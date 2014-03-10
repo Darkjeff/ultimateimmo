@@ -1,0 +1,7 @@
+nbproject
+default.properties
+.buildpath
+.gitmodules
+doxygen_warnings.log
+/.project
+.DS_Store

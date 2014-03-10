@@ -1,0 +1,59 @@
+﻿# Dolibarr language file - fr_FR - ventilation
+CHARSET=UTF-8
+
+Module161000Name= Immobilier
+Module161000Desc= Gestion locative immobilier
+
+
+estate=Immobilier
+Properties=Biens Immobiliers
+ParcImmobilier=Parc Immobilier
+Apart=Appartement
+Building=Immeuble
+Field=Terrain
+Renter=Locataire
+Actif=Actif
+Out=Sorti
+History=historique
+Contracts=Contrats
+RentAndPayment=Loyers et paiements
+RentPerMonth=Loyer mensuel
+PaymentPerMonth=Encaissement mensuel
+CostAndCharges=Charges et frais
+CostPerMonth=Charges mensuel
+TypeCharge=Type de charges
+Tools=Outils
+Result=Revenu Immobilier
+ReleverCompteur=Relever compteur
+NomLoyer=Loyer mois annee
+echeance=date echeance
+periode_du=periode du
+periode_au=periode au
+contrat_id=reference contrat
+local_id=reference local
+nomlocal=nom local
+locataire_id=reference locataire
+nomlocataire=nom locataire
+montant_tot=total
+loy=loyer
+charges=Paiment charge locative
+charge_ex=Charge locative 
+select=Sélection
+GenererQuittance=Generer une Quittance
+ValidateRent=Valider les loyers
+TypeCompteurDict=Module Immobilier - Type de compteur
+letter=Courrier
+NomImmeuble=Immeuble
+NombreLocaux=Nombre de locaux
+street=rue
+zipcode=Code Postal
+town=Ville
+NomLocal=Nom de l'appartement
+NomLocataire=Nom du locataire
+NomContrat=Bail
+LoyerTotal=Montant du loyer
+EncoursLoyer=Encours Locataire
+Addnewrent=Ajouter des loyers
+montant_ttc=Montant TTC
+outrenter=Mettre fin au contrat
+
