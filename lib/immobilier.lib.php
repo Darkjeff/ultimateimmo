@@ -66,7 +66,37 @@ function locataire_prepare_head($object)
 	
 	return $head;
 }
+function mandat_prepare_head($object)
+{
+    global $langs, $conf, $user;
 
+    $h = 0;
+    $head = array();
+
+    $head[$h][0] = dol_buildpath('/immobilier/mandat/fiche.php',1).'?id='.$object->id;
+    $head[$h][1] = $langs->trans("fiche");
+    $head[$h][2] = 'fiche';
+    $h++;
+    
+    $head[$h][0] = dol_buildpath('/immobilier/mandat/document.php',1).'?id='.$object->id;
+    $head[$h][1] = $langs->trans("documents");
+    $head[$h][2] = 'documents';
+    $h++;
+
+    $head[$h][0] = dol_buildpath('/immobilier/mandat/liste.php',1).'?site_view=1&search_site='.$object->id;
+    $head[$h][1] = $langs->trans("liste");
+    $head[$h][2] = 'liste';
+    $h++;
+
+    $head[$h][0] = dol_buildpath('/imobilier/mandat/info.php',1).'?id='.$object->id;
+    $head[$h][1] = $langs->trans("Info");
+    $head[$h][2] = 'info';
+    $h++;
+
+    //complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_site');
+
+    return $head;
+}
 function contrat_prepare_head($object)
 {
 	global $langs, $conf, $user;

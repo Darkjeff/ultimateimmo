@@ -67,7 +67,8 @@ class modImmobilier extends DolibarrModules {
 		'/immobilier/immeuble',
 		'/immobilier/contrat',
 		'/immobilier/charge',
-		'/immobilier/quittance'
+		'/immobilier/quittance',
+		'/immobilier/mandar'
 		);
 		
 		// Config pages
@@ -240,6 +241,7 @@ class modImmobilier extends DolibarrModules {
 		);
 		$r ++;
 		
+		
 		$this->menu [$r] = array (
 		'fk_menu' => 'r=7',
 		'type' => 'left',
@@ -375,6 +377,20 @@ class modImmobilier extends DolibarrModules {
 		'url' => '/immobilier/resultat.php',
 		'langs' => 'immobilier@immobilier',
 		'position' => 151,
+		'enabled' => 1,
+		'perms' => 1,
+		'target' => '',
+		'user' => 0 
+		);
+		$r ++;
+		$this->menu [$r] = array (
+		'fk_menu' => 'r=0',
+		'type' => 'left',
+		'titre' => 'Mandat',
+		'mainmenu' => 'immobilier',
+		'url' => '/immobilier/mandat/liste.php',
+		'langs' => 'immobilier@immobilier',
+		'position' => 152,
 		'enabled' => 1,
 		'perms' => 1,
 		'target' => '',

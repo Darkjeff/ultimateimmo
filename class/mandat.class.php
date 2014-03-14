@@ -223,7 +223,7 @@ class Mandat extends CommonObject
 		$sql.= " t.entity";
 
 		
-        $sql.= " FROM ".MAIN_DB_PREFIX."mandat as t";
+        $sql.= " FROM ".MAIN_DB_PREFIX."immo_mandat as t";
         $sql.= " WHERE t.rowid = ".$id;
 
     	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -301,7 +301,7 @@ class Mandat extends CommonObject
 		// Put here code to add a control on parameters values
 
         // Update request
-        $sql = "UPDATE ".MAIN_DB_PREFIX."mandat SET";
+        $sql = "UPDATE ".MAIN_DB_PREFIX."immo_mandat SET";
         
 		$sql.= " ref_interne=".(isset($this->ref_interne)?"'".$this->db->escape($this->ref_interne)."'":"null").",";
 		$sql.= " fk_soc=".(isset($this->fk_soc)?$this->fk_soc:"null").",";
@@ -397,7 +397,7 @@ class Mandat extends CommonObject
 
 		if (! $error)
 		{
-    		$sql = "DELETE FROM ".MAIN_DB_PREFIX."mandat";
+    		$sql = "DELETE FROM ".MAIN_DB_PREFIX."immo_mandat";
     		$sql.= " WHERE rowid=".$this->id;
 
     		dol_syslog(get_class($this)."::delete sql=".$sql);
@@ -525,7 +525,7 @@ function getmandatUrl($withpicto=0,$option='',$maxlength=0)
 
        
         {
-            $lien = '<a href="'.DOL_URL_ROOT.'/gestimmo/mandat/fiche.php?id='.$this->id.'">';
+            $lien = '<a href="'.DOL_URL_ROOT.'/immobilier/mandat/fiche.php?id='.$this->id.'">';
             $lienfin='</a>';
         }
         $newref=$this->ref;
@@ -533,7 +533,7 @@ function getmandatUrl($withpicto=0,$option='',$maxlength=0)
 
         if ($withpicto) {
             // TODO changer le picto
-           $result.=($lien.img_object($langs->trans("ShowProduct").' '.$this->ref,'product').$lienfin.' ');
+           $result.=($lien.img_object($langs->trans("mandat").' '.$this->ref,'mandat').$lienfin.' ');
             
         }
         $result.=$lien.$newref.$lienfin;
