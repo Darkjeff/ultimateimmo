@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2010 Regis Houssin  <regis@dolibarr.fr>
- *
+ * Copyright (C) 2013-2014      Olivier Geffroy      <jeff@jeffinfo.com>
+ * Copyright (C) 2013-2014 Thierry LECERF  <contact@t3-it.com>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -68,7 +69,7 @@ class modImmobilier extends DolibarrModules {
 		'/immobilier/contrat',
 		'/immobilier/charge',
 		'/immobilier/quittance',
-		'/immobilier/mandar'
+		'/immobilier/mandat'
 		);
 		
 		// Config pages
