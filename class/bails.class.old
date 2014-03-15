@@ -17,10 +17,10 @@
  */
 
 /**
- *  \file       dev/skeletons/immobails.class.php
+ *  \file       dev/skeletons/bails.class.php
  *  \ingroup    mymodule othermodule1 othermodule2
  *  \brief      This file is an example for a CRUD class file (Create/Read/Update/Delete)
- *				Initialy built by build_class_from_table on 2014-03-15 09:42
+ *				Initialy built by build_class_from_table on 2013-05-13 14:45
  */
 
 // Put here all includes required by your class file
@@ -32,13 +32,13 @@ require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
 /**
  *	Put here description of your class
  */
-class Immobails extends CommonObject
+class Bails extends CommonObject
 {
 	var $db;							//!< To store db handler
 	var $error;							//!< To return error code (or message)
 	var $errors=array();				//!< To return several error codes (or messages)
-	var $element='immobails';			//!< Id that identify managed objects
-	var $table_element='immobails';		//!< Name of table without prefix where object is stored
+	var $element='bails';			//!< Id that identify managed objects
+	var $table_element='bails';		//!< Name of table without prefix where object is stored
 
     var $id;
     
@@ -49,14 +49,7 @@ class Immobails extends CommonObject
 	var $Type;
 	var $Date_location='';
 	var $Depot_garantie;
-	var $loy;
-	var $date_entree='';
-	var $date_fin_preavis='';
 	var $date_fin='';
-	var $montant_tot;
-	var $charges;
-	var $date_der_rev='';
-	var $commentaire;
 	var $tms='';
 	var $entity;
 
@@ -95,10 +88,6 @@ class Immobails extends CommonObject
 		if (isset($this->fk_mandat)) $this->fk_mandat=trim($this->fk_mandat);
 		if (isset($this->Type)) $this->Type=trim($this->Type);
 		if (isset($this->Depot_garantie)) $this->Depot_garantie=trim($this->Depot_garantie);
-		if (isset($this->loy)) $this->loy=trim($this->loy);
-		if (isset($this->montant_tot)) $this->montant_tot=trim($this->montant_tot);
-		if (isset($this->charges)) $this->charges=trim($this->charges);
-		if (isset($this->commentaire)) $this->commentaire=trim($this->commentaire);
 		if (isset($this->entity)) $this->entity=trim($this->entity);
 
         
@@ -116,14 +105,7 @@ class Immobails extends CommonObject
 		$sql.= "Type,";
 		$sql.= "Date_location,";
 		$sql.= "Depot_garantie,";
-		$sql.= "loy,";
-		$sql.= "date_entree,";
-		$sql.= "date_fin_preavis,";
 		$sql.= "date_fin,";
-		$sql.= "montant_tot,";
-		$sql.= "charges,";
-		$sql.= "date_der_rev,";
-		$sql.= "commentaire,";
 		$sql.= "entity";
 
 		
@@ -136,14 +118,7 @@ class Immobails extends CommonObject
 		$sql.= " ".(! isset($this->Type)?'NULL':"'".$this->db->escape($this->Type)."'").",";
 		$sql.= " ".(! isset($this->Date_location) || dol_strlen($this->Date_location)==0?'NULL':$this->db->idate($this->Date_location)).",";
 		$sql.= " ".(! isset($this->Depot_garantie)?'NULL':"'".$this->db->escape($this->Depot_garantie)."'").",";
-		$sql.= " ".(! isset($this->loy)?'NULL':"'".$this->loy."'").",";
-		$sql.= " ".(! isset($this->date_entree) || dol_strlen($this->date_entree)==0?'NULL':$this->db->idate($this->date_entree)).",";
-		$sql.= " ".(! isset($this->date_fin_preavis) || dol_strlen($this->date_fin_preavis)==0?'NULL':$this->db->idate($this->date_fin_preavis)).",";
 		$sql.= " ".(! isset($this->date_fin) || dol_strlen($this->date_fin)==0?'NULL':$this->db->idate($this->date_fin)).",";
-		$sql.= " ".(! isset($this->montant_tot)?'NULL':"'".$this->montant_tot."'").",";
-		$sql.= " ".(! isset($this->charges)?'NULL':"'".$this->charges."'").",";
-		$sql.= " ".(! isset($this->date_der_rev) || dol_strlen($this->date_der_rev)==0?'NULL':$this->db->idate($this->date_der_rev)).",";
-		$sql.= " ".(! isset($this->commentaire)?'NULL':"'".$this->db->escape($this->commentaire)."'").",";
 		$sql.= " ".(! isset($this->entity)?'NULL':"'".$this->entity."'")."";
 
         
@@ -211,14 +186,7 @@ class Immobails extends CommonObject
 		$sql.= " t.Type,";
 		$sql.= " t.Date_location,";
 		$sql.= " t.Depot_garantie,";
-		$sql.= " t.loy,";
-		$sql.= " t.date_entree,";
-		$sql.= " t.date_fin_preavis,";
 		$sql.= " t.date_fin,";
-		$sql.= " t.montant_tot,";
-		$sql.= " t.charges,";
-		$sql.= " t.date_der_rev,";
-		$sql.= " t.commentaire,";
 		$sql.= " t.tms,";
 		$sql.= " t.entity";
 
@@ -243,14 +211,7 @@ class Immobails extends CommonObject
 				$this->Type = $obj->Type;
 				$this->Date_location = $this->db->jdate($obj->Date_location);
 				$this->Depot_garantie = $obj->Depot_garantie;
-				$this->loy = $obj->loy;
-				$this->date_entree = $this->db->jdate($obj->date_entree);
-				$this->date_fin_preavis = $this->db->jdate($obj->date_fin_preavis);
 				$this->date_fin = $this->db->jdate($obj->date_fin);
-				$this->montant_tot = $obj->montant_tot;
-				$this->charges = $obj->charges;
-				$this->date_der_rev = $this->db->jdate($obj->date_der_rev);
-				$this->commentaire = $obj->commentaire;
 				$this->tms = $this->db->jdate($obj->tms);
 				$this->entity = $obj->entity;
 
@@ -289,10 +250,6 @@ class Immobails extends CommonObject
 		if (isset($this->fk_mandat)) $this->fk_mandat=trim($this->fk_mandat);
 		if (isset($this->Type)) $this->Type=trim($this->Type);
 		if (isset($this->Depot_garantie)) $this->Depot_garantie=trim($this->Depot_garantie);
-		if (isset($this->loy)) $this->loy=trim($this->loy);
-		if (isset($this->montant_tot)) $this->montant_tot=trim($this->montant_tot);
-		if (isset($this->charges)) $this->charges=trim($this->charges);
-		if (isset($this->commentaire)) $this->commentaire=trim($this->commentaire);
 		if (isset($this->entity)) $this->entity=trim($this->entity);
 
         
@@ -310,14 +267,7 @@ class Immobails extends CommonObject
 		$sql.= " Type=".(isset($this->Type)?"'".$this->db->escape($this->Type)."'":"null").",";
 		$sql.= " Date_location=".(dol_strlen($this->Date_location)!=0 ? "'".$this->db->idate($this->Date_location)."'" : 'null').",";
 		$sql.= " Depot_garantie=".(isset($this->Depot_garantie)?"'".$this->db->escape($this->Depot_garantie)."'":"null").",";
-		$sql.= " loy=".(isset($this->loy)?$this->loy:"null").",";
-		$sql.= " date_entree=".(dol_strlen($this->date_entree)!=0 ? "'".$this->db->idate($this->date_entree)."'" : 'null').",";
-		$sql.= " date_fin_preavis=".(dol_strlen($this->date_fin_preavis)!=0 ? "'".$this->db->idate($this->date_fin_preavis)."'" : 'null').",";
 		$sql.= " date_fin=".(dol_strlen($this->date_fin)!=0 ? "'".$this->db->idate($this->date_fin)."'" : 'null').",";
-		$sql.= " montant_tot=".(isset($this->montant_tot)?$this->montant_tot:"null").",";
-		$sql.= " charges=".(isset($this->charges)?$this->charges:"null").",";
-		$sql.= " date_der_rev=".(dol_strlen($this->date_der_rev)!=0 ? "'".$this->db->idate($this->date_der_rev)."'" : 'null').",";
-		$sql.= " commentaire=".(isset($this->commentaire)?"'".$this->db->escape($this->commentaire)."'":"null").",";
 		$sql.= " tms=".(dol_strlen($this->tms)!=0 ? "'".$this->db->idate($this->tms)."'" : 'null').",";
 		$sql.= " entity=".(isset($this->entity)?$this->entity:"null")."";
 
@@ -437,7 +387,7 @@ class Immobails extends CommonObject
 
 		$error=0;
 
-		$object=new Immobails($this->db);
+		$object=new Bails($this->db);
 
 		$this->db->begin();
 
@@ -496,19 +446,33 @@ class Immobails extends CommonObject
 		$this->Type='';
 		$this->Date_location='';
 		$this->Depot_garantie='';
-		$this->loy='';
-		$this->date_entree='';
-		$this->date_fin_preavis='';
 		$this->date_fin='';
-		$this->montant_tot='';
-		$this->charges='';
-		$this->date_der_rev='';
-		$this->commentaire='';
 		$this->tms='';
 		$this->entity='';
 
 		
 	}
-
+function update_mandat($id_mandat)
+    {
+        $sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element.' set fk_mandat = '.$id_mandat;
+        $sql.= ' WHERE rowid = '.$this->id;
+        $this->db->begin();
+        dol_syslog(get_class($this).'::update_fk_mandat sql='.$sql);
+       // $this->db->begin();
+        $result = $this->db->query($sql);
+        
+        if ($result)
+        {
+            $this->db->commit();   
+            return 1;
+            
+        }
+        else
+        {
+            $this->error=$this->db->lasterror();
+            dol_syslog(get_class($this).'::update_fk_mandat '.$this->error);
+            return -1;
+        }
+    }
 }
 ?>

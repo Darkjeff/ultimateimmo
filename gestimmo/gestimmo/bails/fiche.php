@@ -23,15 +23,14 @@
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/price.lib.php';
 
-dol_include_once('/gestimmo/class/logement.class.php');
+dol_include_once('/immobilier/class/logement.class.php');
 dol_include_once('/core/lib/function.lib.php');
 dol_include_once('/core/class/html.formcompany.class.php');
 dol_include_once('/core/class/doleditor.class.php');
-dol_include_once('/gestimmo/class/html.formgestimmo.class.php');
-dol_include_once('/gestimmo/class/mandat.class.php');
-dol_include_once('/gestimmo/class/bails.class.php');
-dol_include_once('/gestimmo/class/logement.class.php');
-$langs->load("getimmo");
+dol_include_once('/immobilier/class/html.formimmobilier.class.php');
+dol_include_once('/immobilier/class/mandat.class.php');
+dol_include_once('/immobilier/class/bails.class.php');
+
 $langs->load("orders");
 $langs->load("companies");
 
