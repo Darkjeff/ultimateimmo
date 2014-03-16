@@ -23,14 +23,15 @@
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/price.lib.php';
 
-dol_include_once('/immobilier/class/logement.class.php');
+dol_include_once('/immobilier/class/local.class.php');
 dol_include_once('/core/lib/function.lib.php');
 dol_include_once('/core/class/html.formcompany.class.php');
 dol_include_once('/core/class/doleditor.class.php');
-dol_include_once('/immobilier/class/html.formimmobilier.class.php');
+dol_include_once('/immobilier/class/html.immobilier.php');
 dol_include_once('/immobilier/class/mandat.class.php');
 dol_include_once('/immobilier/class/bails.class.php');
 
+$langs->load("immobilier");
 $langs->load("orders");
 $langs->load("companies");
 
@@ -61,7 +62,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" )
         $mesg='<div class="error">'.$langs->trans("Deleterror").':'.$gestimmo->error.'</div>';
     }
 }
-/* TODO en prevision de l'archivage des bails
+/* TODO en prevision de l'archivage des baux
  * Actions archive/active
 */
 if ($action == 'arch_confirm_delete' )
@@ -229,7 +230,7 @@ if ($action == 'create' )
 {
     print_barre_liste($langs->trans("Création Bails de location"),"", "","","","",'',0);   
     $formcompany = new FormCompany($db);
-    $formmandat = new Formgestimmo ($db);
+    $formmandat = new FormImmobilier ($db);
      
     print_fiche_titre($langs->trans("creation d'un bails"));
 
@@ -284,7 +285,7 @@ else
        // $agf = new Logement($db);
         //$result = $agf->fetch($id);
     $formcompany = new FormCompany($db);
-    $formmandat = new Formgestimmo ($db);
+    $formmandat = new FormImmobilier ($db);
     $gestimmo=new Bails($db);
     $result = $gestimmo->fetch($id);
      if ($result)
@@ -297,7 +298,7 @@ else
             if ($action == 'edit')
             {
                // $formcompany = new FormCompany($db);
-                $formimmo = new Formgestimmo($db);
+                $formimmo = new FormImmobilier($db);
                 print_barre_liste($langs->trans("Modification biens"),"", "","","","",'',0);
                 print '<form name="update" action="'.$_SERVER['PHP_SELF'].'" method="post">'."\n";
                 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
@@ -411,7 +412,7 @@ else
  
 else
     {
-         $formimmo = new Formgestimmo($db);
+         $formimmo = new FormImmobilier($db);
                 print_barre_liste($langs->trans("Modification biens"),"", "","","","",'',0);
         print '<tr><td>'.$langs->trans("bail").'</td>';
                 print '<td><input name="ref" class="flat" size="50" value="'.$gestimmo->rowid.'"></td></tr>';

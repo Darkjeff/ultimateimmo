@@ -485,7 +485,201 @@ class FormImmobilier extends Form
 		return $out;
 	} 
 	
-	
-	
+	function select_mandat($selectid, $htmlname='mandat', $filter='', $showempty=0, $forcecombo=0, $event=array())
+    {
+        global $conf,$langs;
+
+        $sql = "SELECT t.rowid, t.ref_interne";
+        $sql.= " FROM ".MAIN_DB_PREFIX."immo_mandat as t";
+        if (!empty($filter)) {
+            $sql .= ' WHERE '.$filter;
+        }
+        $sql.= " ORDER BY t.ref_interne";
+
+        dol_syslog(get_class($this)."::select_mandat sql=".$sql, LOG_DEBUG);
+        $result = $this->db->query($sql);
+        if ($result)
+        {
+
+            if ($conf->use_javascript_ajax  && ! $forcecombo)
+            {
+                $out.= ajax_combobox($htmlname, $event);
+            }
+
+            $out.= '<select id="'.$htmlname.'" class="flat" name="'.$htmlname.'">';
+            if ($showempty) $out.= '<option value="-1"></option>';
+            $num = $this->db->num_rows($result);
+            $i = 0;
+            if ($num)
+            {
+                while ($i < $num)
+                {
+                    $obj = $this->db->fetch_object($result);
+                    $label = stripslashes($obj->ref_interne);
+
+                    if ($selectid > 0 && $selectid == $obj->rowid)
+                    {
+                        $out.= '<option value="'.$obj->rowid.'" selected="selected">'.$label.'</option>';
+                    }
+                    else
+                    {
+                        $out.= '<option value="'.$obj->rowid.'">'.$label.'</option>';
+                    }
+                    $i++;
+                }
+            }
+            $out.= '</select>';
+            $this->db->free($result);
+            return $out;
+        }
+        else
+        {
+            $this->error="Error ".$this->db->lasterror();
+            dol_syslog(get_class($this)."::select_mandat ".$this->error, LOG_ERR);
+            return -1;
+        }
+    }
+	function select_proprio($selectid, $htmlname = 'Proprietaire', $showempty = 0, $event = array())
+	{
+		global $conf, $user, $langs;
+		
+		$out = '';
+		
+		$sql = "SELECT rowid, nom";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_proprio";
+		$sql .= " WHERE statut= 'Actif'";
+		if ($user->id != 1) {
+			$sql .= " AND proprietaire_id=" . $user->id;
+		}
+		$sql .= " ORDER BY nom";
+		
+		dol_syslog(get_class($this) . "::select_locataire sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			
+			$out .= ajax_combobox($htmlname, $event);
+			
+			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			if ($showempty)
+				$out .= '<option value="-1"></option>';
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			if ($num) {
+				while ($i < $num) {
+					$obj = $this->db->fetch_object($resql);
+					$label = $obj->nom;
+					
+					if ($selectid > 0 && $selectid == $obj->rowid) {
+						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
+					} else {
+						$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
+					}
+					$i ++;
+				}
+			}
+			$out .= '</select>';
+		} else {
+			dol_print_error($this->db);
+		}
+		$this->db->free($resql);
+		return $out;
+	}
+	function select_contacts_combobox($socid,$selected='',$htmlname='contactid',$showempty=0,$exclude='',$limitto='',$showfunction=0, $moreclass='', $options_only=false,$forcecombo=0,$event=array())
+    {
+        global $conf,$langs;
+    
+        $langs->load('companies');
+    
+        $out='';
+    
+        // On recherche les societes
+        $sql = "SELECT sp.rowid, sp.nom as name ";
+        $sql.= " FROM ".MAIN_DB_PREFIX ."societe as sp";
+        $sql.= " WHERE sp.entity IN (".getEntity('societe', 1).")";
+        if ($socid > 0) $sql.= " AND sp.fk_soc=".$socid;
+        $sql.= " ORDER BY sp.nom ASC";
+    
+        dol_syslog(get_class($this)."::select_contacts_combobox sql=".$sql);
+        $resql=$this->db->query($sql);
+        if ($resql)
+        {
+            $num=$this->db->num_rows($resql);
+            
+            if ($conf->use_javascript_ajax && $conf->global->AGF_CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo)
+            {           
+                $out.= ajax_combobox($htmlname, $event);
+            }
+    
+            if ($htmlname != 'none' || $options_only) $out.= '<select class="flat'.($moreclass?' '.$moreclass:'').'" id="'.$htmlname.'" name="'.$htmlname.'">';
+            if ($showempty) $out.= '<option value="0"></option>';
+            $num = $this->db->num_rows($resql);
+            $i = 0;
+            if ($num)
+            {
+                include_once(DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php');
+                $contactstatic=new Contact($this->db);
+    
+                while ($i < $num)
+                {
+                    $obj = $this->db->fetch_object($resql);
+    
+                    $contactstatic->id=$obj->rowid;
+                    $contactstatic->name=$obj->name;
+                    $contactstatic->lastname=$obj->name;
+                   
+    
+                    if ($htmlname != 'none')
+                    {
+                        $disabled=0;
+                        if (is_array($exclude) && count($exclude) && in_array($obj->rowid,$exclude)) $disabled=1;
+                        if (is_array($limitto) && count($limitto) && ! in_array($obj->rowid,$limitto)) $disabled=1;
+                        if ($selected && $selected == $obj->rowid)
+                        {
+                            $out.= '<option value="'.$obj->rowid.'"';
+                            if ($disabled) $out.= ' disabled="disabled"';
+                            $out.= ' selected="selected">';
+                            $out.= $contactstatic->getFullName($langs);
+                            if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+                            $out.= '</option>';
+                        }
+                        elseif (!$disabled)
+                        {
+                            $out.= '<option value="'.$obj->rowid.'"';
+                            if ($disabled) $out.= ' disabled="disabled"';
+                            $out.= '>';
+                            $out.= $contactstatic->getFullName($langs);
+                            if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+                            $out.= '</option>';
+                        }
+                    }
+                    else
+                    {
+                        if ($selected == $obj->rowid)
+                        {
+                            $out.= $contactstatic->getFullName($langs);
+                            if ($showfunction && $obj->poste) $out.= ' ('.$obj->poste.')';
+                        }
+                    }
+                    $i++;
+                }
+            }
+            else
+            {
+                $out.= '<option value="-1" selected="selected" disabled="disabled">'.$langs->trans("NoContactDefined").'</option>';
+            }
+            if ($htmlname != 'none' || $options_only)
+            {
+                $out.= '</select>';
+            }
+    
+            $this->num = $num;
+            return $out;
+        }
+        else
+        {
+            dol_print_error($this->db);
+            return -1;
+        }
+    }
 	
 }

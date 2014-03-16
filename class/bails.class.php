@@ -17,10 +17,10 @@
  */
 
 /**
- *  \file       dev/skeletons/mandat.class.php
+ *  \file       dev/skeletons/immobails.class.php
  *  \ingroup    mymodule othermodule1 othermodule2
  *  \brief      This file is an example for a CRUD class file (Create/Read/Update/Delete)
- *				Initialy built by build_class_from_table on 2013-05-16 13:41
+ *				Initialy built by build_class_from_table on 2014-03-15 09:42
  */
 
 // Put here all includes required by your class file
@@ -32,31 +32,31 @@ require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
 /**
  *	Put here description of your class
  */
-class Mandat extends CommonObject
+class Immobails extends CommonObject
 {
 	var $db;							//!< To store db handler
 	var $error;							//!< To return error code (or message)
 	var $errors=array();				//!< To return several error codes (or messages)
-	var $element='mandat';			//!< Id that identify managed objects
-	var $table_element='mandat';		//!< Name of table without prefix where object is stored
+	var $element='immobails';			//!< Id that identify managed objects
+	var $table_element='immobails';		//!< Name of table without prefix where object is stored
 
     var $id;
     
-	var $ref_interne;
-	var $fk_soc;
-	var $fk_biens;
-	var $date_contrat='';
-	var $date_cloture='';
-	var $status;
-	var $mise_en_service='';
-	var $fin_validite='';
-	var $fk_bails;
-	var $fk_commercial;
-	var $notes_private;
-	var $notes_public;
-	var $fk_user_author;
-	var $datec='';
-	var $fk_user_mod;
+	var $fk_prop;
+	var $fk_loc;
+	var $fk_logement;
+	var $fk_mandat;
+	var $Type;
+	var $Date_location='';
+	var $Depot_garantie;
+	var $loy;
+	var $date_entree='';
+	var $date_fin_preavis='';
+	var $date_fin='';
+	var $montant_tot;
+	var $charges;
+	var $date_der_rev='';
+	var $commentaire;
 	var $tms='';
 	var $entity;
 
@@ -89,16 +89,16 @@ class Mandat extends CommonObject
 
 		// Clean parameters
         
-		if (isset($this->ref_interne)) $this->ref_interne=trim($this->ref_interne);
-		if (isset($this->fk_soc)) $this->fk_soc=trim($this->fk_soc);
-		if (isset($this->fk_biens)) $this->fk_biens=trim($this->fk_biens);
-		if (isset($this->status)) $this->status=trim($this->status);
-		if (isset($this->fk_bails)) $this->fk_bails=trim($this->fk_bails);
-		if (isset($this->fk_commercial)) $this->fk_commercial=trim($this->fk_commercial);
-		if (isset($this->notes_private)) $this->notes_private=trim($this->notes_private);
-		if (isset($this->notes_public)) $this->notes_public=trim($this->notes_public);
-		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
-		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
+		if (isset($this->fk_prop)) $this->fk_prop=trim($this->fk_prop);
+		if (isset($this->fk_loc)) $this->fk_loc=trim($this->fk_loc);
+		if (isset($this->fk_logement)) $this->fk_logement=trim($this->fk_logement);
+		if (isset($this->fk_mandat)) $this->fk_mandat=trim($this->fk_mandat);
+		if (isset($this->Type)) $this->Type=trim($this->Type);
+		if (isset($this->Depot_garantie)) $this->Depot_garantie=trim($this->Depot_garantie);
+		if (isset($this->loy)) $this->loy=trim($this->loy);
+		if (isset($this->montant_tot)) $this->montant_tot=trim($this->montant_tot);
+		if (isset($this->charges)) $this->charges=trim($this->charges);
+		if (isset($this->commentaire)) $this->commentaire=trim($this->commentaire);
 		if (isset($this->entity)) $this->entity=trim($this->entity);
 
         
@@ -107,43 +107,43 @@ class Mandat extends CommonObject
 		// Put here code to add control on parameters values
 
         // Insert request
-		$sql = "INSERT INTO ".MAIN_DB_PREFIX."immo_mandat(";
+		$sql = "INSERT INTO ".MAIN_DB_PREFIX."immo_bails(";
 		
-		$sql.= "ref_interne,";
-		$sql.= "fk_soc,";
-		$sql.= "fk_biens,";
-		$sql.= "date_contrat,";
-		$sql.= "date_cloture,";
-		$sql.= "status,";
-		$sql.= "mise_en_service,";
-		$sql.= "fin_validite,";
-		$sql.= "fk_bails,";
-		$sql.= "fk_commercial,";
-		$sql.= "notes_private,";
-		$sql.= "notes_public,";
-		$sql.= "fk_user_author,";
-		$sql.= "datec,";
-		$sql.= "fk_user_mod,";
+		$sql.= "fk_prop,";
+		$sql.= "fk_loc,";
+		$sql.= "fk_logement,";
+		$sql.= "fk_mandat,";
+		$sql.= "Type,";
+		$sql.= "Date_location,";
+		$sql.= "Depot_garantie,";
+		$sql.= "loy,";
+		$sql.= "date_entree,";
+		$sql.= "date_fin_preavis,";
+		$sql.= "date_fin,";
+		$sql.= "montant_tot,";
+		$sql.= "charges,";
+		$sql.= "date_der_rev,";
+		$sql.= "commentaire,";
 		$sql.= "entity";
 
 		
         $sql.= ") VALUES (";
         
-		$sql.= " ".(! isset($this->ref_interne)?'NULL':"'".$this->db->escape($this->ref_interne)."'").",";
-		$sql.= " ".(! isset($this->fk_soc)?'NULL':"'".$this->fk_soc."'").",";
-		$sql.= " ".(! isset($this->fk_biens)?'NULL':"'".$this->fk_biens."'").",";
-		$sql.= " ".(! isset($this->date_contrat) || dol_strlen($this->date_contrat)==0?'NULL':$this->db->idate($this->date_contrat)).",";
-		$sql.= " ".(! isset($this->date_cloture) || dol_strlen($this->date_cloture)==0?'NULL':$this->db->idate($this->date_cloture)).",";
-		$sql.= " ".(! isset($this->status)?'NULL':"'".$this->status."'").",";
-		$sql.= " ".(! isset($this->mise_en_service) || dol_strlen($this->mise_en_service)==0?'NULL':$this->db->idate($this->mise_en_service)).",";
-		$sql.= " ".(! isset($this->fin_validite) || dol_strlen($this->fin_validite)==0?'NULL':$this->db->idate($this->fin_validite)).",";
-		$sql.= " ".(! isset($this->fk_bails)?'NULL':"'".$this->fk_bails."'").",";
-		$sql.= " ".(! isset($this->fk_commercial)?'NULL':"'".$this->fk_commercial."'").",";
-		$sql.= " ".(! isset($this->notes_private)?'NULL':"'".$this->db->escape($this->notes_private)."'").",";
-		$sql.= " ".(! isset($this->notes_public)?'NULL':"'".$this->db->escape($this->notes_public)."'").",";
-		$sql.= " ".(! isset($this->fk_user_author)?'NULL':"'".$this->fk_user_author."'").",";
-		$sql.= " ".(! isset($this->datec) || dol_strlen($this->datec)==0?'NULL':$this->db->idate($this->datec)).",";
-		$sql.= " ".(! isset($this->fk_user_mod)?'NULL':"'".$this->fk_user_mod."'").",";
+		$sql.= " ".(! isset($this->fk_prop)?'NULL':"'".$this->fk_prop."'").",";
+		$sql.= " ".(! isset($this->fk_loc)?'NULL':"'".$this->fk_loc."'").",";
+		$sql.= " ".(! isset($this->fk_logement)?'NULL':"'".$this->fk_logement."'").",";
+		$sql.= " ".(! isset($this->fk_mandat)?'NULL':"'".$this->fk_mandat."'").",";
+		$sql.= " ".(! isset($this->Type)?'NULL':"'".$this->db->escape($this->Type)."'").",";
+		$sql.= " ".(! isset($this->Date_location) || dol_strlen($this->Date_location)==0?'NULL':$this->db->idate($this->Date_location)).",";
+		$sql.= " ".(! isset($this->Depot_garantie)?'NULL':"'".$this->db->escape($this->Depot_garantie)."'").",";
+		$sql.= " ".(! isset($this->loy)?'NULL':"'".$this->loy."'").",";
+		$sql.= " ".(! isset($this->date_entree) || dol_strlen($this->date_entree)==0?'NULL':$this->db->idate($this->date_entree)).",";
+		$sql.= " ".(! isset($this->date_fin_preavis) || dol_strlen($this->date_fin_preavis)==0?'NULL':$this->db->idate($this->date_fin_preavis)).",";
+		$sql.= " ".(! isset($this->date_fin) || dol_strlen($this->date_fin)==0?'NULL':$this->db->idate($this->date_fin)).",";
+		$sql.= " ".(! isset($this->montant_tot)?'NULL':"'".$this->montant_tot."'").",";
+		$sql.= " ".(! isset($this->charges)?'NULL':"'".$this->charges."'").",";
+		$sql.= " ".(! isset($this->date_der_rev) || dol_strlen($this->date_der_rev)==0?'NULL':$this->db->idate($this->date_der_rev)).",";
+		$sql.= " ".(! isset($this->commentaire)?'NULL':"'".$this->db->escape($this->commentaire)."'").",";
 		$sql.= " ".(! isset($this->entity)?'NULL':"'".$this->entity."'")."";
 
         
@@ -157,7 +157,7 @@ class Mandat extends CommonObject
 
 		if (! $error)
         {
-            $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."mandat");
+            $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."immo_bails");
 
 			if (! $notrigger)
 			{
@@ -204,26 +204,26 @@ class Mandat extends CommonObject
         $sql = "SELECT";
 		$sql.= " t.rowid,";
 		
-		$sql.= " t.ref_interne,";
-		$sql.= " t.fk_soc,";
-		$sql.= " t.fk_biens,";
-		$sql.= " t.date_contrat,";
-		$sql.= " t.date_cloture,";
-		$sql.= " t.status,";
-		$sql.= " t.mise_en_service,";
-		$sql.= " t.fin_validite,";
-		$sql.= " t.fk_bails,";
-		$sql.= " t.fk_commercial,";
-		$sql.= " t.notes_private,";
-		$sql.= " t.notes_public,";
-		$sql.= " t.fk_user_author,";
-		$sql.= " t.datec,";
-		$sql.= " t.fk_user_mod,";
+		$sql.= " t.fk_prop,";
+		$sql.= " t.fk_loc,";
+		$sql.= " t.fk_logement,";
+		$sql.= " t.fk_mandat,";
+		$sql.= " t.Type,";
+		$sql.= " t.Date_location,";
+		$sql.= " t.Depot_garantie,";
+		$sql.= " t.loy,";
+		$sql.= " t.date_entree,";
+		$sql.= " t.date_fin_preavis,";
+		$sql.= " t.date_fin,";
+		$sql.= " t.montant_tot,";
+		$sql.= " t.charges,";
+		$sql.= " t.date_der_rev,";
+		$sql.= " t.commentaire,";
 		$sql.= " t.tms,";
 		$sql.= " t.entity";
 
 		
-        $sql.= " FROM ".MAIN_DB_PREFIX."mandat as t";
+        $sql.= " FROM ".MAIN_DB_PREFIX."immo_bails as t";
         $sql.= " WHERE t.rowid = ".$id;
 
     	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -236,21 +236,21 @@ class Mandat extends CommonObject
 
                 $this->id    = $obj->rowid;
                 
-				$this->ref_interne = $obj->ref_interne;
-				$this->fk_soc = $obj->fk_soc;
-				$this->fk_biens = $obj->fk_biens;
-				$this->date_contrat = $this->db->jdate($obj->date_contrat);
-				$this->date_cloture = $this->db->jdate($obj->date_cloture);
-				$this->status = $obj->status;
-				$this->mise_en_service = $this->db->jdate($obj->mise_en_service);
-				$this->fin_validite = $this->db->jdate($obj->fin_validite);
-				$this->fk_bails = $obj->fk_bails;
-				$this->fk_commercial = $obj->fk_commercial;
-				$this->notes_private = $obj->notes_private;
-				$this->notes_public = $obj->notes_public;
-				$this->fk_user_author = $obj->fk_user_author;
-				$this->datec = $this->db->jdate($obj->datec);
-				$this->fk_user_mod = $obj->fk_user_mod;
+				$this->fk_prop = $obj->fk_prop;
+				$this->fk_loc = $obj->fk_loc;
+				$this->fk_logement = $obj->fk_logement;
+				$this->fk_mandat = $obj->fk_mandat;
+				$this->Type = $obj->Type;
+				$this->Date_location = $this->db->jdate($obj->Date_location);
+				$this->Depot_garantie = $obj->Depot_garantie;
+				$this->loy = $obj->loy;
+				$this->date_entree = $this->db->jdate($obj->date_entree);
+				$this->date_fin_preavis = $this->db->jdate($obj->date_fin_preavis);
+				$this->date_fin = $this->db->jdate($obj->date_fin);
+				$this->montant_tot = $obj->montant_tot;
+				$this->charges = $obj->charges;
+				$this->date_der_rev = $this->db->jdate($obj->date_der_rev);
+				$this->commentaire = $obj->commentaire;
 				$this->tms = $this->db->jdate($obj->tms);
 				$this->entity = $obj->entity;
 
@@ -283,16 +283,16 @@ class Mandat extends CommonObject
 
 		// Clean parameters
         
-		if (isset($this->ref_interne)) $this->ref_interne=trim($this->ref_interne);
-		if (isset($this->fk_soc)) $this->fk_soc=trim($this->fk_soc);
-		if (isset($this->fk_biens)) $this->fk_biens=trim($this->fk_biens);
-		if (isset($this->status)) $this->status=trim($this->status);
-		if (isset($this->fk_bails)) $this->fk_bails=trim($this->fk_bails);
-		if (isset($this->fk_commercial)) $this->fk_commercial=trim($this->fk_commercial);
-		if (isset($this->notes_private)) $this->notes_private=trim($this->notes_private);
-		if (isset($this->notes_public)) $this->notes_public=trim($this->notes_public);
-		if (isset($this->fk_user_author)) $this->fk_user_author=trim($this->fk_user_author);
-		if (isset($this->fk_user_mod)) $this->fk_user_mod=trim($this->fk_user_mod);
+		if (isset($this->fk_prop)) $this->fk_prop=trim($this->fk_prop);
+		if (isset($this->fk_loc)) $this->fk_loc=trim($this->fk_loc);
+		if (isset($this->fk_logement)) $this->fk_logement=trim($this->fk_logement);
+		if (isset($this->fk_mandat)) $this->fk_mandat=trim($this->fk_mandat);
+		if (isset($this->Type)) $this->Type=trim($this->Type);
+		if (isset($this->Depot_garantie)) $this->Depot_garantie=trim($this->Depot_garantie);
+		if (isset($this->loy)) $this->loy=trim($this->loy);
+		if (isset($this->montant_tot)) $this->montant_tot=trim($this->montant_tot);
+		if (isset($this->charges)) $this->charges=trim($this->charges);
+		if (isset($this->commentaire)) $this->commentaire=trim($this->commentaire);
 		if (isset($this->entity)) $this->entity=trim($this->entity);
 
         
@@ -301,23 +301,23 @@ class Mandat extends CommonObject
 		// Put here code to add a control on parameters values
 
         // Update request
-        $sql = "UPDATE ".MAIN_DB_PREFIX."mandat SET";
+        $sql = "UPDATE ".MAIN_DB_PREFIX."immo_bails SET";
         
-		$sql.= " ref_interne=".(isset($this->ref_interne)?"'".$this->db->escape($this->ref_interne)."'":"null").",";
-		$sql.= " fk_soc=".(isset($this->fk_soc)?$this->fk_soc:"null").",";
-		$sql.= " fk_biens=".(isset($this->fk_biens)?$this->fk_biens:"null").",";
-		$sql.= " date_contrat=".(dol_strlen($this->date_contrat)!=0 ? "'".$this->db->idate($this->date_contrat)."'" : 'null').",";
-		$sql.= " date_cloture=".(dol_strlen($this->date_cloture)!=0 ? "'".$this->db->idate($this->date_cloture)."'" : 'null').",";
-		$sql.= " status=".(isset($this->status)?$this->status:"null").",";
-		$sql.= " mise_en_service=".(dol_strlen($this->mise_en_service)!=0 ? "'".$this->db->idate($this->mise_en_service)."'" : 'null').",";
-		$sql.= " fin_validite=".(dol_strlen($this->fin_validite)!=0 ? "'".$this->db->idate($this->fin_validite)."'" : 'null').",";
-		$sql.= " fk_bails=".(isset($this->fk_bails)?$this->fk_bails:"null").",";
-		$sql.= " fk_commercial=".(isset($this->fk_commercial)?$this->fk_commercial:"null").",";
-		$sql.= " notes_private=".(isset($this->notes_private)?"'".$this->db->escape($this->notes_private)."'":"null").",";
-		$sql.= " notes_public=".(isset($this->notes_public)?"'".$this->db->escape($this->notes_public)."'":"null").",";
-		$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
-		$sql.= " datec=".(dol_strlen($this->datec)!=0 ? "'".$this->db->idate($this->datec)."'" : 'null').",";
-		$sql.= " fk_user_mod=".(isset($this->fk_user_mod)?$this->fk_user_mod:"null").",";
+		$sql.= " fk_prop=".(isset($this->fk_prop)?$this->fk_prop:"null").",";
+		$sql.= " fk_loc=".(isset($this->fk_loc)?$this->fk_loc:"null").",";
+		$sql.= " fk_logement=".(isset($this->fk_logement)?$this->fk_logement:"null").",";
+		$sql.= " fk_mandat=".(isset($this->fk_mandat)?$this->fk_mandat:"null").",";
+		$sql.= " Type=".(isset($this->Type)?"'".$this->db->escape($this->Type)."'":"null").",";
+		$sql.= " Date_location=".(dol_strlen($this->Date_location)!=0 ? "'".$this->db->idate($this->Date_location)."'" : 'null').",";
+		$sql.= " Depot_garantie=".(isset($this->Depot_garantie)?"'".$this->db->escape($this->Depot_garantie)."'":"null").",";
+		$sql.= " loy=".(isset($this->loy)?$this->loy:"null").",";
+		$sql.= " date_entree=".(dol_strlen($this->date_entree)!=0 ? "'".$this->db->idate($this->date_entree)."'" : 'null').",";
+		$sql.= " date_fin_preavis=".(dol_strlen($this->date_fin_preavis)!=0 ? "'".$this->db->idate($this->date_fin_preavis)."'" : 'null').",";
+		$sql.= " date_fin=".(dol_strlen($this->date_fin)!=0 ? "'".$this->db->idate($this->date_fin)."'" : 'null').",";
+		$sql.= " montant_tot=".(isset($this->montant_tot)?$this->montant_tot:"null").",";
+		$sql.= " charges=".(isset($this->charges)?$this->charges:"null").",";
+		$sql.= " date_der_rev=".(dol_strlen($this->date_der_rev)!=0 ? "'".$this->db->idate($this->date_der_rev)."'" : 'null').",";
+		$sql.= " commentaire=".(isset($this->commentaire)?"'".$this->db->escape($this->commentaire)."'":"null").",";
 		$sql.= " tms=".(dol_strlen($this->tms)!=0 ? "'".$this->db->idate($this->tms)."'" : 'null').",";
 		$sql.= " entity=".(isset($this->entity)?$this->entity:"null")."";
 
@@ -397,7 +397,7 @@ class Mandat extends CommonObject
 
 		if (! $error)
 		{
-    		$sql = "DELETE FROM ".MAIN_DB_PREFIX."mandat";
+    		$sql = "DELETE FROM ".MAIN_DB_PREFIX."immo_bails";
     		$sql.= " WHERE rowid=".$this->id;
 
     		dol_syslog(get_class($this)."::delete sql=".$sql);
@@ -437,7 +437,7 @@ class Mandat extends CommonObject
 
 		$error=0;
 
-		$object=new Mandat($this->db);
+		$object=new Immobails($this->db);
 
 		$this->db->begin();
 
@@ -489,56 +489,26 @@ class Mandat extends CommonObject
 	{
 		$this->id=0;
 		
-		$this->ref_interne='';
-		$this->fk_soc='';
-		$this->fk_biens='';
-		$this->date_contrat='';
-		$this->date_cloture='';
-		$this->status='';
-		$this->mise_en_service='';
-		$this->fin_validite='';
-		$this->fk_bails='';
-		$this->fk_commercial='';
-		$this->notes_private='';
-		$this->notes_public='';
-		$this->fk_user_author='';
-		$this->datec='';
-		$this->fk_user_mod='';
+		$this->fk_prop='';
+		$this->fk_loc='';
+		$this->fk_logement='';
+		$this->fk_mandat='';
+		$this->Type='';
+		$this->Date_location='';
+		$this->Depot_garantie='';
+		$this->loy='';
+		$this->date_entree='';
+		$this->date_fin_preavis='';
+		$this->date_fin='';
+		$this->montant_tot='';
+		$this->charges='';
+		$this->date_der_rev='';
+		$this->commentaire='';
 		$this->tms='';
 		$this->entity='';
 
 		
 	}
-    /**
-     *  Return clicable link of object (with eventually picto)
-     *
-     *  @param      int     $withpicto      Add picto into link
-     *  @param      string  $option         Where point the link
-     *  @param      int     $maxlength      Maxlength of ref
-     *  @return     string                  String with URL
-     */
-function getmandatUrl($withpicto=0,$option='',$maxlength=0)
-    {
-        global $langs;
-
-        $result='';
-
-       
-        {
-            $lien = '<a href="'.DOL_URL_ROOT.'/gestimmo/mandat/fiche.php?id='.$this->id.'">';
-            $lienfin='</a>';
-        }
-        $newref=$this->ref;
-        if ($maxlength) $newref=dol_trunc($newref,$maxlength,'middle');
-
-        if ($withpicto) {
-            // TODO changer le picto
-           $result.=($lien.img_object($langs->trans("ShowProduct").' '.$this->ref,'product').$lienfin.' ');
-            
-        }
-        $result.=$lien.$newref.$lienfin;
-        return $result;
-    }
 
 }
 ?>

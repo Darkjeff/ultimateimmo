@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2010 Regis Houssin  <regis@dolibarr.fr>
- *
+ * Copyright (C) 2013-2014      Olivier Geffroy      <jeff@jeffinfo.com>
+ * Copyright (C) 2013-2014 Thierry LECERF  <contact@t3-it.com>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -67,7 +68,8 @@ class modImmobilier extends DolibarrModules {
 		'/immobilier/immeuble',
 		'/immobilier/contrat',
 		'/immobilier/charge',
-		'/immobilier/quittance'
+		'/immobilier/quittance',
+		'/immobilier/mandat'
 		);
 		
 		// Config pages
@@ -240,6 +242,7 @@ class modImmobilier extends DolibarrModules {
 		);
 		$r ++;
 		
+		
 		$this->menu [$r] = array (
 		'fk_menu' => 'r=7',
 		'type' => 'left',
@@ -375,6 +378,20 @@ class modImmobilier extends DolibarrModules {
 		'url' => '/immobilier/resultat.php',
 		'langs' => 'immobilier@immobilier',
 		'position' => 151,
+		'enabled' => 1,
+		'perms' => 1,
+		'target' => '',
+		'user' => 0 
+		);
+		$r ++;
+		$this->menu [$r] = array (
+		'fk_menu' => 'r=0',
+		'type' => 'left',
+		'titre' => 'Mandat',
+		'mainmenu' => 'immobilier',
+		'url' => '/immobilier/mandat/liste.php',
+		'langs' => 'immobilier@immobilier',
+		'position' => 152,
 		'enabled' => 1,
 		'perms' => 1,
 		'target' => '',

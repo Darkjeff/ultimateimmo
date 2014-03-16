@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS llx_mandat (
   mise_en_service date NOT null,
   fin_validite date NOT null,
   fk_bails integer not null,
+  fk_contrat integer not null,
   fk_commercial integer not null,
   notes_private text,
   notes_public text,

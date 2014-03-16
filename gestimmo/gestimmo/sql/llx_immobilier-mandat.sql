@@ -13,7 +13,7 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
-CREATE TABLE IF NOT EXISTS llx_mandat (
+CREATE TABLE IF NOT EXISTS llx_immobilier_mandat (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
   ref_interne varchar(80) NOT NULL,
   fk_soc integer NOT NULL, 
@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS llx_mandat (
   mise_en_service date NOT null,
   fin_validite date NOT null,
   fk_bails integer not null,
+  fk_contrat integer not null,
   fk_commercial integer not null,
   notes_private text,
   notes_public text,
