@@ -1,11 +1,12 @@
 <?php
-/* Copyright (C) 2001-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
- * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2013 Olivier Geffroy  <jeff@jeffinfo.com>
+/* Copyright (C) 2001-2006	Rodolphe Quiedeville	<rodolphe@quiedeville.org>
+ * Copyright (C) 2004-2005	Laurent Destailleur		<eldy@users.sourceforge.net>
+ * Copyright (C) 2013		Olivier Geffroy			<jeff@jeffinfo.com>
+ * Copyright (C) 2014		Alexandre Spangaro		<alexandre.spangaro@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -14,11 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * $Id: index.php 10 2011-01-24 16:58:03Z hregis $
- * $Source: /cvsroot/dolibarr/dolibarr/htdocs/compta/ventilation/index.php,v $
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
@@ -55,7 +52,7 @@ if ($year == 0) {
 /*
  * View
  */
-llxHeader ( '', 'Compta - Ventilation' );
+llxHeader ( '', $langs->trans("loyer") );
 
 $textprevyear = "<a href=\"loyermois.php?year=" . ($year_current - 1) . "\">" . img_previous () . "</a>";
 $textnextyear = " <a href=\"loyermois.php?year=" . ($year_current + 1) . "\">" . img_next () . "</a>";
@@ -69,10 +66,6 @@ $y = $year_current;
 
 $var = true;
 
-print '<table class="noborder" width="100%">';
-print "</table>\n";
-print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
-print '</tr><tr><td colspan=2>';
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre"><td width=150>'.$langs->trans("Appartement").'</td>';
 print '<td align="center">'.$langs->trans("January").'</td>';
