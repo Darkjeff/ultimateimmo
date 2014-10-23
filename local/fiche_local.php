@@ -32,7 +32,7 @@ if (! $res) die("Include of main fails");
 	
 
 dol_include_once ( "/immobilier/class/local.class.php" );
-dol_include_once ( '/immobilier/lib/immobilier.lib.php' );
+dol_include_once ( '/immobilier/core/lib/immobilier.lib.php' );
 dol_include_once ( '/immobilier/class/html.immobilier.php' );
 dol_include_once ( '/immobilier/class/immeuble.class.php' );
 

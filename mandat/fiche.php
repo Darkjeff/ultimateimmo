@@ -30,7 +30,7 @@ if (! $res) die("Include of main fails");
 // Pour les biens immobilier
 //dol_include_once('/gestimmo/class/logement.class.php');
 // module gestimmo
-dol_include_once('/immobilier/lib/immobilier.lib.php');
+dol_include_once('/immobilier/core/lib/immobilier.lib.php');
 // fonction dolibarr general
 //dol_include_once('/core/lib/function.lib.php');
 //dol_include_once('/core/class/soc.class.php');

@@ -33,7 +33,7 @@ if (! $res) die("Include of main fails");
 	// class
 	
 dol_include_once ( "/immobilier/class/charge.class.php" );
-dol_include_once ( '/immobilier/lib/immobilier.lib.php' );
+dol_include_once ( '/immobilier/core/lib/immobilier.lib.php' );
 dol_include_once ( '/immobilier/class/html.immobilier.php' );
 
 // langs

@@ -32,7 +32,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 
 dol_include_once ( "/immobilier/class/locataire.class.php" );
-dol_include_once ( '/immobilier/lib/immobilier.lib.php' );
+dol_include_once ( '/immobilier/core/lib/immobilier.lib.php' );
 
 // Langs
 $langs->load ( "immobilier@immobilier" );
