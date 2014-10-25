@@ -539,6 +539,4 @@ function getmandatUrl($withpicto=0,$option='',$maxlength=0)
         $result.=$lien.$newref.$lienfin;
         return $result;
     }
-
 }
-?>

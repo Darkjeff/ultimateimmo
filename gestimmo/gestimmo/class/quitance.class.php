@@ -840,4 +840,3 @@ class Quitancedet extends CommonObject
 }
 
 }
-?>

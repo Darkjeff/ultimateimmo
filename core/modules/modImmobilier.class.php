@@ -1,10 +1,12 @@
 <?php
-/* Copyright (C) 2010 Regis Houssin  <regis@dolibarr.fr>
- * Copyright (C) 2013-2014      Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2013-2014 Thierry LECERF  <contact@t3-it.com>
+/* Copyright (C) 2010		Regis Houssin		<regis@dolibarr.fr>
+ * Copyright (C) 2013-2014	Olivier Geffroy		<jeff@jeffinfo.com>
+ * Copyright (C) 2013-2014	Thierry Lecerf		<contact@t3-it.com>
+ * Copyright (C) 2014		Alexandre Spangaro	<alexandre.spangaro@gmail.com>
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -13,32 +15,26 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * \defgroup Immobilier Immobilier module
- * \brief Module to manage breakdown
- * \version	$Id: modVentilation.class.php,v 1.3 2010/05/04 06:37:58 hregis Exp $
+ * \file		immobilier/core/modules/modImmobilier.class.php
+ * \ingroup		Immobilier
+ * \brief		Module to activate Immobilier module
  */
+dol_include_once("/core/modules/DolibarrModules.class.php");
 
 /**
- * \file htdocs/includes/modules/modVentilation.class.php
- * \ingroup compta
- * \brief Fichier de description et activation du module Immobilier
- */
-include_once (DOL_DOCUMENT_ROOT . "/core/modules/DolibarrModules.class.php");
-
-/**
- * \class modVentilation
- * \brief Classe de description et activation du module Ventilation
+ * \class		modImmobilier
+ * \brief		Description and activation class for module immobilier
  */
 class modImmobilier extends DolibarrModules {
 	/**
-	 * \brief	Constructeur.
-	 * definit les noms, constantes et boites
-	 * \param	DB	handler d'acces base
+	 * Constructor.
+	 * Define names, constants, directories, boxes, permissions
+	 *
+	 * @param DoliDB $db
 	 */
 	function modImmobilier($DB) {
 		$this->db = $DB;
@@ -90,8 +86,7 @@ class modImmobilier extends DolibarrModules {
 		"immobilier@immobilier" 
 		);
 		
-		
-		// Dictionnaries
+		// Dictionaries
 		$this->dictionnaries=array(
 			'langs'=>'immobilier@immobilier',
 			'tabname'=>array(MAIN_DB_PREFIX."immo_dict_type_compteur",MAIN_DB_PREFIX."immo_dict_type_letter"),		// List of tables we want to see into dictonnary editor

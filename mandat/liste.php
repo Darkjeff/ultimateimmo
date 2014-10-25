@@ -52,7 +52,7 @@ if (! $res) die("Include of main fails");
  require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
 // Change this following line to use the correct relative path from htdocs
 dol_include_once('/immobilier/class/mandat.class.php');
-require_once DOL_DOCUMENT_ROOT.'/immobilier/lib/immobilier.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/immobilier/core/lib/immobilier.lib.php';
 dol_include_once('immobilier.gestimmo/gestimmo/class/logement.class.php');
 // Load traductions files requiredby by page
 $langs->load("companies");
@@ -275,9 +275,5 @@ print "</tr>\n";
     
 }
 
-
-
-// End of page
-llxFooter();
 $db->close();
-?>
+llxFooter();

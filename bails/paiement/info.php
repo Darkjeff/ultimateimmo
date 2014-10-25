@@ -61,6 +61,4 @@ print '</td></tr></table>';
 print '</div>';
 
 $db->close();
-
 llxFooter();
-?>

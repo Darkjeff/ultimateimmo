@@ -5,7 +5,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -14,11 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * $Id: fiche.php 8 2011-01-21 15:50:38Z hregis $
- * $Source: /cvsroot/dolibarr/dolibarr/htdocs/compta/ventilation/fiche.php,v $
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
@@ -172,7 +168,5 @@ if (GETPOST ( "action" ) == 'update') {
 	print '</form>';
 }
 
-$db->close ();
-
-llxFooter ( "<em>Derni&egrave;re modification $Date: 2010/01/28 13:27:35 $ r&eacute;vision $Revision: 1.12 $</em>" );
-?>
+$db->close();
+llxFooter();

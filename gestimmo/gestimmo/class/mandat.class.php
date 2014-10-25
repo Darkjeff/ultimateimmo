@@ -517,7 +517,7 @@ class Mandat extends CommonObject
      *  @param      int     $maxlength      Maxlength of ref
      *  @return     string                  String with URL
      */
-function getmandatUrl($withpicto=0,$option='',$maxlength=0)
+	function getmandatUrl($withpicto=0,$option='',$maxlength=0)
     {
         global $langs;
 
@@ -539,6 +539,4 @@ function getmandatUrl($withpicto=0,$option='',$maxlength=0)
         $result.=$lien.$newref.$lienfin;
         return $result;
     }
-
 }
-?>

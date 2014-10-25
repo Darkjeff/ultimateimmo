@@ -160,7 +160,5 @@ else
     dol_print_error($db);
 }
 
-
-llxFooter();
 $db->close();
-?>
+llxFooter();

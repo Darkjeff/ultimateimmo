@@ -30,7 +30,7 @@ if (! $res) die("Include of main fails");
 // Pour les biens immobilier
 //dol_include_once('/gestimmo/class/logement.class.php');
 // module gestimmo
-dol_include_once('/immobilier/lib/immobilier.lib.php');
+dol_include_once('/immobilier/core/lib/immobilier.lib.php');
 // fonction dolibarr general
 //dol_include_once('/core/lib/function.lib.php');
 //dol_include_once('/core/class/soc.class.php');
@@ -567,6 +567,5 @@ if ($action != 'create' && $action != 'edit' )
 
 print '</div>';
 
-llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-
-?>
+$db->close();
+llxFooter();

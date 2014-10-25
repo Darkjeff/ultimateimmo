@@ -428,5 +428,5 @@ else
     }
  }}
       
-
-?>
+$db->close();
+llxFooter();
