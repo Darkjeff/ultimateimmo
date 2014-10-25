@@ -168,7 +168,5 @@ if (GETPOST ( "action" ) == 'update') {
 	print '</form>';
 }
 
-$db->close ();
-
-llxFooter ( "<em>Derni&egrave;re modification $Date: 2010/01/28 13:27:35 $ r&eacute;vision $Revision: 1.12 $</em>" );
-?>
+$db->close();
+llxFooter();

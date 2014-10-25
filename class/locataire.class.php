@@ -153,15 +153,5 @@ class Locataire {
 		if ($withpicto != 2)
 			$result .= $lien . ($maxlen ? dol_trunc ( $this->id, $maxlen ) : $this->id) . $lienfin;
 		return $result;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
+	}	
 }
-
-?>

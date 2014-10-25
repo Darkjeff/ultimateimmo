@@ -567,6 +567,5 @@ if ($action != 'create' && $action != 'edit' )
 
 print '</div>';
 
-llxFooter('$Date: 2010-03-30 20:58:28 +0200 (mar. 30 mars 2010) $ - $Revision: 54 $');
-
-?>
+$db->close();
+llxFooter();

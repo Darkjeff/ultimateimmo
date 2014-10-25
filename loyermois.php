@@ -59,28 +59,25 @@ $textnextyear = " <a href=\"loyermois.php?year=" . ($year_current + 1) . "\">" .
 
 print_fiche_titre ( $langs->trans("loyer")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
 
-print '<table border="0" width="100%" class="notopnoleftnoright">';
-print '<tr><td valign="top" width="30%" class="notopnoleft">';
-
 $y = $year_current;
 
 $var = true;
 
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("Appartement").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width="400">' . $langs->trans("Apartment") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("JanuaryMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("FebruaryMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("MarchMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("AprilMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("MayMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("JuneMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("JulyMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("AugustMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("SeptemberMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("OctoberMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("NovemberMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("DecemberMin") . '</td>';
+print '<td width="60" align="center"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 $sql = "SELECT ll.nom AS nom_local,";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.echeance)=1,lo.loy,0)),2) AS 'Janvier',";
@@ -138,26 +135,24 @@ if ($resql) {
 	print $db->lasterror (); // affiche la derniere erreur sql
 }
 
-print "</table>\n";
-print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
-print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
-print '</tr><tr><td colspan=2>';
-print "\n<br>\n";
+print '</table>';
+
+print '<br>';
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("Total").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width="400" align="left">' . $langs->trans("Total") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("JanuaryMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("FebruaryMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("MarchMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("AprilMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("MayMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("JuneMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("JulyMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("AugustMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("SeptemberMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("OctoberMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("NovemberMin") . '</td>';
+print '<td width="60" align="center">' . $langs->trans("DecemberMin") . '</td>';
+print '<td width="60" align="center"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 $sql = "SELECT 'Total loyer' AS 'Total',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.echeance)=1,lo.loy,0)),2) AS 'Janvier',";
@@ -215,10 +210,5 @@ if ($resql) {
 
 print "</table>\n";
 
-print '</td></tr></table>';
-
-$db->close ();
-
-llxFooter ( '$Date: 2006/12/23 15:24:24 $ - $Revision: 1.11 $' );
-
-?>
+$db->close();
+llxFooter();

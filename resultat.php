@@ -869,23 +869,6 @@ foreach( $value_array as $key=>$val) {
 	$i ++;
 }
 print "</table>\n";
-print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
-print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
-print '</tr>';
 
-
-
-
-
-
-
-
-
-
-print '</td></tr></table>';
-
-$db->close ();
-
-llxFooter ( '' );
-
-?>
+$db->close();
+llxFooter();

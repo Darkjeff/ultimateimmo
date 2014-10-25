@@ -217,10 +217,5 @@ if ($resql) {
 
 print "</table>\n";
 
-print '</td></tr></table>';
-
-$db->close ();
-
-llxFooter ( '$Date: 2006/12/23 15:24:24 $ - $Revision: 1.11 $' );
-
-?>
+$db->close();
+llxFooter();

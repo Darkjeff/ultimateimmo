@@ -450,7 +450,8 @@ function add_photo($sdir, $file, $maxWidth = 160, $maxHeight = 120)
 
         return $return;
     }
-function is_photo_available($sdir)
+	
+	function is_photo_available($sdir)
     {
         include_once DOL_DOCUMENT_ROOT .'/core/lib/files.lib.php';
 
@@ -474,7 +475,4 @@ function is_photo_available($sdir)
         }
         return false;
     }
-
 }
-
-?>

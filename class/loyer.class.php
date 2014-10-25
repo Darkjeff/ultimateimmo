@@ -310,5 +310,3 @@ class Loyer {
 		return "Error, mode/status not found";
 	}
 }
-
-?>

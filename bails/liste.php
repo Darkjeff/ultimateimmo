@@ -45,4 +45,5 @@ $action = GETPOST ( 'action' );
 $html = new Form ( $db );
 $htmlimmo = new FormImmobilier ( $db );
 
-?>
+$db->close();
+llxFooter();

@@ -165,7 +165,7 @@ class Charge {
 		}
 	}
 	
-function getNomUrl($withpicto = 0, $maxlen = 0) {
+	function getNomUrl($withpicto = 0, $maxlen = 0) {
 		global $langs;
 		
 		$result = '';
@@ -184,17 +184,4 @@ function getNomUrl($withpicto = 0, $maxlen = 0) {
 			$result .= $lien . ($maxlen ? dol_trunc ( $this->ref, $maxlen ) : $this->ref) . $lienfin;
 		return $result;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
-
-?>

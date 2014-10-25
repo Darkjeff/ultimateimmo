@@ -165,7 +165,5 @@ else
 	print $langs->trans("UnkownError");
 }
 
-
-llxFooter();
 $db->close();
-?>
+llxFooter();

@@ -286,9 +286,5 @@ if ($action == 'list')
     print '</table>'."\n";
 }
 
-
-
-// End of page
-llxFooter();
 $db->close();
-?>
+llxFooter();

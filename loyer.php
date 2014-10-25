@@ -267,6 +267,5 @@ if ($result) {
 	print $db->error ();
 }
 
-llxFooter ( '' );
-$db->close ();
-?>
+$db->close();
+llxFooter();

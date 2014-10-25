@@ -1,8 +1,8 @@
 <?php
-/* Copyright (C) 2002-2005 Rodolphe Quiedeville <rodolphe@quiedeville.org>
- * Copyright (C) 2004      Eric Seigne          <eric.seigne@ryxeo.com>
- * Copyright (C) 2004-2006 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2013      Olivier Geffroy          <jeff@jeffinfo.com>
+/* Copyright (C) 2002-2005	Rodolphe Quiedeville	<rodolphe@quiedeville.org>
+ * Copyright (C) 2004		Eric Seigne				<eric.seigne@ryxeo.com>
+ * Copyright (C) 2004-2006	Laurent Destailleur		<eldy@users.sourceforge.net>
+ * Copyright (C) 2013		Olivier Geffroy			<jeff@jeffinfo.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@
  */
 
 /**
- * \file htdocs/compta/ventilation/liste.php
- * \ingroup immobilier
- * \brief List Appt or House
+ * \file		immobilier/local.php
+ * \ingroup		Immobilier
+ * \brief		List Apartement or House
  */
 
 // Dolibarr environment
@@ -31,23 +31,18 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 	
-	// class
-
+// class
 dol_include_once ( "/immobilier/class/local.class.php" );
 
-
-
-	// Securite acces client
+// Securite acces client
 
 llxHeader ( "", "", 'Immobilier' );
 
 /*
-* Locaux en location
-*
-*/
+ * Locaux en location
+ */
 
 $local_static = new Local ( $db );
-
 
 $page = $_GET ["page"];
 if ($page < 0)
@@ -68,12 +63,8 @@ if ($result) {
 	$num_lignes = $db->num_rows ( $result );
 	$i = 0;
 	
-	print_barre_liste ( "Locaux en location", $page, "local/local.php", "", $sortfield, $sortorder, '', $num_lignes );
-	/*
- * Boutons d'actions
- */
-	print '<a class="butAction" href="local/fiche_local.php?action=create">nouvelle location</a>';
-	
+	print_barre_liste ( "Locaux en location", $page, $_SERVER["PHP_SELF"], "", $sortfield, $sortorder, '', $num_lignes );
+
 	print '<table class="noborder" width="100%">';
 	print '<tr></tr>';
 	print '<tr class="liste_titre">';
@@ -110,7 +101,6 @@ if ($result) {
 } else {
 	print $db->error ();
 }
-$db->close ();
 
-llxFooter ( "<em>Derni&egrave;re modification $Date: 2009/02/20 22:54:07 $ r&eacute;vision $Revision: 1.15 $</em>" );
-?>
+$db->close();
+llxFooter();

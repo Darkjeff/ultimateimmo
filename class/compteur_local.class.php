@@ -449,6 +449,4 @@ class Immocompteurlocal extends CommonObject
             return -1;
         }
     }
-
 }
-?>

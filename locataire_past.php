@@ -92,7 +92,6 @@ if ($result) {
 } else {
 	print $db->error ();
 }
-$db->close ();
 
-llxFooter ( "<em>Derni&egrave;re modification $Date: 2009/02/20 22:54:07 $ r&eacute;vision $Revision: 1.15 $</em>" );
-?>
+$db->close();
+llxFooter();

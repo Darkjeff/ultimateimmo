@@ -157,8 +157,5 @@ if ($id)
 	dol_fiche_end();
 }
 
-
-llxFooter();
-
 $db->close();
-?>
+llxFooter();

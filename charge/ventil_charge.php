@@ -235,8 +235,5 @@ if (GETPOST ( "action" ) == 'create') {
 	print '</form>';
 }
 
-llxFooter ();
-
-$db->close ();
-
-?>
+$db->close();
+llxFooter();

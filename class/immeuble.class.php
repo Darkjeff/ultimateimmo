@@ -175,12 +175,4 @@ class Immeuble extends CommonObject {
 			$result .= $lien . ($maxlen ? dol_trunc ( $this->id, $maxlen ) : $this->id) . $lienfin;
 		return $result;
 	}
-	
-	
-	
-	
-	
-
 }
-
-?>

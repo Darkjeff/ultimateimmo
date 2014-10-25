@@ -491,4 +491,3 @@ class PaiementFourn extends Paiement
 		return $result;
 	}
 }
-?>

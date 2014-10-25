@@ -275,9 +275,5 @@ print "</tr>\n";
     
 }
 
-
-
-// End of page
-llxFooter();
 $db->close();
-?>
+llxFooter();

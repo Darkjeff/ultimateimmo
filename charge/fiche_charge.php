@@ -252,6 +252,5 @@ if ($id > 0) {
 	print '</form>';
 }
 
-llxFooter ( '' );
-$db->close ();
-?>
+$db->close();
+llxFooter();

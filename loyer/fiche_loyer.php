@@ -527,8 +527,5 @@ if ($id > 0) {
 	print "</div>";
 }
 
-llxFooter ();
-
-$db->close ();
-
-?>
+$db->close();
+llxFooter();

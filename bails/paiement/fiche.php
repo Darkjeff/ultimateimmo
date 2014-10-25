@@ -336,9 +336,5 @@ else
 	print $langs->trans("ErrorRecordNotFound");
 }
 
-dol_fiche_end();
-
-llxFooter();
-
 $db->close();
-?>
+llxFooter();

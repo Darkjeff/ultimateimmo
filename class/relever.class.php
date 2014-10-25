@@ -475,6 +475,4 @@ class Immorelever extends CommonObject
 
 		
 	}
-
 }
-?>
