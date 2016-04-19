@@ -68,7 +68,7 @@ if (GETPOST ( "action" ) == 'add') {
 	
 	$res = $local->create ( $user );
 	if ($res == 0) {
-		Header ( "Location: " . DOL_URL_ROOT . "/immobilier/local.php" );
+		Header ( "Location: " . DOL_URL_ROOT . $dolibarr_main_url_root_alt . "/immobilier/local.php" );
 	} else {
 		if ($res == - 3) {
 			$_error = 1;
@@ -91,7 +91,7 @@ if (GETPOST ( "action" ) == 'add') {
 	$e_local = $local;
 	
 	$res = $local->update ();
-	header ( "Location: " . DOL_URL_ROOT . "/immobilier/local/fiche_local.php?id=" . $local->id );
+	header ( "Location: " . DOL_URL_ROOT . $dolibarr_main_url_root_alt . "/immobilier/local/fiche_local.php?id=" . $local->id );
 	if ($res >= 0) {
 		setEventMessage ( $langs->trans ( "SocialContributionAdded" ), 'mesgs' );
 	} else
