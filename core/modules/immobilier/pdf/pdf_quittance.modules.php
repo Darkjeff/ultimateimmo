@@ -20,40 +20,38 @@
  * \ingroup immobilier
  * \brief PDF for immobilier
  */
-dol_include_once ( '/immobilier/core/modules/immobilier/immobilier_modules.php' );
-dol_include_once ( '/immobilier/class/loyer.class.php' );
-dol_include_once ( '/immobilier/class/locataire.class.php' );
-dol_include_once ( '/immobilier/class/local.class.php' );
-dol_include_once ( '/immobilier/class/contrat.class.php' );
-dol_include_once ( '/immobilier/class/paie.class.php' );
-dol_include_once ( '/adherents/class/adherent.class.php' );
+dol_include_once('/immobilier/core/modules/immobilier/immobilier_modules.php');
+dol_include_once('/immobilier/class/immoreceipt.class.php');
+dol_include_once('/immobilier/class/renter.class.php');
+dol_include_once('/immobilier/class/immoproperty.class.php');
+dol_include_once('/immobilier/class/rent.class.php');
+dol_include_once('/immobilier/class/paie.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
-
 class pdf_quittance extends ModelePDFImmobilier {
 	var $emetteur; // Objet societe qui emet
 	
 	/**
-	 * \brief		Constructor
-	 * \param		db		Database handler
+	 * \brief Constructor
+	 * \param db Database handler
 	 */
 	function __construct($db) {
-
 		global $conf, $langs, $mysoc;
 		
-		$langs->load ( "immobilier@immobilier" );
+		$langs->load("immobilier@immobilier");
 		
 		$this->db = $db;
 		$this->name = 'quitance';
-		$this->description = $langs->trans ( 'Quittance' );
+		$this->description = $langs->trans('Quittance');
 		
 		// Dimension page pour format A4 en portrait
 		$this->type = 'pdf';
-		$formatarray = pdf_getFormat ();
-		$this->page_largeur = $formatarray ['width'];
-		$this->page_hauteur = $formatarray ['height'];
+		$formatarray = pdf_getFormat();
+		$this->page_largeur = $formatarray['width'];
+		$this->page_hauteur = $formatarray['height'];
 		$this->format = array (
-			$this->page_largeur,$this->page_hauteur 
+				$this->page_largeur,
+				$this->page_hauteur 
 		);
 		$this->marge_gauche = 15;
 		$this->marge_droite = 15;
@@ -68,340 +66,331 @@ class pdf_quittance extends ModelePDFImmobilier {
 		// Get source company
 		$this->emetteur = $mysoc;
 		if (! $this->emetteur->country_code)
-			$this->emetteur->country_code = substr ( $langs->defaultlang, - 2 ); // By default, if was not defined
+			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
 	}
-
+	
 	/**
 	 * \brief Fonction generant le document sur le disque
-	 * \param agf		Objet document a generer (ou id si ancienne methode)
-	 * outputlangs	Lang object for output language
-	 * file		Name of file to generate
+	 * \param agf Objet document a generer (ou id si ancienne methode)
+	 * outputlangs Lang object for output language
+	 * file Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
-	function write_file($loyer, $outputlangs, $file, $socid, $courrier) {
-
+	function write_file($receipt, $outputlangs, $file, $socid, $courrier) {
 		global $user, $langs, $conf, $mysoc;
 		
-		$default_font_size = pdf_getPDFFontSize ( $outputlangs );
+		$default_font_size = pdf_getPDFFontSize($outputlangs);
 		
-		if (! is_object ( $outputlangs ))
+		if (! is_object($outputlangs))
 			$outputlangs = $langs;
 		
-		if (! is_object ( $loyer )) {
-			$id = $loyer;
-			$loyer = new Loyer ( $this->db );
-			$ret = $loyer->fetch ( $id );
+		if (! is_object($receipt)) {
+			$id = $receipt;
+			$receipt = new Immoreceipt($this->db);
+			$ret = $receipt->fetch($id);
 		}
 		
-		// dol_syslog ( "pdf_quittance::debug loyer=" . var_export ( $loyer, true ) );
+		// dol_syslog ( "pdf_quittance::debug loyer=" . var_export ( $receipt, true ) );
 		
 		// Definition of $dir and $file
 		$dir = $conf->immobilier->dir_output;
 		$file = $dir . '/' . $file;
 		
-		if (! file_exists ( $dir )) {
-			if (create_exdir ( $dir ) < 0) {
-				$this->error = $langs->trans ( "ErrorCanNotCreateDir", $dir );
+		if (! file_exists($dir)) {
+			if (create_exdir($dir) < 0) {
+				$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
 				return 0;
 			}
 		}
 		
-		if (file_exists ( $dir )) {
+		if (file_exists($dir)) {
 			
-			$pdf = pdf_getInstance ( $this->format, $this->unit, $this->orientation );
+			$pdf = pdf_getInstance($this->format, $this->unit, $this->orientation);
 			
-			if (class_exists ( 'TCPDF' )) {
-				$pdf->setPrintHeader ( false );
-				$pdf->setPrintFooter ( false );
+			if (class_exists('TCPDF')) {
+				$pdf->setPrintHeader(false);
+				$pdf->setPrintFooter(false);
 			}
 			
-			$pdf->Open ();
+			$pdf->Open();
 			$pagenb = 0;
 			
-			$pdf->SetTitle ( $outputlangs->convToOutputCharset ( $loyer->nom ) );
-			$pdf->SetSubject ( $outputlangs->transnoentities ( "Quitance" ) );
-			$pdf->SetCreator ( "Dolibarr " . DOL_VERSION . ' (Immobilier module)' );
-			$pdf->SetAuthor ( $outputlangs->convToOutputCharset ( $user->fullname ) );
-			$pdf->SetKeyWords ( $outputlangs->convToOutputCharset ( $loyer->nom ) . " " . $outputlangs->transnoentities ( "Document" ) );
+			$pdf->SetTitle($outputlangs->convToOutputCharset($receipt->nom));
+			$pdf->SetSubject($outputlangs->transnoentities("Quitance"));
+			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Immobilier module)');
+			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->fullname));
+			$pdf->SetKeyWords($outputlangs->convToOutputCharset($receipt->nom) . " " . $outputlangs->transnoentities("Document"));
 			if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION)
-				$pdf->SetCompression ( false );
+				$pdf->SetCompression(false);
 			
-			$pdf->SetMargins ( $this->marge_gauche, $this->marge_haute, $this->marge_droite ); // Left, Top, Right
-			$pdf->SetAutoPageBreak ( 1, 0 );
+			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
+			$pdf->SetAutoPageBreak(1, 0);
 			
 			// On recupere les infos societe
-			$locataire = new Locataire ( $this->db );
-			$result = $locataire->fetch ( $loyer->locataire_id );
+			$renter = new Renter($this->db);
+			$result = $renter->fetch($receipt->fk_renter);
 			
-			$proprio = new Adherent ( $this->db );
-			$result = $proprio->fetch ( $loyer->proprietaire_id );
+			$owner = new Societe($this->db);
+			$result = $owner->fetch($receipt->fk_owner);
 			
-			$local = new Local ( $this->db );
-			$result = $local->fetch ( $loyer->local_id );
+			$property = new Immoproperty($this->db);
+			$result = $property->fetch($receipt->fk_property);
 			
-			$paiement = new Paie ( $this->db );
-			$result = $paiement->fetch_by_loyer ( $loyer->id );
+			$paiement = new Paie($this->db);
+			$result = $paiement->fetch_by_loyer($receipt->id);
 			
-			if (! empty ( $loyer->id )) {
+			if (! empty($receipt->id)) {
 				// New page
-				$pdf->AddPage ();
+				$pdf->AddPage();
 				$pagenb ++;
-				$this->_pagehead ( $pdf, $agf, 1, $outputlangs );
-				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 9 );
-				$pdf->MultiCell ( 0, 3, '', 0, 'J' );
-				$pdf->SetTextColor ( 0, 0, 0 );
+				$this->_pagehead($pdf, $agf, 1, $outputlangs);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+				$pdf->MultiCell(0, 3, '', 0, 'J');
+				$pdf->SetTextColor(0, 0, 0);
 				
 				$posY = $this->marge_haute;
 				$posX = $this->marge_gauche;
 				
 				// Bloc Owner
-				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 15 );
-				$pdf->SetXY ( $posX, $posY + 3 );
-				$pdf->MultiCell ( 100, 3, $outputlangs->convToOutputCharset ( 'Bailleur' ), 1, 'C' );
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 15);
+				$pdf->SetXY($posX, $posY + 3);
+				$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset('Bailleur'), 1, 'C');
 				
-				$posY = $pdf->getY ();
-				$pdf->SetXY ( $posX, $posY );
-				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 13 );
-				$this->str = $proprio->getFullName ( $outputlangs ) . "\n";
-				$this->str .= $proprio->address . "\n";
-				$this->str .= $proprio->zip . ' ' . $proprio->town;
-				$this->str .= ' - ' . $proprio->country . "\n\n";
-				if ($proprio->phone) {
-					$this->str .= $outputlangs->transnoentities ( 'Téléphone' ) . ' ' . $proprio->phone . "\n";
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$this->str = $owner->getFullName($outputlangs) . "\n";
+				$this->str .= $owner->address . "\n";
+				$this->str .= $owner->zip . ' ' . $owner->town;
+				$this->str .= ' - ' . $owner->country . "\n\n";
+				if ($owner->phone) {
+					$this->str .= $outputlangs->transnoentities('Téléphone') . ' ' . $owner->phone . "\n";
 				}
-				if ($proprio->fax) {
-					$this->str .= $outputlangs->transnoentities ( 'Fax' ) . ' ' . $proprio->fax . "\n";
+				if ($owner->fax) {
+					$this->str .= $outputlangs->transnoentities('Fax') . ' ' . $owner->fax . "\n";
 				}
-				if ($proprio->email) {
-					$this->str .= $outputlangs->transnoentities ( 'EMail' ) . ' ' . $proprio->email . "\n";
+				if ($owner->email) {
+					$this->str .= $outputlangs->transnoentities('EMail') . ' ' . $owner->email . "\n";
 				}
-				if ($proprio->url) {
-					$this->str .= $outputlangs->transnoentities ( 'Url' ) . ' ' . $proprio->url . "\n";
+				if ($owner->url) {
+					$this->str .= $outputlangs->transnoentities('Url') . ' ' . $owner->url . "\n";
 				}
 				
-				$pdf->MultiCell ( 100, 20, $outputlangs->convToOutputCharset ( $this->str ), 1, 'L' );
+				$pdf->MultiCell(80, 20, $outputlangs->convToOutputCharset($this->str), 1, 'L');
 				
 				// Bloc Locataire
-				$posX = $this->page_largeur - $this->marge_droite - 100;
-				$posY = $pdf->getY () + 10;
+				$posX = $this->page_largeur - $this->marge_droite - 80;
+				$posY = $pdf->getY() - 20;
 				
-				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 15 );
-				$pdf->SetXY ( $posX, $posY );
-				$pdf->MultiCell ( 100, 3, $outputlangs->convToOutputCharset ( 'Locataire Destinataire' ), 1, 'C' );
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 15);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset('Locataire Destinataire'), 1, 'C');
 				
-				$posY = $pdf->getY ();
-				$pdf->SetXY ( $posX, $posY );
-				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 13 );
-				$this->str = $locataire->nom . "\n";
-				$this->str .= $local->nom . "\n";
-				if (! empty ( $locataire->adresse )) {
-					$this->str .= $locataire->adresse . "\n";
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$this->str = $renter->nom . "\n";
+				$this->str .= $property->nom . "\n";
+				if (! empty($renter->adresse)) {
+					$this->str .= $renter->adresse . "\n";
 				} else {
-					$this->str .= $local->adresse . "\n";
+					$this->str .= $property->adresse . "\n";
 				}
-				$pdf->MultiCell ( 100, 20, $outputlangs->convToOutputCharset ( $this->str ), 1, 'L' );
+				$pdf->MultiCell(80, 20, $outputlangs->convToOutputCharset($this->str), 1, 'L');
+				
+				$text .= "\n";
+				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";
+				
+				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
 				
 				// Bloc Quittance de loyer
 				$posX = $this->marge_gauche;
-				$posY = $pdf->getY () + 10;
+				$posY = $pdf->getY() + 10;
 				$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
 				
-				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), 'B', 15 );
-				$pdf->SetXY ( $posX, $posY );
-				$pdf->MultiCell ( $widthbox, 3, $outputlangs->convToOutputCharset ( 'Quittance de loyer' ), 1, 'C' );
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Quittance de loyer'), 1, 'C');
 				
-				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 13 );
-				$posY = $pdf->getY ();
-				$pdf->SetXY ( $posX, $posY );
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
 				
-				$period = 'Loyer ' . dol_print_date ( $loyer->periode_du, '%b %Y' );
-				$pdf->MultiCell ( $widthbox, 3, $outputlangs->convToOutputCharset ( $period ), 1, 'C' );
+				$period = 'Loyer ' . dol_print_date($receipt->echeance, '%b %Y');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 				
-				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 13 );
-				$posY = $pdf->getY ();
-				$pdf->SetXY ( $posX, $posY );
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
 				
-				$numquitance = 'Quittance n°:' . 'ILQ' . $loyer->id;
-				$pdf->MultiCell ( $widthbox, 3, $outputlangs->convToOutputCharset ( $numquitance ), 1, 'R' );
+				$numquitance = 'Quittance n°:' . 'ILQ' . $receipt->id;
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($numquitance), 1, 'R');
+				$posY = $pdf->getY();
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
+				$pdf->SetXY($posX, $posY);
 				
-				// Sous Bloc Quittance de loyer Gauche
-				$posX = $this->marge_gauche;
-				$posY = $pdf->getY ();
-				$widthbox = ($this->page_largeur - $this->marge_gauche - $this->marge_droite) / 2;
-				
-				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 12 );
-				$pdf->SetXY ( $posX, $posY );
-				$text = ' Reçu de :' . $locataire->nom . "\n";
-				$text .= "\n";
 				$montantpay = 0;
-				if (! empty ( $loyer->paiepartiel )) {
-					$montantpay = $loyer->paiepartiel;
+				if (! empty($receipt->paiepartiel)) {
+					$montantpay = $receipt->paiepartiel;
 				}
-				$text .= ' la somme de :' . $montantpay . '€' . "\n";
-				$text .= "\n";
+				$text = 'Reçu de ' . $renter->nom . ' la somme de ' . $montantpay . '€' . "\n";
+				;
+				
 				$dtpaiement = $paiement->date_paiement;
-				if (empty ( $dtpaiement )) {
-					$dtpaiement = $loyer->echeance;
+				if (empty($dtpaiement)) {
+					$dtpaiement = $receipt->echeance;
 				}
-				$text .= ' le :' . dol_print_date ( $dtpaiement, 'daytext' ) . "\n";
-				$text .= "\n";
-				$text .= ' pour loyer et accessoires des locaux sis à :' . "\n";
-				$text .= $local->adresse . "\n";
-				$text .= "\n";
-				$text .= 'en paiement du terme du ' . dol_print_date ( $loyer->periode_du, 'daytext' ) . "\n";
-				$text .= 'au ' . dol_print_date ( $loyer->periode_au, 'daytext' ) . "\n";
-				$text .= "\n";
-				$text .= 'Fait à ' . $proprio->town . "\n";
-				$text .= 'le ' . dol_print_date ( dol_now (), 'daytext' ) . "\n";
-				$text .= "\n";
+				$text .= 'le ' . dol_print_date($dtpaiement, 'daytext') . ' pour loyer et accessoires des locaux sis à : ' . $property->address . ' en paiement du terme du ' . dol_print_date($receipt->date_start, 'daytext') . ' au ' . dol_print_date($receipt->date_end, 'daytext') . "\n";
 				
-				$pdf->MultiCell ( $widthbox, 0, $outputlangs->convToOutputCharset ( $text ), 1, 'L' );
+				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
 				
-				$newpoy = $pdf->getY ();
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
 				
-				// Sous Bloc Quittance de loyer Droite
-				$posX = $widthbox + $this->marge_gauche;
-				$widthbox = ($this->page_largeur - $this->marge_gauche - $this->marge_droite) / 2;
-				
-				$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 12 );
-				$pdf->SetXY ( $posX, $posY );
 				$text = '<table>';
 				$text .= '<tr>';
-				$text .= '<td colspan="2">';
+				$text .= '<td colspan="3">';
 				$text .= 'Détail :' . "<BR>";
 				
-				$text .= ' - Loyer nu :' . $loyer->loy . '€' . "<BR>";
-				$text .= ' - Charges / Provisions de Charges :' . $loyer->charges . '€' . "<BR>";
-				$text .= "<BR>";
-				$text .= 'Montant total du terme :' . $loyer->montant_tot . '€' . "<BR>";
+				$text .= ' - Loyer nu :' . $receipt->rent . '€' . "<BR>";
+				$text .= ' - Charges / Provisions de Charges :' . $receipt->charges . '€' . "<BR>";
+				$text .= ' - Montant total du terme :' . $receipt->amount_total . '€' . "<BR>";
 				$text .= '</td>';
 				$text .= '</tr>';
 				
 				$sql = "SELECT p.rowid, p.loyer_id, date_paiement as dp, p.montant, p.commentaire as type, il.montant_tot as amount";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "immo_paie as p";
-				$sql .= ", " . MAIN_DB_PREFIX . "immo_loyer as il ";
-				$sql .= " WHERE p.loyer_id = " . $loyer->id;
-				$sql .= " AND p.loyer_id = il.rowid";
+				$sql .= ", " . MAIN_DB_PREFIX . "immo_receipt as il ";
+				$sql .= " WHERE p.fk_receipt = " . $receipt->id;
+				$sql .= " AND p.fk_receipt = il.rowid";
 				$sql .= " ORDER BY dp DESC";
 				
 				// print $sql;
-				dol_syslog ( get_class ( $this ) . ':: Paiement sql=' . $sql, LOG_DEBUG );
-				$resql = $this->db->query ( $sql );
+				dol_syslog(get_class($this) . ':: Paiement', LOG_DEBUG);
+				$resql = $this->db->query($sql);
 				if ($resql) {
-					$num = $this->db->num_rows ( $resql );
+					$num = $this->db->num_rows($resql);
 					$i = 0;
 					$total = 0;
 					$text .= '<tr>';
-					$text .= '<td align="left">' . $langs->trans ( "Date" ) . '</td>';
-					$text .= '<td align="right">' . $langs->trans ( "Amount" ) . '</td>';
-					$text .= '</tr><br>';
+					$text .= '<td align="left">' . $langs->trans("Date") . '</td>';
+					$text .= '<td align="left">' . $langs->trans("Commentaire") . '</td>';
+					$text .= '<td align="right">' . $langs->trans("Amount") . '</td>';
+					$text .= "</tr>";
 					$var = True;
 					while ( $i < $num ) {
-						$objp = $this->db->fetch_object ( $resql );
+						$objp = $this->db->fetch_object($resql);
 						
 						$text .= '<tr>';
-						$text .= '<td>' . dol_print_date ( $this->db->jdate ( $objp->dp ), 'day' ) . "</td>";
-						$text .= '<td align="right">' . price ( $objp->montant ) . ' ' . $langs->trans ( "Currency" . $conf->currency ) . "</td>";
+						
+						$text .= '<td>' . dol_print_date($this->db->jdate($objp->dp), 'day') . "</td>";
+						$text .= '<td>' . $objp->type . "</td>";
+						$text .= '<td align="right">' . price($objp->montant) . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
 						$text .= "</tr>";
 						$totalpaye += $objp->montant;
 						$i ++;
 					}
 					
-					if ($loyer->paye == 0) {
-						$text .= "<br><tr><td align=\"left\">" . $langs->trans ( "AlreadyPaid" ) . " :</td><td align=\"right\">" . price ( $totalpaye ) . " " . $langs->trans ( "Currency" . $conf->currency ) . "</td></tr>";
-						$text .= "<tr><td align=\"left\">" . $langs->trans ( "AmountExpected" ) . " :</td><td align=\"right\">" . price ( $loyer->montant_tot ) . " " . $langs->trans ( "Currency" . $conf->currency ) . "</td></tr>";
+					if ($receipt->paye == 0) {
+						$text .= "<br><tr><td align=\"left\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\">" . price($totalpaye) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
+						$text .= "<tr><td align=\"left\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($receipt->amount_total) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
 						
-						$resteapayer = $loyer->montant_tot - $totalpaye;
+						$resteapayer = $receipt->amount_total - $totalpaye;
 						
-						$text .= "<tr><td align=\"left\">" . $langs->trans ( "RemainderToPay" ) . " :</td>";
-						$text .= "<td align=\"right\">" . price ( $resteapayer, 2 ) . " " . $langs->trans ( "Currency" . $conf->currency ) . "</td></tr>";
+						$text .= "<tr><td align=\"left\">" . $langs->trans("RemainderToPay") . " :</td>";
+						$text .= "<td align=\"right\">" . price($resteapayer, 2) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
 					}
 					
-					$this->db->free ( $resql );
+					$this->db->free($resql);
 				}
 				$text .= "</table>";
-				$pdf->writeHTMLCell ( $widthbox, $newpoy - $posY, $posX, $posY, dol_htmlentitiesbr ( $text ), 1 );
+				$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 0, 1);
 				
 				// Tableau Loyer et solde
-				$sql = "SELECT il.nom, il.solde";
-				$sql .= " FROM " . MAIN_DB_PREFIX . "immo_loyer as il ";
-				$sql .= " WHERE il.solde<>0 AND paye=0 AND periode_du<'" . $this->db->idate ( $loyer->periode_du ) . "'";
-				$sql .= " AND local_id=" . $loyer->local_id . " AND locataire_id=" . $loyer->locataire_id;
+				$sql = "SELECT il.name, il.balance";
+				$sql .= " FROM " . MAIN_DB_PREFIX . "immo_receipt as il ";
+				$sql .= " WHERE il.balance<>0 AND paye=0 AND data_start<'" . $this->db->idate($receipt->date_start) . "'";
+				$sql .= " AND lfk_property=" . $receipt->fk_property . " AND fk_renter=" . $receipt->fk_renter;
 				$sql .= " ORDER BY echeance ASC";
 				
-				dol_syslog ( get_class ( $this ) . ':: loyerAntierieur sql=' . $sql, LOG_DEBUG );
-				$resql = $this->db->query ( $sql );
+				dol_syslog(get_class($this) . ':: loyerAntierieur sql=' . $sql, LOG_DEBUG);
+				$resql = $this->db->query($sql);
 				
 				if ($resql) {
-					$num = $this->db->num_rows ( $resql );
+					$num = $this->db->num_rows($resql);
 					
 					if ($num > 0) {
 						
+						// $pdf->addPage();
+						$posY = $pdf->getY();
+						$pdf->SetXY($posX, $posY);
+						
 						// Bloc Solde Anterieur
-						$posX = $this->marge_gauche;
-						$posY = $pdf->getY () + ($newpoy - $posY) + 5;
+						// $posX = $this->marge_gauche;
+						// $posY = $this->marge_haute;
+						
 						$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
 						
-						$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), 'B', 15 );
-						$pdf->SetXY ( $posX, $posY );
-						$pdf->MultiCell ( $widthbox, 3, $outputlangs->convToOutputCharset ( 'Solde Anterieur' ), 1, 'C' );
+						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+						$pdf->SetXY($posX, $posY);
+						$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Rappel Solde Anterieur'), 1, 'C');
 						
 						$text = '<table>';
 						
 						// print $sql;
-						dol_syslog ( get_class ( $this ) . ':: loyerAntierieur sql=' . $sql, LOG_DEBUG );
-						$resql = $this->db->query ( $sql );
+						dol_syslog(get_class($this) . ':: loyerAntierieur sql=' . $sql, LOG_DEBUG);
+						$resql = $this->db->query($sql);
 						
 						$i = 0;
 						$total = 0;
 						$var = True;
 						while ( $i < $num ) {
-							$objp = $this->db->fetch_object ( $resql );
+							$objp = $this->db->fetch_object($resql);
 							
 							$text .= '<tr>';
-							$text .= '<td>' . $objp->nom . "</td>";
-							$text .= "<td align=\"right\">" . $objp->solde . ' ' . $langs->trans ( "Currency" . $conf->currency ) . "</td>";
+							$text .= '<td>' . $objp->name . "</td>";
+							$text .= "<td align=\"right\">" . $objp->balance . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
 							$text .= "</tr>";
 							
 							$i ++;
 						}
 						
-						$this->db->free ( $resql );
+						$this->db->free($resql);
 						
 						$text .= "</table>";
 						
-						$posY = $pdf->getY ();
+						$posY = $pdf->getY();
 						
-						$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 13 );
-						$pdf->writeHTMLCell ( $widthbox, 0, $posX, $posY, dol_htmlentitiesbr ( $text ), 1, 1 );
+						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+						$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1, 1);
 					}
 				}
 				
 				// Bloc total somme due
 				
 				// Tableau total somme due
-				$sql = "SELECT SUM(il.solde) as total";
-				$sql .= " FROM " . MAIN_DB_PREFIX . "immo_loyer as il ";
-				$sql .= " WHERE il.solde<>0 AND paye=0 AND periode_du<='" . $this->db->idate ( $loyer->periode_du ) . "'";
-				$sql .= " AND local_id=" . $loyer->local_id . " AND locataire_id=" . $loyer->locataire_id;
-				$sql .= " GROUP BY local_id,locataire_id";
+				$sql = "SELECT SUM(il.balance) as total";
+				$sql .= " FROM " . MAIN_DB_PREFIX . "immo_receipt as il ";
+				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<='" . $this->db->idate($receipt->date_start) . "'";
+				$sql .= " AND fk_property=" . $receipt->fk_property . " AND fk_renter=" . $receipt->fk_renter;
+				$sql .= " GROUP BY fk_property,fk_renter";
 				
 				// print $sql;
-				dol_syslog ( get_class ( $this ) . ':: loyerAntierieur sql=' . $sql, LOG_DEBUG );
-				$resql = $this->db->query ( $sql );
+				dol_syslog(get_class($this) . ':: total somme due', LOG_DEBUG);
+				$resql = $this->db->query($sql);
 				if ($resql) {
-					$num = $this->db->num_rows ( $resql );
+					$num = $this->db->num_rows($resql);
 					
 					if ($num > 0) {
 						
-						$objp = $this->db->fetch_object ( $resql );
+						$objp = $this->db->fetch_object($resql);
 						
 						$posX = $this->marge_gauche;
-						$posY = $pdf->getY () + 5;
+						$posY = $pdf->getY();
 						$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
 						
-						$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), 'B', 15 );
-						$pdf->SetXY ( $posX, $posY );
+						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+						$pdf->SetXY($posX, $posY);
 						
 						if ($objp->total > 0) {
 							$title = 'Total somme due';
@@ -409,56 +398,129 @@ class pdf_quittance extends ModelePDFImmobilier {
 							$title = 'Total somme à rembouser';
 						}
 						
-						$pdf->MultiCell ( $widthbox, 3, $outputlangs->convToOutputCharset ( $title ), 1, 'C' );
+						$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($title), 1, 'C');
 						
 						$text = '<table>';
 						
 						$i = 0;
 						$total = 0;
-							
-						$text .= '<tr>';
-						$text .= "<td align=\"right\">" . $objp->total . ' ' . $langs->trans ( "Currency" . $conf->currency ) . "</td></tr>";		
 						
-						$this->db->free ( $resql );
+						$text .= "<td align=\"right\">" . price($objp->total) . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
+						
+						$this->db->free($resql);
 						
 						$text .= "</table>";
 						
-						$posY = $pdf->getY ();
+						$posY = $pdf->getY();
 						
-						$pdf->SetFont ( pdf_getPDFFont ( $outputlangs ), '', 13 );
-						$pdf->writeHTMLCell ( $widthbox, 0, $posX, $posY, dol_htmlentitiesbr ( $text ), 1 );
+						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+						$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1);
 					}
 				}
+				
+				// Bloc total Charge
+				
+				// Tableau total Charge
+				/*$sql = " SELECT YEAR(echeance) as annee, SUM(charges) as accompte,";
+				$sql .= " SUM(charge_ex) as charge,";
+				$sql .= " GROUP_CONCAT(CommCharge SEPARATOR '$') as CommCharge";
+				$sql .= " FROM " . MAIN_DB_PREFIX . "immo_loyer";
+				$sql .= " WHERE local_id=" . $receipt->local_id . " AND locataire_id=" . $receipt->locataire_id;
+				$sql .= " GROUP BY YEAR(echeance)";
+				
+				// print $sql;
+				dol_syslog(get_class($this) . ':: total charge sql=' . $sql, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+					
+					if ($num > 0) {
+						
+						$pdf->addPage();
+						$posX = $this->marge_gauche;
+						$posY = $this->marge_haute;
+						
+						$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
+						
+						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+						$pdf->SetXY($posX, $posY);
+						
+						$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Récapitulatif charges locatives'), 1, 'C');
+						
+						$text = '<table>';
+						
+						$text .= '<tr>';
+						$text .= "<th align=\"left\">Année</th>";
+						$text .= "<th align=\"left\">Charges Locatives</th>";
+						$text .= "<th align=\"left\">Paiement</th>";
+						$text .= "<th align=\"left\">Reste a payer</th>";
+						$text .= "<th align=\"left\">Commentaire</th>";
+						
+						$text .= "</tr>";
+						
+						while ( $objp = $this->db->fetch_object($resql) ) {
+							
+							$text .= '<tr>';
+							$text .= "<td align=\"left\">" . $objp->annee . "</td>";
+							$text .= "<td align=\"left\">" . price($objp->charge) . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
+							$text .= "<td align=\"left\">" . price($objp->accompte) . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
+							$text .= "<td align=\"left\">" . price($objp->charge - $objp->accompte) . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
+							
+							if (! empty($objp->CommCharge)) {
+								$comm_array = explode('$', $objp->CommCharge);
+							}
+							$commentaire_charge = array ();
+							if (is_array($comm_array) && count($comm_array) > 0) {
+								foreach ( $comm_array as $txt_com ) {
+									if (! empty($txt_com)) {
+										$commentaire_charge[] = $txt_com;
+									}
+								}
+							}
+							
+							$text .= "<td align=\"left\">" . implode('<br>', $commentaire_charge) . "</td>";
+							
+							$text .= "</tr>";
+						}
+						$this->db->free($resql);
+						
+						$text .= "</table>";
+						
+						$posY = $pdf->getY();
+						
+						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+						$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1);
+					}
+				}*/
 			}
 			
-			$pdf->Close ();
+			$pdf->Close();
 			
-			$pdf->Output ( $file, 'F' );
-			if (! empty ( $conf->global->MAIN_UMASK ))
-				@chmod ( $file, octdec ( $conf->global->MAIN_UMASK ) );
+			$pdf->Output($file, 'F');
+			if (! empty($conf->global->MAIN_UMASK))
+				@chmod($file, octdec($conf->global->MAIN_UMASK));
 			
 			return 1; // Pas d'erreur
 		} else {
-			$this->error = $langs->trans ( "ErrorConstantNotDefined", "AGF_OUTPUTDIR" );
+			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
 			return 0;
 		}
-		$this->error = $langs->trans ( "ErrorUnknown" );
+		$this->error = $langs->trans("ErrorUnknown");
 		return 0; // Erreur par defaut
 	}
-
+	
 	/**
 	 * \brief Show header of page
 	 * \param pdf Object PDF
 	 * \param object Object invoice
 	 * \param showaddress 0=no, 1=yes
-	 * \param outputlangs		Object lang for output
+	 * \param outputlangs Object lang for output
 	 */
 	function _pagehead(&$pdf, $object, $showaddress = 1, $outputlangs) {
-
 		global $conf, $langs;
 		
-		$outputlangs->load ( "main" );
+		$outputlangs->load("main");
 		
-		pdf_pagehead ( $pdf, $outputlangs, $pdf->page_hauteur );
+		pdf_pagehead($pdf, $outputlangs, $pdf->page_hauteur);
 	}
 }

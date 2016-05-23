@@ -1,0 +1,98 @@
+README (English)
+--------------------------------
+Quick Start
+--------------------------------
+
+1) Install Agefodd
+
+2) What's new ?
+
+3) What Agefodd is made for ?
+
+4) Contact
+
+
+I - INSTALL AGEFODD
+----------------------
+
+To install Agefodd,  Dolibarr (> v = 3.4) have to be already
+installed and configured on your server. It should be fully operational.
+Then, and after downloading the latest version of the module on the Agefodd
+Dolistore site (http://www.dolistore.com/), you must install it as
+follows:
+
+For Dolibarr 3.4
+- In your  Dolibarr installation directory edit the file htdocs/conf/conf.php
+- Find the following lines:
+	#$=dolibarr_main_url_root_alt ...
+    #$=dolibarr_main_document_root_alt ...
+- Delete the first "#" of these lines and assign a value consistent with your Dolibarr instalation
+ $ Dolibarr_main_url_root = ... and $ dolibarr_main_document_root ...
+ 
+example for a UNIX system:
+	$dolibarr_main_url_root = 'http://localhost/Dolibarr/htdocs';
+	$dolibarr_main_document_root = '/var/www/Dolibarr/htdocs';
+	$dolibarr_main_url_root_alt = 'http://localhost/Dolibarr/htdocs/custom';
+	$dolibarr_main_document_root_alt = '/var/www/Dolibarr/htdocs/custom';
+
+example for a Windows system:
+	$dolibarr_main_url_root = 'http://localhost/Dolibarr/htdocs';
+	$dolibarr_main_document_root = 'C:/My Web Sites/Dolibarr/htdocs';
+	$dolibarr_main_url_root_alt = 'http://localhost/Dolibarr/htdocs/custom';
+	$dolibarr_main_document_root_alt = 'C:/My Web Sites/Dolibarr/htdocs/custom';
+
+For dolibarr 3.5
+
+$dolibarr_main_url_root_alt = '/custom';
+$dolibarr_main_document_root_alt = 'C:/My Web Sites/Dolibarr/htdocs/custom';
+
+For more information on the file conf.php file open it conf.php.example
+
+- Extract the Zip file downloaded from Doliforge in the directory dolibarr_main_document_root
+
+- Create the directory custom if it do not exist 
+
+example for a UNIX system: /var/www/Dolibarr/htdocs
+example for a Windows system: C:/My Web Sites/Dolibarr/htdocs/custom
+
+- From your browser, log in as administrator dolibarr
+  and left click on the "configuration" menu.
+  Then click on the submenu "module".
+  On the screen that appears and in the "Human Ressource", you should see
+  appear the menu "Management Training". To activate the module, simply click on
+  the red button to the right of the line ("status" column).
+  The status menu should then proceed to "Enable" menu "Management
+  training "should appear at the top of the application.
+- By default, registered users have only read rights in
+  agefodd. Consider changing these rights under the privileges of your real
+  users.
+
+
+II - UPGRADE AGEFODD
+----------------------
+Desactivate the module and activiate again
+
+III - WHAT'S NEW ?
+------------------------
+
+Check  ChangeLog file .
+
+
+IV - WHAT AGEFODD CAN DO ?
+-------------------------------
+
+- manage training dictionnary,
+- manage actors database (trainees, trainers, trainer,training contacts, organisation),
+- manage plannings, training sessions 
+  (internal and external training, with several trainers),
+- task management, procedural and organisational taks of sessions,
+- automate tasks' prioritization,
+- documents automatic generation,
+- instant display of trainings statistics .
+
+VI - Contact
+-----------------------
+Web site Agefodd project : 
+	https://doliforge.org/projects/agefodd/
+	
+For question, contact me : florian.henry@open-concept.pro

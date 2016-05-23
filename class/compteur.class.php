@@ -388,6 +388,4 @@ class Immocompteur extends CommonObject
 
 		
 	}
-
 }
-?>

@@ -1,20 +1,84 @@
-﻿# Dolibarr language file - fr_FR - ventilation
+﻿# Dolibarr language file - fr_FR - immobilier
 CHARSET=UTF-8
 
-Module161000Name= Immobilier
-Module161000Desc= Gestion locative immobilier
+# Admin
+Module113050Name=Gestion Immobilière
+Module113050Desc=Gestion locative immobilière
+TypeCompteurDict=Immobilier - Type de compteur
+TypePropertyDict=Immobilier - Type de biens
+apa=Appartement
+loc=Local commercial
+gar=Garage
+hou=Maison individuel
+sho=Magasin
+bul=Immeuble
+ImmobilierSetup=Configuration du module gestion immobilière
+PublicSiteDesc=Dolibarr peut offrir une URL de page publique permettant d'afficher un site pour répertorier les annonces immobilières pour les visiteurs externes.
+EnablePublicSite=Activer le site accessible au public
+PublicSite=Site public
+GoogleZoomLevel=Niveau de zoom par défaut (1 à 10)
+GOOGLE_API_SERVERKEY=Clé API (de type "Server key")
+ParametersForGoogleAPIv3Usage=Pour Google API %s V3
+KeepEmptyYoUsePublicQuotaOfAPI=Laisser vide pour utiliser le quota publique de cette API (sinon la clé peut être créée depuis la page https://code.google.com/apis/console/, "API Access" pour créer une "Server key" et "Services" pour activer l'API "%s")
+AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google, vous devez créer une clé depuis la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "Indentification" . Cliquer sur "Créer un clé" et choisir "Clé serveur" puis "Créer". Vous obtiendrez votre clé serveur.
+EnableAPI=Vous devez aussi activer les API pour votre compte Google. Pour cela, aller sur la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "API". Cliquer sur activer API pour "%s".  
 
+# Module
+ListProperties=Liste des biens
+Properties=Biens
+Property=Bien
+ShowProperty=Voir bien
+PropertyParent=Bien parent
+PropertyCard=Fiche bien
+NewProperty=Nouveau bien
+AddProperty=Ajouter bien
+DeleteProperty=Supprimer bien
+ConfirmDeleteProperty=Souhaitez vous vraiment supprimer ce bien ?
+TypeProperty=Type de bien
+NumberOfPieces=Nombre de pièces
+Area=Superficie
+NameProperty=Nom du bien
+Address=Adresse
+Zipcode=Code Postal
+Town=Ville
+Country=Pays
+Surface=Surface m²
+Building=Bâtiment
+Staircase=Escalier
+Floor=Etage
+NumberOfDoor=N° de porte
 
-estate=Immobilier
-Properties=Biens Immobiliers
+SelectRenterCreationForm=Sélectionner le mode de création du locataire
+MenuActRenterNew=Nouveau locataire
+MenuActRenterNewFromContact=Nouveau depuis contact
+ContactImportAsStagiaire=Sélectionner le contact à importer
+CreateANewThirdPartyFromRenterForm=Créer un nouveau tiers
+CreateANewThirdPartyFromRenterFormInfo=Un tiers sera créé en reprenant les informations de ce formulaire
+CreateANewContactFromRenterForm=Créer un contact
+CreateANewContactFromRenterFormInfo=Un contact sera créé et associé au tiers et au locataire
+Renter=Locataire
+Renters=Locataires
+NewRenter=Nouveau locataire
+RentersList=Liste des locataires
+Civility=Civilité
+NomPrenom=Nom/Prénom
+Job=Fonction
+ContactImportAsRenter=Sélectionner le contact à importer
+RenterCard=Locataire
+
+Rent=Location
+Rents=Locations
+ListRents=Liste des locations
+NewRent=Nouvelle location
+
+Estate=Immobilier
 ParcImmobilier=Parc Immobilier
 Apart=Appartement
 Building=Immeuble
 Field=Terrain
-Renter=Locataire
 Actif=Actif
 Out=Sorti
-History=historique
+History=Historique
 Contracts=Contrats
 RentAndPayment=Loyers et paiements
 RentPerMonth=Loyer mensuel
@@ -23,37 +87,56 @@ CostAndCharges=Charges et frais
 CostPerMonth=Charges mensuel
 TypeCharge=Type de charges
 Tools=Outils
-Result=Revenu Immobilier
-ReleverCompteur=Relever compteur
+Result=Revenu immobilier
+ReleverCompteur=Relevé compteur
 NomLoyer=Loyer mois annee
-echeance=date echeance
-periode_du=periode du
-periode_au=periode au
-contrat_id=reference contrat
-local_id=reference local
-nomlocal=nom local
-locataire_id=reference locataire
-nomlocataire=nom locataire
-montant_tot=total
-loy=loyer
-charges=Paiment charge locative
-charge_ex=Charge locative 
-select=Sélection
-GenererQuittance=Generer une Quittance
+Echeance=Date écheance
+Periode_du=Période du
+Periode_au=Période au
+Contrat_id=Réference contrat
+Local_id=Réference local
+Nomlocal=Nom local
+Locataire_id=reference locataire
+Nomlocataire=nom locataire
+Montant_tot=total
+Rent=Loyer
+Rents=Loyers
+RentsByYear=Loyers par année
+RentalLoads=Charges locatives
+Charges=Paiment charge locative
+Charge_ex=Charge locative 
+GenererQuittance=Génerer une quittance
 ValidateRent=Valider les loyers
-TypeCompteurDict=Module Immobilier - Type de compteur
-letter=Courrier
-NomImmeuble=Immeuble
-NombreLocaux=Nombre de locaux
-street=rue
-zipcode=Code Postal
-town=Ville
-NomLocal=Nom de l'appartement
+Letter=Courrier
 NomLocataire=Nom du locataire
 NomContrat=Bail
 LoyerTotal=Montant du loyer
 EncoursLoyer=Encours Locataire
-Addnewrent=Ajouter des loyers
-montant_ttc=Montant TTC
-outrenter=Mettre fin au contrat
+Addnewrent=Ajouter un loyer
+Montant_ttc=Montant TTC
+CostPerSupplier=Cout par fournisseur
+ClassifyDispatch=Charge ventilée
+Nouveau_fournisseur=Nouveau fournisseur
+State=Etat
+AddANewCost=Ajouter une nouvelle charge
+m2=m²
+
+CreateCompteurForThisLocal=Créer un compteur pour ce local
+ListCompteurForThisBulding=Liste des compteurs pour ce local
+DateRelever=Date relevé
+IndexCompteur=Index du compteur
+ConsoCompteur=Consommation du compteur
+CommCharge=Détails des charges réels
+
+Contract=Contrat
+NewContract=Nouveau Contrat
+
+Receipt=Quittance
+NewReceipt=Nouvelle quittance
+allReceiptperContract=Générer les quittances
+
+amount=montant
+comment=commentaire
+Payment=Paiement
+NewPayment=Nouveau Paiement
 

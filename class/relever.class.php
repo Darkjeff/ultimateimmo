@@ -471,10 +471,6 @@ class Immorelever extends CommonObject
 		$this->date_reveler='';
 		$this->index_reveler='';
 		$this->consomation_relever='';
-		$this->comment_relever='';
-
-		
+		$this->comment_relever='';	
 	}
-
 }
-?>

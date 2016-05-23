@@ -450,6 +450,4 @@ class Immoletterenter extends CommonObject
             return -1;
         }
     }
-
 }
-?>
