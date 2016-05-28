@@ -42,6 +42,12 @@ function renter_prepare_head($object)
 	$hselected = $h;
 	$h ++;
 
+	$head[$h][0] = dol_buildpath('/immobilier/renter/bank.php', 1) . '?id=' . $object->id;
+	$head[$h][1] = $langs->trans("Bank");
+	$head[$h][2] = 'bank';
+	$hselected = $h;
+	$h ++;
+
 	$head[$h][0] = dol_buildpath('/immobilier/renter/bilan.php', 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("Bilan");
 	$head[$h][2] = 'bilan';
@@ -89,22 +95,22 @@ function rent_prepare_head($object)
 	$h = 0;
 	$head = array();
 	
-	$head[$h][0] = dol_buildpath('/immobilier/rent/card.php', 1) . '?id=' . $object->reference;
+	$head[$h][0] = dol_buildpath('/immobilier/rent/card.php', 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$hselected = $h;
 	$h ++;
 	
 	require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
-    $upload_dir = $conf->immobilier->dir_output . '/rent/' . $object->reference;
+    $upload_dir = $conf->immobilier->dir_output . '/rent/' . $object->id;
     $nbFiles = count(dol_dir_list($upload_dir,'files',0,'','(\.meta|_preview\.png)$'));
-    $head[$h][0] = dol_buildpath('/immobilier/rent/document.php', 1) . '?id=' . $object->reference;
+    $head[$h][0] = dol_buildpath('/immobilier/rent/document.php', 1) . '?id=' . $object->id;
     $head[$h][1] = $langs->trans("Documents");
 	if($nbFiles > 0) $head[$h][1].= ' <span class="badge">'.$nbFiles.'</span>';
     $head[$h][2] = 'document';
     $h++;
 	
-	$head[$h][0] = dol_buildpath('/immobilier/rent/info.php', 1) . '?id=' . $object->reference;
+	$head[$h][0] = dol_buildpath('/immobilier/rent/info.php', 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("Info");
 	$head[$h][2] = 'info';
 	$hselected = $h;

@@ -27,11 +27,12 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
+// Class
+require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 require_once ('../core/lib/immobilier.lib.php');
 require_once ('../class/rent.class.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
-
 $langs->load("other");
 $langs->load("immobilier@immobilier");
 
@@ -55,18 +56,16 @@ $pagenext = $page + 1;
 if (! $sortorder) $sortorder="ASC";
 if (! $sortfield) $sortfield="name";
 
-
 $object = new Rent($db);
-$object->fetch($id, $ref);
+$object->fetch($id);
 
-$upload_dir = $conf->renter->dir_output.'/'.dol_sanitizeFileName($object->ref);
+$upload_dir = $conf->rent->dir_output.'/'.dol_sanitizeFileName($object->ref);
 $modulepart='immobilier';
 
 
 /*
  * Actions
  */
-
 include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_pre_headers.tpl.php';
 
 
@@ -78,15 +77,10 @@ $form = new Form($db);
 
 llxHeader("","",$langs->trans("RentCard"));
 
-
 if ($object->id)
 {
-	$object->fetch_thirdparty();
-
-	$head=renter_prepare_head($object);
-
-	dol_fiche_head($head, 'document',  $langs->trans("RentCard"), 0, 'user');
-
+	$head=rent_prepare_head($object);
+	dol_fiche_head($head, 'document',  $langs->trans("Rent"), 0, 'rent@immobilier');
 
 	// Construit liste des fichiers
 	$filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview\.png)$',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
@@ -99,15 +93,22 @@ if ($object->id)
 
     print '<table class="border" width="100%">';
 
-    $linkback = '<a href="'.DOL_URL_ROOT.'/rent/list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
+    $linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
 	// Ref
 	print '<tr><td width="25%">'.$langs->trans("Ref").'</td><td>';
 	print $form->showrefnav($object, 'id', $linkback, 1, 'rowid', 'ref', '');
 	print '</td></tr>';
 
-	// Societe
-	//print "<tr><td>".$langs->trans("Company")."</td><td>".$object->client->getNomUrl(1)."</td></tr>";
+	print '<tr>';
+	print '<td>' . $langs->trans("NameProperty") . '</td>';
+	print '<td>' . $object->nomlocal . '</td>';
+	print '</tr>';
+
+	print '<tr>';
+	print '<td>' . $langs->trans("Renter") . '</td>';
+	print '<td>' . $object->nomlocataire . ' ' . $object->lastname_renter . '</td>';
+	print '</tr>';
 
     print '<tr><td>'.$langs->trans("NbOfAttachedFiles").'</td><td colspan="3">'.count($filearray).'</td></tr>';
     print '<tr><td>'.$langs->trans("TotalSizeOfAttachedFiles").'</td><td colspan="3">'.$totalsize.' '.$langs->trans("bytes").'</td></tr>';

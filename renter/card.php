@@ -323,7 +323,7 @@ if ($action == 'create_confirm' && $user->rights->immobilier->renter->write) {
 /*
  * View
 */
-$title = ($action == 'nfcontact' || $action == 'create' ? $langs->trans("NewRenter") : $langs->trans("RenterDetail"));
+$title = ($action == 'nfcontact' || $action == 'create' ? $langs->trans("NewRenter") : $langs->trans("Renter"));
 llxHeader('', $title);
 
 $form = new Form($db);
@@ -493,12 +493,12 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 	print '<tr><td width="25%"><span class="fieldrequired">' . $langs->trans("Civility") . '</span></td>';
 	print '<td colspan="3">' . $formcompany->select_civility(GETPOST('civility_id')) . '</td>';
 	print '</tr>';
+
+	print '<tr><td><span class="fieldrequired">' . $langs->trans("Lastname") . '</span></td>';
+	print '<td colspan="3"><input name="nom" class="flat" size="50" value="' . GETPOST('nom', 'alpha') . '"></td></tr>';
 	
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("Firstname") . '</span></td>';
 	print '<td colspan="3"><input name="prenom" class="flat" size="50" value="' . GETPOST('prenom', 'alpha') . '"></td></tr>';
-	
-	print '<tr><td><span class="fieldrequired">' . $langs->trans("Lastname") . '</span></td>';
-	print '<td colspan="3"><input name="nom" class="flat" size="50" value="' . GETPOST('nom', 'alpha') . '"></td></tr>';
 	
 	print '<tr><td>' . $langs->trans('CreateANewContactFromRenterForm');
 	print img_picto($langs->trans("CreateANewContactFromRenterFormInfo"), 'help');
@@ -554,13 +554,10 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 	print '<tbody>';
 	print '<tr class="liste_titre"><td colspan="4"><b>' . $langs->trans("Owner") . '</b></td>';
 
-
 	print '<tr class="select_thirdparty_block"><td class="fieldrequired">' . $langs->trans("Owner") . '</td><td colspan="3">';
 	print $form->select_company(GETPOST('owner_id', 'int'), 'owner_id', '(s.client IN (1,3,2))', 1, 1);
 	print '</td></tr>';
-	
 
-	
 	print '</tbody>';
 	print '</table>';
 
@@ -599,45 +596,49 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 				// if contact renter from contact then display contact information
 				if (empty($renter->fk_socpeople)) {
 					
-					print '<tr><td>' . $langs->trans("Firstname") . '</td>';
-					print '<td><input name="prenom" class="flat" size="50" value="' . ucfirst($renter->prenom) . '"></td></tr>';
-					
-					print '<tr><td>' . $langs->trans("Lastname") . '</td>';
-					print '<td><input name="nom" class="flat" size="50" value="' . strtoupper($renter->nom) . '"></td></tr>';
-					
 					print '<tr><td>' . $langs->trans("Civility") . '</td>';
-					
 					print '<td>' . $formcompany->select_civility($renter->civilite) . '</td>';
 					print '</tr>';
-					
-					print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
-					
-					print $form->select_company($renter->socid, 'societe', '(s.client IN (1,3,2))', 1, 1);
 
+					print '<tr><td>' . $langs->trans("Lastname") . '</td>';
+					print '<td><input name="nom" class="flat" size="50" value="' . strtoupper($renter->nom) . '"></td></tr>';
+				
+					print '<tr><td>' . $langs->trans("Firstname") . '</td>';
+					print '<td><input name="prenom" class="flat" size="50" value="' . ucfirst($renter->prenom) . '"></td></tr>';
+
+					print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
+					print $form->select_company($renter->socid, 'societe', '(s.client IN (1,3,2))', 1, 1);
 					print '</td></tr>';
 
 					print '<tr><td valign="top">' . $langs->trans("Owner") . '</td><td colspan="3">';
 					print $form->select_company($renter->fk_owner, 'owner_id', '(s.client IN (1,3,2))', 1, 1);
 					print '</td></tr>';
-					
+
 					print '<tr><td>' . $langs->trans("Job") . '</td>';
 					print '<td><input name="fonction" class="flat" size="50" value="' . $renter->fonction . '"></td></tr>';
-					
+
 					print '<tr><td>' . $langs->trans("Phone") . '</td>';
 					print '<td><input name="tel1" class="flat" size="50" value="' . $renter->tel1 . '"></td></tr>';
-					
+
 					print '<tr><td>' . $langs->trans("Mobile") . '</td>';
 					print '<td><input name="tel2" class="flat" size="50" value="' . $renter->tel2 . '"></td></tr>';
-					
+
 					print '<tr><td>' . $langs->trans("Email") . '</td>';
 					print '<td><input name="mail" class="flat" size="50" value="' . $renter->mail . '"></td></tr>';
-					
+
 					print '<tr><td>' . $langs->trans("DateToBirth") . '</td>';
 					print '<td>';
 					print $form->select_date($renter->date_birth, 'datebirth', 0, 0, 1, 'update');
 					print '</td></tr>';
 				} else {
 					print '<input type="hidden" name="fk_socpeople" value="' . $renter->fk_socpeople . '">';
+					
+					print '<tr><td>' . $langs->trans("Civility") . '</td>';
+					$contact_static = new Contact($db);
+					$contact_static->civility_id = $renter->civilite;
+					print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
+					print '<input type="hidden" name="civility_id" value="' . $renter->civilite . '">';
+
 					print '<tr><td>' . $langs->trans("Lastname") . '</td>';
 					print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $renter->fk_socpeople . '">' . strtoupper($renter->nom) . '</a></td></tr>';
 					print '<input type="hidden" name="nom" value="' . $renter->nom . '">';
@@ -645,15 +646,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 					print '<tr><td>' . $langs->trans("Firstname") . '</td>';
 					print '<td>' . ucfirst($renter->prenom) . '</td></tr>';
 					print '<input type="hidden" name="prenom" value="' . $renter->prenom . '">';
-					
-					print '<tr><td>' . $langs->trans("Civility") . '</td>';
-					
-					$contact_static = new Contact($db);
-					$contact_static->civility_id = $renter->civilite;
-					
-					print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
-					print '<input type="hidden" name="civility_id" value="' . $renter->civilite . '">';
-					
+
 					print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 					if ($renter->socid) {
 						print '<a href="' . dol_buildpath('/comm/card.php', 1) . '?socid=' . $renter->socid . '">';
@@ -692,12 +685,8 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 				print '<tr><td valign="top">' . $langs->trans("Note") . '</td>';
 				if (! empty($renter->note))
 					$notes = nl2br($renter->note);
-				else
-					$notes = $langs->trans("UndefinedNote");
 				print '<td><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;">' . stripslashes($renter->note) . '</textarea></td></tr>';
-				
-				
-				
+
 				print '</table>';
 				print '</div>';
 				print '<table style=noborder align="right">';
@@ -730,8 +719,10 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 				print '<tr><td width="25%">' . $langs->trans("Ref") . '</td>';
 				print '<td>' . $form->showrefnav($renter, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
 
-				print '<tr><td>' . $langs->trans("Firstname") . '</td>';
-				print '<td>' . ucfirst($renter->prenom) . '</td></tr>';
+				print '<tr><td>' . $langs->trans("Civility") . '</td>';
+				$contact_static = new Contact($db);
+				$contact_static->civility_id = $renter->civilite;
+				print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
 
 				if (! empty($renter->fk_socpeople)) {
 					print '<tr><td>' . $langs->trans("Lastname") . '</td>';
@@ -741,12 +732,8 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 					print '<td>' . strtoupper($renter->nom) . '</td></tr>';
 				}
 
-				print '<tr><td>' . $langs->trans("Civility") . '</td>';
-
-				$contact_static = new Contact($db);
-				$contact_static->civility_id = $renter->civilite;
-
-				print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
+				print '<tr><td>' . $langs->trans("Firstname") . '</td>';
+				print '<td>' . ucfirst($renter->prenom) . '</td></tr>';
 				
 				print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 				if ($renter->socid) {
@@ -789,8 +776,6 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 				print '<tr><td>' . $langs->trans("Note") . '</td>';
 				if (! empty($renter->note))
 					$notes = nl2br($renter->note);
-				else
-					$notes = $langs->trans("UndefinedNote");
 				print '<td>' . stripslashes($notes) . '</td></tr>';
 				
 				print "</table>";
@@ -805,7 +790,6 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 
 /*
  * Barre d'actions
- *
  */
 
 print '<div class="tabsAction">';

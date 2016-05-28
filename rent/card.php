@@ -31,7 +31,6 @@ if (! $res)
 
 require_once ('../class/rent.class.php');
 require_once ('../core/lib/immobilier.lib.php');
-// dol_include_once ( '/immobilier/class/html.immobilier.php' );
 require_once ('../class/html.formimmobilier.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php');
 
@@ -140,7 +139,7 @@ if ($action == 'update' && $user->rights->immobilier->property->write) {
 		$res = $object->update();
 		
 		if ($res >= 0) {
-			setEventMessage($langs->trans("SocialContributionAdded"), 'mesgs');
+			setEventMessage($langs->trans("RentAdded"), 'mesgs');
 		} else
 			setEventMessage($object->error, 'errors');
 		
@@ -154,7 +153,7 @@ if ($action == 'update' && $user->rights->immobilier->property->write) {
 llxheader('', $langs->trans("Rent"), '');
 
 // Create mode
-if ($action == 'create' && $user->rights->immobilier->property->write) {
+if ($action == 'create' && $user->rights->immobilier->rent->write) {
 	
 	print load_fiche_titre($langs->trans("NewRent"));
 	
@@ -247,12 +246,12 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 			$head = rent_prepare_head($object);
 			dol_fiche_head($head, 'card', $langs->trans("Rent"), 0, 'rent@immobilier');
 			
-			$linkback = '<a href="' . DOL_URL_ROOT . '/immobilier/property/list.php' . (! empty($socid) ? '?socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+			$linkback = '<a href="' . DOL_URL_ROOT . '/immobilier/rent/list.php' . (! empty($socid) ? '?socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 			
 			print '<table class="border" width="100%">';
 			
 			print '<tr>';
-			print '<td><label for="fk_property">' . $langs->trans("Property") . '</label></td>';
+			print '<td><label for="fk_property">' . $langs->trans("Rent") . '</label></td>';
 			print '<td>';
 			print $htmlimmo->select_property($object->fk_property, 'fk_property');
 			print '</td></tr>';
@@ -342,12 +341,14 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 					print $mesg . "<br>";
 				
 				print '<table class="border" width="100%">';
-				
-				print '<tr>';
-				print '<td width="25%">' . $langs->trans("Ref") . '</td>';
-				print '<td>' . $object->reference . '</td>';
-				print '</tr>';
-				
+
+				$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
+
+				// Ref
+				print '<tr><td width="25%">'.$langs->trans("Ref").'</td><td>';
+				print $form->showrefnav($object, 'id', $linkback, 1, 'rowid', 'ref', '');
+				print '</td></tr>';
+
 				print '<tr>';
 				print '<td>' . $langs->trans("NameProperty") . '</td>';
 				print '<td>' . $object->nomlocal . '</td>';
@@ -355,7 +356,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 				
 				print '<tr>';
 				print '<td>' . $langs->trans("Renter") . '</td>';
-				print '<td>' . $object->nomlocataire . '</td>';
+				print '<td>' . $object->nomlocataire . ' ' . $object->lastname_renter . '</td>';
 				print '</tr>';
 				
 				print '<tr>';
@@ -418,13 +419,13 @@ if ($action != 'create' && $action != 'edit') {
 	 *	ET user ? droit "creer/supprimer"
 	 * 	Afficher : "Modifier" / "Supprimer"
 	 */
-	if ($user->rights->immobilier->property->write) {
+	if ($user->rights->immobilier->rent->write) {
 		// Modify
-		print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?action=edit&id=' . $object->reference . '">' . $langs->trans('Modify') . '</a>';
+		print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?action=edit&id=' . $object->id . '">' . $langs->trans('Modify') . '</a>';
 		
 		// Delete
-		if ($user->rights->immobilier->property->delete) {
-			print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?action=delete&id=' . $object->reference . '">' . $langs->trans('Delete') . '</a>';
+		if ($user->rights->immobilier->rent->delete) {
+			print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?action=delete&id=' . $object->id . '">' . $langs->trans('Delete') . '</a>';
 		}
 	}
 }

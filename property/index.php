@@ -23,13 +23,17 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
+$langs->load('immobilier@immobilier');
+
+// Security check
+if (! $user->rights->immobilier->property->read)
+	accessforbidden();
+
 dol_include_once('/immobilier/class/immoproperty.class.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 
 $properties = new Immoproperty($db);
 $propertystatic=new Immoproperty($db);
-
-$langs->load('immobilier@immobilier');
 
 $prps = $properties->fetchAll($year_current);
 

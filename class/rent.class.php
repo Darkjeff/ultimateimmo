@@ -21,13 +21,16 @@
  * \ingroup immobilier
  * \brief	Manage rent object
  */
+require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
 
 /**
  * \class local
  * \brief Classe permettant la gestion des locaux
  */
-class Rent {
+class Rent extends CommonObject {
 	var $db;
+	var $table_element = 'immo_contrat';
+
 	var $id;
 	var $rowid;
 	var $fk_property;
@@ -60,17 +63,23 @@ class Rent {
 		return 1;
 	}
 
+	/**
+	 * Load object in memory from database
+	 *
+	 * @param int $id object
+	 * @return int <0 if KO, >0 if OK
+	 */
 	function fetch($id) {
 		$sql = "SELECT ic.rowid as reference, ic.fk_property, ic.fk_renter,";
-		$sql .= " ic.date_start, ic.date_end, ic.preavis ,";
-		$sql .= " ic.date_prochain_loyer, ic.date_derniere_regul, ic.montant_tot ,";
-		$sql .= " ic.loyer, ic.charges, ic.tva, ic.encours , ic.periode, ic.depot ,";
-		$sql .= " ic.date_der_rev, ic.commentaire ";
-		$sql .= " , lc.nom as nomlocataire , ll.name as nomlocal ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_contrat as ic ";
-		$sql .= " , " . MAIN_DB_PREFIX . "immo_renter as lc ";
-		$sql .= " , " . MAIN_DB_PREFIX . "immo_property as ll ";
-		$sql .= "WHERE ic.fk_renter = lc.rowid AND ic.fk_property = ll.rowid AND ic.rowid = " . $id;
+		$sql .= " ic.date_start, ic.date_end, ic.preavis,";
+		$sql .= " ic.date_prochain_loyer, ic.date_derniere_regul, ic.montant_tot,";
+		$sql .= " ic.loyer, ic.charges, ic.tva, ic.encours, ic.periode, ic.depot,";
+		$sql .= " ic.date_der_rev, ic.commentaire,";
+		$sql .= " lc.nom as nomlocataire, lc.prenom as firstname_renter, ll.name as nomlocal ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_contrat as ic";
+		$sql .= " , " . MAIN_DB_PREFIX . "immo_renter as lc";
+		$sql .= " , " . MAIN_DB_PREFIX . "immo_property as ll";
+		$sql .= " WHERE ic.fk_renter = lc.rowid AND ic.fk_property = ll.rowid AND ic.rowid = " . $id;
 
 		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql );
 		$resql = $this->db->query ( $sql );
@@ -78,26 +87,28 @@ class Rent {
 			if ($this->db->num_rows ( $resql )) {
 				$obj = $this->db->fetch_object ( $resql );
 				
-				$this->id = $obj->rowid;
-				$this->reference = $obj->reference;
-				$this->fk_property = $obj->fk_property;
-				$this->nomlocal = $obj->nomlocal;
-				$this->fk_renter = $obj->fk_renter;
-				$this->nomlocataire = $obj->nomlocataire;
-				$this->date_start = $this->db->jdate ( $obj->date_start );
-				$this->date_end = $this->db->jdate ( $obj->date_end );
-				$this->preavis = $obj->preavis;
-				$this->date_prochain_loyer = $obj->date_prochain_loyer;
-				$this->date_derniere_regul = $obj->date_derniere_regul;
-				$this->montant_tot = $obj->montant_tot;
-				$this->loyer = $obj->loyer;
-				$this->charges = $obj->charges;
-				$this->tva = $obj->tva;
-				$this->encours = $obj->encours;
-				$this->periode = $obj->periode;
-				$this->depot = $obj->depot;
-				$this->date_der_rev = $obj->date_der_rev;
-				$this->commentaire = $obj->commentaire;
+				$this->id = $obj->reference;
+				$this->ref = $obj->reference; // use for next prev refs
+
+				$this->fk_property 			= $obj->fk_property;
+				$this->nomlocal 			= $obj->nomlocal;
+				$this->fk_renter			= $obj->fk_renter;
+				$this->nomlocataire			= $obj->nomlocataire;
+				$this->lastname_renter		= $obj->lastname_renter;
+				$this->date_start			= $this->db->jdate ( $obj->date_start );
+				$this->date_end				= $this->db->jdate ( $obj->date_end );
+				$this->preavis				= $obj->preavis;
+				$this->date_prochain_loyer	= $obj->date_prochain_loyer;
+				$this->date_derniere_regul	= $obj->date_derniere_regul;
+				$this->montant_tot			= $obj->montant_tot;
+				$this->loyer				= $obj->loyer;
+				$this->charges				= $obj->charges;
+				$this->tva					= $obj->tva;
+				$this->encours				= $obj->encours;
+				$this->periode				= $obj->periode;
+				$this->depot				= $obj->depot;
+				$this->date_der_rev			= $obj->date_der_rev;
+				$this->commentaire			= $obj->commentaire;
 			}
 			$this->db->free($resql);
 
@@ -109,7 +120,13 @@ class Rent {
 			return -1;
 		}
 	}
-	
+
+	/**
+	 * Create object into database
+	 *
+	 * @param User $user that create
+	 * @return int <0 if KO, Id of created object if OK
+	 */	
 	function create($user) {
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "immo_contrat (";
 		$sql .= "fk_property,";
@@ -147,6 +164,13 @@ class Rent {
 			return - 1;
 		}
 	}
+
+	/**
+	 * Update object into database
+	 *
+	 * @param User $user that modify
+	 * @return int <0 if KO, >0 if OK
+	 */
 	function update($user) {
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "immo_contrat ";
 		$sql .= "SET fk_property = '" . $this->db->escape ( $this->fk_property ) . "',";
@@ -176,6 +200,7 @@ class Rent {
 			return - 1;
 		}
 	}
+
 	function select_nom_contrat($selected = '', $htmlname = 'actionnomcontrat', $useempty = 0, $maxlen = 40, $help = 1) {
 		global $db, $langs, $user;
 		$sql = "SELECT ic.rowid, il.nom as nomlocal";
@@ -235,7 +260,6 @@ class Rent {
 	 * @param int $mode long, 1=libelle court, 2=Picto + Libelle court, 3=Picto, 4=Picto + Libelle long, 5=Libelle court + Picto
 	 * @return string Label
 	 */
-	 
 	function LibStatut($statut) {
 		global $langs;
 		

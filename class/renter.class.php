@@ -192,7 +192,7 @@ class Renter extends CommonObject {
 		$sql .= " ON s.civilite = civ.code";
 		$sql .= " WHERE s.rowid = " . $id;
 		$sql .= " AND s.entity IN (" . getEntity('immo_renter') . ")";
-		//echo $sql;
+
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -262,127 +262,49 @@ class Renter extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit = '', $offset, $filter = '') {
+	function fetchAll() {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " so.rowid as socid, so.nom as socname, soc.nom as owner_name,";
+		$sql .= " so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilitecode,";
 		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
-		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth, s.fk_owner";
+		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.date_birth, s.place_birth";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_renter as s";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so ON s.fk_soc = so.rowid";
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as soc ON soc.rowid = s.fk_owner';
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
+		$sql .= " ON s.fk_soc = so.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 		$sql .= " ON s.civilite = civ.code";
-		$sql .= " WHERE s.entity IN (" . getEntity('agsession') . ")";
-
-		// Manage filter
-		if (! empty($filter)) {
-			foreach ( $filter as $key => $value ) {
-				if ($key == 'naturalsearch') {
-					$sql .= ' AND (s.nom LIKE \'%' . $this->db->escape($value) . '%\' OR s.prenom LIKE \'%' . $this->db->escape($value) . '%\')';
-				} elseif ($key != 's.tel1') {
-					$sql .= ' AND '. $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
-				} else {
-					$sql .= ' AND '. $key . ' = \'' . $this->db->escape($value) . '\'';
-				}
-			}
-		} 
-
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " ";
-		if (! empty($limit)) {
-			$sql .= $this->db->plimit($limit + 1, $offset);
-		}
-
+		
 		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
-			$num = $this->db->num_rows($resql);
 			$i = 0;
-
+			$obj = '';
+			$num = $this->db->num_rows($resql);
+			$data = array();
 			if ($num) {
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
-
-					$line = new AgfTraineeLine();
-
-					// Manage filter for telephone to remove all space from result to filter correctly
-					if (! empty($filter)) {
-						if (array_key_exists('s.tel1', $filter)) {
-							$value = $filter ['s.tel1'];
-							if (! empty($value)) {
-								if ($pos !== false) {
-									$line->socid = $obj->socid;
-									$line->socname = $obj->socname;
-									$line->civilitecode = $obj->civilitecode;
-									$line->rowid = $obj->rowid;
-									$line->nom = $obj->nom;
-									$line->prenom = $obj->prenom;
-									$line->civilite = $obj->civilite;
-									$line->fk_soc = $obj->fk_soc;
-									$line->fk_owner = $obj->fk_owner;
-									$line->owner_name = $obj->owner_name;
-									$line->fonction = $obj->fonction;
-									$line->tel1 = $obj->tel1;
-									$line->tel2 = $obj->tel2;
-									$line->mail = $obj->mail;
-									$line->note = $obj->note;
-									$line->place_birth = $obj->place_birth;
-									$line->fk_socpeople = $obj->fk_socpeople;
-									$line->date_birth = $this->db->jdate($obj->date_birth);
-								}
-							}
-						} else {
-							$line->socid = $obj->socid;
-							$line->socname = $obj->socname;
-							$line->civilitecode = $obj->civilitecode;
-							$line->rowid = $obj->rowid;
-							$line->nom = $obj->nom;
-							$line->prenom = $obj->prenom;
-							$line->civilite = $obj->civilite;
-							$line->fk_soc = $obj->fk_soc;
-							$line->fk_owner = $obj->fk_owner;
-							$line->owner_name = $obj->owner_name;
-							$line->fonction = $obj->fonction;
-							$line->tel1 = $obj->tel1;
-							$line->tel2 = $obj->tel2;
-							$line->mail = $obj->mail;
-							$line->note = $obj->note;
-							$line->fk_socpeople = $obj->fk_socpeople;
-							$line->date_birth = $this->db->jdate($obj->date_birth);
-							$line->place_birth = $obj->place_birth;
-						}
-					} else {
-						$line->socid = $obj->socid;
-						$line->socname = $obj->socname;
-						$line->civilitecode = $obj->civilitecode;
-						$line->rowid = $obj->rowid;
-						$line->nom = $obj->nom;
-						$line->prenom = $obj->prenom;
-						$line->civilite = $obj->civilite;
-						$line->fk_soc = $obj->fk_soc;
-						$line->fk_owner = $obj->fk_owner;
-						$line->owner_name = $obj->owner_name;
-						$line->fonction = $obj->fonction;
-						$line->tel1 = $obj->tel1;
-						$line->tel2 = $obj->tel2;
-						$line->mail = $obj->mail;
-						$line->note = $obj->note;
-						$line->fk_socpeople = $obj->fk_socpeople;
-						$line->date_birth = $this->db->jdate($obj->date_birth);
-						$line->place_birth = $obj->place_birth;
-					}
-
-					$this->lines [$i] = $line;
-
+					
+					$data[$i] =	array(
+					
+									'id' => $obj->rowid,
+									'NomPrenom' => $obj->nom.' '.$obj->prenom,
+									'Civility' => $obj->civilite,
+									'Company_id' => $obj->socid,
+									'Company' => $obj->socname,
+									'Phone' => $obj->tel1,
+									'Email' => $obj->mail,
+									'fonction' => $obj->fonction
+									);
+					
 					$i ++;
 				}
 			}
-			$this->db->free($resql);
-			return $num;
-		} else {
+
+			return $data; 
+		}else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
 			return - 1;

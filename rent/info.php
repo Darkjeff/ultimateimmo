@@ -36,7 +36,7 @@ $langs->load("immobilier@immobilier");
 $id = GETPOST('rowid')?GETPOST('rowid','int'):GETPOST('id','int');
 
 // Security check
-if (! $user->rights->immobilier->renter->read)
+if (! $user->rights->immobilier->rent->read)
 	accessforbidden();
 
 /*

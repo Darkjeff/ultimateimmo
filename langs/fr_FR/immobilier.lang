@@ -24,12 +24,14 @@ AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google,
 EnableAPI=Vous devez aussi activer les API pour votre compte Google. Pour cela, aller sur la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "API". Cliquer sur activer API pour "%s".  
 
 # Module
+
+# Property
 ListProperties=Liste des biens
 Properties=Biens
 Property=Bien
 ShowProperty=Voir bien
 PropertyParent=Bien parent
-PropertyCard=Fiche bien
+PropertyCard=Bien
 NewProperty=Nouveau bien
 AddProperty=Ajouter bien
 DeleteProperty=Supprimer bien
@@ -48,6 +50,9 @@ Staircase=Escalier
 Floor=Etage
 NumberOfDoor=N° de porte
 
+# Renter
+ListRenters=Liste des locataires
+ShowRenter=Voir locataire
 SelectRenterCreationForm=Sélectionner le mode de création du locataire
 MenuActRenterNew=Nouveau locataire
 MenuActRenterNewFromContact=Nouveau depuis contact
@@ -65,12 +70,15 @@ NomPrenom=Nom/Prénom
 Job=Fonction
 ContactImportAsRenter=Sélectionner le contact à importer
 RenterCard=Locataire
+PlaceBirth=Lieu de naissance
 
+# Rent
 Rent=Location
 Rents=Locations
 ListRents=Liste des locations
 NewRent=Nouvelle location
 
+# Other
 Estate=Immobilier
 ParcImmobilier=Parc Immobilier
 Apart=Appartement
