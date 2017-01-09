@@ -31,7 +31,7 @@ if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main
 if (! $res) die("Include of main fails");
 
 // Class
-dol_include_once ( "/immobilier/class/rent.class.php" );
+dol_include_once ( "/immobilier/class/immorent.class.php" );
 require_once ('../core/lib/immobilier.lib.php');
 
 // Langs

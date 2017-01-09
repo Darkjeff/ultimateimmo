@@ -28,8 +28,8 @@ if (! $res)
 	die("Include of main fails");
 	
 // Class
-dol_include_once ( "/immobilier/class/rent.class.php" );
-require_once ('../class/renter.class.php');
+dol_include_once ( "/immobilier/class/immorent.class.php" );
+require_once ('../class/immorenter.class.php');
 require_once ('../core/lib/immobilier.lib.php');
 
 // Langs
@@ -43,21 +43,12 @@ $mesg = '';
 $limit = $conf->liste_limit;
 
 /*
-* Bilan Renter
-*
-*/
-
-llxheader ( '', $langs->trans("bilanrenter"), '' );
-/*
-$contrat = new Rent ( $db );
-$result = $contrat->fetch ( $id );
-$head = rent_prepare_head ( $contrat );
-
-dol_fiche_head ( $head, 'info', $langs->trans ( "Imoinfo" ), 0, 'agreement' );
-*/
-
+ * Bilan Renter
+ */
 $object = new Renter($db);
 $object->fetch($id, $ref);
+
+llxheader ( '', $langs->trans("RenterCard").' | '.$langs->trans("Bilan"), '' );
 
 $object->fetch_thirdparty();
 
@@ -65,6 +56,14 @@ $head=renter_prepare_head($object);
 
 dol_fiche_head($head, 'bilan',  $langs->trans("RenterCard"), 0, 'user');
 
+$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
+
+immo_banner_tab($object, 'id', $linkback, 1, 'rowid', 'name');
+
+print '<table class="border centpercent">';
+
+print '<div class="underbanner clearboth"></div>';
+	
 $sql = "(SELECT l.date_start as date , l.amount_total as debit, 0 as credit , l.name as des";
 $sql .= " FROM " . MAIN_DB_PREFIX . "immo_receipt as l";
 $sql .= " WHERE l.fk_renter =" . $id;
@@ -79,15 +78,15 @@ $result = $db->query ( $sql );
 if ($result) {
 	$num_lignes = $db->num_rows ( $result );
 	$i = 0;
-	
-	print '<table class="border" width="100%">';
+
+	print '<table class="border tableforfield" width="100%">';
 	print '<tr class="liste_titre">';
-	print '<td>' . $langs->trans ( "date" ) . '</td>';
-	print '<td>' . $langs->trans ( "debit" ) . '</td>';
-	print '<td>' . $langs->trans ( "credit" ) . '</td>';
-	print '<td>' . $langs->trans ( "description" ) . '</td>';
+	print '<td>' . $langs->trans ( "Date" ) . '</td>';
+	print '<td>' . $langs->trans ( "Debit" ) . '</td>';
+	print '<td>' . $langs->trans ( "Credit" ) . '</td>';
+	print '<td>' . $langs->trans ( "Description" ) . '</td>';
 	print "</tr>\n";
-	
+
 	$sql2 = "SELECT SUM(l.amount_total) as debit, 0 as credit ";
 	$sql2 .= " FROM " . MAIN_DB_PREFIX . "immo_receipt as l";
 	$sql2 .= " WHERE l.fk_renter =" . $id;
@@ -103,38 +102,35 @@ if ($result) {
 	$objp3 = $db->fetch_object ( $result3 );
 
 	$var = ! $var;
-	print "<tr $bc[$var]>";
 
-	print '<td>&nbsp; Total</td>';
-	print '<td>' . price($objp2->debit) . '</td>';
-	print '<td>' . price($objp3->credit) . '</td>';
-	print '<td>' . price(($objp3->credit)-($objp2->debit)). ' </td>';
-	//todo add credit - debit 
-		
-	print "</tr>";
-	
 	$var = True;
-	while ( $i < min ( $num_lignes, $limit ) ) {
-		
+	while ( $i < min ( $num_lignes, $limit ) )
+	{
 		$objp = $db->fetch_object ( $result );
 		$var = ! $var;
 		print "<tr $bc[$var]>";
-		
+
 		print '<td>' . dol_print_date ( $db->jdate ( $objp->date ), 'day' ) . '</td>';
-		print '<td>' . $objp->debit . '</td>';
-		print '<td>' . $objp->credit . '</td>';
+		print '<td align="right">' . price($objp->debit) . '</td>';
+		print '<td align="right">' . price($objp->credit) . '</td>';
 		print '<td>' . $objp->des . '</td>';
-		
+
 		print "</tr>";
 		$i ++;
 	}
-	//print '</table>';
+
+	// Total
+	print "<tr $bc[$var]>";
+	print '<td>' . $langs->trans("Total") . '</td>';
+	print '<td align="right">' . price($objp2->debit) . '</td>';
+	print '<td align="right">' . price($objp3->credit) . '</td>';
+	print '<td>' . price(($objp3->credit)-($objp2->debit)). '</td>';
+	print "</tr>";
 } else {
 	print $db->error ();
 }
 
-
-		print '</table>';
+print '</table>';
 
 /*
 if ($result2) {

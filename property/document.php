@@ -1,6 +1,6 @@
 <?php
-/* Copyright (C) 2013 Olivier Geffroy    <jeff@jeffinfo.com>
- * Copyright (C) 2015 Alexandre Spangaro <aspangaro.dolibarr@gmail.com>
+/* Copyright (C) 2013		Olivier Geffroy		<jeff@jeffinfo.com>
+ * Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro.dolibarr@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,42 +87,50 @@ if ($action == 'delete') {
 /*
  * View
  */
-
-llxheader('', $langs->trans("Documents"), '');
 $form = new Form($db);
 
-if ($id > 0) {
+llxheader('', $langs->trans("PropertyCard") . ' | ' . $langs->trans("Files"));
+
+if ($id > 0)
+{
+	/*
+	 * Affichage onglets
+	 */
 	$head = property_prepare_head($object);
 	dol_fiche_head($head, 'document', $langs->trans("PropertyCard"), 0, 'building@immobilier');
 	
+	$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
+
+	immo_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
+
+	print '<div class="underbanner clearboth"></div>';
+	
 	// Construit liste des fichiers
-	$filearray = dol_dir_list ( $upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower ( $sortorder ) == 'desc' ? SORT_DESC : SORT_ASC), 1 );
-	$totalsize = 0;
-	foreach ( $filearray as $key => $file ) {
-		$totalsize += $file ['size'];
+	$filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview\.png)$',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
+	$totalsize=0;
+	foreach($filearray as $key => $file)
+	{
+		$totalsize+=$file['size'];
 	}
+
+	print '<table class="border"width="100%">';
+	// Nbre fichiers
+    print '<tr><td>'.$langs->trans("NbOfAttachedFiles").'</td><td colspan="3">'.count($filearray).'</td></tr>';
+    // Total taille
+	print '<tr><td>'.$langs->trans("TotalSizeOfAttachedFiles").'</td><td colspan="3">'.$totalsize.' '.$langs->trans("bytes").'</td></tr>';
+    print '</table>';
+
+    print '</div>';
 	
-	print '<table class="border" width="100%">';
-	
-	print '<tr><td width="25%">' . $langs->trans("NameProperty") . '</td>';
-	print '<td>'. $object->name . '</td></tr>';
-	print '<tr><td>' . $langs->trans ( "NbOfAttachedFiles" ) . '</td><td colspan="3">' . count ( $filearray ) . '</td></tr>';
-	print '<tr><td>' . $langs->trans ( "TotalSizeOfAttachedFiles" ) . '</td><td colspan="3">' . $totalsize . ' ' . $langs->trans ( "bytes" ) . '</td></tr>';
-	print '</table>';
-	
-	print '</div>';
-	
-	// Affiche formulaire upload
-	$formfile = new FormFile ( $db );
-	$formfile->form_attach_new_file(DOL_URL_ROOT . '/custom/immobilier/property/document.php?id=' . $object->id, '', 0, 0 );
-	
-	// List of document
-	// $param='&id='.$object->id;
-	$formfile->list_of_documents ( $filearray, $object, 'immobilier', $param );
-} else {
+    $modulepart = 'immobilier';
+    $permission = $user->rights->immobilier->property->write;
+    $param = '&id=' . $object->id;
+    include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
+}
+else
+{
 	print $langs->trans("UnkownError");
 }
 
 llxFooter();
-
 $db->close();

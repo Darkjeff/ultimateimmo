@@ -24,7 +24,7 @@ dol_include_once ( '/immobilier/core/modules/immobilier/immobilier_modules.php' 
 dol_include_once ( '/immobilier/class/loyer.class.php' );
 dol_include_once ( '/immobilier/class/locataire.class.php' );
 dol_include_once ( '/immobilier/class/local.class.php' );
-dol_include_once ( '/immobilier/class/rent.class.php' );
+dol_include_once ( '/immobilier/class/immorent.class.php' );
 dol_include_once ( '/immobilier/class/paie.class.php' );
 dol_include_once ( '/adherents/class/adherent.class.php' );
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /* Copyright (C) 2013-2014  Florian Henry   	<florian.henry@open-concept.pro>
  * Copyright (C) 2015 		Alexandre Spangaro  <aspangaro.dolibarr@gmail.com>
  *
@@ -380,6 +380,50 @@ class FormImmobilier extends Form {
 		return $out;
 	}
 	
+	function select_type($selectid, $htmlname = 'type', $showempty = 0, $event = array())
+	{
+		global $conf, $user, $langs;
+		
+		$out = '';
+		
+		$sql = "SELECT rowid, type";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_typologie";
+		$sql .= " ORDER BY type";
+		
+		dol_syslog(get_class($this) . "::select_type sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			
+			$out .= ajax_combobox($htmlname, $event);
+			
+			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			if ($showempty)
+				$out .= '<option value="-1"></option>';
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			if ($num) {
+				while ($i < $num) {
+					$obj = $this->db->fetch_object($resql);
+					$label = $obj->type;
+					
+					if ($selectid > 0 && $selectid == $obj->rowid) {
+						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
+					} else {
+						$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
+					}
+					$i ++;
+				}
+			}
+			$out .= '</select>';
+		} else {
+			dol_print_error($this->db);
+		}
+		$this->db->free($resql);
+		return $out;
+	}
+	
+	
+	
 	/**
 	 * 
 	 * @param unknown $selectid
@@ -393,7 +437,7 @@ class FormImmobilier extends Form {
 		
 		$out = '';
 		
-		$sql = "SELECT rowid, nom";
+		$sql = "SELECT rowid, nom, prenom";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_renter";
 	//	$sql .= " WHERE statut= 'Actif'";
 	//	if ($user->id != 1) {
@@ -415,7 +459,7 @@ class FormImmobilier extends Form {
 			if ($num) {
 				while ($i < $num) {
 					$obj = $this->db->fetch_object($resql);
-					$label = $obj->nom;
+					$label = ucfirst($obj->prenom) . ' ' . strtoupper($obj->nom);
 					
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
@@ -432,6 +476,53 @@ class FormImmobilier extends Form {
 		$this->db->free($resql);
 		return $out;
 	}
+	
+	function select_supplier($selectid, $htmlname = 'supplier', $showempty = 0, $event = array())
+	{
+		global $conf, $user, $langs;
+		
+		$out = '';
+		
+		$sql = "SELECT DISTINCT supplier ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_cost ";
+		$sql .= " ORDER BY supplier";
+		
+		dol_syslog(get_class($this) . "::select_supplier sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			
+			$out .= ajax_combobox($htmlname, $event);
+			
+			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
+			if ($showempty)
+				$out .= '<option value="-1"></option>';
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			if ($num) {
+				while ($i < $num) {
+					$obj = $this->db->fetch_object($resql);
+					$label = $obj->supplier;
+					
+					if (($selectid != '') && $selectid == $obj->supplier) {
+						$out .= '<option value="' . $obj->supplier . '" selected="selected">' . $label . '</option>';
+					} else {
+						$out .= '<option value="' . $obj->supplier . '">' . $label . '</option>';
+					}
+					$i ++;
+				}
+			}
+			$out .= '</select>';
+		} else {
+			dol_print_error($this->db);
+		}
+		$this->db->free($resql);
+		return $out;
+	}
+	
+	
+	
+	
+	
 	
 	/**
 	 * 

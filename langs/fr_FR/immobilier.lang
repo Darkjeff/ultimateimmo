@@ -22,16 +22,17 @@ ParametersForGoogleAPIv3Usage=Pour Google API %s V3
 KeepEmptyYoUsePublicQuotaOfAPI=Laisser vide pour utiliser le quota publique de cette API (sinon la clé peut être créée depuis la page https://code.google.com/apis/console/, "API Access" pour créer une "Server key" et "Services" pour activer l'API "%s")
 AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google, vous devez créer une clé depuis la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "Indentification" . Cliquer sur "Créer un clé" et choisir "Clé serveur" puis "Créer". Vous obtiendrez votre clé serveur.
 EnableAPI=Vous devez aussi activer les API pour votre compte Google. Pour cela, aller sur la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "API". Cliquer sur activer API pour "%s".  
+ExtraFieldsProperty=Attributs supplémentaires (biens)
 
 # Module
 
 # Property
+PropertyCard=Fiche bien
 ListProperties=Liste des biens
 Properties=Biens
 Property=Bien
 ShowProperty=Voir bien
 PropertyParent=Bien parent
-PropertyCard=Bien
 NewProperty=Nouveau bien
 AddProperty=Ajouter bien
 DeleteProperty=Supprimer bien
@@ -46,11 +47,27 @@ Town=Ville
 Country=Pays
 Surface=Surface m²
 Building=Bâtiment
+Field=Terrain
 Staircase=Escalier
 Floor=Etage
 NumberOfDoor=N° de porte
+PropertyEnabled=Bien actif
+PropertyDisabled=Bien désactivé
+Diagnostic=Diagnostics
+DiagnosticsNecessary=Diagnostics nécessaires
+DPE=Diagnostic performance energétique
+SurfaceHabitable=Surface habitable (loi Boutin)
+ERNMT=Etat des risques naturels, miniers et technologiques (ERNMT)
+Plomb=Plomb
+DAPP=Diagnostic amiante des parties privatives (DAPP)
+BuildDate=Date de construction
+Target=Cible
+PropertyForSale=Vente
+PropertyForRent=Location
+Equipements=Equipements
 
 # Renter
+RenterCard=Fiche locataire
 ListRenters=Liste des locataires
 ShowRenter=Voir locataire
 SelectRenterCreationForm=Sélectionner le mode de création du locataire
@@ -69,25 +86,42 @@ Civility=Civilité
 NomPrenom=Nom/Prénom
 Job=Fonction
 ContactImportAsRenter=Sélectionner le contact à importer
-RenterCard=Locataire
 PlaceBirth=Lieu de naissance
+Bilan=Situation
+PropertyEnabled=Locataire actif
+PropertyDisabled=Locataire désactivé
 
 # Rent
+RentCard=Fiche location
 Rent=Location
 Rents=Locations
 ListRents=Liste des locations
 NewRent=Nouvelle location
+DateBeginningLease=Début du bail
+Contracts=Contrats
+AmountHC=Loyer hors charges
+Charges=Charges
+AmountTC=Loyer charges comprises
+Caution=Caution
+
+# Receipts
+ReceiptCard=Fiche quittance
+Receipt=Quittance
+NewReceipt=Nouvelle quittance
+ImmoReceipts=Quittances
+ListReceipts=Liste des quittances
+GenerateMassingReceipts=Générer les quittances en masse
+
+# Costs
+MenuNewRentalLoad=Nouvelle charge
+NewRentalLoad=Nouvelle charge locative
 
 # Other
 Estate=Immobilier
 ParcImmobilier=Parc Immobilier
-Apart=Appartement
-Building=Immeuble
-Field=Terrain
 Actif=Actif
 Out=Sorti
 History=Historique
-Contracts=Contrats
 RentAndPayment=Loyers et paiements
 RentPerMonth=Loyer mensuel
 PaymentPerMonth=Encaissement mensuel
@@ -107,8 +141,6 @@ Nomlocal=Nom local
 Locataire_id=reference locataire
 Nomlocataire=nom locataire
 Montant_tot=total
-Rent=Loyer
-Rents=Loyers
 RentsByYear=Loyers par année
 RentalLoads=Charges locatives
 Charges=Paiment charge locative
@@ -138,10 +170,6 @@ CommCharge=Détails des charges réels
 
 Contract=Contrat
 NewContract=Nouveau Contrat
-
-Receipt=Quittance
-NewReceipt=Nouvelle quittance
-allReceiptperContract=Générer les quittances
 
 amount=montant
 comment=commentaire

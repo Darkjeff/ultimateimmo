@@ -54,7 +54,7 @@ class modImmobilier extends DolibarrModules
 		
 		$this->const_name = 'MAIN_MODULE_' . strtoupper ( $this->name );
 		$this->special = 0;
-		// $this->picto = '';
+		$this->picto = 'building@immobilier';
 		
 		// Data directories to create when module is enabled
 		$this->dirs = array (
@@ -281,14 +281,14 @@ class modImmobilier extends DolibarrModules
 		$this->menus = array (); // List of menus to add
 		$r = 0;
 
-		// Properties
+		// Properties --------------------
 		$this->menu [$r] = array (
 				'fk_menu' => 0,
 				'type' => 'top',
 				'titre' => 'Biens',
 				'mainmenu' => 'biens',
 				'leftmenu' => '0',
-				'url' => '/immobilier/property/index.php',
+				'url' => '/immobilier/property/list.php',
 				'langs' => 'immobilier@immobilier',
 				'position' => 100,
 				'enabled' => '$user->rights->immobilier->property->read',
@@ -303,7 +303,7 @@ class modImmobilier extends DolibarrModules
 			'type' => 'left',
 			'titre' => 'Bien',
 			'leftmenu' => 'bien',
-			'url' => '/immobilier/property/index.php',
+			'url' => '/immobilier/property/list.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 101,
 			'enabled' => '$user->rights->immobilier->property->read',
@@ -333,7 +333,7 @@ class modImmobilier extends DolibarrModules
 			'type' => 'left',
 			'titre' => 'List',
 			'mainmenu' => 'biens',
-			'url' => '/immobilier/property/index.php',
+			'url' => '/immobilier/property/list.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 103,
 			'enabled' => '$user->rights->immobilier->property->read',
@@ -358,7 +358,7 @@ class modImmobilier extends DolibarrModules
 		);
 		$r ++;
 
-		// Renters
+		// Renters --------------------
 		$this->menu [$r] = array (
 				'fk_menu' => 0,
 				'type' => 'top',
@@ -435,7 +435,7 @@ class modImmobilier extends DolibarrModules
 		);
 		$r ++;
 		
-		// Rents
+		// Rents --------------------
 		$this->menu [$r] = array (
 				'fk_menu' => 0,
 				'type' => 'top',
@@ -490,14 +490,14 @@ class modImmobilier extends DolibarrModules
 			'url' => '/immobilier/rent/list.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 303,
-			'enabled' => '$user->rights->immobilier->rent->write',
-			'perms' => '$user->rights->immobilier->rent->write',
+			'enabled' => '$user->rights->immobilier->rent->read',
+			'perms' => '$user->rights->immobilier->rent->read',
 			'target' => '',
 			'user' => 0
 		);
 		$r ++;
 		
-		// Receipt
+		// Receipt --------------------
 		$this->menu [$r] = array (
 				'fk_menu' => 0,
 				'type' => 'top',
@@ -507,8 +507,8 @@ class modImmobilier extends DolibarrModules
 				'url' => '/immobilier/receipt/list.php',
 				'langs' => 'immobilier@immobilier',
 				'position' => 400,
-				'enabled' => '$user->rights->immobilier->renter->read',
-				'perms' => '$user->rights->immobilier->renter->read',
+				'enabled' => '$user->rights->immobilier->rent>read',
+				'perms' => '$user->rights->immobilier->rent->read',
 				'target' => '',
 				'user' => 2 
 		);
@@ -522,8 +522,8 @@ class modImmobilier extends DolibarrModules
 			'url' => '/immobilier/receipt/list.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 401,
-			'enabled' => '$user->rights->immobilier->renter->read',
-			'perms' => '$user->rights->immobilier->renter->read',
+			'enabled' => '$user->rights->immobilier->rent->read',
+			'perms' => '$user->rights->immobilier->rent->read',
 			'target' => '',
 			'user' => 0 
 		);
@@ -537,8 +537,8 @@ class modImmobilier extends DolibarrModules
 			'url' => '/immobilier/receipt/card.php?action=create',
 			'langs' => 'immobilier@immobilier',
 			'position' => 402,
-			'enabled' => '$user->rights->immobilier->renter->write',
-			'perms' => '$user->rights->immobilier->renter->write',
+			'enabled' => '$user->rights->immobilier->rent->write',
+			'perms' => '$user->rights->immobilier->rent->write',
 			'target' => '',
 			'user' => 0
 		);
@@ -552,8 +552,8 @@ class modImmobilier extends DolibarrModules
 			'url' => '/immobilier/receipt/card.php?action=createall',
 			'langs' => 'immobilier@immobilier',
 			'position' => 403,
-			'enabled' => '$user->rights->immobilier->renter->write',
-			'perms' => '$user->rights->immobilier->renter->write',
+			'enabled' => '$user->rights->immobilier->rent->read',
+			'perms' => '$user->rights->immobilier->rent->read',
 			'target' => '',
 			'user' => 0
 		);
@@ -567,8 +567,8 @@ class modImmobilier extends DolibarrModules
 			'url' => '/immobilier/receipt/list.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 404,
-			'enabled' => '$user->rights->immobilier->renter->write',
-			'perms' => '$user->rights->immobilier->renter->write',
+			'enabled' => '$user->rights->immobilier->rent->read',
+			'perms' => '$user->rights->immobilier->rent->read',
 			'target' => '',
 			'user' => 0
 		);
@@ -582,8 +582,8 @@ class modImmobilier extends DolibarrModules
 			'url' => '/immobilier/receipt/list.php?action=validaterent',
 			'langs' => 'immobilier@immobilier',
 			'position' => 406,
-			'enabled' => '$user->rights->immobilier->renter->write',
-			'perms' => '$user->rights->immobilier->renter->write',
+			'enabled' => '$user->rights->immobilier->rent->write',
+			'perms' => '$user->rights->immobilier->rent->write',
 			'target' => '',
 			'user' => 0
 		);
@@ -597,14 +597,14 @@ class modImmobilier extends DolibarrModules
 			'url' => '/immobilier/receipt/stats.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 407,
-			'enabled' => '$user->rights->immobilier->renter->write',
-			'perms' => '$user->rights->immobilier->renter->write',
+			'enabled' => '$user->rights->immobilier->rent->read',
+			'perms' => '$user->rights->immobilier->rent->read',
 			'target' => '',
 			'user' => 0
 		);
 		$r ++;
 		
-		
+		// Payment --------------------
 		$this->menu [$r] = array (
 			'fk_menu' => 'fk_mainmenu=receipt',
 			'type' => 'left',
@@ -612,9 +612,9 @@ class modImmobilier extends DolibarrModules
 			'leftmenu' => 'payment',
 			'url' => '/immobilier/receipt/payment/list.php',
 			'langs' => 'immobilier@immobilier',
-			'position' => 411,
-			'enabled' => '$user->rights->immobilier->renter->read',
-			'perms' => '$user->rights->immobilier->renter->read',
+			'position' => 501,
+			'enabled' => '$user->rights->immobilier->rent->read',
+			'perms' => '$user->rights->immobilier->rent->read',
 			'target' => '',
 			'user' => 0 
 		);
@@ -624,12 +624,12 @@ class modImmobilier extends DolibarrModules
 			'fk_menu' => 'fk_mainmenu=receipt,fk_leftmenu=payment',
 			'type' => 'left',
 			'titre' => 'NewPayment',
-			'leftmenu' => 'payment',
+			'mainmenu' => 'payment',
 			'url' => '/immobilier/receipt/payment/card.php?action=createall',
 			'langs' => 'immobilier@immobilier',
-			'position' => 412,
-			'enabled' => '$user->rights->immobilier->renter->read',
-			'perms' => '$user->rights->immobilier->renter->read',
+			'position' => 502,
+			'enabled' => '$user->rights->immobilier->rent->write',
+			'perms' => '$user->rights->immobilier->rent->write',
 			'target' => '',
 			'user' => 0 
 		);
@@ -639,12 +639,12 @@ class modImmobilier extends DolibarrModules
 			'fk_menu' => 'fk_mainmenu=receipt,fk_leftmenu=payment',
 			'type' => 'left',
 			'titre' => 'List',
-			'leftmenu' => 'payment',
+			'mainmenu' => 'payment',
 			'url' => '/immobilier/receipt/payment/list.php',
 			'langs' => 'immobilier@immobilier',
-			'position' => 413,
-			'enabled' => '$user->rights->immobilier->renter->read',
-			'perms' => '$user->rights->immobilier->renter->read',
+			'position' => 503,
+			'enabled' => '$user->rights->immobilier->rent->read',
+			'perms' => '$user->rights->immobilier->rent->read',
 			'target' => '',
 			'user' => 0 
 		);
@@ -654,17 +654,19 @@ class modImmobilier extends DolibarrModules
 			'fk_menu' => 'fk_mainmenu=receipt,fk_leftmenu=payment',
 			'type' => 'left',
 			'titre' => 'stats',
-			'leftmenu' => 'payment',
+			'mainmenu' => 'payment',
 			'url' => '/immobilier/receipt/payment/stats.php',
 			'langs' => 'immobilier@immobilier',
-			'position' => 414,
-			'enabled' => '$user->rights->immobilier->renter->read',
-			'perms' => '$user->rights->immobilier->renter->read',
+			'position' => 504,
+			'enabled' => '$user->rights->immobilier->rent->read',
+			'perms' => '$user->rights->immobilier->rent->read',
 			'target' => '',
 			'user' => 0 
 		);		
 		$r ++;
 		
+		
+		// Charges --------------------
 		$this->menu [$r] = array (
 			'fk_menu' => 0,
 			'type' => 'top',
@@ -673,7 +675,7 @@ class modImmobilier extends DolibarrModules
 			'leftmenu' => '0',
 			'url' => '/immobilier/cost/list.php',
 			'langs' => 'immobilier@immobilier',
-			'position' => 500,
+			'position' => 600,
 			'enabled' => '$user->rights->immobilier->renter->read',
 			'perms' => '$user->rights->immobilier->renter->read',
 			'target' => '',
@@ -681,6 +683,83 @@ class modImmobilier extends DolibarrModules
 		);
 		$r ++;
 		
+		$this->menu [$r] = array (
+			'fk_menu' => 'fk_mainmenu=rentalloads',
+			'type' => 'left',
+			'titre' => 'RentalLoads',
+			'leftmenu' => 'rentalloads',
+			'url' => '/immobilier/cost/list.php',
+			'langs' => 'immobilier@immobilier',
+			'position' => 601,
+			'enabled' => '$user->rights->immobilier->renter->read',
+			'perms' => '$user->rights->immobilier->renter->read',
+			'target' => '',
+			'user' => 0 
+		);
+		$r ++;
+		
+		$this->menu[$r] = array(
+			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalloads',
+			'type' => 'left',
+			'titre' => 'MenuNewRentalLoad',
+			'mainmenu' => 'rentalloads',
+			'url' => '/immobilier/cost/card.php?action=create',
+			'langs' => 'immobilier@immobilier',
+			'position' => 602,
+			'enabled' => '$user->rights->immobilier->renter->write',
+			'perms' => '$user->rights->immobilier->renter->write',
+			'target' => '',
+			'user' => 0
+		);
+		$r ++;
+		
+			$this->menu[$r] = array(
+			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalloads',
+			'type' => 'left',
+			'titre' => 'List',
+			'mainmenu' => 'rentalloads',
+			'url' => '/immobilier/cost/list.php',
+			'langs' => 'immobilier@immobilier',
+			'position' => 603,
+			'enabled' => '$user->rights->immobilier->renter->write',
+			'perms' => '$user->rights->immobilier->renter->write',
+			'target' => '',
+			'user' => 0
+		);
+		$r ++;
+		
+			
+			$this->menu[$r] = array(
+			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalloads',
+			'type' => 'left',
+			'titre' => 'Stats',
+			'mainmenu' => 'rentalloads',
+			'url' => '/immobilier/cost/stats.php',
+			'langs' => 'immobilier@immobilier',
+			'position' => 604,
+			'enabled' => '$user->rights->immobilier->renter->write',
+			'perms' => '$user->rights->immobilier->renter->write',
+			'target' => '',
+			'user' => 0
+		);
+		$r ++;
+		
+		// Result --------------------
+		$this->menu [$r] = array (
+			'fk_menu' => 0,
+			'type' => 'top',
+			'titre' => 'Result',
+			'mainmenu' => 'result',
+			'leftmenu' => '0',
+			'url' => '/immobilier/result/result.php',
+			'langs' => 'immobilier@immobilier',
+			'position' => 700,
+			'enabled' => '$user->rights->immobilier->renter->read',
+			'perms' => '$user->rights->immobilier->renter->read',
+			'target' => '',
+			'user' => 2 
+		);
+		$r ++;
 		
 		/*
 		

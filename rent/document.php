@@ -32,7 +32,8 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 require_once ('../core/lib/immobilier.lib.php');
-require_once ('../class/rent.class.php');
+require_once ('../class/immorent.class.php');
+
 $langs->load("other");
 $langs->load("immobilier@immobilier");
 
@@ -75,12 +76,12 @@ include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_pre_headers.tpl.php
 
 $form = new Form($db);
 
-llxHeader("","",$langs->trans("RentCard"));
+llxheader('', $langs->trans("RentCard") . ' | ' . $langs->trans("Documents"), '');
 
 if ($object->id)
 {
 	$head=rent_prepare_head($object);
-	dol_fiche_head($head, 'document',  $langs->trans("Rent"), 0, 'rent@immobilier');
+	dol_fiche_head($head, 'document',  $langs->trans("RentCard"), 0, 'rent@immobilier');
 
 	// Construit liste des fichiers
 	$filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview\.png)$',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
@@ -107,7 +108,7 @@ if ($object->id)
 
 	print '<tr>';
 	print '<td>' . $langs->trans("Renter") . '</td>';
-	print '<td>' . $object->nomlocataire . ' ' . $object->lastname_renter . '</td>';
+	print '<td>' . $object->nomlocataire . ' ' . $object->firstname_renter . '</td>';
 	print '</tr>';
 
     print '<tr><td>'.$langs->trans("NbOfAttachedFiles").'</td><td colspan="3">'.count($filearray).'</td></tr>';

@@ -28,7 +28,7 @@ if (! $res)
 
 require_once ('../core/lib/immobilier.lib.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/bank.lib.php';
-require_once ('../class/renter.class.php');
+require_once ('../class/immorenter.class.php');
 require_once ('../class/renterbankaccount.class.php');
 
 $langs->load("companies");
@@ -96,7 +96,7 @@ if ($action == 'update' && ! $_POST["cancel"])
 
 $form = new Form($db);
 
-llxHeader();
+llxHeader('',$langs->trans("RenterCard").' | '.$langs->trans("Bank"));
 
 $head = renter_prepare_head($object);
 
@@ -131,30 +131,15 @@ if ($id && $action != 'edit')
 
     dol_fiche_head($head, 'bank', $langs->trans("RenterCard"), 0, 'user');
 
-    print '<table class="border centpercent">';
+	$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
-	print '<tr><td width="25%">' . $langs->trans("Ref") . '</td>';
-	print '<td>' . $form->showrefnav($object, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
+	immo_banner_tab($object, 'id', $linkback, 1, 'rowid', 'name');
 
-	print '<tr><td>' . $langs->trans("Civility") . '</td>';
-	$contact_static = new Contact($db);
-	$contact_static->civility_id = $object->civilite;
-	print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
-
-	if (! empty($object->fk_socpeople)) {
-		print '<tr><td>' . $langs->trans("Lastname") . '</td>';
-		print '<td><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $object->fk_socpeople . '">' . strtoupper($object->nom) . '</a></td></tr>';
-	} else {
-		print '<tr><td>' . $langs->trans("Lastname") . '</td>';
-		print '<td>' . strtoupper($object->nom) . '</td></tr>';
-	}
-
-	print '<tr><td>' . $langs->trans("Firstname") . '</td>';
-	print '<td>' . ucfirst($object->prenom) . '</td></tr>';
-
-	print '</table>';
-	print '<br>';
 	print '<table class="border centpercent">';
+
+	print '<div class="underbanner clearboth"></div>';
+	
+	print '<table class="border tableforfield" width="100%">';
     print '<tr><td class="titlefield">'.$langs->trans("LabelRIB").'</td>';
     print '<td colspan="4">'.$account->label.'</td></tr>';
 

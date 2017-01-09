@@ -80,6 +80,11 @@ class Immoproperty extends CommonObjectImmobilier
 	public $zip;
 	public $town;
 	public $fk_pays;
+	// Build date ot the property
+	public $datep;
+	// Property target - sale or rent
+	public $target;
+	// Statut show if the property is enabled '1' or not '0'
 	public $statut;
 	public $note_private;
 	public $note_public;
@@ -96,14 +101,15 @@ class Immoproperty extends CommonObjectImmobilier
 	 *
 	 * @param DoliDb $db Database handler
 	 */
-	public function __construct(DoliDB $db)
+	public function __construct($db)
 	{
 		global $langs;
 		$this->db = $db;
+		$this->statut = 0;
 
 		$langs->load("immobilier@immobilier");
-        $this->labelstatut[0]=$langs->trans("PropertyDisabled");
-        $this->labelstatut[1]=$langs->trans("PropertyEnabled");
+        $this->labelstatut[0]=$langs->trans("RenterDisabled");
+        $this->labelstatut[1]=$langs->trans("RenterEnabled");
         $this->labelstatutshort[0]=$langs->trans("Disabled");
         $this->labelstatutshort[1]=$langs->trans("Enabled");
 
@@ -209,6 +215,9 @@ class Immoproperty extends CommonObjectImmobilier
 		if (isset($this->numberofdoor)) {
 			 $this->numberofdoor = trim($this->numberofdoor);
 		}
+		if (isset($this->target)) {
+			 $this->target = trim($this->target);
+		}		
 		if (isset($this->area)) {
 			 $this->area = trim($this->area);
 		}
@@ -261,6 +270,8 @@ class Immoproperty extends CommonObjectImmobilier
 		$sql.= 'zip,';
 		$sql.= 'town,';
 		$sql.= 'fk_pays,';
+		$sql.= 'datep,';
+		$sql.= 'target,';
 		$sql.= 'statut,';
 		$sql.= 'note_private,';
 		$sql.= 'note_public,';
@@ -284,7 +295,9 @@ class Immoproperty extends CommonObjectImmobilier
 		$sql .= ' '.(! isset($this->zip)?'NULL':"'".$this->db->escape($this->zip)."'").',';
 		$sql .= ' '.(! isset($this->town)?'NULL':"'".$this->db->escape($this->town)."'").',';
 		$sql .= ' '.(! isset($this->fk_pays)?'NULL':$this->fk_pays).',';
-		$sql .= ' 1,';
+		$sql .= ' '.(! isset($this->datep) || dol_strlen($this->datep) == 0 ? 'NULL' : "'" . $this->db->idate($this->datep) . "'") . ", ";
+		$sql .= ' '.(! isset($this->target)?0:"'".$this->db->escape($this->target)."'").',';
+		$sql .= ' '.$this->statut.',';
 		$sql .= ' '.(! isset($this->note_private)?'NULL':"'".$this->db->escape($this->note_private)."'").',';
 		$sql .= ' '.(! isset($this->note_public)?'NULL':"'".$this->db->escape($this->note_public)."'").',';
 		$sql .= ' '."'".$this->db->idate(dol_now())."'".',';
@@ -360,6 +373,8 @@ class Immoproperty extends CommonObjectImmobilier
 		$sql .= " t.zip,";
 		$sql .= " t.town,";
 		$sql .= " t.fk_pays,";
+		$sql .= " t.datep,";
+		$sql .= " t.target,";
 		$sql .= " t.statut,";
 		$sql .= " t.note_private,";
 		$sql .= " t.note_public,";
@@ -378,41 +393,52 @@ class Immoproperty extends CommonObjectImmobilier
 		} else {
 			$sql .= ' WHERE t.rowid = ' . $id;
 		}
-
+		
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$numrows = $this->db->num_rows($resql);
 			if ($numrows) {
 				$obj = $this->db->fetch_object($resql);
 
-				$this->id = $obj->rowid;
+				// $this->id 				= $obj->rowid;
 
-				$this->entity = $obj->entity;
+				$this->id 			= $obj->rowid;
+				$this->entity 			= $obj->entity;
 				$this->fk_type_property = $obj->fk_type_property;
-				$this->fk_property = $obj->fk_property;
-				$this->fk_owner = $obj->fk_owner;
-				$this->name = $obj->name;
-				$this->address = $obj->address;
-				$this->building = $obj->building;
-				$this->staircase = $obj->staircase;
-				$this->floor = $obj->floor;
-				$this->numberofdoor = $obj->numberofdoor;
-				$this->area = $obj->area;
-				$this->numberofpieces = $obj->numberofpieces;
-				$this->zip = $obj->zip;
-				$this->town = $obj->town;
-				$this->fk_pays = $obj->fk_pays;
-				$this->statut = $obj->statut;
-				$this->note_private = $obj->note_private;
-				$this->note_public = $obj->note_public;
-				$this->datec = $this->db->jdate($obj->datec);
-				$this->tms = $this->db->jdate($obj->tms);
-				$this->fk_user_author = $obj->fk_user_author;
-				$this->fk_user_modif = $obj->fk_user_modif;
-				$this->type_id = $obj->type_id;
+				$this->fk_property 		= $obj->fk_property;
+				$this->fk_owner 		= $obj->fk_owner;
+				$this->name 			= $obj->name;
+				$this->address 			= $obj->address;
+				$this->building 		= $obj->building;
+				$this->staircase 		= $obj->staircase;
+				$this->floor 			= $obj->floor;
+				$this->numberofdoor 	= $obj->numberofdoor;
+				$this->area 			= $obj->area;
+				$this->numberofpieces 	= $obj->numberofpieces;
+				$this->zip 				= $obj->zip;
+				$this->town 			= $obj->town;
+				$this->fk_pays 			= $obj->fk_pays;
+				$this->datep			= $this->db->jdate ( $obj->datep );
+				$this->target			= $obj->target;
+				$this->statut 			= $obj->statut;
+				$this->note_private 	= $obj->note_private;
+				$this->note_public 		= $obj->note_public;
+				$this->datec 			= $this->db->jdate($obj->datec);
+				$this->tms 				= $this->db->jdate($obj->tms);
+				$this->fk_user_author 	= $obj->fk_user_author;
+				$this->fk_user_modif 	= $obj->fk_user_modif;
+				$this->type_id 			= $obj->type_id;
+
 				$label = ($obj->type_code && $langs->transnoentitiesnoconv($obj->type_code)!=$obj->type_code?$langs->transnoentitiesnoconv($obj->type_code):($obj->type_label!='-'?$obj->type_label:''));
-				$this->type_label = $label;
-				$this->type_code = $obj->type_code;
+				$this->type_label 		= $label;
+				$this->type_code 		= $obj->type_code;
+
+                // Retreive all extrafield for thirdparty
+                // fetch optionals attributes and labels
+                require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
+                $extrafields=new ExtraFields($this->db);
+                $extralabels=$extrafields->fetch_name_optionals_label($this->table_element,true);
+                $this->fetch_optionals($this->id,$extralabels);
 			}
 			$this->db->free($resql);
 
@@ -441,7 +467,7 @@ class Immoproperty extends CommonObjectImmobilier
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetchAll($year)
+	function fetchAll()
     {
         global $langs;
 
@@ -501,7 +527,7 @@ class Immoproperty extends CommonObjectImmobilier
 									'town' => $obj->town,
 									'fk_pays' => $obj->fk_pays,
 									'statut' => $obj->statut,
-									'type_label' => $obj->type_label,
+									'type_code' => $langs->trans($obj->type_code),
 									'building' => $obj->property,
 									'owner_name' => $obj->owner_name,
 									);
@@ -518,6 +544,54 @@ class Immoproperty extends CommonObjectImmobilier
 		}
 
     }
+    
+    function fetchAllByBuilding($activ = 1) {
+		global $user;
+		
+		$sql = "SELECT * ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_property as l";
+		$sql .= " WHERE l.statut = " . $activ . "  ";
+		$sql .= " AND l.fk_property = " . $this->id;
+		$sql .= " ORDER BY name";
+		
+		dol_syslog(get_class($this) . "::fetchAllByBuilding sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			
+			$this->line = array ();
+			$num = $this->db->num_rows($resql);
+			
+			while ($obj = $this->db->fetch_object($resql)) {
+				
+				
+				$line = new ImmopropertyLine();
+				
+				$line->id = $obj->rowid;
+				$line->fk_property = $obj->fk_property;
+				$line->name = $obj->name;
+				$line->address = $obj->address;
+				$line->statut = $obj->statut;
+				$line->area = $obj->area;
+				$line->fk_owner = $obj->fk_owner;
+				
+				$this->lines[] = $line;
+
+			}
+			$this->db->free($resql);
+			return $num;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetchAllByBuilding " . $this->error, LOG_ERR);
+			return - 1;
+		}
+	}
+    
+    
+    
+    
+    
+    
+    
 
 	/**
 	 * Update object into database
@@ -563,6 +637,9 @@ class Immoproperty extends CommonObjectImmobilier
 		}
 		if (isset($this->numberofdoor)) {
 			 $this->numberofdoor = trim($this->numberofdoor);
+		}
+		if (isset($this->target)) {
+			 $this->target = trim($this->target);
 		}
 		if (isset($this->area)) {
 			 $this->area = trim($this->area);
@@ -613,6 +690,8 @@ class Immoproperty extends CommonObjectImmobilier
 		$sql .= ' zip = '.(isset($this->zip)?"'".$this->db->escape($this->zip)."'":"null").',';
 		$sql .= ' town = '.(isset($this->town)?"'".$this->db->escape($this->town)."'":"null").',';
 		$sql .= ' fk_pays = '.(isset($this->fk_pays)?$this->fk_pays:"null").',';
+		$sql .= ' datep = ' . (dol_strlen ( $this->datep ) != 0 ? "'" . $this->db->idate ( $this->datep ) . "'" : 'null'). ",";
+		$sql .= ' target = '.(isset($this->target)?"'".$this->db->escape($this->target)."'":0).',';
 		$sql .= ' statut = '.(isset($this->statut)?$this->statut:"null").',';
 		$sql .= ' note_private = '.(isset($this->note_private)?"'".$this->db->escape($this->note_private)."'":"null").',';
 		$sql .= ' note_public = '.(isset($this->note_public)?"'".$this->db->escape($this->note_public)."'":"null").',';
@@ -624,7 +703,29 @@ class Immoproperty extends CommonObjectImmobilier
 		$this->db->begin();
 
 		$resql = $this->db->query($sql);
-		if (!$resql) {
+		if (!$resql)
+		{
+			$action='update';
+
+            // Actions on extra fields (by external module)
+			// TODO le hook fait double emploi avec le trigger !!
+		    $hookmanager->initHooks(array('propertydao'));
+            $parameters=array('id'=>$this->id);
+            $action='';
+            $reshook=$hookmanager->executeHooks('insertExtraFields',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+            if (empty($reshook))
+            {
+            	if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+            	{
+            		$result=$this->insertExtraFields();
+            		if ($result < 0)
+            		{
+            			$error++;
+            		}
+            	}
+            }
+            else if ($reshook < 0) $error++;
+
 			$error ++;
 			$this->errors[] = 'Error ' . $this->db->lasterror();
 			dol_syslog(__METHOD__ . ' ' . join(',', $this->errors), LOG_ERR);
@@ -668,18 +769,22 @@ class Immoproperty extends CommonObjectImmobilier
 
 		$this->db->begin();
 
-		if (!$error) {
-			if (!$notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action calls a trigger.
+        // Removed extrafields
+        if (! $error)
+        {
+        	if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+        	{
+        		$result=$this->deleteExtraFields();
+        		if ($result < 0)
+        		{
+        			$error++;
+        			$errorflag=-4;
+        			dol_syslog(get_class($this)."::delete erreur ".$errorflag." ".$this->error, LOG_ERR);
+        		}
+        	}
+        }
 
-				//// Call triggers
-				//$result=$this->call_trigger('MYOBJECT_DELETE',$user);
-				//if ($result < 0) { $error++; //Do also what you must do to rollback action if trigger fail}
-				//// End call triggers
-			}
-		}
-
+		// Removed property
 		if (!$error) {
 			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . $this->table_element;
 			$sql .= ' WHERE rowid=' . $this->id;

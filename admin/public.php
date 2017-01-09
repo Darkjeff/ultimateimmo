@@ -111,6 +111,17 @@ print '</center>';
 
 print '</form>';
 
+print '<br>';
+
+print img_picto('','object_globe.png').' '.$langs->trans('Website').':<br>';
+if ($conf->multicompany->enabled) {
+	$entity_qr='?entity='.$conf->entity;
+} else {
+	$entity_qr='';
+}
+print '<a target="_blank" href="'.DOL_URL_ROOT.'/public/members/new.php'.$entity_qr.'">'.DOL_MAIN_URL_ROOT.'/public/members/new.php'.$entity_qr.'</a>';
+
+
 llxFooter();
 
 $db->close();

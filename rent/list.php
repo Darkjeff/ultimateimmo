@@ -1,6 +1,7 @@
-<?php
+﻿<?php
 /* Copyright (C) 2013-2015 Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2015-2016 Alexandre Spangaro	<aspangaro.dolibarr@gmail.com>
+ * Copyright (C) 2016      Jamelbaz   			<jamelbaz@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,151 +28,114 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
-dol_include_once ( "/immobilier/class/rent.class.php" );
-require_once ('../core/lib/immobilier.lib.php');
-require_once '../class/immoproperty.class.php';
-require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
+$langs->load('immobilier@immobilier');
 
-// Securite acces client
-if ($user->societe_id > 0)
-	accessforbidden ();
+// Security check
+if (! $user->rights->immobilier->rent->read)
+	accessforbidden();
 
-llxHeader ( '', 'Contrat' );
+dol_include_once('/immobilier/class/immorent.class.php');
+dol_include_once('/immobilier/class/immoproperty.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+
+$object = new Rent($db);
+$thirdparty_static = new Societe($db);
+$rents = $object->fetchAll();
+
+llxHeader('',$langs->trans('Rents'));
 
 /*
- * Locaux en location
+ * View
  */
-$page = $_GET ["page"];
-if ($page < 0)
-	$page = 0;
-$limit = $conf->liste_limit;
-$offset = $limit * $page;
+print_fiche_titre($langs->trans("ListRents"));
+?>
+	<div class="container">
+		<section>
+			<table id="dataTable" class="display" cellspacing="0" width="100%">
+				<thead>
+					<tr class="liste_titre">
+						<th><?php echo $langs->trans('Contract'); ?></th>
+						<th><?php echo $langs->trans('Renter'); ?></th>
+						<th><?php echo $langs->trans('Property'); ?></th>
+						<th><?php echo $langs->trans('Owner'); ?></th>
+						<th><?php echo $langs->trans('LoyerTotal'); ?></th>
+						<th><?php echo $langs->trans("EncoursLoyer"); ?></th>
+						<th><?php echo $langs->trans("Status"); ?></th>
+						<th><?php echo $langs->trans("Action"); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php 
+					$propertystatic = new Immoproperty($db);
+					foreach($rents as $rent): 
+						$propertystatic->id = $rent['location_id'];
+						$propertystatic->name = $rent['location'];
+					?>
+					<tr>
+						<td><a href="card.php?id=<?php print $rent['contrat']; ?>"><?php print img_object($langs->trans("ShowRent").': '. $rent['contrat'], 'rent@immobilier' ) . " " . $rent['contrat']; ?></a></td>
+						<td><a href="../renter/card.php?id=<?php print $rent['locataire_id'] ?>"><?php print img_object($langs->trans("ShowRenter").': '. $rent['locataire'], 'user' ) . " " . $rent['locataire']; ?></a></td>
+						<td><?php print $propertystatic->getNomUrl(1); ?></td>
+						<td>
+						<?php 
+						if(!empty($rent['owner_id'])){
+							$thirdparty_static->id=$rent['owner_id'];
+							$thirdparty_static->name=$rent['owner'];
+							echo $thirdparty_static->getNomUrl(1);
+						}
+						
+						?>
+						</td>
+						<td align="right"><?php print price($rent['loyerTotal']); ?></td>
+						<td><?php print price($rent['encoursLoyer']); ?></td>
+						<td><?php print $object->LibStatut($rent['state']); ?></td>
+						<td align="center">
+							<a href="card.php?action=edit&id=<?php print $renter['id']; ?>"><?php print img_edit() ?></a>
+							<a class="delete" href="card.php?action=confirm_delete&confirm=yes&id=<?php print $renter['id']; ?>"><?php print img_delete() ?></a>
+						</td>
+					</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		</section>
+	</div>
 
-$sql = "SELECT c.rowid as reference, loc.rowid as locId, loc.nom as nom, loc.prenom as prenom, l.address as address , l.rowid as localId, l.name as local, soc.rowid as soc_id, soc.nom as owner_name, c.montant_tot as total, c.encours as encours, c.preavis as preavis";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_renter as loc";
-$sql .= " , " . MAIN_DB_PREFIX . "immo_contrat as c";
-$sql .= " , " . MAIN_DB_PREFIX . "immo_property as l";
-$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as soc ON soc.rowid = l.fk_owner';
-$sql .= " WHERE loc.rowid = c.fk_renter and l.rowid = c.fk_property";
-if ($user->id != 1) {
-	$sql .= " AND c.proprietaire_id=".$user->id;
-}
-if (strlen(trim($_GET["search_nom"]))) {
-	$sql .= " AND loc.nom like '%" . $_GET["search_nom"] . "%'";
-}
-if (strlen(trim($_GET["search_local"]))) {
-	$sql .= " AND l.name like '%" . $_GET["search_local"] . "%'";
-}
-if (strlen(trim($_GET["search_statut"]))) {
-	$sql .= " AND c.preavis = '" . $_GET["search_statut"] . "'";
-}
-if (strlen(trim($_GET["search_owner_name"]))) {
-	$sql .= " AND soc.nom like '%" . $_GET["search_owner_name"] . "%'";
-}
+<script type="text/javascript" language="javascript" class="init">
+		$(document).ready(function() {
+			$('#dataTable').DataTable( {
+				language: {
+					processing:     "Traitement en cours...",
+					search:         "Rechercher&nbsp;:",
+					lengthMenu:    "Afficher _MENU_ &eacute;l&eacute;ments",
+					info:           "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+					infoEmpty:      "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
+					infoFiltered:   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+					infoPostFix:    "",
+					loadingRecords: "Chargement en cours...",
+					zeroRecords:    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+					emptyTable:     "Aucune donnée disponible dans le tableau",
+					paginate: {
+						first:      "Premier",
+						previous:   "Pr&eacute;c&eacute;dent",
+						next:       "Suivant",
+						last:       "Dernier"
+					},
+					aria: {
+						sortAscending:  ": activer pour trier la colonne par ordre croissant",
+						sortDescending: ": activer pour trier la colonne par ordre décroissant"
+					}
+				}
+			});
+			
+			$("table#dataTable").on("click", ".delete", function(event) {
+			event.preventDefault();
+			var r=confirm("Êtes-vous sûr de vouloir supprimer ?");
+			if (r==true)   {  
+			   window.location = $(this).attr('href');
+			}
 
-$sql .= " ORDER BY loc.nom ASC " . $db->plimit ( $limit + 1, $offset );
+		});
 
-$result = $db->query ( $sql );
-if ($result) {
-	$num_lignes = $db->num_rows ( $result );
-	$i = 0;
+		} );
+	</script>
 
-	$search_owner_name = GETPOST('search_owner_name', 'alpha');
-	if (! empty($search_owner_name)) {
-		$filter['soc.nom'] = $search_owner_name;
-		$param .= "&amp;search_owner_name=" . urlencode($search_owner_name);
-	}
-
-	print_barre_liste ( "contrat", $page, $_SERVER["PHP_SELF"], "", $sortfield, $sortorder, '', $num_lignes );
-
-	$html = new Form($db);
-	$contrat = new Rent($db, GETPOST ( 'id' ) );
-
-	print '<form method="GET" action="' . $_SERVER["PHP_SELF"] . '">';
-
-	print '<table class="noborder" width="100%">';
-	print '<tr></tr>';
-	print '<tr class="liste_titre">';
-	print '<td>'.$langs->trans("Contrat").'</td>';
-	print '<td>'.$langs->trans("Locataire").'</td>';
-	print '<td>'.$langs->trans("Location").'</td>';
-	print '<td>'.$langs->trans("Owner").'</td>';
-	print '<td>'.$langs->trans("LoyerTotal").'</td>';
-	print '<td>'.$langs->trans("EncoursLoyer").'</td>';
-	print '<td>'.$langs->trans("Status").'</td>';
-	print '<td>&nbsp;</td>';
-	print "</tr>\n";
-
-	print '<tr class="liste_titre">';
-	print '<td align="right">&nbsp;</td>';
-	print '<td class="liste_titre"><input type="text" class="flat" size="15" name="search_nom" value="' . GETPOST("search_lastname") . '"></td>';
-	print '<td class="liste_titre"><input type="text" class="flat" size="15" name="search_local" value="' . GETPOST("search_lastname") . '"></td>';
-	print '<td class="liste_titre">';
-	print '<input class="flat" size="7" type="text" name="search_owner_name" value="' . $search_owner_name . '">';
-	print '</td>';
-	print '<td align="right">&nbsp;</td>';
-	print '<td align="right">&nbsp;</td>';
-	print '<td class="liste_titre" align="left">';
-	print $html->selectarray('search_statut', array(''=>'', '0'=>'0','1'=>'1'), $contrat->statut);
-	print '</td>';
-	print '<td align="right">';
-	print '<input type="image" class="liste_titre" name="button_search" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" alt="' . $langs->trans("Search") . '">';
-	print '</td>';
-	print "</tr>\n";
-
-	$propertystatic = new Immoproperty($db);	
-	$thirdparty_static = new Societe($db);
-
-	$var = True;
-	while ( $i < min ( $num_lignes, $limit ) ) {
-		$objp = $db->fetch_object ( $result );
-		$code_statut = '';
-
-		$propertystatic->id = $objp->localId;
-		$propertystatic->name = $objp->local;
-
-		if ($objp->preavis == 1 ){
-			$code_statut = 'color: red';
-		} else {
-			$code_statut = 'color:blue';
-		}
-
-		$var = ! $var;
-		print "<tr $bc[$var]>";
-		print '<td>';
-		$contrat->id = $objp->reference;
-		$contrat->nom = $objp->reference;
-		print $contrat->getNomUrl ( 1, '20' );
-		print '</td>';
-
-		print '<td align="left" style="' . $code_statut . '">';
-		print '<a href="../renter/card.php?id=' . $objp->locId . '">' . img_object($langs->trans("ShowDetails"), "user") . ' ' . strtoupper($objp->nom) . ' ' . ucfirst($objp->prenom) . '</a>';
-
-		print '<td>' . $propertystatic->getNomUrl(1) . '</td>';
-
-		$thirdparty_static->id=$objp->fk_owner;
-		$thirdparty_static->name=$objp->owner_name;
-		print '<td>' . $thirdparty_static->getNomUrl(1) . '</td>';
-		
-		print '<td align="right">' . price($objp->total) . '</td>';
-		print '<td align="right">' . price($objp->encours) . '</td>';
-		print '<td>' . $contrat->LibStatut($objp->preavis) . '</td>';
-		print '<td align="center">';
-		if ($user->admin) {
-			print '<a href="./list.php?action=delete&id=' . $objp->id . '">';
-			print img_delete();
-			print '</a>';
-		}
-		print '</td>' . "\n";
-
-		print "</tr>";
-		$i ++;
-	}
-	print "</table></form>";
-} else {
-	print $db->error ();
-}
-
-llxFooter();
-
-$db->close();
+<?php llxFooter();?>

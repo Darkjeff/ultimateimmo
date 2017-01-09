@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /* Copyright (C) 2013		Olivier Geffroy		<jeff@jeffinfo.com>
  * Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro.dolibarr@gmail.com>
  * Copyright (C) 2016		Jamelbaz			<jamelbaz@gmail.com>
@@ -29,10 +29,11 @@ $langs->load('immobilier@immobilier');
 if (! $user->rights->immobilier->renter->read)
 	accessforbidden();
 
-dol_include_once('/immobilier/class/renter.class.php');
+dol_include_once('/immobilier/class/immorenter.class.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 
 $renters = new Renter($db);
+$renterstatic=new Renter($db);
 $thirdparty_static = new Societe($db);
 	
 $renters = $renters->fetchAll($year_current);
@@ -52,8 +53,9 @@ print_fiche_titre($langs->trans("ListRenters"));
 						<th><?php echo $langs->trans('Renter'); ?></th>
 						<th><?php echo $langs->trans('Company'); ?></th>
 						<th><?php echo $langs->trans('Phone'); ?></th>
+						<th><?php echo $langs->trans('PhoneMobile'); ?></th>
 						<th><?php echo $langs->trans('Email'); ?></th>
-						<th><?php echo $langs->trans("Fonction"); ?></th>
+						<th><?php echo $langs->trans("Statut"); ?></th>
 						<th><?php echo $langs->trans("Action"); ?></th>
 					</tr>
 				</thead>
@@ -72,8 +74,9 @@ print_fiche_titre($langs->trans("ListRenters"));
 						?>
 						</td>
 						<td><?php print $renter['Phone']; ?></td>
+						<td><?php print $renter['Phonemobile']; ?></td>
 						<td><?php print $renter['Email']; ?></td>
-						<td><?php print $renter['Fonction']; ?></td>
+						<td><?php print $renterstatic->LibStatut($renter['state']); ?></td>
 						<td align="center">
 							<a href="card.php?action=edit&id=<?php print $renter['id']; ?>"><?php print img_edit() ?></a>
 							<a class="delete" href="card.php?action=confirm_delete&confirm=yes&id=<?php print $renter['id']; ?>"><?php print img_delete() ?></a>

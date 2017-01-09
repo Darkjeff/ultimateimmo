@@ -29,7 +29,7 @@ if (! $res)
 
 require_once ('../core/lib/immobilier.lib.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
-require_once ('../class/rent.class.php');
+require_once ('../class/immorent.class.php');
 
 $langs->load("immobilier@immobilier");
 
@@ -43,7 +43,7 @@ if (! $user->rights->immobilier->rent->read)
  * View
  */
 
-llxHeader();
+llxheader('', $langs->trans("RentCard") . ' | ' . $langs->trans("Infos"), '');
 
 if ($id)
 {
@@ -53,13 +53,41 @@ if ($id)
 
 	$head = rent_prepare_head($object);
 
-	dol_fiche_head($head, 'info', $langs->trans("Rent"), 0, 'rent@immobilier');
+	dol_fiche_head($head, 'info', $langs->trans("RentCard"), 0, 'rent@immobilier');
 
-    print '<table width="100%"><tr><td>';
+	print '<table class="border" width="100%">';
+
+	$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
+
+	/*
+	// Ref
+	print '<tr><td class="titlefield">'.$langs->trans("Ref").'</td><td>';
+	print $form->showrefnav($object, 'id', $linkback, 1, 'rowid', 'ref', '');
+	print '</td></tr>';
+
+	print '<tr>';
+	print '<td>' . $langs->trans("NameProperty") . '</td>';
+	print '<td>' . $object->nomlocal . '</td>';
+	print '</tr>';
+			
+	print '<tr>';
+	print '<td>' . $langs->trans("Renter") . '</td>';
+	print '<td>' . $object->nomlocataire . ' ' . $object->firstname_renter . '</td>';
+	print '</tr>';
+	print '</table>';
+	*/
+
+	print '<div class="fichecenter">';
+
+	print '<div class="underbanner clearboth"></div>';
+
+	print '<br>';
+
     dol_print_object_info($object);
-    print '</td></tr></table>';
 
-    print '</div>';
+	print '</div>';
+	
+	dol_fiche_end();
 }
 
 $db->close();

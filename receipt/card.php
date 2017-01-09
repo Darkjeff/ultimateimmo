@@ -1,6 +1,7 @@
 ﻿<?php
 /* Copyright (C) 2013-2015 Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2015      Alexandre Spangaro	<aspangaro.dolibarr@gmail.com>
+ * Copyright (C) 2015-2016 Alexandre Spangaro	<aspangaro.dolibarr@gmail.com>
+ * Copyright (C) 2016		Jamelbaz			<jamelbaz@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +18,9 @@
  */
 
 /**
- * \file htdocs/compta/ventilation/card.php
- * \ingroup compta
- * \brief Page fiche ventilation
+ * \file 		immobilier/receipt/card.php
+ * \ingroup 	immobilier
+ * \brief 		Receipt page
  */
 
 // Dolibarr environment
@@ -29,7 +30,8 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 	
-	// Class
+// Class
+require_once '../core/lib/immobilier.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 dol_include_once("/immobilier/class/immoreceipt.class.php");
 require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
@@ -37,7 +39,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 $res = dol_include_once("/immobilier/core/modules/immobilier/modules_immobilier.php");
 if (! $res)
 	die("Include of immobilier");
-dol_include_once("/immobilier/class/rent.class.php");
+dol_include_once("/immobilier/class/immorent.class.php");
 
 // Langs
 $langs->load("immobilier@immobilier");
@@ -45,8 +47,9 @@ $langs->load("compta");
 $langs->load("bills");
 
 $mesg = '';
-$id = GETPOST('id', 'int');
+$id = GETPOST('rowid')?GETPOST('rowid','int'):GETPOST('id','int');
 $action = GETPOST('action');
+$cancel = GETPOST('cancel');
 
 // Actions
 
@@ -116,7 +119,7 @@ if ($action == 'chargeloc') {
 /*
  * Add rental
  */
-if ($action == 'add' && $_POST["cancel"] != $langs->trans("Cancel")) {
+if ($action == 'add' && $cancel != $langs->trans("Cancel")) {
 	$error = 0;
 	
 	$datev = dol_mktime(12, 0, 0, $_POST["datevmonth"], $_POST["datevday"], $_POST["datevyear"]);
@@ -225,8 +228,7 @@ if ($action == 'addall')
  * Edit Receipt
  */
 
-if ($action == 'maj') 
-
+if ($action == 'update')
 {
 	$dateech = @dol_mktime($_POST["echhour"], $_POST["echmin"], $_POST["echsec"], $_POST["echmonth"], $_POST["echday"], $_POST["echyear"]);
 	$dateperiod = @dol_mktime($_POST["periodhour"], $_POST["periodmin"], $_POST["periodsec"], $_POST["periodmonth"], $_POST["periodday"], $_POST["periodyear"]);
@@ -252,15 +254,15 @@ if ($action == 'maj')
 	$receipt = new Immoreceipt($db);
 	$result = $receipt->fetch($id);
 	
-	$receipt->nom = GETPOST('nom'); // $_POST["nom"];
-	$receipt->montant_tot = $_POST["montant_tot"];
-	$receipt->loy = $_POST["loy"];
-	$receipt->charges = $_POST["charges"];
-	$receipt->echeance = $dateech;
-	$receipt->commentaire = $_POST["commentaire"];
-	$receipt->statut = $_POST["statut"];
-	$receipt->date_start = $dateperiod;
-	$receipt->date_end = $dateperiodend;
+	$receipt->nom 			= GETPOST('nom');
+	$receipt->montant_tot 	= $_POST["montant_tot"];
+	$receipt->loy 			= $_POST["loy"];
+	$receipt->charges 		= $_POST["charges"];
+	$receipt->echeance 		= $dateech;
+	$receipt->commentaire 	= $_POST["commentaire"];
+	$receipt->statut 		= $_POST["statut"];
+	$receipt->date_start 	= $dateperiod;
+	$receipt->date_end 		= $dateperiodend;
 	
 	$result = $receipt->update($user);
 	header("Location: " . DOL_URL_ROOT . "/custom/immobilier/receipt/card.php?id=" . $receipt->id);
@@ -293,7 +295,7 @@ if ($action == 'create') {
 	$dateep = dol_mktime(23, 59, 59, $dateepmonth, $dateepday, $dateepyear);
 	
 	if (empty($datesp) || empty($dateep)) // We define date_start and date_end
-{
+	{
 		$datesp = dol_get_first_day($pastmonthyear, $pastmonth, false);
 		$dateep = dol_get_last_day($pastmonthyear, $pastmonth, false);
 	}
@@ -341,338 +343,607 @@ if ($action == 'create') {
 
 /* *************************************************************************** */
 /*                                                                             */
-/* Mode add all contract                                                                 */
+/* Mode add all contract                                                       */
 /*                                                                             */
 /* *************************************************************************** */
 
-if ($action == 'createall') {
-	
-	llxheader('', $langs->trans("newrental"), '');
-	print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
-	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
-	print '<input type="hidden" name="action" value="addall">';
-	
-	print '<table class="border" width="100%">';
-	
-	print "<tr class=\"liste_titre\">";
-	
-	print '<td align="left">';
-	print $langs->trans("NomLoyer");
-	print '</td><td align="center">';
-	print $langs->trans("echeance");
-	print '</td><td align="center">';
-	print $langs->trans("periode_du");
-	print '</td><td align="center">';
-	print $langs->trans("periode_au");
-	print '</td><td align="left">';
-	print '&nbsp;';
-	print '</td>';
-	print "</tr>\n";
-	
-	print '<tr ' . $bc[$var] . ' valign="top">';
-	
-	/*
-	 * Nom du loyer
-	 */
-	print '<td><input name="name" size="30" value="' . GETPOST('name') . '"</td>';
-	
-	// Due date
-	
-	print '<td align="center">';
-	print $form->select_date(! empty($dateech) ? $dateech : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
-	print '</td>';
-	print '<td align="center">';
-	print $form->select_date(! empty($dateperiod) ? $dateperiod : '-1', 'period', 0, 0, 0, 'fiche_loyer', 1);
-	print '</td>';
-	print '<td align="center">';
-	print $form->select_date(! empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', 0, 0, 0, 'fiche_loyer', 1);
-	print '</td>';
-	
-	print '<td align="center"><input type="submit" class="button" value="' . $langs->trans("Add") . '"></td></tr>';
-	
-	print '</table>';
-	
-	/*
-	 * List agreement
-	 */
-	
-	$sql = "SELECT c.rowid as reference, loc.nom as nom, l.address  , l.name as local, loc.statut as statut, c.montant_tot as total, c.loyer , c.charges, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis";
-	$sql .= " FROM " . MAIN_DB_PREFIX . "immo_renter loc";
-	$sql .= " , " . MAIN_DB_PREFIX . "immo_contrat as c";
-	$sql .= " , " . MAIN_DB_PREFIX . "immo_property as l";
-	$sql .= " WHERE preavis = 0 AND loc.rowid = c.fk_renter and l.rowid = c.fk_property  ";
-	if ($user->id != 1) {
-		$sql .= " AND c.proprietaire_id=" . $user->id;
-	}
-	$resql = $db->query($sql);
-	if ($resql) {
-		$num = $db->num_rows($resql);
+elseif ($action == 'createall') 
+{
+		llxheader('', $langs->trans("newrental"), '');
+		print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
+		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+		print '<input type="hidden" name="action" value="addall">';
 		
-		$i = 0;
-		$total = 0;
+		print '<table class="border" width="100%">';
 		
-		print '<br><table class="noborder" width="100%">';
-		print '<tr class="liste_titre">';
-		print '<td>' . $langs->trans('contrat_id') . '</td>';
-		print '<td>' . $langs->trans('local_id') . '</td>';
-		print '<td>' . $langs->trans('nomlocal') . '</td>';
-		print '<td>' . $langs->trans('locataire_id') . '</td>';
-		print '<td>' . $langs->trans('nomlocataire') . '</td>';
-		print '<td align="right">' . $langs->trans('montant_tot') . '</td>';
-		print '<td align="right">' . $langs->trans('rent') . '</td>';
-		print '<td align="right">' . $langs->trans('charges') . '</td>';
-		print '<td align="right">' . $langs->trans('select') . '</td>';
+		print "<tr class=\"liste_titre\">";
+		
+		print '<td align="left">';
+		print $langs->trans("NomLoyer");
+		print '</td><td align="center">';
+		print $langs->trans("echeance");
+		print '</td><td align="center">';
+		print $langs->trans("periode_du");
+		print '</td><td align="center">';
+		print $langs->trans("periode_au");
+		print '</td><td align="left">';
+		print '&nbsp;';
+		print '</td>';
 		print "</tr>\n";
 		
-		if ($num > 0) {
-			$var = True;
-			
-			while ( $i < $num ) {
-				$objp = $db->fetch_object($resql);
-				$var = ! $var;
-				print '<tr ' . $bc[$var] . '>';
-				
-				print '<td>' . $objp->reference . '</td>';
-				print '<td>' . $objp->reflocal . '</td>';
-				print '<td>' . $objp->local . '</td>';
-				print '<td>' . $objp->reflocataire . '</td>';
-				print '<td>' . $objp->nom . '</td>';
-				
-				print '<td align="right">' . price($objp->total) . '</td>';
-				print '<td align="right">' . price($objp->loyer) . '</td>';
-				print '<td align="right">' . price($objp->charges) . '</td>';
-				// Colonne choix contrat
-				print '<td align="center">';
-				
-				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->reference . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->loyer . '_' . $objp->charges . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
-				print '</td>';
-				print '</tr>';
-				
-				$i ++;
-			}
-		}
-		$var = ! $var;
+		print '<tr ' . $bc[$var] . ' valign="top">';
 		
-		print "</table>\n";
-		$db->free($resql);
-	} 
+		/*
+		 * Nom du loyer
+		 */
+		print '<td><input name="name" size="30" value="' . GETPOST('name') . '"</td>';
+		
+		// Due date
+		print '<td align="center">';
+		print $form->select_date(! empty($dateech) ? $dateech : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
+		print '</td>';
+		print '<td align="center">';
+		print $form->select_date(! empty($dateperiod) ? $dateperiod : '-1', 'period', 0, 0, 0, 'fiche_loyer', 1);
+		print '</td>';
+		print '<td align="center">';
+		print $form->select_date(! empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', 0, 0, 0, 'fiche_loyer', 1);
+		print '</td>';
+		
+		print '<td align="center"><input type="submit" class="button" value="' . $langs->trans("Add") . '"></td></tr>';
+		
+		print '</table>';
+		
+		/*
+		 * List agreement
+		 */
+		$sql = "SELECT c.rowid as reference, loc.nom as nom, l.address  , l.name as local, loc.statut as statut, c.montant_tot as total, c.loyer , c.charges, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_renter loc";
+		$sql .= " , " . MAIN_DB_PREFIX . "immo_contrat as c";
+		$sql .= " , " . MAIN_DB_PREFIX . "immo_property as l";
+		$sql .= " WHERE preavis = 0 AND loc.rowid = c.fk_renter and l.rowid = c.fk_property  ";
+		if ($user->id != 1) {
+			$sql .= " AND c.proprietaire_id=" . $user->id;
+		}
+		$resql = $db->query($sql);
+		if ($resql) {
+			$num = $db->num_rows($resql);
+			
+			$i = 0;
+			$total = 0;
+			
+			print '<br><table class="noborder" width="100%">';
+			print '<tr class="liste_titre">';
+			print '<td>' . $langs->trans('contrat_id') . '</td>';
+			print '<td>' . $langs->trans('local_id') . '</td>';
+			print '<td>' . $langs->trans('nomlocal') . '</td>';
+			print '<td>' . $langs->trans('locataire_id') . '</td>';
+			print '<td>' . $langs->trans('nomlocataire') . '</td>';
+			print '<td align="right">' . $langs->trans('montant_tot') . '</td>';
+			print '<td align="right">' . $langs->trans('rent') . '</td>';
+			print '<td align="right">' . $langs->trans('charges') . '</td>';
+			print '<td align="right">' . $langs->trans('select') . '</td>';
+			print "</tr>\n";
+			
+			if ($num > 0) {
+				$var = True;
+				
+				while ( $i < $num ) {
+					$objp = $db->fetch_object($resql);
+					$var = ! $var;
+					print '<tr ' . $bc[$var] . '>';
+					
+					print '<td>' . $objp->reference . '</td>';
+					print '<td>' . $objp->reflocal . '</td>';
+					print '<td>' . $objp->local . '</td>';
+					print '<td>' . $objp->reflocataire . '</td>';
+					print '<td>' . $objp->nom . '</td>';
+					
+					print '<td align="right">' . price($objp->total) . '</td>';
+					print '<td align="right">' . price($objp->loyer) . '</td>';
+					print '<td align="right">' . price($objp->charges) . '</td>';
+					// Colonne choix contrat
+					print '<td align="center">';
+					
+					print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->reference . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->loyer . '_' . $objp->charges . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
+					print '</td>';
+					print '</tr>';
+					
+					$i ++;
+				}
+			}
+			$var = ! $var;
+			
+			print "</table>\n";
+			$db->free($resql);
+		} 
 
-	else {
-		dol_print_error($db);
-	}
-	print '</form>';
+		else {
+			dol_print_error($db);
+		}
+		print '</form>';
 }
-
 /* *************************************************************************** */
 /*                                                                             */
 /* Mode fiche                                                                  */
 /*                                                                             */
 /* *************************************************************************** */
-
-if ($id > 0) {
-	// if (GETPOST("action") == 'update')
-	llxheader('', $langs->trans("rental"), '');
-	
-	$receipt = new Immoreceipt($db);
-	$result = $receipt->fetch($id);
-	
-	if ($action == 'delete') {
-		// Param url = id de la periode à supprimer - id session
-		$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
-		if ($ret == 'html')
-			print '<br>';
-	}
-	
-	print '<form action="' . $_SERVER["PHP_SELF"] . '" method="post">';
-	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
-	print '<input type="hidden" name="action" value="maj">';
-	print '<input type="hidden" name="id" value="' . GETPOST("id") . '">' . "\n";
-	
-	print '<table class="border" width="100%">';
-	
-	/*
-	 * Nom du loyer
-	 */
-	
-	print '<tr><td width="25%">' . $langs->trans("NomLoyer") . '</td>';
-	print '<td><input name="nom" size="20" value="' . $receipt->name . '"</td></tr>';
-	
-	/*
-	 * Contrat
-	 */
-	
-	print '<tr><td>' . $langs->trans("contrat_id") . '</td>';
-	print '<td>' . $receipt->fk_contract . '</td></tr>';
-	
-	/*
-	 * Nom Appartement
-	 */
-	
-	print '<tr><td>' . $langs->trans("nomlocal") . ' </td>';
-	print '<td>' . $receipt->nomlocal . '</td></tr>';
-	
-	/*
-	 * Nom locataire
-	 */
-	
-	print '<tr><td>' . $langs->trans("nomlocataire") . '</td>';
-	print '<td>' . $receipt->nomlocataire . '</td></tr>';
-	
-	// Amount
-	
-	print '<tr><td>' . $langs->trans("montant_tot") . '</td>';
-	print '<td><input name="montant_tot" size="10" value="' . $receipt->amount_total . '"</td></tr>';
-	print '<tr><td>' . $langs->trans("rent") . '</td>';
-	print '<td><input name="loy" size="10" value="' . $receipt->rent . '"</td></tr>';
-	print '<tr><td>' . $langs->trans("charges") . '</td>';
-	print '<td><input name="charges" size="10" value="' . $receipt->charges . '"</td>';
-	$rowspan = 5;
-	print '<td rowspan="' . $rowspan . '" valign="top">';
-	
-	/*
-	 * Paiements
-	 */
-	$sql = "SELECT p.rowid, p.fk_receipt, date_payment as dp, p.amount, p.comment as type, il.amount_total ";
-	$sql .= " FROM " . MAIN_DB_PREFIX . "immo_payment as p";
-	$sql .= ", " . MAIN_DB_PREFIX . "immo_receipt as il ";
-	$sql .= " WHERE p.fk_receipt = " . $id;
-	$sql .= " AND p.fk_receipt = il.rowid";
-	$sql .= " ORDER BY dp DESC";
-	
-	// print $sql;
-	$resql = $db->query($sql);
-	if ($resql) {
-		$num = $db->num_rows($resql);
-		$i = 0;
-		$total = 0;
-		echo '<table class="nobordernopadding" width="100%">';
-		print '<tr class="liste_titre">';
-		print '<td>' . $langs->trans("Date") . '</td><td>' . $langs->trans("Type") . '</td>';
-		print '<td align="right">' . $langs->trans("Amount") . '</td><td></td><td>X</td></tr>';
+else
+{
+	if ($id > 0)
+	{
+		if ($action == 'edit')
+		{
+			llxheader('', $langs->trans("ReceiptCard") . ' | ' . $langs->trans("Card"), '');
 		
-		$var = True;
-		while ( $i < $num ) {
-			$objp = $db->fetch_object($resql);
-			$var = ! $var;
-			print "<tr " . $bc[$var] . "><td>";
-			print "<a href=" . DOL_URL_ROOT . "/custom/immobilier/receipt/payment/card.php?action=update&id=" . $objp->rowid . "&amp;receipt=" . $id . ">" . img_object($langs->trans("Payment"), "payment") . "</a> ";
-			print dol_print_date($db->jdate($objp->dp), 'day') . "</td>\n";
-			print "<td>" . $objp->type . "</td>\n";
-			print '<td align="right">' . price($objp->amount) . "</td><td>&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td>\n";
+			$receipt = new Immoreceipt($db);
+			$result = $receipt->fetch($id);
 			
-			print '<td>';
-			if ($user->admin) {
-				print "<a href=\"" . DOL_URL_ROOT . "/custom/immobilier/receipt/payment/card.php?id=". $objp->rowid . "&amp;action=delete&amp;receipt=" . $id . "\">";
-				print img_delete();
-				print '</a>';
+			if ($action == 'delete') {
+				// Param url = id de la periode à supprimer - id session
+				$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+				if ($ret == 'html')
+					print '<br>';
 			}
-			print '</td>';
-			print "</tr>";
-			$totalpaye += $objp->amount;
-			$i ++;
-		}
-		
-		if ($receipt->paye == 0) {
-			print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\"><b>" . price($totalpaye) . "</b></td><td>&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
-			print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\" bgcolor=\"#d0d0d0\">" . price($receipt->amount_total) . "</td><td bgcolor=\"#d0d0d0\">&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
 			
-			$resteapayer = $receipt->amount_total - $totalpaye;
+			print '<form action="' . $_SERVER["PHP_SELF"] . '" method="post">';
+			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+			print '<input type="hidden" name="action" value="update">';
+			print '<input type="hidden" name="id" value="' . GETPOST("id") . '">' . "\n";
 			
-			print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("RemainderToPay") . " :</td>";
-			print "<td align=\"right\" bgcolor=\"#f0f0f0\"><b>" . price($resteapayer) . "</b></td><td bgcolor=\"#f0f0f0\">&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
-		}
-		print "</table>";
-		$db->free($resql);
-	} else {
-		dol_print_error($db);
-	}
-	print "</td>";
-	
-	print "</tr>";
-	
-	// Due date
-	
-	print '<tr><td>' . $langs->trans("echeance") . '</td>';
-	print '<td align="left">';
-	print $form->select_date($receipt->echeance, 'ech', 0, 0, 0, 'fiche_loyer', 1);
-	print '</td>';
-	print '<tr><td>' . $langs->trans("periode_du") . '</td>';
-	print '<td align="left">';
-	print $form->select_date($receipt->date_start, 'period', 0, 0, 0, 'fiche_loyer', 1);
-	print '</td>';
-	print '<tr><td>' . $langs->trans("periode_au") . '</td>';
-	print '<td align="left">';
-	print $form->select_date($receipt->date_end, 'periodend', 0, 0, 0, 'fiche_loyer', 1);
-	print '</td>';
-	print '<tr><td>' . $langs->trans("commentaire") . '</td>';
-	print '<td><input name="commentaire" size="70" value="' . $receipt->commentaire . '"</td></tr>';
-	
-	// Status loyer
-	
-	print '<tr><td>statut</td>';
-	print '<td align="left" nowrap="nowrap">';
-	print $receipt->LibStatut($receipt->paye, 5);
-	print "</td></tr>";
-	
-	print '<tr><td colspan="2">&nbsp;</td></tr>';
-	
-	print '</table>';
-	
-	if (GETPOST("action") == 'update') {
-		print '<br><div align="center">';
-		print '<input type="submit" class="button" name="save" value="' . $langs->trans("Save") . '">';
-		print ' &nbsp; ';
-		print '<input type="submit" class="button" name="cancel" value="' . $langs->trans("Cancel") . '">';
-		print '</div';
-	}
-	
-	if (GETPOST("action") == 'update')
-		print "</form>\n";
-	
-	if (is_file($conf->immobilier->dir_output . '/quittance_' . $id . '.pdf')) {
-		print '&nbsp';
-		print '<table class="border" width="100%">';
-		print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("LinkedDocuments") . '</td></tr>';
-		// afficher
-		$legende = $langs->trans("Ouvrir");
-		print '<tr><td width="200" align="center">' . $langs->trans("Quittance") . '</td><td> ';
-		print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immobilier&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
-		print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
-		print '</td></tr></table>';
-	}
-	
-	print '</div>';
-	
-	/*
-	 *   Boutons actions
-	 */
-	
-	print "<div class=\"tabsAction\">\n";
-	
-	// Edit
-	
-	print "<a class=\"butAction\" href=\"" . DOL_URL_ROOT . "/custom/immobilier/receipt/card.php?id=$receipt->id&amp;action=update\">" . $langs->trans("Modify") . "</a>";
-	
-	// Emettre paiement
-	if ($object->paye == 0 && ((price2num($receipt->amount_total) < 0 && round($resteapayer) < 0) || (price2num($receipt->amount_total) > 0 && round($resteapayer) > 0))) {
-		print "<a class=\"butAction\" href=\"" . DOL_URL_ROOT . "/custom/immobilier/receipt/payment/card.php?id=$id&amp;action=create\">" . $langs->trans("DoPayment") . "</a>";
-	}
-	
-	// Classify 'paid'
-	if ($receipt->paye == 0 && round($resteapayer) <= 0) {
-		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&id=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a>';
-	}
-	
-	// Delete
-	print "<a class=\"butActionDelete\" href=\"" . DOL_URL_ROOT . "/custom/immobilier/receipt/card.php?id=" . $id . "&amp;action=delete\">" . $langs->trans("Delete") . "</a>";
-	
-	// generate quittance
-	
-	print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=quittance&id=' . $id . '">' . $langs->trans('GenererQuittance') . '</a>';
-	
-	
-}
+			$head = receipt_prepare_head($receipt);
+			dol_fiche_head($head, 'card', $langs->trans("ReceiptCard"), 0, 'rent@immobilier');
+			
+			print '<table class="border" width="100%">';
+			
+			/*
+			 * Nom du loyer
+			 */
+			
+			print '<tr><td class="titlefield">' . $langs->trans("NomLoyer") . '</td>';
+			print '<td><input name="nom" size="20" value="' . $receipt->name . '"</td></tr>';
+			
+			/*
+			 * Contrat
+			 */
+			
+			print '<tr><td>' . $langs->trans("contrat_id") . '</td>';
+			print '<td>' . $receipt->fk_contract . '</td></tr>';
+			
+			/*
+			 * Nom Appartement
+			 */
+			
+			print '<tr><td>' . $langs->trans("nomlocal") . ' </td>';
+			print '<td>' . $receipt->nomlocal . '</td></tr>';
 
+			// Nom locataire
+			print '<tr><td>' . $langs->trans("nomlocataire") . '</td>';
+			print '<td>' . $receipt->nomlocataire . '</td></tr>';
+			
+			// Amount
+			print '<tr><td>' . $langs->trans("montant_tot") . '</td>';
+			print '<td><input name="montant_tot" size="10" value="' . $receipt->amount_total . '"</td></tr>';
+			print '<tr><td>' . $langs->trans("rent") . '</td>';
+			print '<td><input name="loy" size="10" value="' . $receipt->rent . '"</td></tr>';
+			print '<tr><td>' . $langs->trans("charges") . '</td>';
+			print '<td><input name="charges" size="10" value="' . $receipt->charges . '"</td>';
+			$rowspan = 5;
+			print '<td rowspan="' . $rowspan . '" valign="top">';
+			
+			/*
+			 * Paiements
+			 */
+			$sql = "SELECT p.rowid, p.fk_receipt, date_payment as dp, p.amount, p.comment as type, il.amount_total ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "immo_payment as p";
+			$sql .= ", " . MAIN_DB_PREFIX . "immo_receipt as il ";
+			$sql .= " WHERE p.fk_receipt = " . $id;
+			$sql .= " AND p.fk_receipt = il.rowid";
+			$sql .= " ORDER BY dp DESC";
+			
+			$resql = $db->query($sql);
+			if ($resql) {
+				$num = $db->num_rows($resql);
+				$i = 0;
+				$total = 0;
+				echo '<table class="nobordernopadding" width="100%">';
+				print '<tr class="liste_titre">';
+				print '<td>' . $langs->trans("Date") . '</td><td>' . $langs->trans("Type") . '</td>';
+				print '<td align="right">' . $langs->trans("Amount") . '</td><td></td><td>X</td></tr>';
+				
+				$var = True;
+				while ( $i < $num ) {
+					$objp = $db->fetch_object($resql);
+					$var = ! $var;
+					print "<tr " . $bc[$var] . "><td>";
+					print "<a href=" . DOL_URL_ROOT . "/custom/immobilier/receipt/payment/card.php?action=update&id=" . $objp->rowid . "&amp;receipt=" . $id . ">" . img_object($langs->trans("Payment"), "payment") . "</a> ";
+					print dol_print_date($db->jdate($objp->dp), 'day') . "</td>\n";
+					print "<td>" . $objp->type . "</td>\n";
+					print '<td align="right">' . price($objp->amount) . "</td><td>&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td>\n";
+					
+					print '<td>';
+					if ($user->admin) {
+						print "<a href=\"" . DOL_URL_ROOT . "/custom/immobilier/receipt/payment/card.php?id=". $objp->rowid . "&amp;action=delete&amp;receipt=" . $id . "\">";
+						print img_delete();
+						print '</a>';
+					}
+					print '</td>';
+					print "</tr>";
+					$totalpaye += $objp->amount;
+					$i ++;
+				}
+				
+				if ($receipt->paye == 0) {
+					print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\"><b>" . price($totalpaye) . "</b></td><td>&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
+					print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\" bgcolor=\"#d0d0d0\">" . price($receipt->amount_total) . "</td><td bgcolor=\"#d0d0d0\">&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
+					
+					$resteapayer = $receipt->amount_total - $totalpaye;
+					
+					print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("RemainderToPay") . " :</td>";
+					print "<td align=\"right\" bgcolor=\"#f0f0f0\"><b>" . price($resteapayer) . "</b></td><td bgcolor=\"#f0f0f0\">&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
+				}
+				print "</table>";
+				$db->free($resql);
+			} else {
+				dol_print_error($db);
+			}
+			print "</td>";
+			
+			print "</tr>";
+			
+			// Due date
+			print '<tr><td>' . $langs->trans("echeance") . '</td>';
+			print '<td align="left">';
+			print $form->select_date($receipt->echeance, 'ech', 0, 0, 0, 'fiche_loyer', 1);
+			print '</td>';
+			print '<tr><td>' . $langs->trans("periode_du") . '</td>';
+			print '<td align="left">';
+			print $form->select_date($receipt->date_start, 'period', 0, 0, 0, 'fiche_loyer', 1);
+			print '</td>';
+			print '<tr><td>' . $langs->trans("periode_au") . '</td>';
+			print '<td align="left">';
+			print $form->select_date($receipt->date_end, 'periodend', 0, 0, 0, 'fiche_loyer', 1);
+			print '</td>';
+			print '<tr><td>' . $langs->trans("commentaire") . '</td>';
+			print '<td><input name="commentaire" size="70" value="' . $receipt->commentaire . '"</td></tr>';
+			
+			// Status loyer
+			print '<tr><td>statut</td>';
+			print '<td align="left" nowrap="nowrap">';
+			print $receipt->LibStatut($receipt->paye, 5);
+			print "</td></tr>";
+			
+			print '<tr><td colspan="2">&nbsp;</td></tr>';
+			
+			print '</table>';
+			
+			
+				// Show email send receipt
+			/*if ($action == 'sendreceipt')
+			{
+				
+				print load_fiche_titre($langs->trans("SendReceipt"));
+
+				// Cree l'objet formulaire mail
+				include_once DOL_DOCUMENT_ROOT.'/core/class/html.formmail.class.php';
+				$formmail = new FormMail($db);
+				$formmail->fromname = (isset($_POST['fromname'])?$_POST['fromname']:$conf->global->MAIN_MAIL_EMAIL_FROM);
+				$formmail->frommail = (isset($_POST['frommail'])?$_POST['frommail']:$conf->global->MAIN_MAIL_EMAIL_FROM);
+				$formmail->trackid='sendreceipt';
+				$formmail->withfromreadonly=0;
+				$formmail->withsubstit=0;
+				$formmail->withfrom=1;
+				$formmail->witherrorsto=1;
+				$formmail->withto=$receipt->emaillocataire;
+				$formmail->withtocc=(! empty($_POST['sendtocc'])?$_POST['sendtocc']:1);       // ! empty to keep field if empty
+				$formmail->withtoccc=(! empty($_POST['sendtoccc'])?$_POST['sendtoccc']:1);    // ! empty to keep field if empty
+				$formmail->withtopic=(isset($_POST['subject'])?$_POST['subject']:$langs->trans("Test"));
+				$formmail->withtopicreadonly=0;
+				$formmail->withfile=2;
+				$formmail->withbody=$langs->transnoentities("PredefinedMailSendReceipt");
+				$formmail->withbodyreadonly=0;
+				$formmail->withcancel=1;
+				$formmail->withdeliveryreceipt=1;
+				$formmail->withfckeditor=($action == 'testhtml'?1:0);
+				$formmail->ckeditortoolbar='dolibarr_mailings';
+				// Tableau des substitutions
+				$formmail->substit=$substitutionarrayfortest;
+				// Tableau des parametres complementaires du post
+				$formmail->param["action"]='sendreceipt';
+				$formmail->param["models"]="body";
+				$formmail->param["mailid"]=0;
+				$formmail->param["returnurl"]=$_SERVER["PHP_SELF"];
+
+				// Init list of files
+				if (GETPOST("mode")=='init')
+				{
+					$formmail->clear_attached_files();
+				}
+
+				print $formmail->get_form(($action == 'testhtml'?'addfilehtml':'addfile'),($action == 'testhtml'?'removefilehtml':'removefile'));
+
+				print '<br>';
+			}*/
+			
+			dol_fiche_end();
+		} else {
+			
+		// Display receipt card
+			llxheader('', $langs->trans("ReceiptCard") . ' | ' . $langs->trans("Card"), '');
+			
+			$receipt = new Immoreceipt($db);
+			$result = $receipt->fetch($id);
+			
+			if ($action == 'delete') {
+				// Param url = id de la periode à supprimer - id session
+				$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+				if ($ret == 'html')
+					print '<br>';
+			}
+			
+			$head = receipt_prepare_head($receipt);
+			dol_fiche_head($head, 'card', $langs->trans("ReceiptCard"), 0, 'rent@immobilier');
+			
+			print '<form action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
+			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+			print '<table class="border" width="100%">';
+
+			$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
+
+			$nbrows=11;
+
+			// Ref
+			print '<tr><td>'.$langs->trans("Ref").'</td><td colspan="2">';
+			print $form->showrefnav($receipt, 'id', $linkback, 1, 'id', 'id', '');
+			print '</td>';
+			print '</tr>';
+
+			// Receipt name
+			print '<tr><td>' . $langs->trans("NomLoyer") . '</td>';
+			print '<td colspan="2">' . $receipt->name . '</td></tr>';
+			
+			// Contract
+			print '<tr><td>' . $langs->trans("contrat_id") . '</td>';
+			print '<td colspan="2">' . $receipt->fk_contract . '</td></tr>';
+			
+			// Property
+			print '<tr><td>' . $langs->trans("Property") . ' </td>';
+			print '<td colspan="2">' . $receipt->nomlocal . '</td></tr>';
+
+			// Renter
+			print '<tr><td>' . $langs->trans("nomlocataire") . '</td>';
+			print '<td colspan="2">' . $receipt->nomlocataire . '</td></tr>';
+			
+			// Amount
+			print '<tr><td>' . $langs->trans("montant_tot") . '</td>';
+			print '<td colspan="2">' . price($receipt->amount_total) . '</td></tr>';
+			print '<tr><td>' . $langs->trans("rent") . '</td>';
+			print '<td colspan="2">' . price($receipt->rent) . '</td></tr>';
+			print '<tr><td>' . $langs->trans("charges") . '</td>';
+			print '<td>' . price($receipt->charges) . '</td>';
+			
+			$rowspan=6;
+			print '<td rowspan="'.$rowspan.'" valign="top">';
+			
+			/*
+			 * Paiements
+			 */
+			$sql = "SELECT p.rowid, p.fk_receipt, date_payment as dp, p.amount, p.fk_typepayment, pp.libelle as typepayment_label, il.amount_total ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "immo_payment as p";
+			$sql .= ", " . MAIN_DB_PREFIX . "immo_receipt as il ";
+			$sql .= ", " . MAIN_DB_PREFIX . "c_paiement as pp";
+			$sql .= " WHERE p.fk_receipt = " . $id;
+			$sql .= " AND p.fk_receipt = il.rowid";
+			$sql .= " AND p.fk_typepayment = pp.id";
+			
+			$sql .= " ORDER BY dp DESC";
+			
+			$resql = $db->query($sql);
+			if ($resql) {
+				$num = $db->num_rows($resql);
+				$i = 0;
+				$total = 0;
+				print '<table class="nobordernopadding" width="100%">';
+				
+				print '<tr class="liste_titre">';
+				print '<td>'.$langs->trans("RefPayment").'</td>';
+				print '<td>'.$langs->trans("Date").'</td>';
+				print '<td>'.$langs->trans("Type").'</td>';
+				print '<td align="right">'.$langs->trans("Amount").'</td>';
+				if ($user->admin) print '<td>&nbsp;</td>';
+				print '</tr>';
+				
+				$var = True;
+				while ( $i < $num ) {
+					$objp = $db->fetch_object($resql);
+					$var = ! $var;
+					print "<tr " . $bc[$var] . "><td>";
+					print "<a href=" . DOL_URL_ROOT . "/custom/immobilier/receipt/payment/card.php?action=update&amp;id=" . $objp->rowid . "&amp;receipt=" . $id . ">" . img_object($langs->trans("Payment"), "payment") . ' ' . $objp->rowid . "</a></td>";
+					print '<td>' . dol_print_date($db->jdate($objp->dp), 'day') . '</td>';
+					print '<td>' . $objp->typepayment_label . '</td>';
+					print '<td align="right">' . price($objp->amount) . "&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td>\n";
+					
+					print '<td align="right">';
+					if ($user->admin) {
+						print "<a href=\"" . DOL_URL_ROOT . "/custom/immobilier/receipt/payment/card.php?id=". $objp->rowid . "&amp;action=delete&amp;receipt=" . $id . "\">";
+						print img_delete();
+						print '</a>';
+					}
+					print '</td>';
+					print "</tr>";
+					$totalpaye += $objp->amount;
+					$i ++;
+				}
+				
+				if ($receipt->paye == 0) {
+					print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\"><b>" . price($totalpaye) . "</b></td><td>&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
+					print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\" bgcolor=\"#d0d0d0\">" . price($receipt->amount_total) . "</td><td bgcolor=\"#d0d0d0\">&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
+					
+					$resteapayer = $receipt->amount_total - $totalpaye;
+					
+					print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("RemainderToPay") . " :</td>";
+					print "<td align=\"right\" bgcolor=\"#f0f0f0\"><b>" . price($resteapayer) . "</b></td><td bgcolor=\"#f0f0f0\">&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
+				}
+				print "</table>";
+				$db->free($resql);
+			} else {
+				dol_print_error($db);
+			}
+			print "</td>";
+			
+			print "</tr>";
+			
+			// Due date
+			print '<tr><td>' . $langs->trans("echeance") . '</td>';
+			print '<td>';
+			print dol_print_date($receipt->echeance,"day");
+			print '</td>';
+			print '<tr><td>' . $langs->trans("periode_du") . '</td>';
+			print '<td>';
+			print dol_print_date($receipt->date_start,"day");
+			print '</td>';
+			print '<tr><td>' . $langs->trans("periode_au") . '</td>';
+			print '<td>';
+			print dol_print_date($receipt->date_end,"day");
+			print '</td>';
+			print '<tr><td>' . $langs->trans("Comment") . '</td>';
+			print '<td>' . $receipt->commentaire . '</td></tr>';
+			
+			// Status loyer
+			print '<tr><td>'.$langs->trans("Status").'</td>';
+			print '<td>';
+			print $receipt->LibStatut($receipt->paye, 5);
+			print '</td></tr>';
+			
+			print '</table>';
+			
+			
+				// Show email send receipt
+			/*if ($action == 'sendreceipt')
+			{
+				
+				print load_fiche_titre($langs->trans("SendReceipt"));
+
+				// Cree l'objet formulaire mail
+				include_once DOL_DOCUMENT_ROOT.'/core/class/html.formmail.class.php';
+				$formmail = new FormMail($db);
+				$formmail->fromname = (isset($_POST['fromname'])?$_POST['fromname']:$conf->global->MAIN_MAIL_EMAIL_FROM);
+				$formmail->frommail = (isset($_POST['frommail'])?$_POST['frommail']:$conf->global->MAIN_MAIL_EMAIL_FROM);
+				$formmail->trackid='sendreceipt';
+				$formmail->withfromreadonly=0;
+				$formmail->withsubstit=0;
+				$formmail->withfrom=1;
+				$formmail->witherrorsto=1;
+				$formmail->withto=$receipt->emaillocataire;
+				$formmail->withtocc=(! empty($_POST['sendtocc'])?$_POST['sendtocc']:1);       // ! empty to keep field if empty
+				$formmail->withtoccc=(! empty($_POST['sendtoccc'])?$_POST['sendtoccc']:1);    // ! empty to keep field if empty
+				$formmail->withtopic=(isset($_POST['subject'])?$_POST['subject']:$langs->trans("Test"));
+				$formmail->withtopicreadonly=0;
+				$formmail->withfile=2;
+				$formmail->withbody=$langs->transnoentities("PredefinedMailSendReceipt");
+				$formmail->withbodyreadonly=0;
+				$formmail->withcancel=1;
+				$formmail->withdeliveryreceipt=1;
+				$formmail->withfckeditor=($action == 'testhtml'?1:0);
+				$formmail->ckeditortoolbar='dolibarr_mailings';
+				// Tableau des substitutions
+				$formmail->substit=$substitutionarrayfortest;
+				// Tableau des parametres complementaires du post
+				$formmail->param["action"]='sendreceipt';
+				$formmail->param["models"]="body";
+				$formmail->param["mailid"]=0;
+				$formmail->param["returnurl"]=$_SERVER["PHP_SELF"];
+
+				// Init list of files
+				if (GETPOST("mode")=='init')
+				{
+					$formmail->clear_attached_files();
+				}
+
+				print $formmail->get_form(($action == 'testhtml'?'addfilehtml':'addfile'),($action == 'testhtml'?'removefilehtml':'removefile'));
+
+				print '<br>';
+			}*/
+
+			dol_fiche_end();
+
+			if (is_file($conf->immobilier->dir_output . '/quittance_' . $id . '.pdf')) {
+				print '&nbsp';
+				print '<table class="border" width="100%">';
+				print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("LinkedDocuments") . '</td></tr>';
+				// afficher
+				$legende = $langs->trans("Ouvrir");
+				print '<tr><td width="200" align="center">' . $langs->trans("Quittance") . '</td><td> ';
+				print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immobilier&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+				print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				print '</td></tr></table>';
+			}
+			
+			print '</div>';
+			
+		/*
+		 * Actions bar
+		 */
+
+		print '<div class="tabsAction">';
+
+		if ($action != 'create' && $action != 'edit')
+		{
+			
+			// Edit
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . DOL_URL_ROOT . '/custom/immobilier/receipt/card.php?id=' . $receipt->id . '&amp;action=edit">' . $langs->trans("Modify") . '</a></div>';
+
+			// Create payment
+			if ($object->paye == 0 && $user->rights->immobilier->rent->write)
+			{
+				if ($resteapayer == 0)
+				{
+					print '<div class="inline-block divButAction"><span class="butActionRefused" title="' . $langs->trans("DisabledBecauseRemainderToPayIsZero") . '">' . $langs->trans('DoPayment') . '</span></div>';
+				}
+				else
+				{
+					print '<div class="inline-block divButAction"><a class="butAction" href="'.DOL_URL_ROOT.'/custom/immobilier/receipt/payment/card.php?id=' . $id . '&amp;action=create">' . $langs->trans('DoPayment') . '</a></div>';
+				}
+			}
+
+			// Classify 'paid'
+			if ($receipt->paye == 0 && round($resteapayer) <= 0) {
+				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&id=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
+			}
+			
+			// Delete
+			print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . DOL_URL_ROOT . '/custom/immobilier/receipt/card.php?id=' . $id . '&amp;action=delete">' . $langs->trans("Delete") . '</a></div>';
+			
+			// Generate receipt
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=quittance&id=' . $id . '">' . $langs->trans('GenererQuittance') . '</a></div>';
+			
+			// Send receipt
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . DOL_URL_ROOT . '/custom/immobilier/receipt/mails.php?id=' . $id . '">' . $langs->trans('SendMail') . '</a></div>';
+		}
+
+		print '</div>';
+
+		print '<table width="100%"><tr><td width="50%" valign="top">';
+
+		/*
+		 * Documents generes
+		 */
+		$filename	=	dol_sanitizeFileName($receipt->id);
+		$filedir	=	$conf->immobilier->dir_output . "/" . dol_sanitizeFileName($receipt->id);
+		$urlsource	=	$_SERVER['PHP_SELF'].'?id='.$receipt->id;
+		$genallowed	=	$user->rights->immobilier->rent->write;
+		$delallowed	=	$user->rights->immobilier->rent->delete;
+
+		$var=true;
+
+		print '<br>';
+		$formfile->show_documents('immobilier',$filename,$filedir,$urlsource,$genallowed,$delallowed,$receipt->modelpdf);
+
+		print '</td><td>&nbsp;</td>';
+
+		print '</tr></table>';
+		}
+	}
+}
 llxFooter();
 
 $db->close();

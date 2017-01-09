@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Copyright (C) 2012-2013 Florian Henry <florian.henry@open-concept.pro>
  *
@@ -22,10 +22,10 @@
  */
 dol_include_once('/immobilier/core/modules/immobilier/immobilier_modules.php');
 dol_include_once('/immobilier/class/immoreceipt.class.php');
-dol_include_once('/immobilier/class/renter.class.php');
+dol_include_once('/immobilier/class/immorenter.class.php');
 dol_include_once('/immobilier/class/immoproperty.class.php');
-dol_include_once('/immobilier/class/rent.class.php');
-dol_include_once('/immobilier/class/paie.class.php');
+dol_include_once('/immobilier/class/immorent.class.php');
+dol_include_once('/immobilier/class/immopayment.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 class pdf_quittance extends ModelePDFImmobilier {
@@ -136,8 +136,8 @@ class pdf_quittance extends ModelePDFImmobilier {
 			$property = new Immoproperty($this->db);
 			$result = $property->fetch($receipt->fk_property);
 			
-			$paiement = new Paie($this->db);
-			$result = $paiement->fetch_by_loyer($receipt->id);
+			//$paiement = new Immopayment($this->db);
+			//$result = $paiement->fetch_by_loyer($receipt->id);
 			
 			if (! empty($receipt->id)) {
 				// New page
@@ -189,13 +189,10 @@ class pdf_quittance extends ModelePDFImmobilier {
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$this->str = $renter->nom . "\n";
-				$this->str .= $property->nom . "\n";
-				if (! empty($renter->adresse)) {
-					$this->str .= $renter->adresse . "\n";
-				} else {
-					$this->str .= $property->adresse . "\n";
-				}
+				$this->str = $renter->civilite . ' ' .$renter->nom. ' '.$renter->prenom. "\n";
+				// $this->str .= $property->name . "\n";
+				$this->str .= $property->address . "\n";
+				$this->str .= $property->zip . ' ' . $property->town;
 				$pdf->MultiCell(80, 20, $outputlangs->convToOutputCharset($this->str), 1, 'L');
 				
 				$text .= "\n";
@@ -219,47 +216,56 @@ class pdf_quittance extends ModelePDFImmobilier {
 				$period = 'Loyer ' . dol_print_date($receipt->echeance, '%b %Y');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				/*
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'ID', 13);
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
-				
-				$numquitance = 'Quittance n°:' . 'ILQ' . $receipt->id;
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($numquitance), 1, 'R');
+	
+				$numquittance = 'Quittance n°: ' . 'ILQ' . $receipt->id;
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($numquittance), 1, 'ID');
+				*/
+
 				$posY = $pdf->getY();
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 				$pdf->SetXY($posX, $posY);
-				
+
 				$montantpay = 0;
 				if (! empty($receipt->paiepartiel)) {
 					$montantpay = $receipt->paiepartiel;
 				}
-				$text = 'Reçu de ' . $renter->nom . ' la somme de ' . $montantpay . '€' . "\n";
+				$text = 'Reçu de ' . $renter->civilite . '' .$renter->prenom. ' '.$renter->nom. ' la somme de ' . price($montantpay) . '€' . "\n";
 				;
-				
+
 				$dtpaiement = $paiement->date_paiement;
 				if (empty($dtpaiement)) {
 					$dtpaiement = $receipt->echeance;
 				}
 				$text .= 'le ' . dol_print_date($dtpaiement, 'daytext') . ' pour loyer et accessoires des locaux sis à : ' . $property->address . ' en paiement du terme du ' . dol_print_date($receipt->date_start, 'daytext') . ' au ' . dol_print_date($receipt->date_end, 'daytext') . "\n";
-				
-				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
-				
+
+				/*
+				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 1, 'L');
+
+				$posY = $pdf->getY();
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Détail'), 1, 'C');
+				*/
+
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
-				
+
 				$text = '<table>';
 				$text .= '<tr>';
-				$text .= '<td colspan="3">';
-				$text .= 'Détail :' . "<BR>";
-				
-				$text .= ' - Loyer nu :' . $receipt->rent . '€' . "<BR>";
-				$text .= ' - Charges / Provisions de Charges :' . $receipt->charges . '€' . "<BR>";
-				$text .= ' - Montant total du terme :' . $receipt->amount_total . '€' . "<BR>";
+				$text .= '<td colspan="2">';
+
+				$text .= ' - Loyer nu : ' . price($receipt->rent) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
+				$text .= ' - Charges / Provisions de Charges : ' . price($receipt->charges) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
+				$text .= ' - Montant total du terme : ' . price($receipt->amount_total) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
 				$text .= '</td>';
 				$text .= '</tr>';
 				
-				$sql = "SELECT p.rowid, p.loyer_id, date_paiement as dp, p.montant, p.commentaire as type, il.montant_tot as amount";
-				$sql .= " FROM " . MAIN_DB_PREFIX . "immo_paie as p";
+				$sql = "SELECT p.rowid, p.fk_receipt, date_payment as dp, p.amount, p.comment as type, il.amount_total ";
+				$sql .= " FROM " . MAIN_DB_PREFIX . "immo_payment as p";
 				$sql .= ", " . MAIN_DB_PREFIX . "immo_receipt as il ";
 				$sql .= " WHERE p.fk_receipt = " . $receipt->id;
 				$sql .= " AND p.fk_receipt = il.rowid";
@@ -274,7 +280,7 @@ class pdf_quittance extends ModelePDFImmobilier {
 					$total = 0;
 					$text .= '<tr>';
 					$text .= '<td align="left">' . $langs->trans("Date") . '</td>';
-					$text .= '<td align="left">' . $langs->trans("Commentaire") . '</td>';
+					//$text .= '<td align="left">' . $langs->trans("Commentaire") . '</td>';
 					$text .= '<td align="right">' . $langs->trans("Amount") . '</td>';
 					$text .= "</tr>";
 					$var = True;
@@ -284,10 +290,10 @@ class pdf_quittance extends ModelePDFImmobilier {
 						$text .= '<tr>';
 						
 						$text .= '<td>' . dol_print_date($this->db->jdate($objp->dp), 'day') . "</td>";
-						$text .= '<td>' . $objp->type . "</td>";
-						$text .= '<td align="right">' . price($objp->montant) . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
+						//$text .= '<td>' . $objp->type . "</td>";
+						$text .= '<td align="right">' . price($objp->amount) . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
 						$text .= "</tr>";
-						$totalpaye += $objp->montant;
+						$totalpaye += $objp->amount;
 						$i ++;
 					}
 					
@@ -304,13 +310,14 @@ class pdf_quittance extends ModelePDFImmobilier {
 					$this->db->free($resql);
 				}
 				$text .= "</table>";
-				$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 0, 1);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1, 1);
 				
 				// Tableau Loyer et solde
 				$sql = "SELECT il.name, il.balance";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "immo_receipt as il ";
-				$sql .= " WHERE il.balance<>0 AND paye=0 AND data_start<'" . $this->db->idate($receipt->date_start) . "'";
-				$sql .= " AND lfk_property=" . $receipt->fk_property . " AND fk_renter=" . $receipt->fk_renter;
+				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<'" . $this->db->idate($receipt->date_start) . "'";
+				$sql .= " AND fk_property=" . $receipt->fk_property . " AND fk_renter=" . $receipt->fk_renter;
 				$sql .= " ORDER BY echeance ASC";
 				
 				dol_syslog(get_class($this) . ':: loyerAntierieur sql=' . $sql, LOG_DEBUG);
@@ -349,7 +356,7 @@ class pdf_quittance extends ModelePDFImmobilier {
 							
 							$text .= '<tr>';
 							$text .= '<td>' . $objp->name . "</td>";
-							$text .= "<td align=\"right\">" . $objp->balance . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
+							$text .= "<td align=\"right\">" . price($objp->balance) . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
 							$text .= "</tr>";
 							
 							$i ++;

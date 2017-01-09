@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2015 Alexandre Spangaro <aspangaro.dolibarr@gmail.com>
+/* Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro.dolibarr@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ if (! $user->rights->immobilier->property->read)
  * View
  */
 
-llxHeader();
+llxHeader('' , $langs->trans("PropertyCard") . ' | ' . $langs->trans("Info"));
 
 if ($id)
 {
@@ -53,13 +53,23 @@ if ($id)
 
 	$head = property_prepare_head($object);
 
+	$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
+
 	dol_fiche_head($head, 'info', $langs->trans("PropertyCard"), 0, 'building@immobilier');
 
-    print '<table width="100%"><tr><td>';
-    dol_print_object_info($object);
-    print '</td></tr></table>';
+	immo_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
 
-    print '</div>';
+	print '<div class="fichecenter">';
+
+	print '<div class="underbanner clearboth"></div>';
+
+	print '<br>';
+
+    dol_print_object_info($object);
+
+	print '</div>';
+	
+	dol_fiche_end();
 }
 
 $db->close();

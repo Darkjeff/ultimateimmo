@@ -33,6 +33,7 @@ require_once '../class/html.formimmobilier.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 
 $langs->load("immobilier@immobilier");
 
@@ -49,6 +50,10 @@ $fk_property = GETPOST('fk_property', 'int');
 if ($fk_property==-1) $fk_property='';
 
 $object = new Immoproperty($db);
+$extrafields = new ExtraFields($db);
+
+// fetch optionals attributes and labels
+$extralabels=$extrafields->fetch_name_optionals_label($object->table_element);
 
 // Security check
 if (! $user->rights->immobilier->property->read)
@@ -63,7 +68,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->immobilie
 	$result = $object->delete($user);
 
 	if ($result > 0) {
-		Header("Location: index.php");
+		Header("Location: list.php");
 		exit();
 	} else {
 		setEventMessages(null,$object->errors, 'errors');
@@ -91,11 +96,13 @@ if ($action == 'add' && $user->rights->immobilier->property->write) {
 		}
 
 		if (empty($error)) {
+			$datep = dol_mktime(0, 0, 0, GETPOST('datebuildpropertymonth', 'int'), GETPOST('datebuildpropertyday', 'int'), GETPOST('datebuildpropertyyear', 'int'));
+
 			$object->fk_type_property = $type_id;
 			
-			$object->fk_owner = $fk_owner;
-			$object->statut = 1;
-			$object->entity=$conf->entity;
+			$object->fk_owner		= $fk_owner;
+			$object->status			= GETPOST('statut');
+			$object->entity			= $conf->entity;
 
 			$tmparray=getCountry(GETPOST('country_id','int'),'all',$db,$langs,0);
 			if (! empty($tmparray['id']))
@@ -117,9 +124,15 @@ if ($action == 'add' && $user->rights->immobilier->property->write) {
 			$object->zip 			= GETPOST('zipcode', 'alpha');
 			$object->town			= GETPOST('town', 'alpha');
 			$object->fk_pays		= $object->country_id;
+			$object->datep			= $datep;
+			$object->target			= GETPOST('target','int');
 			$object->note_public 	= GETPOST('note_public', 'alpha');
 			$object->note_private 	= GETPOST('note_private', 'alpha');
 			$object->fk_user_author	= $user->id;
+
+			// Fill array 'array_options' with data from add form
+			$ret = $extrafields->setOptionalsFromPost($extralabels,$object);
+			if ($ret < 0) $error++;
 
 			$id = $object->create($user);
             if ($id > 0)
@@ -136,7 +149,7 @@ if ($action == 'add' && $user->rights->immobilier->property->write) {
 			$action='create';
 		}
 	} else {
-        header("Location: index.php");
+        header("Location: list.php");
         exit;
 	}
 }
@@ -162,9 +175,11 @@ if ($action == 'update' && $user->rights->immobilier->property->write)
 		}
 
 		if (empty($error)) {
+			$datep = dol_mktime(0, 0, 0, GETPOST('datebuildpropertymonth', 'int'), GETPOST('datebuildpropertyday', 'int'), GETPOST('datebuildpropertyyear', 'int'));
+
 			$object->fk_type_property = $type_id;
 			$object->fk_owner 		= $fk_owner;
-			$object->statut 		= 1;
+			$object->statut 		= GETPOST('statut');
 
 			$object->fk_property 	= $fk_property;
 			$object->name 			= GETPOST('name', 'alpha');
@@ -178,10 +193,16 @@ if ($action == 'update' && $user->rights->immobilier->property->write)
 			$object->zip 			= GETPOST('zipcode', 'alpha');
 			$object->town			= GETPOST('town', 'alpha');
 			$object->fk_pays		= GETPOST('country_id', 'int');
+			$object->datep			= $datep;
+			$object->target			= GETPOST('target','int');
 			$object->note_public 	= GETPOST('note_public', 'alpha');
 			$object->note_private 	= GETPOST('note_private', 'alpha');
 			$object->id 			= $id;
 			$object->fk_user_modif	= $user->id;
+
+			// Fill array 'array_options' with data from add form
+			$ret = $extrafields->setOptionalsFromPost($extralabels,$object);
+			if ($ret < 0) $error++;
 
 			$id = $object->update($user);
 
@@ -199,7 +220,7 @@ if ($action == 'update' && $user->rights->immobilier->property->write)
 			print $langs->trans('ErrorFieldRequired');
 		}
 	} else {
-        header("Location: index.php");
+        header("Location: list.php");
         exit;
 	}
 }
@@ -207,7 +228,7 @@ if ($action == 'update' && $user->rights->immobilier->property->write)
 /*
  * View
  */
-llxHeader('', $langs->trans("Property"));
+llxHeader('', $langs->trans("PropertyCard") . ' | ' . $langs->trans("Card"));
 
 $form = new Form($db);
 $formcompany = new FormCompany($db);
@@ -228,11 +249,19 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 
 	// Name | Ref
 	print '<tr>';
-	print '<td width="25%">'.fieldLabel('NameProperty','nameproperty',1).'</td>';
+	print '<td class="titlefield">'.fieldLabel('NameProperty','nameproperty',1).'</td>';
 	print '<td>';
 	print '<input name="name" id="nameproperty" size="32" value="' . GETPOST('name') . '">';
 	print '</td>';
 	print '</tr>';
+
+    // Status
+	print '<tr>';
+	print '<td>'.fieldLabel('Statut','statut',0).'</td>';
+	print '<td class="maxwidthonsmartphone">';
+    $statutarray=array('1' => $langs->trans("PropertyEnabled"), '0' => $langs->trans("PropertyDisabled"));
+    print $form->selectarray('statut',$statutarray,GETPOST('statut'));
+    print '</td></tr>';
 
 	// Type property
 	print '<tr>';
@@ -300,23 +329,6 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 	print '</td>';
 	print '</tr>';
 
-	// Area
-	print '<tr>';
-	print '<td>'.fieldLabel('Area','area',0).'</td>';
-	print '<td>';
-	print '<input name="area" id="area" size="5" value="' . GETPOST('area') . '">';
-	print ' ' . $langs->trans("m2");
-	print '</td>';
-	print '</tr>';
-
-	// Number of pieces
-	print '<tr>';
-	print '<td>'.fieldLabel('NumberOfPieces','numberofpieces',0).'</td>';
-	print '<td>';
-	print '<input name="numberofpieces" id="numberofpieces" size="5" value="' . GETPOST('numberofpieces') . '">';
-	print '</td>';
-	print '</tr>';
-
 	// Zipcode
 	print '<tr>';
 	print '<td>'.fieldLabel('Zip','zipcode',0).'</td>';
@@ -347,7 +359,48 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 		if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"),1);
 	print '</td>';
 	print '</tr>';
-	
+
+	// Build date
+	print '<tr>';
+	print '<td>'.fieldLabel('BuildDate','selectdatep',0).'</td>';
+	print '<td align="left">';
+	print $form->select_date('', 'datebuildproperty', '', '', 1);
+	print '</td></tr>';
+
+	// Target
+	print '<tr>';
+    print '<td>'.fieldLabel('Target','target',0).'</td>';
+	print '<td class="maxwidthonsmartphone">';
+			$targetarray=array('0' => $langs->trans("PropertyForRent"), '1' => $langs->trans("PropertyForSale"));
+    print $form->selectarray('target',$targetarray,GETPOST('target'));
+    print '</td></tr>';
+
+	// Area
+	print '<tr>';
+	print '<td>'.fieldLabel('Area','area',0).'</td>';
+	print '<td>';
+	print '<input name="area" id="area" size="5" value="' . GETPOST('area') . '">';
+	print ' ' . $langs->trans("m2");
+	print '</td>';
+	print '</tr>';
+
+	// Number of pieces
+	print '<tr>';
+	print '<td>'.fieldLabel('NumberOfPieces','numberofpieces',0).'</td>';
+	print '<td>';
+	print '<input name="numberofpieces" id="numberofpieces" size="5" value="' . GETPOST('numberofpieces') . '">';
+	print '</td>';
+	print '</tr>';
+
+	// Other attributes
+	$parameters=array();
+	$reshook=$hookmanager->executeHooks('formObjectOptions',$parameters,$object,$action);    // Note that $action and $object may have been modified by hook
+	if (empty($reshook) && ! empty($extrafields->attribute_label))
+	{
+		print $object->showOptionals($extrafields,'edit');
+	}
+
+/*	
 	// Public note
 	print '<tr>';
 	print '<td class="border" valign="top">'.fieldLabel('NotePublic','note_public',0).'</td>';
@@ -367,6 +420,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 		print $doleditor->Create(1);
 		print '</td></tr>';
 	}
+*/
 
 	print '</tbody>';
 	print '</table>';
@@ -390,6 +444,10 @@ else
 			if ($result < 0) {
 				setEventMessages(null, $object->errors, 'errors');
 			}
+			$res=$object->fetch_optionals($object->id,$extralabels);
+			if ($res < 0) {
+				dol_print_error($db); exit;
+			}
 
 			print "<form name='update' action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
 			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -399,17 +457,33 @@ else
 			$head = property_prepare_head($object);
 			dol_fiche_head($head, 'card', $langs->trans("PropertyCard"), 0, 'building@immobilier');
 
-			$linkback = '<a href="'.DOL_URL_ROOT.'/immobilier/property/index.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
+			$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
 			print '<table class="border" width="100%">';
 
 			// Name | Ref
 			print '<tr>';
-			print '<td width="25%">'.fieldLabel('NameProperty','nameproperty',1).'</td>';
+			print '<td class="titlefield">'.fieldLabel('NameProperty','nameproperty',1).'</td>';
 			print '<td>';
 			print '<input name="name" id="nameproperty" size="32" value="' . $object->name . '">';
 			print '</td>';
 			print '</tr>';
+			
+            // Status
+            print '<tr><td>'.fieldLabel('Status','statut',1).'</td><td>';
+            print '<select class="flat" name="statut">';
+            if ($object->statut)
+            {
+                print '<option value="1" selected>'.$langs->trans("PropertyEnabled").'</option>';
+                print '<option value="0">'.$langs->trans("PropertyDisabled").'</option>';
+            }
+            else
+            {
+                print '<option value="1">'.$langs->trans("PropertyEnabled").'</option>';
+                print '<option value="0" selected>'.$langs->trans("PropertyDisabled").'</option>';
+            }
+            print '</select>';
+            print '</td></tr>';
 	
 			// Type property
 			print '<tr>';
@@ -477,23 +551,6 @@ else
 			print '</td>';
 			print '</tr>';
 
-			// Area
-			print '<tr>';
-			print '<td>'.fieldLabel('Area','area',0).'</td>';
-			print '<td>';
-			print '<input name="area" id="area" size="5" value="' . $object->area . '">';
-			print ' ' . $langs->trans("m2");
-			print '</td>';
-			print '</tr>';
-
-			// Number of pieces
-			print '<tr>';
-			print '<td>'.fieldLabel('NumberOfPieces','numberofpieces',0).'</td>';
-			print '<td>';
-			print '<input name="numberofpieces" id="numberofpieces" size="5" value="' . $object->numberofpieces . '">';
-			print '</td>';
-			print '</tr>';
-
 			// Zipcode / Town
 			print '<tr><td>'.fieldLabel('Zip','zipcode',0).'</td><td>';
 			print $formcompany->select_ziptown($object->zip, 'zipcode', array (
@@ -515,6 +572,47 @@ else
 			print '</td>';
 			print '</tr>';
 
+			// Build date
+			print '<tr>';
+			print '<td>'.fieldLabel('BuildDate','selectdatep',0).'</td>';
+			print '<td align="left">';
+			print $form->select_date($object->datep, 'datebuildproperty', 0, 0, 0, '', 1);
+			print '</td></tr>';
+
+			// Target
+			print '<tr>';
+			print '<td>'.fieldLabel('Target','target',0).'</td>';
+			print '<td class="maxwidthonsmartphone">';
+			$targetarray=array('0' => $langs->trans("PropertyForRent"), '1' => $langs->trans("PropertyForSale"));
+			print $form->selectarray('target',$targetarray,GETPOST('target'));
+			print '</td></tr>';		
+
+			// Area
+			print '<tr>';
+			print '<td>'.fieldLabel('Area','area',0).'</td>';
+			print '<td>';
+			print '<input name="area" id="area" size="5" value="' . $object->area . '">';
+			print ' ' . $langs->trans("m2");
+			print '</td>';
+			print '</tr>';
+
+			// Number of pieces
+			print '<tr>';
+			print '<td>'.fieldLabel('NumberOfPieces','numberofpieces',0).'</td>';
+			print '<td>';
+			print '<input name="numberofpieces" id="numberofpieces" size="5" value="' . $object->numberofpieces . '">';
+			print '</td>';
+			print '</tr>';
+
+			// Other attributes
+			$parameters=array("colspan"=>2);
+			$reshook=$hookmanager->executeHooks('formObjectOptions',$parameters,$object,$action);    // Note that $action and $object may have been modified by hook
+			if (empty($reshook) && ! empty($extrafields->attribute_label))
+			{
+				print $object->showOptionals($extrafields,'edit',$parameters);
+			}
+
+/*
 			// Public note
 			print '<tr>';
 			print '<td class="border" valign="top">'.fieldLabel('NotePublic','note_public',0).'</td>';
@@ -534,6 +632,7 @@ else
 				print $doleditor->Create(1);
 				print '</td></tr>';
 			}
+*/
 
 			print '</table>';
 			dol_fiche_end();
@@ -545,13 +644,17 @@ else
 
 			print '</form>';
 		} else {
+			
 			// Display property card
-
 			$object = new Immoproperty($db);
 			$result = $object->fetch($id);
 
 			if ($result < 0) {
 				setEventMessages(null, $object->errors, 'errors');
+			}
+			$res=$object->fetch_optionals($object->id,$extralabels);
+			if ($res < 0) {
+				dol_print_error($db); exit;
 			}
 
 			if ($result) {
@@ -569,19 +672,27 @@ else
 						print '<br>';
 				}
 
-				print '<table class="border" width="100%">';
+				$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
-				$linkback = '<a href="./index.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
+				immo_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
 
+				print '<div class="fichecenter">';
+				print '<div class="fichehalfleft">';
+				
+				print '<div class="underbanner clearboth"></div>';
+				print '<table class="border tableforfield" width="100%">';
+
+/*				
 				print '<tr>';
-				print '<td width="25%">'.$langs->trans("NameProperty").'</td>';
-				print '<td colspan="2">';
+				print '<td class="titlefield">'.$langs->trans("NameProperty").'</td>';
+				print '<td>';
             	print $form->showrefnav($object, 'rowid', $linkback, 1, 'rowid', 'name', '');
             	print '</td></tr>';
+*/
 
 				print '<tr>';
-				print '<td>'.$langs->trans("TypeProperty").'</td>';
-				print '<td colspan="2">'.$object->type_label.'</td>';
+				print '<td class="titlefield">'.$langs->trans("TypeProperty").'</td>';
+				print '<td>'.$object->type_label.'</td>';
 				print '</tr>';
 				
 				// Owner
@@ -597,7 +708,7 @@ else
 					print '<td><label for="fk_property">' . $langs->trans("Property") . '</label></td>';
 					print '<td>';
 					$propertystat=new Immoproperty($db);
-					if (!empty($object->fk_property)) {
+					if (! empty($object->fk_property)) {
 						$result=$propertystat->fetch($object->fk_property);
 						if ($result<0) {
 							setEventMessages(null,$propertystat->errors,'errors');
@@ -608,67 +719,104 @@ else
 					print '</tr>';
 				}
 
+/*
 				print '<tr>';
 				print '<td>'.$langs->trans("Address").'</td>';
-				print '<td colspan="2">'.$object->address.'</td>';
+				print '<td>'.$object->address.'</td>';
 				print '</tr>';
-
+*/
 				print '<tr>';
 				print '<td>'.$langs->trans("Building").'</td>';
-				print '<td colspan="2">'.$object->building.'</td>';
+				print '<td>'.$object->building.'</td>';
 				print '</tr>';
 
 				print '<tr>';
 				print '<td>'.$langs->trans("Staircase").'</td>';
-				print '<td colspan="2">'.$object->staircase.'</td>';
+				print '<td>'.$object->staircase.'</td>';
 				print '</tr>';
 
 				print '<tr>';
 				print '<td>'.$langs->trans("Floor").'</td>';
-				print '<td colspan="2">'.$object->floor.'</td>';
+				print '<td>'.$object->floor.'</td>';
 				print '</tr>';
 
 				print '<tr>';
 				print '<td>'.$langs->trans("NumberOfDoor").'</td>';
-				print '<td colspan="2">'.$object->numberofdoor.'</td>';
+				print '<td>'.$object->numberofdoor.'</td>';
 				print '</tr>';
-
-				print '<tr>';
-				print '<td>'.$langs->trans("Area").'</td>';
-				print '<td colspan="2">'.$object->area.' '.$langs->trans("m2").'</td>';
-				print '</tr>';
-
-				print '<tr>';
-				print '<td>'.$langs->trans("NumberOfPieces").'</td>';
-				print '<td colspan="2">'.$object->numberofpieces.'</td>';
-				print '</tr>';
-
+/*
 				print '<tr>';
 				print '<td>'.$langs->trans("Zipcode").'</td>';
-				print '<td colspan="2">'.$object->zip.'</td>';
+				print '<td>'.$object->zip.'</td>';
 				print '</tr>';
 
 				print '<tr>';
 				print '<td>'.$langs->trans("Town").'</td>';
-				print '<td colspan="2">'.$object->town.'</td>';
+				print '<td>'.$object->town.'</td>';
 				print '</tr>';
 
 				print '<tr>';
 				print '<td>'.$langs->trans("Country").'</td>';
-				print '<td colspan="2">'.getCountry($object->fk_pays,1).'</td>';
+				print '<td>'.getCountry($object->fk_pays,1).'</td>';
+				print '</tr>';
+*/
+
+				print '</table>';
+				print '</div>';
+				print '<div class="fichehalfright"><div class="ficheaddleft">';
+		   
+				print '<div class="underbanner clearboth"></div>';
+				print '<table class="border tableforfield" width="100%">';
+
+				print '<tr>';
+				print '<td class="titlefield">' . $langs->trans("BuildDate") . '</td>';
+				print '<td>' . dol_print_date($object->datep,"day") . '</td>';
 				print '</tr>';
 
 				print '<tr>';
+				print '<td>'.$langs->trans("Target").'</td>';
+				if ($object->target == 0) $target = $langs->trans("PropertyForRent"); else $target = $langs->trans("PropertyForSale");  
+				print '<td>'.$target.'</td>';
+				print '</tr>';
+
+				print '<tr>';
+				print '<td>'.$langs->trans("Area").'</td>';
+				$area = $object->area.' '.$langs->trans("m2");
+				print '<td>';
+				if(! empty($object->area)) print $area;
+				print '</td>';
+				print '</tr>';
+
+				print '<tr>';
+				print '<td>'.$langs->trans("NumberOfPieces").'</td>';
+				print '<td>'.$object->numberofpieces.'</td>';
+				print '</tr>';
+
+				// Other attributes
+				$parameters=array();
+				$reshook=$hookmanager->executeHooks('formObjectOptions',$parameters,$object,$action);    // Note that $action and $object may have been modified by hook
+				if (empty($reshook) && ! empty($extrafields->attribute_label))
+				{
+					print $object->showOptionals($extrafields, 'view', $parameters);
+				}
+
+/*
+				print '<tr>';
 				print '<td>'.$langs->trans("NotePublic").'</td>';
-				print '<td colspan="2">'.$object->note_public.'</td>';
+				print '<td>'.$object->note_public.'</td>';
 				print '</tr>';
 
 				print '<tr>';
 				print '<td>'.$langs->trans("NotePrivate").'</td>';
-				print '<td colspan="2">'.$object->note_private.'</td>';
+				print '<td>'.$object->note_private.'</td>';
 				print '</tr>';
+*/
 
-				print '</table>';
+				print "</table>\n";
+				print '</div>';
+				
+				print '</div></div>';
+				print '<div style="clear:both"></div>';
 
 				print '</form>';
 

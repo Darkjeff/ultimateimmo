@@ -29,7 +29,7 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
-require_once ('../class/rent.class.php');
+require_once ('../class/immorent.class.php');
 require_once ('../core/lib/immobilier.lib.php');
 require_once ('../class/html.formimmobilier.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php');
@@ -73,7 +73,7 @@ if ($action == 'add' && $user->rights->immobilier->property->write) {
 	$error = 0;
 	
 	if (! $cancel) {
-		$datect = @dol_mktime($_POST["datecthour"], $_POST["datectmin"], $_POST["datectsec"], $_POST["datectmonth"], $_POST["datectday"], $_POST["datectyear"]);
+		$datect = dol_mktime(0, 0, 0, GETPOST('datecontractmonth', 'int'), GETPOST('datecontractday', 'int'), GETPOST('datecontractyear', 'int'));
 		
 		$object = new Rent($db);
 		
@@ -136,7 +136,7 @@ if ($action == 'update' && $user->rights->immobilier->property->write) {
 		
 		$e_contrat = $object;
 		
-		$res = $object->update();
+		$res = $object->update($user);
 		
 		if ($res >= 0) {
 			setEventMessage($langs->trans("RentAdded"), 'mesgs');
@@ -150,7 +150,7 @@ if ($action == 'update' && $user->rights->immobilier->property->write) {
 /*
  * View
  */
-llxheader('', $langs->trans("Rent"), '');
+llxheader('', $langs->trans("RentCard") . ' | ' . $langs->trans("Card"), '');
 
 // Create mode
 if ($action == 'create' && $user->rights->immobilier->rent->write) {
@@ -168,7 +168,7 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 	
 	// Name Property
 	print '<tr>';
-	print '<td width="25%" class="fieldrequired"><label for="nameproperty">' . $langs->trans("NameProperty") . '</label></td>';
+	print '<td class="titlefield"><span class="fieldrequired"><label for="nameproperty">' . $langs->trans("Property") . '</label></td>';
 	print '<td>';
 	print $htmlimmo->select_property($object->fk_property, 'fk_property');
 	print '</td></tr>';
@@ -182,37 +182,45 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 	
 	// Date
 	print '<tr>';
-	print '<td><label for="date">' . $langs->trans("Date") . '</label></td>';
+	print '<td><label for="date">' . $langs->trans("DateBeginningLease") . '</label></td>';
 	print '<td align="left">';
-	print $html->select_date(! empty($datect) ? $datect : '-1', 'datect', 0, 0, 0, 'fiche_contrat', 1);
+	print $form->select_date('', 'datecontract', '', '', 1);
 	print '</td></tr>';
 	
 	// Income rent
 	print '<tr>';
-	print '<td><label for="amount">' . $langs->trans("Amount") . '</label></td>';
-	print '<td><input name="montant_tot" id="amount" size="30" value="' . $object->montant_tot . '"</td></tr>';
-	print '<tr>';
-	print '<td><label for="loyer">' . $langs->trans("Loyer") . '</label></td>';
-	print '<td><input name="loyer" id="loyer" size="70" value="' . $object->loyer . '"</td></tr>';
-	print '<tr>';
-	print '<td><label for="charges">' . $langs->trans("Charges") . '</label></td>';
-	print '<td><input name="charges" id="charges" size="10" value="' . $object->charges . '"</td></tr>';
-	print '<tr>';
-	print '<td><label for="vat">' . $langs->trans("VAT") . '</label></td>';
-	print '<td><input name="tva" id="vat" size="10" value="' . $object->tva . '"</td></tr>';
+	print '<td><label for="loyer">' . $langs->trans("AmountHC") . '</label></td>';
+	print '<td><input name="loyer" id="loyer" size="10" value="' . price($object->loyer) . '" OnChange="javascript:compteur1();"></td></tr>';
 	
 	print '<tr>';
+	print '<td><label for="charges">' . $langs->trans("Charges") . '</label></td>';
+	print '<td><input name="charges" id="charges" size="10" value="' . price($object->charges) . '" OnChange="javascript:compteur1();"></td></tr>';
+	print '<tr>';
+	
+	print '<tr>';
+	print '<td><label for="amount">' . $langs->trans("AmountTC") . '</label></td>';
+	print '<td><input name="montant_tot" id="amount" size="10" value="' . price($object->montant_tot) . '" disabled="disabled"></td></tr>';
+	
+	print '<td><label for="vat">' . $langs->trans("VAT") . '</label></td>';
+	print '<td>';
+	print $form->selectyesno("vat", (isset($_POST['vat'])?GETPOST('vat'):$object->vat), 0);
+	print '</td></tr>';
+
+	/*
+	print '<tr>';
 	print '<td><label for="periode">' . $langs->trans("Period") . '</label></td>';
-	print '<td><input name="periode" id="periode" size="10" value="' . $object->periode . '"</td></tr>';
+	print '<td><input name="periode" id="periode" size="10" value="' . $object->periode . '"></td></tr>';
+	*/
+
 	print '<tr>';
-	print '<td><label for="depot">' . $langs->trans("Depot") . '</label></td>';
-	print '<td><input name="depot" size="10" id="depot" value="' . $object->depot . '"</td></tr>';
+	print '<td><label for="depot">' . $langs->trans("Caution") . '</label></td>';
+	print '<td><input name="depot" size="10" id="depot" value="' . $object->depot . '"></td></tr>';
 	print '<tr>';
-	print '<td><label for="note">' . $langs->trans("Comment") . '</label></td>';
-	print '<td><input name="commentaire" id="note" size="10" value="' . $object->commentaire . '"</td></tr>';
+	print '<td><label for="note">' . $langs->trans("Note") . '</label></td>';
+	print '<td><input name="commentaire" id="note" size="10" value="' . $object->commentaire . '"></td></tr>';
 	print '<tr>';
 	print '<td><label for="owner">' . $langs->trans("Owner") . '</label></td>';
-	print '<td><input name="proprietaire_id" id="owner" size="10" value="' . $object->proprietaire_id . '"</td></tr>';
+	print '<td><input name="proprietaire_id" id="owner" size="10" value="' . $object->proprietaire_id . '"></td></tr>';
 	
 	print '</tbody>';
 	print '</table>';
@@ -223,7 +231,17 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 	print '<input type="submit" value="' . $langs->trans("Save") . '" name="bouton" class="button" />';
 	print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="' . $langs->trans("Cancel") . '" class="button" onclick="history.go(-1)" />';
 	print '</div>';
+
+	?>
+	<script language="javascript">
+
+	function compteur1(){
+		document.getElementById('amount').value = parseInt(document.getElementById('loyer').value) + parseInt(document.getElementById('charges').value);
+	}
+
+	</script>
 	
+	<?php
 	print '</form>';
 } else {
 	
@@ -238,40 +256,40 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 				setEventMessages(null, $object->errors, 'errors');
 			}
 			
-			print "<form name='update' action=\"" . $_SERVER['PHP_SELF'] . "\" method=\"post\">\n";
+			print '<form name="update" action="' . $_SERVER['PHP_SELF'] . '" method="post">';
 			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 			print '<input type="hidden" name="action" value="update">';
 			print '<input type="hidden" name="id" value="' . $id . '">';
 			
 			$head = rent_prepare_head($object);
-			dol_fiche_head($head, 'card', $langs->trans("Rent"), 0, 'rent@immobilier');
-			
+			dol_fiche_head($head, 'card', $langs->trans("RentCard"), 0, 'rent@immobilier');
+
 			$linkback = '<a href="' . DOL_URL_ROOT . '/immobilier/rent/list.php' . (! empty($socid) ? '?socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
-			
+
 			print '<table class="border" width="100%">';
-			
+
 			print '<tr>';
-			print '<td><label for="fk_property">' . $langs->trans("Rent") . '</label></td>';
+			print '<td class="titlefield">'.fieldLabel('Property','fk_property',1).'</td>';
 			print '<td>';
 			print $htmlimmo->select_property($object->fk_property, 'fk_property');
 			print '</td></tr>';
-			
+
 			print '<tr>';
 			print '<td><label for="renter">' . $langs->trans("Renter") . '</label></td>';
-			print '<td>' . $object->nomlocataire . '</td>';
+			print '<td>' . $object->nomlocataire . ' ' . $object->firstname_renter . '</td>';
 			print '</tr>';
-			
+
 			print '<tr>';
-			print '<td><label for="datect">' . $langs->trans("Date") . '</label></td>';
+			print '<td><label for="datect">' . $langs->trans("DateStart") . '</label></td>';
 			print '<td align="left">';
 			print $html->select_date($object->date_start, 'datect', 0, 0, 0, 'fiche_contrat', 1);
 			print '</td></tr>';
-			
+
 			print '<tr>';
 			print '<td><label for="datectend">' . $langs->trans("DateEnd") . '</label></td>';
 			print '<td align="left">';
 			print $html->select_date($object->date_end, 'datectend', 0, 0, 0, 'fiche_contrat', 1);
-			
+
 			print '<tr>';
 			print '<td><label for="preavis">' . $langs->trans("Preavis") . '</label></td>';
 			if ($object->preavis) {
@@ -280,34 +298,43 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 				$checked = '';
 			}
 			print '<td><input type="checkbox" id="preavis" name="preavis" ' . $checked . ' value="1"></td></tr>';
+
+			print '<tr>';
+			print '<td>'.fieldLabel('AmountHC','loyer',0).'</td>';
+			print '<td><input name="loyer" id=loyer" size="10" value="' . price($object->loyer) . '"  OnChange="javascript:compteur1();"></td></tr>';
+
+			print '<tr>';
+			print '<td>'.fieldLabel('Charges','charges',0).'</td>';
+			print '<td><input name="charges" id="charges" size="10" value="' . price($object->charges) . '"  OnChange="javascript:compteur1();"></td></tr>';
+
+			print '<tr>';
+			print '<td>'.fieldLabel('AmountTC','amount',1).'</td>';
+			print '<td><input name="montant_tot" id="amount" size="10" value="' . price($object->montant_tot) . '" disabled="disabled"></td></tr>';
 			
 			print '<tr>';
-			print '<td><label for="amount">' . $langs->trans("Amount") . '</label></td>';
-			print '<td><input name="montant_tot" id="amount" size="10" value="' . $object->montant_tot . '"</td></tr>';
-			
-			print '<tr>';
-			print '<td><label for="loyer">' . $langs->trans("Loyer") . '</label></td>';
-			print '<td><input name="loyer" id=loyer" size="10" value="' . $object->loyer . '"</td></tr>';
-			
-			print '<tr>';
-			print '<td><label for="charges">' . $langs->trans("Charges") . '</label></td>';
-			print '<td><input name="charges" id="charges" size="10" value="' . $object->charges . '"</td></tr>';
-			
-			print '<tr>';
-			print '<td><label for="vat">' . $langs->trans("Vat") . '</label></td>';
-			print '<td><input name="tva" id="vat" size="10" value="' . $object->tva . '"</td></tr>';
-			
+			print '<td>'.fieldLabel('VAT','vat',0).'</td>';
+			print '<td>';
+			print $form->selectyesno("vat", (isset($_POST['vat'])?GETPOST('vat'):$object->vat), 0);
+			print '</td></tr>';
+
+			/*
 			print '<tr>';
 			print '<td><label for="periode">' . $langs->trans("Period") . '</label></td>';
 			print '<td><input name="periode" id=periode" size="10" value="' . $object->periode . '"</td></tr>';
-			
+			*/
+
 			print '<tr>';
-			print '<td><label for="depot">' . $langs->trans("Depot") . '</label></td>';
-			print '<td><input name="depot" size="10" value="' . $object->depot . '"</td></tr>';
+			print '<td><label for="depot">' . $langs->trans("Caution") . '</label></td>';
+			print '<td><input name="depot" size="10" value="' . price($object->depot) . '"</td></tr>';
 			
+			// Public note
 			print '<tr>';
-			print '<td><label for="note">' . $langs->trans("Comment") . '</label></td>';
-			print '<td><input name="commentaire" id="note" size="90" value="' . $object->commentaire . '"</td></tr>';
+			print '<td class="border" valign="top">'.fieldLabel('NotePublic','note',0).'</td>';
+			print '<td valign="top" colspan="2">';
+
+			$doleditor = new DolEditor('note', $object->commentaire, '', 80, 'dolibarr_notes', 'In', 0, false, true, ROWS_3, 70);
+			print $doleditor->Create(1);
+			print '</td></tr>';
 			
 			print '<tr>';
 			print '<td><label for="owner">' . $langs->trans("Owner") . '</label></td>';
@@ -320,6 +347,17 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 			print '<input type="submit" value="' . $langs->trans("Modify") . '" name="bouton" class="button">';
 			print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="' . $langs->trans("Cancel") . '" class="button" onclick="history.go(-1)" />';
 			print '</div>';
+
+			?>
+			<script language="javascript">
+
+			function compteur1(){
+				document.getElementById('amount').value = parseInt(document.getElementById('loyer').value) + parseInt(document.getElementById('charges').value);
+			}
+
+			</script>
+			
+			<?php
 			
 			print '</form>';
 		} else {
@@ -335,7 +373,7 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 			if ($result) {
 			// View mode
 				$head = rent_prepare_head($object);
-				dol_fiche_head($head, 'card', $langs->trans("Rent"), 0, 'rent@immobilier');
+				dol_fiche_head($head, 'card', $langs->trans("RentCard"), 0, 'rent@immobilier');
 
 				if ($mesg)
 					print $mesg . "<br>";
@@ -345,7 +383,7 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 				$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
 				// Ref
-				print '<tr><td width="25%">'.$langs->trans("Ref").'</td><td>';
+				print '<tr><td class="titlefield">'.$langs->trans("Ref").'</td><td>';
 				print $form->showrefnav($object, 'id', $linkback, 1, 'rowid', 'ref', '');
 				print '</td></tr>';
 
@@ -356,7 +394,7 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 				
 				print '<tr>';
 				print '<td>' . $langs->trans("Renter") . '</td>';
-				print '<td>' . $object->nomlocataire . ' ' . $object->lastname_renter . '</td>';
+				print '<td>' . $object->nomlocataire . ' ' . $object->firstname_renter . '</td>';
 				print '</tr>';
 				
 				print '<tr>';
@@ -373,27 +411,27 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 				print '<td>' . $langs->trans("preavis") . '</td>';
 				print '<td>' . $object->preavis . '</td>';
 				print '</tr>';
-				
+
 				print '<tr>';
-				print '<td>' . $langs->trans("montant_tot") . '</td>';
-				print '<td>' . price($object->montant_tot,0,$langs,0,0,-1,$conf->currency) . '</td>';
+				print '<td>' . $langs->trans("AmountHC") . '</td>';
+				print '<td>' . price($object->loyer) . '</td>';
 				print '</tr>';
-				
+
 				print '<tr>';
-				print '<td>' . $langs->trans("loyer") . '</td>';
-				print '<td>' . price($object->loyer,0,$langs,0,0,-1,$conf->currency) . '</td>';
+				print '<td>' . $langs->trans("Charges") . '</td>';
+				print '<td>' . price($object->charges) . '</td>';
 				print '</tr>';
-				
+
 				print '<tr>';
-				print '<td>' . $langs->trans("charges") . '</td>';
-				print '<td>' . price($object->charges,0,$langs,0,0,-1,$conf->currency) . '</td>';
+				print '<td>' . $langs->trans("AmountTC") . '</td>';
+				print '<td>' . price($object->montant_tot) . '</td>';
 				print '</tr>';
-				
+
 				print '<tr>';
-				print '<td>' . $langs->trans("depot") . '</td>';
-				print '<td>' . price($object->depot,0,$langs,0,0,-1,$conf->currency) . '</td>';
+				print '<td>' . $langs->trans("Caution") . '</td>';
+				print '<td>' . price($object->depot) . '</td>';
 				print '</tr>';
-				
+
 				print '<tr>';
 				print '<td>' . $langs->trans("Note") . '</td>';
 				print '<td>' . $object->commentaire . '</td>';

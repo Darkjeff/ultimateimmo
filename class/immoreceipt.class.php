@@ -3,7 +3,6 @@
  * Copyright (C) 2014       Juanjo Menent       <jmenent@2byte.es>
  * Copyright (C) 2015       Florian Henry       <florian.henry@open-concept.pro>
  * Copyright (C) 2015       Raphaël Doursenaud  <rdoursenaud@gpcsolutions.fr>
- * Copyright (C) ---Put here your own copyright and developer email---
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +19,12 @@
  */
 
 /**
- * \file    immobilier/immoreceipt.class.php
+ * \file    immobilier/calss/immoreceipt.class.php
  * \ingroup immobilier
  * \brief   This file is an example for a CRUD class file (Create/Read/Update/Delete)
  *          Put some comments here
  */
 
-// Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
 
 /**
@@ -90,6 +88,7 @@ class Immoreceipt extends CommonObject
 	public $renter_id;
 	public $nomlocataire;
 	public $prenomlocataire;
+	public $emaillocataire;
 	public $nomlocal;
 	public $property_id;
 
@@ -102,7 +101,7 @@ class Immoreceipt extends CommonObject
 	 *
 	 * @param DoliDb $db Database handler
 	 */
-	public function __construct(DoliDB $db)
+	public function __construct($db)
 	{
 		$this->db = $db;
 		return 1;
@@ -287,8 +286,10 @@ class Immoreceipt extends CommonObject
 		$sql .= " t.date_end,";
 		$sql .= " t.fk_owner,";
 		$sql .= " t.paye,";
+		$sql .= " t.model_pdf,";
 		$sql .= " lc.rowid as renter_id,";
 		$sql .= " lc.nom as nomlocataire,";
+		$sql .= " lc.mail as emaillocataire,";
 		$sql .= " ll.name as nomlocal,";
 		$sql .= " ll.rowid as property_id";
 
@@ -308,30 +309,32 @@ class Immoreceipt extends CommonObject
 			if ($numrows) {
 				$obj = $this->db->fetch_object($resql);
 
-				$this->id = $obj->rowid;
-				
-				$this->fk_contract = $obj->fk_contract;
-				$this->fk_property = $obj->fk_property;
-				$this->name = $obj->name;
-				$this->fk_renter = $obj->fk_renter;
-				$this->amount_total = $obj->amount_total;
-				$this->rent = $obj->rent;
-				$this->balance = $obj->balance;
-				$this->paiepartiel = $obj->paiepartiel;
-				$this->charges = $obj->charges;
-				$this->vat = $obj->vat;
-				$this->echeance = $this->db->jdate($obj->echeance);
-				$this->commentaire = $obj->commentaire;
-				$this->statut = $obj->statut;
-				$this->date_rent = $this->db->jdate($obj->date_rent);
-				$this->date_start = $this->db->jdate($obj->date_start);
-				$this->date_end = $this->db->jdate($obj->date_end);
-				$this->fk_owner = $obj->fk_owner;
-				$this->paye = $obj->paye;
-				$this->renter_id = $obj->renter_id;
-				$this->nomlocataire = $obj->nomlocataire;
-				$this->nomlocal = $obj->nomlocal;
-				$this->property_id = $obj->property_id;
+				$this->id				= $obj->rowid;
+
+				$this->fk_contract		= $obj->fk_contract;
+				$this->fk_property		= $obj->fk_property;
+				$this->name				= $obj->name;
+				$this->fk_renter		= $obj->fk_renter;
+				$this->amount_total		= $obj->amount_total;
+				$this->rent				= $obj->rent;
+				$this->balance			= $obj->balance;
+				$this->paiepartiel		= $obj->paiepartiel;
+				$this->charges			= $obj->charges;
+				$this->vat				= $obj->vat;
+				$this->echeance			= $this->db->jdate($obj->echeance);
+				$this->commentaire		= $obj->commentaire;
+				$this->statut			= $obj->statut;
+				$this->date_rent		= $this->db->jdate($obj->date_rent);
+				$this->date_start		= $this->db->jdate($obj->date_start);
+				$this->date_end			= $this->db->jdate($obj->date_end);
+				$this->fk_owner			= $obj->fk_owner;
+				$this->paye				= $obj->paye;
+				$this->renter_id		= $obj->renter_id;
+				$this->nomlocataire 	= $obj->nomlocataire;
+				$this->emaillocataire	= $obj->emaillocataire;
+				$this->nomlocal			= $obj->nomlocal;
+				$this->property_id		= $obj->property_id;
+				$this->modelpdf			= $obj->model_pdf;
 			}
 			$this->db->free($resql);
 
@@ -360,7 +363,7 @@ class Immoreceipt extends CommonObject
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetchAll($sortorder='', $sortfield='', $limit=0, $offset=0, array $filter = array(), $filtermode='AND')
+	public function fetchAll()
 	{
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
@@ -399,66 +402,51 @@ class Immoreceipt extends CommonObject
 		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'immo_property as ll ON t.fk_property = ll.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as soc ON soc.rowid = t.fk_owner';
 
-		// Manage filter
-		$sqlwhere = array();
-		if (count($filter) > 0) {
-			foreach ($filter as $key => $value) {
-				$sqlwhere [] = $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
-			}
-		}
-		if (count($sqlwhere) > 0) {
-			$sql .= ' WHERE ' . implode(' '.$filtermode.' ', $sqlwhere);
-		}
 		
-		if (!empty($sortfield)) {
-			$sql .= $this->db->order($sortfield,$sortorder);
-		}
-		if (!empty($limit)) {
-		 $sql .=  ' ' . $this->db->plimit($limit + 1, $offset);
-		}
 		$this->lines = array();
 
 		$resql = $this->db->query($sql);
 		if ($resql) {
+			$i = 0;
+			$obj = '';
 			$num = $this->db->num_rows($resql);
-
-			while ($obj = $this->db->fetch_object($resql)) {
-				$line = new ImmoreceiptLine();
-
-				$line->id = $obj->rowid;
-				
-				$line->fk_contract = $obj->fk_contract;
-				$line->fk_property = $obj->fk_property;
-				$line->name = $obj->name;
-				$line->fk_renter = $obj->fk_renter;
-				$line->amount_total = $obj->amount_total;
-				$line->rent = $obj->rent;
-				$line->balance = $obj->balance;
-				$line->paiepartiel = $obj->paiepartiel;
-				$line->charges = $obj->charges;
-				$line->vat = $obj->vat;
-				$line->echeance = $this->db->jdate($obj->echeance);
-				$line->commentaire = $obj->commentaire;
-				$line->statut = $obj->statut;
-				$line->date_rent = $this->db->jdate($obj->date_rent);
-				$line->date_start = $this->db->jdate($obj->date_start);
-				$line->date_end = $this->db->jdate($obj->date_end);				
-				$line->fk_owner = $obj->fk_owner;
-				$line->owner_name = $obj->owner_name;
-				$line->paye = $obj->paye;
-				$line->renter_id = $obj->renter_id;
-				$line->nomlocataire = $obj->nomlocataire;
-				$line->prenomlocataire = $obj->prenomlocataire;
-				$line->nomlocal = $obj->nomlocal;
-				$line->property_id = $obj->property_id;
-
-				
-
-				$this->lines[] = $line;
+			$data = array();
+			if ($num) {
+				while ( $i < $num ) {
+					$obj = $this->db->fetch_object($resql);
+					
+					
+					$data[$i] =	array(
+									'fk_contract' => $obj->fk_contract,
+									'fk_property' => $obj->fk_property,
+									'name' => $obj->name,
+									'fk_renter' => $obj->fk_renter,
+									'amount_total' => $obj->amount_total,
+									'rent' => $obj->rent,
+									'balance' => $obj->balance,
+									'paiepartiel' => $obj->paiepartiel,
+									'charges' => $obj->charges,
+									'vat' => $obj->vat,
+									'echeance' => $this->db->jdate($obj->echeance),
+									'commentaire' => $obj->commentaire,
+									'statut' => $obj->statut,
+									'date_rent' => $this->db->jdate($obj->date_rent),
+									'date_start' => $this->db->jdate($obj->date_start),
+									'date_end' => $this->db->jdate($obj->date_end),
+									'fk_owner' => $obj->fk_owner,
+									'owner_name' => $obj->owner_name,
+									'paye' => $obj->paye,
+									'renter_id' => $obj->renter_id,
+									'nomlocataire' => $obj->nomlocataire,
+									'prenomlocataire' => $obj->prenomlocataire,
+									'nomlocal' => $obj->nomlocal,
+									'property_id' => $obj->property_id,
+									);
+					$i ++;
+				}
 			}
-			$this->db->free($resql);
-
-			return $num;
+			
+			return $data;
 		} else {
 			$this->errors[] = 'Error ' . $this->db->lasterror();
 			dol_syslog(__METHOD__ . ' ' . join(',', $this->errors), LOG_ERR);
@@ -482,7 +470,6 @@ class Immoreceipt extends CommonObject
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
 		// Clean parameters
-		
 		if (isset($this->fk_contract)) {
 			 $this->fk_contract = trim($this->fk_contract);
 		}
@@ -526,14 +513,12 @@ class Immoreceipt extends CommonObject
 			 $this->paye = trim($this->paye);
 		}
 
-		
-
 		// Check parameters
 		// Put here code to add a control on parameters values
 
 		// Update request
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element . ' SET';
-		
+
 		$sql .= ' fk_contract = '.(isset($this->fk_contract)?$this->fk_contract:"null").',';
 		$sql .= ' fk_property = '.(isset($this->fk_property)?$this->fk_property:"null").',';
 		$sql .= ' name = '.(isset($this->name)?"'".$this->db->escape($this->name)."'":"null").',';
@@ -727,11 +712,9 @@ class Immoreceipt extends CommonObject
 	 */
 	function getNomUrl($withpicto = 0, $maxlen = 0) {
 		global $langs;
-	
+
 		$result = '';
-	
-		
-	
+
 		$lien = '<a href="' . DOL_URL_ROOT . '/custom/immobilier/receipt/card.php?id=' . $this->id . '">';
 		$lienfin = '</a>';
 
@@ -741,7 +724,8 @@ class Immoreceipt extends CommonObject
 				$result .= ' ';
 				if ($withpicto != 2)
 					$result .= $lien . ($maxlen ? dol_trunc ( $this->id, $maxlen ) : $this->id) . $lienfin;
-					return $result;
+
+		return $result;
 	}
 	
 	/**
@@ -751,19 +735,19 @@ class Immoreceipt extends CommonObject
 	 */
 	public function fetchByLocalId($id,$filter=array()) {
 	
-		$sql = "SELECT il.rowid as reference, il.contrat_id , il.local_id, il.nom as nomloyer, il.locataire_id, il.montant_tot,";
-		$sql .= " il.loy, il.charges, il.charge_ex , il.CommCharge,  il.echeance, il.commentaire, il.statut, il.paye ,";
-		$sql .= " il.periode_du , il.periode_au, il.proprietaire_id,il.paiepartiel ";
-		$sql .= " , lc.nom as nomlocataire , ll.nom as nomlocal ";
+		$sql = "SELECT il.rowid as reference, il.fk_contract , il.fk_property, il.name as nomrenter, il.fk_renter, il.amount_total,";
+		$sql .= " il.rent, il.charges,   il.echeance, il.commentaire, il.statut, il.paye ,";
+		$sql .= " il.date_start , il.date_end, il.fk_owner, il.paiepartiel ";
+		$sql .= " , lc.nom as nomlocataire , ll.name as nomlocal ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element." as il ";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "immo_locataire as lc ON il.locataire_id = lc.rowid";
-		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "immo_local as ll ON il.local_id = ll.rowid ";
-		$sql .= " WHERE il.local_id = " . $id;
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "immo_renter as lc ON il.fk_renter = lc.rowid";
+		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "immo_property as ll ON il.fk_property = ll.rowid ";
+		$sql .= " WHERE il.fk_property = " . $id;
 	
 		if (count($filter>0)) {
 			foreach($filter as $key=>$value) {
-				if ($key=='insidedateloyer') {
-					$sql .= " AND il.periode_du<='".$this->db->idate($value)."' AND il.periode_au>='".$this->db->idate($value)."'";
+				if ($key=='insidedaterenter') {
+					$sql .= " AND il.date_start<='".$this->db->idate($value)."' AND il.date_end>='".$this->db->idate($value)."'";
 				}
 			}
 		}
@@ -779,29 +763,27 @@ class Immoreceipt extends CommonObject
 			while ($obj = $this->db->fetch_object($resql)) {
 	
 	
-				$line = new LoyerLine();
+				$line = new immoreceiptLine();
 	
 				$line->id = $obj->reference;
 				$line->ref = $obj->reference;
-				$line->contrat_id = $obj->contrat_id;
-				$line->local_id = $obj->local_id;
+				$line->fk_contract = $obj->fk_contract;
+				$line->fk_property = $obj->fk_property;
 				$line->nomlocal = $obj->nomlocal;
-				$line->nom = $obj->nomloyer;
-				$line->locataire_id = $obj->locataire_id;
+				$line->nom = $obj->nomrenter;
+				$line->fk_renter = $obj->fk_renter;
 				$line->nomlocataire = $obj->nomlocataire;
-				$line->montant_tot = $obj->montant_tot;
-				$line->loy = $obj->loy;
+				$line->amount_total = $obj->amount_total;
+				$line->rent = $obj->rent;
 				$line->charges = $obj->charges;
-				$line->charge_ex = $obj->charge_ex;
-				$line->CommCharge = $obj->CommCharge;
 				$line->echeance = $this->db->jdate ( $obj->echeance );
 				$line->commentaire = $obj->commentaire;
 				$line->statut = $obj->statut;
-				$line->periode_du = $this->db->jdate ( $obj->periode_du );
-				$line->periode_au = $this->db->jdate ( $obj->periode_au );
+				$line->date_start = $this->db->jdate ( $obj->date_start );
+				$line->date_end = $this->db->jdate ( $obj->date_end );
 				$line->encours = $obj->encours;
 				$line->regul = $obj->regul;
-				$line->proprietaire_id = $obj->proprietaire_id;
+				$line->fk_owner = $obj->fk_owner;
 				$line->paye = $obj->paye;
 				$line->paiepartiel = $obj->paiepartiel;
 	
@@ -893,6 +875,41 @@ class Immoreceipt extends CommonObject
 		}
 	
 		return "Error, mode/status not found";
+	}
+
+	/**
+	 * Give information on the object
+	 *
+	 * @param int $id object
+	 * @return int <0 if KO, >0 if OK
+	 */
+	function info($id) {
+		global $langs;
+
+		$sql = "SELECT";
+		$sql .= " r.rowid, r.datec, r.tms, r.fk_user_author, r.fk_user_modif";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_receipt as r";
+		$sql .= " WHERE r.rowid = " . $id;
+
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
+				$this->id = $obj->rowid;
+				$this->user_creation = $obj->fk_user_author;
+				$this->date_creation = $this->db->jdate($obj->datec);
+				$this->user_modification = $obj->fk_user_modif;
+				if(! empty($this->user_modification)) $this->date_modification = $this->db->jdate($obj->tms);
+			}
+			$this->db->free($resql);
+
+			return 1;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
+			return - 1;
+		}
 	}
 
 }

@@ -3,7 +3,6 @@
  * Copyright (C) 2014       Juanjo Menent       <jmenent@2byte.es>
  * Copyright (C) 2015       Florian Henry       <florian.henry@open-concept.pro>
  * Copyright (C) 2015       Raphaël Doursenaud  <rdoursenaud@gpcsolutions.fr>
- * Copyright (C) ---Put here your own copyright and developer email---
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +72,9 @@ class Immopayment extends CommonObject
 	public $fk_property;
 	public $fk_renter;
 	public $amount;
+	public $fk_typepayment;
+	public $num_payment;
+	public $fk_bank;
 	public $comment;
 	public $date_payment = '';
 	public $fk_owner;
@@ -90,7 +92,7 @@ class Immopayment extends CommonObject
 	 *
 	 * @param DoliDb $db Database handler
 	 */
-	public function __construct(DoliDB $db)
+	public function __construct( $db)
 	{
 		$this->db = $db;
 		return 1;
@@ -111,30 +113,16 @@ class Immopayment extends CommonObject
 		$error = 0;
 
 		// Clean parameters
-		
-		if (isset($this->fk_contract)) {
-			 $this->fk_contract = trim($this->fk_contract);
-		}
-		if (isset($this->fk_property)) {
-			 $this->fk_property = trim($this->fk_property);
-		}
-		if (isset($this->fk_renter)) {
-			 $this->fk_renter = trim($this->fk_renter);
-		}
-		if (isset($this->amount)) {
-			 $this->amount = trim($this->amount);
-		}
-		if (isset($this->comment)) {
-			 $this->comment = trim($this->comment);
-		}
-		if (isset($this->fk_owner)) {
-			 $this->fk_owner = trim($this->fk_owner);
-		}
-		if (isset($this->fk_receipt)) {
-			 $this->fk_receipt = trim($this->fk_receipt);
-		}
-
-		
+		if (isset($this->fk_contract))		$this->fk_contract = trim($this->fk_contract);
+		if (isset($this->fk_property))		$this->fk_property = trim($this->fk_property);
+		if (isset($this->fk_renter))		$this->fk_renter = trim($this->fk_renter);
+		if (isset($this->amount))			$this->amount = trim($this->amount);
+		if (isset($this->fk_bank))			$this->fk_bank=trim($this->fk_bank);
+		if (isset($this->fk_typepayment))   $this->fk_typepayment=trim($this->fk_typepayment);
+		if (isset($this->num_payment))      $this->num_payment=trim($this->num_payment);
+		if (isset($this->comment))			$this->comment = trim($this->comment);
+		if (isset($this->fk_owner))			$this->fk_owner = trim($this->fk_owner);
+		if (isset($this->fk_receipt))		$this->fk_receipt = trim($this->fk_receipt);
 
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -146,24 +134,28 @@ class Immopayment extends CommonObject
 		$sql.= 'fk_property,';
 		$sql.= 'fk_renter,';
 		$sql.= 'amount,';
+		$sql.= 'fk_bank,';
+		$sql.= 'fk_typepayment,';
+		$sql.= 'num_payment,';
 		$sql.= 'comment,';
 		$sql.= 'date_payment,';
 		$sql.= 'fk_owner,';
 		$sql.= 'fk_receipt';
 
-		
 		$sql .= ') VALUES (';
-		
+
 		$sql .= ' '.(! isset($this->fk_contract)?'NULL':$this->fk_contract).',';
 		$sql .= ' '.(! isset($this->fk_property)?'NULL':$this->fk_property).',';
 		$sql .= ' '.(! isset($this->fk_renter)?'NULL':$this->fk_renter).',';
 		$sql .= ' '.(! isset($this->amount)?'NULL':"'".$this->amount."'").',';
+		$sql .= ' '.(! isset($this->fk_bank)?'NULL':"'".$this->fk_bank."'").',';
+		$sql .= ' '.(! isset($this->fk_typepayment)?'NULL':"'".$this->db->escape($this->fk_typepayment)."'").',';
+		$sql .= ' '.(! isset($this->num_payment)?'NULL':"'".$this->db->escape($this->num_payment)."'").',';		
 		$sql .= ' '.(! isset($this->comment)?'NULL':"'".$this->db->escape($this->comment)."'").',';
 		$sql .= ' '.(! isset($this->date_payment) || dol_strlen($this->date_payment)==0?'NULL':"'".$this->db->idate($this->date_payment)."'").',';
 		$sql .= ' '.(! isset($this->fk_owner)?'NULL':$this->fk_owner).',';
 		$sql .= ' '.(! isset($this->fk_receipt)?'NULL':$this->fk_receipt);
 
-		
 		$sql .= ')';
 
 		$this->db->begin();
@@ -219,19 +211,28 @@ class Immopayment extends CommonObject
 		$sql .= " t.fk_property,";
 		$sql .= " t.fk_renter,";
 		$sql .= " t.amount,";
+		$sql .= " t.fk_bank,";
+		$sql .= " t.fk_typepayment,";
+		$sql .= " p.libelle as typepayment_label,";
+		$sql .= " t.num_payment,";
 		$sql .= " t.comment,";
 		$sql .= " t.date_payment,";
 		$sql .= " t.fk_owner,";
-		$sql .= " t.fk_receipt";
-		$sql .= " , lc.nom as nomlocataire , ll.name as nomlocal , lo.name as nomloyer ";
+		$sql .= " t.fk_receipt,";
+		$sql .= " lc.nom as nomlocataire,";
+		$sql .= " ll.name as nomlocal,";
+		$sql .= " lo.name as nomloyer ";
 
-		
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
-		$sql .= " , " . MAIN_DB_PREFIX . "immo_renter as lc ";
-		$sql .= " , " . MAIN_DB_PREFIX . "immo_property as ll ";
-		$sql .= " , " . MAIN_DB_PREFIX . "immo_receipt as lo ";
+		$sql .= " , " . MAIN_DB_PREFIX . "immo_renter as lc";
+		$sql .= " , " . MAIN_DB_PREFIX . "immo_property as ll";
+		$sql .= " , " . MAIN_DB_PREFIX . "immo_receipt as lo";
+		$sql .= " , " . MAIN_DB_PREFIX . "c_paiement as p";		
 		
-		$sql .= "WHERE t.fk_renter = lc.rowid AND t.fk_property = ll.rowid AND t.fk_receipt = lo.rowid ";
+		$sql .= " WHERE t.fk_renter = lc.rowid";
+		$sql .= " AND t.fk_property = ll.rowid";
+		$sql .= " AND t.fk_receipt = lo.rowid";
+		$sql .= " AND t.fk_typepayment = p.id";
 		
 		if (!empty($ref)) {
 			$sql .= ' AND t.ref = ' . '\'' . $ref . '\'';
@@ -247,16 +248,18 @@ class Immopayment extends CommonObject
 
 				$this->id = $obj->rowid;
 				
-				$this->fk_contract = $obj->fk_contract;
-				$this->fk_property = $obj->fk_property;
-				$this->fk_renter = $obj->fk_renter;
-				$this->amount = $obj->amount;
-				$this->comment = $obj->comment;
-				$this->date_payment = $this->db->jdate($obj->date_payment);
-				$this->fk_owner = $obj->fk_owner;
-				$this->fk_receipt = $obj->fk_receipt;
-
-				
+				$this->fk_contract			= $obj->fk_contract;
+				$this->fk_property			= $obj->fk_property;
+				$this->fk_renter			= $obj->fk_renter;
+				$this->amount				= $obj->amount;
+				$this->fk_bank				= $obj->fk_bank;
+				$this->fk_typepayment		= $obj->fk_typepayment;
+				$this->typepayment_label	= $obj->typepayment_label;
+				$this->num_payment			= $obj->num_payment;
+				$this->comment				= $obj->comment;
+				$this->date_payment			= $this->db->jdate($obj->date_payment);
+				$this->fk_owner				= $obj->fk_owner;
+				$this->fk_receipt			= $obj->fk_receipt;
 			}
 			$this->db->free($resql);
 
@@ -400,8 +403,6 @@ class Immopayment extends CommonObject
 		if (isset($this->fk_receipt)) {
 			 $this->fk_receipt = trim($this->fk_receipt);
 		}
-
-		
 
 		// Check parameters
 		// Put here code to add a control on parameters values
@@ -573,6 +574,74 @@ class Immopayment extends CommonObject
 		
 	}
 
+	function fetch_by_loyer($id) {
+		$sql = "SELECT ip.rowid as reference, ip.fk_contract, ip.fk_property,";
+		$sql .= "ip.fk_renter, ip.amount, ip.comment, ip.date_payment,";
+		$sql .= "ip.fk_owner, ip.fk_receipt";
+		$sql .= " , lc.nom as nomlocataire , ll.name as nomlocal , lo.nom as nomloyer ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_payment as ip ";
+		$sql .= " , " . MAIN_DB_PREFIX . "immo_renter as lc ";
+		$sql .= " , " . MAIN_DB_PREFIX . "immo_property as ll ";
+		$sql .= " , " . MAIN_DB_PREFIX . "immo_receipt as lo ";
+		$sql .= "WHERE ip.fk_renter = lc.rowid AND ip.fk_property = ll.rowid AND ip.fk_receipt = lo.rowid AND lo.rowid = " . $id;
+		
+		dol_syslog ( get_class ( $this ) . "::fetch_by_loyer sql=" . $sql );
+		$resql = $this->db->query ( $sql );
+		if ($resql) {
+			if ($this->db->num_rows ( $resql )) {
+				$obj = $this->db->fetch_object ( $resql );
+				
+				$this->id = $obj->reference;
+				$this->ref = $obj->reference;
+				$this->fk_contract = $obj->fk_contract;
+				$this->fk_property = $obj->fk_property;
+				$this->nomlocal = $obj->nomlocal;
+				$this->fk_renter = $obj->fk_renter;
+				$this->nomlocataire = $obj->nomlocataire;
+				$this->amount = $obj->amount;
+				$this->comment = $obj->comment;
+				$this->date_paiement = $this->db->jdate ( $obj->date_payment );
+				$this->fk_receipt = $obj->fk_receipt;
+				$this->nomloyer = $obj->nomloyer;
+				$this->fk_owner = $obj->fk_owner;
+				
+				1;
+			} else {
+				return 0;
+			}
+			$this->db->free ( $resql );
+		} else {
+			$this->error = $this->db->error ();
+			return - 1;
+		}
+	}
+
+	/**
+	 * Renvoie nom clicable (avec eventuellement le picto)
+	 *
+	 * @param int $withpicto picto, 1=Inclut le picto dans le lien, 2=Picto seul
+	 * @param int $maxlen libelle
+	 * @return string avec URL
+	 */
+	function getNomUrl($withpicto = 0, $maxlen = 0) {
+		global $langs;
+	
+		$result = '';
+	
+		if (empty ( $this->id ))
+			$this->id = $this->id;
+	
+			$lien = '<a href="' . DOL_URL_ROOT . '/custom/immobilier/receipt/payment/card.php?id=' . $this->id . '">';
+			$lienfin = '</a>';
+	
+			if ($withpicto)
+				$result .= ($lien . img_object ( $langs->trans ( "ShowPayment" ) . ': ' . $this->id, 'bill' ) . $lienfin . ' ');
+				if ($withpicto && $withpicto != 2)
+					$result .= ' ';
+					if ($withpicto != 2)
+						$result .= $lien . ($maxlen ? dol_trunc ( $this->ref, $maxlen ) : $this->ref) . $lienfin;
+		return $result;
+	}
 }
 
 /**
@@ -602,31 +671,3 @@ class ImmopaymentLine
 	 */
 	
 }
-
-/**
-	 * Renvoie nom clicable (avec eventuellement le picto)
-	 *
-	 * @param int $withpicto picto, 1=Inclut le picto dans le lien, 2=Picto seul
-	 * @param int $maxlen libelle
-	 * @return string avec URL
-	 */
-	function getNomUrl($withpicto = 0, $maxlen = 0) {
-		global $langs;
-	
-		$result = '';
-	
-		if (empty ( $this->id ))
-			$this->id = $this->id;
-	
-			$lien = '<a href="' . DOL_URL_ROOT . '/custom/immobilier/receipt/payment/card.php?id=' . $this->id . '">';
-			$lienfin = '</a>';
-	
-			if ($withpicto)
-				$result .= ($lien . img_object ( $langs->trans ( "ShowPayment" ) . ': ' . $this->id, 'bill' ) . $lienfin . ' ');
-				if ($withpicto && $withpicto != 2)
-					$result .= ' ';
-					if ($withpicto != 2)
-						$result .= $lien . ($maxlen ? dol_trunc ( $this->ref, $maxlen ) : $this->ref) . $lienfin;
-						return $result;
-	}
-

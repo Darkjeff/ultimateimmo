@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS llx_immo_property
   rowid				integer AUTO_INCREMENT PRIMARY KEY,
   entity			integer DEFAULT 1 NOT NULL,	-- multi company id
   fk_type_property	integer DEFAULT 1 NOT NULL,
-  fk_property       integer,  -- Hierarchic parent
-  fk_owner	        integer,  -- Hierarchic parent
+  fk_property       integer,  	-- Hierarchic parent
+  fk_owner	        integer,  	-- Owner of the property
   name				varchar(128) NOT NULL,
   address			text,
   building			varchar(32),
@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS llx_immo_property
   zip				varchar(32),
   town				varchar(64),
   fk_pays 			integer,
+  datep				date DEFAULT NULL,	-- Build date of the property
+  target			tinyint DEFAULT 0,	-- Rent or sale
   statut			smallint NOT NULL DEFAULT 0,
   note_private		text DEFAULT NULL,
   note_public		text DEFAULT NULL,

@@ -28,7 +28,7 @@ if (! $res)
 	die("Include of main fails");
 
 require_once ('../core/lib/immobilier.lib.php');
-require_once ('../class/renter.class.php');
+require_once ('../class/immorenter.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
 
@@ -55,39 +55,41 @@ $pagenext = $page + 1;
 if (! $sortorder) $sortorder="ASC";
 if (! $sortfield) $sortfield="name";
 
-
 $object = new Renter($db);
 $object->fetch($id, $ref);
 
-$upload_dir = $conf->renter->dir_output.'/'.dol_sanitizeFileName($object->ref);
+$upload_dir = $conf->immobilier->dir_output.'/renter/'.dol_sanitizeFileName($object->ref);
 $modulepart='immobilier';
-
 
 /*
  * Actions
  */
 
-include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_pre_headers.tpl.php';
-
+if (empty($reshook)) {
+	include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
+}
 
 /*
  * View
  */
-
 $form = new Form($db);
 
-llxHeader("","",$langs->trans("RenterCard"));
+llxHeader("",$langs->trans("RenterCard").' | '.$langs->trans("Files"));
 
-
-if ($object->id)
+if ($id > 0)
 {
-	$object->fetch_thirdparty();
-
+	/*
+	 * Affichage onglets
+	 */
 	$head=renter_prepare_head($object);
-
 	dol_fiche_head($head, 'document',  $langs->trans("RenterCard"), 0, 'user');
 
+	$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
+	immo_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
+
+	print '<div class="underbanner clearboth"></div>';
+	
 	// Construit liste des fichiers
 	$filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview\.png)$',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
 	$totalsize=0;
@@ -96,21 +98,11 @@ if ($object->id)
 		$totalsize+=$file['size'];
 	}
 
-
-    print '<table class="border" width="100%">';
-
-    $linkback = '<a href="'.DOL_URL_ROOT.'/renter/list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
-
-	// Ref
-	print '<tr><td width="25%">'.$langs->trans("Ref").'</td><td>';
-	print $form->showrefnav($object, 'id', $linkback, 1, 'rowid', 'ref', '');
-	print '</td></tr>';
-
-	// Societe
-	//print "<tr><td>".$langs->trans("Company")."</td><td>".$object->client->getNomUrl(1)."</td></tr>";
-
+	print '<table class="border"width="100%">';
+	// Nbre fichiers
     print '<tr><td>'.$langs->trans("NbOfAttachedFiles").'</td><td colspan="3">'.count($filearray).'</td></tr>';
-    print '<tr><td>'.$langs->trans("TotalSizeOfAttachedFiles").'</td><td colspan="3">'.$totalsize.' '.$langs->trans("bytes").'</td></tr>';
+    // Total taille
+	print '<tr><td>'.$langs->trans("TotalSizeOfAttachedFiles").'</td><td colspan="3">'.$totalsize.' '.$langs->trans("bytes").'</td></tr>';
     print '</table>';
 
     print '</div>';
@@ -119,7 +111,6 @@ if ($object->id)
     $permission = $user->rights->immobilier->renter->write;
     $param = '&id=' . $object->id;
     include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
-
 }
 else
 {
@@ -127,5 +118,4 @@ else
 }
 
 llxFooter();
-
 $db->close();

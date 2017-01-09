@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS llx_immo_cost
 (
 	rowid			integer AUTO_INCREMENT PRIMARY KEY,
 	fk_property     integer,
+	fk_soc			integer,
 	type     		integer,
 	label			varchar(256) 	NOT NULL,
 	supplier		varchar(256) 	DEFAULT '' NOT NULL,
