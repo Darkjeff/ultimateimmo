@@ -141,7 +141,7 @@ elseif ($action == 'update')
 	$charge->date = $dateacq;
 	$charge->date_start = $datedu;
 	$charge->date_end = $dateau;
-	$charge->socid = GETPOST("societe");
+	$charge->socid = GETPOST("fk_soc");
 	$charge->fk_owner = GETPOST("fk_owner");
 	$charge->commentaire = GETPOST("commentaire");
 
@@ -297,9 +297,9 @@ if ($id > 0) {
 
 		// Tier
 			print '<tr>';
-			print '<td>'.fieldLabel('societe','socid',1).'</td>';
+			print '<td>'.fieldLabel('societe','fk_soc',1).'</td>';
 			print '<td>';
-			print $form->select_thirdparty_list($charge->socid,'socid');
+			print $form->select_thirdparty_list($charge->fk_soc,'fk_soc');
 			print '</td>';
 			print '</tr>';
 
@@ -310,6 +310,15 @@ if ($id > 0) {
 		print $htmlimmo->select_property($charge->fk_property, 'fk_property');
 		print '</td>';
 		print '</tr>';
+
+		print '<tr>';
+		print '<td>'.$langs->trans("Type").'</td>';
+		print '<td>';
+		print $htmlimmo->select_type($charge->type, 'type');
+		print '</td>';
+		print '</tr>';
+
+
 
 		print '<tr>';
 		print '<td>'.$langs->trans("amount").'</td>';
@@ -609,6 +618,12 @@ if ($id > 0) {
 		print '<td>'.$langs->trans("Building").'</td>';
 		print '<td>'.$propertystatic->getNomUrl(1).'</td>';
 		print '</tr>';
+
+		print '<tr>';
+		print '<td>'.$langs->trans("type").'</td>';
+		print '<td>' . $charge->type . '</td>';
+		print '</tr>';
+
 
 		print '<tr>';
 		print '<td>'.$langs->trans("amount").'</td>';

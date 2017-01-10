@@ -312,7 +312,7 @@ class Immocost extends CommonObjectImmobilier
 		$sql .= " fk_property ='" . $this->db->escape ( $this->fk_property ) . "',";
 		$sql .= " type ='" . $this->db->escape ( $this->type ) . "',";
 		$sql .= " amount ='" . $this->db->escape ( $this->amount ) . "',";
-		$sql .= "fk_soc ='" . $this->db->escape ( $this->fk_soc ) . "',";
+		$sql .= "fk_soc ='" . $this->db->escape ( $this->socid ) . "',";
 		$sql .= " fk_owner ='" . $user->id . "',";
 		$sql .= " note_public ='" . $this->db->escape ( $this->note_public ) . "',";
 		$sql .= " date=" . (dol_strlen($this->date) != 0 ? "'" . $this->db->idate($this->date) . "'" : 'null').',';
