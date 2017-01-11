@@ -299,7 +299,7 @@ if ($id > 0) {
 			print '<tr>';
 			print '<td>'.fieldLabel('societe','fk_soc',1).'</td>';
 			print '<td>';
-			print $form->select_thirdparty_list($charge->fk_soc,'fk_soc');
+			print $form->select_thirdparty_list($charge->socid,'fk_soc');
 			print '</td>';
 			print '</tr>';
 
@@ -440,138 +440,7 @@ if ($id > 0) {
 		
 		print "<div class='clearboth'></div>";
 
-		/*print '<div class="fichecenter"><div class="fichehalfleft"><div class="underbanner clearboth"></div><table class="border tableforfield" width="100%"><tbody>';
-
-		print '<tr>';
-
-		print '<form name="update" action="' . $_SERVER['PHP_SELF'] . '" method="post">';
-		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
-		print '<input type="hidden" name="action" value="update">';
-		print '<input type="hidden" name="id" value="' . GETPOST("id") . '">' . "\n";
-
-		
-		print '<td width="25%">'.$langs->trans("Label").'</td>';
-		print '<td><input name="label" size="30" value="' . $charge->label . '"</td>';
-		print '</tr>';
-
-		print '<tr>';
-		print '<td>'.$langs->trans("supplier").'</td>';
-		print '<td>';
-		print $htmlimmo->select_supplier($charge->supplier, 'supplier', 1);
-		print '</td>';
-		print '</tr>';
-
-		print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
-						if ($charge->socid) {
-							print '<a href="' . dol_buildpath('/comm/card.php', 1) . '?socid=' . $charge->socid . '">';
-							print '<input type="hidden" name="societe" value="' . $charge->socid . '">';
-							print img_object($langs->trans("ShowCompany"), "company") . ' ' . dol_trunc($charge->socname, 20) . '</a>';
-						} else {
-							print '&nbsp;';
-							print '<input type="hidden" name="societe" value="">';
-						}
-						print '</td></tr>';
-
-
-		print '<tr>';
-		print '<td>'.$langs->trans("Building").'</td>';
-		print '<td>';
-		print $htmlimmo->select_property($charge->fk_property, 'fk_property');
-		print '</td>';
-		print '</tr>';
-
-		print '<tr>';
-		print '<td>'.$langs->trans("amount").'</td>';
-		print '<td><input name="amount" size="30" value="' . $charge->amount . '"</td>';
-		print '</tr>';
-
-		print '<tr>';
-		print '<td>'.$langs->trans("Date").'</td>';
-		print '<td align="left">';
-		print $html->select_date($charge->date, 'acq', 0, 0, 0, 'fiche_charge', 1);
-		print '</td>';
-		print '</tr>';
-
-		print '<tr>';
-		print '<td>'.$langs->trans("DateStartPeriod").'</td>';
-		print '<td align="left">';
-		print $html->select_date($charge->date_start, 'du', 0, 0, 0, 'fiche_charge', 1);
-		print '</td>';
-		print '</tr>';
-
-		print '<tr>';
-		print '<td>'.$langs->trans("DateEndPeriod").'</td>';
-		print '<td align="left">';
-		print $html->select_date($charge->date_end, 'au', 0, 0, 0, 'fiche_charge', 1);
-		print '</td>';
-		print '</tr>';
-
-		print '<tr>';
-		print '<td>'.$langs->trans("Comment").'</td>';
-		print '<td><input name="commentaire" size="80" value="' . $charge->commentaire . '"</td>';
-		print '</tr>';
-
-		print '<tr><td>'.$langs->trans("Status").'</td>';
-		print '<td align="left" nowrap="nowrap">';
-		print $charge->LibStatut ( $charge->dispatch, 5 );
-		print "</td></tr>";
-
-		print '<tr>';
-		print '<td>&nbsp;</td>';
-		print '<td><input type="submit" class="button" value="' . $langs->trans("Sauvegarder") . '"><input type="cancel" class="button" value="' . $langs->trans("Cancel") . '"></td>';
-		print '</tr>';
-
-		print '</form>';
-		print '</tbody></table>';
-		
-		print '</div><div class="fichehalfright"><div class="ficheaddleft"><div class="underbanner clearboth"></div>';
-
-		
-
-		print '<form action="' . $_SERVER['PHP_SELF'] . '" method="post">';
-		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
-		print '<input type="hidden" name="action" value="addrepart">';
-		print '<input type="hidden" name="id" value="' . GETPOST("id") . '">' . "\n";
-		echo '<table class="border tableforfield" width="100%"><tbody>';
-
-		print '<tr  class="liste_titre">';
-		print '<td>';
-		print $langs->trans('localid');
-		print '</td>';
-		print '<td>';
-		print $langs->trans('Type');
-		print '</td>';
-		print '<td>';
-		print $langs->trans('Amount');
-		print '</td>';
-		print '<td>';
-		print '&nbsp';
-		print '</td>';
-
-		print '<tr>';
-
-		print '<td>';
-		print $htmlimmo->select_property($chargedet->fk_property, 'fk_property');
-		print '</td>';
-
-		print '<td>';
-		print '<input type="text" size="15" name="chargedet_type"/>';
-		print '</td>';
-
-		print '<td>';
-		print '<input type="text" size="15" name="montant"/>';
-		print '</td>';
-
-		print '<td>';
-		print '<input type="submit" value="' . $langs->trans('addrepart') . '" name="addrepart"/>';
-		print '</td>';
-
-		print '</tr>';
-
-		print '<tbody></table></div></div></div>';
-
-		print '</form>';*/
-		
+				
 	}else{
 		
 		llxheader('', $langs->trans("Charge"), '');

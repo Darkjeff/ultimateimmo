@@ -75,8 +75,10 @@ print_fiche_titre($langs->trans("Charges"));
                         {"sClass": "center"},
                         {"sClass": "center"},
                         {"sClass": "left"},
-                        {"sClass": "center"},
-						]
+                        {"sClass": "center"},                        
+						],
+						 "order": [[ 0, "desc" ]]
+						
 			});
 
 			$("table#dataTable").on("click", ".delete", function(event) {

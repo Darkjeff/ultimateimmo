@@ -151,7 +151,8 @@ print_fiche_titre($langs->trans("ListReceipts"));
                         {"sClass": "center"},
                         {"sClass": "left"},
                         {"sClass": "center"},
-						]
+						],
+						 "order": [[ 0, "desc" ]]
 			});
 
 			$("table#dataTable").on("click", ".delete", function(event) {
