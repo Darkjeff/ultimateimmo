@@ -258,6 +258,7 @@ if ($action == 'update')
 	$receipt->montant_tot 	= $_POST["montant_tot"];
 	$receipt->loy 			= $_POST["loy"];
 	$receipt->charges 		= $_POST["charges"];
+	$receipt->vat 			= $_POST["vat"];
 	$receipt->echeance 		= $dateech;
 	$receipt->commentaire 	= $_POST["commentaire"];
 	$receipt->statut 		= $_POST["statut"];
@@ -527,6 +528,8 @@ else
 			print '<td><input name="loy" size="10" value="' . $receipt->rent . '"</td></tr>';
 			print '<tr><td>' . $langs->trans("charges") . '</td>';
 			print '<td><input name="charges" size="10" value="' . $receipt->charges . '"</td>';
+			print '<tr><td>' . $langs->trans("vat") . '</td>';
+			print '<td><input name="vat" size="10" value="' . $receipt->vat . '"</td>';
 			$rowspan = 5;
 			print '<td rowspan="' . $rowspan . '" valign="top">';
 			
@@ -665,6 +668,12 @@ else
 			}*/
 			
 			dol_fiche_end();
+			print '<div class="center">';
+	print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+	print '<input type="submit" class="butActionDelete" name="cancel" value="' . $langs->trans("Cancel") . '">';
+	print '</div>';
+			
+			
 		} else {
 			
 		// Display receipt card
@@ -720,6 +729,8 @@ else
 			print '<td colspan="2">' . price($receipt->rent) . '</td></tr>';
 			print '<tr><td>' . $langs->trans("charges") . '</td>';
 			print '<td>' . price($receipt->charges) . '</td>';
+			print '<tr><td>' . $langs->trans("vat") . '</td>';
+			print '<td>' . price($receipt->vat) . '</td>';
 			
 			$rowspan=6;
 			print '<td rowspan="'.$rowspan.'" valign="top">';
@@ -936,7 +947,7 @@ else
 		$var=true;
 
 		print '<br>';
-		$formfile->show_documents('immobilier',$filename,$filedir,$urlsource,$genallowed,$delallowed,$receipt->modelpdf);
+		//$formfile->show_documents('immobilier',$filename,$filedir,$urlsource,$genallowed,$delallowed,$receipt->modelpdf);
 
 		print '</td><td>&nbsp;</td>';
 
