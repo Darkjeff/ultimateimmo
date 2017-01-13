@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /* Copyright (C) 2013		Olivier Geffroy		<jeff@jeffinfo.com>
  * Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro.dolibarr@gmail.com>
  * Copyright (C) 2016		Jamelbaz			<jamelbaz@gmail.com>
@@ -76,7 +76,8 @@ print_fiche_titre($langs->trans("ListPayment"));
                         {"sClass": "right"},
                         {"sClass": "center"},
                         {"sClass": "center"},
-						]
+						],
+						"order": [[ 1, "desc" ]]
 			});
 
 			$("table#dataTable").on("click", ".delete", function(event) {

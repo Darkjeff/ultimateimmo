@@ -631,7 +631,7 @@ class Immopayment extends CommonObject
 		if (empty ( $this->id ))
 			$this->id = $this->id;
 	
-			$lien = '<a href="' . DOL_URL_ROOT . '/custom/immobilier/receipt/payment/card.php?id=' . $this->id . '">';
+			$lien = '<a href="' . DOL_URL_ROOT . '/custom/immobilier/receipt/payment/card.php?action=update&id=' . $this->id . '">';
 			$lienfin = '</a>';
 	
 			if ($withpicto)
