@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /* Copyright (C) 2013-2014  Florian Henry   	<florian.henry@open-concept.pro>
  * Copyright (C) 2015-2016	Alexandre Spangaro  <aspangaro.dolibarr@gmail.com>
  *

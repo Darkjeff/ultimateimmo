@@ -137,8 +137,9 @@ $sql .= ", ll.rowid as property_id, ll.name as nomlocal,";
 $sql .= " soc.rowid as soc_id,";
 $sql .= " soc.nom as company";
 $sql .= " FROM " . MAIN_DB_PREFIX . "immo_cost as ch";
-$sql .= ' LEFT JOIN llx_immo_property as ll ON ch.fk_property = ll.rowid';
-$sql .= ' LEFT JOIN llx_societe as soc ON soc.rowid = ch.fk_soc';
+$sql .= " LEFT JOIN llx_immo_property as ll ON ch.fk_property = ll.rowid";
+$sql .= " LEFT JOIN llx_societe as soc ON soc.rowid = ch.fk_soc";
+
 
  
 require( '../class/ssp.class.php' );

@@ -1,26 +1,38 @@
--- ============================================================================
--- Copyright (C) 2016      	Olivier Geffroy		<jeff@jeffinfo.com>
+-- phpMyAdmin SQL Dump
+-- version 4.1.14
+-- http://www.phpmyadmin.net
 --
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+-- Client :  127.0.0.1
+-- Généré le :  Dim 24 Juillet 2016 à 12:41
+-- Version du serveur :  5.6.17
+-- Version de PHP :  5.5.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
 --
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+-- Base de données :  `jeffimmo`
 --
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-- --------------------------------------------------------
+
 --
--- ============================================================================
---
--- Contraintes pour la table llx_immo_building
+-- Structure de la table `llx_immo_building`
 --
 
 CREATE TABLE IF NOT EXISTS `llx_immo_building` (
-   rowid  			integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	fk_property		integer NOT NULL,
-	name			text NOT NULL
-) ENGINE=InnoDB
+  `rowid` int(11) NOT NULL AUTO_INCREMENT,
+  `fk_property` int(11) NOT NULL,
+  `name` text NOT NULL,
+  PRIMARY KEY (`rowid`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

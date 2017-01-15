@@ -83,7 +83,7 @@ if ($action == 'add' && $user->rights->immobilier->property->write) {
 		$object->montant_tot = GETPOST("montant_tot");
 		$object->loyer = GETPOST("loyer");
 		$object->charges = GETPOST("charges");
-		$object->tva = GETPOST("tva");
+		$object->tva = GETPOST('tva_value','alpha');
 		$object->periode = GETPOST("periode");
 		$object->depot = GETPOST("depot");
 		$object->commentaire = GETPOST("commentaire");
@@ -123,10 +123,10 @@ if ($action == 'update' && $user->rights->immobilier->property->write) {
 		$object->date_start = $datect;
 		$object->preavis = GETPOST('preavis');
 		$object->date_end = $datectend;
-		$object->montant_tot = GETPOST("montant_tot");
+		$object->montant_tot =  GETPOST("loyer") + GETPOST("charges");
 		$object->loyer = GETPOST("loyer");
 		$object->charges = GETPOST("charges");
-		$object->tva = GETPOST("tva");
+		$object->tva = GETPOST('tva_value','alpha');
 		$object->periode = GETPOST("periode");
 		$object->depot = GETPOST("depot");
 		$object->commentaire = GETPOST("commentaire");
@@ -190,21 +190,22 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 	// Income rent
 	print '<tr>';
 	print '<td><label for="loyer">' . $langs->trans("AmountHC") . '</label></td>';
-	print '<td><input name="loyer" id="loyer" size="10" value="' . price($object->loyer) . '" OnChange="javascript:compteur1();"></td></tr>';
+	print '<td><input name="loyer" id="loyer" size="10" value="' . price($object->loyer) . '" </td></tr>';
 	
 	print '<tr>';
 	print '<td><label for="charges">' . $langs->trans("Charges") . '</label></td>';
-	print '<td><input name="charges" id="charges" size="10" value="' . price($object->charges) . '" OnChange="javascript:compteur1();"></td></tr>';
+	print '<td><input name="charges" id="charges" size="10" value="' . price($object->charges) . '" ></td></tr>';
 	print '<tr>';
 	
 	print '<tr>';
 	print '<td><label for="amount">' . $langs->trans("AmountTC") . '</label></td>';
 	print '<td><input name="montant_tot" id="amount" size="10" value="' . price($object->montant_tot) . '" disabled="disabled"></td></tr>';
 	
-	print '<td><label for="vat">' . $langs->trans("VAT") . '</label></td>';
-	print '<td>';
-	print $form->selectyesno("vat", (isset($_POST['vat'])?GETPOST('vat'):$object->vat), 0);
-	print '</td></tr>';
+	
+	print '<tr><td>'.fieldLabel('tva','tva_value').'</td><td>';
+    print $form->selectyesno('tva_value',$object->tva,1);
+    print '</td>';
+	
 
 	/*
 	print '<tr>';
@@ -232,16 +233,8 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 	print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="' . $langs->trans("Cancel") . '" class="button" onclick="history.go(-1)" />';
 	print '</div>';
 
-	?>
-	<script language="javascript">
-
-	function compteur1(){
-		document.getElementById('amount').value = parseInt(document.getElementById('loyer').value) + parseInt(document.getElementById('charges').value);
-	}
-
-	</script>
 	
-	<?php
+	
 	print '</form>';
 } else {
 	
@@ -301,21 +294,19 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 
 			print '<tr>';
 			print '<td>'.fieldLabel('AmountHC','loyer',0).'</td>';
-			print '<td><input name="loyer" id=loyer" size="10" value="' . price($object->loyer) . '"  OnChange="javascript:compteur1();"></td></tr>';
+			print '<td><input name="loyer" id=loyer" size="10" value="' . price($object->loyer) . '" </td></tr>';
 
 			print '<tr>';
 			print '<td>'.fieldLabel('Charges','charges',0).'</td>';
-			print '<td><input name="charges" id="charges" size="10" value="' . price($object->charges) . '"  OnChange="javascript:compteur1();"></td></tr>';
+			print '<td><input name="charges" id="charges" size="10" value="' . price($object->charges) . '"  </td></tr>';
 
 			print '<tr>';
 			print '<td>'.fieldLabel('AmountTC','amount',1).'</td>';
 			print '<td><input name="montant_tot" id="amount" size="10" value="' . price($object->montant_tot) . '" disabled="disabled"></td></tr>';
 			
-			print '<tr>';
-			print '<td>'.fieldLabel('VAT','vat',0).'</td>';
-			print '<td>';
-			print $form->selectyesno("vat", (isset($_POST['vat'])?GETPOST('vat'):$object->vat), 0);
-			print '</td></tr>';
+			print '<tr><td>'.fieldLabel('tva','tva_value').'</td><td>';
+			print $form->selectyesno('tva_value',$object->tva,1);
+			print '</td>';
 
 			/*
 			print '<tr>';
@@ -348,16 +339,9 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 			print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="' . $langs->trans("Cancel") . '" class="button" onclick="history.go(-1)" />';
 			print '</div>';
 
-			?>
-			<script language="javascript">
-
-			function compteur1(){
-				document.getElementById('amount').value = parseInt(document.getElementById('loyer').value) + parseInt(document.getElementById('charges').value);
-			}
-
-			</script>
+		
 			
-			<?php
+			
 			
 			print '</form>';
 		} else {
@@ -426,7 +410,15 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 				print '<td>' . $langs->trans("AmountTC") . '</td>';
 				print '<td>' . price($object->montant_tot) . '</td>';
 				print '</tr>';
-
+				
+				// VAT payers
+				print '<tr><td>';
+				print $langs->trans('VATIsUsed');
+				print '</td><td>';
+				print yn($object->tva);
+				print '</td>';
+				print '</tr>';
+		
 				print '<tr>';
 				print '<td>' . $langs->trans("Caution") . '</td>';
 				print '<td>' . price($object->depot) . '</td>';
