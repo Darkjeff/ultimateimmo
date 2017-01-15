@@ -255,8 +255,8 @@ if ($action == 'update')
 	$result = $receipt->fetch($id);
 	
 	$receipt->nom 			= GETPOST('nom');
-	$receipt->montant_tot 	= $_POST["montant_tot"];
-	$receipt->loy 			= $_POST["loy"];
+	$receipt->amount_total 	= $_POST["rent"] + $_POST["charges"];
+	$receipt->rent 			= $_POST["rent"];
 	$receipt->charges 		= $_POST["charges"];
 	$receipt->vat 			= $_POST["vat"];
 	$receipt->echeance 		= $dateech;
@@ -523,9 +523,9 @@ else
 			
 			// Amount
 			print '<tr><td>' . $langs->trans("montant_tot") . '</td>';
-			print '<td><input name="montant_tot" size="10" value="' . $receipt->amount_total . '"</td></tr>';
+			print '<td>' . $receipt->amount_total . '</td></tr>';
 			print '<tr><td>' . $langs->trans("rent") . '</td>';
-			print '<td><input name="loy" size="10" value="' . $receipt->rent . '"</td></tr>';
+			print '<td><input name="rent" size="10" value="' . $receipt->rent . '"</td></tr>';
 			print '<tr><td>' . $langs->trans("charges") . '</td>';
 			print '<td><input name="charges" size="10" value="' . $receipt->charges . '"</td>';
 			print '<tr><td>' . $langs->trans("vat") . '</td>';
