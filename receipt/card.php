@@ -509,6 +509,12 @@ else
 			
 			print '<tr><td>' . $langs->trans("contrat_id") . '</td>';
 			print '<td>' . $receipt->fk_contract . '</td></tr>';
+				print '<tr><td>';
+				print $langs->trans('VATIsUsed');
+				print '</td><td>';
+				print yn($receipt->addtva);
+				print '</td>';
+				print '</tr>';
 			
 			/*
 			 * Nom Appartement
@@ -529,7 +535,7 @@ else
 			print '<tr><td>' . $langs->trans("charges") . '</td>';
 			print '<td><input name="charges" size="10" value="' . $receipt->charges . '"</td>';
 			print '<tr><td>' . $langs->trans("vat") . '</td>';
-			print '<td><input name="vat" size="10" value="' . $receipt->vat . '"</td>';
+			print '<td>' . $receipt->vat . '</td>';
 			$rowspan = 5;
 			print '<td rowspan="' . $rowspan . '" valign="top">';
 			
@@ -713,6 +719,15 @@ else
 			// Contract
 			print '<tr><td>' . $langs->trans("contrat_id") . '</td>';
 			print '<td colspan="2">' . $receipt->fk_contract . '</td></tr>';
+			
+			print '<tr><td>';
+				print $langs->trans('VATIsUsed');
+				print '</td><td>';
+				print yn($receipt->addtva);
+				print '</td>';
+				print '</tr>';
+			
+			
 			
 			// Property
 			print '<tr><td>' . $langs->trans("Property") . ' </td>';

@@ -291,11 +291,13 @@ class Immoreceipt extends CommonObject
 		$sql .= " lc.nom as nomlocataire,";
 		$sql .= " lc.mail as emaillocataire,";
 		$sql .= " ll.name as nomlocal,";
-		$sql .= " ll.rowid as property_id";
+		$sql .= " ll.rowid as property_id,";
+		$sql .= " ic.tva as addtva";
 
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'immo_renter as lc ON t.fk_renter = lc.rowid';
 		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'immo_property as ll ON t.fk_property = ll.rowid';
+		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'immo_contrat as ic ON t.fk_contract = ic.rowid';
 		
 		if (null !== $ref) {
 			$sql .= ' WHERE t.ref = ' . '\'' . $ref . '\'';
@@ -335,6 +337,7 @@ class Immoreceipt extends CommonObject
 				$this->nomlocal			= $obj->nomlocal;
 				$this->property_id		= $obj->property_id;
 				$this->modelpdf			= $obj->model_pdf;
+				$this->addtva			= $obj->addtva;
 			}
 			$this->db->free($resql);
 
