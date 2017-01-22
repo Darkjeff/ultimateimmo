@@ -255,10 +255,17 @@ if ($action == 'update')
 	$result = $receipt->fetch($id);
 	
 	$receipt->nom 			= GETPOST('nom');
-	$receipt->amount_total 	= $_POST["rent"] + $_POST["charges"];
+	If ($receipt->addtva != 0) {
+	$receipt->amount_total 	= ($_POST["rent"] + $_POST["charges"])*1.2;}
+	Else {
+	$receipt->amount_total 	= $_POST["rent"] + $_POST["charges"];}
 	$receipt->rent 			= $_POST["rent"];
 	$receipt->charges 		= $_POST["charges"];
-	$receipt->vat 			= $_POST["vat"];
+	If ($receipt->addtva != 0) {
+	$receipt->vat 			= ($_POST["rent"]+$_POST["charges"])*0.2;}
+	Else {
+	$receipt->vat 			= 0;}
+	
 	$receipt->echeance 		= $dateech;
 	$receipt->commentaire 	= $_POST["commentaire"];
 	$receipt->statut 		= $_POST["statut"];
