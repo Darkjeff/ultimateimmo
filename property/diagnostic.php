@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2013		Olivier Geffroy		<jeff@jeffinfo.com>
- * Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro.dolibarr@gmail.com>
+ * Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,11 +56,11 @@ if ($result < 0) {
 $html = new Form($db);
 $htmlimmo = new FormImmobilier($db);
 
-llxheader('', $langs->trans("PropertyCard") . ' | ' . $langs->trans("Diagnostic"), '');
+llxheader('', $langs->trans("Property") . ' | ' . $langs->trans("Diagnostic"), '');
 
 $head = property_prepare_head($object);
 
-dol_fiche_head($head, 'diagnostic', $langs->trans("PropertyCard"), 0, 'building@immobilier');
+dol_fiche_head($head, 'diagnostic', $langs->trans("Property"), 0, 'building@immobilier');
 
 if ($result) {
 	if ($mesg)

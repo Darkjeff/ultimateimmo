@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2013		Olivier Geffroy		<jeff@jeffinfo.com>
- * Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro.dolibarr@gmail.com>
+ * Copyright (C) 2015-2017	Alexandre Spangaro	<aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ if ($action == 'delete') {
  */
 $form = new Form($db);
 
-llxheader('', $langs->trans("PropertyCard") . ' | ' . $langs->trans("Files"));
+llxheader('', $langs->trans("Property") . ' | ' . $langs->trans("Files"));
 
 if ($id > 0)
 {
@@ -97,7 +97,7 @@ if ($id > 0)
 	 * Affichage onglets
 	 */
 	$head = property_prepare_head($object);
-	dol_fiche_head($head, 'document', $langs->trans("PropertyCard"), 0, 'building@immobilier');
+	dol_fiche_head($head, 'document', $langs->trans("Property"), 0, 'building@immobilier');
 	
 	$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
@@ -115,7 +115,7 @@ if ($id > 0)
 
 	print '<table class="border"width="100%">';
 	// Nbre fichiers
-    print '<tr><td>'.$langs->trans("NbOfAttachedFiles").'</td><td colspan="3">'.count($filearray).'</td></tr>';
+    print '<tr><td class="titlefield">'.$langs->trans("NbOfAttachedFiles").'</td><td colspan="3">'.count($filearray).'</td></tr>';
     // Total taille
 	print '<tr><td>'.$langs->trans("TotalSizeOfAttachedFiles").'</td><td colspan="3">'.$totalsize.' '.$langs->trans("bytes").'</td></tr>';
     print '</table>';

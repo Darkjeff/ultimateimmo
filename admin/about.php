@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2015-2016 Alexandre Spangaro  <aspangaro.dolibarr@gmail.com>
+/* Copyright (C) 2015-2016 Alexandre Spangaro  <aspangaro@zendsi.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ print '</td></tr>';
 // Alexandre Spangaro
 print '<tr><td width="25%" style="text-align:center"><img src="../img/asilib.png"></td>';
 print '<td><b>Alexandre Spangaro</b>&nbsp;-&nbsp;Développeur';
-print '<br>Asilib - Votre gestion informatique en toute liberté !<br>' . $langs->trans("Email") . ' : aspangaro.dolibarr@gmail.com';
+print '<br>Asilib - Votre gestion informatique en toute liberté !<br>' . $langs->trans("Email") . ' : aspangaro@zendsi.com';
 print '<br><a target="_blank" title="Twitter" alt="Twitter" href="http://twitter.com/alexspangaro"><img src="../img/tweet.png" width="20"></a>&nbsp;<a target="_blank" title="Linkedin" alt="Linkedin" href="https://fr.linkedin.com/in/aspangaro"><img src="../img/link.png" width="20"></a>';
 print '<br>&nbsp;';
 print '</td></tr>';

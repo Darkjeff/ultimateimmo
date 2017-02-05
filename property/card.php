@@ -1,6 +1,6 @@
 ﻿<?php
 /* Copyright (C) 2013-2015 Olivier Geffroy    <jeff@jeffinfo.com>
- * Copyright (C) 2015-2016 Alexandre Spangaro <aspangaro.dolibarr@gmail.com>
+ * Copyright (C) 2015-2017 Alexandre Spangaro <aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -228,7 +228,7 @@ if ($action == 'update' && $user->rights->immobilier->property->write)
 /*
  * View
  */
-llxHeader('', $langs->trans("PropertyCard") . ' | ' . $langs->trans("Card"));
+llxHeader('', $langs->trans("Property") . ' | ' . $langs->trans("Card"));
 
 $form = new Form($db);
 $formcompany = new FormCompany($db);
@@ -455,7 +455,7 @@ else
 			print '<input type="hidden" name="id" value="'.$id.'">';
 
 			$head = property_prepare_head($object);
-			dol_fiche_head($head, 'card', $langs->trans("PropertyCard"), 0, 'building@immobilier');
+			dol_fiche_head($head, 'card', $langs->trans("Property"), 0, 'building@immobilier');
 
 			$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 

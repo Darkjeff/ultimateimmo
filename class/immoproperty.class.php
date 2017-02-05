@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2013		Olivier Geffroy		<jeff@jeffinfo.com>
- * Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro.dolibarr@gmail.com>
+ * Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro@zendsi.com>
  * Copyright (C) 2015 		Florian HENRY		<florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify

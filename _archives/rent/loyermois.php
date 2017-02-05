@@ -2,7 +2,7 @@
 /* Copyright (C) 2001-2006  Rodolphe Quiedeville  <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2005  Laurent Destailleur   <eldy@users.sourceforge.net>
  * Copyright (C) 2013       Olivier Geffroy       <jeff@jeffinfo.com>
- * Copyright (C) 2015       Alexandre Spangaro    <aspangaro.dolibarr@gmail.com>
+ * Copyright (C) 2015       Alexandre Spangaro    <aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
