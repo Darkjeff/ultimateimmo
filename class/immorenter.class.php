@@ -50,6 +50,7 @@ class Renter extends CommonObject {
 	var $fk_owner;
 	var $owner_name;
 	var $lines = array ();
+	var $tms;
 	// Statut show if the property is enabled '1' or not '0'
 	var $statut;
 	
@@ -157,6 +158,7 @@ class Renter extends CommonObject {
 		$sql .= " entity,";
 		$sql .= " date_birth,";
 		$sql .= " place_birth,";
+		$sql .= " tms,";
 		$sql .= " statut";
 		$sql .= ") VALUES (";
 		
@@ -177,6 +179,7 @@ class Renter extends CommonObject {
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->date_birth) || dol_strlen($this->date_birth) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_birth) . "'") . ", ";
 		$sql .= " " . (isset($this->place_birth) ? "'" . $this->place_birth . "'" : "null") . ", ";
+		$sql .= "" .(dol_strlen($this->tms) != 0 ? "'".$this->db->idate($this->tms)."'" : "'".$this->db->idate(dol_now())."'").',';
 		$sql .= " ".$this->statut;
 		$sql .= ")";
 

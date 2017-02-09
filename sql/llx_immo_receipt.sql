@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS llx_immo_receipt (
    datec			datetime,  -- date de creation
    tms				timestamp, -- date de modification
    fk_user_author	integer,
-   fk_user_modif	integer DEFAULT NULL 
+   fk_user_modif	integer DEFAULT NULL, 
    model_pdf		varchar(255)
 )ENGINE=InnoDB;
 
