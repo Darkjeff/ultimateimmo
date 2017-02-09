@@ -144,6 +144,7 @@ class Renter extends CommonObject {
 		$sql .= " prenom,";
 		$sql .= " civilite,";
 		$sql .= " fk_user_author,";
+		$sql .= " fk_user_mod,";
 		$sql .= " datec,";
 		$sql .= " fk_soc,";
 		$sql .= " fk_owner,";
@@ -162,6 +163,7 @@ class Renter extends CommonObject {
 		$sql .= " " . (isset($this->nom) ? "'" . $this->nom . "'" : "null") . ", ";
 		$sql .= " " . (isset($this->prenom) ? "'" . $this->prenom . "'" : "null") . ", ";
 		$sql .= " " . (isset($this->civilite) ? "'" . $this->civilite . "'" : "null") . ", ";
+		$sql .= ' ' . $user->id . ", ";
 		$sql .= ' ' . $user->id . ", ";
 		$sql .= "'" . $this->db->idate(dol_now()) . "', ";
 		$sql .= " " . (isset($this->socid) ? $this->db->escape($this->socid) : "null") . ", ";
