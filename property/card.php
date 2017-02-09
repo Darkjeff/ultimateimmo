@@ -180,7 +180,7 @@ if ($action == 'update' && $user->rights->immobilier->property->write)
 			$object->fk_type_property = $type_id;
 			$object->fk_owner 		= $fk_owner;
 			$object->statut 		= GETPOST('statut');
-
+			$object->entity			= $conf->entity;
 			$object->fk_property 	= $fk_property;
 			$object->name 			= GETPOST('name', 'alpha');
 			$object->address 		= GETPOST('address', 'alpha');
