@@ -39,7 +39,7 @@ class Rent extends CommonObject {
 	var $nomlocal;
 	var $nomlocataire;
 	var $date_start;
-	var $date_fin_preavis;
+	var $date_end;
 	var $preavis;
 	var $date_prochain_loyer;
 	var $date_dernier_regul;
@@ -229,6 +229,7 @@ class Rent extends CommonObject {
 		$sql .= "fk_property,";
 		$sql .= "fk_renter,";
 		$sql .= "date_start,";
+		$sql .= "date_end,";
 		$sql .= "montant_tot,";
 		$sql .= "loyer,";
 		$sql .= "charges,";
@@ -242,6 +243,7 @@ class Rent extends CommonObject {
 		$sql .= " '" . $this->fk_property . "',";
 		$sql .= " '" . $this->fk_renter . "',";
 		$sql .= " " . (! isset($this->date_start) || dol_strlen($this->date_start) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_start) . "'") . ", ";
+		$sql .= " " . (! isset($this->date_end) || dol_strlen($this->date_end) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_end) . "'") . ", ";
 		$sql .= " '" . $this->montant_tot . "',";
 		$sql .= " '" . $this->loyer . "',";
 		$sql .= " '" . $this->charges . "',";
