@@ -86,7 +86,7 @@ print_fiche_titre($langs->trans("ListRents"));
 						?>
 						</td>
 						<td align="right"><?php print price($rent['loyerTotal']); ?></td>
-						<td><?php print price($rent['encoursLoyer']); ?></td>
+						<td align="right"><?php print price($rent['encoursLoyer']); ?></td>
 						<td><?php print $object->LibStatut($rent['state']); ?></td>
 						<td align="center">
 							<a href="card.php?action=edit&id=<?php print $renter['id']; ?>"><?php print img_edit() ?></a>

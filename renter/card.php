@@ -91,9 +91,11 @@ if ($action == 'update' && $user->rights->immobilier->renter->write) {
 		$renter->mail = GETPOST('mail', 'alpha');
 		$renter->note = GETPOST('note', 'alpha');
 		$renter->date_birth = dol_mktime(0, 0, 0, GETPOST('datebirthmonth', 'int'), GETPOST('datebirthday', 'int'), GETPOST('datebirthyear', 'int'));
-		if (! empty($fk_socpeople))
+		if (! empty($fk_socpeople)){
 			$renter->fk_socpeople = $fk_socpeople;
+			}
 		$renter->place_birth = GETPOST('place_birth', 'alpha');
+		$renter->statut 		= GETPOST('statut');
 		$result = $renter->update($user);
 		
 		if ($result > 0) {
@@ -624,8 +626,9 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 
 					print '<tr><td>' . $langs->trans("Email") . '</td>';
 					print '<td><input name="mail" class="flat" size="50" value="' . $object->email . '"></td></tr>';
-
-					print '<tr><td>' . $langs->trans("DateToBirth") . '</td>';
+					
+					print '<td>'.fieldLabel('DateToBirth','date_birth',1).'</td>';	
+					//print '<tr><td>' . $langs->trans("DateToBirth") . '</td>';
 					print '<td>';
 					print $form->select_date($object->date_birth, 'datebirth', 0, 0, 1, 'update');
 					print '</td></tr>';
@@ -673,13 +676,31 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 					print '<td>' . dol_print_email($object->email, $object->id, $object->socid, 'AC_EMAIL', 25) . '</td></tr>';
 					print '<input type="hidden" name="mail" value="' . $object->email . '">';
 					
-					print '<tr><td>' . $langs->trans("DateToBirth") . '</td>';
+					print '<td>'.fieldLabel('DateToBirth','date_birth',1).'</td>';
+					//print '<tr><td>' . $langs->trans("DateToBirth") . '</td>';
 					print '<td>' . dol_print_date($object->date_birth, "day");
 					print '</td></tr>';
 				}
 				
 				print '<tr><td>' . $langs->trans("PlaceBirth") . '</td>';
 				print '<td><input name="place_birth" class="flat" size="50" value="' . $object->place_birth . '"></td></tr>';
+				
+				  // Status
+            print '<tr><td>'.fieldLabel('Status','statut',1).'</td><td>';
+            print '<select class="flat" name="statut">';
+            if ($object->statut)
+            {
+                print '<option value="1" selected>'.$langs->trans("RenterEnabled").'</option>';
+                print '<option value="0">'.$langs->trans("RenterDisabled").'</option>';
+            }
+            else
+            {
+                print '<option value="1">'.$langs->trans("RenterEnabled").'</option>';
+                print '<option value="0" selected>'.$langs->trans("RenterDisabled").'</option>';
+            }
+            print '</select>';
+            print '</td></tr>';
+				
 				
 				print '<tr><td valign="top">' . $langs->trans("Note") . '</td>';
 				if (! empty($object->note))

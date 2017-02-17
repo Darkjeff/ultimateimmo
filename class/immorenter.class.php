@@ -86,9 +86,9 @@ class Renter extends CommonObject {
 		global $langs;
 		
 
-		if ($statut == 1)
-			return img_picto ( $langs->trans ( "Inactive" ), 'statut8' ) . ' ' . $langs->trans ( "Inactive" );
 		if ($statut == 0)
+			return img_picto ( $langs->trans ( "Inactive" ), 'statut8' ) . ' ' . $langs->trans ( "Inactive" );
+		if ($statut == 1)
 			return img_picto ( $langs->trans ( "Active" ), 'statut4' ) . ' ' . $langs->trans ( "Active" );
 
 		return "Error, mode/status not found";
@@ -337,7 +337,7 @@ class Renter extends CommonObject {
 		$sql = "SELECT";
 		$sql .= " so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilitecode,";
-		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
+		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction, s.statut,";
 		$sql .= " s.tel1 as phone_pro, s.tel2 as phone_mobile, s.mail as email, s.note, s.date_birth, s.place_birth";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_renter as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
@@ -365,7 +365,8 @@ class Renter extends CommonObject {
 									'Company' => $obj->socname,
 									'Phone' => $obj->phone_pro,
 									'Phonemobile' => $obj->phone_mobile,
-									'Email' => $obj->email
+									'Email' => $obj->email,
+									'Statut' => $obj->statut
 									);
 					
 					$i ++;
@@ -458,6 +459,7 @@ class Renter extends CommonObject {
 		$sql .= " tel1=" . (isset($this->tel1) ? "'" . $this->tel1 . "'" : "null") . ",";
 		$sql .= " tel2=" . (isset($this->tel2) ? "'" . $this->tel2 . "'" : "null") . ",";
 		$sql .= " mail=" . (isset($this->mail) ? "'" . $this->mail . "'" : "null") . ",";
+		$sql .= ' statut = '.(isset($this->statut)?$this->statut:"null").',';
 		$sql .= " note=" . (isset($this->note) ? "'" . $this->note . "'" : "null") . ",";
 		$sql .= " fk_socpeople=" . (isset($this->fk_socpeople) ? $this->fk_socpeople : "null") . ", ";
 		$sql .= " fk_owner=" . (isset($this->fk_owner) ? $this->fk_owner : "null") . ", ";

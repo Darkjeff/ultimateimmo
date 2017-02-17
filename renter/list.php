@@ -76,7 +76,7 @@ print_fiche_titre($langs->trans("ListRenters"));
 						<td><?php print $renter['Phone']; ?></td>
 						<td><?php print $renter['Phonemobile']; ?></td>
 						<td><?php print $renter['Email']; ?></td>
-						<td><?php print $renterstatic->LibStatut($renter['state']); ?></td>
+						<td><?php print $renterstatic->LibStatut($renter['Statut']); ?></td>
 						<td align="center">
 							<a href="card.php?action=edit&id=<?php print $renter['id']; ?>"><?php print img_edit() ?></a>
 							<a class="delete" href="card.php?action=confirm_delete&confirm=yes&id=<?php print $renter['id']; ?>"><?php print img_delete() ?></a>

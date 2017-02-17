@@ -88,8 +88,8 @@ Job=Fonction
 ContactImportAsRenter=Sélectionner le contact à importer
 PlaceBirth=Lieu de naissance
 Bilan=Situation
-PropertyEnabled=Locataire actif
-PropertyDisabled=Locataire désactivé
+RenterEnabled=Locataire actif
+RenterDisabled=Locataire désactivé
 
 # Rent
 RentCard=Fiche location
