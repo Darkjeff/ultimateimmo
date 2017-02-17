@@ -438,4 +438,44 @@ class Rent extends CommonObject {
 			return - 1;
 		}
 	}
+	
+	
+	/**
+	 * Delete object in database
+	 *
+	 * @param User $user      User that deletes
+	 * @param bool $notrigger false=launch triggers after, true=disable triggers
+	 *
+	 * @return int <0 if KO, >0 if OK
+	 */
+	public function delete(User $user, $notrigger = false)
+	{
+		dol_syslog(__METHOD__, LOG_DEBUG);
+
+		$error = 0;
+
+		$this->db->begin();
+
+        
+
+		// Removed property
+		if (!$error) {
+			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . $this->table_element;
+			$sql .= ' WHERE rowid=' . $this->id;
+
+			$resql = $this->db->query($sql);
+			if (!$resql) {
+				$error ++;
+				$this->errors[] = 'Error ' . $this->db->lasterror();
+				dol_syslog(__METHOD__ . ' ' . join(',', $this->errors), LOG_ERR);
+			}
+		}
+
+	
+	
+	}
+	
+	
+	
+	
 }

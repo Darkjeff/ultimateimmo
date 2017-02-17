@@ -19,7 +19,7 @@
 --
 
 CREATE TABLE IF NOT EXISTS `llx_immo_cost` (
-  `rowid` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `rowid` mediumint(8) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `fk_property` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `type` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `label` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -36,7 +36,6 @@ CREATE TABLE IF NOT EXISTS `llx_immo_cost` (
   `dispatch` smallint(8) NOT NULL DEFAULT '0',
   `fk_user_author` int(11) NOT NULL,
   `fk_user_modif` int(11) NOT NULL,
-  `fk_soc` int(11) NOT NULL,
-  PRIMARY KEY (`rowid`)
+  `fk_soc` int(11) NOT NULL
 ) ENGINE=InnoDB;
 

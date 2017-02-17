@@ -71,6 +71,17 @@ class modImmobilier extends DolibarrModules
 		// Config pages
 		$this->config_page_url = array('public.php@immobilier');
 		
+		
+		// Defined all module parts (triggers, login, substitutions, menus, css, etc...)
+        $this->module_parts = array('triggers' => 1,
+        							'substitutions' => 1,
+        							'menus' => 1,
+        							'css' => array('/custom/immobilier/css/styles.css.php'),
+        							'hooks' => array('index', 'searchform', 'thirdpartycard','commcard','categorycard','contactcard','actioncard','agendathirdparty','projectthirdparty','infothirdparty','thirdpartybancard','consumptionthirdparty','thirdpartynotification','thirdpartymargins','thirdpartycustomerprice','documentcabinetmed','searchform','demo'));
+
+		
+		
+		
 		// Dependencies
 		$this->depends = array (
 				'modSociete',

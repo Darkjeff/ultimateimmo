@@ -80,7 +80,8 @@ if ($action == 'add' && $user->rights->immobilier->property->write) {
 		$object->fk_property = GETPOST("fk_property");
 		$object->fk_renter = GETPOST("fk_renter");
 		$object->date_start = $datect;
-		$object->montant_tot = GETPOST("montant_tot");
+		$object->date_end = $datect;
+		$object->montant_tot = GETPOST("loyer") + GETPOST("charges");
 		$object->loyer = GETPOST("loyer");
 		$object->charges = GETPOST("charges");
 		$object->tva = GETPOST('tva_value','alpha');
