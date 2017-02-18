@@ -230,6 +230,7 @@ class Rent extends CommonObject {
 		$sql .= "fk_renter,";
 		$sql .= "date_start,";
 		$sql .= "date_end,";
+		$sql .= "date_prochain_loyer,";
 		$sql .= "montant_tot,";
 		$sql .= "loyer,";
 		$sql .= "charges,";
@@ -244,6 +245,7 @@ class Rent extends CommonObject {
 		$sql .= " '" . $this->fk_renter . "',";
 		$sql .= " " . (! isset($this->date_start) || dol_strlen($this->date_start) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_start) . "'") . ", ";
 		$sql .= " " . (! isset($this->date_end) || dol_strlen($this->date_end) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_end) . "'") . ", ";
+		$sql .= " " . (! isset($this->date_prochain_loyer) || dol_strlen($this->date_prochain_loyer) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_prochain_loyer) . "'") . ", ";
 		$sql .= " '" . $this->montant_tot . "',";
 		$sql .= " '" . $this->loyer . "',";
 		$sql .= " '" . $this->charges . "',";

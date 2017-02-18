@@ -81,6 +81,7 @@ if ($action == 'add' && $user->rights->immobilier->property->write) {
 		$object->fk_renter = GETPOST("fk_renter");
 		$object->date_start = $datect;
 		$object->date_end = $datect;
+		$object->date_prochain_loyer = $datect;
 		$object->montant_tot = GETPOST("loyer") + GETPOST("charges");
 		$object->loyer = GETPOST("loyer");
 		$object->charges = GETPOST("charges");
