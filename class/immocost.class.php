@@ -67,12 +67,12 @@ class Immocost extends CommonObjectImmobilier
 	
 	public $entity;
 	public $fk_property;
-	public $type;
+	public $cost_type;
 	public $label;
 	public $amount_ht;
 	public $amount_vat;
 	public $amount;
-	public $date;
+	public $datec;
 	public $date_start;
 	public $date_end;
 	public $note_public;
@@ -97,8 +97,8 @@ class Immocost extends CommonObjectImmobilier
 	
 	function fetch($id) {
 		$sql = "SELECT ic.rowid as reference, ic.fk_property,so.rowid as socid, so.nom as socname,";
-		$sql .= "ic.type, ic.label, ";
-		$sql .= "ic.amount_ht, ic.amount_vat , ic.amount , ic.date ,";
+		$sql .= "ic.cost_type, ic.label, ";
+		$sql .= "ic.amount_ht, ic.amount_vat , ic.amount , ic.datec ,";
 		$sql .= "ic.date_start ,ic.date_end , ic.note_public , ic.dispatch, ";
 		$sql .= "ic.fk_owner,";
 		$sql .= " ll.name as nomlocal,";
@@ -118,12 +118,12 @@ class Immocost extends CommonObjectImmobilier
 				$this->id = $obj->reference;
 				$this->ref = $obj->reference;
 				$this->fk_property = $obj->fk_property;
-				$this->type = $obj->type;
+				$this->cost_type = $obj->cost_type;
 				$this->label = $obj->label;
 				$this->amount_ht = $obj->amount_ht;
 				$this->amount_vat = $obj->amount_vat;
 				$this->amount = $obj->amount;
-				$this->date = $this->db->jdate ( $obj->date );
+				$this->datec = $this->db->jdate ( $obj->datec );
 				$this->date_start = $this->db->jdate ( $obj->date_start );
 				$this->date_end = $this->db->jdate ( $obj->date_end );
 				$this->note_public = $obj->note_public;
@@ -155,12 +155,12 @@ class Immocost extends CommonObjectImmobilier
 		$sql .= ' t.rowid,';
 		
 		$sql .= " t.fk_property,";
-		$sql .= " t.type,";
+		$sql .= " t.cost_type,";
 		$sql .= " t.label,";
 		$sql .= " t.amount_ht,";
 		$sql .= " t.amount_vat,";
 		$sql .= " t.amount,";
-		$sql .= " t.date,";
+		$sql .= " t.datec,";
 		$sql .= " t.date_start,";
 		$sql .= " t.date_end,";
 		$sql .= " t.note_public,";
@@ -207,12 +207,12 @@ class Immocost extends CommonObjectImmobilier
 				$line->id = $obj->rowid;
 				
 				$line->fk_property = $obj->fk_property;
-				$line->type = $obj->type;
+				$line->cost_type = $obj->cost_type;
 				$line->label = $obj->label;
 				$line->amount_ht = $obj->amount_ht;
 				$line->amount_vat = $obj->amount_vat;
 				$line->amount = $obj->amount;
-				$line->date = $obj->date;
+				$line->datec = $obj->datec;
 				$line->date_start = $obj->date_start;
 				$line->date_end = $obj->date_end;
 				$line->note_public = $obj->note_public;
@@ -239,12 +239,12 @@ class Immocost extends CommonObjectImmobilier
 	function create($user) {
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "immo_cost (";
 		$sql .= " fk_property,";
-		$sql .= " type,"; 
+		$sql .= " cost_type,"; 
 		$sql .= " label,";
 		$sql .= " amount_ht,";
 		$sql .= " amount_vat,";
 		$sql .= " amount,";
-		$sql .= " date,";
+		$sql .= " datec,";
 		$sql .= " date_start,";
 		$sql .= " date_end,";
 		$sql .= " note_public,";
@@ -252,12 +252,12 @@ class Immocost extends CommonObjectImmobilier
 		$sql .= " fk_owner ";
 		$sql .= " ) VALUES (";
 		$sql .= " '" . $this->fk_property . "',";
-		$sql .= " '" . $this->db->escape($this->type) . "',";
+		$sql .= " '" . $this->db->escape($this->cost_type) . "',";
 		$sql .= " '" . $this->db->escape($this->label) . "',";
 		$sql .= " '" . $this->amount_ht . "',";
 		$sql .= " '" . $this->amount_vat . "',";
 		$sql .= " '" . $this->amount . "',";
-		$sql .= " " . ($this->date ? "'" . $this->db->idate ( $this->date ) . "'" : "null") . ",";
+		$sql .= " " . ($this->datec ? "'" . $this->db->idate ( $this->datec ) . "'" : "null") . ",";
 		$sql .= " " . ($this->date_start ? "'" . $this->db->idate ( $this->date_start ) . "'" : "null") . ",";
 		$sql .= " " . ($this->date_end ? "'" . $this->db->idate ( $this->date_end ) . "'" : "null") . ",";
 		$sql .= " '" . $this->db->escape($this->note_public) . "',";
@@ -310,12 +310,12 @@ class Immocost extends CommonObjectImmobilier
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "immo_cost ";
 		$sql .= " SET label ='" . $this->db->escape ( $this->label ) . "',";
 		$sql .= " fk_property ='" . $this->db->escape ( $this->fk_property ) . "',";
-		$sql .= " type ='" . $this->db->escape ( $this->type ) . "',";
+		$sql .= " cost_type ='" . $this->db->escape ( $this->cost_type ) . "',";
 		$sql .= " amount ='" . $this->db->escape ( $this->amount ) . "',";
 		$sql .= "fk_soc ='" . $this->db->escape ( $this->socid ) . "',";
 		$sql .= " fk_owner ='" . $user->id . "',";
 		$sql .= " note_public ='" . $this->db->escape ( $this->note_public ) . "',";
-		$sql .= " date=" . (dol_strlen($this->date) != 0 ? "'" . $this->db->idate($this->date) . "'" : 'null').',';
+		$sql .= " datec=" . (dol_strlen($this->datec) != 0 ? "'" . $this->db->idate($this->datec) . "'" : 'null').',';
 		$sql .= " date_start=" . (dol_strlen($this->date_start) != 0 ? "'" . $this->db->idate($this->date_start) . "'" : 'null').',';
 		$sql .= " date_end=" . (dol_strlen($this->date_end) != 0 ? "'" . $this->db->idate($this->date_end) . "'" : 'null').',';
 		$sql .= " dispatch=" . $this->db->escape ( $this->dispatch );

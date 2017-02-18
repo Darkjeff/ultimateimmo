@@ -76,7 +76,7 @@ $columns = array(
 	array( 'db' => 'amount',  'dt' => 3 ),
 	
 	array(
-		'db'        => 'date',
+		'db'        => 'datec',
 		'dt'        => 4,
 		'formatter' => function( $d, $row, $db ) {
 			return dol_print_date($d, 'day');
@@ -132,7 +132,7 @@ $sql_details = array(
  * server-side, there is no need to edit below this line.
  */
 
-$sql = "SELECT SQL_CALC_FOUND_ROWS ch.rowid as reference, ch.fk_property as idlocal , ch.cost_type as cost_type, ch.label as libelle, ch.amount_ht , ch.amount_vat , ch.amount , ch.date, ch.fk_soc, ch.dispatch";
+$sql = "SELECT SQL_CALC_FOUND_ROWS ch.rowid as reference, ch.fk_property as idlocal , ch.cost_type as cost_type, ch.label as libelle, ch.amount_ht , ch.amount_vat , ch.amount , ch.datec , ch.fk_soc, ch.dispatch";
 $sql .= ", ll.rowid as property_id, ll.name as nomlocal,";
 $sql .= " soc.rowid as soc_id,";
 $sql .= " soc.nom as company";
