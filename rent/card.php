@@ -1,6 +1,6 @@
 ﻿<?php
 /* Copyright (C) 2013-2015 Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2015-2016 Alexandre Spangaro	<aspangaro@zendsi.com>
+ * Copyright (C) 2015-2017 Alexandre Spangaro	<aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -204,7 +204,7 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 	print '<td><input name="montant_tot" id="amount" size="10" value="' . price($object->montant_tot) . '" disabled="disabled"></td></tr>';
 	
 	
-	print '<tr><td>'.fieldLabel('tva','tva_value').'</td><td>';
+	print '<tr><td>'.fieldLabel('VAT','tva_value').'</td><td>';
     print $form->selectyesno('tva_value',$object->tva,1);
     print '</td>';
 	
@@ -306,7 +306,7 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 			print '<td>'.fieldLabel('AmountTC','amount',1).'</td>';
 			print '<td><input name="montant_tot" id="amount" size="10" value="' . price($object->montant_tot) . '" disabled="disabled"></td></tr>';
 			
-			print '<tr><td>'.fieldLabel('tva','tva_value').'</td><td>';
+			print '<tr><td>'.fieldLabel('VAT','tva_value',1).'</td><td>';
 			print $form->selectyesno('tva_value',$object->tva,1);
 			print '</td>';
 
@@ -415,7 +415,7 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 				
 				// VAT payers
 				print '<tr><td>';
-				print $langs->trans('VATIsUsed');
+				print $langs->trans('VAT');
 				print '</td><td>';
 				print yn($object->tva);
 				print '</td>';

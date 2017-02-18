@@ -50,20 +50,15 @@ $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 $cancel = GETPOST('cancel');
 
-$html = new Form($db);
-$htmlimmo = new FormImmobilier($db);
 $object = new Immocost($db);
 $object->fetch($id);
-
-
 
 /*
  * 	Classify dispatch
  */
 if (GETPOST ( "action" ) == 'dispatch') {
-	$charge = new Immocost ( $db );
-	$charge->fetch ( $id );
-	$result = $charge->set_dispatch ( $user );
+	$object->fetch($id);
+	$result = $object->set_dispatch ( $user );
 	Header ( "Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id );
 }
 
@@ -71,8 +66,8 @@ if (GETPOST ( "action" ) == 'dispatch') {
 /*
  *	Delete cost
  */
-if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes') {
-	//echo "hhhhhhhhhh";
+if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes')
+{
 	$object = new Immocost($db);
 	$object->fetch($id);
 	$result = $object->delete($user);
@@ -95,20 +90,18 @@ if (GETPOST("action") == 'add') {
 	$datedu = dol_mktime(0,0,0, GETPOST("dumonth"), GETPOST("duday"), GETPOST("duyear"));
 	$dateau = dol_mktime(0,0,0, GETPOST("aumonth"), GETPOST("auday"), GETPOST("auyear"));
 
-	$charge = new Immocost($db);
+	$object->fk_property = GETPOST("fk_property");
+	$object->label = GETPOST("label");
+	$object->socid = GETPOST("societe");
+	$object->fk_property = GETPOST("fk_property");
+	$object->cost_type = GETPOST("cost_type");
+	$object->amount = GETPOST("amount");
+	$object->datec = $dateacq;
+	$object->date_start = $datedu;
+	$object->date_end = $dateau;
+	$object->fk_owner = GETPOST("fk_owner");
 
-	$charge->fk_property = GETPOST("fk_property");
-	$charge->label = GETPOST("label");
-	$charge->socid = GETPOST("societe");
-	$charge->fk_property = GETPOST("fk_property");
-	$charge->cost_type = GETPOST("cost_type");
-	$charge->amount = GETPOST("amount");
-	$charge->datec = $dateacq;
-	$charge->date_start = $datedu;
-	$charge->date_end = $dateau;
-	$charge->fk_owner = GETPOST("fk_owner");
-
-	$res = $charge->create($user);
+	$res = $object->create($user);
 	if ($res == 0) {
 	} else {
 		if ($res == - 3) {
@@ -120,7 +113,7 @@ if (GETPOST("action") == 'add') {
 			$action = "create";
 		}
 	}
-	Header("Location: " . dol_buildpath('/immobilier/cost/document.php',1)."?id=" . $charge->id);
+	Header("Location: " . dol_buildpath('/immobilier/cost/document.php',1)."?id=" . $object->id);
 } 
 elseif ($action == 'update')
 {
@@ -130,25 +123,22 @@ elseif ($action == 'update')
 	$datedu = dol_mktime(0,0,0, GETPOST("dumonth"), GETPOST("duday"), GETPOST("duyear"));
 	$dateau = dol_mktime(0,0,0, GETPOST("aumonth"), GETPOST("auday"), GETPOST("auyear"));
 
-	$charge = new Immocost($db);
-	$charge->fetch($id);
+	$object->fk_property = GETPOST("fk_property");
+	$object->label = GETPOST("label");
+	$object->fk_property = GETPOST("fk_property");
+	$object->cost_type = GETPOST("cost_type");
+	$object->amount = GETPOST("amount");
+	$object->datec = $dateacq;
+	$object->date_start = $datedu;
+	$object->date_end = $dateau;
+	$object->socid = GETPOST("fk_soc");
+	$object->fk_owner = GETPOST("fk_owner");
+	$object->commentaire = GETPOST("commentaire");
 
-	$charge->fk_property = GETPOST("fk_property");
-	$charge->label = GETPOST("label");
-	$charge->fk_property = GETPOST("fk_property");
-	$charge->cost_type = GETPOST("cost_type");
-	$charge->amount = GETPOST("amount");
-	$charge->datec = $dateacq;
-	$charge->date_start = $datedu;
-	$charge->date_end = $dateau;
-	$charge->socid = GETPOST("fk_soc");
-	$charge->fk_owner = GETPOST("fk_owner");
-	$charge->commentaire = GETPOST("commentaire");
-
-	$res = $charge->update($user);
+	$res = $object->update($user);
 
 	if ($res < 0) {
-		setEventMessage($charge->error, 'errors');
+		setEventMessage($object->error, 'errors');
 	} else {
 		setEventMessage($langs->trans("SocialContributionAdded"), 'mesgs');
 	}
@@ -201,10 +191,16 @@ elseif ($action == 'update')
 /*
  * View
  */
+$form = new Form($db);
+$formimmo = new FormImmobilier($db);
 
-if ($action == 'create') {
+$title=$langs->trans("RentalLoads") . " | " . $langs->trans("Card");
+$help_url='';
+llxHeader('',$title,$help_url);
 
-	llxheader('', $langs->trans("addcharge"), '');
+if ($action == 'create')
+{
+	print load_fiche_titre($langs->trans("NewRentalLoad"));
 
 	print '<form name="add" action="' . $_SERVER['PHP_SELF'] . '" method="post">';
 	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
@@ -213,38 +209,48 @@ if ($action == 'create') {
 	dol_fiche_head('');
 
 	print '<table class="border" width="100%">';
-	print '<tr><td class=titlefield">'.$langs->trans("Label").'</td>';
-	print '<td><input name="label" size="80" value="' . $charge->label . '"</td></tr>';
+	print '<tr><td class="titlefieldcreate">'.$langs->trans("Label").'</td>';
+	print '<td><input name="label" size="80" value="' . $object->label . '"</td></tr>';
 	
 	print '<tr class="select_thirdparty_block"><td class="fieldrequired">' . $langs->trans("Company") . '</td><td colspan="3">';
 	print $form->select_company(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 1, 1);
 	print '</td></tr>';
 
-	print '<tr><td>'.$langs->trans("amount").'</td>';
-	print '<td><input name="amount" size="30" value="' . $charge->amount . '"</td></tr>';
+	print '<tr><td>'.$langs->trans("Amount").'</td>';
+	print '<td><input name="amount" size="30" value="' . $object->amount . '"</td></tr>';
+
 	print '<tr><td>'.$langs->trans("Date").'</td>';
 	print '<td align="left">';
-	print $html->select_date(! empty($dateacq) ? $dateacq : '-1', 'acq', 0, 0, 0, 'fiche_charge', 1);
+	print $form->select_date(! empty($dateacq) ? $dateacq : '-1', 'acq', 0, 0, 0, 'fiche_charge', 1);
 	print '</td></tr>';
+
 	print '<tr><td>'.$langs->trans("Building").'</td>';
 	print '<td>';
-	print $htmlimmo->select_property($charge->fk_property, 'fk_property');
+	print $formimmo->select_property($object->fk_property, 'fk_property');
 	print '</td></tr>';
+
 	print '<td>'.$langs->trans("Type").'</td>';
 	print '<td>';
-	print $htmlimmo->select_type($charge->cost_type, 'cost_type');
+	print $formimmo->select_type($object->cost_type, 'cost_type');
 	print '</td></tr>';
 
 	print '<tr><td>'.$langs->trans("DateStartPeriod").'</td>';
 	print '<td align="left">';
-	print $html->select_date(! empty($datedu) ? $datedu : '-1', 'du', 0, 0, 0, 'fiche_charge', 1);
+	print $form->select_date(! empty($datedu) ? $datedu : '-1', 'du', 0, 0, 0, 'fiche_charge', 1);
 	print '</td></tr>';
+
 	print '<tr><td>'.$langs->trans("DateEndPeriod").'</td>';
 	print '<td align="left">';
-	print $html->select_date(! empty($dateau) ? $dateau : '-1', 'au', 0, 0, 0, 'fiche_charge', 1);
+	print $form->select_date(! empty($dateau) ? $dateau : '-1', 'au', 0, 0, 0, 'fiche_charge', 1);
 	print '</td></tr>';
-	print '<tr><td>'.$langs->trans("Comment").'</td>';
-	print '<td><input name="commentaire" size="120" value="' . $charge->commentaire . '"></td></tr>';
+
+    print '<tr><td class="tdtop">';
+    print $langs->trans("Comment");
+    print '</td><td>';
+    require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
+    $doleditor=new DolEditor('commentaire','','',120,'dolibarr_notes','',false,true,$conf->global->FCKEDITOR_ENABLE_SOCIETE,ROWS_3,'90%');
+    $doleditor->Create();
+    print "</td></tr>\n";
 
 	print '</tbody>';
 	print "</table>\n";
@@ -258,11 +264,8 @@ if ($action == 'create') {
 
 if ($id > 0) {
 	
-	if($action== "edit"){
-				llxheader('', $langs->trans("Charge"), '');
-
-		$charge = new Immocost($db);
-		$result = $charge->fetch($id);
+	if($action== "edit")
+	{
 		$object = new Immocost($db);
 		$object->fetch($id);
 
@@ -276,7 +279,6 @@ if ($id > 0) {
 		$nbligne = 0;
 		
 		//Card
-		
 		print '<form name="update" action="' . $_SERVER['PHP_SELF'] . '" method="post">';
 		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 		print '<input type="hidden" name="action" value="update">';
@@ -284,82 +286,82 @@ if ($id > 0) {
 		
 		print '<div class="fichecenter"><div class="fichehalfleft"><div class="underbanner clearboth"></div><table class="border tableforfield" width="100%"><tbody>';
 
-		print '<td width="25%">'.$langs->trans("Label").'</td>';
-		print '<td><input name="label" size="30" value="' . $charge->label . '"</td>';
+		print '<td class="titlefield">'.$langs->trans("Label").'</td>';
+		print '<td><input name="label" size="30" value="' . $object->label . '"</td>';
 		print '</tr>';
 
-		
-
 		// Tier
-			print '<tr>';
-			print '<td>'.fieldLabel('societe','fk_soc',1).'</td>';
-			print '<td>';
-			print $form->select_thirdparty_list($charge->socid,'fk_soc');
-			print '</td>';
-			print '</tr>';
-
+		print '<tr>';
+		print '<td>'.fieldLabel('societe','fk_soc',1).'</td>';
+		print '<td>';
+		print $form->select_thirdparty_list($object->socid,'fk_soc');
+		print '</td>';
+		print '</tr>';
 
 		print '<tr>';
 		print '<td>'.$langs->trans("Building").'</td>';
 		print '<td>';
-		print $htmlimmo->select_property($charge->fk_property, 'fk_property');
+		print $formimmo->select_property($object->fk_property, 'fk_property');
 		print '</td>';
 		print '</tr>';
 
 		print '<tr>';
 		print '<td>'.$langs->trans("Type").'</td>';
 		print '<td>';
-		print $htmlimmo->select_type($charge->cost_type, 'cost_type');
+		print $formimmo->select_type($object->cost_type, 'cost_type');
 		print '</td>';
 		print '</tr>';
 
-
-
 		print '<tr>';
 		print '<td>'.$langs->trans("amount").'</td>';
-		print '<td><input name="amount" size="30" value="' . $charge->amount . '"</td>';
+		print '<td><input name="amount" size="30" value="' . $object->amount . '"</td>';
 		print '</tr>';
 
 		print '<tr>';
 		print '<td>'.$langs->trans("Date").'</td>';
 		print '<td align="left">';
-		print $html->select_date($charge->datec, 'acq', 0, 0, 0, 'fiche_charge', 1);
+		print $form->select_date($object->datec, 'acq', 0, 0, 0, 'fiche_charge', 1);
 		print '</td>';
 		print '</tr>';
 
 		print '<tr>';
 		print '<td>'.$langs->trans("DateStartPeriod").'</td>';
 		print '<td align="left">';
-		print $html->select_date($charge->date_start, 'du', 0, 0, 0, 'fiche_charge', 1);
+		print $form->select_date($object->date_start, 'du', 0, 0, 0, 'fiche_charge', 1);
 		print '</td>';
 		print '</tr>';
 
 		print '<tr>';
 		print '<td>'.$langs->trans("DateEndPeriod").'</td>';
 		print '<td align="left">';
-		print $html->select_date($charge->date_end, 'au', 0, 0, 0, 'fiche_charge', 1);
+		print $form->select_date($object->date_end, 'au', 0, 0, 0, 'fiche_charge', 1);
 		print '</td>';
 		print '</tr>';
 
-		print '<tr>';
-		print '<td>'.$langs->trans("Comment").'</td>';
-		print '<td><textarea name="commentaire">' . $charge->commentaire . '</textarea></td>';
-		print '</tr>';
+		print '<tr><td>';
+		print $langs->trans("Comment");
+		print '</td><td>';
+		require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
+		$doleditor=new DolEditor('commentaire','','',120,'dolibarr_notes','',false,true,$conf->global->FCKEDITOR_ENABLE_SOCIETE,ROWS_3,'90%');
+		$doleditor->Create();
+		print "</td></tr>\n";
 
 		print '<tr><td>'.$langs->trans("Status").'</td>';
 		print '<td align="left" nowrap="nowrap">';
-		print $charge->LibStatut ( $charge->dispatch, 5 );
+		print $object->LibStatut($object->dispatch, 5);
 		print "</td></tr>";
 
-		print '<tr>';
-		print '<td>&nbsp;</td>';
-		print '<td><input type="submit" class="button" value="' . $langs->trans("Sauvegarder") . '"><input type="cancel" class="button" value="' . $langs->trans("Cancel") . '"></td>';
-		print '</tr>';
+		print '</table>';
 
+        dol_fiche_end();
 
-		print '</tbody></table></form>';
-		
-				/*
+        print '<div align="center">';
+        print '<input value="'.$langs->trans("Save").'" class="button" type="submit" name="save">';
+        print '</div>';
+
+        print '</form>';
+
+		/*
 		 * Barre d'actions
 		 */
 
@@ -380,11 +382,8 @@ if ($id > 0) {
 
 		print '</div>';
 
-		
-		
 		print '</div><div class="fichehalfright"><div class="ficheaddleft"><div class="underbanner clearboth"></div>';		
 
-		
 		/*
 		 * Liste des repartition
 		 */
@@ -429,19 +428,11 @@ if ($id > 0) {
 		} else {
 			dol_print_error($db);
 		}
-		
-		
 
-		
 		print "<div class='clearboth'></div>";
 
-				
-	}else{
+	} else {
 		
-		llxheader('', $langs->trans("Charge"), '');
-
-		$charge = new Immocost($db);
-		$result = $charge->fetch($id);
 		$object = new Immocost($db);
 		$object->fetch($id);
 
@@ -454,29 +445,26 @@ if ($id > 0) {
 
 		$nbligne = 0;
 		
-		//Card
+		// Card
 		print '<div class="fichecenter"><div class="fichehalfleft"><div class="underbanner clearboth"></div><table class="border tableforfield" width="100%"><tbody>';
 
 		print '<tr>';
 		print '<td width="25%">'.$langs->trans("Label").'</td>';
-		print '<td>' . $charge->label . '</td>';
+		print '<td>' . $object->label . '</td>';
 		print '</tr>';
 
-		
-		
 		$thirdparty_static = new Societe($db);
-		$thirdparty_static->id=$charge->soc_id;
-		$thirdparty_static->name= $charge->socname;
-		
+		$thirdparty_static->id=$object->soc_id;
+		$thirdparty_static->name= $object->socname;
+
 		print '<tr>';
 		print '<td>'.$langs->trans("Company").'</td>';
 		print '<td>' . $thirdparty_static->getNomUrl(1) . '</td>';
 		print '</tr>';
-		
+
 		$propertystatic=new Immoproperty($db);
-		$propertystatic->id = $charge->property_id;
-		$propertystatic->name = $charge->nomlocal;
-		
+		$propertystatic->id = $object->property_id;
+		$propertystatic->name = $object->nomlocal;
 
 		print '<tr>';
 		print '<td>'.$langs->trans("Building").'</td>';
@@ -484,50 +472,50 @@ if ($id > 0) {
 		print '</tr>';
 
 		print '<tr>';
-		print '<td>'.$langs->trans("type").'</td>';
-		print '<td>' . $charge->cost_type . '</td>';
+		print '<td>'.$langs->trans("Type").'</td>';
+		print '<td>' . $object->cost_type . '</td>';
 		print '</tr>';
 
 
 		print '<tr>';
-		print '<td>'.$langs->trans("amount").'</td>';
-		print '<td>' . $charge->amount . '</td>';
+		print '<td>'.$langs->trans("Amount").'</td>';
+		print '<td>' . $object->amount . '</td>';
 		print '</tr>';
 
 		print '<tr>';
 		print '<td>'.$langs->trans("Date").'</td>';
 		print '<td align="left">';
-		print dol_print_date($charge->datec, 'day');
+		print dol_print_date($object->datec, 'day');
 		print '</td>';
 		print '</tr>';
 
 		print '<tr>';
 		print '<td>'.$langs->trans("DateStartPeriod").'</td>';
 		print '<td align="left">';
-		print dol_print_date($charge->date_start, 'day');
+		print dol_print_date($object->date_start, 'day');
 		print '</td>';
 		print '</tr>';
 
 		print '<tr>';
 		print '<td>'.$langs->trans("DateEndPeriod").'</td>';
 		print '<td align="left">';
-		print dol_print_date($charge->date_end, 'day');
+		print dol_print_date($object->date_end, 'day');
 		print '</td>';
 		print '</tr>';
 
 		print '<tr>';
 		print '<td>'.$langs->trans("Comment").'</td>';
-		print '<td>' . $charge->commentaire . '</td>';
+		print '<td>' . $object->commentaire . '</td>';
 		print '</tr>';
 
 		print '<tr><td>'.$langs->trans("Status").'</td>';
 		print '<td align="left" nowrap="nowrap">';
-		print $charge->LibStatut ( $charge->dispatch, 5 );
+		print $object->LibStatut($object->dispatch, 5);
 		print "</td></tr>";
 
 		print '</tbody></table>';
 		
-				/*
+		/*
 		 * Barre d'actions
 		 */
 
@@ -548,11 +536,8 @@ if ($id > 0) {
 
 		print '</div>';
 
-		
-		
 		print '</div><div class="fichehalfright"><div class="ficheaddleft"><div class="underbanner clearboth"></div>';		
 
-		
 		/*
 		 * Liste des repartition
 		 */
@@ -597,9 +582,6 @@ if ($id > 0) {
 		} else {
 			dol_print_error($db);
 		}
-		
-		
-
 
 		$form = new Form($db);
 
