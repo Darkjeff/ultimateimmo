@@ -79,7 +79,7 @@ if ($action == 'ventil') {
 		
 		// main info loyer
 		$ChargeDet->amount = GETPOST('amount_'.$localid);
-		$ChargeDet->type = GETPOST('typecharge');
+		$ChargeDet->cost_type = GETPOST('typecharge');
 		$ChargeDet->fk_cost = $id;
 		$ChargeDet->fk_property = $localid;
 		
@@ -184,7 +184,7 @@ if ($id > 0) {
 		foreach ( $local->lines as $local_line ) {
 			// Trouve les loyer existant sur cee lieu pour cette période
 			$result = $loyer->fetchByLocalId($local_line->id, array (
-					'insidedateloyer' => $charge->date 
+					'insidedateloyer' => $charge->datec 
 			));
 			if ($result < 0) {
 				setEventMessage($loyer->error, 'errors');

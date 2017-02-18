@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2013-2015 Olivier Geffroy    <jeff@jeffinfo.com>
- * Copyright (C) 2015-2016 Alexandre Spangaro <aspangaro@zendsi.com>
+ * Copyright (C) 2015-2017 Alexandre Spangaro <aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,9 +91,9 @@ if (GETPOST("sendit") && ! empty($conf->global->MAIN_UPLOAD_DOC)) {
 
 if (GETPOST("action") == 'add') {
 	
-	$dateacq = @dol_mktime($_POST["acqhour"], $_POST["acqmin"], $_POST["acqsec"], $_POST["acqmonth"], $_POST["acqday"], $_POST["acqyear"]);
-	$datedu = @dol_mktime($_POST["duhour"], $_POST["dumin"], $_POST["dusec"], $_POST["dumonth"], $_POST["duday"], $_POST["duyear"]);
-	$dateau = @dol_mktime($_POST["auhour"], $_POST["aumin"], $_POST["ausec"], $_POST["aumonth"], $_POST["auday"], $_POST["auyear"]);
+	$dateacq = dol_mktime(0,0,0,GETPOST("acqmonth"), GETPOST("acqday"), GETPOST("acqyear"));
+	$datedu = dol_mktime(0,0,0, GETPOST("dumonth"), GETPOST("duday"), GETPOST("duyear"));
+	$dateau = dol_mktime(0,0,0, GETPOST("aumonth"), GETPOST("auday"), GETPOST("auyear"));
 
 	$charge = new Immocost($db);
 
@@ -101,9 +101,9 @@ if (GETPOST("action") == 'add') {
 	$charge->label = GETPOST("label");
 	$charge->socid = GETPOST("societe");
 	$charge->fk_property = GETPOST("fk_property");
-	$charge->type = GETPOST("type");
+	$charge->cost_type = GETPOST("cost_type");
 	$charge->amount = GETPOST("amount");
-	$charge->date = $dateacq;
+	$charge->datec = $dateacq;
 	$charge->date_start = $datedu;
 	$charge->date_end = $dateau;
 	$charge->fk_owner = GETPOST("fk_owner");
@@ -136,9 +136,9 @@ elseif ($action == 'update')
 	$charge->fk_property = GETPOST("fk_property");
 	$charge->label = GETPOST("label");
 	$charge->fk_property = GETPOST("fk_property");
-	$charge->type = GETPOST("type");
+	$charge->cost_type = GETPOST("cost_type");
 	$charge->amount = GETPOST("amount");
-	$charge->date = $dateacq;
+	$charge->datec = $dateacq;
 	$charge->date_start = $datedu;
 	$charge->date_end = $dateau;
 	$charge->socid = GETPOST("fk_soc");
@@ -160,7 +160,7 @@ elseif ($action == 'update')
 	$chargedet->amount = GETPOST('amount', 'alpha');
 	$chargedet->fk_property = GETPOST('fk_property', 'alpha');
 	$chargedet->fk_cost = $id;
-	$chargedet->type = GETPOST('chargedet_type');
+	$chargedet->cost_type = GETPOST('chargedet_type');
 
 	$result = $chargedet->create($user);
 
@@ -213,17 +213,12 @@ if ($action == 'create') {
 	dol_fiche_head('');
 
 	print '<table class="border" width="100%">';
-	print '<tr><td width="25%">'.$langs->trans("Label").'</td>';
+	print '<tr><td class=titlefield">'.$langs->trans("Label").'</td>';
 	print '<td><input name="label" size="80" value="' . $charge->label . '"</td></tr>';
-	
-	
-	
-	
 	
 	print '<tr class="select_thirdparty_block"><td class="fieldrequired">' . $langs->trans("Company") . '</td><td colspan="3">';
 	print $form->select_company(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 1, 1);
 	print '</td></tr>';
-
 
 	print '<tr><td>'.$langs->trans("amount").'</td>';
 	print '<td><input name="amount" size="30" value="' . $charge->amount . '"</td></tr>';
@@ -237,7 +232,7 @@ if ($action == 'create') {
 	print '</td></tr>';
 	print '<td>'.$langs->trans("Type").'</td>';
 	print '<td>';
-	print $htmlimmo->select_type($charge->type, 'type');
+	print $htmlimmo->select_type($charge->cost_type, 'cost_type');
 	print '</td></tr>';
 
 	print '<tr><td>'.$langs->trans("DateStartPeriod").'</td>';
@@ -314,7 +309,7 @@ if ($id > 0) {
 		print '<tr>';
 		print '<td>'.$langs->trans("Type").'</td>';
 		print '<td>';
-		print $htmlimmo->select_type($charge->type, 'type');
+		print $htmlimmo->select_type($charge->cost_type, 'cost_type');
 		print '</td>';
 		print '</tr>';
 
@@ -328,7 +323,7 @@ if ($id > 0) {
 		print '<tr>';
 		print '<td>'.$langs->trans("Date").'</td>';
 		print '<td align="left">';
-		print $html->select_date($charge->date, 'acq', 0, 0, 0, 'fiche_charge', 1);
+		print $html->select_date($charge->datec, 'acq', 0, 0, 0, 'fiche_charge', 1);
 		print '</td>';
 		print '</tr>';
 
@@ -490,7 +485,7 @@ if ($id > 0) {
 
 		print '<tr>';
 		print '<td>'.$langs->trans("type").'</td>';
-		print '<td>' . $charge->type . '</td>';
+		print '<td>' . $charge->cost_type . '</td>';
 		print '</tr>';
 
 
@@ -502,7 +497,7 @@ if ($id > 0) {
 		print '<tr>';
 		print '<td>'.$langs->trans("Date").'</td>';
 		print '<td align="left">';
-		print dol_print_date($charge->date, 'day');
+		print dol_print_date($charge->datec, 'day');
 		print '</td>';
 		print '</tr>';
 

@@ -84,7 +84,7 @@ print '<td align="center">'.$langs->trans("November").'</td>';
 print '<td align="center">'.$langs->trans("December").'</td>';
 print '<td align="center">'.$langs->trans("Total").'</td></tr>';
 
-$sql = "SELECT it.type AS type_charge,ib.name AS nom_immeuble,";
+$sql = "SELECT it.type AS type_charge, ib.name AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date)=1,ic.amount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date)=2,ic.amount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date)=3,ic.amount,0)),2) AS 'Mars',";
@@ -104,11 +104,11 @@ $sql .= " , " . MAIN_DB_PREFIX . "immo_property as ii";
 $sql .= " , " . MAIN_DB_PREFIX . "immo_building as ib";
 $sql .= " WHERE ic.date >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND ic.type = it.rowid ";
+$sql .= "  AND ic.cost_type = it.rowid";
 $sql .= "  AND ic.fk_property = ii.rowid AND ii.fk_property = ib.fk_property";
 
 
-$sql .= " GROUP BY ii.fk_property,it.type";
+$sql .= " GROUP BY ii.fk_property, it.type";
 
 $resql = $db->query ( $sql );
 if ($resql) {
@@ -179,7 +179,7 @@ $sql .= " FROM " . MAIN_DB_PREFIX . "immo_cost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "immo_typologie as it";
 $sql .= " WHERE ic.date >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND ic.type = it.rowid ";
+$sql .= "  AND ic.cost_type = it.rowid";
 
 
 $resql = $db->query ( $sql );

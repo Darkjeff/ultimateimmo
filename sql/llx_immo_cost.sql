@@ -1,6 +1,6 @@
 ﻿-- ===================================================================
--- Copyright (C) 2016      Olivier Geffroy      <jeff@jeffinfo.com>
--- Copyright (C) 2016      Alexandre Spangaro   <aspangaro@zendsi.com>
+-- Copyright (C) 2016		Olivier Geffroy      <jeff@jeffinfo.com>
+-- Copyright (C) 2016-2017	Alexandre Spangaro   <aspangaro@zendsi.com>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,24 +18,26 @@
 -- ===================================================================
 --
 
-CREATE TABLE IF NOT EXISTS `llx_immo_cost` (
-  `rowid` mediumint(8) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `fk_property` mediumint(8) unsigned NOT NULL DEFAULT '0',
-  `type` mediumint(8) unsigned NOT NULL DEFAULT '0',
-  `label` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `supplier` varchar(200) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `new_supplier` varchar(200) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `amount_ht` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `amount_vat` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `amount` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `date` datetime DEFAULT NULL,
-  `date_start` datetime DEFAULT NULL,
-  `date_end` datetime DEFAULT NULL,
-  `note_public` text COLLATE utf8_unicode_ci,
-  `fk_owner` int(11) NOT NULL DEFAULT '1',
-  `dispatch` smallint(8) NOT NULL DEFAULT '0',
-  `fk_user_author` int(11) NOT NULL,
-  `fk_user_modif` int(11) NOT NULL,
-  `fk_soc` int(11) NOT NULL
+CREATE TABLE IF NOT EXISTS llx_immo_cost
+(
+	rowid			integer AUTO_INCREMENT PRIMARY KEY,
+	tms             timestamp,
+	datec			datetime,
+	fk_property		integer NOT NULL,
+	cost_type		integer DEFAULT -1,
+	label			varchar(255),
+	supplier		varchar(64) NOT NULL,
+	new_supplier	varchar(255) NOT NULL,
+	amount_ht		double(24,8) NOT NULL default 0,
+	amount_vat		double(24,8) NOT NULL default 0,
+	amount			double(24,8) NOT NULL default 0,
+	date_start		datetime,
+	date_end		datetime,
+	note_public		text,
+	fk_owner		integer NOT NULL DEFAULT 0,
+	dispatch		smallint(8) NOT NULL DEFAULT 0,
+	fk_user_author	integer,
+	fk_user_modif	integer,
+	fk_soc			integer
 ) ENGINE=InnoDB;
 
