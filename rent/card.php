@@ -43,9 +43,6 @@ $confirm = GETPOST('confirm', 'alpha');
 $cancel = GETPOST('cancel', 'alpha');
 $id = GETPOST('rowid') ? GETPOST('rowid', 'int') : GETPOST('id', 'int');
 
-$html = new Form($db);
-$htmlimmo = new FormImmobilier($db);
-
 $object = new Rent($db);
 
 // Security check
@@ -152,7 +149,10 @@ if ($action == 'update' && $user->rights->immobilier->property->write) {
 /*
  * View
  */
-llxheader('', $langs->trans("RentCard") . ' | ' . $langs->trans("Card"), '');
+$form = new Form($db);
+$formimmo = new FormImmobilier($db);
+
+llxheader('', $langs->trans("Rent") . ' | ' . $langs->trans("Card"), '');
 
 // Create mode
 if ($action == 'create' && $user->rights->immobilier->rent->write) {
@@ -172,14 +172,14 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 	print '<tr>';
 	print '<td class="titlefield"><span class="fieldrequired"><label for="nameproperty">' . $langs->trans("Property") . '</label></td>';
 	print '<td>';
-	print $htmlimmo->select_property($object->fk_property, 'fk_property');
+	print $formimmo->select_property($object->fk_property, 'fk_property');
 	print '</td></tr>';
 	
 	// Name Renter
 	print '<tr>';
 	print '<td class="fieldrequired"><label for="renter">' . $langs->trans("Renter") . '</label></td>';
 	print '<td>';
-	print $htmlimmo->select_renter($object->fk_renter, 'fk_renter');
+	print $formimmo->select_renter($object->fk_renter, 'fk_renter');
 	print '</td></tr>';
 	
 	// Date
@@ -257,7 +257,7 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 			print '<input type="hidden" name="id" value="' . $id . '">';
 			
 			$head = rent_prepare_head($object);
-			dol_fiche_head($head, 'card', $langs->trans("RentCard"), 0, 'rent@immobilier');
+			dol_fiche_head($head, 'card', $langs->trans("Rent"), 0, 'rent@immobilier');
 
 			$linkback = '<a href="' . DOL_URL_ROOT . '/immobilier/rent/list.php' . (! empty($socid) ? '?socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
@@ -266,7 +266,7 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 			print '<tr>';
 			print '<td class="titlefield">'.fieldLabel('Property','fk_property',1).'</td>';
 			print '<td>';
-			print $htmlimmo->select_property($object->fk_property, 'fk_property');
+			print $formimmo->select_property($object->fk_property, 'fk_property');
 			print '</td></tr>';
 
 			print '<tr>';
@@ -277,13 +277,13 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 			print '<tr>';
 			print '<td><label for="datect">' . $langs->trans("DateStart") . '</label></td>';
 			print '<td align="left">';
-			print $html->select_date($object->date_start, 'datect', 0, 0, 0, 'fiche_contrat', 1);
+			print $form->select_date($object->date_start, 'datect', 0, 0, 0, 'fiche_contrat', 1);
 			print '</td></tr>';
 
 			print '<tr>';
 			print '<td><label for="datectend">' . $langs->trans("DateEnd") . '</label></td>';
 			print '<td align="left">';
-			print $html->select_date($object->date_end, 'datectend', 0, 0, 0, 'fiche_contrat', 1);
+			print $form->select_date($object->date_end, 'datectend', 0, 0, 0, 'fiche_contrat', 1);
 
 			print '<tr>';
 			print '<td><label for="preavis">' . $langs->trans("Preavis") . '</label></td>';

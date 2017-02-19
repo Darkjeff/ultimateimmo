@@ -101,7 +101,7 @@ if ($action == 'add' && $user->rights->immobilier->property->write) {
 			$object->fk_type_property = $type_id;
 			
 			$object->fk_owner		= $fk_owner;
-			$object->status			= GETPOST('statut');
+			$object->statut			= GETPOST('statut');
 			$object->entity			= $conf->entity;
 
 			$tmparray=getCountry(GETPOST('country_id','int'),'all',$db,$langs,0);
@@ -255,7 +255,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 	print '</td>';
 	print '</tr>';
 
-    // Status
+	// Status
 	print '<tr>';
 	print '<td>'.fieldLabel('Statut','statut',0).'</td>';
 	print '<td class="maxwidthonsmartphone">';
@@ -472,7 +472,7 @@ else
             // Status
             print '<tr><td>'.fieldLabel('Status','statut',1).'</td><td>';
             print '<select class="flat" name="statut">';
-            if ($object->statut)
+            if (! empty($object->statut))
             {
                 print '<option value="1" selected>'.$langs->trans("PropertyEnabled").'</option>';
                 print '<option value="0">'.$langs->trans("PropertyDisabled").'</option>';
@@ -705,7 +705,7 @@ else
 				
 				if ($object->type_id!='6') {
 					print '<tr>';
-					print '<td><label for="fk_property">' . $langs->trans("Property") . '</label></td>';
+					print '<td><label for="fk_property">' . $langs->trans("PropertyParent") . '</label></td>';
 					print '<td>';
 					$propertystat=new Immoproperty($db);
 					if (! empty($object->fk_property)) {

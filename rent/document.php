@@ -76,12 +76,12 @@ include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_pre_headers.tpl.php
 
 $form = new Form($db);
 
-llxheader('', $langs->trans("RentCard") . ' | ' . $langs->trans("Documents"), '');
+llxheader('', $langs->trans("Rent") . ' | ' . $langs->trans("Documents"), '');
 
 if ($object->id)
 {
 	$head=rent_prepare_head($object);
-	dol_fiche_head($head, 'document',  $langs->trans("RentCard"), 0, 'rent@immobilier');
+	dol_fiche_head($head, 'document',  $langs->trans("Rent"), 0, 'rent@immobilier');
 
 	// Construit liste des fichiers
 	$filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview\.png)$',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
@@ -91,13 +91,12 @@ if ($object->id)
 		$totalsize+=$file['size'];
 	}
 
-
     print '<table class="border" width="100%">';
 
     $linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
 	// Ref
-	print '<tr><td width="25%">'.$langs->trans("Ref").'</td><td>';
+	print '<tr><td class="titlefield">'.$langs->trans("Ref").'</td><td>';
 	print $form->showrefnav($object, 'id', $linkback, 1, 'rowid', 'ref', '');
 	print '</td></tr>';
 

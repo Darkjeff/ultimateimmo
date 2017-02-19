@@ -597,7 +597,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 				// if contact renter from contact then display contact information
 				if (empty($object->fk_socpeople)) {
 
-					print '<tr><td>' . $langs->trans("Civility") . '</td>';
+					print '<tr><td class="titlefield">' . $langs->trans("Civility") . '</td>';
 					print '<td>' . $formcompany->select_civility($object->civilite) . '</td>';
 					print '</tr>';
 
@@ -635,7 +635,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 				} else {
 					print '<input type="hidden" name="fk_socpeople" value="' . $object->fk_socpeople . '">';
 					
-					print '<tr><td>' . $langs->trans("Civility") . '</td>';
+					print '<tr><td class="titlefield">' . $langs->trans("Civility") . '</td>';
 					$contact_static = new Contact($db);
 					$contact_static->civility_id = $object->civilite;
 					print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
@@ -685,23 +685,22 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 				print '<tr><td>' . $langs->trans("PlaceBirth") . '</td>';
 				print '<td><input name="place_birth" class="flat" size="50" value="' . $object->place_birth . '"></td></tr>';
 				
-				  // Status
-            print '<tr><td>'.fieldLabel('Status','statut',1).'</td><td>';
-            print '<select class="flat" name="statut">';
-            if ($object->statut)
-            {
-                print '<option value="1" selected>'.$langs->trans("RenterEnabled").'</option>';
-                print '<option value="0">'.$langs->trans("RenterDisabled").'</option>';
-            }
-            else
-            {
-                print '<option value="1">'.$langs->trans("RenterEnabled").'</option>';
-                print '<option value="0" selected>'.$langs->trans("RenterDisabled").'</option>';
-            }
-            print '</select>';
-            print '</td></tr>';
-				
-				
+				// Status
+				print '<tr><td>'.fieldLabel('Status','statut',1).'</td><td>';
+				print '<select class="flat" name="statut">';
+				if ($object->statut)
+				{
+					print '<option value="1" selected>'.$langs->trans("RenterEnabled").'</option>';
+					print '<option value="0">'.$langs->trans("RenterDisabled").'</option>';
+				}
+				else
+				{
+					print '<option value="1">'.$langs->trans("RenterEnabled").'</option>';
+					print '<option value="0" selected>'.$langs->trans("RenterDisabled").'</option>';
+				}
+				print '</select>';
+				print '</td></tr>';
+
 				print '<tr><td valign="top">' . $langs->trans("Note") . '</td>';
 				if (! empty($object->note))
 					$notes = nl2br($object->note);
@@ -749,7 +748,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 				print '<td>' . $form->showrefnav($object, 'id	', '', 1, 'rowid', 'id') . '</td></tr>';
 				*/
 
-				print '<tr><td>' . $langs->trans("Civility") . '</td>';
+				print '<tr><td class="titlefield">' . $langs->trans("Civility") . '</td>';
 				$contact_static = new Contact($db);
 				$contact_static->civility_id = $object->civilite;
 				print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
@@ -776,7 +775,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 					print '&nbsp;';
 				}
 				print '</td></tr>';
-				
+
 				print '<tr><td valign="top">' . $langs->trans("Owner") . '</td><td>';
 				if ($object->fk_owner) {
 					$soc = new Societe($db);
@@ -786,7 +785,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 					print '&nbsp;';
 				}
 				print '</td></tr>';
-				
+
 				print '<tr><td>' . $langs->trans("Job") . '</td>';
 				print '<td>' . $object->fonction . '</td></tr>';
 
@@ -814,7 +813,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 				print '<div class="underbanner clearboth"></div>';
 				print '<table class="border tableforfield" width="100%">';
 
-				print '<tr><td>' . $langs->trans("Note") . '</td>';
+				print '<tr><td class="titlefield">' . $langs->trans("Note") . '</td>';
 				if (! empty($object->note))
 					$notes = nl2br($object->note);
 				print '<td>' . stripslashes($notes) . '</td></tr>';

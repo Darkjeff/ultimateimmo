@@ -31,14 +31,11 @@ if (! $res)
 	die("Include of main fails");
 	
 // Class
-require_once '../core/lib/immobilier.lib.php';
-require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
-dol_include_once("/immobilier/class/immoreceipt.class.php");
 require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
-
-$res = dol_include_once("/immobilier/core/modules/immobilier/modules_immobilier.php");
-if (! $res)
-	die("Include of immobilier");
+require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
+dol_include_once("/immobilier/core/lib/immobilier.lib.php");
+dol_include_once("/immobilier/class/immoreceipt.class.php");
+dol_include_once("/immobilier/core/modules/immobilier/modules_immobilier.php");
 dol_include_once("/immobilier/class/immorent.class.php");
 
 // Langs
@@ -48,8 +45,8 @@ $langs->load("bills");
 
 $mesg = '';
 $id = GETPOST('rowid')?GETPOST('rowid','int'):GETPOST('id','int');
-$action = GETPOST('action');
-$cancel = GETPOST('cancel');
+$action = GETPOST('action','alpha');
+$cancel = GETPOST('cancel','alpha');
 
 // Actions
 
@@ -119,12 +116,12 @@ if ($action == 'chargeloc') {
 /*
  * Add rental
  */
-if ($action == 'add' && $cancel != $langs->trans("Cancel")) {
+if ($action == 'add' && ! $cancel) {
 	$error = 0;
 	
-	$datev = dol_mktime(12, 0, 0, $_POST["datevmonth"], $_POST["datevday"], $_POST["datevyear"]);
-	$datesp = dol_mktime(12, 0, 0, $_POST["datespmonth"], $_POST["datespday"], $_POST["datespyear"]);
-	$dateep = dol_mktime(12, 0, 0, $_POST["dateepmonth"], $_POST["dateepday"], $_POST["dateepyear"]);
+	$datev = dol_mktime(12, 0, 0, GETPOST("datevmonth"), GETPOST("datevday"), GETPOST("datevyear"));
+	$datesp = dol_mktime(12, 0, 0, GETPOST("datespmonth"), GETPOST("datespday"), GETPOST("datespyear"));
+	$dateep = dol_mktime(12, 0, 0, GETPOST("dateepmonth"), GETPOST("dateepday"), GETPOST("dateepyear"));
 	
 	$object->nom = GETPOST("nom");
 	$object->datesp = $datesp;
@@ -162,9 +159,9 @@ if ($action == 'addall')
 {
 	
 	$error=0;
-	$dateech = dol_mktime(0,0, GETPOST("echsec"), $_POST["echmonth"], $_POST["echday"], $_POST["echyear"]);
-	$dateperiod = dol_mktime($_POST["periodhour"], $_POST["periodmin"], $_POST["periodsec"], $_POST["periodmonth"], $_POST["periodday"], $_POST["periodyear"]);
-	$dateperiodend = dol_mktime($_POST["periodendhour"], $_POST["periodendmin"], $_POST["periodendsec"], $_POST["periodendmonth"], $_POST["periodendday"], $_POST["periodendyear"]);
+	$dateech = dol_mktime(12,0,0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
+	$dateperiod = dol_mktime(12,0,0, GETPOST("periodmonth"), GETPOST("periodday"), GETPOST("periodyear"));
+	$dateperiodend = dol_mktime(12,0,0, GETPOST("periodendmonth"), GETPOST("periodendday"), GETPOST("periodendyear"));
 	
 	if (empty($dateech)) {
 		setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), 'errors');
@@ -236,9 +233,9 @@ if ($action == 'addall')
 
 if ($action == 'update')
 {
-	$dateech = @dol_mktime($_POST["echhour"], $_POST["echmin"], $_POST["echsec"], $_POST["echmonth"], $_POST["echday"], $_POST["echyear"]);
-	$dateperiod = @dol_mktime($_POST["periodhour"], $_POST["periodmin"], $_POST["periodsec"], $_POST["periodmonth"], $_POST["periodday"], $_POST["periodyear"]);
-	$dateperiodend = @dol_mktime($_POST["periodendhour"], $_POST["periodendmin"], $_POST["periodendsec"], $_POST["periodendmonth"], $_POST["periodendday"], $_POST["periodendyear"]);
+	$dateech = @dol_mktime(12,0,0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
+	$dateperiod = @dol_mktime(12,0,0, GETPOST("periodmonth"), GETPOST("periodday"), GETPOST("periodyear"));
+	$dateperiodend = @dol_mktime(12,0,0, GETPOST("periodendmonth"), GETPOST("periodendday"), GETPOST("periodendyear"));
 	/*if (! $dateech)
 	 {
 	 $mesg='<div class="error">'.$langs->trans("ErrorFieldRequired",$langs->transnoentities("DateDue")).'</div>';
@@ -691,9 +688,9 @@ else
 			
 			dol_fiche_end();
 			print '<div class="center">';
-	print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-	print '<input type="submit" class="butActionDelete" name="cancel" value="' . $langs->trans("Cancel") . '">';
-	print '</div>';
+			print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+			print '<input type="submit" class="butActionDelete" name="cancel" value="' . $langs->trans("Cancel") . '">';
+			print '</div>';
 			
 			
 		} else {

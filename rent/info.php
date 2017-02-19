@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2015-2016  Alexandre Spangaro <aspangaro@zendsi.com>
+/* Copyright (C) 2015-2017  Alexandre Spangaro <aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ if (! $user->rights->immobilier->rent->read)
  * View
  */
 
-llxheader('', $langs->trans("RentCard") . ' | ' . $langs->trans("Infos"), '');
+llxheader('', $langs->trans("Rent") . ' | ' . $langs->trans("Infos"), '');
 
 if ($id)
 {
@@ -53,7 +53,7 @@ if ($id)
 
 	$head = rent_prepare_head($object);
 
-	dol_fiche_head($head, 'info', $langs->trans("RentCard"), 0, 'rent@immobilier');
+	dol_fiche_head($head, 'info', $langs->trans("Rent"), 0, 'rent@immobilier');
 
 	print '<table class="border" width="100%">';
 
