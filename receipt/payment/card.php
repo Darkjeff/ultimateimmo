@@ -254,7 +254,7 @@ if ($action == 'create')
 
 	print '<tr>';
 	print '<td valign="top">'.$langs->trans("Comments").'</td>';
-	print '<td valign="top" colspan="2"><textarea name="note" wrap="soft" cols="60" rows="'.ROWS_3.'"></textarea></td>';
+	print '<td valign="top" colspan="2"><textarea name="comment" wrap="soft" cols="60" rows="'.ROWS_3.'"></textarea></td>';
 	print '</tr>';
 	
 	print '</table>';

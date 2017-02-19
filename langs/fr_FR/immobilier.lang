@@ -110,7 +110,7 @@ Receipt=Quittance
 NewReceipt=Nouvelle quittance
 ImmoReceipts=Quittances
 ListReceipts=Liste des quittances
-GenerateMassingReceipts=Générer les quittances en masse
+allReceiptperContract=Générer les quittances
 
 # Costs
 MenuNewRentalLoad=Nouvelle charge

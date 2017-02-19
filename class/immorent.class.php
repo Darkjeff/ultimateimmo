@@ -51,6 +51,8 @@ class Rent extends CommonObject {
 	var $periode;
 	var $depot;
 	var $date_der_rev;
+	var $datec;
+	var $tms;
 	var $commentaire;
 	var $proprietaire_id;
 
@@ -239,6 +241,7 @@ class Rent extends CommonObject {
 		$sql .= "depot,";
 		$sql .= "commentaire,";
 		$sql .= "datec,";
+		$sql .= "tms,";
 		$sql .= "fk_user_author";
 		$sql .= ") VALUES (";
 		$sql .= " '" . $this->fk_property . "',";
@@ -253,6 +256,7 @@ class Rent extends CommonObject {
 		$sql .= " '" . $this->periode . "',";
 		$sql .= " '" . $this->depot . "',";
 		$sql .= " '" . $this->commentaire . "',";
+		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= ' ' . $user->id;
 		$sql .= ")";
