@@ -76,7 +76,7 @@ div.mainmenu.rents {
 	background-image: url(<?php echo dol_buildpath('custom/immobilier/img/rent.png',1) ?>);
 }
 
-div.mainmenu.receipt {
+div.mainmenu.receipts {
 	background-image: url(<?php echo dol_buildpath('custom/immobilier/img/receipt.png',1) ?>);
 }
 

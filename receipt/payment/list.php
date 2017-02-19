@@ -47,11 +47,11 @@ print_fiche_titre($langs->trans("ListPayment"));
 					<tr class="liste_titre">
 						<th><?php echo $langs->trans('Reference'); ?></th>
 						<th><?php echo $langs->trans('DatePayment'); ?></th>
-						<th><?php echo $langs->trans('nomlocataire'); ?></th>
+						<th><?php echo $langs->trans('Renter'); ?></th>
 						<th><?php echo $langs->trans('nomlocal'); ?></th>
 						<th><?php echo $langs->trans('nomloyer'); ?></th>
-						<th><?php echo $langs->trans("amount"); ?></th>
-						<th><?php echo $langs->trans("comment"); ?></th>
+						<th><?php echo $langs->trans("Amount"); ?></th>
+						<th><?php echo $langs->trans("Comment"); ?></th>
 						<th><?php echo $langs->trans("Action"); ?></th>
 					</tr>
 				</thead>

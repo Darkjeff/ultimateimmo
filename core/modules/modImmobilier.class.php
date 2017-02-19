@@ -199,7 +199,7 @@ class modImmobilier extends DolibarrModules
 
 		// Boxes
 		$this->boxes = array ();
-		
+
 		// Permissions
 		$this->rights = array(); // Permission array used by this module
 		$r = 0;
@@ -210,21 +210,21 @@ class modImmobilier extends DolibarrModules
 		$this->rights[$r][4] = 'property';
 		$this->rights[$r][5] = 'read';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1130502;
 		$this->rights[$r][1] = 'Update properties';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'property';
 		$this->rights[$r][5] = 'write';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1130503;
 		$this->rights[$r][1] = 'Delete properties';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'property';
 		$this->rights[$r][5] = 'delete';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1130504;
 		$this->rights[$r][1] = 'Export properties';
 		$this->rights[$r][3] = 0;
@@ -238,21 +238,21 @@ class modImmobilier extends DolibarrModules
 		$this->rights[$r][4] = 'renter';
 		$this->rights[$r][5] = 'read';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1130512;
 		$this->rights[$r][1] = 'Update renters';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'renter';
 		$this->rights[$r][5] = 'write';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1130513;
 		$this->rights[$r][1] = 'Delete renters';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'renter';
 		$this->rights[$r][5] = 'delete';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1130514;
 		$this->rights[$r][1] = 'Export renters';
 		$this->rights[$r][3] = 0;
@@ -266,28 +266,28 @@ class modImmobilier extends DolibarrModules
 		$this->rights[$r][4] = 'rent';
 		$this->rights[$r][5] = 'read';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1130522;
 		$this->rights[$r][1] = 'Update rents';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'rent';
 		$this->rights[$r][5] = 'write';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1130523;
 		$this->rights[$r][1] = 'Delete rents';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'rent';
 		$this->rights[$r][5] = 'delete';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1130524;
 		$this->rights[$r][1] = 'Export rents';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'rent';
 		$this->rights[$r][5] = 'export';
 		$r ++;
-		
+
 		// Main menu entries
 		$this->menus = array (); // List of menus to add
 		$r = 0;
@@ -445,7 +445,7 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
-		
+
 		// Rents --------------------
 		$this->menu [$r] = array (
 				'fk_menu' => 0,
@@ -467,7 +467,7 @@ class modImmobilier extends DolibarrModules
 			'fk_menu' => 'fk_mainmenu=rents',
 			'type' => 'left',
 			'titre' => 'Rents',
-			'leftmenu' => 'rents',
+			'leftmenu' => 'rent',
 			'url' => '/immobilier/rent/list.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 301,
@@ -477,9 +477,9 @@ class modImmobilier extends DolibarrModules
 			'user' => 0 
 		);
 		$r ++;
-		
+
 		$this->menu[$r] = array(
-			'fk_menu' => 'fk_mainmenu=rents,fk_leftmenu=rents',
+			'fk_menu' => 'fk_mainmenu=rents,fk_leftmenu=rent',
 			'type' => 'left',
 			'titre' => 'NewRent',
 			'mainmenu' => 'rents',
@@ -492,9 +492,9 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
-		
+
 		$this->menu[$r] = array(
-			'fk_menu' => 'fk_mainmenu=rents,fk_leftmenu=rents',
+			'fk_menu' => 'fk_mainmenu=rents,fk_leftmenu=rent',
 			'type' => 'left',
 			'titre' => 'List',
 			'mainmenu' => 'rents',
@@ -507,13 +507,13 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
-		
+
 		// Receipt --------------------
 		$this->menu [$r] = array (
 				'fk_menu' => 0,
 				'type' => 'top',
-				'titre' => 'Receipt',
-				'mainmenu' => 'receipt',
+				'titre' => 'Receipts',
+				'mainmenu' => 'receipts',
 				'leftmenu' => '0',
 				'url' => '/immobilier/receipt/list.php',
 				'langs' => 'immobilier@immobilier',
@@ -526,9 +526,9 @@ class modImmobilier extends DolibarrModules
 		$r ++;
 
 		$this->menu [$r] = array (
-			'fk_menu' => 'fk_mainmenu=receipt',
+			'fk_menu' => 'fk_mainmenu=receipts',
 			'type' => 'left',
-			'titre' => 'Receipt',
+			'titre' => 'Receipts',
 			'leftmenu' => 'receipt',
 			'url' => '/immobilier/receipt/list.php',
 			'langs' => 'immobilier@immobilier',
@@ -539,12 +539,12 @@ class modImmobilier extends DolibarrModules
 			'user' => 0 
 		);
 		$r ++;
-		
+
 		$this->menu[$r] = array(
-			'fk_menu' => 'fk_mainmenu=receipt,fk_leftmenu=receipt',
+			'fk_menu' => 'fk_mainmenu=receipts,fk_leftmenu=receipt',
 			'type' => 'left',
 			'titre' => 'NewReceipt',
-			'mainmenu' => 'receipt',
+			'mainmenu' => 'receipts',
 			'url' => '/immobilier/receipt/card.php?action=create',
 			'langs' => 'immobilier@immobilier',
 			'position' => 402,
@@ -554,12 +554,12 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
-		
+
 		$this->menu[$r] = array(
-			'fk_menu' => 'fk_mainmenu=receipt,fk_leftmenu=receipt',
+			'fk_menu' => 'fk_mainmenu=receipts,fk_leftmenu=receipt',
 			'type' => 'left',
-			'titre' => 'allReceiptperContract',
-			'mainmenu' => 'receipt',
+			'titre' => 'AllReceiptperContract',
+			'mainmenu' => 'receipts',
 			'url' => '/immobilier/receipt/card.php?action=createall',
 			'langs' => 'immobilier@immobilier',
 			'position' => 403,
@@ -569,12 +569,12 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
-		
+
 		$this->menu[$r] = array(
-			'fk_menu' => 'fk_mainmenu=receipt,fk_leftmenu=receipt',
+			'fk_menu' => 'fk_mainmenu=receipts,fk_leftmenu=receipt',
 			'type' => 'left',
 			'titre' => 'List',
-			'mainmenu' => 'receipt',
+			'mainmenu' => 'receipts',
 			'url' => '/immobilier/receipt/list.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 404,
@@ -584,12 +584,12 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
-		
+
 		$this->menu[$r] = array(
-			'fk_menu' => 'fk_mainmenu=receipt,fk_leftmenu=receipt',
+			'fk_menu' => 'fk_mainmenu=receipts,fk_leftmenu=receipt',
 			'type' => 'left',
 			'titre' => 'Validate',
-			'mainmenu' => 'receipt',
+			'mainmenu' => 'receipts',
 			'url' => '/immobilier/receipt/list.php?action=validaterent',
 			'langs' => 'immobilier@immobilier',
 			'position' => 406,
@@ -599,12 +599,12 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
-		
+
 		$this->menu[$r] = array(
-			'fk_menu' => 'fk_mainmenu=receipt,fk_leftmenu=receipt',
+			'fk_menu' => 'fk_mainmenu=receipts,fk_leftmenu=receipt',
 			'type' => 'left',
-			'titre' => 'Stats',
-			'mainmenu' => 'receipt',
+			'titre' => 'Statistics',
+			'mainmenu' => 'receipts',
 			'url' => '/immobilier/receipt/stats.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 407,
@@ -614,12 +614,12 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
-		
+
 		// Payment --------------------
 		$this->menu [$r] = array (
-			'fk_menu' => 'fk_mainmenu=receipt',
+			'fk_menu' => 'fk_mainmenu=receipts',
 			'type' => 'left',
-			'titre' => 'Payment',
+			'titre' => 'Payments',
 			'leftmenu' => 'payment',
 			'url' => '/immobilier/receipt/payment/list.php',
 			'langs' => 'immobilier@immobilier',
@@ -630,12 +630,12 @@ class modImmobilier extends DolibarrModules
 			'user' => 0 
 		);
 		$r ++;
-		
+
 		$this->menu [$r] = array (
-			'fk_menu' => 'fk_mainmenu=receipt,fk_leftmenu=payment',
+			'fk_menu' => 'fk_mainmenu=receipts,fk_leftmenu=payment',
 			'type' => 'left',
 			'titre' => 'NewPayment',
-			'mainmenu' => 'payment',
+			'mainmenu' => 'receipts',
 			'url' => '/immobilier/receipt/payment/card.php?action=createall',
 			'langs' => 'immobilier@immobilier',
 			'position' => 502,
@@ -645,12 +645,12 @@ class modImmobilier extends DolibarrModules
 			'user' => 0 
 		);
 		$r ++;
-		
+
 		$this->menu [$r] = array (
-			'fk_menu' => 'fk_mainmenu=receipt,fk_leftmenu=payment',
+			'fk_menu' => 'fk_mainmenu=receipts,fk_leftmenu=payment',
 			'type' => 'left',
 			'titre' => 'List',
-			'mainmenu' => 'payment',
+			'mainmenu' => 'receipts',
 			'url' => '/immobilier/receipt/payment/list.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 503,
@@ -662,10 +662,10 @@ class modImmobilier extends DolibarrModules
 		$r ++;
 		
 			$this->menu [$r] = array (
-			'fk_menu' => 'fk_mainmenu=receipt,fk_leftmenu=payment',
+			'fk_menu' => 'fk_mainmenu=receipts,fk_leftmenu=payment',
 			'type' => 'left',
-			'titre' => 'stats',
-			'mainmenu' => 'payment',
+			'titre' => 'Statistics',
+			'mainmenu' => 'receipts',
 			'url' => '/immobilier/receipt/payment/stats.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 504,
@@ -675,8 +675,7 @@ class modImmobilier extends DolibarrModules
 			'user' => 0 
 		);		
 		$r ++;
-		
-		
+
 		// Charges --------------------
 		$this->menu [$r] = array (
 			'fk_menu' => 0,
@@ -693,12 +692,12 @@ class modImmobilier extends DolibarrModules
 			'user' => 2 
 		);
 		$r ++;
-		
+
 		$this->menu [$r] = array (
 			'fk_menu' => 'fk_mainmenu=rentalloads',
 			'type' => 'left',
 			'titre' => 'RentalLoads',
-			'leftmenu' => 'rentalloads',
+			'leftmenu' => 'rentalload',
 			'url' => '/immobilier/cost/list.php',
 			'langs' => 'immobilier@immobilier',
 			'position' => 601,
@@ -708,9 +707,9 @@ class modImmobilier extends DolibarrModules
 			'user' => 0 
 		);
 		$r ++;
-		
+
 		$this->menu[$r] = array(
-			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalloads',
+			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalload',
 			'type' => 'left',
 			'titre' => 'MenuNewRentalLoad',
 			'mainmenu' => 'rentalloads',
@@ -723,9 +722,9 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
-		
-			$this->menu[$r] = array(
-			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalloads',
+
+		$this->menu[$r] = array(
+			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalload',
 			'type' => 'left',
 			'titre' => 'List',
 			'mainmenu' => 'rentalloads',
@@ -738,12 +737,11 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
-		
-			
-			$this->menu[$r] = array(
+
+		$this->menu[$r] = array(
 			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalloads',
 			'type' => 'left',
-			'titre' => 'Stats',
+			'titre' => 'Statistics',
 			'mainmenu' => 'rentalloads',
 			'url' => '/immobilier/cost/stats.php',
 			'langs' => 'immobilier@immobilier',
@@ -754,7 +752,7 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
-		
+
 		// Result --------------------
 		$this->menu [$r] = array (
 			'fk_menu' => 0,
@@ -771,7 +769,7 @@ class modImmobilier extends DolibarrModules
 			'user' => 2 
 		);
 		$r ++;
-		
+
 		/*
 		
 

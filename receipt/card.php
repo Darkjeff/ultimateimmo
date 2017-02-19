@@ -1,6 +1,6 @@
 ﻿<?php
-/* Copyright (C) 2013-2015 Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2015-2016 Alexandre Spangaro	<aspangaro@zendsi.com>
+/* Copyright (C) 2013-2015	Olivier Geffroy		<jeff@jeffinfo.com>
+ * Copyright (C) 2015-2017	Alexandre Spangaro	<aspangaro@zendsi.com>
  * Copyright (C) 2016		Jamelbaz			<jamelbaz@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -431,7 +431,7 @@ elseif ($action == 'createall')
 			print '<td>' . $langs->trans('local_id') . '</td>';
 			print '<td>' . $langs->trans('nomlocal') . '</td>';
 			print '<td>' . $langs->trans('locataire_id') . '</td>';
-			print '<td>' . $langs->trans('nomlocataire') . '</td>';
+			print '<td>' . $langs->trans('Renter') . '</td>';
 			print '<td align="right">' . $langs->trans('montant_tot') . '</td>';
 			print '<td align="right">' . $langs->trans('rent') . '</td>';
 			print '<td align="right">' . $langs->trans('charges') . '</td>';
@@ -540,7 +540,7 @@ else
 			print '<td>' . $receipt->nomlocal . '</td></tr>';
 
 			// Nom locataire
-			print '<tr><td>' . $langs->trans("nomlocataire") . '</td>';
+			print '<tr><td>' . $langs->trans("Renter") . '</td>';
 			print '<td>' . $receipt->nomlocataire . '</td></tr>';
 			
 			// Amount
@@ -750,7 +750,7 @@ else
 			print '<td colspan="2">' . $receipt->nomlocal . '</td></tr>';
 
 			// Renter
-			print '<tr><td>' . $langs->trans("nomlocataire") . '</td>';
+			print '<tr><td>' . $langs->trans("Renter") . '</td>';
 			print '<td colspan="2">' . $receipt->nomlocataire . '</td></tr>';
 			
 			// Amount

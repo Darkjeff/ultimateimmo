@@ -1,7 +1,6 @@
 <?php
-/* Copyright (C) 2004      Rodolphe Quiedeville <rodolphe@quiedeville.org>
- * Copyright (C) 2005-2006 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
+/* Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
+ * Copyright (C) 2015-2017	Alexandre Spangaro	<aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,46 +34,41 @@ require_once ('../core/lib/immobilier.lib.php');
 dol_include_once ( '/immobilier/class/html.immobilier.php' );
 
 // Langs
-$langs->load ( "immobilier@immobilier" );
+$langs->load("immobilier@immobilier");
 
 $mesg = '';
 $id = GETPOST ( 'id', 'int' );
 $action = GETPOST ( 'action', 'alpha' );
 
-$html = new Form ( $db );
-$htmlimmo = new FormImmobilier ( $db );
-
 /*
  * Creation of a letter
  */
+$form = new Form($db);
+$formimmo = new FormImmobilier($db);
 
+llxheader ('', $langs->trans("letter"), '');
+	
+$nbligne = 0;
+	
+$locataire = new Locataire ($db, GETPOST('id'));
+	
+$head = locataire_prepare_head($locataire);
+	
+dol_fiche_head($head, 'letter', $langs->trans("letter"), 0, 'renter');
+	
+print '<form action="fiche_locataire.php" method="post">';
+print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">';
+print '<input type="hidden" name="action" value="update">';
+print '<input type="hidden" name="id" value="'.$object->id.'">' . "\n";
+	
+print '<table class="border" width="100%">';
+	
+print '<tr><td class="titlefield">'.$langs->trans("NomLocataire").'</td>';
+print '<td>' . $locataire->nom . '</td></tr>';
+print '<tr><td>'.$langs->trans("Address").'</td>';
+print '<td>' . $locataire->adresse . '</td></tr>';
 
-	llxheader ( '', $langs->trans ( "letter" ), '' );
-	
-	$html = new Form ( $db );
-	$nbligne = 0;
-	
-	$locataire = new Locataire ( $db, GETPOST ( 'id' ) );
-	
-	$head = locataire_prepare_head ( $locataire );
-	
-	dol_fiche_head ( $head, 'letter', $langs->trans ( "letter" ), 0, 'renter' );
-	
-	print '<form action="fiche_locataire.php" method="post">';
-	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">';
-	print '<input type="hidden" name="action" value="update">';
-	print '<input type="hidden" name="id" value="'.$object->id.'">' . "\n";
-	
-	print '<table class="border" width="100%">';
-	
-	print '<tr><td width="25%">'.$langs->trans("NomLocataire").'</td>';
-	print '<td>' . $locataire->nom . '</td></tr>';
-	print '<tr><td>'.$langs->trans("Address").'</td>';
-	print '<td>' . $locataire->adresse . '</td></tr>';
-
-
-	print '</table>';
-	
+print '</table>';
 	
 print_barre_liste ( $langs->trans ( "ListLetter" ), "", "", "", "", "", '', 0 );
 
@@ -93,12 +87,12 @@ print '<tr><td>';
 print $langs->trans('CreateLetterForThisRenter');
 print '</td></tr>';
 print '<tr><td>';
-print $htmlimmo->select_type_letter('');
+print $formimmo->select_type_letter('');
 print '<td>';
 print $langs->trans('Dateletter');
 print '</td>';
 print '<td>';
-print $html->select_date( '', 'dtletter', '', '', '', 'addletter' );
+print $form->select_date( '', 'dtletter', '', '', '', 'addletter' );
 print '</td><td>';
 
 print '<input type="submit" value="'.$langs->trans('Add').'"/>';
@@ -123,7 +117,7 @@ print '<td>';
 print $langs->trans('ConsoCompteur');
 print '</td>';
 print '<td>';
-print $langs->trans('Commentaire');
+print $langs->trans('Comment');
 print '</td>';
 print '<td>';
 print '</td>';

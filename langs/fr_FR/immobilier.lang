@@ -99,6 +99,8 @@ ListRents=Liste des locations
 NewRent=Nouvelle location
 DateBeginningLease=Début du bail
 Contracts=Contrats
+Contract=Contrat
+NewContract=Nouveau Contrat
 AmountHC=Loyer hors charges
 Charges=Charges
 AmountTC=Loyer charges comprises
@@ -107,10 +109,11 @@ Caution=Caution
 # Receipts
 ReceiptCard=Fiche quittance
 Receipt=Quittance
+Receipts=Quittances
 NewReceipt=Nouvelle quittance
 ImmoReceipts=Quittances
 ListReceipts=Liste des quittances
-allReceiptperContract=Générer les quittances
+AllReceiptperContract=Générer les quittances
 
 # Costs
 MenuNewRentalLoad=Nouvelle charge
@@ -139,7 +142,6 @@ Contrat_id=Réference contrat
 Local_id=Réference local
 Nomlocal=Nom local
 Locataire_id=reference locataire
-Nomlocataire=nom locataire
 Montant_tot=total
 RentsByYear=Loyers par année
 RentalLoads=Charges locatives
@@ -148,7 +150,6 @@ Charge_ex=Charge locative
 GenererQuittance=Génerer une quittance
 ValidateRent=Valider les loyers
 Letter=Courrier
-NomLocataire=Nom du locataire
 NomContrat=Bail
 LoyerTotal=Montant du loyer
 EncoursLoyer=Encours Locataire
@@ -168,11 +169,8 @@ IndexCompteur=Index du compteur
 ConsoCompteur=Consommation du compteur
 CommCharge=Détails des charges réels
 
-Contract=Contrat
-NewContract=Nouveau Contrat
-
-amount=montant
-comment=commentaire
-Payment=Paiement
+Amount=Montant
+Comment=Commentaire
+Payments=Paiements
 NewPayment=Nouveau Paiement
 

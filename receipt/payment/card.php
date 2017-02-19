@@ -53,24 +53,24 @@ if ($action == 'add')
 		exit;
 	}
 
-	$datepaie = @dol_mktime($_POST["paiehour"], $_POST["paiemin"], $_POST["paiesec"], $_POST["paiemonth"], $_POST["paieday"], $_POST["paieyear"]);
+	$datepaie = @dol_mktime(0,0,0, GETPOST("paiemonth"), GETPOST("paieday"), GETPOST("paieyear"));
 	if (! $datepaie) {
 		$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Datepaie")) . '</div>';
 		$action = 'create';
 	} else {
 		$paie = new Immopayment($db);
 		
-		$paie->fk_contract = $_POST["fk_contract"];
-		$paie->fk_property = $_POST["fk_property"];
-		$paie->fk_renter = $_POST["fk_renter"];
-		$paie->amount = $_POST["amount"];
-		$paie->comment = $_POST["comment"];
-		$paie->date_payment = $datepaie;
-		$paie->fk_receipt = $_POST["fk_receipt"];
-    	$paie->fk_bank	= $_POST["accountid"];
-		$paie->fk_typepayment  = $_POST["fk_typepayment"];
-    	$paie->num_payment  = $_POST["num_payment"];
-		$paie->fk_owner = $user->id;
+		$paie->fk_contract		= GETPOST("fk_contract");
+		$paie->fk_property		= GETPOST("fk_property");
+		$paie->fk_renter		= GETPOST("fk_renter");
+		$paie->amount			= GETPOST("amount");
+		$paie->comment			= GETPOST("comment");
+		$paie->date_payment		= $datepaie;
+		$paie->fk_receipt		= GETPOST("fk_receipt");
+    	$paie->fk_bank			= GETPOST("accountid");
+		$paie->fk_typepayment	= GETPOST("fk_typepayment");
+    	$paie->num_payment		= GETPOST("num_payment");
+		$paie->fk_owner			= $user->id;
 		
 		$id = $paie->create($user);
 		header("Location: " . DOL_URL_ROOT . "/custom/immobilier/receipt/card.php?id=" . $paie->fk_receipt);
@@ -104,7 +104,7 @@ if ($action == 'delete') {
 /***** Update ******/
 
 if ($action == 'maj') {
-	$datepaie = @dol_mktime($_POST["paiehour"], $_POST["paiemin"], $_POST["paiesec"], $_POST["paiemonth"], $_POST["paieday"], $_POST["paieyear"]);
+	$datepaie = @dol_mktime(0, 0, 0, GETPOST("paiemonth"), GETPOST("paieday"), GETPOST("paieyear"));
 	if (! $datepaie) {
 		$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Datepaie")) . '</div>';
 		$action = 'update';
@@ -113,9 +113,9 @@ if ($action == 'maj') {
 		
 		$result = $paie->fetch($id);
 		
-		$paie->amount = $_POST["amount"];
-		$paie->comment = $_POST["comment"];
-		$paie->date_payment = $datepaie;
+		$paie->amount		= GETPOST("amount");
+		$paie->comment		= GETPOST("comment");
+		$paie->date_payment	= $datepaie;
 		
 		$result = $paie->update($user);
 		header("Location: " . DOL_URL_ROOT . "/custom/immobilier/receipt/card.php?id=" . $receipt_id);
@@ -124,7 +124,7 @@ if ($action == 'maj') {
 }
 
 if ($action == 'addall') {
-	$datepaie = @dol_mktime($_POST["paiehour"], $_POST["paiemin"], $_POST["paiesec"], $_POST["paiemonth"], $_POST["paieday"], $_POST["paieyear"]);
+	$datepaie = @dol_mktime(0, 0, 0, GETPOST("paiemonth"), GETPOST("paieday"), GETPOST("paieyear"));
 	if (! $datepaie) {
 		$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Datepaie")) . '</div>';
 		$action = 'createall';
@@ -142,17 +142,17 @@ if ($action == 'addall') {
 				if (! empty($reference) && !empty($amount)) {
 					$paie = new Immopayment($db);
 
-					$paie->fk_contract = GETPOST('fk_contract_'.$reference);
-					$paie->fk_property = GETPOST('fk_property_'.$reference);
-					$paie->fk_renter = GETPOST('fk_renter_'.$reference);
-					$paie->amount =price2num($amount);
-					$paie->comment = GETPOST('comment');
-					$paie->date_payment = $datepaie;
-					$paie->fk_receipt = GETPOST('receipt_'.$reference);
-					$paie->fk_bank	= $_POST["accountid"];
-					$paie->fk_typepayment  = $_POST["fk_typepayment"];
-					$paie->num_payment  = $_POST["num_payment"];
-					$paie->fk_owner = $user->id;
+					$paie->fk_contract		= GETPOST('fk_contract_'.$reference);
+					$paie->fk_property		= GETPOST('fk_property_'.$reference);
+					$paie->fk_renter		= GETPOST('fk_renter_'.$reference);
+					$paie->amount			= price2num($amount);
+					$paie->comment			= GETPOST('comment');
+					$paie->date_payment		= $datepaie;
+					$paie->fk_receipt		= GETPOST('receipt_'.$reference);
+					$paie->fk_bank			= GETPOST("accountid");
+					$paie->fk_typepayment	= GETPOST("fk_typepayment");
+					$paie->num_payment		= GETPOST("num_payment");
+					$paie->fk_owner			= $user->id;
 					
 					$result = $paie->create ($user);
 
@@ -206,9 +206,9 @@ if ($action == 'create')
 	print '<tr class="liste_titre"><td colspan="3">'.$langs->trans("Receipt").'</td>';
 
 	print '<tr><td>' . $langs->trans("NomAppartement") . '</td><td>' . $receipt->nomlocal . '</td></tr>';
-	print '<tr><td>' . $langs->trans("NomLocataire") . '</td><td>' . $receipt->nomlocataire . '</td></tr>';
+	print '<tr><td>' . $langs->trans("Renter") . '</td><td>' . $receipt->nomlocataire . '</td></tr>';
 	print '<tr><td>' . $langs->trans("RefLoyer") . '</td><td>' . $receipt->name . '</td></tr>';
-	print '<tr><td>'.$langs->trans("Amount")."</td><td colspan=\"2\">".price($receipt->amount_total,0,$outputlangs,1,-1,-1,$conf->currency).'</td></tr>';
+	print '<tr><td>' . $langs->trans("Amount") . '</td><td colspan="2">'.price($receipt->amount_total,0,$outputlangs,1,-1,-1,$conf->currency).'</td></tr>';
 
 	$sql = "SELECT sum(p.amount) as total";
 	$sql.= " FROM ".MAIN_DB_PREFIX."immo_payment as p";
@@ -224,7 +224,7 @@ if ($action == 'create')
 	print '<tr><td valign="top">'.$langs->trans("RemainderToPay").'</td><td colspan="2">'.price($total-$sumpaid,0,$outputlangs,1,-1,-1,$conf->currency).'</td></tr>';
 
 	print '<tr class="liste_titre">';
-	print "<td colspan=\"3\">".$langs->trans("Payment").'</td>';
+	print '<td colspan="3">'.$langs->trans("Payment").'</td>';
 	print '</tr>';
 
 	print '<tr><td class="fieldrequired">' . $langs->trans("Date") . '</td>';
@@ -307,24 +307,19 @@ if ($action == 'createall') {
 	print $form->select_date(! empty($datepaie) ? $datepaie : '-1', 'paie', 0, 0, 0, 'card', 1);
 	print '</td>';
 	
-	/*
-	 * Comment
-	 */
+	// Comment
 	print '<td><input name="comment" size="30" value="' . GETPOST('comment') . '"</td>';
 	
 	// Payment mode
-	
 	print '<td align="center">';
 	print $form->select_types_paiements(isset($_POST["fk_typepayment"])?$_POST["fk_typepayment"]:$paie->fk_typepayment, "fk_typepayment");
 	print '</td>';
 	
 	// AccountToCredit
-	
 	print '<td align="center">';
 	print $form->select_comptes(isset($_POST["accountid"])?$_POST["accountid"]:$paie->accountid, "accountid", 0, '',1);  // Show open bank account list
 	print '</td>';
-		
-		
+
 	// num_payment
 	print '<td><input name="num_payment" size="30" value="' . GETPOST('num_payment') . '"</td>';
 	
@@ -354,7 +349,7 @@ if ($action == 'createall') {
 		print '<tr class="liste_titre">';
 		print '<td>' . $langs->trans('NameReceipt') . '</td>';
 		print '<td>' . $langs->trans('nomlocal') . '</td>';
-		print '<td>' . $langs->trans('nomlocataire') . '</td>';
+		print '<td>' . $langs->trans('Renter') . '</td>';
 		print '<td align="right">' . $langs->trans('montant_tot') . '</td>';
 		print '<td align="right">' . $langs->trans('payed') . '</td>';
 		print '<td align="right">' . $langs->trans('due') . '</td>';
@@ -419,9 +414,9 @@ if ($action == 'createall') {
 if ($action == 'update') {
 	$receipt = new Immoreceipt($db);
 	$result = $receipt->fetch($receipt_id);
-	
+
 	$paie = new Immopayment($db);
-		
+
 	$result = $paie->fetch($id);
 	
 	print '<form action="card.php" method="post">';
@@ -436,24 +431,33 @@ if ($action == 'update') {
 	print '<input type="hidden" name="fk_property" size="10" value="' . $receipt->fk_property . '">';
 	print '<input type="hidden" name="fk_renter" size="10" value="' . $receipt->fk_renter . '">';
 	print '<input type="hidden" name="fk_receipt" size="10" value="' . $id . '">';
+
+	print '<tr><td class="titlefield">' . $langs->trans("NomAppartement") . '</td><td>' . $receipt->nomlocal . '</td></tr>';
+
+	print '<tr><td>' . $langs->trans("NomLocataire") . '</td><td>' . $receipt->nomlocataire . '</td></tr>';
+
+	print '<tr><td>' . $langs->trans("RefLoyer") . '</td><td>' . $receipt->name . '</td></tr>';
 	
-	print '<tr><td width="20%">' . $langs->trans("NomAppartement") . '</td><td>' . $receipt->nomlocal . '</td></tr>';
-	print '<tr><td width="20%">' . $langs->trans("NomLocataire") . '</td><td>' . $receipt->nomlocataire . '</td></tr>';
-	print '<tr><td width="20%">' . $langs->trans("RefLoyer") . '</td><td>' . $receipt->name . '</td></tr>';
-	;
-	
-	print '<tr><td width="20%">' . $langs->trans("amount") . '</td>';
+	print '<tr><td>' . $langs->trans("Amount") . '</td>';
 	print '<td><input name="amount" size="30" value="' . round($paie->amount,2) . '"</td></tr>';
-	print '<tr><td width="20%">' . $langs->trans("Commentaire") . '</td>';
+	
+	print '<tr><td>' . $langs->trans("Comment") . '</td>';
 	print '<td><input name="comment" size="10" value="' . $paie->comment . '"</td></tr>';
-	print '<tr><td width="20%">' . $langs->trans("DatePaiement") . '</td>';
+	
+	print '<tr><td>' . $langs->trans("DatePaiement") . '</td>';
 	print '<td align="left">';
 	print $form->select_date(! empty($paie->date_payment) ? $paie->date_payment : '-1', 'paie', 0, 0, 0, 'card', 1);
 	print '</td>';
 	
-	print '<tr><td>&nbsp;</td><td><input type="submit" class="button" value="' . $langs->trans("Sauvegarder") . '"><input type="cancel" class="button" value="' . $langs->trans("Cancel") . '"></td></tr>';
-	
 	print '</table>';
+
+	dol_fiche_end();
+
+	print '<div align="center">';
+	print '<input type="submit" value="'.$langs->trans("AddProperty").'" name="bouton" class="button" />';
+	print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="'.$langs->trans("Cancel").'" class="button" onclick="history.go(-1)" />';
+	print '</div>';
+
 	print '</form>';
 }
 
