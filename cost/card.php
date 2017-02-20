@@ -272,7 +272,7 @@ if ($id > 0) {
 		$upload_dir = $conf->immobilier->dir_output . '/' . dol_sanitizeFileName($object->id);
 		$modulepart = 'immobilier';
 
-		$head = charge_prepare_head($charge);
+		$head = charge_prepare_head($object);
 
 		dol_fiche_head($head, 'fiche', $langs->trans("Charge"), 0, 'propertie');
 
@@ -439,7 +439,7 @@ if ($id > 0) {
 		$upload_dir = $conf->immobilier->dir_output . '/' . dol_sanitizeFileName($object->id);
 		$modulepart = 'immobilier';
 
-		$head = charge_prepare_head($charge);
+		$head = charge_prepare_head($object);
 
 		dol_fiche_head($head, 'fiche', $langs->trans("Charge"), 0, 'propertie');
 
