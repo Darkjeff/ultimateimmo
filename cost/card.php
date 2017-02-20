@@ -473,7 +473,7 @@ if ($id > 0) {
 
 		print '<tr>';
 		print '<td>'.$langs->trans("Type").'</td>';
-		print '<td>' . $object->cost_type . '</td>';
+		print '<td>' . $object->label_type . '</td>';
 		print '</tr>';
 
 

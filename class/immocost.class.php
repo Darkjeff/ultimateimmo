@@ -64,10 +64,11 @@ class Immocost extends CommonObjectImmobilier
 	 * @var int ID
 	 */
 	public $id;
-	
+	public $rowid;
 	public $entity;
 	public $fk_property;
 	public $cost_type;
+	public $label_type;
 	public $label;
 	public $amount_ht;
 	public $amount_vat;
@@ -101,10 +102,11 @@ class Immocost extends CommonObjectImmobilier
 		$sql .= "ic.amount_ht, ic.amount_vat , ic.amount , ic.datec ,";
 		$sql .= "ic.date_start ,ic.date_end , ic.note_public , ic.dispatch, ";
 		$sql .= "ic.fk_owner,";
-		$sql .= " ll.name as nomlocal,";
+		$sql .= " ll.name as nomlocal, it.type as label_type,";
 		$sql .= " ll.rowid as property_id";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_cost as ic ";
-		$sql .= ' LEFT JOIN llx_immo_property as ll ON ic.fk_property = ll.rowid';
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immo_property as ll ON ic.fk_property = ll.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immo_typologie as it ON ic.cost_type = it.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON ic.fk_soc = so.rowid";
 		$sql .= " WHERE ic.rowid = " . $id;
@@ -119,6 +121,7 @@ class Immocost extends CommonObjectImmobilier
 				$this->ref = $obj->reference;
 				$this->fk_property = $obj->fk_property;
 				$this->cost_type = $obj->cost_type;
+				$this->label_type = $obj->label_type;
 				$this->label = $obj->label;
 				$this->amount_ht = $obj->amount_ht;
 				$this->amount_vat = $obj->amount_vat;
