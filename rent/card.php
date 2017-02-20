@@ -202,13 +202,11 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 	print '<tr>';
 	print '<td><label for="amount">' . $langs->trans("AmountTC") . '</label></td>';
 	print '<td><input name="montant_tot" id="amount" size="10" value="' . price($object->montant_tot) . '" disabled="disabled"></td></tr>';
-	
-	
+
 	print '<tr><td>'.fieldLabel('VAT','tva_value').'</td><td>';
     print $form->selectyesno('tva_value',$object->tva,1);
     print '</td>';
 	
-
 	/*
 	print '<tr>';
 	print '<td><label for="periode">' . $langs->trans("Period") . '</label></td>';
@@ -285,14 +283,9 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 			print '<td align="left">';
 			print $form->select_date($object->date_end, 'datectend', 0, 0, 0, 'fiche_contrat', 1);
 
-			print '<tr>';
-			print '<td><label for="preavis">' . $langs->trans("Preavis") . '</label></td>';
-			if ($object->preavis) {
-				$checked = 'checked="checked"';
-			} else {
-				$checked = '';
-			}
-			print '<td><input type="checkbox" id="preavis" name="preavis" ' . $checked . ' value="1"></td></tr>';
+			print '<tr><td>'.fieldLabel('Notice','preavis',1).'</td><td>';
+			print $form->selectyesno('preavis',$object->preavis,1);
+			print '</td>';
 
 			print '<tr>';
 			print '<td>'.fieldLabel('AmountHC','loyer',0).'</td>';
@@ -394,9 +387,9 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 				print '</tr>';
 				
 				print '<tr>';
-				print '<td>' . $langs->trans("preavis") . '</td>';
-				print '<td>' . $object->preavis . '</td>';
-				print '</tr>';
+				print '<td>' . $langs->trans("Notice") . '</td><td>';
+				print yn($object->preavis);
+				print '</td></tr>';
 
 				print '<tr>';
 				print '<td>' . $langs->trans("AmountHC") . '</td>';

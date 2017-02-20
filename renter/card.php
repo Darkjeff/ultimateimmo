@@ -326,7 +326,7 @@ if ($action == 'create_confirm' && $user->rights->immobilier->renter->write) {
 /*
  * View
 */
-$title = ($action == 'nfcontact' || $action == 'create' ? $langs->trans("NewRenter") : $langs->trans("RenterCard").' | '.$langs->trans("Card"));
+$title = ($action == 'nfcontact' || $action == 'create' ? $langs->trans("NewRenter") : $langs->trans("Renter").' | '.$langs->trans("Card"));
 llxHeader('', $title);
 
 $form = new Form($db);
@@ -580,7 +580,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 
 		if ($result) {
 			$head = renter_prepare_head($object);
-			dol_fiche_head($head, 'card', $langs->trans("RenterCard"), 0, 'user');
+			dol_fiche_head($head, 'card', $langs->trans("Renter"), 0, 'user');
 
 			// Affichage en mode "édition"
 			if ($action == 'edit') {

@@ -48,13 +48,13 @@ $limit = $conf->liste_limit;
 $object = new Renter($db);
 $object->fetch($id, $ref);
 
-llxheader ( '', $langs->trans("RenterCard").' | '.$langs->trans("Bilan"), '' );
+llxheader ( '', $langs->trans("Renter").' | '.$langs->trans("Bilan"), '' );
 
 $object->fetch_thirdparty();
 
 $head=renter_prepare_head($object);
 
-dol_fiche_head($head, 'bilan',  $langs->trans("RenterCard"), 0, 'user');
+dol_fiche_head($head, 'bilan',  $langs->trans("Renter"), 0, 'user');
 
 $linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 

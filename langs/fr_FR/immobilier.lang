@@ -105,6 +105,7 @@ AmountHC=Loyer hors charges
 Charges=Charges
 AmountTC=Loyer charges comprises
 Caution=Caution
+Notice=Préavis
 
 # Receipts
 ReceiptCard=Fiche quittance

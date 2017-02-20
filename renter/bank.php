@@ -96,7 +96,7 @@ if ($action == 'update' && ! $_POST["cancel"])
 
 $form = new Form($db);
 
-llxHeader('',$langs->trans("RenterCard").' | '.$langs->trans("Bank"));
+llxHeader('',$langs->trans("Renter").' | '.$langs->trans("Bank"));
 
 $head = renter_prepare_head($object);
 
@@ -129,7 +129,7 @@ if ($id && $action != 'edit')
 	$title = $langs->trans("User");
 	$linkback = '<a href="./list.php">'.$langs->trans("BackToList").'</a>';
 
-    dol_fiche_head($head, 'bank', $langs->trans("RenterCard"), 0, 'user');
+    dol_fiche_head($head, 'bank', $langs->trans("Renter"), 0, 'user');
 
 	$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
@@ -226,7 +226,7 @@ if ($id && $action == 'edit' && $user->rights->user->user->creer)
 	$title = $langs->trans("User");
 	$linkback = '<a href="./list.php">'.$langs->trans("BackToList").'</a>';
 
-    dol_fiche_head($head, 'bank', $langs->trans("RenterCard"), 0, 'user');
+    dol_fiche_head($head, 'bank', $langs->trans("Renter"), 0, 'user');
 
     print '<table class="border centpercent">';
 

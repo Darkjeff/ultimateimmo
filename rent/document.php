@@ -27,12 +27,10 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
-// Class
-require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
-require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
-require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 require_once ('../core/lib/immobilier.lib.php');
 require_once ('../class/immorent.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php');
+require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
 
 $langs->load("other");
 $langs->load("immobilier@immobilier");
@@ -60,15 +58,17 @@ if (! $sortfield) $sortfield="name";
 $object = new Rent($db);
 $object->fetch($id);
 
-$upload_dir = $conf->rent->dir_output.'/'.dol_sanitizeFileName($object->ref);
+$upload_dir = $conf->immobilier->dir_output.'/rent/'.dol_sanitizeFileName($object->ref);
 $modulepart='immobilier';
 
 
 /*
  * Actions
  */
-include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_pre_headers.tpl.php';
 
+ if (empty($reshook)) {
+	include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
+}
 
 /*
  * View
@@ -78,10 +78,14 @@ $form = new Form($db);
 
 llxheader('', $langs->trans("Rent") . ' | ' . $langs->trans("Documents"), '');
 
-if ($object->id)
+if ($id > 0)
 {
 	$head=rent_prepare_head($object);
 	dol_fiche_head($head, 'document',  $langs->trans("Rent"), 0, 'rent@immobilier');
+
+    print '<table class="border" width="100%">';
+
+    $linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
 	// Construit liste des fichiers
 	$filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview\.png)$',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
@@ -90,10 +94,6 @@ if ($object->id)
 	{
 		$totalsize+=$file['size'];
 	}
-
-    print '<table class="border" width="100%">';
-
-    $linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
 	// Ref
 	print '<tr><td class="titlefield">'.$langs->trans("Ref").'</td><td>';
@@ -128,5 +128,4 @@ else
 }
 
 llxFooter();
-
 $db->close();

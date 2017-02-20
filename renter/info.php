@@ -43,7 +43,7 @@ if (! $user->rights->immobilier->renter->read)
  * View
  */
 
-llxHeader('',$langs->trans("RenterCard").' | '.$langs->trans("Notes"));
+llxHeader('',$langs->trans("Renter").' | '.$langs->trans("Notes"));
 
 if ($id)
 {
@@ -55,7 +55,7 @@ if ($id)
 
 	$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
-	dol_fiche_head($head, 'info', $langs->trans("RenterCard"), 0, 'user');
+	dol_fiche_head($head, 'info', $langs->trans("Renter"), 0, 'user');
 
 	immo_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
 

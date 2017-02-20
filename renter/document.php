@@ -74,7 +74,7 @@ if (empty($reshook)) {
  */
 $form = new Form($db);
 
-llxHeader("",$langs->trans("RenterCard").' | '.$langs->trans("Files"));
+llxHeader("",$langs->trans("Renter").' | '.$langs->trans("Files"));
 
 if ($id > 0)
 {
@@ -82,7 +82,7 @@ if ($id > 0)
 	 * Affichage onglets
 	 */
 	$head=renter_prepare_head($object);
-	dol_fiche_head($head, 'document',  $langs->trans("RenterCard"), 0, 'user');
+	dol_fiche_head($head, 'document',  $langs->trans("Renter"), 0, 'user');
 
 	$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
