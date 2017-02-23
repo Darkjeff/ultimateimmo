@@ -115,6 +115,7 @@ NewReceipt=Nouvelle quittance
 ImmoReceipts=Quittances
 ListReceipts=Liste des quittances
 AllReceiptperContract=Générer les quittances
+Income=Restants
 
 # Costs
 MenuNewRentalLoad=Nouvelle charge
