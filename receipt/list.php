@@ -40,12 +40,13 @@ require_once '../class/immoproperty.class.php';
 $action = GETPOST('action', 'alpha');
 $mesg = '';
 $action = GETPOST('action');
+$massaction=GETPOST('massaction','alpha');
 $cancel = GETPOST('cancel');
 $id = GETPOST('id', 'int');
 $rowid = GETPOST('rowid', 'int');
-$search_renter = GETPOST('search_renter');
-$search_property = GETPOST('search_property');
-$search_rent = GETPOST('search_rent');
+$search_renter = trim(GETPOST('search_renter'));
+$search_property = trim(GETPOST('search_property'));
+$search_rent = trim(GETPOST('search_rent'));
 // Security check
 if ($user->societe_id > 0) accessforbidden();
 // Load variable for pagination	
@@ -69,8 +70,8 @@ $arrayfields=array(
     't.echeance'=>array('label'=>$langs->trans("Echeance"), 'checked'=>1),
     't.amount_total'=>array('label'=>$langs->trans("amount_total"), 'checked'=>1),
     't.paiepartiel'=>array('label'=>$langs->trans("income"), 'checked'=>1),
-    't.charges'=>array('label'=>$langs->trans("charges"), 'checked'=>0),
-    't.vat'=>array('label'=>$langs->trans("vat"), 'checked'=>0),
+    //'t.charges'=>array('label'=>$langs->trans("charges"), 'checked'=>0),
+    //'t.vat'=>array('label'=>$langs->trans("vat"), 'checked'=>0),
     't.paye'=>array('label'=>$langs->trans("paye"), 'checked'=>1),
 	'soc.nom'=>array('label'=>$langs->trans("Owner"), 'checked'=>1)
 );
@@ -189,25 +190,25 @@ if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes') {
  * View
  */
 
-$form = new Form($db);
+$form=new Form($db);
 $object = new Immoreceipt($db);
-$form_loyer = new Immoreceipt($db);
+//$form_loyer = new Immoreceipt($db);
 
 llxHeader('', $langs->trans("Receipt"));
 
 
 
-	$sql = "SELECT t.rowid as receipt_id, t.fk_contract, t.fk_property, t.name as name, t.fk_renter, t.amount_total as amount_total, t.rent as rent, t.balance,";
+	$sql = "SELECT t.rowid as receipt_id, t.fk_contract, t.fk_property, t.name , t.fk_renter, t.amount_total as amount_total, t.rent as rent, t.balance,";
 	$sql .= " t.paiepartiel as paiepartiel, t.charges, t.vat, t.echeance as echeance, t.commentaire, t.statut as receipt_statut, t.date_rent,";
 	$sql .= " t.date_start, t.date_end, t.fk_owner, t.paye as paye, lc.rowid as renter_id, lc.nom as nomlocataire, lc.prenom as prenomlocataire,";
 	$sql .= " ll.name as nomlocal, ll.rowid as property_id, soc.rowid as soc_id, soc.nom as owner_name";
 	$sql .= ' FROM llx_immo_receipt as t';
 	$sql .= ' INNER JOIN llx_immo_renter as lc ON t.fk_renter = lc.rowid';
 	$sql .= ' INNER JOIN llx_immo_property as ll ON t.fk_property = ll.rowid';
-	$sql .= ' LEFT JOIN llx_societe as soc ON soc.rowid = t.fk_owner';
-	if (strlen(trim($search_renter)))			$sql .= natural_search("lc.nom", $search_renter);
-	if (strlen(trim($search_property)))			$sql .= natural_search("ll.name", $search_property);
-	if (strlen(trim($search_rent)))				$sql .= natural_search("t.name", $search_rent);
+	$sql .= ' INNER JOIN llx_societe as soc ON soc.rowid = t.fk_owner';
+	if ($search_renter)			$sql .= natural_search("lc.nom", $search_renter);
+	if ($search_property)		$sql .= natural_search("ll.name", $search_property);
+	if ($search_rent)			$sql .= natural_search("t.name", $search_rent);
 	$sql .= $db->order($sortfield, $sortorder);
 // Count total nb of records
 $nbtotalofrecords = '';
@@ -261,16 +262,16 @@ if ($resql)
 	// Line for search fields
 	print '<tr class="liste_titre">';
 	if (! empty($arrayfields['t.rowid']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
-	if (! empty($arrayfields['lc.nom']['checked']))			print '<td class="liste_titre"><input type="text" class="flat" size="20" name="search_renter" value="' . $search_renter . '"></td>';
-	if (! empty($arrayfields['ll.name']['checked']))		print '<td class="liste_titre"><input type="text" class="flat" size="10" name="search_property" value="' . $search_property . '"></td>';
-	if (! empty($arrayfields['t.name']['checked']))			print '<td class="liste_titre"><input type="text" class="flat" size="10" name="search_rent" value="' . $search_rent . '"></td>';
+	if (! empty($arrayfields['lc.nom']['checked']))			print '<td class="liste_titre"><input type="text" class="flat" size="20" name="search_renter" value="' .$search_renter. '"></td>';
+	if (! empty($arrayfields['ll.name']['checked']))		print '<td class="liste_titre"><input type="text" class="flat" size="10" name="search_property" value="' .$search_property. '"></td>';
+	if (! empty($arrayfields['t.name']['checked']))			print '<td class="liste_titre"><input type="text" class="flat" size="10" name="search_rent" value="' .$search_rent. '"></td>';
 	if (! empty($arrayfields['t.echeance']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
 	if (! empty($arrayfields['t.amount_total']['checked']))	print  '<td class="liste_titre">&nbsp;</td>';
 	if (! empty($arrayfields['t.paiepartiel']['checked']))	print  '<td class="liste_titre">&nbsp;</td>';
 	if (! empty($arrayfields['t.paye']['checked']))			print  '<td class="liste_titre">&nbsp;</td>';
 	if (! empty($arrayfields['soc.nom']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
 	print '<td align="right" colspan="2" class="liste_titre">';
-	//$searchpitco=$form->showFilterAndCheckAddButtons(0); need to debug 
+	$searchpicto=$form->showFilterAndCheckAddButtons($massactionbutton?1:0, 'checkforselect', 1);
 	print $searchpicto;
 	print '</td>';
 	print '</tr>';
@@ -297,6 +298,11 @@ if ($resql)
 			$var = ! $var;
 			print "<tr " . $bc[$var] . ">";
 			print '<td>' . $receiptstatic->getNomUrl(1) . '</td>';
+			//need to debug in order to show pdf
+			if (is_file($conf->immobilier->dir_output . '/quittance_' . $id . '.pdf')) {
+			print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immobilier&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+			print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+			}
 			
 			print '<td align="left" style="' . $code_statut . '">';
 			print '<a href="../renter/card.php?id=' . $obj->renter_id . '">' . img_object($langs->trans("ShowDetails"), "user") . ' ' . strtoupper($obj->nomlocataire) . ' ' . ucfirst($obj->nomlocataire) . '</a>';		
