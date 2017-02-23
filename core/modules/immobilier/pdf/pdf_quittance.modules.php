@@ -190,7 +190,7 @@ class pdf_quittance extends ModelePDFImmobilier {
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
 				$this->str = $renter->civilite . ' ' .$renter->nom. ' '.$renter->prenom. "\n";
-				// $this->str .= $property->name . "\n";
+				$this->str .= $property->name . "\n";
 				$this->str .= $property->address . "\n";
 				$this->str .= $property->zip . ' ' . $property->town;
 				$pdf->MultiCell(80, 20, $outputlangs->convToOutputCharset($this->str), 1, 'L');
@@ -207,7 +207,12 @@ class pdf_quittance extends ModelePDFImmobilier {
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetXY($posX, $posY);
+				if ($receipt->paye != 1 ) {
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Appel de loyer'), 1, 'C');
+				} else {
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Quittance de loyer'), 1, 'C');
+				}
+				
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
 				$posY = $pdf->getY();
@@ -259,6 +264,9 @@ class pdf_quittance extends ModelePDFImmobilier {
 				$text .= '<td colspan="2">';
 
 				$text .= ' - Loyer nu : ' . price($receipt->rent) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
+				if ($receipt->vat > 0) {
+				$text .= ' - TVA : ' . price($receipt->vat) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
+				} 
 				$text .= ' - Charges / Provisions de Charges : ' . price($receipt->charges) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
 				$text .= ' - Montant total du terme : ' . price($receipt->amount_total) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
 				$text .= '</td>';
@@ -279,7 +287,7 @@ class pdf_quittance extends ModelePDFImmobilier {
 					$i = 0;
 					$total = 0;
 					$text .= '<tr>';
-					$text .= '<td align="left">' . $langs->trans("Date") . '</td>';
+					$text .= '<td align="left">' . $langs->trans("DatePayment") . '</td>';
 					//$text .= '<td align="left">' . $langs->trans("Commentaire") . '</td>';
 					$text .= '<td align="right">' . $langs->trans("Amount") . '</td>';
 					$text .= "</tr>";
@@ -291,7 +299,7 @@ class pdf_quittance extends ModelePDFImmobilier {
 						
 						$text .= '<td>' . dol_print_date($this->db->jdate($objp->dp), 'day') . "</td>";
 						//$text .= '<td>' . $objp->type . "</td>";
-						$text .= '<td align="right">' . price($objp->amount) . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
+						$text .= '<td align="right">' . $objp->type .' '. price($objp->amount) . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
 						$text .= "</tr>";
 						$totalpaye += $objp->amount;
 						$i ++;
