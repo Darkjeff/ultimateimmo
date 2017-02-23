@@ -41,7 +41,7 @@ dol_include_once("/immobilier/class/immoproperty.class.php");
 
 $langs->load("immobilier@immobilier");
 
-<<<<<<< HEAD
+
 $action = GETPOST('action', 'alpha');
 $mesg = '';
 $action = GETPOST('action');
@@ -49,18 +49,10 @@ $massaction=GETPOST('massaction','alpha');
 $cancel = GETPOST('cancel');
 $id = GETPOST('id', 'int');
 $rowid = GETPOST('rowid', 'int');
-$search_renter = trim(GETPOST('search_renter'));
-$search_property = trim(GETPOST('search_property'));
-$search_rent = trim(GETPOST('search_rent'));
-=======
-$id = GETPOST('id', 'int');
-$rowid = GETPOST('rowid', 'int');
-$action = GETPOST('action', 'alpha');
-$massaction=GETPOST('massaction','alpha');
 
 $mesg = '';
 
->>>>>>> origin/master
+
 // Security check
 if ($user->societe_id > 0) accessforbidden();
 
@@ -86,19 +78,11 @@ $arrayfields=array(
     'll.name'=>array('label'=>$langs->trans("Property"), 'checked'=>1),
 	't.name'=>array('label'=>$langs->trans("Receipt"), 'checked'=>1),
     't.echeance'=>array('label'=>$langs->trans("Echeance"), 'checked'=>1),
-<<<<<<< HEAD
-    't.amount_total'=>array('label'=>$langs->trans("amount_total"), 'checked'=>1),
-    't.paiepartiel'=>array('label'=>$langs->trans("income"), 'checked'=>1),
-    //'t.charges'=>array('label'=>$langs->trans("charges"), 'checked'=>0),
-    //'t.vat'=>array('label'=>$langs->trans("vat"), 'checked'=>0),
-    't.paye'=>array('label'=>$langs->trans("paye"), 'checked'=>1),
-=======
     't.amount_total'=>array('label'=>$langs->trans("AmountTC"), 'checked'=>1),
     't.paiepartiel'=>array('label'=>$langs->trans("Income"), 'checked'=>1),
     't.charges'=>array('label'=>$langs->trans("Charges"), 'checked'=>0),
     't.vat'=>array('label'=>$langs->trans("VAT"), 'checked'=>0),
     't.paye'=>array('label'=>$langs->trans("Paid"), 'checked'=>1),
->>>>>>> origin/master
 	'soc.nom'=>array('label'=>$langs->trans("Owner"), 'checked'=>1)
 );
 
@@ -210,31 +194,14 @@ if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes') {
 /*
  * View
  */
-<<<<<<< HEAD
 
-$form=new Form($db);
-=======
+
 $form = new Form($db);
->>>>>>> origin/master
 $object = new Immoreceipt($db);
 //$form_loyer = new Immoreceipt($db);
 
 llxHeader('', $langs->trans("Receipts"));
 
-$sql = "SELECT t.rowid as receipt_id, t.fk_contract, t.fk_property, t.name as name, t.fk_renter, t.amount_total as amount_total, t.rent as rent, t.balance,";
-$sql .= " t.paiepartiel as paiepartiel, t.charges, t.vat, t.echeance as echeance, t.commentaire, t.statut as receipt_statut, t.date_rent,";
-$sql .= " t.date_start, t.date_end, t.fk_owner, t.paye as paye, lc.rowid as renter_id, lc.nom as nomlocataire, lc.prenom as prenomlocataire,";
-$sql .= " ll.name as nomlocal, ll.rowid as property_id, soc.rowid as soc_id, soc.nom as owner_name";
-$sql .= ' FROM llx_immo_receipt as t';
-$sql .= ' INNER JOIN llx_immo_renter as lc ON t.fk_renter = lc.rowid';
-$sql .= ' INNER JOIN llx_immo_property as ll ON t.fk_property = ll.rowid';
-$sql .= ' LEFT JOIN llx_societe as soc ON soc.rowid = t.fk_owner';
-if (!empty($search_renter))		$sql .= natural_search("lc.nom", $search_renter);
-if (!empty($search_property))	$sql .= natural_search("ll.name", $search_property);
-if (!empty($search_rent))		$sql .= natural_search("t.name", $search_rent);
-$sql .= $db->order($sortfield, $sortorder);
-
-<<<<<<< HEAD
 	$sql = "SELECT t.rowid as receipt_id, t.fk_contract, t.fk_property, t.name , t.fk_renter, t.amount_total as amount_total, t.rent as rent, t.balance,";
 	$sql .= " t.paiepartiel as paiepartiel, t.charges, t.vat, t.echeance as echeance, t.commentaire, t.statut as receipt_statut, t.date_rent,";
 	$sql .= " t.date_start, t.date_end, t.fk_owner, t.paye as paye, lc.rowid as renter_id, lc.nom as nomlocataire, lc.prenom as prenomlocataire,";
@@ -247,8 +214,7 @@ $sql .= $db->order($sortfield, $sortorder);
 	if ($search_property)		$sql .= natural_search("ll.name", $search_property);
 	if ($search_rent)			$sql .= natural_search("t.name", $search_rent);
 	$sql .= $db->order($sortfield, $sortorder);
-=======
->>>>>>> origin/master
+
 // Count total nb of records
 $nbtotalofrecords = '';
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
@@ -315,14 +281,6 @@ if ($resql)
 	if (! empty($arrayfields['t.paiepartiel']['checked']))	print '<td class="liste_titre">&nbsp;</td>';
 	if (! empty($arrayfields['t.paye']['checked']))			print '<td class="liste_titre">&nbsp;</td>';
 	if (! empty($arrayfields['soc.nom']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
-<<<<<<< HEAD
-	print '<td align="right" colspan="2" class="liste_titre">';
-	$searchpicto=$form->showFilterAndCheckAddButtons($massactionbutton?1:0, 'checkforselect', 1);
-	print $searchpicto;
-	print '</td>';
-	print '</tr>';
-=======
->>>>>>> origin/master
 	
 	// Action column
 	print '<td class="liste_titre" align="middle">';
@@ -352,45 +310,16 @@ if ($resql)
 
 			$var = ! $var;
 			print "<tr " . $bc[$var] . ">";
-<<<<<<< HEAD
-			print '<td>' . $receiptstatic->getNomUrl(1) . '</td>';
-			//need to debug in order to show pdf
-			if (is_file($conf->immobilier->dir_output . '/quittance_' . $id . '.pdf')) {
-			print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immobilier&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
-			print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
-			}
-			
-			print '<td align="left" style="' . $code_statut . '">';
-			print '<a href="../renter/card.php?id=' . $obj->renter_id . '">' . img_object($langs->trans("ShowDetails"), "user") . ' ' . strtoupper($obj->nomlocataire) . ' ' . ucfirst($obj->nomlocataire) . '</a>';		
-			print '</td>';
-			
-			$propertystatic->id = $obj->property_id;
-			$propertystatic->name = stripslashes(nl2br($obj->nomlocal));
-			print '<td>' . $propertystatic->getNomUrl(1) . '</td>';
-			print '<td>' . stripslashes(nl2br($obj->name)) . '</td>';
-	// due date
-		
-		print '<td>' . dol_print_date($obj->echeance, 'day') . '</td>';
-		
-		// amount
-		
-		print '<td align="left" width="100">' . price($obj->amount_total) . '</td>';
-		print '<td align="left" width="100">' . price($obj->paiepartiel) . '</td>';
-		
-		// Affiche statut de la facture
-		print '<td align="right" nowrap="nowrap">';
-		print $receiptstatic->LibStatut($obj->paye, 5);
-		print "</td>";
-		
-		$thirdparty_static->id=$obj->fk_owner;
-		$thirdparty_static->name=$obj->owner_name;
-		print '<td>' . $thirdparty_static->getNomUrl(1) . '</td>';
-			
-=======
->>>>>>> origin/master
+
+
 			
 			if (! empty($arrayfields['t.rowid']['checked'])) {
 				print '<td>' . $receiptstatic->getNomUrl(1) . '</td>';
+			}
+			
+			if (is_file($conf->immobilier->dir_output . '/quittance_' . $id . '.pdf')) {
+			print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immobilier&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+			print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			}
 
 			if (! empty($arrayfields['lc.nom']['checked'])) {
