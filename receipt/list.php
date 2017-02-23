@@ -1,6 +1,6 @@
 <?php
-/* Copyright (C) 2013-2015 Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2015      Alexandre Spangaro	<aspangaro.dolibarr@gmail.com>
+/* Copyright (C) 2013-2017	Olivier Geffroy		<jeff@jeffinfo.com>
+ * Copyright (C) 2015-2017	Alexandre Spangaro	<aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,26 +17,31 @@
  */
 
 /**
- * \file immobilier/receipt/list.php
+ * \file	immobilier/receipt/list.php
  * \ingroup immobilier
- * \brief List of rent
+ * \brief	List of rent
  */
 
-	
 // Class
-require '../../../main.inc.php';
+$res = @include ("../../main.inc.php"); // For root directory
+if (! $res)
+	$res = @include ("../../../main.inc.php"); // For "custom" directory
+if (! $res)
+	die("Include of main fails");
+
 require_once DOL_DOCUMENT_ROOT . '/core/lib/admin.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
+require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 dol_include_once("/immobilier/class/immoreceipt.class.php");
 dol_include_once("/immobilier/class/renter.class.php");
 dol_include_once("/immobilier/class/immoproperty.class.php");
-require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
-require_once '../class/html.formimmobilier.class.php';
-dol_include_once('/immobilier/class/immorent.class.php');
-require_once '../class/immoproperty.class.php';
+dol_include_once("/immobilier/class/html.formimmobilier.class.php");
+dol_include_once("/immobilier/class/immorent.class.php");
+dol_include_once("/immobilier/class/immoproperty.class.php");
 
-// Langs
+$langs->load("immobilier@immobilier");
 
+<<<<<<< HEAD
 $action = GETPOST('action', 'alpha');
 $mesg = '';
 $action = GETPOST('action');
@@ -47,57 +52,73 @@ $rowid = GETPOST('rowid', 'int');
 $search_renter = trim(GETPOST('search_renter'));
 $search_property = trim(GETPOST('search_property'));
 $search_rent = trim(GETPOST('search_rent'));
+=======
+$id = GETPOST('id', 'int');
+$rowid = GETPOST('rowid', 'int');
+$action = GETPOST('action', 'alpha');
+$massaction=GETPOST('massaction','alpha');
+
+$mesg = '';
+
+>>>>>>> origin/master
 // Security check
 if ($user->societe_id > 0) accessforbidden();
-// Load variable for pagination	
+
+// Load variable for pagination
 $limit = GETPOST("limit")?GETPOST("limit","int"):$conf->liste_limit;
-$sortfield = GETPOST("sortfield",'alpha');
-$sortorder = GETPOST("sortorder",'alpha');
-$page = GETPOST("page",'int');
+$sortfield = GETPOST('sortfield','alpha');
+$sortorder = GETPOST('sortorder','alpha');
+$page = GETPOST('page','int');
 if ($page == -1) { $page = 0; }
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
-if (! $sortfield)
-	$sortfield = "t.echeance";
-if (! $sortorder)
-	$sortorder = "DESC";
+if (!$sortorder) $sortorder="DESC";
+if (!$sortfield) $sortfield="t.echeance";
+
+$search_renter 		= GETPOST('search_renter','alpha');
+$search_property	= GETPOST('search_property','alpha');
+$search_rent		= GETPOST('search_rent','alpha');
+
 $arrayfields=array(
 	't.rowid'=>array('label'=>$langs->trans("Reference"), 'checked'=>1),
     'lc.nom'=>array('label'=>$langs->trans("Renter"), 'checked'=>1),
     'll.name'=>array('label'=>$langs->trans("Property"), 'checked'=>1),
 	't.name'=>array('label'=>$langs->trans("Receipt"), 'checked'=>1),
     't.echeance'=>array('label'=>$langs->trans("Echeance"), 'checked'=>1),
+<<<<<<< HEAD
     't.amount_total'=>array('label'=>$langs->trans("amount_total"), 'checked'=>1),
     't.paiepartiel'=>array('label'=>$langs->trans("income"), 'checked'=>1),
     //'t.charges'=>array('label'=>$langs->trans("charges"), 'checked'=>0),
     //'t.vat'=>array('label'=>$langs->trans("vat"), 'checked'=>0),
     't.paye'=>array('label'=>$langs->trans("paye"), 'checked'=>1),
+=======
+    't.amount_total'=>array('label'=>$langs->trans("AmountTC"), 'checked'=>1),
+    't.paiepartiel'=>array('label'=>$langs->trans("Income"), 'checked'=>1),
+    't.charges'=>array('label'=>$langs->trans("Charges"), 'checked'=>0),
+    't.vat'=>array('label'=>$langs->trans("VAT"), 'checked'=>0),
+    't.paye'=>array('label'=>$langs->trans("Paid"), 'checked'=>1),
+>>>>>>> origin/master
 	'soc.nom'=>array('label'=>$langs->trans("Owner"), 'checked'=>1)
 );
+
 /*
  * Actions
  */
 
 if (GETPOST('cancel')) { $action='list'; $massaction=''; }
-if (! GETPOST('confirmmassaction')) { $massaction=''; }
-$parameters=array();
-$reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
-if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
-if (empty($reshook))
+if (! GETPOST('confirmmassaction') && $massaction != 'presend' && $massaction != 'confirm_presend') { $massaction=''; }
+
+include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
+
+// Purge search criteria
+if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter.x") || GETPOST("button_removefilter"))		// Both test must be present to be compatible with all browsers
 {
-    if (! empty($cancel)) $action = '';
-    
-    include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
-    
-    if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter.x") ||GETPOST("button_removefilter")) // All test are required to be compatible with all browsers
-    {
     $search_renter = "";
 	$search_property = "";
 	$search_rent = "";
-	$search_array_options=array();
-    }
-    }
+    $search_array_options=array();
+}
 
 if ($action == 'validaterent') {
 	
@@ -189,15 +210,31 @@ if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes') {
 /*
  * View
  */
+<<<<<<< HEAD
 
 $form=new Form($db);
+=======
+$form = new Form($db);
+>>>>>>> origin/master
 $object = new Immoreceipt($db);
 //$form_loyer = new Immoreceipt($db);
 
-llxHeader('', $langs->trans("Receipt"));
+llxHeader('', $langs->trans("Receipts"));
 
+$sql = "SELECT t.rowid as receipt_id, t.fk_contract, t.fk_property, t.name as name, t.fk_renter, t.amount_total as amount_total, t.rent as rent, t.balance,";
+$sql .= " t.paiepartiel as paiepartiel, t.charges, t.vat, t.echeance as echeance, t.commentaire, t.statut as receipt_statut, t.date_rent,";
+$sql .= " t.date_start, t.date_end, t.fk_owner, t.paye as paye, lc.rowid as renter_id, lc.nom as nomlocataire, lc.prenom as prenomlocataire,";
+$sql .= " ll.name as nomlocal, ll.rowid as property_id, soc.rowid as soc_id, soc.nom as owner_name";
+$sql .= ' FROM llx_immo_receipt as t';
+$sql .= ' INNER JOIN llx_immo_renter as lc ON t.fk_renter = lc.rowid';
+$sql .= ' INNER JOIN llx_immo_property as ll ON t.fk_property = ll.rowid';
+$sql .= ' LEFT JOIN llx_societe as soc ON soc.rowid = t.fk_owner';
+if (!empty($search_renter))		$sql .= natural_search("lc.nom", $search_renter);
+if (!empty($search_property))	$sql .= natural_search("ll.name", $search_property);
+if (!empty($search_rent))		$sql .= natural_search("t.name", $search_rent);
+$sql .= $db->order($sortfield, $sortorder);
 
-
+<<<<<<< HEAD
 	$sql = "SELECT t.rowid as receipt_id, t.fk_contract, t.fk_property, t.name , t.fk_renter, t.amount_total as amount_total, t.rent as rent, t.balance,";
 	$sql .= " t.paiepartiel as paiepartiel, t.charges, t.vat, t.echeance as echeance, t.commentaire, t.statut as receipt_statut, t.date_rent,";
 	$sql .= " t.date_start, t.date_end, t.fk_owner, t.paye as paye, lc.rowid as renter_id, lc.nom as nomlocataire, lc.prenom as prenomlocataire,";
@@ -210,6 +247,8 @@ llxHeader('', $langs->trans("Receipt"));
 	if ($search_property)		$sql .= natural_search("ll.name", $search_property);
 	if ($search_rent)			$sql .= natural_search("t.name", $search_rent);
 	$sql .= $db->order($sortfield, $sortorder);
+=======
+>>>>>>> origin/master
 // Count total nb of records
 $nbtotalofrecords = '';
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
@@ -218,85 +257,102 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
 	$nbtotalofrecords = $db->num_rows($resql);
 }	
 $sql .= $db->plimit($limit + 1, $offset);
+
+//print $sql;
 $resql = $db->query($sql);
 if ($resql)
 {
 	$num = $db->num_rows($resql);
-    $params='';
     
+	$arrayofselected=is_array($toselect)?$toselect:array();
+
+	$param="";
+
     if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param.='&contextpage='.$contextpage;
-	if ($search_renter) $params.= '&amp;search_renter='.urlencode($search_renter);
-	if ($search_property) $params.= '&amp;search_property='.urlencode($search_property);
-	if ($search_rent) $params.= '&amp;search_rent='.urlencode($search_rent);
-    if ($optioncss) $param.='&optioncss='.$optioncss;
-	print_barre_liste($langs->trans('ListReceipt'), $page, $_SERVER["PHP_SELF"], $params, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_receipt');
-	
-	$i = 0;
-    print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">'."\n";
+	if ($limit > 0 && $limit != $conf->liste_limit) $param.='&limit='.$limit;
+	if ($search_renter)		$params.= '&amp;search_renter='.urlencode($search_renter);
+	if ($search_property)	$params.= '&amp;search_property='.urlencode($search_property);
+	if ($search_rent)		$params.= '&amp;search_rent='.urlencode($search_rent);
+    if ($optioncss)			$param.='&optioncss='.$optioncss;
+
+    print '<form action="'.$_SERVER["PHP_SELF"].'" method="POST">'."\n";
     if ($optioncss != '') print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
     print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
     print '<input type="hidden" name="action" value="list">';
     print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
     print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
-    
-	print '<br><br>';
+
+	$title = $langs->trans("ListReceipts");
+	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $params, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_receipt');
 	
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
-    $selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
+	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
 	
     print '<div class="div-table-responsive">';
     print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
 	print '<tr class="liste_titre">';
-	if (! empty($arrayfields['t.rowid']['checked']))	print_liste_field_titre($arrayfields['t.rowid']['label'], $_SERVER["PHP_SELF"],"t.rowid","",$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['t.rowid']['checked']))		print_liste_field_titre($arrayfields['t.rowid']['label'], $_SERVER["PHP_SELF"],"t.rowid","",$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['lc.nom']['checked']))			print_liste_field_titre($arrayfields['lc.nom']['label'], $_SERVER["PHP_SELF"],"lc.nom","",$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['ll.name']['checked']))	print_liste_field_titre($arrayfields['ll.name']['label'], $_SERVER["PHP_SELF"],"ll.name", "", $param,'align="left"',$sortfield,$sortorder);
-	if (! empty($arrayfields['t.name']['checked']))		print_liste_field_titre($arrayfields['t.name']['label'],$_SERVER["PHP_SELF"],'t.name','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['ll.name']['checked']))		print_liste_field_titre($arrayfields['ll.name']['label'], $_SERVER["PHP_SELF"],"ll.name", "", $param,'align="left"',$sortfield,$sortorder);
+	if (! empty($arrayfields['t.name']['checked']))			print_liste_field_titre($arrayfields['t.name']['label'],$_SERVER["PHP_SELF"],'t.name','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['t.echeance']['checked']))		print_liste_field_titre($arrayfields['t.echeance']['label'],$_SERVER["PHP_SELF"],'t.echeance','',$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['t.amount_total']['checked']))			print_liste_field_titre($arrayfields['t.amount_total']['label'],$_SERVER["PHP_SELF"],'t.amount_total','',$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['t.paiepartiel']['checked']))			print_liste_field_titre($arrayfields['t.paiepartiel']['label'],$_SERVER["PHP_SELF"],'t.paiepartiel','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['t.amount_total']['checked']))	print_liste_field_titre($arrayfields['t.amount_total']['label'],$_SERVER["PHP_SELF"],'t.amount_total','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['t.paiepartiel']['checked']))	print_liste_field_titre($arrayfields['t.paiepartiel']['label'],$_SERVER["PHP_SELF"],'t.paiepartiel','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['t.paye']['checked']))			print_liste_field_titre($arrayfields['t.paye']['label'],$_SERVER["PHP_SELF"],'t.paye','',$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['soc.nom']['checked']))			print_liste_field_titre($arrayfields['soc.nom']['label'],$_SERVER["PHP_SELF"],'soc.nom','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['soc.nom']['checked']))		print_liste_field_titre($arrayfields['soc.nom']['label'],$_SERVER["PHP_SELF"],'soc.nom','',$param,'',$sortfield,$sortorder);
 	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="right"',$sortfield,$sortorder,'maxwidthsearch ');
 	print "</tr>\n";
-	// Line for search fields
+	
+	// Filters
 	print '<tr class="liste_titre">';
 	if (! empty($arrayfields['t.rowid']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
 	if (! empty($arrayfields['lc.nom']['checked']))			print '<td class="liste_titre"><input type="text" class="flat" size="20" name="search_renter" value="' .$search_renter. '"></td>';
 	if (! empty($arrayfields['ll.name']['checked']))		print '<td class="liste_titre"><input type="text" class="flat" size="10" name="search_property" value="' .$search_property. '"></td>';
 	if (! empty($arrayfields['t.name']['checked']))			print '<td class="liste_titre"><input type="text" class="flat" size="10" name="search_rent" value="' .$search_rent. '"></td>';
 	if (! empty($arrayfields['t.echeance']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
-	if (! empty($arrayfields['t.amount_total']['checked']))	print  '<td class="liste_titre">&nbsp;</td>';
-	if (! empty($arrayfields['t.paiepartiel']['checked']))	print  '<td class="liste_titre">&nbsp;</td>';
-	if (! empty($arrayfields['t.paye']['checked']))			print  '<td class="liste_titre">&nbsp;</td>';
+	if (! empty($arrayfields['t.amount_total']['checked']))	print '<td class="liste_titre">&nbsp;</td>';
+	if (! empty($arrayfields['t.paiepartiel']['checked']))	print '<td class="liste_titre">&nbsp;</td>';
+	if (! empty($arrayfields['t.paye']['checked']))			print '<td class="liste_titre">&nbsp;</td>';
 	if (! empty($arrayfields['soc.nom']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
+<<<<<<< HEAD
 	print '<td align="right" colspan="2" class="liste_titre">';
 	$searchpicto=$form->showFilterAndCheckAddButtons($massactionbutton?1:0, 'checkforselect', 1);
 	print $searchpicto;
 	print '</td>';
 	print '</tr>';
+=======
+>>>>>>> origin/master
 	
+	// Action column
+	print '<td class="liste_titre" align="middle">';
+	$searchpitco=$form->showFilterAndCheckAddButtons($massactionbutton?1:0, 'checkforselect', 1);
+	print $searchpitco;
+	print '</td>';
 
-	
-	$var = false;
+	print "</tr>\n";
+
+	$var = true;
 	
 	$receiptstatic = new Immoreceipt($db);
-	
 	$thirdparty_static = new Societe($db);
-	
-	 $contrat = new Rent($db);
-	 
-	 $propertystatic = new Immoproperty($db);
-	
-	while ( $i < min($num, $limit) ) 
+	$contrat = new Rent($db);
+	$propertystatic = new Immoproperty($db);
+
+	if ($num > 0)
 	{
-		$obj = $db->fetch_object($resql);
-			
+        $i=0;
+    	$var=true;
+		while ( $i < min($num, $limit) ) 
+		{
+			$obj = $db->fetch_object($resql);
+	
 			$receiptstatic->id = $obj->receipt_id;
 			$receiptstatic->name = $obj->name;
-			
+
 			$var = ! $var;
 			print "<tr " . $bc[$var] . ">";
+<<<<<<< HEAD
 			print '<td>' . $receiptstatic->getNomUrl(1) . '</td>';
 			//need to debug in order to show pdf
 			if (is_file($conf->immobilier->dir_output . '/quittance_' . $id . '.pdf')) {
@@ -330,23 +386,80 @@ if ($resql)
 		$thirdparty_static->name=$obj->owner_name;
 		print '<td>' . $thirdparty_static->getNomUrl(1) . '</td>';
 			
+=======
+>>>>>>> origin/master
 			
+			if (! empty($arrayfields['t.rowid']['checked'])) {
+				print '<td>' . $receiptstatic->getNomUrl(1) . '</td>';
+			}
+
+			if (! empty($arrayfields['lc.nom']['checked'])) {
+				print '<td align="left" style="' . $code_statut . '">';
+				print '<a href="../renter/card.php?id=' . $obj->renter_id . '">' . img_object($langs->trans("ShowDetails"), "user") . ' ' . strtoupper($obj->nomlocataire) . ' ' . ucfirst($obj->nomlocataire) . '</a>';		
+				print '</td>';
+			}
+
+			if (! empty($arrayfields['ll.name']['checked'])) {
+				$propertystatic->id = $obj->property_id;
+				$propertystatic->name = stripslashes(nl2br($obj->nomlocal));
+				print '<td>' . $propertystatic->getNomUrl(1) . '</td>';
+			}
+
+			if (! empty($arrayfields['t.name']['checked'])) {
+				print '<td>' . stripslashes(nl2br($obj->name)) . '</td>';
+			}
+
+			// Due date
+			if (! empty($arrayfields['t.echeance']['checked'])) {
+				print '<td>' . dol_print_date($obj->echeance, 'day') . '</td>';
+			}
+
+			// Amount
+			if (! empty($arrayfields['t.amount_total']['checked'])) {
+				print '<td align="right">' . price($obj->amount_total) . '</td>';
+			}
 			
+			if (! empty($arrayfields['t.paiepartiel']['checked'])) {
+				print '<td align="right">' . price($obj->paiepartiel) . '</td>';
+			}
+
+			// Affiche statut de la facture
+			if (! empty($arrayfields['t.paye']['checked'])) {
+				print '<td align="right" nowrap="nowrap">';
+				print $receiptstatic->LibStatut($obj->paye, 5);
+				print "</td>";
+			}
+
+			if (! empty($arrayfields['soc.nom']['checked'])) {
+				$thirdparty_static->id=$obj->fk_owner;
+				$thirdparty_static->name=$obj->owner_name;
+				print '<td>' . $thirdparty_static->getNomUrl(1) . '</td>';
+			}
+
 			print '<td align="center">';
-		if ($user->admin) {
-			print '<a href="./list.php?action=delete&id=' . $obj->id . '">';
-			print img_delete();
-			print '</a>';
-		}
-		print '</td>' . "\n";
-			
+			if ($user->admin) {
+				print '<a href="./list.php?action=delete&id=' . $obj->id . '">';
+				print img_delete();
+				print '</a>';
+			}
+			print '</td>' . "\n";
+
 			print "</tr>\n";
-			
+				
 			$i ++;
 		}
-	print "</table>";
-	print "</div>";
-	print '</form>';
+	}
+	else
+	{
+		print '<tr '.$bc[false].'>'.'<td colspan="9" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
+	}
+	
+	$db->free($resql);
+
+	print '</table>'."\n";
+	print '</div>';
+
+	print '</form>'."\n";
 } else {
 	dol_print_error($db);
 }
