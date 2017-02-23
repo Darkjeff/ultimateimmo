@@ -314,13 +314,15 @@ if ($resql)
 
 			
 			if (! empty($arrayfields['t.rowid']['checked'])) {
-				print '<td>' . $receiptstatic->getNomUrl(1) . '</td>';
+				print '<td>' . $receiptstatic->getNomUrl(1)  ;
 			}
 			
-			if (is_file($conf->immobilier->dir_output . '/quittance_' . $id . '.pdf')) {
-			print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immobilier&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+			if (is_file($conf->immobilier->dir_output . '/quittance_' . $obj->receipt_id . '.pdf')) {
+			print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immobilier&file=quittance_' . $obj->receipt_id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 			print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 			}
+			
+			print '</td>';
 
 			if (! empty($arrayfields['lc.nom']['checked'])) {
 				print '<td align="left" style="' . $code_statut . '">';
@@ -367,7 +369,7 @@ if ($resql)
 
 			print '<td align="center">';
 			if ($user->admin) {
-				print '<a href="./list.php?action=delete&id=' . $obj->id . '">';
+				print '<a href="./list.php?action=delete&id=' . $obj->receipt_id . '">';
 				print img_delete();
 				print '</a>';
 			}
