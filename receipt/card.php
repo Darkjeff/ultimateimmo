@@ -48,6 +48,8 @@ $id = GETPOST('rowid')?GETPOST('rowid','int'):GETPOST('id','int');
 $action = GETPOST('action','alpha');
 $cancel = GETPOST('cancel','alpha');
 
+$object = new Immoreceipt($db);
+
 // Actions
 
 /*
