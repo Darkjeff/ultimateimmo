@@ -45,10 +45,9 @@ $langs->load("admin");
 $langs->load("other");
 
 $def = array();
+$action = GETPOST('action','alpha');
 $actiontest=$_POST["test"];
 $actionsave=$_POST["save"];
-
-
 
 /*
  * Actions
@@ -74,8 +73,19 @@ if ($actionsave)
     }
 }
 
+if ($action == 'setimmobiliergoogle')
+{
+	$setimmobiliergoogle = GETPOST('value', 'int');
+    $res = dolibarr_set_const($db, "IMMOBILIER_USE_GOOGLE", $setimmobiliergoogle, 'yesno', 0, '', $conf->entity);
+    if (! $res > 0)
+        $error ++;
 
-
+        if (! $error) {
+            setEventMessages($langs->trans("SetupSaved"), null, 'mesgs');
+        } else {
+            setEventMessages($langs->trans("Error"), null, 'mesgs');
+        }
+}
 
 /*
  * View
@@ -93,15 +103,31 @@ print_fiche_titre($langs->trans("ImmobilierSetup"),$linkback,'setup');
 $head = immobilier_admin_prepare_head();
 dol_fiche_head($head, 'gmaps', $langs->trans("Module113050Name"), 0, 'building@immobilier');
 
-print '<form name="googleconfig" action="'.$_SERVER["PHP_SELF"].'" method="post">';
+print '<form action="' . $_SERVER["PHP_SELF"] . '" method="post">';
+print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+print '<input type="hidden" name="action" value="update">';
 
 $var=false;
 print "<table class=\"noborder\" width=\"100%\">";
 
 print "<tr class=\"liste_titre\">";
-print '<td>'.$langs->trans("Parameter")."</td>";
+print '<td>'.$langs->trans("Parameters")."</td>";
 print "<td>".$langs->trans("Value")."</td>";
 print "</tr>";
+
+$var = ! $var;
+print "<tr " . $bc[$var] . ">";
+print '<td>' . $langs->trans("IMMOBILIER_USE_GOOGLE") . '</td>';
+if (! empty($conf->global->IMMOBILIER_USE_GOOGLE)) {
+    print '<td><a href="' . $_SERVER['PHP_SELF'] . '?action=setimmobiliergoogle&value=0">';
+    print img_picto($langs->trans("Activated"), 'switch_on');
+    print '</a></td>';
+} else {
+    print '<td><a href="' . $_SERVER['PHP_SELF'] . '?action=setimmobiliergoogle&value=1">';
+    print img_picto($langs->trans("Disabled"), 'switch_off');
+    print '</a></td>';
+}
+print '</tr>';
 
 //print '<br>';
 print '<tr '.$bc[$var].'><td>'.$langs->trans("GoogleZoomLevel").'</td><td>';

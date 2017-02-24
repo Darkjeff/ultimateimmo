@@ -16,6 +16,7 @@ ImmobilierSetup=Configuration du module gestion immobilière
 PublicSiteDesc=Dolibarr peut offrir une URL de page publique permettant d'afficher un site pour répertorier les annonces immobilières pour les visiteurs externes.
 EnablePublicSite=Activer le site accessible au public
 PublicSite=Site public
+IMMOBILIER_USE_GOOGLE=Utiliser google avec le module immobilier
 GoogleZoomLevel=Niveau de zoom par défaut (1 à 10)
 GOOGLE_API_SERVERKEY=Clé API (de type "Server key")
 ParametersForGoogleAPIv3Usage=Pour Google API %s V3
