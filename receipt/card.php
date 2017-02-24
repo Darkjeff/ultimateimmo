@@ -374,11 +374,11 @@ elseif ($action == 'createall')
 		print '<td align="left">';
 		print $langs->trans("NomLoyer");
 		print '</td><td align="center">';
-		print $langs->trans("echeance");
+		print $langs->trans("Echeance");
 		print '</td><td align="center">';
-		print $langs->trans("periode_du");
+		print $langs->trans("Periode_du");
 		print '</td><td align="center">';
-		print $langs->trans("periode_au");
+		print $langs->trans("Periode_au");
 		print '</td><td align="left">';
 		print '&nbsp;';
 		print '</td>';
@@ -426,16 +426,16 @@ elseif ($action == 'createall')
 			
 			print '<br><table class="noborder" width="100%">';
 			print '<tr class="liste_titre">';
-			print '<td>' . $langs->trans('contrat_id') . '</td>';
-			print '<td>' . $langs->trans('local_id') . '</td>';
-			print '<td>' . $langs->trans('nomlocal') . '</td>';
-			print '<td>' . $langs->trans('locataire_id') . '</td>';
+			print '<td>' . $langs->trans('Contract') . '</td>';
+			print '<td>' . $langs->trans('Property') . '</td>';
+			print '<td>' . $langs->trans('Nomlocal') . '</td>';
 			print '<td>' . $langs->trans('Renter') . '</td>';
-			print '<td align="right">' . $langs->trans('montant_tot') . '</td>';
-			print '<td align="right">' . $langs->trans('rent') . '</td>';
-			print '<td align="right">' . $langs->trans('charges') . '</td>';
+			print '<td>' . $langs->trans('Renter') . '</td>';
+			print '<td align="right">' . $langs->trans('AmountTC') . '</td>';
+			print '<td align="right">' . $langs->trans('Rent') . '</td>';
+			print '<td align="right">' . $langs->trans('Charges') . '</td>';
 			print '<td align="right">' . $langs->trans('VATIsUsed') . '</td>';
-			print '<td align="right">' . $langs->trans('select') . '</td>';
+			print '<td align="right">' . $langs->trans('Select') . '</td>';
 			print "</tr>\n";
 			
 			if ($num > 0) {
@@ -489,7 +489,7 @@ else
 	{
 		if ($action == 'edit')
 		{
-			llxheader('', $langs->trans("ReceiptCard") . ' | ' . $langs->trans("Card"), '');
+			llxheader('', $langs->trans("Receipt") . ' | ' . $langs->trans("Card"), '');
 		
 			$receipt = new Immoreceipt($db);
 			$result = $receipt->fetch($id);
@@ -511,31 +511,22 @@ else
 			
 			print '<table class="border" width="100%">';
 			
-			/*
-			 * Nom du loyer
-			 */
-			
+			// Nom du loyer
 			print '<tr><td class="titlefield">' . $langs->trans("NomLoyer") . '</td>';
 			print '<td><input name="nom" size="20" value="' . $receipt->name . '"</td></tr>';
 			
-			/*
-			 * Contrat
-			 */
-			
-			print '<tr><td>' . $langs->trans("contrat_id") . '</td>';
+			// Contract
+			print '<tr><td>' . $langs->trans("Contract") . '</td>';
 			print '<td>' . $receipt->fk_contract . '</td></tr>';
-				print '<tr><td>';
-				print $langs->trans('VATIsUsed');
-				print '</td><td>';
-				print yn($receipt->addtva);
-				print '</td>';
-				print '</tr>';
-			
-			/*
-			 * Nom Appartement
-			 */
-			
-			print '<tr><td>' . $langs->trans("nomlocal") . ' </td>';
+			print '<tr><td>';
+			print $langs->trans('VATIsUsed');
+			print '</td><td>';
+			print yn($receipt->addtva);
+			print '</td>';
+			print '</tr>';
+
+			// Bien
+			print '<tr><td>' . $langs->trans("Property") . ' </td>';
 			print '<td>' . $receipt->nomlocal . '</td></tr>';
 
 			// Nom locataire
@@ -543,13 +534,13 @@ else
 			print '<td>' . $receipt->nomlocataire . '</td></tr>';
 			
 			// Amount
-			print '<tr><td>' . $langs->trans("montant_tot") . '</td>';
+			print '<tr><td>' . $langs->trans("AmountTC") . '</td>';
 			print '<td>' . $receipt->amount_total . '</td></tr>';
-			print '<tr><td>' . $langs->trans("rent") . '</td>';
+			print '<tr><td>' . $langs->trans("Rent") . '</td>';
 			print '<td><input name="rent" size="10" value="' . $receipt->rent . '"</td></tr>';
-			print '<tr><td>' . $langs->trans("charges") . '</td>';
+			print '<tr><td>' . $langs->trans("Charges") . '</td>';
 			print '<td><input name="charges" size="10" value="' . $receipt->charges . '"</td>';
-			print '<tr><td>' . $langs->trans("vat") . '</td>';
+			print '<tr><td>' . $langs->trans("VAT") . '</td>';
 			print '<td>' . $receipt->vat . '</td>';
 			$rowspan = 5;
 			print '<td rowspan="' . $rowspan . '" valign="top">';
@@ -615,19 +606,19 @@ else
 			print "</tr>";
 			
 			// Due date
-			print '<tr><td>' . $langs->trans("echeance") . '</td>';
+			print '<tr><td>' . $langs->trans("Echeance") . '</td>';
 			print '<td align="left">';
 			print $form->select_date($receipt->echeance, 'ech', 0, 0, 0, 'fiche_loyer', 1);
 			print '</td>';
-			print '<tr><td>' . $langs->trans("periode_du") . '</td>';
+			print '<tr><td>' . $langs->trans("Periode_du") . '</td>';
 			print '<td align="left">';
 			print $form->select_date($receipt->date_start, 'period', 0, 0, 0, 'fiche_loyer', 1);
 			print '</td>';
-			print '<tr><td>' . $langs->trans("periode_au") . '</td>';
+			print '<tr><td>' . $langs->trans("Periode_au") . '</td>';
 			print '<td align="left">';
 			print $form->select_date($receipt->date_end, 'periodend', 0, 0, 0, 'fiche_loyer', 1);
 			print '</td>';
-			print '<tr><td>' . $langs->trans("commentaire") . '</td>';
+			print '<tr><td>' . $langs->trans("Comment") . '</td>';
 			print '<td><input name="commentaire" size="70" value="' . $receipt->commentaire . '"</td></tr>';
 			
 			// Status loyer
@@ -698,7 +689,7 @@ else
 		} else {
 			
 		// Display receipt card
-			llxheader('', $langs->trans("ReceiptCard") . ' | ' . $langs->trans("Card"), '');
+			llxheader('', $langs->trans("Receipt") . ' | ' . $langs->trans("Card"), '');
 			
 			$receipt = new Immoreceipt($db);
 			$result = $receipt->fetch($id);
@@ -711,63 +702,89 @@ else
 			}
 			
 			$head = receipt_prepare_head($receipt);
-			dol_fiche_head($head, 'card', $langs->trans("ReceiptCard"), 0, 'rent@immobilier');
+			dol_fiche_head($head, 'card', $langs->trans("Receipt"), 0, 'rent@immobilier');
 			
 			print '<form action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-			print '<table class="border" width="100%">';
 
 			$linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
-			$nbrows=11;
+			print '<div class="fichecenter">';
+			print '<div class="fichehalfleft">';
+			print '<div class="underbanner clearboth"></div>';
+				
+			print '<table class="border centpercent">';
 
 			// Ref
-			print '<tr><td>'.$langs->trans("Ref").'</td><td colspan="2">';
+			print '<tr><td class="titlefield">'.$langs->trans("Ref").'</td><td>';
 			print $form->showrefnav($receipt, 'id', $linkback, 1, 'id', 'id', '');
 			print '</td>';
 			print '</tr>';
 
 			// Receipt name
 			print '<tr><td>' . $langs->trans("NomLoyer") . '</td>';
-			print '<td colspan="2">' . $receipt->name . '</td></tr>';
+			print '<td>' . $receipt->name . '</td></tr>';
 			
 			// Contract
-			print '<tr><td>' . $langs->trans("contrat_id") . '</td>';
-			print '<td colspan="2">' . $receipt->fk_contract . '</td></tr>';
+			print '<tr><td>' . $langs->trans("Contract") . '</td>';
+			print '<td>' . $receipt->fk_contract . '</td></tr>';
 			
+			// VAT
 			print '<tr><td>';
-				print $langs->trans('VATIsUsed');
-				print '</td><td>';
-				print yn($receipt->addtva);
-				print '</td>';
-				print '</tr>';
-			
-			
-			
+			print $langs->trans('VATIsUsed');
+			print '</td><td>';
+			print yn($receipt->addtva);
+			print '</td>';
+			print '</tr>';
+
 			// Property
 			print '<tr><td>' . $langs->trans("Property") . ' </td>';
-			print '<td colspan="2">' . $receipt->nomlocal . '</td></tr>';
+			print '<td>' . $receipt->nomlocal . '</td></tr>';
 
 			// Renter
 			print '<tr><td>' . $langs->trans("Renter") . '</td>';
-			print '<td colspan="2">' . $receipt->nomlocataire . '</td></tr>';
+			print '<td>' . $receipt->nomlocataire . '</td></tr>';
 			
 			// Amount
-			print '<tr><td>' . $langs->trans("montant_tot") . '</td>';
-			print '<td colspan="2">' . price($receipt->amount_total) . '</td></tr>';
-			print '<tr><td>' . $langs->trans("rent") . '</td>';
-			print '<td colspan="2">' . price($receipt->rent) . '</td></tr>';
-			print '<tr><td>' . $langs->trans("charges") . '</td>';
+			print '<tr><td>' . $langs->trans("AmountTC") . '</td>';
+			print '<td>' . price($receipt->amount_total) . '</td></tr>';
+			print '<tr><td>' . $langs->trans("AmountHC") . '</td>';
+			print '<td>' . price($receipt->rent) . '</td></tr>';
+			print '<tr><td>' . $langs->trans("Charges") . '</td>';
 			print '<td>' . price($receipt->charges) . '</td>';
-			print '<tr><td>' . $langs->trans("vat") . '</td>';
+			print '<tr><td>' . $langs->trans("VAT") . '</td>';
 			print '<td>' . price($receipt->vat) . '</td>';
+			print "</tr>";
 			
-			$rowspan=6;
-			print '<td rowspan="'.$rowspan.'" valign="top">';
+			// Due date
+			print '<tr><td>' . $langs->trans("Echeance") . '</td>';
+			print '<td>';
+			print dol_print_date($receipt->echeance,"day");
+			print '</td>';
+			print '<tr><td>' . $langs->trans("Periode_du") . '</td>';
+			print '<td>';
+			print dol_print_date($receipt->date_start,"day");
+			print '</td>';
+			print '<tr><td>' . $langs->trans("Periode_au") . '</td>';
+			print '<td>';
+			print dol_print_date($receipt->date_end,"day");
+			print '</td>';
+			print '<tr><td>' . $langs->trans("Comment") . '</td>';
+			print '<td>' . $receipt->commentaire . '</td></tr>';
 			
-			/*
-			 * Paiements
-			 */
+			// Status loyer
+			print '<tr><td>'.$langs->trans("Status").'</td>';
+			print '<td>';
+			print $receipt->LibStatut($receipt->paye, 5);
+			print '</td></tr>';
+			
+			print '</table>';
+
+			print '</div>';
+			print '<div class="fichehalfright">';
+			print '<div class="ficheaddleft">';
+
+			// List of payments
 			$sql = "SELECT p.rowid, p.fk_receipt, date_payment as dp, p.amount, p.fk_typepayment, pp.libelle as typepayment_label, il.amount_total ";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "immo_payment as p";
 			$sql .= ", " . MAIN_DB_PREFIX . "immo_receipt as il ";
@@ -775,7 +792,6 @@ else
 			$sql .= " WHERE p.fk_receipt = " . $id;
 			$sql .= " AND p.fk_receipt = il.rowid";
 			$sql .= " AND p.fk_typepayment = pp.id";
-			
 			$sql .= " ORDER BY dp DESC";
 			
 			$resql = $db->query($sql);
@@ -816,49 +832,27 @@ else
 				}
 				
 				if ($receipt->paye == 0) {
-					print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\"><b>" . price($totalpaye) . "</b></td><td>&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
-					print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\" bgcolor=\"#d0d0d0\">" . price($receipt->amount_total) . "</td><td bgcolor=\"#d0d0d0\">&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
+					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\"><b>" . price($totalpaye) . "</b></td></tr>\n";
+					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($receipt->amount_total) . "</td></tr>\n";
 					
-					$resteapayer = $receipt->amount_total - $totalpaye;
+					$remaintopay = $receipt->amount_total - $totalpaye;
 					
-					print "<tr><td colspan=\"2\" align=\"right\">" . $langs->trans("RemainderToPay") . " :</td>";
-					print "<td align=\"right\" bgcolor=\"#f0f0f0\"><b>" . price($resteapayer) . "</b></td><td bgcolor=\"#f0f0f0\">&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
+					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("RemainderToPay") . " :</td>";
+					print '<td align="right"'.($remaintopay?' class="amountremaintopay"':'').'>'.price($remaintopay)."</td></tr>\n";
 				}
 				print "</table>";
 				$db->free($resql);
 			} else {
 				dol_print_error($db);
 			}
-			print "</td>";
-			
-			print "</tr>";
-			
-			// Due date
-			print '<tr><td>' . $langs->trans("echeance") . '</td>';
-			print '<td>';
-			print dol_print_date($receipt->echeance,"day");
-			print '</td>';
-			print '<tr><td>' . $langs->trans("periode_du") . '</td>';
-			print '<td>';
-			print dol_print_date($receipt->date_start,"day");
-			print '</td>';
-			print '<tr><td>' . $langs->trans("periode_au") . '</td>';
-			print '<td>';
-			print dol_print_date($receipt->date_end,"day");
-			print '</td>';
-			print '<tr><td>' . $langs->trans("Comment") . '</td>';
-			print '<td>' . $receipt->commentaire . '</td></tr>';
-			
-			// Status loyer
-			print '<tr><td>'.$langs->trans("Status").'</td>';
-			print '<td>';
-			print $receipt->LibStatut($receipt->paye, 5);
-			print '</td></tr>';
-			
-			print '</table>';
-			
-			
-				// Show email send receipt
+
+			print '</div>';
+			print '</div>';
+			print '</div>';
+	
+			print '<div class="clearboth"></div>';
+
+			// Show email send receipt
 			/*if ($action == 'sendreceipt')
 			{
 				
