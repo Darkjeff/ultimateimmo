@@ -37,14 +37,10 @@ dol_include_once("/immobilier/class/renter.class.php");
 dol_include_once("/immobilier/class/immoproperty.class.php");
 dol_include_once("/immobilier/class/html.formimmobilier.class.php");
 dol_include_once("/immobilier/class/immorent.class.php");
-dol_include_once("/immobilier/class/immoproperty.class.php");
 
 $langs->load("immobilier@immobilier");
 
-
 $action = GETPOST('action', 'alpha');
-$mesg = '';
-$action = GETPOST('action');
 $massaction=GETPOST('massaction','alpha');
 $cancel = GETPOST('cancel');
 $id = GETPOST('id', 'int');
@@ -86,10 +82,6 @@ $arrayfields=array(
 	'soc.nom'=>array('label'=>$langs->trans("Owner"), 'checked'=>1)
 );
 
-/*
- * Actions
- */
-
 if (GETPOST('cancel')) { $action='list'; $massaction=''; }
 if (! GETPOST('confirmmassaction') && $massaction != 'presend' && $massaction != 'confirm_presend') { $massaction=''; }
 
@@ -104,6 +96,9 @@ if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter.x") || GETP
     $search_array_options=array();
 }
 
+/*
+ * Actions
+ */
 if ($action == 'validaterent') {
 	
 	$error = 0;
@@ -176,9 +171,7 @@ $formconfirm = $html->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $id, $langs->t
 	print $formconfirm;
 }
 
-/*
- *	Delete rental
- */
+// Delete rental
 if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes') {
 	$receipt = new Immoreceipt($db);
 	$receipt->fetch($id);
@@ -202,18 +195,18 @@ $object = new Immoreceipt($db);
 
 llxHeader('', $langs->trans("Receipts"));
 
-	$sql = "SELECT t.rowid as receipt_id, t.fk_contract, t.fk_property, t.name , t.fk_renter, t.amount_total as amount_total, t.rent as rent, t.balance,";
-	$sql .= " t.paiepartiel as paiepartiel, t.charges, t.vat, t.echeance as echeance, t.commentaire, t.statut as receipt_statut, t.date_rent,";
-	$sql .= " t.date_start, t.date_end, t.fk_owner, t.paye as paye, lc.rowid as renter_id, lc.nom as nomlocataire, lc.prenom as prenomlocataire,";
-	$sql .= " ll.name as nomlocal, ll.rowid as property_id, soc.rowid as soc_id, soc.nom as owner_name";
-	$sql .= ' FROM llx_immo_receipt as t';
-	$sql .= ' INNER JOIN llx_immo_renter as lc ON t.fk_renter = lc.rowid';
-	$sql .= ' INNER JOIN llx_immo_property as ll ON t.fk_property = ll.rowid';
-	$sql .= ' INNER JOIN llx_societe as soc ON soc.rowid = t.fk_owner';
-	if ($search_renter)			$sql .= natural_search("lc.nom", $search_renter);
-	if ($search_property)		$sql .= natural_search("ll.name", $search_property);
-	if ($search_rent)			$sql .= natural_search("t.name", $search_rent);
-	$sql .= $db->order($sortfield, $sortorder);
+$sql = "SELECT t.rowid as receipt_id, t.fk_contract, t.fk_property, t.name , t.fk_renter, t.amount_total as amount_total, t.rent as rent, t.balance,";
+$sql .= " t.paiepartiel as paiepartiel, t.charges, t.vat, t.echeance as echeance, t.commentaire, t.statut as receipt_statut, t.date_rent,";
+$sql .= " t.date_start, t.date_end, t.fk_owner, t.paye as paye, lc.rowid as renter_id, lc.nom as nomlocataire, lc.prenom as prenomlocataire,";
+$sql .= " ll.name as nomlocal, ll.rowid as property_id, soc.rowid as soc_id, soc.nom as owner_name";
+$sql .= ' FROM llx_immo_receipt as t';
+$sql .= ' INNER JOIN llx_immo_renter as lc ON t.fk_renter = lc.rowid';
+$sql .= ' INNER JOIN llx_immo_property as ll ON t.fk_property = ll.rowid';
+$sql .= ' INNER JOIN llx_societe as soc ON soc.rowid = t.fk_owner';
+if ($search_renter)			$sql .= natural_search("lc.nom", $search_renter);
+if ($search_property)		$sql .= natural_search("ll.name", $search_property);
+if ($search_rent)			$sql .= natural_search("t.name", $search_rent);
+$sql .= $db->order($sortfield, $sortorder);
 
 // Count total nb of records
 $nbtotalofrecords = '';
@@ -251,10 +244,10 @@ if ($resql)
 
 	$title = $langs->trans("ListReceipts");
 	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $params, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_receipt');
-	
+
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
-	
+
     print '<div class="div-table-responsive">';
     print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
 	print '<tr class="liste_titre">';
@@ -284,8 +277,8 @@ if ($resql)
 	
 	// Action column
 	print '<td class="liste_titre" align="middle">';
-	$searchpitco=$form->showFilterAndCheckAddButtons($massactionbutton?1:0, 'checkforselect', 1);
-	print $searchpitco;
+	$searchpicto=$form->showFilterAndCheckAddButtons($massactionbutton?1:0, 'checkforselect', 1);
+	print $searchpicto;
 	print '</td>';
 
 	print "</tr>\n";
@@ -314,7 +307,7 @@ if ($resql)
 
 			
 			if (! empty($arrayfields['t.rowid']['checked'])) {
-				print '<td>' . $receiptstatic->getNomUrl(1)  ;
+				print '<td>' . $receiptstatic->getNomUrl(1);
 			}
 			
 			if (is_file($conf->immobilier->dir_output . '/quittance_' . $obj->receipt_id . '.pdf')) {

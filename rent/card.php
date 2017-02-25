@@ -352,7 +352,7 @@ if ($action == 'create' && $user->rights->immobilier->rent->write) {
 			if ($result) {
 			// View mode
 				$head = rent_prepare_head($object);
-				dol_fiche_head($head, 'card', $langs->trans("RentCard"), 0, 'rent@immobilier');
+				dol_fiche_head($head, 'card', $langs->trans("Rent"), 0, 'rent@immobilier');
 
 				if ($mesg)
 					print $mesg . "<br>";

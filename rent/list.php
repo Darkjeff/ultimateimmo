@@ -1,7 +1,6 @@
-﻿<?php
+<?php
 /* Copyright (C) 2013-2015 Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2015-2016 Alexandre Spangaro	<aspangaro@zendsi.com>
- * Copyright (C) 2016      Jamelbaz   			<jamelbaz@gmail.com>
+ * Copyright (C) 2015-2017 Alexandre Spangaro	<aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +17,9 @@
  */
 
 /**
- * \file    immobilier/rent/list.php
- * \ingroup immobilier
- * \brief   List of rent
+ * \file    	immobilier/rent/list.php
+ * \ingroup 	Immobilier
+ * \brief   	List of rent
  */
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
@@ -28,114 +27,227 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
-$langs->load('immobilier@immobilier');
+dol_include_once("/immobilier/class/immorent.class.php");
+dol_include_once("/immobilier/class/immoproperty.class.php");
+dol_include_once("/immobilier/class/immorenter.class.php");
+dol_include_once("/immobilier/core/lib/immobilier.lib.php");
+
+$langs->load("immobilier@immobilier");
+
+$id = GETPOST('id', 'int');
+$rowid = GETPOST('rowid', 'int');
 
 // Security check
-if (! $user->rights->immobilier->rent->read)
-	accessforbidden();
+if ($user->societe_id > 0) 	accessforbidden ();
 
-dol_include_once('/immobilier/class/immorent.class.php');
-dol_include_once('/immobilier/class/immoproperty.class.php');
-require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+// Load variable for pagination
+$limit = GETPOST("limit")?GETPOST("limit","int"):$conf->liste_limit;
+$sortfield = GETPOST('sortfield','alpha');
+$sortorder = GETPOST('sortorder','alpha');
+$page = GETPOST('page','int');
+if ($page == -1) { $page = 0; }
+$offset = $limit * $page;
+$pageprev = $page - 1;
+$pagenext = $page + 1;
+if (!$sortorder) $sortorder="DESC";
+if (!$sortfield) $sortfield="c.rowid";
 
-$object = new Rent($db);
-$thirdparty_static = new Societe($db);
-$rents = $object->fetchAll();
+$search_renter		= GETPOST('search_name', 'alpha');
+$search_property	= GETPOST('search_property', 'alpha');
+$search_status		= GETPOST('search_status', 'alpha') != '' ? GETPOST('search_status', 'alpha') : GETPOST('statut', 'alpha');
 
-llxHeader('',$langs->trans('Rents'));
+$arrayfields=array(
+	'c.rowid'=>array('label'=>$langs->trans("Contract"), 'checked'=>1),
+    'loc.nom'=>array('label'=>$langs->trans("Renter"), 'checked'=>1),
+    'l.name'=>array('label'=>$langs->trans("Property"), 'checked'=>1),
+    'c.montant_total'=>array('label'=>$langs->trans("AmountTC"), 'checked'=>1),
+    'c.encours'=>array('label'=>$langs->trans("Income"), 'checked'=>1),
+	'c.statut'=>array('label'=>$langs->trans("Status"), 'checked'=>1)
+);
+
+include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
+
+// Purge search criteria
+if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter.x") || GETPOST("button_removefilter"))
+{
+	$search_renter = "";
+	$search_property = "";
+	$search_status = "";
+    $search_array_options=array();
+}
 
 /*
  * View
  */
-print_fiche_titre($langs->trans("ListRents"));
-?>
-	<div class="container">
-		<section>
-			<table id="dataTable" class="display" cellspacing="0" width="100%">
-				<thead>
-					<tr class="liste_titre">
-						<th><?php echo $langs->trans('Contract'); ?></th>
-						<th><?php echo $langs->trans('Renter'); ?></th>
-						<th><?php echo $langs->trans('Property'); ?></th>
-						<th><?php echo $langs->trans('Owner'); ?></th>
-						<th><?php echo $langs->trans('LoyerTotal'); ?></th>
-						<th><?php echo $langs->trans("EncoursLoyer"); ?></th>
-						<th><?php echo $langs->trans("Status"); ?></th>
-						<th><?php echo $langs->trans("Action"); ?></th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php 
-					$propertystatic = new Immoproperty($db);
-					foreach($rents as $rent): 
-						$propertystatic->id = $rent['location_id'];
-						$propertystatic->name = $rent['location'];
-					?>
-					<tr>
-						<td><a href="card.php?id=<?php print $rent['contrat']; ?>"><?php print img_object($langs->trans("ShowRent").': '. $rent['contrat'], 'rent@immobilier' ) . " " . $rent['contrat']; ?></a></td>
-						<td><a href="../renter/card.php?id=<?php print $rent['locataire_id'] ?>"><?php print img_object($langs->trans("ShowRenter").': '. $rent['locataire'], 'user' ) . " " . $rent['locataire']; ?></a></td>
-						<td><?php print $propertystatic->getNomUrl(1); ?></td>
-						<td>
-						<?php 
-						if(!empty($rent['owner_id'])){
-							$thirdparty_static->id=$rent['owner_id'];
-							$thirdparty_static->name=$rent['owner'];
-							echo $thirdparty_static->getNomUrl(1);
-						}
-						
-						?>
-						</td>
-						<td align="right"><?php print price($rent['loyerTotal']); ?></td>
-						<td align="right"><?php print price($rent['encoursLoyer']); ?></td>
-						<td><?php print $object->LibStatut($rent['state']); ?></td>
-						<td align="center">
-							<a href="card.php?action=edit&id=<?php print $renter['id']; ?>"><?php print img_edit() ?></a>
-							<a class="delete" href="card.php?action=confirm_delete&confirm=yes&id=<?php print $renter['id']; ?>"><?php print img_delete() ?></a>
-						</td>
-					</tr>
-					<?php endforeach; ?>
-				</tbody>
-			</table>
-		</section>
-	</div>
+$form = new Form($db);
+$object = new Rent($db);
 
-<script type="text/javascript" language="javascript" class="init">
-		$(document).ready(function() {
-			$('#dataTable').DataTable( {
-				language: {
-					processing:     "Traitement en cours...",
-					search:         "Rechercher&nbsp;:",
-					lengthMenu:    "Afficher _MENU_ &eacute;l&eacute;ments",
-					info:           "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
-					infoEmpty:      "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
-					infoFiltered:   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-					infoPostFix:    "",
-					loadingRecords: "Chargement en cours...",
-					zeroRecords:    "Aucun &eacute;l&eacute;ment &agrave; afficher",
-					emptyTable:     "Aucune donnée disponible dans le tableau",
-					paginate: {
-						first:      "Premier",
-						previous:   "Pr&eacute;c&eacute;dent",
-						next:       "Suivant",
-						last:       "Dernier"
-					},
-					aria: {
-						sortAscending:  ": activer pour trier la colonne par ordre croissant",
-						sortDescending: ": activer pour trier la colonne par ordre décroissant"
-					}
-				}
-			});
-			
-			$("table#dataTable").on("click", ".delete", function(event) {
-			event.preventDefault();
-			var r=confirm("Êtes-vous sûr de vouloir supprimer ?");
-			if (r==true)   {  
-			   window.location = $(this).attr('href');
+llxHeader('', $langs->trans("Rents"));
+
+$sql = "SELECT c.rowid as contract_id, c.montant_tot as amount_total, c.encours as encours, c.preavis as preavis, c.statut as statut"; 
+$sql .= ", loc.rowid as renter_id, loc.nom as renter_lastname";
+$sql .= ", l.name as property_name, l.rowid as property_id";
+$sql .= " FROM " . MAIN_DB_PREFIX . "immo_contrat as c";
+$sql .= " , " . MAIN_DB_PREFIX . "immo_renter as loc";
+$sql .= " , " . MAIN_DB_PREFIX . "immo_property as l";
+$sql .= " WHERE loc.rowid = c.fk_renter and l.rowid = c.fk_property";
+if ($user->id != 1) {
+	$sql .= " AND c.proprietaire_id=".$user->id;
+}
+if ($search_renter)		$sql .= natural_search("loc.nom", $search_renter);
+if ($search_property)	$sql .= natural_search("l.name", $search_property);
+if ($search_statut)		$sql .= natural_search("c.statut", $search_statut);
+$sql .= $db->order($sortfield, $sortorder);
+
+// Count total nb of records
+$nbtotalofrecords = '';
+if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
+{
+	$resql = $db->query($sql);
+	$nbtotalofrecords = $db->num_rows($resql);
+}	
+$sql .= $db->plimit($limit + 1, $offset);
+
+//print $sql;
+$resql = $db->query($sql);
+if ($resql)
+{
+	$num = $db->num_rows($resql);
+    
+	$arrayofselected=is_array($toselect)?$toselect:array();
+
+	$param="";
+
+    if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param.='&contextpage='.$contextpage;
+	if ($limit > 0 && $limit != $conf->liste_limit) $param.='&limit='.$limit;
+	if ($search_renter)		$params.= '&amp;search_renter='.urlencode($search_renter);
+	if ($search_property)	$params.= '&amp;search_property='.urlencode($search_property);
+	if ($search_status)		$params.= '&amp;search_status='.urlencode($search_status);
+    if ($optioncss)			$param.='&optioncss='.$optioncss;
+
+	print '<form action="'.$_SERVER["PHP_SELF"].'" method="POST">'."\n";
+    if ($optioncss != '') print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
+    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+    print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
+    print '<input type="hidden" name="action" value="list">';
+    print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
+    print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
+
+	$title = $langs->trans("ListRents");
+	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $params, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_rent');
+
+	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
+	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
+
+    print '<div class="div-table-responsive">';
+    print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
+	print '<tr class="liste_titre">';
+	if (! empty($arrayfields['c.rowid']['checked']))		print_liste_field_titre($arrayfields['c.rowid']['label'], $_SERVER["PHP_SELF"],"c.rowid","",$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['loc.nom']['checked']))		print_liste_field_titre($arrayfields['loc.nom']['label'], $_SERVER["PHP_SELF"],"loc.nom","",$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['l.name']['checked']))			print_liste_field_titre($arrayfields['l.name']['label'], $_SERVER["PHP_SELF"],"l.name", "", $param,'align="left"',$sortfield,$sortorder);
+	if (! empty($arrayfields['c.montant_tot']['checked']))	print_liste_field_titre($arrayfields['c.montant_tot']['label'],$_SERVER["PHP_SELF"],'c.montant_tot','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['c.encours']['checked']))		print_liste_field_titre($arrayfields['c.encours']['label'],$_SERVER["PHP_SELF"],'c.encours','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['c.statut']['checked']))		print_liste_field_titre($arrayfields['c.statut']['label'],$_SERVER["PHP_SELF"],'c.statut','',$param,'',$sortfield,$sortorder);
+	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="right"',$sortfield,$sortorder,'maxwidthsearch ');
+	print "</tr>\n";
+
+	// Filters
+	print '<tr class="liste_titre">';
+	if (! empty($arrayfields['c.rowid']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
+	if (! empty($arrayfields['loc.nom']['checked']))		print '<td class="liste_titre"><input type="text" class="flat" size="20" name="search_renter" value="' .$search_renter. '"></td>';
+	if (! empty($arrayfields['l.name']['checked']))			print '<td class="liste_titre"><input type="text" class="flat" size="10" name="search_property" value="' .$search_property. '"></td>';
+	if (! empty($arrayfields['c.montant_tot']['checked']))	print '<td class="liste_titre">&nbsp;</td>';
+	if (! empty($arrayfields['c.encours']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
+	if (! empty($arrayfields['c.statut']['checked']))		print '<td class="liste_titre">'.$form->selectarray('search_status', $object->status_array, $object->statut).'</td>';
+	
+	// Action column
+	print '<td class="liste_titre" align="middle">';
+	$searchpicto=$form->showFilterAndCheckAddButtons($massactionbutton?1:0, 'checkforselect', 1);
+	print $searchpicto;
+	print '</td>';
+
+	print "</tr>\n";
+
+	$var = true;
+
+	$rentstatic = new Rent($db);
+	$propertystatic = new Immoproperty($db);
+
+	if ($num > 0)
+	{
+        $i=0;
+    	$var=true;
+		while ( $i < min($num, $limit) ) 
+		{
+			$obj = $db->fetch_object($resql);
+			$code_statut = '';
+
+			if ($objp->preavis == 1 ){
+				$code_statut = 'color: red';
+			} else {
+				$code_statut = 'color:blue';
 			}
 
-		});
+			$var = ! $var;
+			print "<tr ".$bc[$var].">";
 
-		} );
-	</script>
+			if (! empty($arrayfields['c.rowid']['checked'])) {
+				$rentstatic->id = $obj->contract_id;
+				$rentstatic->nom = $obj->contract_id;
+				print '<td>' . $rentstatic->getNomUrl(1);
+			}
 
-<?php llxFooter();?>
+			if (! empty($arrayfields['loc.nom']['checked'])) {
+				print '<td align="left" style="' . $code_statut . '">';
+				print '<a href="../renter/card.php?id=' . $obj->renter_id . '">' . img_object($langs->trans("ShowDetails"), "user") . ' ' . strtoupper($obj->renter_lastname) . ' ' . ucfirst($obj->renter_lastname) . '</a>';		
+				print '</td>';
+			}
+
+			if (! empty($arrayfields['l.name']['checked'])) {
+				$propertystatic->id = $obj->property_id;
+				$propertystatic->name = stripslashes(nl2br($obj->property_name));
+				print '<td>' . $propertystatic->getNomUrl(1) . '</td>';
+			}
+
+			if (! empty($arrayfields['c.montant_tot']['checked'])) {
+				print '<td align="right">' . price($obj->amount_total) . '</td>';
+			}
+
+			if (! empty($arrayfields['c.encours']['checked'])) {
+				print '<td>' . price($obj->encours) . '</td>';
+			}
+
+			if (! empty($arrayfields['c.statut']['checked'])) {
+				print '<td>' . stripslashes(nl2br($obj->statut)) . '</td>';
+			}
+
+			print '<td align="center">';
+			if ($user->admin) {
+				print '<a href="./list.php?action=delete&id=' . $obj->id . '">';
+				print img_delete();
+				print '</a>';
+			}
+			print '</td>' . "\n";
+
+			print "</tr>\n";
+				
+			$i ++;
+		}
+	}
+	else
+	{
+		print '<tr '.$bc[false].'>'.'<td colspan="9" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
+	}
+	
+	$db->free($resql);
+
+	print '</table>'."\n";
+	print '</div>';
+
+	print '</form>'."\n";
+} else {
+	dol_print_error($db);
+}
+
+llxFooter();
+$db->close();
