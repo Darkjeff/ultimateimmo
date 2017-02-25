@@ -319,7 +319,7 @@ if ($resql)
 
 			if (! empty($arrayfields['lc.nom']['checked'])) {
 				print '<td align="left" style="' . $code_statut . '">';
-				print '<a href="../renter/card.php?id=' . $obj->renter_id . '">' . img_object($langs->trans("ShowDetails"), "user") . ' ' . strtoupper($obj->nomlocataire) . ' ' . ucfirst($obj->nomlocataire) . '</a>';		
+				print '<a href="../renter/card.php?id=' . $obj->renter_id . '">' . img_object($langs->trans("ShowDetails"), "user") . '  ' . ucfirst($obj->nomlocataire) . '</a>';		
 				print '</td>';
 			}
 
