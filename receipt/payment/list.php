@@ -120,7 +120,7 @@ if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes') {
 		header("Location: list.php");
 		exit();
 	} else {
-		$mesg = '<div class="error">' . $receipt->error . '</div>';
+		$mesg = '<div class="error">' . $payment->error . '</div>';
 	}
 }
 
@@ -245,7 +245,8 @@ if ($resql)
 
 			
 			if (! empty($arrayfields['t.rowid']['checked'])) {
-				print '<td>' . $payment->getNomUrl(1)  ;
+				print '<td>' ;
+				print "<a href=" . DOL_URL_ROOT . "/custom/immobilier/receipt/payment/card.php?action=update&id=" . $obj->reference . "&amp;receipt=" . $obj->receipt_id . ">" . img_object($langs->trans("Payment"), "payment") . " ". $obj->reference . "</a> ";
 				print '</td>';
 			}
 
