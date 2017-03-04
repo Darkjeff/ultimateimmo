@@ -752,6 +752,21 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
+		
+			$this->menu[$r] = array(
+			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalloads',
+			'type' => 'left',
+			'titre' => 'RenterCost',
+			'mainmenu' => 'rentalloads',
+			'url' => '/immobilier/cost/cost_renter.php',
+			'langs' => 'immobilier@immobilier',
+			'position' => 605,
+			'enabled' => '$user->rights->immobilier->renter->write',
+			'perms' => '$user->rights->immobilier->renter->write',
+			'target' => '',
+			'user' => 0
+		);
+		$r ++;
 
 		// Result --------------------
 		$this->menu [$r] = array (
