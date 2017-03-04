@@ -928,9 +928,9 @@ else
 			print '<div class="inline-block divButAction"><a class="butAction" href="' . DOL_URL_ROOT . '/custom/immobilier/receipt/card.php?id=' . $receipt->id . '&amp;action=edit">' . $langs->trans("Modify") . '</a></div>';
 
 			// Create payment
-			if ($object->paye == 0 && $user->rights->immobilier->rent->write)
+			if ($receipt->paye == 0 && $user->rights->immobilier->rent->write)
 			{
-				if ($resteapayer == 0)
+				if ($remaintopay == 0)
 				{
 					print '<div class="inline-block divButAction"><span class="butActionRefused" title="' . $langs->trans("DisabledBecauseRemainderToPayIsZero") . '">' . $langs->trans('DoPayment') . '</span></div>';
 				}
@@ -941,7 +941,7 @@ else
 			}
 
 			// Classify 'paid'
-			if ($receipt->paye == 0 && round($resteapayer) <= 0) {
+			if ($receipt->paye == 0 && round($remaintopay) <= 0) {
 				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&id=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
 			}
 			
