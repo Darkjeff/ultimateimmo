@@ -739,9 +739,9 @@ class modImmobilier extends DolibarrModules
 		$r ++;
 
 		$this->menu[$r] = array(
-			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalloads',
+			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalload',
 			'type' => 'left',
-			'titre' => 'Statistics',
+			'titre' => 'StatisticsCost',
 			'mainmenu' => 'rentalloads',
 			'url' => '/immobilier/cost/stats.php',
 			'langs' => 'immobilier@immobilier',
@@ -752,15 +752,16 @@ class modImmobilier extends DolibarrModules
 			'user' => 0
 		);
 		$r ++;
+		// Cost renter --------------------
 		
 			$this->menu[$r] = array(
-			'fk_menu' => 'fk_mainmenu=rentalloads,fk_leftmenu=rentalloads',
+			'fk_menu' => 'fk_mainmenu=rentalloads',
 			'type' => 'left',
 			'titre' => 'RenterCost',
 			'mainmenu' => 'rentalloads',
 			'url' => '/immobilier/cost/cost_renter.php',
 			'langs' => 'immobilier@immobilier',
-			'position' => 605,
+			'position' => 700,
 			'enabled' => '$user->rights->immobilier->renter->write',
 			'perms' => '$user->rights->immobilier->renter->write',
 			'target' => '',
@@ -777,14 +778,15 @@ class modImmobilier extends DolibarrModules
 			'leftmenu' => '0',
 			'url' => '/immobilier/result/result.php',
 			'langs' => 'immobilier@immobilier',
-			'position' => 700,
+			'position' => 800,
 			'enabled' => '$user->rights->immobilier->renter->read',
 			'perms' => '$user->rights->immobilier->renter->read',
 			'target' => '',
 			'user' => 2 
 		);
 		$r ++;
-
+		
+	
 		/*
 		
 
