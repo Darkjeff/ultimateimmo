@@ -335,9 +335,6 @@ if ($action == 'createall') {
 	$sql .= " , " . MAIN_DB_PREFIX . "immo_property as l";
 	$sql .= " , " . MAIN_DB_PREFIX . "immo_contrat as c";
 	$sql .= " WHERE rec.paye = 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND  c.rowid = rec.fk_contract and c.preavis =0 ";
-	if ($user->id != 1) {
-		$sql .= " AND rec.owner_id=" . $user->id;
-	}
 	$resql = $db->query($sql);
 	if ($resql) {
 		$num = $db->num_rows($resql);
