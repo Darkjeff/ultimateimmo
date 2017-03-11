@@ -91,9 +91,6 @@ $sql .= " FROM " . MAIN_DB_PREFIX . "immo_contrat as c";
 $sql .= " , " . MAIN_DB_PREFIX . "immo_renter as loc";
 $sql .= " , " . MAIN_DB_PREFIX . "immo_property as l";
 $sql .= " WHERE loc.rowid = c.fk_renter and l.rowid = c.fk_property";
-if ($user->id != 1) {
-	$sql .= " AND c.proprietaire_id=".$user->id;
-}
 if ($search_renter)		$sql .= natural_search("loc.nom", $search_renter);
 if ($search_property)	$sql .= natural_search("l.name", $search_property);
 if ($search_statut)		$sql .= natural_search("c.statut", $search_statut);
