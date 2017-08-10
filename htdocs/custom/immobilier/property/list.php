@@ -27,6 +27,7 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 	
+require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 dol_include_once('/immobilier/class/immoproperty.class.php');
 dol_include_once('/core/lib/company.lib.php');
 
@@ -87,7 +88,7 @@ llxHeader('', $langs->trans("Property"));
 
 $sql = "SELECT l.rowid as property_id, l.name, l.address, l.zip, l.town"; 
 $sql .= ",  l.statut, tp.label as type_property, co.label as country";
-$sql .= ", l.name as property_name, b.name as building_name, soc.nom as owner";
+$sql .= ", l.name as property_name, l.fk_owner, b.name as building_name, soc.nom as owner";
 $sql .= " FROM " . MAIN_DB_PREFIX . "immo_property as l";
 $sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'c_immo_type_property as tp ON tp.id = l.fk_type_property';
 $sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immo_building as b ON b.rowid = l.fk_property';
@@ -129,8 +130,8 @@ if ($resql)
     print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
     print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 
-	$title = $langs->trans("ListRents");
-	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $params, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_rent');
+	$title = $langs->trans("ListProperties");
+	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $params, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_property');
 
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
@@ -173,6 +174,7 @@ if ($resql)
 	$var = true;
 
 	$propertystatic = new Immoproperty($db);
+	$thirdparty_static = new Societe($db);
 
 	if ($num > 0)
 	{
@@ -216,11 +218,17 @@ if ($resql)
 				print '<td>' . stripslashes(nl2br($obj->building)) . '</td>';
 			}
 			if (! empty($arrayfields['soc.nom']['checked'])) {
-				print '<td>' . stripslashes(nl2br($obj->owner)) . '</td>';
+				//print '<td>' . stripslashes(nl2br($obj->owner)) . '</td>';
+				$thirdparty_static->id=$obj->fk_owner;
+				$thirdparty_static->name=$obj->owner;
+				print '<td>' . $thirdparty_static->getNomUrl(1) . '</td>';
 			}
 			
 			if (! empty($arrayfields['l.statut']['checked'])) {
-				print '<td>' . stripslashes(nl2br($obj->statut)) . '</td>';
+			
+				print '<td align="right" nowrap="nowrap">';
+				print $propertystatic->LibStatut($obj->statut, 5);
+				print "</td>";
 			}
 
 			print '<td align="center">';
