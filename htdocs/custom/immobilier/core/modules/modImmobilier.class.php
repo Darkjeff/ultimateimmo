@@ -357,11 +357,26 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r] = array(
 			'fk_menu' => 'fk_mainmenu=biens,fk_leftmenu=bien',
 			'type' => 'left',
+			'titre' => 'ListBuilding',
+			'mainmenu' => 'biens',
+			'url' => '/immobilier/property/list.php?action=building',
+			'langs' => 'immobilier@immobilier',
+			'position' => 104,
+			'enabled' => '$user->rights->immobilier->property->read',
+			'perms' => '$user->rights->immobilier->property->read',
+			'target' => '',
+			'user' => 0
+		);
+		$r ++;
+
+		$this->menu[$r] = array(
+			'fk_menu' => 'fk_mainmenu=biens,fk_leftmenu=bien',
+			'type' => 'left',
 			'titre' => 'Statistics',
 			'mainmenu' => 'biens',
 			'url' => '/immobilier/property/stats.php',
 			'langs' => 'immobilier@immobilier',
-			'position' => 104,
+			'position' => 105,
 			'enabled' => '$user->rights->immobilier->property->read',
 			'perms' => '$user->rights->immobilier->property->read',
 			'target' => '',

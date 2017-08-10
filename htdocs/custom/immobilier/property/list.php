@@ -35,6 +35,7 @@ $langs->load("immobilier@immobilier");
 
 $id = GETPOST('id', 'int');
 $rowid = GETPOST('rowid', 'int');
+$action = GETPOST('action', 'alpha');
 
 // Security check
 if ($user->societe_id > 0) 	accessforbidden ();
@@ -94,7 +95,11 @@ $sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'c_immo_type_property as tp ON tp.id =
 $sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immo_building as b ON b.rowid = l.fk_property';
 $sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as soc ON soc.rowid = l.fk_owner';
 $sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as co ON co.rowid = l.fk_pays';
+if ($action == 'building') {
+$sql .= " WHERE tp.id = 6";
+} else {
 $sql .= " WHERE tp.id <> 6";
+}
 if ($search_property)	$sql .= natural_search("l.name", $search_property);
 $sql .= $db->order($sortfield, $sortorder);
 
@@ -233,7 +238,7 @@ if ($resql)
 
 			print '<td align="center">';
 			if ($user->admin) {
-				print '<a href="./list.php?action=delete&id=' . $obj->id . '">';
+				print '<a href="./list.php?action=delete&id=' . $obj->property_id . '">';
 				print img_delete();
 				print '</a>';
 			}
