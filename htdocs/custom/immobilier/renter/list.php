@@ -85,14 +85,14 @@ llxHeader('', $langs->trans("Renter"));
 $sql = "SELECT";
 $sql .= " so.rowid as socid, so.nom as socname,";
 $sql .= " civ.code as civilitecode,";
-$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction, s.statut,";
+$sql .= " s.rowid as renter_id, s.nom as renter_lastname, s.prenom, s.civilite, s.fk_soc, s.fonction, s.statut,";
 $sql .= " s.tel1 as phone_pro, s.tel2 as phone_mobile, s.mail as email, s.note, s.date_birth, s.place_birth";
 $sql .= " FROM " . MAIN_DB_PREFIX . "immo_renter as s";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 $sql .= " ON s.fk_soc = so.rowid";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 $sql .= " ON s.civilite = civ.code";
-$sql .= " WHERE s.statut > 0";
+//$sql .= " WHERE s.statut > 0";
 if ($search_renter)	$sql .= natural_search("s.nom", $search_property);
 $sql .= $db->order($sortfield, $sortorder);
 
@@ -128,8 +128,8 @@ if ($resql)
     print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
     print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 
-	$title = $langs->trans("ListRents");
-	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $params, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_rent');
+	$title = $langs->trans("ListRenter");
+	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $params, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_renter');
 
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
@@ -186,18 +186,24 @@ if ($resql)
 			print "<tr ".$bc[$var].">";
 
 			if (! empty($arrayfields['s.nom']['checked'])) {
-				print '<td>' . stripslashes(nl2br($obj->nom)) . '</td>';
-			}
+				print '<td align="left" style="' . $obj->nom . '">';
+				print '<a href="../renter/card.php?id=' . $obj->renter_id . '">' . img_object($langs->trans("ShowDetails"), "user") . ' ' . strtoupper($obj->renter_lastname) . '</a>';		
+				print '</td>';
+				}
 			if (! empty($arrayfields['s.tel1']['checked'])) {
-				print '<td>' . stripslashes(nl2br($obj->tel1)) . '</td>';
+				print '<td>' . stripslashes(nl2br($obj->phone_pro)) . '</td>';
 			}
 			if (! empty($arrayfields['s.tel2']['checked'])) {
-				print '<td>' . stripslashes(nl2br($obj->tel2)) . '</td>';
+				print '<td>' . stripslashes(nl2br($obj->phone_mobile)) . '</td>';
 			}
 			if (! empty($arrayfields['s.mail']['checked'])) {
-				print '<td>' . stripslashes(nl2br($obj->mail)) . '</td>';
+				print '<td>' . stripslashes(nl2br($obj->email)) . '</td>';
 			}
 			if (! empty($arrayfields['s.statut']['checked'])) {
+				print '<td align="right" nowrap="nowrap">';
+				print $renterstatic->LibStatut($obj->statut, 5);
+				print "</td>";
+			
 				print '<td>' . stripslashes(nl2br($obj->statut)) . '</td>';
 			}
 			if (! empty($arrayfields['s.owner']['checked'])) {
