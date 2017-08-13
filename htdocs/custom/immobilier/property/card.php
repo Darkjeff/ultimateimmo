@@ -74,7 +74,7 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->immobilie
 		setEventMessages(null,$object->errors, 'errors');
 	}
 }
- 
+
 if ($action == 'add' && $user->rights->immobilier->property->write) {
 
 	$error = 0;
@@ -99,7 +99,7 @@ if ($action == 'add' && $user->rights->immobilier->property->write) {
 			$datep = dol_mktime(0, 0, 0, GETPOST('datebuildpropertymonth', 'int'), GETPOST('datebuildpropertyday', 'int'), GETPOST('datebuildpropertyyear', 'int'));
 
 			$object->fk_type_property = $type_id;
-			
+
 			$object->fk_owner		= $fk_owner;
 			$object->statut			= GETPOST('statut');
 			$object->entity			= $conf->entity;
@@ -135,8 +135,8 @@ if ($action == 'add' && $user->rights->immobilier->property->write) {
 			if ($ret < 0) $error++;
 
 			$id = $object->create($user);
-			
-			
+
+
             if ($id > 0)
             {
                 header("Location: " . $_SERVER["PHP_SELF"] . "?id=" . $id);
@@ -234,23 +234,23 @@ $error = 0;
 $db->begin();
 
 $result = $object->fetch($id);
+$building = $object->name;
 
-// todo debug insert into 
-
-$sql1 = 'INSERT INTO ' . MAIN_DB_PREFIX . 'immo_building as bu';
-$sql1 .= ' (bu.name , bu.fk_property)';
-$sql1 .= ' VALUES (';
-$sql1 .= ''.$object->name. ',';
+// todo debug insert into
+$sql1 = 'INSERT INTO ' . MAIN_DB_PREFIX . 'immo_building (';
+$sql1 .= 'name,';
+$sql1 .= 'fk_property';
+$sql1 .= ') VALUES (';
+$sql1 .= ' '.(! isset($object->name)?'NULL':"'".$db->escape($object->name)."'").',';
 $sql1 .= ''.$id;
 $sql1 .= ')';
-
 // dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 	$resql1 = $db->query($sql1);
 	if (! $resql1) {
 		$error ++;
 		setEventMessage($db->lasterror(), 'errors');
 	} else {
-	$db->rollback();
+	$db->commit();
 			setEventMessage($db->lasterror(), 'errors');
 		}
 }
@@ -308,7 +308,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 	print $form->select_thirdparty_list(GETPOST('fk_owner'),'fk_owner');
 	print '</td>';
 	print '</tr>';
-	
+
 	// Property parent
 	if ($object->type_id!='6') {
 		print '<tr>';
@@ -318,7 +318,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 		print '</td>';
 		print '</tr>';
 	}
-	
+
 	// Address
 	print '<tr>';
 	print '<td>'.fieldLabel('Address','address',0).'</td>';
@@ -365,18 +365,18 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 	print '<td>';
 	print $formcompany->select_ziptown(GETPOST('zipcode', 'alpha'), 'zipcode', array (
 			'town',
-			'selectcountry_id' 
+			'selectcountry_id'
 	), 6);
 	print '</td>';
 	print '</tr>';
-	
+
 	// Town
 	print '<tr>';
 	print '<td>'.fieldLabel('Town','town',0).'</td>';
 	print '<td>';
 	print $formcompany->select_ziptown(GETPOST('town', 'alpha'), 'town', array (
 			'zipcode',
-			'selectcountry_id' 
+			'selectcountry_id'
 	));
 	print '</td>';
 	print '</tr>';
@@ -430,7 +430,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 		print $object->showOptionals($extrafields,'edit');
 	}
 
-/*	
+/*
 	// Public note
 	print '<tr>';
 	print '<td class="border" valign="top">'.fieldLabel('NotePublic','note_public',0).'</td>';
@@ -498,7 +498,7 @@ else
 			print '<input name="name" id="nameproperty" size="32" value="' . $object->name . '">';
 			print '</td>';
 			print '</tr>';
-			
+
             // Status
             print '<tr><td>'.fieldLabel('Status','statut',1).'</td><td>';
             print '<select class="flat" name="statut">';
@@ -514,7 +514,7 @@ else
             }
             print '</select>';
             print '</td></tr>';
-	
+
 			// Type property
 			print '<tr>';
 			print '<td>'.fieldLabel('TypeProperty','type_id',1).'</td><td>';
@@ -522,7 +522,7 @@ else
 			if ($user->admin)
 				print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"),1);
 			print "</td></tr>";
-			
+
 			// Owner
 			print '<tr>';
 			print '<td>'.fieldLabel('Owner','fk_owner',1).'</td>';
@@ -530,7 +530,7 @@ else
 			print $form->select_thirdparty_list($object->fk_owner,'fk_owner');
 			print '</td>';
 			print '</tr>';
-			
+
 			// Property
 			if ($object->type_id!='6') {
 				print '<tr>';
@@ -540,7 +540,7 @@ else
 				print '</td>';
 				print '</tr>';
 			}
-	
+
 			// Address
 			print '<tr>';
 			print '<td>'.fieldLabel('Address','address',0).'</td>';
@@ -585,12 +585,12 @@ else
 			print '<tr><td>'.fieldLabel('Zip','zipcode',0).'</td><td>';
 			print $formcompany->select_ziptown($object->zip, 'zipcode', array (
 					'town',
-					'selectcountry_id' 
+					'selectcountry_id'
 			), 6) . '</tr>';
 			print '<tr><td>'.fieldLabel('Town','town',0).'</td><td>';
 			print $formcompany->select_ziptown($object->town, 'town', array (
 					'zipcode',
-					'selectcountry_id' 
+					'selectcountry_id'
 			)) . '</td></tr>';
 
 			// Country
@@ -615,7 +615,7 @@ else
 			print '<td class="maxwidthonsmartphone">';
 			$targetarray=array('0' => $langs->trans("PropertyForRent"), '1' => $langs->trans("PropertyForSale"));
 			print $form->selectarray('target',$targetarray,GETPOST('target'));
-			print '</td></tr>';		
+			print '</td></tr>';
 
 			// Area
 			print '<tr>';
@@ -675,7 +675,7 @@ else
 
 			print '</form>';
 		} else {
-			
+
 			// Display property card
 			$object = new Immoproperty($db);
 			$result = $object->fetch($id);
@@ -709,11 +709,11 @@ else
 
 				print '<div class="fichecenter">';
 				print '<div class="fichehalfleft">';
-				
+
 				print '<div class="underbanner clearboth"></div>';
 				print '<table class="border tableforfield" width="100%">';
 
-/*				
+/*
 				print '<tr>';
 				print '<td class="titlefield">'.$langs->trans("NameProperty").'</td>';
 				print '<td>';
@@ -725,7 +725,7 @@ else
 				print '<td class="titlefield">'.$langs->trans("TypeProperty").'</td>';
 				print '<td>'.$object->type_label.'</td>';
 				print '</tr>';
-				
+
 				// Owner
 				print '<tr>';
 				print '<td>'.$langs->trans("Owner") . '</td>';
@@ -733,7 +733,7 @@ else
 				print $object->getNomUrlOwner(1);
 				print '</td>';
 				print '</tr>';
-				
+
 				if ($object->type_id!='6') {
 					print '<tr>';
 					print '<td><label for="fk_property">' . $langs->trans("PropertyParent") . '</label></td>';
@@ -795,7 +795,7 @@ else
 				print '</table>';
 				print '</div>';
 				print '<div class="fichehalfright"><div class="ficheaddleft">';
-		   
+
 				print '<div class="underbanner clearboth"></div>';
 				print '<table class="border tableforfield" width="100%">';
 
@@ -806,7 +806,7 @@ else
 
 				print '<tr>';
 				print '<td>'.$langs->trans("Target").'</td>';
-				if ($object->target == 0) $target = $langs->trans("PropertyForRent"); else $target = $langs->trans("PropertyForSale");  
+				if ($object->target == 0) $target = $langs->trans("PropertyForRent"); else $target = $langs->trans("PropertyForSale");
 				print '<td>'.$target.'</td>';
 				print '</tr>';
 
@@ -845,7 +845,7 @@ else
 
 				print "</table>\n";
 				print '</div>';
-				
+
 				print '</div></div>';
 				print '<div style="clear:both"></div>';
 
