@@ -135,6 +135,8 @@ if ($action == 'add' && $user->rights->immobilier->property->write) {
 			if ($ret < 0) $error++;
 
 			$id = $object->create($user);
+			
+			
             if ($id > 0)
             {
                 header("Location: " . $_SERVER["PHP_SELF"] . "?id=" . $id);
@@ -223,6 +225,34 @@ if ($action == 'update' && $user->rights->immobilier->property->write)
         header("Location: list.php");
         exit;
 	}
+}
+
+if ($action == 'makebuilding' ) {
+
+$error = 0;
+
+$db->begin();
+
+$result = $object->fetch($id);
+
+// todo debug insert into 
+
+$sql1 = 'INSERT INTO ' . MAIN_DB_PREFIX . 'immo_building as bu';
+$sql1 .= ' (bu.name , bu.fk_property)';
+$sql1 .= ' VALUES (';
+$sql1 .= ''.$object->name. ',';
+$sql1 .= ''.$id;
+$sql1 .= ')';
+
+// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
+	$resql1 = $db->query($sql1);
+	if (! $resql1) {
+		$error ++;
+		setEventMessage($db->lasterror(), 'errors');
+	} else {
+	$db->rollback();
+			setEventMessage($db->lasterror(), 'errors');
+		}
 }
 
 /*
@@ -640,6 +670,7 @@ else
 			print '<div class="center">';
 			print '<input type="submit" value="'.$langs->trans("Modify").'" name="bouton" class="button">';
 			print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="'.$langs->trans("Cancel").'" class="button" onclick="history.go(-1)" />';
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=makebuilding&id=' . $id . '">' . $langs->trans('BienPrincipal') . '</a></div>';
 			print '</div>';
 
 			print '</form>';

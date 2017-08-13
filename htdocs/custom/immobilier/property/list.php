@@ -92,7 +92,7 @@ $sql .= ",  l.statut, tp.label as type_property, co.label as country";
 $sql .= ", l.name as property_name, l.fk_owner, b.name as building_name, soc.nom as owner";
 $sql .= " FROM " . MAIN_DB_PREFIX . "immo_property as l";
 $sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'c_immo_type_property as tp ON tp.id = l.fk_type_property';
-$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immo_building as b ON b.rowid = l.fk_property';
+$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immo_building as b ON b.fk_property = l.fk_property';
 $sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as soc ON soc.rowid = l.fk_owner';
 $sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as co ON co.rowid = l.fk_pays';
 if ($action == 'building') {
@@ -220,7 +220,7 @@ if ($resql)
 				print '<td>' . stripslashes(nl2br($obj->type_property)) . '</td>';
 			}
 			if (! empty($arrayfields['b.name']['checked'])) {
-				print '<td>' . stripslashes(nl2br($obj->building)) . '</td>';
+				print '<td>' . stripslashes(nl2br($obj->building_name)) . '</td>';
 			}
 			if (! empty($arrayfields['soc.nom']['checked'])) {
 				//print '<td>' . stripslashes(nl2br($obj->owner)) . '</td>';
@@ -235,7 +235,7 @@ if ($resql)
 				print $propertystatic->LibStatut($obj->statut, 5);
 				print "</td>";
 			}
-
+/*
 			print '<td align="center">';
 			if ($user->admin) {
 				print '<a href="./list.php?action=delete&id=' . $obj->property_id . '">';
@@ -243,7 +243,7 @@ if ($resql)
 				print '</a>';
 			}
 			print '</td>' . "\n";
-
+*/
 			print "</tr>\n";
 				
 			$i ++;
