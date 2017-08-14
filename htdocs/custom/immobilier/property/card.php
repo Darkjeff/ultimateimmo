@@ -30,6 +30,8 @@ if (! $res)
 require_once '../core/lib/immobilier.lib.php';
 require_once '../class/immoproperty.class.php';
 require_once '../class/html.formimmobilier.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
@@ -255,6 +257,62 @@ $sql1 .= ')';
 		}
 }
 
+// Logo/Photo save
+                $dir     = $conf->societe->multidir_output[$object->entity]."/".$object->id."/logos";
+                $file_OK = is_uploaded_file($_FILES['photo']['tmp_name']);
+                if (GETPOST('deletephoto') && $object->photo)
+                {
+                    $fileimg=$dir.'/'.$object->logo;
+                    $dirthumbs=$dir.'/thumbs';
+                    dol_delete_file($fileimg);
+                    dol_delete_dir_recursive($dirthumbs);
+                }
+                if ($file_OK)
+                {
+                    if (image_format_supported($_FILES['photo']['name']) > 0)
+                    {
+                        dol_mkdir($dir);
+
+                        if (@is_dir($dir))
+                        {
+                            $newfile=$dir.'/'.dol_sanitizeFileName($_FILES['photo']['name']);
+                            $result = dol_move_uploaded_file($_FILES['photo']['tmp_name'], $newfile, 1);
+
+                            if (! $result > 0)
+                            {
+                                $errors[] = "ErrorFailedToSaveFile";
+                            }
+                            else
+                            {
+                                // Create small thumbs for company (Ratio is near 16/9)
+                                // Used on logon for example
+                                $imgThumbSmall = vignette($newfile, $maxwidthsmall, $maxheightsmall, '_small', $quality);
+
+                                // Create mini thumbs for company (Ratio is near 16/9)
+                                // Used on menu or for setup page for example
+                                $imgThumbMini = vignette($newfile, $maxwidthmini, $maxheightmini, '_mini', $quality);
+                            }
+                        }
+                    }
+                    else
+					{
+                        $errors[] = "ErrorBadImageFormat";
+                    }
+                }
+                else
+              {
+					switch($_FILES['photo']['error'])
+					{
+					    case 1: //uploaded file exceeds the upload_max_filesize directive in php.ini
+					    case 2: //uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the html form
+					      $errors[] = "ErrorFileSizeTooLarge";
+					      break;
+      					case 3: //uploaded file was only partially uploaded
+					      $errors[] = "ErrorFilePartiallyUploaded";
+					      break;
+					}
+                }
+
 /*
  * View
  */
@@ -421,6 +479,16 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 	print '<input name="numberofpieces" id="numberofpieces" size="5" value="' . GETPOST('numberofpieces') . '">';
 	print '</td>';
 	print '</tr>';
+	
+	// Ajout du logo
+        print '<tr class="hideonsmartphone">';
+        print '<td>'.fieldLabel('Logo','photoinput').'</td>';
+        print '<td colspan="3">';
+        print '<input class="flat" type="file" name="photo" id="photoinput" />';
+        print '</td>';
+        print '</tr>';
+	
+	
 
 	// Other attributes
 	$parameters=array();
@@ -822,6 +890,24 @@ else
 				print '<td>'.$langs->trans("NumberOfPieces").'</td>';
 				print '<td>'.$object->numberofpieces.'</td>';
 				print '</tr>';
+				
+				 // Logo
+            print '<tr class="hideonsmartphone">';
+            print '<td>'.fieldLabel('Logo','photoinput').'</td>';
+            print '<td colspan="3">';
+            if ($object->logo) print $form->showphoto('societe',$object);
+            $caneditfield=1;
+            if ($caneditfield)
+            {
+                if ($object->logo) print "<br>\n";
+                print '<table class="nobordernopadding">';
+                if ($object->logo) print '<tr><td><input type="checkbox" class="flat photodelete" name="deletephoto" id="photodelete"> '.$langs->trans("Delete").'<br><br></td></tr>';
+                //print '<tr><td>'.$langs->trans("PhotoFile").'</td></tr>';
+                print '<tr><td><input type="file" class="flat" name="photo" id="photoinput"></td></tr>';
+                print '</table>';
+            }
+            print '</td>';
+            print '</tr>';
 
 				// Other attributes
 				$parameters=array();
