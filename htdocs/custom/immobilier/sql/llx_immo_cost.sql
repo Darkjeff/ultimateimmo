@@ -1,5 +1,5 @@
-﻿-- ===================================================================
--- Copyright (C) 2016		Olivier Geffroy      <jeff@jeffinfo.com>
+-- ===================================================================
+-- Copyright (C) 2016-2017		Olivier Geffroy      <jeff@jeffinfo.com>
 -- Copyright (C) 2016-2017	Alexandre Spangaro   <aspangaro@zendsi.com>
 --
 -- This program is free software; you can redistribute it and/or modify
