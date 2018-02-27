@@ -189,7 +189,8 @@ if ($action == 'addall')
 			$monMontant = $maLigneCourante[3];
 			$monLoyer = $maLigneCourante[4];
 			$monCharges = $maLigneCourante[5];
-			$monTVA = $maLigneCourante[6];
+			$monTVA = $maLigneCourante[7];
+			$monOwner = $maLigneCourante[6];
 			
 			// main info loyer
 			$receipt->name = GETPOST('name', 'alpha');
@@ -201,7 +202,7 @@ if ($action == 'addall')
 			$receipt->fk_contract = $monId;
 			$receipt->fk_property = $monLocal;
 			$receipt->fk_renter = $monLocataire;
-			$receipt->fk_owner = $user->id;
+			$receipt->fk_owner = $monOwner;
 			If ($monTVA == Oui) {
 			$receipt->amount_total = $monMontant * 1.2;
 			$receipt->vat = $monMontant * 0.2;}
@@ -409,7 +410,8 @@ elseif ($action == 'createall')
 		/*
 		 * List agreement
 		 */
-		$sql = "SELECT c.rowid as reference, loc.nom as nom, l.address  , l.name as local, loc.statut as statut, c.montant_tot as total, c.loyer , c.charges, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.tva";
+		$sql = "SELECT c.rowid as reference, loc.nom as nom, l.address  , l.name as local, loc.statut as statut, c.montant_tot as total,";
+		$sql .= "c.loyer , c.charges, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.tva, l.fk_owner";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_renter loc";
 		$sql .= " , " . MAIN_DB_PREFIX . "immo_contrat as c";
 		$sql .= " , " . MAIN_DB_PREFIX . "immo_property as l";
@@ -427,11 +429,12 @@ elseif ($action == 'createall')
 			print '<td>' . $langs->trans('Property') . '</td>';
 			print '<td>' . $langs->trans('Nomlocal') . '</td>';
 			print '<td>' . $langs->trans('Renter') . '</td>';
-			print '<td>' . $langs->trans('Renter') . '</td>';
+			print '<td>' . $langs->trans('NameRenter') . '</td>';
 			print '<td align="right">' . $langs->trans('AmountTC') . '</td>';
 			print '<td align="right">' . $langs->trans('Rent') . '</td>';
 			print '<td align="right">' . $langs->trans('Charges') . '</td>';
 			print '<td align="right">' . $langs->trans('VATIsUsed') . '</td>';
+			print '<td align="right">' . $langs->trans('nameowner') . '</td>';
 			print '<td align="right">' . $langs->trans('Select') . '</td>';
 			print "</tr>\n";
 			
@@ -453,11 +456,12 @@ elseif ($action == 'createall')
 					print '<td align="right">' . price($objp->loyer) . '</td>';
 					print '<td align="right">' . price($objp->charges) . '</td>';
 					print '<td align="right">' . yn($objp->tva) . '</td>';
+					print '<td align="right">' . $objp->fk_owner . '</td>';
 					
 					// Colonne choix contrat
 					print '<td align="center">';
 					
-					print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->reference . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->loyer . '_' . $objp->charges . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
+					print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->reference . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->loyer . '_' . $objp->charges . '_' . $objp->fk_owner . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
 					print '</td>';
 					print '</tr>';
 					
