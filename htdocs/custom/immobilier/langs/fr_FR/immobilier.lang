@@ -176,4 +176,7 @@ Amount=Montant
 Comment=Commentaire
 Payments=Paiements
 NewPayment=Nouveau Paiement
+RenterCost=Charges Locataires
+payed=payé 
+StatisticsCost=Statistique charges
 
