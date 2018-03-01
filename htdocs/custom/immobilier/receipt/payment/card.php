@@ -172,7 +172,113 @@ if ($action == 'addall') {
 /*
  * View
  */
+ 
 
+ // Add realtime total information
+ /*
+		if (! empty($conf->use_javascript_ajax))
+		{
+			print "\n".'<script type="text/javascript" language="javascript">';
+			print '$(document).ready(function () {
+            			setPaiementCode();
+
+            			$("#selectpaiementcode").change(function() {
+            				setPaiementCode();
+            			});
+
+            			function setPaiementCode()
+            			{
+            				var code = $("#selectpaiementcode option:selected").val();
+
+                            if (code == \'CHQ\' || code == \'VIR\')
+            				{
+            					if (code == \'CHQ\')
+			                    {
+			                        $(\'.fieldrequireddyn\').addClass(\'fieldrequired\');
+			                    }
+            					if ($(\'#fieldchqemetteur\').val() == \'\')
+            					{
+            						var emetteur = ('.$facture->type.' == '.Facture::TYPE_CREDIT_NOTE.') ? \''.dol_escape_js(dol_escape_htmltag($conf->global->MAIN_INFO_SOCIETE_NOM)).'\' : jQuery(\'#thirdpartylabel\').val();
+            						$(\'#fieldchqemetteur\').val(emetteur);
+            					}
+            				}
+            				else
+            				{
+            					$(\'.fieldrequireddyn\').removeClass(\'fieldrequired\');
+            					$(\'#fieldchqemetteur\').val(\'\');
+            				}
+            			}
+
+						function _elemToJson(selector)
+						{
+							var subJson = {};
+							$.map(selector.serializeArray(), function(n,i)
+							{
+								subJson[n["name"]] = n["value"];
+							});
+
+							return subJson;
+						}
+						function callForResult(imgId)
+						{
+							var json = {};
+							var form = $("#payment_form");
+
+							json["invoice_type"] = $("#invoice_type").val();
+            				json["amountPayment"] = $("#amountpayment").attr("value");
+							json["amounts"] = _elemToJson(form.find("input.amount"));
+							json["remains"] = _elemToJson(form.find("input.remain"));
+
+							if (imgId != null) {
+								json["imgClicked"] = imgId;
+							}
+
+							$.post("'.DOL_URL_ROOT.'/compta/ajaxpayment.php", json, function(data)
+							{
+								json = $.parseJSON(data);
+
+								form.data(json);
+
+								for (var key in json)
+								{
+									if (key == "result")	{
+										if (json["makeRed"]) {
+											$("#"+key).addClass("error");
+										} else {
+											$("#"+key).removeClass("error");
+										}
+										json[key]=json["label"]+" "+json[key];
+										$("#"+key).text(json[key]);
+									} else {console.log(key);
+										form.find("input[name*=\""+key+"\"]").each(function() {
+											$(this).attr("value", json[key]);
+										});
+									}
+								}
+							});
+						}
+						$("#payment_form").find("input.amount").change(function() {
+							callForResult();
+						});
+						$("#payment_form").find("input.amount").keyup(function() {
+							callForResult();
+						});
+			';
+
+			print '	});'."\n";
+
+			//Add js for AutoFill
+			print ' $(document).ready(function () {';
+			print ' 	$(".AutoFillAmout").on(\'click touchstart\', function(){
+							$("input[name="+$(this).data(\'rowname\')+"]").val($(this).data("value")).trigger("change");
+						});';
+			print '	});'."\n";
+
+			print '	</script>'."\n";
+		}
+ 
+ */
+ 
 $form = new Form($db);
 
 llxHeader();
