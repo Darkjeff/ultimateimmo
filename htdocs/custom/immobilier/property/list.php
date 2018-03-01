@@ -244,6 +244,7 @@ if ($resql)
 			}
 			print '</td>' . "\n";
 */
+			print '<td></td>';
 			print "</tr>\n";
 				
 			$i ++;
