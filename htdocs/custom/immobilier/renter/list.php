@@ -141,7 +141,7 @@ if ($resql)
 	if (! empty($arrayfields['s.tel1']['checked']))		print_liste_field_titre($arrayfields['s.tel1']['label'], $_SERVER["PHP_SELF"],"s.tel1","",$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['s.tel2']['checked']))			print_liste_field_titre($arrayfields['s.tel2']['label'], $_SERVER["PHP_SELF"],"s.tel2", "", $param,'align="left"',$sortfield,$sortorder);
 	if (! empty($arrayfields['s.mail']['checked']))	print_liste_field_titre($arrayfields['s.mail']['label'],$_SERVER["PHP_SELF"],'s.mail','',$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['s.statut']['checked']))		print_liste_field_titre($arrayfields['s.statut']['label'],$_SERVER["PHP_SELF"],'s.statut','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['s.statut']['checked']))		print_liste_field_titre($arrayfields['s.statut']['label'],$_SERVER["PHP_SELF"],'s.statut','',$param,'align="right"',$sortfield,$sortorder);
 	if (! empty($arrayfields['s.owner']['checked']))		print_liste_field_titre($arrayfields['s.owner']['label'],$_SERVER["PHP_SELF"],'s.owner','',$param,'',$sortfield,$sortorder);
 	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="right"',$sortfield,$sortorder,'maxwidthsearch ');
 	print "</tr>\n";
@@ -201,10 +201,7 @@ if ($resql)
 			}
 			if (! empty($arrayfields['s.statut']['checked'])) {
 				print '<td align="right" nowrap="nowrap">';
-				print $renterstatic->LibStatut($obj->statut, 5);
-				print "</td>";
-			
-				print '<td>' . stripslashes(nl2br($obj->statut)) . '</td>';
+				print $renterstatic->LibStatut($obj->statut, 5) . '</td>';
 			}
 			if (! empty($arrayfields['s.owner']['checked'])) {
 				print '<td>' . stripslashes(nl2br($obj->owner)) . '</td>';
