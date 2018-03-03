@@ -1,4 +1,4 @@
-﻿# Dolibarr language file - fr_FR - immobilier
+# Dolibarr language file - fr_FR - immobilier
 CHARSET=UTF-8
 
 # Admin
@@ -121,6 +121,7 @@ DatePayment=Date de paiement
 # Costs
 MenuNewRentalLoad=Nouvelle charge
 NewRentalLoad=Nouvelle charge locative
+ListCosts=Liste des charges
 
 # Other
 Estate=Immobilier
