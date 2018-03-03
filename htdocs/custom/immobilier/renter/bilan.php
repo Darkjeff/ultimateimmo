@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /* Copyright (C) 2013-2016 Olivier Geffroy		<jeff@jeffinfo.com>
  * Copyright (C) 2015-2016 Alexandre Spangaro	<aspangaro@zendsi.com>
  *
@@ -101,15 +101,10 @@ if ($result) {
 	$objp2 = $db->fetch_object ( $result2 );
 	$objp3 = $db->fetch_object ( $result3 );
 
-	$var = ! $var;
-
-	$var = True;
 	while ( $i < min ( $num_lignes, $limit ) )
 	{
 		$objp = $db->fetch_object ( $result );
-		$var = ! $var;
-		print "<tr $bc[$var]>";
-
+		print '<tr class="oddeven">';
 		print '<td>' . dol_print_date ( $db->jdate ( $objp->date ), 'day' ) . '</td>';
 		print '<td align="right">' . price($objp->debit) . '</td>';
 		print '<td align="right">' . price($objp->credit) . '</td>';
@@ -120,7 +115,7 @@ if ($result) {
 	}
 
 	// Total
-	print "<tr $bc[$var]>";
+	print '<tr class="oddeven">';
 	print '<td>' . $langs->trans("Total") . '</td>';
 	print '<td align="right">' . price($objp2->debit) . '</td>';
 	print '<td align="right">' . price($objp3->credit) . '</td>';
