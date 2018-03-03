@@ -165,15 +165,12 @@ if ($resql)
 
 	print "</tr>\n";
 
-	$var = true;
-
 	$rentstatic = new Rent($db);
 	$propertystatic = new Immoproperty($db);
 
 	if ($num > 0)
 	{
         $i=0;
-    	$var=true;
 		while ( $i < min($num, $limit) ) 
 		{
 			$obj = $db->fetch_object($resql);
@@ -185,8 +182,7 @@ if ($resql)
 				$code_statut = 'color:blue';
 			}
 
-			$var = ! $var;
-			print "<tr ".$bc[$var].">";
+			print '<tr class="oddeven">';
 
 			if (! empty($arrayfields['c.rowid']['checked'])) {
 				$rentstatic->id = $obj->contract_id;
@@ -233,7 +229,7 @@ if ($resql)
 	}
 	else
 	{
-		print '<tr '.$bc[false].'>'.'<td colspan="9" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
+		print '<tr class="oddeven">'.'<td colspan="9" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
 	}
 	
 	$db->free($resql);
