@@ -31,7 +31,7 @@ require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 dol_include_once('/immobilier/class/immoproperty.class.php');
 dol_include_once('/core/lib/company.lib.php');
 
-$langs->load("immobilier@immobilier");
+$langs->loadLangs(array("immobilier@immobilier","companies"));
 
 $id = GETPOST('id', 'int');
 $rowid = GETPOST('rowid', 'int');
@@ -152,7 +152,7 @@ if ($resql)
 	if (! empty($arrayfields['tp.label']['checked']))		print_liste_field_titre($arrayfields['tp.label']['label'],$_SERVER["PHP_SELF"],'tp.label','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['b.name']['checked']))		print_liste_field_titre($arrayfields['b.name']['label'],$_SERVER["PHP_SELF"],'b.name','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['soc.nom']['checked']))		print_liste_field_titre($arrayfields['soc.nom']['label'],$_SERVER["PHP_SELF"],'soc.nom','',$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['l.statut']['checked']))		print_liste_field_titre($arrayfields['l.statut']['label'],$_SERVER["PHP_SELF"],'l.statut','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['l.statut']['checked']))		print_liste_field_titre($arrayfields['l.statut']['label'],$_SERVER["PHP_SELF"],'l.statut','',$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="right"',$sortfield,$sortorder,'maxwidthsearch ');
 	print "</tr>\n";
 
