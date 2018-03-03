@@ -69,7 +69,6 @@ print '<tr><td valign="top" width="30%" class="notopnoleft">';
 
 $y = $year_current;
 
-$var = true;
 print '<table class="noborder" width="100%">';
 print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
@@ -122,7 +121,7 @@ if ($resql) {
 		
 		$row = $db->fetch_row ( $resql );
 		
-		print '<tr><td>' . $row [0] . '</td>';
+		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td align="right">' . $row [1] . '</td>';
 		print '<td align="right">' . $row [2] . '</td>';
 		print '<td align="right">' . $row [3] . '</td>';
@@ -197,7 +196,7 @@ if ($resql) {
 		
 		$row = $db->fetch_row ( $resql );
 		
-		print '<tr><td>' . $row [0] . '</td>';
+		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td align="right">' . $row [1] . '</td>';
 		print '<td align="right">' . $row [2] . '</td>';
 		print '<td align="right">' . $row [3] . '</td>';
@@ -315,8 +314,7 @@ print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 foreach( $value_array as $key=>$val) {
 
-
-	print '<tr><td>' . $key. '</td>';
+	print '<tr class="oddeven"><td>' . $key. '</td>';
 	print '<td align="right">' . $val[1] . '</td>';
 	print '<td align="right">' . $val[2] . '</td>';
 	print '<td align="right">' . $val[3] . '</td>';
@@ -337,15 +335,6 @@ print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr>';
-
-
-
-
-
-
-
-
-
 
 
 print '<tr><td colspan=2>';
@@ -402,7 +391,7 @@ if ($resql) {
 		
 		$row = $db->fetch_row ( $resql );
 		
-		print '<tr><td>' . $row [0] . '</td>';
+		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td align="right">' . $row [1] . '</td>';
 		print '<td align="right">' . $row [2] . '</td>';
 		print '<td align="right">' . $row [3] . '</td>';
@@ -557,7 +546,7 @@ print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
 foreach( $value_array as $key=>$val) {
 
 
-	print '<tr><td>' . $key. '</td>';
+	print '<tr class="oddeven"><td>' . $key. '</td>';
 	print '<td align="right">' . $val[1] . '</td>';
 	print '<td align="right">' . $val[2] . '</td>';
 	print '<td align="right">' . $val[3] . '</td>';
@@ -637,7 +626,7 @@ if ($resql) {
 		
 		$row = $db->fetch_row ( $resql );
 		
-		print '<tr><td>' . $row [0] . '</td>';
+		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td align="right">' . $row [1] . '</td>';
 		print '<td align="right">' . $row [2] . '</td>';
 		print '<td align="right">' . $row [3] . '</td>';
@@ -829,7 +818,7 @@ print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
 foreach( $value_array as $key=>$val) {
 
 
-	print '<tr><td>' . $key. '</td>';
+	print '<tr class="oddeven"><td>' . $key. '</td>';
 	print '<td align="right">' . $val[1] . '</td>';
 	print '<td align="right">' . $val[2] . '</td>';
 	print '<td align="right">' . $val[3] . '</td>';
@@ -850,15 +839,6 @@ print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr>';
-
-
-
-
-
-
-
-
-
 
 print '</td></tr></table>';
 
