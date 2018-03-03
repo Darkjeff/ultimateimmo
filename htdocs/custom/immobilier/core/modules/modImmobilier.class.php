@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /* Copyright (C) 2013-2016 Olivier Geffroy    <jeff@jeffinfo.com>
  * Copyright (C) 2015-2016 Alexandre Spangaro <aspangaro@zendsi.com>
  *
