@@ -128,7 +128,7 @@ if ($resql)
     print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
     print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 
-	$title = $langs->trans("ListRenter");
+	$title = $langs->trans("ListRenters");
 	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $params, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_renter');
 
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
