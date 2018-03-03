@@ -256,9 +256,9 @@ if ($resql)
 	if (! empty($arrayfields['ll.name']['checked']))		print_liste_field_titre($arrayfields['ll.name']['label'], $_SERVER["PHP_SELF"],"ll.name", "", $param,'align="left"',$sortfield,$sortorder);
 	if (! empty($arrayfields['t.name']['checked']))			print_liste_field_titre($arrayfields['t.name']['label'],$_SERVER["PHP_SELF"],'t.name','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['t.echeance']['checked']))		print_liste_field_titre($arrayfields['t.echeance']['label'],$_SERVER["PHP_SELF"],'t.echeance','',$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['t.amount_total']['checked']))	print_liste_field_titre($arrayfields['t.amount_total']['label'],$_SERVER["PHP_SELF"],'t.amount_total','',$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['t.paiepartiel']['checked']))	print_liste_field_titre($arrayfields['t.paiepartiel']['label'],$_SERVER["PHP_SELF"],'t.paiepartiel','',$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['t.paye']['checked']))			print_liste_field_titre($arrayfields['t.paye']['label'],$_SERVER["PHP_SELF"],'t.paye','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['t.amount_total']['checked']))	print_liste_field_titre($arrayfields['t.amount_total']['label'],$_SERVER["PHP_SELF"],'t.amount_total','',$param,'align="right"',$sortfield,$sortorder);
+	if (! empty($arrayfields['t.paiepartiel']['checked']))	print_liste_field_titre($arrayfields['t.paiepartiel']['label'],$_SERVER["PHP_SELF"],'t.paiepartiel','',$param,'align="right"',$sortfield,$sortorder);
+	if (! empty($arrayfields['t.paye']['checked']))			print_liste_field_titre($arrayfields['t.paye']['label'],$_SERVER["PHP_SELF"],'t.paye','',$param,'align="right"',$sortfield,$sortorder);
 	if (! empty($arrayfields['soc.nom']['checked']))		print_liste_field_titre($arrayfields['soc.nom']['label'],$_SERVER["PHP_SELF"],'soc.nom','',$param,'',$sortfield,$sortorder);
 	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="right"',$sortfield,$sortorder,'maxwidthsearch ');
 	print "</tr>\n";
