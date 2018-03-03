@@ -176,15 +176,12 @@ if ($resql)
 
 	print "</tr>\n";
 
-	$var = true;
-
 	$propertystatic = new Immoproperty($db);
 	$thirdparty_static = new Societe($db);
 
 	if ($num > 0)
 	{
         $i=0;
-    	$var=true;
 		while ( $i < min($num, $limit) ) 
 		{
 			$obj = $db->fetch_object($resql);
@@ -196,8 +193,7 @@ if ($resql)
 				$code_statut = 'color:blue';
 			}
 
-			$var = ! $var;
-			print "<tr ".$bc[$var].">";
+			print '<tr class="oddeven">';
 
 			if (! empty($arrayfields['l.name']['checked'])) {
 				$propertystatic->id = $obj->property_id;
