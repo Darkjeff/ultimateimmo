@@ -194,8 +194,8 @@ if ($resql)
 	if (! empty($arrayfields['t.rowid']['checked']))		print_liste_field_titre($arrayfields['t.rowid']['label'], $_SERVER["PHP_SELF"],"t.rowid","",$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['t.label']['checked']))			print_liste_field_titre($arrayfields['t.label']['label'], $_SERVER["PHP_SELF"],"t.label","",$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['ll.name']['checked']))		print_liste_field_titre($arrayfields['ll.name']['label'], $_SERVER["PHP_SELF"],"ll.name", "", $param,'align="left"',$sortfield,$sortorder);
-	if (! empty($arrayfields['t.amount']['checked']))			print_liste_field_titre($arrayfields['t.amount']['label'],$_SERVER["PHP_SELF"],'t.amount','',$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['t.datec']['checked']))		print_liste_field_titre($arrayfields['t.datec']['label'],$_SERVER["PHP_SELF"],'t.datec','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['t.amount']['checked']))			print_liste_field_titre($arrayfields['t.amount']['label'],$_SERVER["PHP_SELF"],'t.amount','',$param,'align="right"',$sortfield,$sortorder);
+	if (! empty($arrayfields['t.datec']['checked']))		print_liste_field_titre($arrayfields['t.datec']['label'],$_SERVER["PHP_SELF"],'t.datec','',$param,'align="right"',$sortfield,$sortorder);
 	if (! empty($arrayfields['soc.nom']['checked']))		print_liste_field_titre($arrayfields['soc.nom']['label'],$_SERVER["PHP_SELF"],'soc.nom','',$param,'',$sortfield,$sortorder);
 	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="right"',$sortfield,$sortorder,'maxwidthsearch ');
 	print "</tr>\n";
