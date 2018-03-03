@@ -66,9 +66,8 @@ print '<tr><td valign="top" width="30%" class="notopnoleft">';
 
 $y = $year_current;
 
-$var = true;
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=250>'.$langs->trans("Type").'</td>';
+print '<tr class="liste_titre oddeven"><td width=250>'.$langs->trans("Type").'</td>';
 print '<td align="center">'.$langs->trans("Building").'</td>';
 print '<td align="center">'.$langs->trans("January").'</td>';
 print '<td align="center">'.$langs->trans("February").'</td>';
@@ -119,7 +118,7 @@ if ($resql) {
 		
 		$row = $db->fetch_row ( $resql );
 		
-		print '<tr><td>' . $row [0] . '</td>';
+		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td align="right">' . $row [1] . '</td>';
 		print '<td align="right">' . $row [2] . '</td>';
 		print '<td align="right">' . $row [3] . '</td>';
@@ -145,7 +144,7 @@ print "</table>\n";
 
 print "<br>";
 
-print '<table class="noborder" width="100%">';
+print '<table class="noborder  oddeven" width="100%">';
 print '<tr class="liste_titre"><td width=350>'.$langs->trans("Total").'</td>';
 print '<td align="center">'.$langs->trans("January").'</td>';
 print '<td align="center">'.$langs->trans("February").'</td>';
@@ -191,7 +190,7 @@ if ($resql) {
 		
 		$row = $db->fetch_row ( $resql );
 		
-		print '<tr><td>' . $row [0] . '</td>';
+		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td align="right">' . $row [1] . '</td>';
 		print '<td align="right">' . $row [2] . '</td>';
 		print '<td align="right">' . $row [3] . '</td>';
