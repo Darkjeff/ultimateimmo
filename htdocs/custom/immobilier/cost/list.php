@@ -216,8 +216,6 @@ if ($resql)
 	print '</td>';
 
 	print "</tr>\n";
-
-	$var = true;
 	
 	$coststatic = new Immocost($db);
 	$thirdparty_static = new Societe($db);
@@ -226,7 +224,6 @@ if ($resql)
 	if ($num > 0)
 	{
         $i=0;
-    	$var=true;
 		while ( $i < min($num, $limit) ) 
 		{
 			$obj = $db->fetch_object($resql);
@@ -234,10 +231,7 @@ if ($resql)
 			$coststatic->id = $obj->reference;
 			//$receiptstatic->name = $obj->name;
 
-			$var = ! $var;
-			print "<tr " . $bc[$var] . ">";
-
-
+			print '<tr class="oddeven">';
 			
 			if (! empty($arrayfields['t.rowid']['checked'])) {
 				print '<td>' . $coststatic->getNomUrl(1)  ;
@@ -296,7 +290,7 @@ if ($resql)
 	}
 	else
 	{
-		print '<tr '.$bc[false].'>'.'<td colspan="9" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
+		print '<tr class="oddeven">'.'<td colspan="9" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
 	}
 	
 	$db->free($resql);
