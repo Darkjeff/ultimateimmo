@@ -17,7 +17,7 @@
  */
 
 /**
- * \file	immobilier/class/immoimmorenter.class.php
+ * \file	immobilier/class/immorenter.class.php
  * \ingroup immobilier
  * \brief	Manage renter object
  */
@@ -27,7 +27,7 @@ require_once (DOL_DOCUMENT_ROOT . "/contact/class/contact.class.php");
 /**
  * Renter Class
  */
-class Renter extends CommonObject {
+class ImmoRenter extends CommonObject {
 	var $db;
 	var $error;
 	var $errors = array ();
