@@ -45,7 +45,7 @@ $limit = $conf->liste_limit;
 /*
  * Bilan Renter
  */
-$object = new Renter($db);
+$object = new ImmoRenter($db);
 $object->fetch($id, $ref);
 
 llxheader ( '', $langs->trans("Renter").' | '.$langs->trans("Bilan"), '' );

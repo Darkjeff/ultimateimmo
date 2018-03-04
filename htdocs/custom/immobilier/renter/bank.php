@@ -43,7 +43,7 @@ $action = GETPOST("action");
 if (! $user->rights->immobilier->renter->read)
 	accessforbidden();
 
-$object = new Renter($db);
+$object = new ImmoRenter($db);
 if ($id > 0 || ! empty($ref))
 {
 	$result = $object->fetch($id, $ref);

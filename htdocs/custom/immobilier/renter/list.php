@@ -78,7 +78,7 @@ if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter.x") || GETP
  * View
  */
 $form = new Form($db);
-$object = new Renter($db);
+$object = new ImmoRenter($db);
 
 llxHeader('', $langs->trans("Renter"));
 
@@ -163,7 +163,7 @@ if ($resql)
 
 	print "</tr>\n";
 
-	$renterstatic = new Renter($db);
+	$renterstatic = new ImmoRenter($db);
 
 	if ($num > 0)
 	{

@@ -47,7 +47,7 @@ llxHeader('',$langs->trans("Renter").' | '.$langs->trans("Notes"));
 
 if ($id)
 {
-	$object = new Renter($db);
+	$object = new ImmoRenter($db);
 	$object->fetch($id);
 	$object->info($id);
 

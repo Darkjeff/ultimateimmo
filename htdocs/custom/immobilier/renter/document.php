@@ -55,7 +55,7 @@ $pagenext = $page + 1;
 if (! $sortorder) $sortorder="ASC";
 if (! $sortfield) $sortfield="name";
 
-$object = new Renter($db);
+$object = new ImmoRenter($db);
 $object->fetch($id, $ref);
 
 $upload_dir = $conf->immobilier->dir_output.'/renter/'.dol_sanitizeFileName($object->ref);

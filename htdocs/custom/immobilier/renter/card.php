@@ -52,7 +52,7 @@ $importfrom = GETPOST('importfrom', 'alpha');
  * Actions delete
 */
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->immobilier->renter->write) {
-	$renter = new Renter($db);
+	$renter = new ImmoRenter($db);
 	$result = $renter->remove($id);
 	
 	if ($result > 0) {
@@ -332,7 +332,7 @@ llxHeader('', $title);
 $form = new Form($db);
 $formcompany = new FormCompany($db);
 $formimmo = new FormImmobilier($db);
-$object = new Renter($db);
+$object = new ImmoRenter($db);
 
 /*
  * Action create
@@ -575,7 +575,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 } else {
 	// Affichage de la fiche locataire
 	if ($id) {
-		$object = new Renter($db);
+		$object = new ImmoRenter($db);
 		$result = $object->fetch($id);
 
 		if ($result) {
