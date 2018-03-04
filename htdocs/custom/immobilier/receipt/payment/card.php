@@ -450,8 +450,8 @@ if ($action == 'createall') {
 		
 		print '<br><table class="noborder" width="100%">';
 		print '<tr class="liste_titre">';
-		print '<td>' . $langs->trans('NameReceipt') . '</td>';
-		print '<td>' . $langs->trans('nomlocal') . '</td>';
+		print '<td>' . $langs->trans('ReceiptName') . '</td>';
+		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
 		print '<td align="right">' . $langs->trans('montant_tot') . '</td>';
 		print '<td align="right">' . $langs->trans('payed') . '</td>';
