@@ -54,6 +54,12 @@ function renter_prepare_head($object)
 	$hselected = $h;
 	$h ++;
 	
+	$head[$h][0] = dol_buildpath('/immobilier/renter/stats.php', 1) . '?id=' . $object->id;
+	$head[$h][1] = $langs->trans("Stats");
+	$head[$h][2] = 'stats';
+	$hselected = $h;
+	$h ++;
+	
 	require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
     $upload_dir = $conf->immobilier->dir_output . '/renter/' . $object->id;
     $nbFiles = count(dol_dir_list($upload_dir,'files',0,'','(\.meta|_preview\.png)$'));
