@@ -7,6 +7,7 @@
  * Copyright (C) 2005-2009 Regis Houssin        <regis@dolibarr.fr>
  * Copyright (C) 2008      Patrick Raguin       <patrick.raguin@auguria.net>
  * Copyright (C) 2010      Juanjo Menent        <jmenent@2byte.es>
+ * Copyright (C) 2018      Philippe Grand       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@
  */
 
 /**
- *	\file       htdocs/custom/immobillier/class/renter.class.php
+ *	\file       htdocs/custom/immobilier/class/renter.class.php
  *	\ingroup    immobilier
  *	\brief      File for renter class
  */
@@ -34,97 +35,185 @@ require_once(DOL_DOCUMENT_ROOT."/societe/class/societe.class.php");
 /**
  *	Class to manage third parties objects (customers, suppliers, prospects...)
  */
-class Patient extends Societe
+class Renter extends Societe
 {
-    var $db;
-    var $error;
-    var $errors=array();
-    var $element='societe';
-    var $table_element = 'societe';
-    var $ismultientitymanaged = 1;	// 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+    public $db;
+    public $error;
+    public $errors=array();
+    public $element='societe';
+    public $table_element = 'societe';
+	
+    /**
+     * 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+     * @var int
+     */
+    protected $ismultientitymanaged = 1;
 
-    var $id;
-    var $nom;
-    var $nom_particulier;
-    var $firstname;
-    var $particulier;
-    var $address;
-    var $zip;
-    var $town;
+	public $entity;
 
-    var $departement_id;
-    var $state_code;
-    var $departement;
+    public $id;
+	
+    /**
+     * Thirdparty name
+     * @var string
+     * @deprecated Use $name instead
+     * @see name
+     */
+    public $nom;
+	
+    public $nom_particulier;
+    public $firstname;
+    public $particulier;
+    public $address;
+    public $zip;
+    public $town;
 
-    var $country_id;
-    var $country_code;
-    var $country;
+    /**
+     * Id of department
+     * @var int
+     */
+    public $state_id;
+	
+	/**
+     * State code
+     * @var string
+     */
+    public $state_code;
+    public $state;
 
-    var $tel;
-    var $fax;
-    var $email;
-    var $url;
-    var $barcode;
+    public $country_id;
+    public $country_code;
+    public $country;
 
-    // 4 identifiants professionnels (leur utilisation depend du pays)
-    var $siren;		// IdProf1 - Deprecated
-    var $siret;		// IdProf2 - Deprecated
-    var $ape;		// IdProf3 - Deprecated
-    var $idprof1;	// IdProf1
-    var $idprof2;	// IdProf2
-    var $idprof3;	// IdProf3
-    var $idprof4;	// IdProf4
+   /**
+	 * Phone number
+	 * @var string
+	 */
+	public $phone;
+	
+	/**
+	 * Fax number
+	 * @var string
+	 */
+	public $fax;
+	
+	/**
+	 * Email
+	 * @var string
+	 */
+	public $email;
+	
+	/**
+	 * Skype username
+	 * @var string
+	 */
+	public $skype;
+	
+	/**
+	 * Webpage
+	 * @var string
+	 */
+	public $url;
+	
+	/**
+     * Barcode value
+     * @var string
+     */
+    public $barcode;
 
-    var $prefix_comm;
+    // 6 professional id (usage depends on country)
 
-    var $tva_assuj;
-    var $tva_intra;
+    /**
+     * Professional ID 1 (Ex: Siren in France)
+     * @var string
+     */
+    public $idprof1;
+
+	/**
+     * Professional ID 2 (Ex: Siret in France)
+     * @var string
+     */	
+    public $idprof2;	
+	
+	/**
+     * Professional ID 3 (Ex: Ape in France)
+     * @var string
+     */
+    public $idprof3;
+	
+	 /**
+     * Professional ID 4 (Ex: RCS in France)
+     * @var string
+     */
+    public $idprof4;
+
+	/**
+     * Professional ID 5
+     * @var string
+     */
+    public $idprof5;
+
+    /**
+     * Professional ID 6
+     * @var string
+     */
+    public $idprof6;	
+
+    public $prefix_comm;
+
+    public $tva_assuj;
+	
+	/**
+     * Intracommunitary VAT ID
+     * @var string
+     */
+    public $tva_intra;
 
     // Local taxes
-    var $localtax1_assuj;
-    var $localtax2_assuj;
+    public $localtax1_assuj;
+    public $localtax2_assuj;
 
-    var $capital;
-    var $typent_id;
-    var $typent_code;
-    var $effectif_id;
-    var $forme_juridique_code;
-    var $forme_juridique;
+    public $capital;
+    public $typent_id;
+    public $typent_code;
+    public $effectif_id;
+    public $forme_juridique_code;
+    public $forme_juridique;
 
-    var $remise_percent;
-    var $mode_reglement_id;
-    var $cond_reglement_id;
+    public $remise_percent;
+    public $mode_reglement_id;
+    public $cond_reglement_id;
 
-    var $client;					// 0=no customer, 1=customer, 2=prospect
-    var $prospect;					// 0=no prospect, 1=prospect
-    var $fournisseur;				// =0no supplier, 1=supplier
+    public $client;					// 0=no customer, 1=customer, 2=prospect
+    public $prospect;					// 0=no prospect, 1=prospect
+    public $fournisseur;				// =0no supplier, 1=supplier
 
-    var $code_client;
-    var $code_fournisseur;
-    var $code_compta;
-    var $code_compta_fournisseur;
+    public $code_client;
+    public $code_fournisseur;
+    public $code_compta;
+    public $code_compta_fournisseur;
 
-    var $note_public;
-    var $note_private;
+    public $note_public;
+    public $note_private;
     //! code statut prospect
-    var $stcomm_id;
-    var $statut_commercial;
+    public $stcomm_id;
+    public $statut_commercial;
 
-    var $price_level;
+    public $price_level;
 
-    var $datec;
-    var $date_update;
+    public $datec;
+    public $date_update;
 
-    var $commercial_id; //Id du commercial affecte
-    var $default_lang;
+    public $commercial_id; //Id du commercial affecte
+    public $default_lang;
 
-    var $canvas;
+    public $canvas;
 
-    var $import_key;
+    public $import_key;
 
-    var $logo;
-    var $logo_small;
-    var $logo_mini;
+    public $logo;
+    public $logo_small;
+    public $logo_mini;
 
 
     /**
@@ -132,7 +221,7 @@ class Patient extends Societe
 	 *
 	 *  @param		DoliDB		$db      Database handler
      */
-    function Owner($db)
+    public function __construct($db)
     {
         global $conf;
 
@@ -162,36 +251,40 @@ class Patient extends Societe
      */
     function update($id, $user='', $call_trigger=1, $allowmodcodeclient=0, $allowmodcodefournisseur=0)
     {
-        require_once(DOL_DOCUMENT_ROOT."/core/lib/functions2.lib.php");
+        global $langs,$conf,$hookmanager;
+        require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 
-        global $langs,$conf;
+		$error=0;
 
         dol_syslog(get_class($this)."::Update id=".$id." call_trigger=".$call_trigger." allowmodcodeclient=".$allowmodcodeclient." allowmodcodefournisseur=".$allowmodcodefournisseur);
 
         // Clean parameters
-        $this->id=$id;
-        $this->name=trim($this->name?$this->name:$this->nom);
-        $this->address=trim($this->address);
-        $this->zip=trim($this->zip);
-        $this->town=trim($this->ville);
-        $this->country_id=trim($this->country_id);
-        $this->state_id=trim($this->state_id);
-        $this->phone=trim($this->phone);
-        $this->fax=trim($this->fax);
-        $this->phone = preg_replace("/\s/","",$this->phone);
-        $this->phone = preg_replace("/\./","",$this->phone);
-        $this->fax = preg_replace("/\s/","",$this->fax);
-        $this->fax = preg_replace("/\./","",$this->fax);
-        $this->email=trim($this->email);
-        $this->url=$this->url?clean_url($this->url,0):'';
-        $this->idprof1=trim($this->idprof1);
-        $this->idprof2=trim($this->idprof2);
-        $this->idprof3=trim($this->idprof3);
-        $this->idprof4=trim($this->idprof4);
-        $this->prefix_comm=trim($this->prefix_comm);
+         $this->id			= $id;
+        $this->name			= $this->name?trim($this->name):trim($this->nom);
+         $this->address		= $this->address?trim($this->address):trim($this->address);
+        $this->zip			= $this->zip?trim($this->zip):trim($this->zip);
+        $this->town			= $this->town?trim($this->town):trim($this->town);
+        $this->state_id		= trim($this->state_id);
+        $this->country_id	= ($this->country_id > 0)?$this->country_id:0;
+        $this->phone		= trim($this->phone);
+        $this->phone		= preg_replace("/\s/","",$this->phone);
+        $this->phone		= preg_replace("/\./","",$this->phone);
+        $this->fax			= trim($this->fax);
+        $this->fax			= preg_replace("/\s/","",$this->fax);
+        $this->fax			= preg_replace("/\./","",$this->fax);
+        $this->email		= trim($this->email);
+        $this->skype		= trim($this->skype);
+        $this->url			= $this->url?clean_url($this->url,0):'';
+        $this->idprof1		= trim($this->idprof1);
+        $this->idprof2		= trim($this->idprof2);
+        $this->idprof3		= trim($this->idprof3);
+        $this->idprof4		= trim($this->idprof4);
+        $this->idprof5		= (! empty($this->idprof5)?trim($this->idprof5):'');
+        $this->idprof6		= (! empty($this->idprof6)?trim($this->idprof6):'');
+        $this->prefix_comm	= trim($this->prefix_comm);
 
-        $this->tva_assuj=trim($this->tva_assuj);
-        $this->tva_intra=dol_sanitizeFileName($this->tva_intra,'');
+        $this->tva_assuj	= trim($this->tva_assuj);
+        $this->tva_intra	= dol_sanitizeFileName($this->tva_intra,'');
 
         // Local taxes
         $this->localtax1_assuj=trim($this->localtax1_assuj);
