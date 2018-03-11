@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2013-2014  Florian Henry   	<florian.henry@open-concept.pro>
  * Copyright (C) 2015-2016	Alexandre Spangaro  <aspangaro@zendsi.com>
+ * Copyright (C) 2018		Philippe Grand  	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,14 +28,27 @@ require_once (DOL_DOCUMENT_ROOT . "/contact/class/contact.class.php");
 /**
  * Renter Class
  */
-class ImmoRenter extends CommonObject {
+class ImmoRenter extends CommonObject 
+{
 	var $db;
 	var $error;
 	var $errors = array ();
-	var $element = 'immorenter';
-	var $table_element = 'immo_renter';
+	
+	/**
+	 * @var string ID to identify managed object
+	 */
+	public $element = 'immorenter';
+	/**
+	 * @var string Name of table without prefix where object is stored
+	 */
+	public $table_element = 'immo_renter';
+	
 	var $id;
-	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	/**
+	 * @var int  Does immorenter support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	 */
+	protected $ismultientitymanaged = 1;
+	
 	var $nom;
 	var $prenom;
 	var $fonction;
@@ -57,11 +71,16 @@ class ImmoRenter extends CommonObject {
 	/**
 	 * Constructor
 	 *
-	 * @param DoliDb $db handler
+	 * @param DoliDb $db Database handler
 	 */
-	function __construct($db) {
+	public function __construct(DoliDB $db)
+	{
+		global $conf;
+
 		$this->db = $db;
-		return 1;
+
+		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID)) $this->fields['rowid']['visible']=0;
+		if (empty($conf->multicompany->enabled)) $this->fields['entity']['enabled']=0;
 	}
 
 	/**
@@ -463,7 +482,7 @@ class ImmoRenter extends CommonObject {
 		$sql .= " note=" . (isset($this->note) ? "'" . $this->note . "'" : "null") . ",";
 		$sql .= " fk_socpeople=" . (isset($this->fk_socpeople) ? $this->fk_socpeople : "null") . ", ";
 		$sql .= " fk_owner=" . (isset($this->fk_owner) ? $this->fk_owner : "null") . ", ";
-		$sql .= " date_birth=" . (! isset($this->date_birth) || dol_strlen($this->date_birth) == 0 ? "null" : "'" . $this->db->idate($this->date_birth) . "',");
+		$sql .= " date_birth=" . (! isset($this->date_birth) || dol_strlen($this->date_birth) == 0 ? "null" : "'" . $this->db->idate($this->date_birth) . "'"). ",";
 		$sql .= " place_birth=" . (isset($this->place_birth) ? "'" . $this->place_birth . "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 
@@ -527,6 +546,47 @@ class ImmoRenter extends CommonObject {
 			dol_syslog(get_class($this) . "::remove " . $this->error, LOG_ERR);
 			$this->db->rollback();
 			return - 1;
+		}
+	}
+	
+	/**
+	 *    Set link to a third party
+	 *
+	 *    @param     int	$thirdpartyid		Id of user to link to
+	 *    @return    int						1=OK, -1=KO
+	 */
+	function setThirdPartyId($thirdpartyid)
+	{
+		global $conf, $langs;
+
+		$this->db->begin();
+
+		// Remove link to third party onto any other members
+		if ($thirdpartyid > 0)
+		{
+			$sql = "UPDATE ".MAIN_DB_PREFIX."immo_renter SET fk_soc = null";
+			$sql.= " WHERE fk_soc = '".$thirdpartyid."'";
+			$sql.= " AND entity = ".$conf->entity;
+			dol_syslog(get_class($this)."::setThirdPartyId", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+		}
+
+		// Add link to third party for current member
+		$sql = "UPDATE ".MAIN_DB_PREFIX."immo_renter SET fk_soc = ".($thirdpartyid>0 ? $thirdpartyid : 'null');
+		$sql.= " WHERE rowid = ".$this->id;
+
+		dol_syslog(get_class($this)."::setThirdPartyId", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			$this->db->commit();
+			return 1;
+		}
+		else
+		{
+			$this->error=$this->db->error();
+			$this->db->rollback();
+			return -1;
 		}
 	}
 
