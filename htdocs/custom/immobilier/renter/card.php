@@ -166,7 +166,7 @@ if ($action == 'create_confirm' && $user->rights->immobilier->renter->write) {
 	if (! $_POST["cancel"]) {
 		$error = 0;
 		
-		$renter = new Renter($db);
+		$renter = new ImmoRenter($db);
 		
 		if ($importfrom == 'create') {
 			
@@ -456,7 +456,7 @@ if ($action == 'create' && $user->rights->immobilier->property->write) {
 	print '<tr><td class="titlefield">' . $langs->trans("ContactImportAsRenter") . '</td>';
 	print '<td>';
 	
-	$renter_static = new Renter($db);
+	$renter_static = new ImmoRenter($db);
 	$renter_static->fetchall('DESC', 's.rowid', '', 0);
 	$exclude_array = array ();
 	if (is_array($renter_static->lines) && count($renter_static->lines) > 0) {
