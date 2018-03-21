@@ -127,7 +127,7 @@ class pdf_quittance extends ModelePDFImmobilier {
 			$pdf->SetAutoPageBreak(1, 0);
 			
 			// On recupere les infos societe
-			$renter = new Renter($this->db);
+			$renter = new ImmoRenter($this->db);
 			$result = $renter->fetch($receipt->fk_renter);
 			
 			$owner = new Societe($this->db);
