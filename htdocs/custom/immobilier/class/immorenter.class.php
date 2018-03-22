@@ -144,22 +144,52 @@ class ImmoRenter extends CommonObject
     }
 
     /**
-     *  Return label for status given
-     *
-     *  @param	int		$statut        	Id status
-     *  @param  int		$mode          	0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label
-     *  @return string 			       	Label of the status
-     */
-   function LibStatut($statut) {
+	 *  Return the status
+	 *
+	 *  @param	int		$statut        	Id statut
+	 *  @param  int		$mode          	0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto, 6=Long label + Picto
+	 *  @return string 			       	Label of statut
+	 */
+	static function LibStatut($statut,$mode=0)
+	{
 		global $langs;
-		
 
-		if ($statut == 0)
-			return img_picto ( $langs->trans ( "Inactive" ), 'statut8' ) . ' ' . $langs->trans ( "Inactive" );
-		if ($statut == 1)
-			return img_picto ( $langs->trans ( "Active" ), 'statut4' ) . ' ' . $langs->trans ( "Active" );
-
-		return "Error, mode/status not found";
+		if ($mode == 0)
+		{
+			$prefix='';
+			if ($statut == 1) return $langs->trans('Enabled');
+			if ($statut == 0) return $langs->trans('Disabled');
+		}
+		if ($mode == 1)
+		{
+			if ($statut == 1) return $langs->trans('Enabled');
+			if ($statut == 0) return $langs->trans('Disabled');
+		}
+		if ($mode == 2)
+		{
+			if ($statut == 1) return img_picto($langs->trans('Enabled'),'statut4').' '.$langs->trans('Enabled');
+			if ($statut == 0) return img_picto($langs->trans('Disabled'),'statut5').' '.$langs->trans('Disabled');
+		}
+		if ($mode == 3)
+		{
+			if ($statut == 1) return img_picto($langs->trans('Enabled'),'statut4');
+			if ($statut == 0) return img_picto($langs->trans('Disabled'),'statut5');
+		}
+		if ($mode == 4)
+		{
+			if ($statut == 1) return img_picto($langs->trans('Enabled'),'statut4').' '.$langs->trans('Enabled');
+			if ($statut == 0) return img_picto($langs->trans('Disabled'),'statut5').' '.$langs->trans('Disabled');
+		}
+		if ($mode == 5)
+		{
+			if ($statut == 1) return $langs->trans('Enabled').' '.img_picto($langs->trans('Enabled'),'statut4');
+			if ($statut == 0) return $langs->trans('Disabled').' '.img_picto($langs->trans('Disabled'),'statut5');
+		}
+		if ($mode == 6)
+		{
+			if ($statut == 1) return $langs->trans('Enabled').' '.img_picto($langs->trans('Enabled'),'statut4');
+			if ($statut == 0) return $langs->trans('Disabled').' '.img_picto($langs->trans('Disabled'),'statut5');
+		}
 	}
 
 	

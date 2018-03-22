@@ -381,29 +381,35 @@ foreach ($extrafields->attribute_computed as $key => $val)
 }
 
 // Loop on record
-// --------------------------------------------------------------------
 $i=0;
 $totalarray=array();
 while ($i < min($num, $limit))
 {
 	$obj = $db->fetch_object($resql);
 	if (empty($obj)) break;		// Should not happen
-
+	$code_statut = '';
 	// Store properties in $object
 	$object->id = $obj->rowid;
 	foreach($object->fields as $key => $val)
 	{
 		if (isset($obj->$key)) $object->$key = $obj->$key;
 	}
-
-	// Show here line of result
 	print '<tr class="oddeven">';
+	
+	if (! empty($arrayfields['s.nom']['checked'])) 
+	{
+		print '<td align="left" style="' . $obj->nom . '">';
+		print '<a href="'.dol_buildpath('/immobilier/renter/card.php',1).'?id=' . $obj->rowid . '">' . img_object($langs->trans("ShowDetails"), "user") . ' ' . strtoupper($obj->nom) . '</a>';		
+		print '</td>';
+	}
+	
 	foreach($object->fields as $key => $val)
 	{
 		$align='';
 		if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
 		if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
-		if ($key == 'statut') $align.=($align?' ':'').'center';
+		if ($key == 'statut') $val=0;
+		if ($key == 'nom') $val=0;
 		if (! empty($arrayfields['s.'.$key]['checked']))
 		{
 			print '<td';
@@ -419,6 +425,24 @@ while ($i < min($num, $limit))
 			}
 		}
 	}
+	
+	if (! empty($arrayfields['s.statut']['checked'])) {
+		print '<td align="right" nowrap="nowrap">';
+		print $object->LibStatut($obj->statut, 5) . '</td>';
+	}
+	
+
+	print '<td align="center">';
+	if ($user->admin) {
+		print '<a href="./list.php?action=delete&id=' . $obj->id . '">';
+		print img_delete();
+		print '</a>';
+	}
+	print '</td>' . "\n";
+
+	print "</tr>\n";
+		
+	$i ++;
 	// Extra fields
 	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_print_fields.tpl.php';
 	// Fields from hook
