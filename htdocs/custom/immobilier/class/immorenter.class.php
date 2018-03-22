@@ -30,10 +30,6 @@ require_once (DOL_DOCUMENT_ROOT . "/contact/class/contact.class.php");
  */
 class ImmoRenter extends CommonObject 
 {
-	var $db;
-	var $error;
-	var $errors = array ();
-	
 	/**
 	 * @var string ID to identify managed object
 	 */
@@ -42,31 +38,84 @@ class ImmoRenter extends CommonObject
 	 * @var string Name of table without prefix where object is stored
 	 */
 	public $table_element = 'immo_renter';
-	
-	var $id;
 	/**
 	 * @var int  Does immorenter support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
-	protected $ismultientitymanaged = 1;
-	
-	var $nom;
-	var $prenom;
-	var $fonction;
-	var $tel1;
-	var $tel2;
-	var $mail;
-	var $note;
-	var $date_birth;
-	var $place_birth;
-	var $socid;
-	var $socname;
-	var $fk_socpeople;
-	var $fk_owner;
-	var $owner_name;
-	var $lines = array ();
-	var $tms;
-	// Statut show if the property is enabled '1' or not '0'
-	var $statut;
+	public $ismultientitymanaged = 0;
+	/**
+	 * @var int  Does immorenter support extrafields ? 0=No, 1=Yes
+	 */
+	public $isextrafieldmanaged = 1;
+	/**
+	 * @var string String with name of icon for immorenter. Must be the part after the 'object_' into object_immorenter.png
+	 */
+	public $picto = 'immorenter@immobilier';
+
+	/**
+	 *  'type' if the field format.
+	 *  'label' the translation key.
+	 *  'enabled' is a condition when the field must be managed.
+	 *  'visible' says if field is visible in list (Examples: 0=Not visible, 1=Visible on list and create/update/view forms, 2=Visible on list only. Using a negative value means field is not shown by default on list but can be selected for viewing)
+	 *  'notnull' is set to 1 if not null in database. Set to -1 if we must set data to null if empty ('' or 0).
+	 *  'index' if we want an index in database.
+	 *  'foreignkey'=>'tablename.field' if the field is a foreign key (it is recommanded to name the field fk_...).
+	 *  'position' is the sort order of field.
+	 *  'searchall' is 1 if we want to search in this field when making a search from the quick search button.
+	 *  'isameasure' must be set to 1 if you want to have a total on list for this field. Field type must be summable like integer or double(24,8).
+	 *  'help' is a string visible as a tooltip on field
+	 *  'comment' is not used. You can store here any text of your choice. It is not used by application.
+	 *  'default' is a default value for creation (can still be replaced by the global setup of default values)
+	 *  'showoncombobox' if field must be shown into the label of combobox
+	 */
+
+	/**
+	 * @var array  Array with all fields and their property. Do not use it as a static var. It may be modified by constructor.
+	 */
+	public $fields=array(
+		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'visible'=>-1, 'enabled'=>1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
+		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>-1, 'enabled'=>1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
+		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
+		'note' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>61, 'notnull'=>-1,),
+		'datec' => array('type'=>'datetime', 'label'=>'DateCreation', 'visible'=>-2, 'enabled'=>1, 'position'=>500, 'notnull'=>1,),
+		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'visible'=>-2, 'enabled'=>1, 'position'=>501, 'notnull'=>1,),
+		'fk_user_author' => array('type'=>'integer', 'label'=>'UserAuthor', 'visible'=>-2, 'enabled'=>1, 'position'=>510, 'notnull'=>1,),
+		'fk_user_mod' => array('type'=>'integer', 'label'=>'UserModif', 'visible'=>-2, 'enabled'=>1, 'position'=>511, 'notnull'=>-1,),
+		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'visible'=>-2, 'enabled'=>1, 'position'=>1000, 'notnull'=>-1,),
+		'statut' => array('type'=>'integer', 'label'=>'Status', 'visible'=>1, 'enabled'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
+		'nom' => array('type'=>'varchar(50)', 'label'=>'Nom', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>1, 'searchall'=>1,),
+		'prenom' => array('type'=>'varchar(50)', 'label'=>'Prenom', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>1, 'searchall'=>1,),
+		'civilite' => array('type'=>'varchar(6)', 'label'=>'Civilite', 'visible'=>1, 'enabled'=>1, 'position'=>41, 'notnull'=>1,),
+		'fk_socpeople' => array('type'=>'integer:Contact:contact/class/contact.class.php', 'label'=>'Contact', 'visible'=>1, 'enabled'=>1, 'position'=>51, 'notnull'=>-1,),
+		'fk_owner' => array('type'=>'integer', 'label'=>'Owner', 'visible'=>1, 'enabled'=>1, 'position'=>52, 'notnull'=>-1,),
+		'fonction' => array('type'=>'varchar(60)', 'label'=>'Fonction', 'visible'=>-1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1,),
+		'tel1' => array('type'=>'varchar(30)', 'label'=>'Telephone1', 'visible'=>-1, 'enabled'=>1, 'position'=>53, 'notnull'=>-1,),
+		'tel2' => array('type'=>'varchar(30)', 'label'=>'Telephone2', 'visible'=>-1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1,),
+		'mail' => array('type'=>'varchar(100)', 'label'=>'Email', 'visible'=>-1, 'enabled'=>1, 'position'=>55, 'notnull'=>-1,),
+		'date_birth' => array('type'=>'datetime', 'label'=>'DateNaissance', 'visible'=>-1, 'enabled'=>1, 'position'=>56, 'notnull'=>-1,),
+		'place_birth' => array('type'=>'varchar(100)', 'label'=>'LieuNaissance', 'visible'=>-1, 'enabled'=>1, 'position'=>57, 'notnull'=>-1,),
+	);
+	public $rowid;
+	public $entity;
+	public $fk_soc;
+	public $note;
+	public $datec;
+	public $tms;
+	public $fk_user_author;
+	public $fk_user_mod;
+	public $import_key;
+	public $statut;
+	public $nom;
+	public $prenom;
+	public $civilite;
+	public $fk_socpeople;
+	public $fk_owner;
+	public $fonction;
+	public $tel1;
+	public $tel2;
+	public $mail;
+	public $date_birth;
+	public $place_birth;
+
 	
 	/**
 	 * Constructor
