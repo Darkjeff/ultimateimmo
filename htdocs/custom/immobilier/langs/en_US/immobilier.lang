@@ -1,185 +1,53 @@
-# Dolibarr language file - en_US - immobilier
-CHARSET=UTF-8
+# Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Admin
-Module113050Name=Gestion Immobilière
-Module113050Desc=Gestion locative immobilière
-TypeCompteurDict=Immobilier - Type de compteur
-TypePropertyDict=Immobilier - Type de biens
-apa=Appartement
-loc=Local commercial
-gar=Garage
-hou=Maison individuel
-sho=Magasin
-bul=Immeuble
-ImmobilierSetup=Configuration du module gestion immobilière
-PublicSiteDesc=Dolibarr peut offrir une URL de page publique permettant d'afficher un site pour répertorier les annonces immobilières pour les visiteurs externes.
-EnablePublicSite=Activer le site accessible au public
-PublicSite=Site public
-IMMOBILIER_USE_GOOGLE=Utiliser google avec le module immobilier
-GoogleZoomLevel=Niveau de zoom par défaut (1 à 10)
-GOOGLE_API_SERVERKEY=Clé API (de type "Server key")
-ParametersForGoogleAPIv3Usage=Pour Google API %s V3
-KeepEmptyYoUsePublicQuotaOfAPI=Laisser vide pour utiliser le quota publique de cette API (sinon la clé peut être créée depuis la page https://code.google.com/apis/console/, "API Access" pour créer une "Server key" et "Services" pour activer l'API "%s")
-AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google, vous devez créer une clé depuis la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "Indentification" . Cliquer sur "Créer un clé" et choisir "Clé serveur" puis "Créer". Vous obtiendrez votre clé serveur.
-EnableAPI=Vous devez aussi activer les API pour votre compte Google. Pour cela, aller sur la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "API". Cliquer sur activer API pour "%s".  
-ExtraFieldsProperty=Attributs supplémentaires (biens)
+#
+# Generic
+#
 
-# Module
+# Module label 'ModuleImmobilierName'
+ModuleImmobilierName = Immobilier
+# Module description 'ModuleImmobilierDesc'
+ModuleImmobilierDesc = Immobilier description
 
-# Property
-PropertyCard=Fiche bien
-ListProperties=Liste des biens
-Properties=Biens
-Property=Bien
-ShowProperty=Voir bien
-PropertyParent=Bien parent
-NewProperty=Nouveau bien
-AddProperty=Ajouter bien
-DeleteProperty=Supprimer bien
-ConfirmDeleteProperty=Souhaitez vous vraiment supprimer ce bien ?
-TypeProperty=Type de bien
-NumberOfPieces=Nombre de pièces
-Area=Superficie
-NameProperty=Nom du bien
-Address=Adresse
-Zipcode=Code Postal
-Town=Ville
-Country=Pays
-Surface=Surface m²
-Building=Bâtiment
-ListBuilding=List of building
-Field=Terrain
-Staircase=Escalier
-Floor=Etage
-NumberOfDoor=N° de porte
-PropertyEnabled=Bien actif
-PropertyDisabled=Bien désactivé
-Diagnostic=Diagnostics
-DiagnosticsNecessary=Diagnostics nécessaires
-DPE=Diagnostic performance energétique
-SurfaceHabitable=Surface habitable (loi Boutin)
-ERNMT=Etat des risques naturels, miniers et technologiques (ERNMT)
-Plomb=Plomb
-DAPP=Diagnostic amiante des parties privatives (DAPP)
-BuildDate=Date de construction
-Target=Cible
-PropertyForSale=Vente
-PropertyForRent=Location
-Equipements=Equipements
+#
+# Admin page
+#
+ImmobilierSetup = Immobilier setup
+Settings = Settings
+ImmobilierSetupPage = Immobilier setup page
+IMMOBILIER_MYPARAM1 = My param 1
+IMMOBILIER_MYPARAM1Tooltip = My param 1 tooltip
+IMMOBILIER_MYPARAM2=My param 2
+IMMOBILIER_MYPARAM2Tooltip=My param 2 tooltip
 
-# Renter
-RenterCard=Fiche locataire
-ListRenters=Liste des locataires
-ShowRenter=Voir locataire
-SelectRenterCreationForm=Sélectionner le mode de création du locataire
-MenuActRenterNew=Nouveau locataire
-MenuActRenterNewFromContact=Nouveau depuis contact
-ContactImportAsStagiaire=Sélectionner le contact à importer
-CreateANewThirdPartyFromRenterForm=Créer un nouveau tiers
-CreateANewThirdPartyFromRenterFormInfo=Un tiers sera créé en reprenant les informations de ce formulaire
-CreateANewContactFromRenterForm=Créer un contact
-CreateANewContactFromRenterFormInfo=Un contact sera créé et associé au tiers et au locataire
-Renter=Locataire
-Renters=Locataires
-NewRenter=Nouveau locataire
-RentersList=Liste des locataires
-Civility=Civilité
-NomPrenom=Nom/Prénom
-Job=Fonction
-ContactImportAsRenter=Sélectionner le contact à importer
-PlaceBirth=Lieu de naissance
-Bilan=Situation
-RenterEnabled=Locataire actif
-RenterDisabled=Locataire désactivé
 
-# Rent
-RentCard=Fiche location
-Rent=Location
-Rents=Locations
-ListRents=Liste des locations
-NewRent=Nouvelle location
-DateBeginningLease=Début du bail
-Contracts=Contrats
-Contract=Contrat
-NewContract=Nouveau Contrat
-AmountHC=Loyer hors charges
-Charges=Charges
-AmountTC=Loyer charges comprises
-Caution=Caution
-Notice=Préavis
+#
+# About page
+#
+About = About
+ImmobilierAbout = About Immobilier
+ImmobilierAboutPage = Immobilier about page
 
-# Receipts
-ReceiptCard=Fiche quittance
-Receipt=Quittance
-Receipts=Quittances
-ReceiptName=Name of receipt
-NewReceipt=Nouvelle quittance
-ImmoReceipts=Quittances
-ListReceipts=Liste des quittances
-AllReceiptperContract=Générer les quittances
-DatePayment=Date de paiement
+#
+# Sample page
+#
+MyPageName = My page name
 
-# Costs
-MenuNewRentalLoad=Nouvelle charge
-NewRentalLoad=Nouvelle charge locative
-ListCosts=Liste des charges
-
-# Other
-Estate=Immobilier
-ParcImmobilier=Parc Immobilier
-Actif=Actif
-Out=Sorti
-History=Historique
-RentAndPayment=Loyers et paiements
-RentPerMonth=Loyer mensuel
-PaymentPerMonth=Encaissement mensuel
-CostAndCharges=Charges et frais
-CostPerMonth=Charges mensuel
-TypeCharge=Type de charges
-Tools=Outils
-Result=Revenu immobilier
-ReleverCompteur=Relevé compteur
-NomLoyer=Loyer mois annee
-Echeance=Date écheance
-Periode_du=Période du
-Periode_au=Période au
-Contrat_id=Réference contrat
-Local_id=Réference local
-Nomlocal=Nom local
-Locataire_id=reference locataire
-Montant_tot=total
-RentsByYear=Loyers par année
-RentalLoads=Charges locatives
-Charges=Paiment charge locative
-Charge_ex=Charge locative 
-GenererQuittance=Génerer une quittance
-ValidateRent=Valider les loyers
-Letter=Courrier
-NomContrat=Bail
-LoyerTotal=Montant du loyer
-EncoursLoyer=Encours Locataire
-Addnewrent=Ajouter un loyer
-Montant_ttc=Montant TTC
-CostPerSupplier=Cout par fournisseur
-ClassifyDispatch=Charge ventilée
-Nouveau_fournisseur=Nouveau fournisseur
-State=Etat
-AddANewCost=Ajouter une nouvelle charge
-m2=m²
-
-CreateCompteurForThisLocal=Créer un compteur pour ce local
-ListCompteurForThisBulding=Liste des compteurs pour ce local
-DateRelever=Date relevé
-IndexCompteur=Index du compteur
-ConsoCompteur=Consommation du compteur
-CommCharge=Détails des charges réels
-
-Amount=Montant
-Comment=Commentaire
-Payments=Paiements
-NewPayment=Nouveau Paiement
-RenterCost=Charges Locataires
-payed=payé 
-StatisticsCost=Statistique charges
-
+#
+# Sample widget
+#
+MyWidget = My widget
+MyWidgetDescription = My widget description

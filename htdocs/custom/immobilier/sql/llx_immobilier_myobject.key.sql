@@ -11,8 +11,14 @@
 -- GNU General Public License for more details.
 --
 -- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-- along with this program.  If not, see http://www.gnu.org/licenses/.
 
-INSERT INTO llx_immobilier_myobject VALUES (
-	1, 1, 'mydata'
-);
+
+-- BEGIN MODULEBUILDER INDEXES
+ALTER TABLE llx_immobilier_myobject ADD INDEX idx_fieldobject (fieldobject);
+-- END MODULEBUILDER INDEXES
+
+--ALTER TABLE llx_immobilier_myobject ADD UNIQUE INDEX uk_immobilier_myobject_fieldxyz(fieldx, fieldy);
+
+--ALTER TABLE llx_immobilier_myobject ADD CONSTRAINT llx_immobilier_myobject_field_id FOREIGN KEY (fk_field) REFERENCES llx_myotherobject(rowid);
+
