@@ -1,5 +1,6 @@
 <?php
 /* Copyright (C) 2005-2012 Laurent Destailleur  <eldy@users.sourceforge.net>
+ * Copyright (C) 2018 Philippe GRAND 			<philippe.grand@atoo-net.com>
  *
  * This file is an example to follow to add your own email selector inside
  * the Dolibarr email tool.
@@ -9,25 +10,26 @@
  */
 
 include_once DOL_DOCUMENT_ROOT.'/core/modules/mailings/modules_mailings.php';
-dol_include_once("/immobilier/class/myobject.class.php");
+dol_include_once("/immobilier/class/immorenter.class.php");
 
 
 /**
  * mailing_mailinglist_immobilier
  */
-class mailing_mailinglist_immobilier_myobject extends MailingTargets
+class mailing_mailinglist_immobilier_immorenter extends MailingTargets
 {
 	// CHANGE THIS: Put here a name not already used
-	var $name='mailinglist_immobilier_myobject';
+	public $name='mailinglist_immobilier_immorenter';
 	// CHANGE THIS: Put here a description of your selector module
-	var $desc='My object emailing target selector';
+	public $desc='Contacts of renters';
 	// CHANGE THIS: Set to 1 if selector is available for admin users only
-	var $require_admin=0;
+	public $require_admin=0;              
+	// Module mailing actif si modules require_module actifs
 
-	var $enabled=0;
-	var $require_module=array();
-	var $picto='immobilier@immobilier';
-	var $db;
+	public $enabled=0;
+	public $require_module=array("societe");
+	public $picto='immobilier@immobilier';
+	public $db;
 
 
 	/**
@@ -55,7 +57,7 @@ class mailing_mailinglist_immobilier_myobject extends MailingTargets
     function formFilter()
     {
         global $langs;
-        $langs->load("members");
+        $langs->load("immobilier@immobilier");
 
         $form=new Form($this->db);
 
@@ -84,7 +86,7 @@ class mailing_mailinglist_immobilier_myobject extends MailingTargets
 	 */
 	function url($id)
 	{
-		return '<a href="'.dol_buildpath('/immobilier/myobject_card.php',1).'?id='.$id.'">'.img_object('',"generic").'</a>';
+		return '<a href="'.dol_buildpath('/immobilier/immorenter_card.php',1).'?id='.$id.'">'.img_object('',"generic").'</a>';
 	}
 
 
@@ -102,8 +104,8 @@ class mailing_mailinglist_immobilier_myobject extends MailingTargets
 		$j = 0;
 
 
-		$sql = " select rowid as id, email, firstname, lastname, plan, partner";
-		$sql.= " from ".MAIN_DB_PREFIX."myobject";
+		$sql = " select rowid as id, email, firstname, lastname";
+		$sql.= " from ".MAIN_DB_PREFIX."immobilier_immorenter";
 		$sql.= " where email IS NOT NULL AND email != ''";
 		if (! empty($_POST['filter']) && $_POST['filter'] != 'none') $sql.= " AND status = '".$this->db->escape($_POST['filter'])."'";
 		$sql.= " ORDER BY email";
@@ -115,7 +117,7 @@ class mailing_mailinglist_immobilier_myobject extends MailingTargets
 			$num = $this->db->num_rows($result);
 			$i = 0;
 
-			dol_syslog("mailinglist_immobilier_myobject.modules.php: mailing ".$num." targets found");
+			dol_syslog("mailinglist_immobilier_immorenter.modules.php: mailing ".$num." targets found");
 
 			$old = '';
 			while ($i < $num)
@@ -128,7 +130,6 @@ class mailing_mailinglist_immobilier_myobject extends MailingTargets
 						'name' => $obj->lastname,
 						'id' => $obj->id,
 						'firstname' => $obj->firstname,
-						'other' => $obj->plan.';'.$obj->partner,
 						'source_url' => $this->url($obj->id),
 						'source_id' => $obj->id,
 						'source_type' => 'dolicloud'
@@ -170,10 +171,16 @@ class mailing_mailinglist_immobilier_myobject extends MailingTargets
 	 */
 	function getSqlArrayForStats()
 	{
-		// CHANGE THIS: Optionnal
+		$langs->load("commercial");
 
-		//var $statssql=array();
-		//$this->statssql[0]="SELECT field1 as label, count(distinct(email)) as nb FROM mytable WHERE email IS NOT NULL";
+		$statssql=array();
+		$statssql[0] = "SELECT '".$langs->trans("NbOfImmoRenterContacts")."' as label,";
+		$statssql[0].= " count(distinct(c.email)) as nb";
+		$statssql[0].= " FROM ".MAIN_DB_PREFIX."socpeople as c";
+		$statssql[0].= " WHERE c.entity IN (".getEntity('societe').")";
+		$statssql[0].= " AND c.email != ''";      // Note that null != '' is false
+		$statssql[0].= " AND c.no_email = 0";
+		$statssql[0].= " AND c.statut = 1";
 
 		return array();
 	}
@@ -190,7 +197,7 @@ class mailing_mailinglist_immobilier_myobject extends MailingTargets
 	 */
 	function getNbOfRecipients($filter=1,$option='')
 	{
-		$a=parent::getNbOfRecipients("select count(distinct(email)) as nb from ".MAIN_DB_PREFIX."myobject as p where email IS NOT NULL AND email != ''");
+		$a=parent::getNbOfRecipients("select count(distinct(email)) as nb from ".MAIN_DB_PREFIX."immobilier_immorenter as p where email IS NOT NULL AND email != ''");
 
 		if ($a < 0) return -1;
 		return $a;
