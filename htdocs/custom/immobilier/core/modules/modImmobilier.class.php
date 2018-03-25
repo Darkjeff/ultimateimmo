@@ -1,8 +1,8 @@
 <?php
 /* Copyright (C) 2004-2018 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2013-2018 Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2015-2018 Alexandre Spangaro   <aspangaro@zendsi.com>
- * Copyright (C) 2018      Philippe GRAND       <philippe.grand@atoo-net.com>
+ * Copyright (C) 2013-2016 Olivier Geffroy      <jeff@jeffinfo.com>
+ * Copyright (C) 2015-2016 Alexandre Spangaro   <aspangaro@zendsi.com>
+ * Copyright (C) 2018 Philippe GRAND 			<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,7 @@ class modImmobilier extends DolibarrModules
 		$this->conflictwith = array();	// List of module class names as string this module is in conflict with
 		$this->langfiles = array("immobilier@immobilier");
 		$this->phpmin = array(5,3);					// Minimum version of PHP required by module
-		$this->need_dolibarr_version = array(7,0);	// Minimum version of Dolibarr required by module
+		$this->need_dolibarr_version = array(4,0);	// Minimum version of Dolibarr required by module
 		$this->warnings_activation = array();                     // Warning to show when we activate module. array('always'='text') or array('FR'='textfr','ES'='textes'...)
 		$this->warnings_activation_ext = array();                 // Warning to show when we activate an external module. array('always'='text') or array('FR'='textfr','ES'='textes'...)
 		//$this->automatic_activation = array('FR'=>'ImmobilierWasAutomaticallyActivatedBecauseOfYourCountryChoice');
@@ -209,44 +209,23 @@ class modImmobilier extends DolibarrModules
 
 		$r=0;
 		$this->rights[$r][0] = $this->numero + $r;	// Permission id (must not be already used)
-		$this->rights[$r][1] = 'Read renters';      // Permission label
+		$this->rights[$r][1] = 'Read renter';	// Permission label
 		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'read';				// In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
 		$this->rights[$r][5] = '';				    // In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;	// Permission id (must not be already used)
-		$this->rights[$r][1] = 'Create/Update renters';	// Permission label
+		$this->rights[$r][1] = 'Create/Update renter';	// Permission label
 		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'write';				// In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
 		$this->rights[$r][5] = '';				    // In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;	// Permission id (must not be already used)
-		$this->rights[$r][1] = 'Delete renters';    // Permission label
+		$this->rights[$r][1] = 'Delete renter';	// Permission label
 		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'delete';			// In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
-		$this->rights[$r][5] = '';				    // In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
-
-        $r++;
-		$this->rights[$r][0] = $this->numero + $r;	// Permission id (must not be already used)
-		$this->rights[$r][1] = 'Read properties';   // Permission label
-		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'read';				// In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
-		$this->rights[$r][5] = '';				    // In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
-
-		$r++;
-		$this->rights[$r][0] = $this->numero + $r;	// Permission id (must not be already used)
-		$this->rights[$r][1] = 'Create/Update properties';	// Permission label
-		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'write';				// In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
-		$this->rights[$r][5] = '';				    // In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
-
-		$r++;
-		$this->rights[$r][0] = $this->numero + $r;	// Permission id (must not be already used)
-		$this->rights[$r][1] = 'Delete properties';	// Permission label
-		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'delete';			// In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
+		$this->rights[$r][4] = 'delete';				// In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
 		$this->rights[$r][5] = '';				    // In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
 
 
@@ -302,35 +281,7 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
                 				'fk_menu'=>'fk_mainmenu=immobilier',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',			                // This is a Left menu entry
-								'titre'=>'ListProperties',
-								'mainmenu'=>'immobilier',
-								'leftmenu'=>'immobilier_immoproperty',
-								'url'=>'/immobilier/property/immoproperty_list.php',
-								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-								'position'=>1100+$r,
-								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-								'perms'=>'1',			                // Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
-								'target'=>'',
-								'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
-
-		$this->menu[$r++]=array(
-                				'fk_menu'=>'fk_mainmenu=immobilier,fk_leftmenu=immobilier_immoproperty',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-								'type'=>'left',			                // This is a Left menu entry
-								'titre'=>'NewProperty',
-								'mainmenu'=>'immobilier',
-								'leftmenu'=>'immobilier_immoproperty',
-								'url'=>'/immobilier/property/immoproperty_card.php?action=create',
-								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-								'position'=>1100+$r,
-								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-								'perms'=>'1',			                // Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
-								'target'=>'',
-								'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
-
-		$this->menu[$r++]=array(
-                				'fk_menu'=>'fk_mainmenu=immobilier',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-								'type'=>'left',			                // This is a Left menu entry
-								'titre'=>'ListRenters',
+								'titre'=>'List ImmoRenter',
 								'mainmenu'=>'immobilier',
 								'leftmenu'=>'immobilier_immorenter',
 								'url'=>'/immobilier/renter/immorenter_list.php',
@@ -340,11 +291,10 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',			                // Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
-
 		$this->menu[$r++]=array(
                 				'fk_menu'=>'fk_mainmenu=immobilier,fk_leftmenu=immobilier_immorenter',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',			                // This is a Left menu entry
-								'titre'=>'NewRenter',
+								'titre'=>'New ImmoRenter',
 								'mainmenu'=>'immobilier',
 								'leftmenu'=>'immobilier_immorenter',
 								'url'=>'/immobilier/renter/immorenter_card.php?action=create',
@@ -354,7 +304,7 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',			                // Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
-
+               		
 		/* END MODULEBUILDER LEFTMENU MYOBJECT */
 
 
