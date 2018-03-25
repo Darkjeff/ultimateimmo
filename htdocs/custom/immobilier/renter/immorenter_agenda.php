@@ -67,8 +67,8 @@ $search_agenda_label=GETPOST('search_agenda_label');
 
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
-//if ($user->societe_id > 0) $socid = $user->societe_id;
-//$result = restrictedArea($user, 'immobilier', $id);
+if ($user->societe_id > 0) $socid = $user->societe_id;
+$result = restrictedArea($user, 'immobilier', $id);
 
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $sortfield = GETPOST("sortfield",'alpha');
@@ -222,17 +222,13 @@ if ($object->id > 0)
 	}
 
 
-	print '<div class="tabsAction">';
-
+	//print '<div class="tabsAction">';
+	$buttoncreate='';
     if (! empty($conf->agenda->enabled))
     {
     	if (! empty($user->rights->agenda->myactions->create) || ! empty($user->rights->agenda->allactions->create))
     	{
-        	print '<a class="butAction" href="'.DOL_URL_ROOT.'/comm/action/card.php?action=create'.$out.'">'.$langs->trans("AddAction").'</a>';
-    	}
-    	else
-    	{
-        	print '<a class="butActionRefused" href="#">'.$langs->trans("AddAction").'</a>';
+        	$buttoncreate.='<a class="addnewrecord" href="'.DOL_URL_ROOT.'/comm/action/card.php?action=create'.$out.'">'.$langs->trans("AddAction").'</a>';
     	}
     }
 
@@ -245,14 +241,14 @@ if ($object->id > 0)
         if ($limit > 0 && $limit != $conf->liste_limit) $param.='&limit='.$limit;
 
 
-		print load_fiche_titre($langs->trans("ActionsOnImmoRenter"),'','');
+		print load_fiche_titre($langs->trans("ActionsOnImmoRenter"),$buttoncreate,'');
 
         // List of all actions
 		$filters=array();
         $filters['search_agenda_label']=$search_agenda_label;
 
         // TODO Replace this with same code than into list.php
-        //show_actions_done($conf,$langs,$db,$object,null,0,$actioncode, '', $filters, $sortfield, $sortorder);
+        show_actions_done($conf,$langs,$db,$object,null,0,$actioncode, '', $filters, $sortfield, $sortorder);
     }
 }
 
