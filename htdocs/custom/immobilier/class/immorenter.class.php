@@ -92,10 +92,10 @@ class ImmoRenter extends CommonObject
 		'status' => array('type'=>'integer', 'label'=>'Status', 'visible'=>1, 'enabled'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
 		'firstname' => array('type'=>'varchar(255)', 'label'=>'Firstname', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'searchall'=>1,),
 		'email' => array('type'=>'varchar(255)', 'label'=>'Email', 'visible'=>1, 'enabled'=>1, 'position'=>63, 'notnull'=>-1,),
-		'civilite' => array('type'=>'varchar(6)', 'label'=>'Civilite', 'visible'=>1, 'enabled'=>1, 'position'=>25, 'notnull'=>-1,),
 		'birth' => array('type'=>'date', 'label'=>'Birth', 'visible'=>1, 'enabled'=>1, 'position'=>64, 'notnull'=>-1,),
 		'phone' => array('type'=>'varchar(30)', 'label'=>'Phone', 'visible'=>-1, 'enabled'=>1, 'position'=>65, 'notnull'=>-1,),
 		'phone_mobile' => array('type'=>'varchar(30)', 'label'=>'PhoneMobile', 'visible'=>1, 'enabled'=>1, 'position'=>66, 'notnull'=>-1,),
+		'civility_id' => array('type'=>'integer', 'label'=>'Civility', 'visible'=>1, 'enabled'=>1, 'position'=>25, 'notnull'=>1, 'arrayofkeyval'=>array('0'=>'MME', '1'=>'MLE', '2'=>'MR')),
 	);
 	public $rowid;
 	public $ref;
@@ -113,10 +113,10 @@ class ImmoRenter extends CommonObject
 	public $status;
 	public $firstname;
 	public $email;
-	public $civilite;
 	public $birth;
 	public $phone;
 	public $phone_mobile;
+	public $civility_id;
 	// END MODULEBUILDER PROPERTIES
 
 

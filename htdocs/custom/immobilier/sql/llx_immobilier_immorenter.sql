@@ -32,7 +32,7 @@ CREATE TABLE llx_immobilier_immorenter(
 	status integer NOT NULL, 
 	firstname varchar(255), 
 	email varchar(255), 
-	civilite varchar(6), 
+	civility_id integer, 
 	birth date, 
 	phone varchar(30), 
 	phone_mobile varchar(30)

@@ -16,7 +16,7 @@
  */
 
 /**
- * \file    core/triggers/interface_99_modImmobilier_ImmobilierTriggers.class.php
+ * \file    core/triggers/interface_99_modimmobilier_immobilierTriggers.class.php
  * \ingroup immobilier
  * \brief   Example trigger.
  *
@@ -24,7 +24,7 @@
  *
  * \remarks You can create other triggers by copying this one.
  * - File name should be either:
- *      - interface_99_modImmobilier_MyTrigger.class.php
+ *      - interface_99_modimmobilier_MyTrigger.class.php
  *      - interface_99_all_MyTrigger.class.php
  * - The file must stay in core/triggers
  * - The class name must be InterfaceMytrigger
@@ -36,9 +36,9 @@ require_once DOL_DOCUMENT_ROOT.'/core/triggers/dolibarrtriggers.class.php';
 
 
 /**
- *  Class of triggers for Immobilier module
+ *  Class of triggers for immobilier module
  */
-class InterfaceImmobilierTriggers extends DolibarrTriggers
+class InterfaceimmobilierTriggers extends DolibarrTriggers
 {
 	/**
 	 * @var DoliDB Database handler
@@ -56,7 +56,7 @@ class InterfaceImmobilierTriggers extends DolibarrTriggers
 
 		$this->name = preg_replace('/^Interface/i', '', get_class($this));
 		$this->family = "demo";
-		$this->description = "Immobilier triggers.";
+		$this->description = "immobilier triggers.";
 		// 'development', 'experimental', 'dolibarr' or version
 		$this->version = 'development';
 		$this->picto = 'immobilier@immobilier';
