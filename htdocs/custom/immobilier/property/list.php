@@ -1,6 +1,6 @@
 <?php
-/* Copyright (C) 2013-2015 Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2015-2017 Alexandre Spangaro	<aspangaro@zendsi.com>
+/* Copyright (C) 2013-2015  Olivier Geffroy      <jeff@jeffinfo.com>
+ * Copyright (C) 2015-2018  Alexandre Spangaro   <aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
  */
 
 /**
- * \file    	immobilier/property/list.php
- * \ingroup 	Immobilier
- * \brief   	List of property
+ * \file        immobilier/property/list.php
+ * \ingroup     Immobilier
+ * \brief       List of property
  */
 $res = @include ("../../main.inc.php"); // For root directory
 if (! $res)
@@ -59,14 +59,14 @@ $search_property	= GETPOST('search_property', 'alpha');
 
 $arrayfields=array(
 	'l.name'=>array('label'=>$langs->trans("Property"), 'checked'=>1),
-    'l.address'=>array('label'=>$langs->trans("address"), 'checked'=>1),
-    'l.zip'=>array('label'=>$langs->trans("zip"), 'checked'=>1),
-    'l.town'=>array('label'=>$langs->trans("town"), 'checked'=>1),
-    'co.label'=>array('label'=>$langs->trans("country"), 'checked'=>1),
-    'tp.label'=>array('label'=>$langs->trans("TypeProperty"), 'checked'=>1),
-    'b.name'=>array('label'=>$langs->trans("Building"), 'checked'=>1),
-    'soc.nom'=>array('label'=>$langs->trans("Owner"), 'checked'=>1),
-    'l.statut'=>array('label'=>$langs->trans("Status"), 'checked'=>1)
+	'l.address'=>array('label'=>$langs->trans("Address"), 'checked'=>1),
+	'l.zip'=>array('label'=>$langs->trans("Zip"), 'checked'=>1),
+	'l.town'=>array('label'=>$langs->trans("Town"), 'checked'=>1),
+	'co.label'=>array('label'=>$langs->trans("Country"), 'checked'=>1),
+	'tp.label'=>array('label'=>$langs->trans("TypeProperty"), 'checked'=>1),
+	'b.name'=>array('label'=>$langs->trans("Building"), 'checked'=>1),
+	'soc.nom'=>array('label'=>$langs->trans("Owner"), 'checked'=>1),
+	'l.statut'=>array('label'=>$langs->trans("Status"), 'checked'=>1)
 );
 
 include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
@@ -74,8 +74,11 @@ include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 // Purge search criteria
 if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter.x") || GETPOST("button_removefilter"))
 {
-	
 	$search_property = "";
+	$search_address="";
+	$search_zip="";
+	$search_town="";
+	$search_country='';
 	$search_array_options=array();
 }
 
@@ -88,7 +91,7 @@ $object = new Immoproperty($db);
 llxHeader('', $langs->trans("Property"));
 
 $sql = "SELECT l.rowid as property_id, l.name, l.address, l.zip, l.town"; 
-$sql .= ",  l.statut, tp.label as type_property, co.label as country";
+$sql .= ", l.statut, tp.label as type_property, co.label as country";
 $sql .= ", l.name as property_name, l.fk_owner, b.name as building_name, soc.nom as owner";
 $sql .= " FROM " . MAIN_DB_PREFIX . "immo_property as l";
 $sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'c_immo_type_property as tp ON tp.id = l.fk_type_property';
@@ -100,7 +103,10 @@ $sql .= " WHERE tp.id = 6";
 } else {
 $sql .= " WHERE tp.id <> 6";
 }
-if ($search_property)	$sql .= natural_search("l.name", $search_property);
+if ($search_property)	$sql.= natural_search("l.name", $search_property);
+if ($search_town)		$sql.= natural_search("l.town",$search_town);
+if ($search_zip)		$sql.= natural_search("l.zip",$search_zip);
+if ($search_country)	$sql.= " AND d.country IN (".$search_country.')';
 $sql .= $db->order($sortfield, $sortorder);
 
 // Count total nb of records
@@ -117,23 +123,23 @@ $resql = $db->query($sql);
 if ($resql)
 {
 	$num = $db->num_rows($resql);
-    
+
 	$arrayofselected=is_array($toselect)?$toselect:array();
 
 	$param="";
 
-    if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param.='&contextpage='.$contextpage;
+	if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param.='&contextpage='.$contextpage;
 	if ($limit > 0 && $limit != $conf->liste_limit) $param.='&limit='.$limit;
 	if ($search_property)	$params.= '&amp;search_property='.urlencode($search_property);
-    if ($optioncss)			$param.='&optioncss='.$optioncss;
+	if ($optioncss)			$param.='&optioncss='.$optioncss;
 
 	print '<form action="'.$_SERVER["PHP_SELF"].'" method="POST">'."\n";
-    if ($optioncss != '') print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
-    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-    print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
-    print '<input type="hidden" name="action" value="list">';
-    print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
-    print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
+	if ($optioncss != '') print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
+	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
+	print '<input type="hidden" name="action" value="list">';
+	print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
+	print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 
 	$title = $langs->trans("ListProperties");
 	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $params, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_property');
@@ -141,32 +147,32 @@ if ($resql)
 	$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 	$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
 
-    print '<div class="div-table-responsive">';
-    print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
+	print '<div class="div-table-responsive">';
+	print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
 	print '<tr class="liste_titre">';
-	if (! empty($arrayfields['l.name']['checked']))		print_liste_field_titre($arrayfields['l.name']['label'], $_SERVER["PHP_SELF"],"l.name","",$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['l.name']['checked']))			print_liste_field_titre($arrayfields['l.name']['label'], $_SERVER["PHP_SELF"],"l.name","",$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['l.address']['checked']))		print_liste_field_titre($arrayfields['l.address']['label'], $_SERVER["PHP_SELF"],"l.address","",$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['l.zip']['checked']))			print_liste_field_titre($arrayfields['l.zip']['label'], $_SERVER["PHP_SELF"],"l.zip", "", $param,'align="left"',$sortfield,$sortorder);
-	if (! empty($arrayfields['l.town']['checked']))	print_liste_field_titre($arrayfields['l.town']['label'],$_SERVER["PHP_SELF"],'l.town','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['l.town']['checked']))			print_liste_field_titre($arrayfields['l.town']['label'],$_SERVER["PHP_SELF"],'l.town','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['co.label']['checked']))		print_liste_field_titre($arrayfields['co.label']['label'],$_SERVER["PHP_SELF"],'co.label','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['tp.label']['checked']))		print_liste_field_titre($arrayfields['tp.label']['label'],$_SERVER["PHP_SELF"],'tp.label','',$param,'',$sortfield,$sortorder);
-	if (! empty($arrayfields['b.name']['checked']))		print_liste_field_titre($arrayfields['b.name']['label'],$_SERVER["PHP_SELF"],'b.name','',$param,'',$sortfield,$sortorder);
+	if (! empty($arrayfields['b.name']['checked']))			print_liste_field_titre($arrayfields['b.name']['label'],$_SERVER["PHP_SELF"],'b.name','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['soc.nom']['checked']))		print_liste_field_titre($arrayfields['soc.nom']['label'],$_SERVER["PHP_SELF"],'soc.nom','',$param,'',$sortfield,$sortorder);
 	if (! empty($arrayfields['l.statut']['checked']))		print_liste_field_titre($arrayfields['l.statut']['label'],$_SERVER["PHP_SELF"],'l.statut','',$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="right"',$sortfield,$sortorder,'maxwidthsearch ');
 	print "</tr>\n";
 
 	// Filters
-	print '<tr class="liste_titre">';
-	if (! empty($arrayfields['l.name']['checked']))		print '<td class="liste_titre"><input type="text" class="flat" size="20" name="search_property" value="' .$search_property. '"></td>';
-	if (! empty($arrayfields['l.address']['checked']))	print '<td class="liste_titre">&nbsp;</td>';
-	if (! empty($arrayfields['l.zip']['checked']))	print '<td class="liste_titre">&nbsp;</td>';
-	if (! empty($arrayfields['l.town']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
-	if (! empty($arrayfields['co.label']['checked']))	print '<td class="liste_titre">&nbsp;</td>';
-	if (! empty($arrayfields['tp.label']['checked']))	print '<td class="liste_titre">&nbsp;</td>';
-	if (! empty($arrayfields['b.name']['checked']))	print '<td class="liste_titre">&nbsp;</td>';
-	if (! empty($arrayfields['soc.nom']['checked']))	print '<td class="liste_titre">&nbsp;</td>';
-	if (! empty($arrayfields['l.statut']['checked']))	print '<td class="liste_titre">&nbsp;</td>';
+	print '<tr class="liste_titre_filter">';
+	if (! empty($arrayfields['l.name']['checked']))			print '<td class="liste_titre"><input type="text" class="flat" size="10" name="search_property" value="' .$search_property. '"></td>';
+	if (! empty($arrayfields['l.address']['checked']))		print '<td class="liste_titre"><input class="flat searchstring" size="10" type="text" name="search_town" value="'.dol_escape_htmltag($search_address).'"></td>';
+	if (! empty($arrayfields['l.zip']['checked']))			print '<td class="liste_titre"><input class="flat searchstring" size="4" type="text" name="search_zip" value="'.dol_escape_htmltag($search_zip).'"></td>';
+	if (! empty($arrayfields['l.town']['checked']))			print '<td class="liste_titre"><input class="flat searchstring" size="6" type="text" name="search_town" value="'.dol_escape_htmltag($search_town).'"></td>';
+	if (! empty($arrayfields['co.label']['checked']))		print '<td class="liste_titre">'.$form->select_country($search_country,'search_country','',0,'maxwidth100').'</td>';
+	if (! empty($arrayfields['tp.label']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
+	if (! empty($arrayfields['b.name']['checked']))			print '<td class="liste_titre">&nbsp;</td>';
+	if (! empty($arrayfields['soc.nom']['checked']))		print '<td class="liste_titre">&nbsp;</td>';
+	if (! empty($arrayfields['l.statut']['checked']))		print '<td class="liste_titre">'.$form->selectarray('search_status', array('0'=>$langs->trans('ActivityCeased'),'1'=>$langs->trans('InActivity')), $search_status, 1).'</td>';
 	
 	// Action column
 	print '<td class="liste_titre" align="middle">';
@@ -181,7 +187,7 @@ if ($resql)
 
 	if ($num > 0)
 	{
-        $i=0;
+		$i=0;
 		while ( $i < min($num, $limit) ) 
 		{
 			$obj = $db->fetch_object($resql);
@@ -226,7 +232,6 @@ if ($resql)
 			}
 			
 			if (! empty($arrayfields['l.statut']['checked'])) {
-			
 				print '<td align="right" nowrap="nowrap">';
 				print $propertystatic->LibStatut($obj->statut, 5);
 				print "</td>";

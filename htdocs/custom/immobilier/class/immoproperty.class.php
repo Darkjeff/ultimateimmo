@@ -820,23 +820,22 @@ class Immoproperty extends CommonObjectImmobilier
 	{
 		global $langs;
 
-		$result = '';
+		$result='';
 
-		if (empty ( $this->name ))
-			$this->name = $this->name;
+		$this->name = $this->name;
+		$label=$langs->trans("ShowProperty").': '.$this->name;
 
-			$link = '<a href="' . DOL_URL_ROOT . '/custom/immobilier/property/card.php?id=' . $this->id . '">';
-			$linkend = '</a>';
+		$linkstart = '<a href="'.DOL_URL_ROOT.'/custom/immobilier/property/card.php?id='.$this->id.'" title="'.dol_escape_htmltag($label, 1).'" class="classfortooltip">';
+		$linkend = '</a>';
 
-			if ($withpicto)
-				$result .= ($link . img_object ( $langs->trans("ShowProperty") . ': ' . $this->name, 'building@immobilier' ) . $linkend . ' ');
-			if ($withpicto && $withpicto != 2)
-				$result .= ' ';
-			if ($withpicto != 2)
-				$result .= $link . ($maxlength ? dol_trunc ( $this->name, $maxlength ) : $this->name) . $linkend;
-			return $result;
+		$result .= $linkstart;
+		if ($withpicto) $result.=img_object(($notooltip?'':$label), ($this->picto?$this->picto:'building@immobilier'), ($notooltip?(($withpicto != 2) ? 'class="paddingright"' : ''):'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip?0:1);
+		if ($withpicto != 2) $result.= $this->name;
+		$result .= $linkend;
+
+		return $result;
 	}
-	
+
 	/**
 	 *	Return clicable name (with picto eventually)
 	 *
