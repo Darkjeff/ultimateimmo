@@ -85,17 +85,18 @@ class immobilierwidget1 extends ModeleBoxes
 	public function __construct(DoliDB $db, $param = '')
 	{
 		global $user, $conf, $langs;
-		$langs->load("boxes");
-		$langs->load('immobilier@immobilier');
+		
+		// Load traductions files requiredby by page
+		$langs->loadLangs(array("immobilier@immobilier","boxes"));
 
 		parent::__construct($db, $param);
 
-		$this->boxlabel = $langs->transnoentitiesnoconv("MyWidget");
+		$this->boxlabel = $langs->transnoentitiesnoconv("RenterWidget");
 
 		$this->param = $param;
 
 		//$this->enabled = $conf->global->FEATURES_LEVEL > 0;         // Condition when module is enabled or not
-		//$this->hidden = ! ($user->rights->immobilier->myobject->read);   // Condition when module is visible by user (test on permission)
+		$this->hidden = ! ($user->rights->immobilier->read);   // Condition when module is visible by user (test on permission)
 	}
 
 	/**
@@ -111,7 +112,7 @@ class immobilierwidget1 extends ModeleBoxes
 		// Use configuration value for max lines count
 		$this->max = $max;
 
-		//include_once DOL_DOCUMENT_ROOT . "/immobilier/class/immobilier.class.php";
+		dol_include_once('/immobilier/class/immorenter.class.php');						
 
 		// Populate the head at runtime
 		$text = $langs->trans("ImmobilierBoxDescription", $max);
@@ -133,64 +134,44 @@ class immobilierwidget1 extends ModeleBoxes
 			// Adds translated " (Graph)" to a hidden form value's input (?)
 			'graph' => false
 		);
+		
+		/*if ($user->rights->immobilier->read)
+		{		*/
+			// Initialize technical objects
+			$object=new ImmoRenter($this->db);
+			
+			$sql = "SELECT t.ref, t.lastname";		
+			$sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
+			$sql.= " WHERE t.entity IN (".getEntity('immorenter').")";
+			
+			$result = $this->db->query($sql);
+			if ($result) {
+				$num = $this->db->num_rows($result);
+				
+				$line = 0;
+				while ($line < $num)
+				{
+					$objp = $this->db->fetch_object($result);
+					
+					$object->ref=$objp->ref;
+					$object->lastname=$objp->lastname;
+					
+					$this->info_box_contents[$line][] = array(
+						'td' => '',
+						'text' => $object->getNomUrl(1),
+						'asis' => 1,
+					);
 
-		// Populate the contents at runtime
-		$this->info_box_contents = array(
-			0 => array( // First line
-				0 => array( // First Column
-					//  HTML properties of the TR element. Only available on the first column.
-					'tr'           => 'align="left"',
-					// HTML properties of the TD element
-					'td'           => '',
+					$this->info_box_contents[$line][] = array(
+						'td' => '',
+						'text' => $object->lastname,
+						'asis' => 1,
+					);
 
-					// Main text for content of cell
-					'text'         => 'First cell of first line',
-					// Link on 'text' and 'logo' elements
-					'url'          => 'http://example.com',
-					// Link's target HTML property
-					'target'       => '_blank',
-					// Fist line logo (deprecated. Include instead logo html code into text or text2, and set asis property to true to avoid HTML cleaning)
-					//'logo'         => 'monmodule@monmodule',
-					// Unformatted text, added after text. Usefull to add/load javascript code
-					'textnoformat' => '',
-
-					// Main text for content of cell (other method)
-					//'text2'        => '<p><strong>Another text</strong></p>',
-
-					// Truncates 'text' element to the specified character length, 0 = disabled
-					'maxlength'    => 0,
-					// Prevents HTML cleaning (and truncation)
-					'asis'         => false,
-					// Same for 'text2'
-					'asis2'        => true
-				),
-				1 => array( // Another column
-					// No TR for n≠0
-					'td'   => '',
-					'text' => 'Second cell',
-				)
-			),
-			1 => array( // Another line
-				0 => array( // TR
-					'tr'   => 'align="left"',
-					'text' => 'Another line'
-				),
-				1 => array( // TR
-					'tr'   => 'align="left"',
-					'text' => ''
-				)
-			),
-			2 => array( // Another line
-				0 => array( // TR
-					'tr'   => 'align="left"',
-					'text' => ''
-				),
-				0 => array( // TR
-					'tr'   => 'align="left"',
-					'text' => ''
-				)
-			),
-		);
+					$line++;
+				}
+			}
+		//}
 	}
 
 	/**
@@ -200,10 +181,10 @@ class immobilierwidget1 extends ModeleBoxes
 	 * @param array $contents Array with properties of box lines
 	 * @return void
 	 */
-	public function showBox($head = null, $contents = null)
+	public function showBox($head = null, $contents = null, $nooutput=0)
 	{
 		// You may make your own code here…
 		// … or use the parent's class function using the provided head and contents templates
-		parent::showBox($this->info_box_head, $this->info_box_contents);
+		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 }
