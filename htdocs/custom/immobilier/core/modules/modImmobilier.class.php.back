@@ -98,7 +98,7 @@ class modImmobilier extends DolibarrModules
 									'models' => 1,                                   	// Set this to 1 if module has its own models directory (core/modules/xxx)
 									'css' => array('/immobilier/css/immobilier.css.php'),	// Set this to relative path of css file if module has its own css file
 	 								'js' => array('/immobilier/js/immobilier.js.php'),          // Set this to relative path of js file if module must load a js on all pages
-									'hooks' => array('data'=>array('index', 'searchform', 'thirdpartycard','commcard','categorycard','contactcard','actioncard','agendathirdparty','projectthirdparty','infothirdparty','thirdpartybancard','consumptionthirdparty','thirdpartynotification','thirdpartymargins','thirdpartycustomerprice','searchform'), 'entity'=>'0') 	// Set here all hooks context managed by module. To find available hook context, make a "grep -r '>initHooks(' *" on source code. You can also set hook context 'all'
+									'hooks' => array('data'=>array('index', 'searchform', 'thirdpartycard','commcard','categorycard','contactcard','actioncard','agendathirdparty','projectthirdparty','infothirdparty','thirdpartybancard','consumptionthirdparty','thirdpartynotification','thirdpartymargins','thirdpartycustomerprice','immorentercard'), 'entity'=>'0') 	// Set here all hooks context managed by module. To find available hook context, make a "grep -r '>initHooks(' *" on source code. You can also set hook context 'all'
 		                        );
 
 		// Data directories to create when module is enabled.
@@ -225,7 +225,7 @@ class modImmobilier extends DolibarrModules
 		$this->rights[$r][0] = $this->numero + $r;	// Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete immorenter of Immobilier';	// Permission label
 		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'delete';				// In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
+		$this->rights[$r][4] = 'delete';			// In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
 		$this->rights[$r][5] = '';				    // In php code, permission will be checked by test if ($user->rights->immobilier->level1->level2)
 
 
@@ -284,7 +284,7 @@ class modImmobilier extends DolibarrModules
 								'titre'=>'List ImmoRenter',
 								'mainmenu'=>'immobilier',
 								'leftmenu'=>'immobilier_immorenter',
-								'url'=>'/immobilier/renter/immorenter_list.php',
+								'url'=>'/immobilier/immorenter_list.php',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1100+$r,
 								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
@@ -297,7 +297,7 @@ class modImmobilier extends DolibarrModules
 								'titre'=>'New ImmoRenter',
 								'mainmenu'=>'immobilier',
 								'leftmenu'=>'immobilier_immorenter',
-								'url'=>'/immobilier/renter/immorenter_card.php?action=create',
+								'url'=>'/immobilier/immorenter_card.php?action=create',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1100+$r,
 								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.

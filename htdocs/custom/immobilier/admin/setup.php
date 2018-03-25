@@ -17,9 +17,9 @@
  */
 
 /**
- * \file    immobilier/admin/about.php
+ * \file    immobilier/admin/setup.php
  * \ingroup immobilier
- * \brief   About page of module Immobilier.
+ * \brief   Immobilier setup page.
  */
 
 // Load Dolibarr environment
@@ -36,40 +36,38 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
+global $langs, $user;
+
 // Libraries
-require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
+require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once '../lib/immobilier.lib.php';
+//require_once "../class/myclass.class.php";
 
 // Translations
-$langs->load("errors");
-$langs->load("admin");
-$langs->load("immobilier@immobilier");
+$langs->loadLangs(array("admin", "immobilier@immobilier"));
 
 // Access control
-if (! $user->admin) {
-	accessforbidden();
-}
+if (! $user->admin) accessforbidden();
 
 // Parameters
 $action = GETPOST('action', 'alpha');
 $backtopage = GETPOST('backtopage', 'alpha');
+
+$arrayofparameters=array('IMMOBILIER_MYPARAM1'=>array('css'=>'minwidth200'), 'IMMOBILIER_MYPARAM2'=>array('css'=>'minwidth500'));
 
 
 /*
  * Actions
  */
 
-// None
+include DOL_DOCUMENT_ROOT.'/core/actions_setmoduleoptions.inc.php';
 
 
 /*
  * View
  */
 
-$form = new Form($db);
-
-$page_name = "ImmobilierAbout";
+$page_name = "ImmobilierSetup";
 llxHeader('', $langs->trans($page_name));
 
 // Subheader
@@ -79,13 +77,59 @@ print load_fiche_titre($langs->trans($page_name), $linkback, 'object_immobilier@
 
 // Configuration header
 $head = immobilierAdminPrepareHead();
-dol_fiche_head($head, 'about', '', 0, 'immobilier@immobilier');
+dol_fiche_head($head, 'settings', '', -1, "immobilier@immobilier");
 
-dol_include_once('/immobilier/core/modules/modImmobilier.class.php');
-$tmpmodule = new modImmobilier($db);
-print $tmpmodule->getDescLong();
+// Setup page goes here
+echo $langs->trans("ImmobilierSetupPage");
+
+
+if ($action == 'edit')
+{
+	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
+	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<input type="hidden" name="action" value="update">';
+
+	print '<table class="noborder" width="100%">';
+	print '<tr class="liste_titre"><td class="titlefield">'.$langs->trans("Parameter").'</td><td>'.$langs->trans("Value").'</td></tr>';
+
+	foreach($arrayofparameters as $key => $val)
+	{
+		print '<tr class="oddeven"><td>';
+		print $form->textwithpicto($langs->trans($key),$langs->trans($key.'Tooltip'));
+		print '</td><td><input name="'.$key.'"  class="flat '.(empty($val['css'])?'minwidth200':$val['css']).'" value="' . $conf->global->$key . '"></td></tr>';
+	}
+
+	print '</table>';
+
+	print '<br><div class="center">';
+	print '<input class="button" type="submit" value="'.$langs->trans("Save").'">';
+	print '</div>';
+
+	print '</form>';
+	print '<br>';
+}
+else
+{
+	print '<table class="noborder" width="100%">';
+	print '<tr class="liste_titre"><td class="titlefield">'.$langs->trans("Parameter").'</td><td>'.$langs->trans("Value").'</td></tr>';
+
+	foreach($arrayofparameters as $key => $val)
+	{
+		print '<tr class="oddeven"><td>';
+		print $form->textwithpicto($langs->trans($key),$langs->trans($key.'Tooltip'));
+		print '</td><td>' . $conf->global->$key . '</td></tr>';
+	}
+
+	print '</table>';
+
+	print '<div class="tabsAction">';
+	print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?action=edit">'.$langs->trans("Modify").'</a>';
+	print '</div>';
+}
+
 
 // Page end
 dol_fiche_end();
+
 llxFooter();
 $db->close();

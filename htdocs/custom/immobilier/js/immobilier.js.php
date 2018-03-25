@@ -1,6 +1,5 @@
 <?php
-/* Copyright (C) 2004-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+/* Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,12 +13,26 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Library javascript to enable Browser notifications
  */
 
+if (!defined('NOREQUIREUSER'))  define('NOREQUIREUSER', '1');
+if (!defined('NOREQUIREDB'))    define('NOREQUIREDB','1');
+if (!defined('NOREQUIRESOC'))   define('NOREQUIRESOC', '1');
+if (!defined('NOREQUIRETRAN'))  define('NOREQUIRETRAN','1');
+if (!defined('NOCSRFCHECK'))    define('NOCSRFCHECK', 1);
+if (!defined('NOTOKENRENEWAL')) define('NOTOKENRENEWAL', 1);
+if (!defined('NOLOGIN'))        define('NOLOGIN', 1);
+if (!defined('NOREQUIREMENU'))  define('NOREQUIREMENU', 1);
+if (!defined('NOREQUIREHTML'))  define('NOREQUIREHTML', 1);
+if (!defined('NOREQUIREAJAX'))  define('NOREQUIREAJAX','1');
+
+
 /**
- * \file    immobilier/admin/about.php
+ * \file    immobilier/js/immobilier.js.php
  * \ingroup immobilier
- * \brief   About page of module Immobilier.
+ * \brief   JavaScript file for module Immobilier.
  */
 
 // Load Dolibarr environment
@@ -30,62 +43,20 @@ if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER
 $tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
 while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
 if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/../main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/../main.inc.php");
 // Try main.inc.php using relative path
 if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
-// Libraries
-require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
-require_once '../lib/immobilier.lib.php';
+// Define js type
+header('Content-Type: application/javascript');
+// Important: Following code is to cache this file to avoid page request by browser at each Dolibarr page access.
+// You can use CTRL+F5 to refresh your browser cache.
+if (empty($dolibarr_nocache)) header('Cache-Control: max-age=3600, public, must-revalidate');
+else header('Cache-Control: no-cache');
+?>
 
-// Translations
-$langs->load("errors");
-$langs->load("admin");
-$langs->load("immobilier@immobilier");
-
-// Access control
-if (! $user->admin) {
-	accessforbidden();
-}
-
-// Parameters
-$action = GETPOST('action', 'alpha');
-$backtopage = GETPOST('backtopage', 'alpha');
+/* Javascript library of module Immobilier */
 
 
-/*
- * Actions
- */
-
-// None
-
-
-/*
- * View
- */
-
-$form = new Form($db);
-
-$page_name = "ImmobilierAbout";
-llxHeader('', $langs->trans($page_name));
-
-// Subheader
-$linkback = '<a href="'.($backtopage?$backtopage:DOL_URL_ROOT.'/admin/modules.php').'">'.$langs->trans("BackToModuleList").'</a>';
-
-print load_fiche_titre($langs->trans($page_name), $linkback, 'object_immobilier@immobilier');
-
-// Configuration header
-$head = immobilierAdminPrepareHead();
-dol_fiche_head($head, 'about', '', 0, 'immobilier@immobilier');
-
-dol_include_once('/immobilier/core/modules/modImmobilier.class.php');
-$tmpmodule = new modImmobilier($db);
-print $tmpmodule->getDescLong();
-
-// Page end
-dol_fiche_end();
-llxFooter();
-$db->close();
