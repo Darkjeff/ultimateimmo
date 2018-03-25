@@ -305,7 +305,7 @@ class modImmobilier extends DolibarrModules
 								'titre'=>'ListProperties',
 								'mainmenu'=>'immobilier',
 								'leftmenu'=>'immobilier_immoproperty',
-								'url'=>'/immobilier/property/immoproperty_list.php',
+								'url'=>'/immobilier/immoproperty_list.php',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1100+$r,
 								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
@@ -319,7 +319,7 @@ class modImmobilier extends DolibarrModules
 								'titre'=>'NewProperty',
 								'mainmenu'=>'immobilier',
 								'leftmenu'=>'immobilier_immoproperty',
-								'url'=>'/immobilier/property/immoproperty_card.php?action=create',
+								'url'=>'/immobilier/immoproperty_card.php?action=create',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1100+$r,
 								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
