@@ -1,4 +1,4 @@
--- Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) ---Put here your own copyright and developer email---
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -14,14 +14,12 @@
 -- along with this program.  If not, see http://www.gnu.org/licenses/.
 
 
-CREATE TABLE llx_immobilier_immorenter(
+CREATE TABLE llx_immobilier_immoproperty(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL, 
 	entity integer DEFAULT 1 NOT NULL, 
-	lastname varchar(255), 
 	fk_soc integer, 
-	description text, 
 	note_public text, 
 	note_private text, 
 	date_creation datetime NOT NULL, 
@@ -30,11 +28,19 @@ CREATE TABLE llx_immobilier_immorenter(
 	fk_user_modif integer, 
 	import_key varchar(14), 
 	status integer NOT NULL, 
-	firstname varchar(255), 
-	email varchar(255), 
-	birth date, 
-	phone varchar(30), 
-	phone_mobile varchar(30), 
-	civility_id integer NOT NULL
+	address varchar(255) NOT NULL, 
+	building varchar(32) NOT NULL, 
+	staircase varchar(8) NOT NULL, 
+	fk_type_property integer NOT NULL, 
+	fk_property integer NOT NULL, 
+	numfloor varchar(8) NOT NULL, 
+	numflat varchar(8) NOT NULL, 
+	numdoor varchar(8) NOT NULL, 
+	area varchar(8) NOT NULL, 
+	zip varchar(32) NOT NULL, 
+	town varchar(64) NOT NULL, 
+	fk_pays integer NOT NULL, 
+	datep date, 
+	target integer
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

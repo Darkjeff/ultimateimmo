@@ -15,11 +15,11 @@
 
 
 -- BEGIN MODULEBUILDER INDEXES
-ALTER TABLE llx_immobilier_immorenter ADD INDEX idx_immobilier_immorenter_rowid (rowid);
 ALTER TABLE llx_immobilier_immorenter ADD INDEX idx_immobilier_immorenter_ref (ref);
 ALTER TABLE llx_immobilier_immorenter ADD INDEX idx_immobilier_immorenter_entity (entity);
 ALTER TABLE llx_immobilier_immorenter ADD INDEX idx_immobilier_immorenter_fk_soc (fk_soc);
 ALTER TABLE llx_immobilier_immorenter ADD INDEX idx_immobilier_immorenter_status (status);
+ALTER TABLE llx_immobilier_immorenter ADD INDEX idx_immobilier_immorenter_rowid (rowid);
 -- END MODULEBUILDER INDEXES
 
 --ALTER TABLE llx_immobilier_immorenter ADD UNIQUE INDEX uk_immobilier_immorenter_fieldxyz(fieldx, fieldy);
