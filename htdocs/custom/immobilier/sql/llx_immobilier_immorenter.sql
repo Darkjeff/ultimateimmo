@@ -16,7 +16,7 @@
 
 CREATE TABLE llx_immobilier_immorenter(
 	-- BEGIN MODULEBUILDER FIELDS
-	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL
+	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	ref varchar(128) NOT NULL, 
 	entity integer DEFAULT 1 NOT NULL, 
 	lastname varchar(255), 
@@ -35,6 +35,6 @@ CREATE TABLE llx_immobilier_immorenter(
 	birth date, 
 	phone varchar(30), 
 	phone_mobile varchar(30), 
-	civility_id integer NOT NULL, 
+	civility_id integer NOT NULL
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;
