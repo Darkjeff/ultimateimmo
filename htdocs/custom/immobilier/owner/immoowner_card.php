@@ -114,7 +114,7 @@ if (empty($reshook))
 
 	$permissiontoadd = $user->rights->immobilier->write;
 	$permissiontodelete = $user->rights->immobilier->delete;
-	$backurlforlist = dol_buildpath('/immobilier/immoowner_list.php',1);
+	$backurlforlist = dol_buildpath('/immobilier/owner/immoowner_list.php',1);
 
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
