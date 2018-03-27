@@ -46,3 +46,20 @@ MyPageName = Nom de ma page
 #
 MyWidget = Mon widget
 MyWidgetDescription = Description de mon widget
+
+ImmoRenter = Locataire
+BirthDay = Date de Naissance
+ImmoProperty = Bien Immobilier 
+Building = Immeuble
+Staircase = Escalier
+NumFloor = Etage
+NumFlat = Numéro Appartement
+NumDoor = Porte n°
+Area = surface
+PropertyParent = Bien Parent
+DateBuilt = Date de construction
+Target = cible
+ImmoOwner = Propriétaire
+Civility = Titre
+
+
