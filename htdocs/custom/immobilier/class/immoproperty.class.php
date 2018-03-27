@@ -41,6 +41,12 @@ class ImmoProperty extends CommonObject
 	 */
 	public $table_element = 'immobilier_immoproperty';
 	/**
+	 * @var string Name of table without prefix where object is stored
+	 */
+	public $fk_element='fk_property';
+	
+	public $fieldsforcombobox='ref';
+	/**
 	 * @var int  Does immoproperty support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
 	public $ismultientitymanaged = 0;
