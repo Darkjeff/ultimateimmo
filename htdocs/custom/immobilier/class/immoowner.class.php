@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) ---Put here your own copyright and developer email---
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
  */
 
 /**
- * \file        class/immorenter.class.php
+ * \file        class/immoowner.class.php
  * \ingroup     immobilier
- * \brief       This file is a CRUD class file for ImmoRenter (Create/Read/Update/Delete)
+ * \brief       This file is a CRUD class file for ImmoOwner (Create/Read/Update/Delete)
  */
 
 // Put here all includes required by your class file
@@ -28,30 +28,30 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
 //require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
 /**
- * Class for ImmoRenter
+ * Class for ImmoOwner
  */
-class ImmoRenter extends CommonObject
+class ImmoOwner extends CommonObject
 {
 	/**
 	 * @var string ID to identify managed object
 	 */
-	public $element = 'immorenter';
+	public $element = 'immoowner';
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
-	public $table_element = 'immobilier_immorenter';
+	public $table_element = 'immobilier_immoowner';
 	/**
-	 * @var int  Does immorenter support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	 * @var int  Does immoowner support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
 	public $ismultientitymanaged = 0;
 	/**
-	 * @var int  Does immorenter support extrafields ? 0=No, 1=Yes
+	 * @var int  Does immoowner support extrafields ? 0=No, 1=Yes
 	 */
 	public $isextrafieldmanaged = 1;
 	/**
-	 * @var string String with name of icon for immorenter. Must be the part after the 'object_' into object_immorenter.png
+	 * @var string String with name of icon for immoowner. Must be the part after the 'object_' into object_immoowner.png
 	 */
-	public $picto = 'immorenter@immobilier';
+	public $picto = 'immoowner@immobilier';
 
 
 	/**
@@ -76,11 +76,10 @@ class ImmoRenter extends CommonObject
 	 * @var array  Array with all fields and their property. Do not use it as a static var. It may be modified by constructor.
 	 */
 	public $fields=array(
+		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'visible'=>-1, 'enabled'=>1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'visible'=>1, 'enabled'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>-1, 'enabled'=>1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
-		'lastname' => array('type'=>'varchar(255)', 'label'=>'Lastname', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1,),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'description' => array('type'=>'text', 'label'=>'Descrption', 'visible'=>-1, 'enabled'=>1, 'position'=>60, 'notnull'=>-1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>62, 'notnull'=>-1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'visible'=>-2, 'enabled'=>1, 'position'=>500, 'notnull'=>1,),
@@ -89,19 +88,18 @@ class ImmoRenter extends CommonObject
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'visible'=>-2, 'enabled'=>1, 'position'=>511, 'notnull'=>-1,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'visible'=>-2, 'enabled'=>1, 'position'=>1000, 'notnull'=>-1,),
 		'status' => array('type'=>'integer', 'label'=>'Status', 'visible'=>1, 'enabled'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
-		'firstname' => array('type'=>'varchar(255)', 'label'=>'Firstname', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'searchall'=>1,),
-		'email' => array('type'=>'varchar(255)', 'label'=>'Email', 'visible'=>1, 'enabled'=>1, 'position'=>63, 'notnull'=>-1,),
-		'birth' => array('type'=>'date', 'label'=>'BirthDay', 'visible'=>1, 'enabled'=>1, 'position'=>64, 'notnull'=>-1,),
-		'phone' => array('type'=>'varchar(30)', 'label'=>'Phone', 'visible'=>-1, 'enabled'=>1, 'position'=>65, 'notnull'=>-1,),
-		'phone_mobile' => array('type'=>'varchar(30)', 'label'=>'PhoneMobile', 'visible'=>1, 'enabled'=>1, 'position'=>66, 'notnull'=>-1,),
-		'civility_id' => array('type'=>'integer', 'label'=>'Civility', 'visible'=>1, 'enabled'=>1, 'position'=>25, 'notnull'=>1, 'arrayofkeyval'=>array('0'=>'MME', '1'=>'MLE', '2'=>'MR')),
-		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'visible'=>-1, 'enabled'=>1, 'position'=>1, 'notnull'=>1, 'index'=>1,),
+		'civility_id' => array('type'=>'integer', 'label'=>'Civility', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>1, 'arrayofkeyval'=>array('0'=>'MME', '1'=>'MLE', '2'=>'MR')),
+		'firstname' => array('type'=>'varchar(255)', 'label'=>'Firstname', 'visible'=>-1, 'enabled'=>1, 'position'=>32, 'notnull'=>1,),
+		'lastname' => array('type'=>'varchar(255)', 'label'=>'Lastname', 'visible'=>-1, 'enabled'=>1, 'position'=>34, 'notnull'=>1, 'searchall'=>1,),
+		'email' => array('type'=>'varchar(255)', 'label'=>'Email', 'visible'=>-1, 'enabled'=>1, 'position'=>36, 'notnull'=>1, 'searchall'=>1,),
+		'birth' => array('type'=>'date', 'label'=>'BirthDay', 'visible'=>-1, 'enabled'=>1, 'position'=>38, 'notnull'=>-1,),
+		'phone' => array('type'=>'varchar(30)', 'label'=>'Phone', 'visible'=>-1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
+		'phone_mobile' => array('type'=>'varchar(30)', 'label'=>'PhoneMobile', 'visible'=>-1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1,),
 	);
+	public $rowid;
 	public $ref;
 	public $entity;
-	public $lastname;
 	public $fk_soc;
-	public $description;
 	public $note_public;
 	public $note_private;
 	public $date_creation;
@@ -110,13 +108,13 @@ class ImmoRenter extends CommonObject
 	public $fk_user_modif;
 	public $import_key;
 	public $status;
+	public $civility_id;
 	public $firstname;
+	public $lastname;
 	public $email;
 	public $birth;
 	public $phone;
 	public $phone_mobile;
-	public $civility_id;
-	public $rowid;
 	// END MODULEBUILDER PROPERTIES
 
 
@@ -126,21 +124,21 @@ class ImmoRenter extends CommonObject
 	/**
 	 * @var int    Name of subtable line
 	 */
-	//public $table_element_line = 'immorenterdet';
+	//public $table_element_line = 'immoownerdet';
 	/**
 	 * @var int    Field with ID of parent key if this field has a parent
 	 */
-	//public $fk_element = 'fk_immorenter';
+	//public $fk_element = 'fk_immoowner';
 	/**
 	 * @var int    Name of subtable class that manage subtable lines
 	 */
-	//public $class_element_line = 'ImmoRenterline';
+	//public $class_element_line = 'ImmoOwnerline';
 	/**
 	 * @var array  Array of child tables (child tables to delete before deleting a record)
 	 */
-	//protected $childtables=array('immorenterdet');
+	//protected $childtables=array('immoownerdet');
 	/**
-	 * @var ImmoRenterLine[]     Array of subtable lines
+	 * @var ImmoOwnerLine[]     Array of subtable lines
 	 */
 	//public $lines = array();
 
@@ -245,7 +243,7 @@ class ImmoRenter extends CommonObject
 	{
 		$this->lines=array();
 
-		// Load lines with object ImmoRenterLine
+		// Load lines with object ImmoOwnerLine
 
 		return count($this->lines)?1:0;
 	}*/
@@ -295,11 +293,11 @@ class ImmoRenter extends CommonObject
         $result = '';
         $companylink = '';
 
-        $label = '<u>' . $langs->trans("ImmoRenter") . '</u>';
+        $label = '<u>' . $langs->trans("ImmoOwner") . '</u>';
         $label.= '<br>';
         $label.= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 
-        $url = dol_buildpath('/immobilier/renter/immorenter_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/immobilier/immoowner_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {
@@ -314,7 +312,7 @@ class ImmoRenter extends CommonObject
         {
             if (! empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER))
             {
-                $label=$langs->trans("ShowImmoRenter");
+                $label=$langs->trans("ShowImmoOwner");
                 $linkclose.=' alt="'.dol_escape_htmltag($label, 1).'"';
             }
             $linkclose.=' title="'.dol_escape_htmltag($label, 1).'"';
@@ -483,10 +481,10 @@ class ImmoRenter extends CommonObject
 }
 
 /**
- * Class ImmoRenterLine. You can also remove this and generate a CRUD class for lines objects.
+ * Class ImmoOwnerLine. You can also remove this and generate a CRUD class for lines objects.
  */
 /*
-class ImmoRenterLine
+class ImmoOwnerLine
 {
 	// @var int ID
 	public $id;
