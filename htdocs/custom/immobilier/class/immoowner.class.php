@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) ---Put here your own copyright and developer email---
+ * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,6 +169,7 @@ class ImmoOwner extends CommonObject
 	 */
 	public function create(User $user, $notrigger = false)
 	{
+		$this->birth = dol_print_date($this->birth,'day');
 		return $this->createCommon($user, $notrigger);
 	}
 
@@ -258,6 +259,7 @@ class ImmoOwner extends CommonObject
 	 */
 	public function update(User $user, $notrigger = false)
 	{
+		$this->birth = dol_print_date($this->birth,'day');
 		return $this->updateCommon($user, $notrigger);
 	}
 
@@ -298,7 +300,7 @@ class ImmoOwner extends CommonObject
         $label.= '<br>';
         $label.= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 
-        $url = dol_buildpath('/immobilier/immoowner_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/immobilier/owner/immoowner_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {
