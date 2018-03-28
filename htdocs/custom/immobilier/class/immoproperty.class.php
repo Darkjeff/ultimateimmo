@@ -98,7 +98,7 @@ class ImmoProperty extends CommonObject
 		'building' => array('type'=>'varchar(32)', 'label'=>'Building', 'visible'=>1, 'enabled'=>1, 'position'=>32, 'notnull'=>-1,),
 		'staircase' => array('type'=>'varchar(8)', 'label'=>'Staircase', 'visible'=>1, 'enabled'=>1, 'position'=>34, 'notnull'=>-1,),
 		'fk_type_property' => array('type'=>'integer', 'label'=>'PropertyType', 'visible'=>-1, 'enabled'=>1, 'position'=>52, 'notnull'=>1,),
-		'fk_property' => array('type'=>'integer', 'label'=>'PropertyParent', 'visible'=>-1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1, 'comment'=>"Hierarchic parent",),
+		//'fk_property' => array('type'=>'integer', 'label'=>'PropertyParent', 'visible'=>-1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1, 'comment'=>"Hierarchic parent",),
 		'numfloor' => array('type'=>'varchar(8)', 'label'=>'NumFloor', 'visible'=>1, 'enabled'=>1, 'position'=>36, 'notnull'=>-1,),
 		'numflat' => array('type'=>'varchar(8)', 'label'=>'NumFlat', 'visible'=>1, 'enabled'=>1, 'position'=>38, 'notnull'=>-1,),
 		'numdoor' => array('type'=>'varchar(8)', 'label'=>'NumDoor', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
