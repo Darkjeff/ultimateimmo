@@ -403,11 +403,11 @@ class modImmobilier extends DolibarrModules
 								'target'=>'',
 								'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
 		$this->menu[$r++]=array(
-                				'fk_menu'=>'fk_mainmenu=immobilier,fk_leftmenu=immobilier_immorent',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+                				'fk_menu'=>'fk_mainmenu=immobilier,fk_leftmenu=immobilier_immoreceipt',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',			                // This is a Left menu entry
 								'titre'=>'New ImmoReceipt',
 								'mainmenu'=>'immobilier',
-								'leftmenu'=>'immobilier_immorent',
+								'leftmenu'=>'immobilier_immoreceipt',
 								'url'=>'/immobilier/receipt/immoreceipt_card.php?action=create',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1100+$r,
