@@ -316,7 +316,7 @@ class ImmoReceipt extends CommonObject
         $label.= '<br>';
         $label.= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 
-        $url = dol_buildpath('/immobilier/immoreceipt_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/immobilier/receipt/immoreceipt_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {

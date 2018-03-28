@@ -17,7 +17,12 @@
 -- BEGIN MODULEBUILDER INDEXES
 ALTER TABLE llx_immobilier_immoreceipt ADD INDEX idx_immobilier_immoreceipt_rowid (rowid);
 ALTER TABLE llx_immobilier_immoreceipt ADD INDEX idx_immobilier_immoreceipt_ref (ref);
+ALTER TABLE llx_immobilier_immoreceipt ADD INDEX idx_immobilier_immoreceipt_vat (vat);
 ALTER TABLE llx_immobilier_immoreceipt ADD INDEX idx_immobilier_immoreceipt_fk_soc (fk_soc);
+ALTER TABLE llx_immobilier_immoreceipt ADD INDEX idx_immobilier_immoreceipt_fk_contract (fk_contract);
+ALTER TABLE llx_immobilier_immoreceipt ADD INDEX idx_immobilier_immoreceipt_fk_property (fk_property);
+ALTER TABLE llx_immobilier_immoreceipt ADD INDEX idx_immobilier_immoreceipt_fk_renter (fk_renter);
+ALTER TABLE llx_immobilier_immoreceipt ADD INDEX idx_immobilier_immoreceipt_fk_owner (fk_owner);
 ALTER TABLE llx_immobilier_immoreceipt ADD CONSTRAINT llx_immobilier_immoreceipt_fk_user_creat FOREIGN KEY (fk_user_creat) REFERENCES llx_user(rowid);
 ALTER TABLE llx_immobilier_immoreceipt ADD INDEX idx_immobilier_immoreceipt_status (status);
 -- END MODULEBUILDER INDEXES
