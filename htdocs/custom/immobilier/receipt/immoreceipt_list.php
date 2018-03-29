@@ -95,7 +95,7 @@ $extralabels = $extrafields->fetch_name_optionals_label('immoreceipt');
 $search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
 
 // Default sort order (if not yet defined by previous GETPOST)
-if (! $sortfield) $sortfield="t.".key($object->fields);   // Set here default search field. By default 1st field in definition.
+if (! $sortfield) $sortfield="t.date_rent";   // Set here default search field. By default 1st field in definition.
 if (! $sortorder) $sortorder="ASC";
 
 // Security check
