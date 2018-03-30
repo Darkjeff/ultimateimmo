@@ -95,7 +95,7 @@ $extralabels = $extrafields->fetch_name_optionals_label('immorenter_type');
 $search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
 
 // Default sort order (if not yet defined by previous GETPOST)
-if (! $sortfield) $sortfield="t.label";   // Set here default search field. By default 1st field in definition.
+if (! $sortfield) $sortfield="t.rentok";   // Set here default search field. By default 1st field in definition.
 if (! $sortorder) $sortorder="ASC";
 
 // Security check

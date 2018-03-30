@@ -41,8 +41,9 @@ if (! $res) die("Include of main fails");
 
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 dol_include_once('/immobilier/class/immorenter.class.php');
+dol_include_once('/immobilier/class/immorenter_type.class.php');
+dol_include_once('/immobilier/class/immorent.class.php');
 require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
-require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 
 $langs->loadLangs(array("immobilier@immobilier"));
 
@@ -77,159 +78,86 @@ $now=dol_now();
 $form = new Form($db);
 $formfile = new FormFile($db);
 $staticrenter=new ImmoRenter($db);
-$companystatic=new Societe($db);
-
+$statictype=new ImmoRenter_Type($db);
+$immorentstatic=new ImmoRent($db);
 
 llxHeader("",$langs->trans("ImmobilierArea"));
 
 print load_fiche_titre($langs->trans("ImmobilierArea"),'','immobilier.png@immobilier');
 
+$Immorenters=array();
+$RenterToValidate=array();
+$RentersValidated=array();
+$RenterUpToDate=array();
+$RentersResiliated=array();
+
+$ImmorenterType=array();
+
+// Liste les locataires
+$sql = "SELECT t.rowid, t.label, t.rentok,";
+$sql.= " d.status, count(d.rowid) as somme";
+$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immorenter_type as t";
+$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."immobilier_immorenter as d";
+$sql.= " ON t.rowid = d.fk_immorenter_type";
+$sql.= " AND d.entity IN (".getEntity('immorenter').")";
+$sql.= " WHERE t.entity IN (".getEntity('immorenter_type').")";
+$sql.= " GROUP BY t.rowid, t.label, t.rentok, d.status";
+
+dol_syslog("index.php::select nb of immorenters by type", LOG_DEBUG);
+$result = $db->query($sql);
+if ($result)
+{
+	$num = $db->num_rows($result);
+	$i = 0;
+	while ($i < $num)
+	{
+		$objp = $db->fetch_object($result);
+
+		$rentertype=new ImmoRenter_Type($db);
+		$rentertype->id=$objp->rowid;
+		$rentertype->rentok=$objp->rentok;
+		$rentertype->label=$objp->label;
+		$ImmorenterType[$objp->rowid]=$rentertype;
+
+		if ($objp->status == -1) { $RenterToValidate[$objp->rowid]=$objp->somme; }
+		if ($objp->status == 1)  { $RentersValidated[$objp->rowid]=$objp->somme; }
+		if ($objp->status == 0)  { $RentersResiliated[$objp->rowid]=$objp->somme; }
+
+		$i++;
+	}
+	$db->free($result);
+}
+
+$now=dol_now();
+
+// List members up to date
+// current rule: uptodate = the end date is in future whatever is type
+// old rule: uptodate = if type does not need payment, that end date is null, if type need payment that end date is in future)
+$sql = "SELECT count(*) as somme , d.fk_immorenter_type";
+$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immorenter as d, ".MAIN_DB_PREFIX."immobilier_immorenter_type as t";
+$sql.= " WHERE d.entity IN (".getEntity('immorenter').")";
+//$sql.= " AND d.statut = 1 AND ((t.subscription = 0 AND d.datefin IS NULL) OR d.datefin >= '".$db->idate($now)."')";
+$sql.= " AND d.status = 1 AND d.datefin >= '".$db->idate($now)."'";
+$sql.= " AND t.rowid = d.fk_immorenter_type";
+$sql.= " GROUP BY d.fk_immorenter_type";
+
+dol_syslog("index.php::select nb of uptodate renters by type", LOG_DEBUG);
+$result = $db->query($sql);
+if ($result)
+{
+	$num = $db->num_rows($result);
+	$i = 0;
+	while ($i < $num)
+	{
+		$objp = $db->fetch_object($result);
+		$RenterUpToDate[$objp->fk_immorenter_type]=$objp->somme;
+		$i++;
+	}
+	$db->free();
+}
+
 print '<div class="fichecenter"><div class="fichethirdleft">';
 
-
-/* BEGIN MODULEBUILDER DRAFT MYOBJECT*/
-// Draft MyObject
-if (! empty($conf->immobilier->enabled) && $user->rights->immobilier->read)
-{
-
-	$sql = "SELECT c.rowid, c.ref, c.civility_id, c.lastname, c.firstname, c.birth as birthday, c.description, c.email, c.phone, c.phone_mobile, c.status, count(c.rowid) as somme, s.rowid as socid, s.nom as name, s.client";
-    $sql.= ", s.code_client";
-	$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immorenter as c";
-	$sql.= ", ".MAIN_DB_PREFIX."societe as s";
-	$sql.= " WHERE c.fk_soc = s.rowid";
-	$sql.= " AND c.entity IN (".getEntity('immorenter').")";
-	if ($socid)	$sql.= " AND c.fk_soc = ".$socid;
-
-	$resql = $db->query($sql);
-	if ($resql)
-	{
-		$total = 0;
-		$num = $db->num_rows($resql);
-
-		print '<table class="noborder" width="100%">';
-		print '<tr class="liste_titre">';
-		print '<th colspan="3">'.$langs->trans("ListOfRenters").($num?' <span class="badge">'.$num.'</span>':'').'</th></tr>';
-
-		if ($num > 0)
-		{
-			$i = 0;
-			while ($i < $num)
-			{
-				$obj = $db->fetch_object($resql);
-				print '<tr class="oddeven"><td class="nowrap">';
-                $staticrenter->id=$obj->rowid;
-                $staticrenter->ref=$obj->ref;
-                $staticrenter->lastname=$obj->lastname;
-                $staticrenter->firstname = $obj->firstname;
-                $staticrenter->email = $obj->email;
-                $staticrenter->phone_mobile = $obj->phone_mobile;
-				$staticrenter->status = $obj->status;
-                print $staticrenter->getNomUrl(1);
-                print '</td>';
-				print '<td class="nowrap">';
-				$companystatic->id=$obj->socid;
-				$companystatic->name=$obj->name;
-				$companystatic->client=$obj->client;
-                $companystatic->code_client = $obj->code_client;
-                $companystatic->code_fournisseur = $obj->code_fournisseur;
-				print $companystatic->getNomUrl(1,'customer',16);
-				print '</td>';
-				print '<td align="right" class="nowrap">'.$obj->email.'</td></tr>';
-				$i++;
-				if ($obj->status == 0)  { $RenterToValidate[$obj->rowid]=$obj->somme; }
-				if ($obj->status == 1)  { $RentersValidated[$obj->rowid]=$obj->somme; }
-				if ($obj->status == -1) { $RentersResiliated[$obj->rowid]=$obj->somme; }
-				
-				
-			}
-
-		}
-		else
-		{
-
-			print '<tr class="oddeven"><td colspan="3" class="opacitymedium">'.$langs->trans("NoOrder").'</td></tr>';
-		}
-		print "</table><br>";
-
-		$db->free($resql);
-	}
-	else
-	{
-		dol_print_error($db);
-	}
-}
-/*END MODULEBUILDER DRAFT MYOBJECT */
-
-
-print '</div><div class="fichetwothirdright"><div class="ficheaddleft">';
-
-
-$NBMAX=3;
-$max=3;
-
-/* BEGIN MODULEBUILDER LASTMODIFIED MYOBJECT
-// Last modified myobject
-if (! empty($conf->immobilier->enabled) && $user->rights->immobilier->read)
-{
-	$sql = "SELECT s.rowid, s.nom as name, s.client, s.datec, s.tms, s.canvas";
-    $sql.= ", s.code_client";
-	$sql.= " FROM ".MAIN_DB_PREFIX."societe as s";
-	if (! $user->rights->societe->client->voir && ! $socid) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
-	$sql.= " WHERE s.client IN (1, 2, 3)";
-	$sql.= " AND s.entity IN (".getEntity($companystatic->element).")";
-	if (! $user->rights->societe->client->voir && ! $socid) $sql.= " AND s.rowid = sc.fk_soc AND sc.fk_user = " .$user->id;
-	if ($socid)	$sql.= " AND s.rowid = $socid";
-	$sql .= " ORDER BY s.tms DESC";
-	$sql .= $db->plimit($max, 0);
-
-	$resql = $db->query($sql);
-	if ($resql)
-	{
-		$num = $db->num_rows($resql);
-		$i = 0;
-
-		print '<table class="noborder" width="100%">';
-		print '<tr class="liste_titre">';
-		print '<th colspan="2">';
-		if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS) && empty($conf->global->SOCIETE_DISABLE_CUSTOMERS)) print $langs->trans("BoxTitleLastCustomersOrProspects",$max);
-        else if (! empty($conf->global->SOCIETE_DISABLE_CUSTOMERS)) print $langs->trans("BoxTitleLastModifiedProspects",$max);
-		else print $langs->trans("BoxTitleLastModifiedCustomers",$max);
-		print '</th>';
-		print '<th align="right">'.$langs->trans("DateModificationShort").'</th>';
-		print '</tr>';
-		if ($num)
-		{
-			while ($i < $num)
-			{
-				$objp = $db->fetch_object($resql);
-				$companystatic->id=$objp->rowid;
-				$companystatic->name=$objp->name;
-				$companystatic->client=$objp->client;
-                $companystatic->code_client = $objp->code_client;
-                $companystatic->code_fournisseur = $objp->code_fournisseur;
-                $companystatic->canvas=$objp->canvas;
-				print '<tr class="oddeven">';
-				print '<td class="nowrap">'.$companystatic->getNomUrl(1,'customer',48).'</td>';
-				print '<td align="right" nowrap>';
-				print $companystatic->getLibCustProspStatut();
-				print "</td>";
-				print '<td align="right" nowrap>'.dol_print_date($db->jdate($objp->tms),'day')."</td>";
-				print '</tr>';
-				$i++;
-
-
-			}
-
-			$db->free($resql);
-		}
-		else
-		{
-			print '<tr class="oddeven"><td colspan="3" class="opacitymedium">'.$langs->trans("None").'</td></tr>';
-		}
-		print "</table><br>";
-	}
-}
-*/
 
 /*
  * Statistics
@@ -244,26 +172,31 @@ if ($conf->use_javascript_ajax)
 
     $SommeA=0;
     $SommeB=0;
-	$SommeC=0;
+    $SommeC=0;
+    $SommeD=0;
     $total=0;
     $dataval=array();
     $datalabels=array();
     $i=0;
-    foreach ($AdherentType as $key => $adhtype)
+    foreach ($ImmorenterType as $key => $rentertype)
     {
-        $datalabels[]=array($i,$adhtype->getNomUrl(0,dol_size(16)));
+        $datalabels[]=array($i,$rentertype->getNomUrl(0,dol_size(16)));
         $dataval['draft'][]=array($i,isset($RenterToValidate[$key])?$RenterToValidate[$key]:0);
-        $dataval['notuptodate'][]=array($i,isset($RentersValidated[$key])?$RentersValidated[$key]-(isset($MemberUpToDate[$key])?$MemberUpToDate[$key]:0):0);
-		$dataval['resiliated'][]=array($i,isset($RentersResiliated[$key])?$RentersResiliated[$key]:0);
+        $dataval['notuptodate'][]=array($i,isset($RentersValidated[$key])?$RentersValidated[$key]-(isset($RenterUpToDate[$key])?$RenterUpToDate[$key]:0):0);
+        $dataval['uptodate'][]=array($i,isset($RenterUpToDate[$key])?$RenterUpToDate[$key]:0);
+        $dataval['resiliated'][]=array($i,isset($RentersResiliated[$key])?$RentersResiliated[$key]:0);
         $SommeA+=isset($RenterToValidate[$key])?$RenterToValidate[$key]:0;
-        $SommeB+=isset($RentersValidated[$key])?$RentersValidated[$key]-(isset($MemberUpToDate[$key])?$MemberUpToDate[$key]:0):0;
-		$SommeC+=isset($MemberUpToDate[$key])?$MemberUpToDate[$key]:0;
+        $SommeB+=isset($RentersValidated[$key])?$RentersValidated[$key]-(isset($RenterUpToDate[$key])?$RenterUpToDate[$key]:0):0;
+        $SommeC+=isset($RenterUpToDate[$key])?$RenterUpToDate[$key]:0;
+        $SommeD+=isset($RentersResiliated[$key])?$RentersResiliated[$key]:0;
         $i++;
     }
-    $total = $SommeA + $SommeB;
+    $total = $SommeA + $SommeB + $SommeC + $SommeD;
     $dataseries=array();
-    $dataseries[]=array($langs->trans("MenuMembersNotUpToDate"), round($SommeB));
-    $dataseries[]=array($langs->trans("MembersStatusToValid"), round($SommeA));
+    $dataseries[]=array($langs->trans("MenuRentersNotUpToDate"), round($SommeB));
+    $dataseries[]=array($langs->trans("MenuRentersUpToDate"), round($SommeC));
+    $dataseries[]=array($langs->trans("RentersStatusResiliated"), round($SommeD));
+    $dataseries[]=array($langs->trans("RentersStatusToValid"), round($SommeA));
 
     include_once DOL_DOCUMENT_ROOT.'/core/class/dolgraph.class.php';
     $dolgraph = new DolGraph();
@@ -277,13 +210,21 @@ if ($conf->use_javascript_ajax)
 
     print '</td></tr>';
     print '<tr class="liste_total"><td>'.$langs->trans("Total").'</td><td align="right">';
-    print $SommeA+$SommeB;
+    print $SommeA+$SommeB+$SommeC+$SommeD;
     print '</td></tr>';
     print '</table>';
     print '</div>';
 }
 
-print '</div></div></div>';
+print '<br>';
+
+
+print '</div><div class="fichetwothirdright"><div class="ficheaddleft">';
+
+
+$NBMAX=3;
+$max=3;
+
 
 llxFooter();
 

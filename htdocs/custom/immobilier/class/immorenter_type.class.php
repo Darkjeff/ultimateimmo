@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) ---Put here your own copyright and developer email---
+ * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ class ImmoRenter_Type extends CommonObject
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
 		'renters' => array('type'=>'varchar(255)', 'label'=>'Renters', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
-		'rentok' => array('type'=>'integer', 'label'=>'RentOk', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
+		'rentok' => array('type'=>'integer', 'label'=>'RentOk', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes'),),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>62, 'notnull'=>-1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>500, 'notnull'=>1,),
@@ -393,7 +393,7 @@ class ImmoRenter_Type extends CommonObject
         $label.= '<br>';
         $label.= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 
-        $url = dol_buildpath('/immobilier/immorenter_type_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/immobilier/renter_type/immorenter_type_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {
