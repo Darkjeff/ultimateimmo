@@ -17,7 +17,7 @@
 --
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS llx_immo_payment (
+CREATE TABLE IF NOT EXISTS llx_immobilier_immopayment (
    rowid  			integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
    fk_contract  	integer NOT NULL,
    fk_property  	integer NOT NULL,

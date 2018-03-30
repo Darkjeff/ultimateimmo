@@ -15,7 +15,7 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --
 -- ========================================================================
-create table if not exists llx_c_immo_type_property
+create table if not exists llx_c_immobilier_type_property
 (
   id      integer     PRIMARY KEY,
   code    varchar(12) NOT NULL,

@@ -18,7 +18,7 @@
 -- ===================================================================
 --
 
-CREATE TABLE IF NOT EXISTS llx_immo_cost
+CREATE TABLE IF NOT EXISTS llx_immobilier_immocost
 (
 	rowid			integer AUTO_INCREMENT PRIMARY KEY,
 	tms             timestamp,

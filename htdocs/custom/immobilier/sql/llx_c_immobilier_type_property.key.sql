@@ -16,4 +16,4 @@
 --
 -- ========================================================================
 
-ALTER TABLE llx_c_immo_type_property ADD UNIQUE INDEX uk_c_immo_type_property(code);
+ALTER TABLE llx_c_immobilier_type_property ADD UNIQUE INDEX uk_c_immo_type_property(code);

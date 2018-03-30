@@ -14,7 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-CREATE TABLE IF NOT EXISTS  llx_immo_typologie  (
+CREATE TABLE IF NOT EXISTS  llx_immobilier_immotypologie  (
    rowid integer NOT NULL  AUTO_INCREMENT PRIMARY KEY,
    type varchar(200) NOT NULL DEFAULT '',
    famille varchar(100) NOT NULL

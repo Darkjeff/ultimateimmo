@@ -26,7 +26,7 @@ SET time_zone = "+00:00";
 -- Structure de la table `llx_immo_building`
 --
 
-CREATE TABLE IF NOT EXISTS `llx_immo_building` (
+CREATE TABLE IF NOT EXISTS `llx_immobilier_immobuilding` (
   `rowid` int(11) NOT NULL AUTO_INCREMENT,
   `fk_property` int(11) NOT NULL,
   `name` text NOT NULL,
