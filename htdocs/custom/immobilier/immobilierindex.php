@@ -43,7 +43,6 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 dol_include_once('/immobilier/class/immorenter.class.php');
 dol_include_once('/immobilier/class/immorenter_type.class.php');
 dol_include_once('/immobilier/class/immorent.class.php');
-require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
 
 $langs->loadLangs(array("immobilier@immobilier"));
 
@@ -218,14 +217,167 @@ if ($conf->use_javascript_ajax)
 
 print '<br>';
 
+// List of rent by year
+$Total=array();
+$Number=array();
+$tot=0;
+$numb=0;
+
+$sql = "SELECT c.notice, c.date_start as datestart";
+$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immorenter as d, ".MAIN_DB_PREFIX."immobilier_immorent as c";
+$sql.= " WHERE d.entity IN (".getEntity('immorenter').")";
+$sql.= " AND d.rowid = c.fk_soc";
+if(isset($date_select) && $date_select != '')
+{
+    $sql .= " AND c.datestart LIKE '".$date_select."%'";
+}
+$result = $db->query($sql);
+if ($result)
+{
+    $num = $db->num_rows($result);
+    $i = 0;
+    while ($i < $num)
+    {
+        $objp = $db->fetch_object($result);
+        $year=dol_print_date($db->jdate($objp->datestart),"%Y");
+        $Total[$year]=(isset($Total[$year])?$Total[$year]:0)+$objp->notice;
+        $Number[$year]=(isset($Number[$year])?$Number[$year]:0)+1;
+        $tot+=$objp->notice;
+        $numb+=1;
+        $i++;
+    }
+}
+
+print '<div class="div-table-responsive-no-min">';
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<th>'.$langs->trans("Subscriptions").'</th>';
+print '<th align="right">'.$langs->trans("Number").'</th>';
+print '<th align="right">'.$langs->trans("AmountTotal").'</th>';
+print '<th align="right">'.$langs->trans("AmountAverage").'</th>';
+print "</tr>\n";
+
+krsort($Total);
+foreach ($Total as $key=>$value)
+{
+    print '<tr class="oddeven">';
+    print '<td><a href=\"'.dol_buildpath('/immobilier/receipt/list.php',1).'?date_select=$key\">$key</a></td>';
+    print "<td align=\"right\">".$Number[$key]."</td>";
+    print "<td align=\"right\">".price($value)."</td>";
+    print "<td align=\"right\">".price(price2num($value/$Number[$key],'MT'))."</td>";
+    print "</tr>\n";
+}
+
+// Total
+print '<tr class="liste_total">';
+print '<td>'.$langs->trans("Total").'</td>';
+print "<td align=\"right\">".$numb."</td>";
+print '<td align="right">'.price($tot)."</td>";
+print "<td align=\"right\">".price(price2num($numb>0?($tot/$numb):0,'MT'))."</td>";
+print "</tr>\n";
+print "</table></div>";
+print "<br>\n";
+
 
 print '</div><div class="fichetwothirdright"><div class="ficheaddleft">';
 
 
-$NBMAX=3;
-$max=3;
+/*
+ * Last modified renters
+ */
+$max=5;
+
+$sql = "SELECT a.rowid, a.status, a.lastname, a.firstname, a.fk_soc,";
+$sql.= " a.tms as datem, a.date_creation,";
+$sql.= " ta.rowid as typeid, ta.label, ta.rentok";
+$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immorenter as a, ".MAIN_DB_PREFIX."immobilier_immorenter_type as ta";
+$sql.= " WHERE a.entity IN (".getEntity('immorenter').")";
+$sql.= " AND a.fk_immorenter_type = ta.rowid";
+$sql.= $db->order("a.tms","DESC");
+$sql.= $db->plimit($max, 0);
+
+$resql=$db->query($sql);
+if ($resql)
+{
+	print '<div class="div-table-responsive-no-min">';
+	print '<table class="noborder" width="100%">';
+	print '<tr class="liste_titre">';
+	print '<th colspan="4">'.$langs->trans("LastRentersModified",$max).'</th></tr>';
+
+	$num = $db->num_rows($resql);
+	if ($num)
+	{
+		$i = 0;
+		while ($i < $num)
+		{
+			$obj = $db->fetch_object($resql);
+			print '<tr class="oddeven">';
+			$staticrenter->id=$obj->rowid;
+			$staticrenter->lastname=$obj->lastname;
+			$staticrenter->firstname=$obj->firstname;
+			if (! empty($obj->fk_soc))
+			{
+				$staticrenter->fk_soc = $obj->fk_soc;
+				$staticrenter->fetch_thirdparty();
+				$staticrenter->name=$staticrenter->thirdparty->name;
+			}
+			else
+			{
+				$staticrenter->name=$obj->company;
+			}
+			$staticrenter->ref=$staticrenter->getFullName($langs);
+			$statictype->id=$obj->typeid;
+			$statictype->label=$obj->label;
+			print '<td>'.$staticrenter->getNomUrl(1,32).'</td>';
+			print '<td>'.$statictype->getNomUrl(1,32).'</td>';
+			print '<td>'.dol_print_date($db->jdate($obj->datem),'dayhour').'</td>';
+			print '<td align="right">'.$staticrenter->LibStatut($obj->status,($obj->rentok=='yes'?1:0),$db->jdate($obj->date_end_subscription),5).'</td>';
+			print '</tr>';
+			$i++;
+		}
+	}
+	print "</table></div>";
+	print "<br>";
+}
+else
+{
+	dol_print_error($db);
+}
+
+// Summary of renters by type
+print '<div class="div-table-responsive-no-min">';
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<th>'.$langs->trans("RentersTypes").'</th>';
+print '<th align=right>'.$langs->trans("RentersStatusToValid").'</th>';
+print '<th align=right>'.$langs->trans("MenuRentersNotUpToDate").'</th>';
+print '<th align=right>'.$langs->trans("MenuRentersUpToDate").'</th>';
+print '<th align=right>'.$langs->trans("RentersStatusResiliated").'</th>';
+print "</tr>\n";
+
+foreach ($ImmorenterType as $key => $rentertype)
+{
+	print '<tr class="oddeven">';
+	print '<td>'.$rentertype->getNomUrl(1, dol_size(32)).'</td>';
+	print '<td align="right">'.(isset($RenterToValidate[$key]) && $RenterToValidate[$key] > 0?$RenterToValidate[$key]:'').' '.$staticrenter->LibStatut(-1,$rentertype->label,0,3).'</td>';
+	print '<td align="right">'.(isset($RentersValidated[$key]) && ($RentersValidated[$key]-(isset($RenterUpToDate[$key])?$RenterUpToDate[$key]:0) > 0) ? $RentersValidated[$key]-(isset($RenterUpToDate[$key])?$RenterUpToDate[$key]:0):'').' '.$staticrenter->LibStatut(1,$rentertype->label,0,3).'</td>';
+	print '<td align="right">'.(isset($RenterUpToDate[$key]) && $RenterUpToDate[$key] > 0 ? $RenterUpToDate[$key]:'').' '.$staticrenter->LibStatut(1,$rentertype->label,$now,3).'</td>';
+	print '<td align="right">'.(isset($RentersResiliated[$key]) && $RentersResiliated[$key]> 0 ?$RentersResiliated[$key]:'').' '.$staticrenter->LibStatut(0,$rentertype->label,0,3).'</td>';
+	print "</tr>\n";
+}
+print '<tr class="liste_total">';
+print '<td class="liste_total">'.$langs->trans("Total").'</td>';
+print '<td class="liste_total" align="right">'.$SommeA.' '.$staticrenter->LibStatut(-1,$rentertype->label,0,3).'</td>';
+print '<td class="liste_total" align="right">'.$SommeB.' '.$staticrenter->LibStatut(1,$rentertype->label,0,3).'</td>';
+print '<td class="liste_total" align="right">'.$SommeC.' '.$staticrenter->LibStatut(1,$rentertype->label,$now,3).'</td>';
+print '<td class="liste_total" align="right">'.$SommeD.' '.$staticrenter->LibStatut(0,$rentertype->label,0,3).'</td>';
+print '</tr>';
+
+print "</table>\n";
+print "</div>";
+
+print '</div></div></div>';
 
 
 llxFooter();
-
 $db->close();
