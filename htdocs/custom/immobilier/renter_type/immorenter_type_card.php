@@ -17,9 +17,9 @@
  */
 
 /**
- *   	\file       immoreceipt_card.php
+ *   	\file       immorenter_type_card.php
  *		\ingroup    immobilier
- *		\brief      Page to create/edit/view immoreceipt
+ *		\brief      Page to create/edit/view immorenter_type
  */
 
 //if (! defined('NOREQUIREUSER'))          define('NOREQUIREUSER','1');
@@ -56,8 +56,8 @@ if (! $res) die("Include of main fails");
 
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
-dol_include_once('/immobilier/class/immoreceipt.class.php');
-dol_include_once('/immobilier/lib/immoreceipt.lib.php');
+dol_include_once('/immobilier/class/immorenter_type.class.php');
+dol_include_once('/immobilier/lib/immorenter_type.lib.php');
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("immobilier@immobilier","other"));
@@ -70,12 +70,12 @@ $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 
 // Initialize technical objects
-$object=new ImmoReceipt($db);
+$object=new ImmoRenter_Type($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
-$hookmanager->initHooks(array('immoreceiptcard'));     // Note that conf->hooks_modules contains array
+$hookmanager->initHooks(array('immorenter_typecard'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
-$extralabels = $extrafields->fetch_name_optionals_label('immoreceipt');
+$extralabels = $extrafields->fetch_name_optionals_label('immorenter_type');
 $search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
 
 // Initialize array of search criterias
@@ -117,7 +117,7 @@ if (empty($reshook))
 
 	$permissiontoadd = $user->rights->immobilier->write;
 	$permissiontodelete = $user->rights->immobilier->delete;
-	$backurlforlist = dol_buildpath('/immobilier/receipt/immoreceipt_list.php',1);
+	$backurlforlist = dol_buildpath('/immobilier/renter_type/immorenter_type_list.php',1);
 
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
@@ -128,7 +128,7 @@ if (empty($reshook))
 	// Actions to send emails
 	$trigger_name='MYOBJECT_SENTBYMAIL';
 	$autocopy='MAIN_MAIL_AUTOCOPY_MYOBJECT_TO';
-	$trackid='immoreceipt'.$object->id;
+	$trackid='immorenter_type'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 }
 
@@ -144,7 +144,7 @@ if (empty($reshook))
 $form=new Form($db);
 $formfile=new FormFile($db);
 
-llxHeader('','ImmoReceipt','');
+llxHeader('','ImmoRenter_Type','');
 
 // Example : Adding jquery code
 print '<script type="text/javascript" language="javascript">
@@ -165,7 +165,7 @@ jQuery(document).ready(function() {
 // Part to create
 if ($action == 'create')
 {
-	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoReceipt")));
+	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoRenter_Type")));
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -198,7 +198,7 @@ if ($action == 'create')
 // Part to edit record
 if (($id || $ref) && $action == 'edit')
 {
-	print load_fiche_titre($langs->trans("ImmoReceipt"));
+	print load_fiche_titre($langs->trans("ImmoRenter_Type"));
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -232,15 +232,15 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 {
     $res = $object->fetch_optionals();
 
-	$head = immoreceiptPrepareHead($object);
-	dol_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'immoreceipt@immobilier');
+	$head = immorenter_typePrepareHead($object);
+	dol_fiche_head($head, 'card', $langs->trans("ImmoRenter_Type"), -1, 'immorenter_type@immobilier');
 
 	$formconfirm = '';
 
 	// Confirmation to delete
 	if ($action == 'delete')
 	{
-	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
+	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoRenter_Type'), $langs->trans('ConfirmDeleteImmoRenter_Type'), 'confirm_delete', '', 0, 1);
 	}
 
 	// Confirmation of action xxxx
@@ -270,7 +270,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/immobilier/receipt/immoreceipt_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/immobilier/renter_type/immorenter_type_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref='<div class="refidno">';
 	/*
@@ -409,7 +409,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		*/
 
 	    // Show links to link elements
-	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));
+	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immorenter_type'));
 	    $somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
 
 
@@ -417,14 +417,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	    $MAXEVENT = 10;
 
-	    $morehtmlright = '<a href="'.dol_buildpath('/immobilier/receipt/immoreceipt_info.php', 1).'?id='.$object->id.'">';
+	    $morehtmlright = '<a href="'.dol_buildpath('/immobilier/renter_type/immorenter_type_info.php', 1).'?id='.$object->id.'">';
 	    $morehtmlright.= $langs->trans("SeeAll");
 	    $morehtmlright.= '</a>';
 
 	    // List of actions on element
 	    include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
 	    $formactions = new FormActions($db);
-	    $somethingshown = $formactions->showactions($object, 'immoreceipt', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
+	    $somethingshown = $formactions->showactions($object, 'immorenter_type', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
 
 	    print '</div></div></div>';
 	}

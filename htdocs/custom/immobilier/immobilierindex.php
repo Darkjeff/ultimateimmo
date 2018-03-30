@@ -40,10 +40,14 @@ if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main
 if (! $res) die("Include of main fails");
 
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
+dol_include_once('/immobilier/class/immorenter.class.php');
+require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
+require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 
 $langs->loadLangs(array("immobilier@immobilier"));
 
 $action=GETPOST('action', 'alpha');
+$id = GETPOST('id','int')?GETPOST('id','int'):GETPOST('rowid','int');
 
 
 // Securite acces client
@@ -72,6 +76,9 @@ $now=dol_now();
 
 $form = new Form($db);
 $formfile = new FormFile($db);
+$staticrenter=new ImmoRenter($db);
+$companystatic=new Societe($db);
+
 
 llxHeader("",$langs->trans("ImmobilierArea"));
 
@@ -80,21 +87,17 @@ print load_fiche_titre($langs->trans("ImmobilierArea"),'','immobilier.png@immobi
 print '<div class="fichecenter"><div class="fichethirdleft">';
 
 
-/* BEGIN MODULEBUILDER DRAFT MYOBJECT
+/* BEGIN MODULEBUILDER DRAFT MYOBJECT*/
 // Draft MyObject
 if (! empty($conf->immobilier->enabled) && $user->rights->immobilier->read)
 {
-	$langs->load("orders");
 
-	$sql = "SELECT c.rowid, c.ref, c.ref_client, c.total_ht, c.tva as total_tva, c.total_ttc, s.rowid as socid, s.nom as name, s.client, s.canvas";
+	$sql = "SELECT c.rowid, c.ref, c.civility_id, c.lastname, c.firstname, c.birth as birthday, c.description, c.email, c.phone, c.phone_mobile, c.status, count(c.rowid) as somme, s.rowid as socid, s.nom as name, s.client";
     $sql.= ", s.code_client";
-	$sql.= " FROM ".MAIN_DB_PREFIX."commande as c";
+	$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immorenter as c";
 	$sql.= ", ".MAIN_DB_PREFIX."societe as s";
-	if (! $user->rights->societe->client->voir && ! $socid) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 	$sql.= " WHERE c.fk_soc = s.rowid";
-	$sql.= " AND c.fk_statut = 0";
-	$sql.= " AND c.entity IN (".getEntity('commande').")";
-	if (! $user->rights->societe->client->voir && ! $socid) $sql.= " AND s.rowid = sc.fk_soc AND sc.fk_user = " .$user->id;
+	$sql.= " AND c.entity IN (".getEntity('immorenter').")";
 	if ($socid)	$sql.= " AND c.fk_soc = ".$socid;
 
 	$resql = $db->query($sql);
@@ -105,24 +108,23 @@ if (! empty($conf->immobilier->enabled) && $user->rights->immobilier->read)
 
 		print '<table class="noborder" width="100%">';
 		print '<tr class="liste_titre">';
-		print '<th colspan="3">'.$langs->trans("DraftOrders").($num?' <span class="badge">'.$num.'</span>':'').'</th></tr>';
+		print '<th colspan="3">'.$langs->trans("ListOfRenters").($num?' <span class="badge">'.$num.'</span>':'').'</th></tr>';
 
-		$var = true;
 		if ($num > 0)
 		{
 			$i = 0;
 			while ($i < $num)
 			{
-
 				$obj = $db->fetch_object($resql);
 				print '<tr class="oddeven"><td class="nowrap">';
-                $orderstatic->id=$obj->rowid;
-                $orderstatic->ref=$obj->ref;
-                $orderstatic->ref_client=$obj->ref_client;
-                $orderstatic->total_ht = $obj->total_ht;
-                $orderstatic->total_tva = $obj->total_tva;
-                $orderstatic->total_ttc = $obj->total_ttc;
-                print $orderstatic->getNomUrl(1);
+                $staticrenter->id=$obj->rowid;
+                $staticrenter->ref=$obj->ref;
+                $staticrenter->lastname=$obj->lastname;
+                $staticrenter->firstname = $obj->firstname;
+                $staticrenter->email = $obj->email;
+                $staticrenter->phone_mobile = $obj->phone_mobile;
+				$staticrenter->status = $obj->status;
+                print $staticrenter->getNomUrl(1);
                 print '</td>';
 				print '<td class="nowrap">';
 				$companystatic->id=$obj->socid;
@@ -130,18 +132,17 @@ if (! empty($conf->immobilier->enabled) && $user->rights->immobilier->read)
 				$companystatic->client=$obj->client;
                 $companystatic->code_client = $obj->code_client;
                 $companystatic->code_fournisseur = $obj->code_fournisseur;
-                $companystatic->canvas=$obj->canvas;
 				print $companystatic->getNomUrl(1,'customer',16);
 				print '</td>';
-				print '<td align="right" class="nowrap">'.price($obj->total_ttc).'</td></tr>';
+				print '<td align="right" class="nowrap">'.$obj->email.'</td></tr>';
 				$i++;
-				$total += $obj->total_ttc;
+				if ($obj->status == 0)  { $RenterToValidate[$obj->rowid]=$obj->somme; }
+				if ($obj->status == 1)  { $RentersValidated[$obj->rowid]=$obj->somme; }
+				if ($obj->status == -1) { $RentersResiliated[$obj->rowid]=$obj->somme; }
+				
+				
 			}
-			if ($total>0)
-			{
 
-				print '<tr class="liste_total"><td>'.$langs->trans("Total").'</td><td colspan="2" align="right">'.price($total)."</td></tr>";
-			}
 		}
 		else
 		{
@@ -157,7 +158,7 @@ if (! empty($conf->immobilier->enabled) && $user->rights->immobilier->read)
 		dol_print_error($db);
 	}
 }
-END MODULEBUILDER DRAFT MYOBJECT */
+/*END MODULEBUILDER DRAFT MYOBJECT */
 
 
 print '</div><div class="fichetwothirdright"><div class="ficheaddleft">';
@@ -229,6 +230,58 @@ if (! empty($conf->immobilier->enabled) && $user->rights->immobilier->read)
 	}
 }
 */
+
+/*
+ * Statistics
+ */
+
+if ($conf->use_javascript_ajax)
+{
+	print '<div class="div-table-responsive-no-min">';
+	print '<table class="noborder nohover" width="100%">';
+    print '<tr class="liste_titre"><th colspan="2">'.$langs->trans("Statistics").'</th></tr>';
+    print '<tr><td align="center" colspan="2">';
+
+    $SommeA=0;
+    $SommeB=0;
+	$SommeC=0;
+    $total=0;
+    $dataval=array();
+    $datalabels=array();
+    $i=0;
+    foreach ($AdherentType as $key => $adhtype)
+    {
+        $datalabels[]=array($i,$adhtype->getNomUrl(0,dol_size(16)));
+        $dataval['draft'][]=array($i,isset($RenterToValidate[$key])?$RenterToValidate[$key]:0);
+        $dataval['notuptodate'][]=array($i,isset($RentersValidated[$key])?$RentersValidated[$key]-(isset($MemberUpToDate[$key])?$MemberUpToDate[$key]:0):0);
+		$dataval['resiliated'][]=array($i,isset($RentersResiliated[$key])?$RentersResiliated[$key]:0);
+        $SommeA+=isset($RenterToValidate[$key])?$RenterToValidate[$key]:0;
+        $SommeB+=isset($RentersValidated[$key])?$RentersValidated[$key]-(isset($MemberUpToDate[$key])?$MemberUpToDate[$key]:0):0;
+		$SommeC+=isset($MemberUpToDate[$key])?$MemberUpToDate[$key]:0;
+        $i++;
+    }
+    $total = $SommeA + $SommeB;
+    $dataseries=array();
+    $dataseries[]=array($langs->trans("MenuMembersNotUpToDate"), round($SommeB));
+    $dataseries[]=array($langs->trans("MembersStatusToValid"), round($SommeA));
+
+    include_once DOL_DOCUMENT_ROOT.'/core/class/dolgraph.class.php';
+    $dolgraph = new DolGraph();
+    $dolgraph->SetData($dataseries);
+    $dolgraph->setShowLegend(1);
+    $dolgraph->setShowPercent(1);
+    $dolgraph->SetType(array('pie'));
+    $dolgraph->setWidth('100%');
+    $dolgraph->draw('idgraphstatus');
+    print $dolgraph->show($total?0:1);
+
+    print '</td></tr>';
+    print '<tr class="liste_total"><td>'.$langs->trans("Total").'</td><td align="right">';
+    print $SommeA+$SommeB;
+    print '</td></tr>';
+    print '</table>';
+    print '</div>';
+}
 
 print '</div></div></div>';
 

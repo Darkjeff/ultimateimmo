@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) ---Put here your own copyright and developer email---
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,43 +17,41 @@
  */
 
 /**
- * \file        class/immorenter.class.php
+ * \file        class/immorenter_type.class.php
  * \ingroup     immobilier
- * \brief       This file is a CRUD class file for ImmoRenter (Create/Read/Update/Delete)
+ * \brief       This file is a CRUD class file for ImmoRenter_Type (Create/Read/Update/Delete)
  */
 
 // Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
-require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 //require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 //require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
 /**
- * Class for ImmoRenter
+ * Class for ImmoRenter_Type
  */
-class ImmoRenter extends CommonObject
+class ImmoRenter_Type extends CommonObject
 {
-	public $fk_element='fk_renter';
 	/**
 	 * @var string ID to identify managed object
 	 */
-	public $element = 'immorenter';
+	public $element = 'immorenter_type';
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
-	public $table_element = 'immobilier_immorenter';
+	public $table_element = 'immobilier_immorenter_type';
 	/**
-	 * @var int  Does immorenter support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	 * @var int  Does immorenter_type support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
 	public $ismultientitymanaged = 0;
 	/**
-	 * @var int  Does immorenter support extrafields ? 0=No, 1=Yes
+	 * @var int  Does immorenter_type support extrafields ? 0=No, 1=Yes
 	 */
 	public $isextrafieldmanaged = 1;
 	/**
-	 * @var string String with name of icon for immorenter. Must be the part after the 'object_' into object_immorenter.png
+	 * @var string String with name of icon for immorenter_type. Must be the part after the 'object_' into object_immorenter_type.png
 	 */
-	public $picto = 'immorenter@immobilier';
+	public $picto = 'immorenter_type@immobilier';
 
 
 	/**
@@ -62,6 +60,7 @@ class ImmoRenter extends CommonObject
 	 *  'enabled' is a condition when the field must be managed.
 	 *  'visible' says if field is visible in list (Examples: 0=Not visible, 1=Visible on list and create/update/view forms, 2=Visible on list only. Using a negative value means field is not shown by default on list but can be selected for viewing)
 	 *  'notnull' is set to 1 if not null in database. Set to -1 if we must set data to null if empty ('' or 0).
+	 *  'default' is a default value for creation (can still be replaced by the global setup of default values)
 	 *  'index' if we want an index in database.
 	 *  'foreignkey'=>'tablename.field' if the field is a foreign key (it is recommanded to name the field fk_...).
 	 *  'position' is the sort order of field.
@@ -69,8 +68,8 @@ class ImmoRenter extends CommonObject
 	 *  'isameasure' must be set to 1 if you want to have a total on list for this field. Field type must be summable like integer or double(24,8).
 	 *  'help' is a string visible as a tooltip on field
 	 *  'comment' is not used. You can store here any text of your choice. It is not used by application.
-	 *  'default' is a default value for creation (can still be replaced by the global setup of default values)
-	 *  'showoncombobox' if field must be shown into the label of combobox
+	 *  'showoncombobox' if value of the field must be visible into the label of the combobox that list record
+	 *  'arraykeyval' to set list of value if type is a list of predefined values. For example: array("0"=>"Draft","1"=>"Active","-1"=>"Cancel")
 	 */
 
 	// BEGIN MODULEBUILDER PROPERTIES
@@ -78,34 +77,25 @@ class ImmoRenter extends CommonObject
 	 * @var array  Array with all fields and their property. Do not use it as a static var. It may be modified by constructor.
 	 */
 	public $fields=array(
-		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'visible'=>1, 'enabled'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
-		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>-1, 'enabled'=>1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
-		'lastname' => array('type'=>'varchar(255)', 'label'=>'Lastname', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1,),
-		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'fk_immorenter_type' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ImmoRenterType', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'description' => array('type'=>'text', 'label'=>'Description', 'visible'=>-1, 'enabled'=>1, 'position'=>60, 'notnull'=>-1,),
-		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>61, 'notnull'=>-1,),
-		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>62, 'notnull'=>-1,),
-		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'visible'=>-2, 'enabled'=>1, 'position'=>500, 'notnull'=>1,),
-		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'visible'=>-2, 'enabled'=>1, 'position'=>501, 'notnull'=>1,),
-		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'visible'=>-2, 'enabled'=>1, 'position'=>510, 'notnull'=>1,),
-		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'visible'=>-2, 'enabled'=>1, 'position'=>511, 'notnull'=>-1,),
-		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'visible'=>-2, 'enabled'=>1, 'position'=>1000, 'notnull'=>-1,),
-		'status' => array('type'=>'integer', 'label'=>'Status', 'visible'=>1, 'enabled'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
-		'firstname' => array('type'=>'varchar(255)', 'label'=>'Firstname', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'searchall'=>1,),
-		'email' => array('type'=>'varchar(255)', 'label'=>'Email', 'visible'=>1, 'enabled'=>1, 'position'=>63, 'notnull'=>-1,),
-		'birth' => array('type'=>'date', 'label'=>'BirthDay', 'visible'=>1, 'enabled'=>1, 'position'=>64, 'notnull'=>-1,),
-		'phone' => array('type'=>'varchar(30)', 'label'=>'Phone', 'visible'=>-1, 'enabled'=>1, 'position'=>65, 'notnull'=>-1,),
-		'phone_mobile' => array('type'=>'varchar(30)', 'label'=>'PhoneMobile', 'visible'=>1, 'enabled'=>1, 'position'=>66, 'notnull'=>-1,),
-		'civility_id' => array('type'=>'integer', 'label'=>'Civility', 'visible'=>1, 'enabled'=>1, 'position'=>25, 'notnull'=>1, 'arrayofkeyval'=>array('0'=>'MME', '1'=>'MLE', '2'=>'MR')),
-		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'visible'=>-1, 'enabled'=>1, 'position'=>1, 'notnull'=>1, 'index'=>1,),
+		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
+		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
+		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
+		'renters' => array('type'=>'varchar(255)', 'label'=>'Renters', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
+		'rentok' => array('type'=>'integer', 'label'=>'RentOk', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
+		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>61, 'notnull'=>-1,),
+		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>62, 'notnull'=>-1,),
+		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>500, 'notnull'=>1,),
+		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
+		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1, 'foreignkey'=>'llx_user.rowid',),
+		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'enabled'=>1, 'visible'=>-2, 'position'=>511, 'notnull'=>-1,),
+		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1,),
+		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
 	);
+	public $rowid;
 	public $ref;
-	public $entity;
-	public $lastname;
-	public $fk_soc;
-	public $fk_immorenter_type;
-	public $description;
+	public $label;
+	public $renters;
+	public $rentok;
 	public $note_public;
 	public $note_private;
 	public $date_creation;
@@ -114,13 +104,6 @@ class ImmoRenter extends CommonObject
 	public $fk_user_modif;
 	public $import_key;
 	public $status;
-	public $firstname;
-	public $email;
-	public $birth;
-	public $phone;
-	public $phone_mobile;
-	public $civility_id;
-	public $rowid;
 	// END MODULEBUILDER PROPERTIES
 
 
@@ -130,21 +113,21 @@ class ImmoRenter extends CommonObject
 	/**
 	 * @var int    Name of subtable line
 	 */
-	//public $table_element_line = 'immorenterdet';
+	//public $table_element_line = 'immorenter_typedet';
 	/**
 	 * @var int    Field with ID of parent key if this field has a parent
 	 */
-	//public $fk_element = 'fk_immorenter';
+	//public $fk_element = 'fk_immorenter_type';
 	/**
 	 * @var int    Name of subtable class that manage subtable lines
 	 */
-	//public $class_element_line = 'ImmoRenterline';
+	//public $class_element_line = 'ImmoRenter_Typeline';
 	/**
 	 * @var array  Array of child tables (child tables to delete before deleting a record)
 	 */
-	//protected $childtables=array('immorenterdet');
+	//protected $childtables=array('immorenter_typedet');
 	/**
-	 * @var ImmoRenterLine[]     Array of subtable lines
+	 * @var ImmoRenter_TypeLine[]     Array of subtable lines
 	 */
 	//public $lines = array();
 
@@ -157,12 +140,22 @@ class ImmoRenter extends CommonObject
 	 */
 	public function __construct(DoliDB $db)
 	{
-		global $conf;
+		global $conf, $user;
 
 		$this->db = $db;
+		$this->status = 1;
 
-		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID)) $this->fields['rowid']['visible']=0;
-		if (empty($conf->multicompany->enabled)) $this->fields['entity']['enabled']=0;
+		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible']=0;
+		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled']=0;
+
+		// Unset fields that are disabled
+		foreach($this->fields as $key => $val)
+		{
+			if (isset($val['enabled']) && empty($val['enabled']))
+			{
+				unset($this->fields[$key]);
+			}
+		}
 	}
 
 	/**
@@ -174,7 +167,6 @@ class ImmoRenter extends CommonObject
 	 */
 	public function create(User $user, $notrigger = false)
 	{
-		$this->birth = dol_print_date($this->birth,'day');
 		return $this->createCommon($user, $notrigger);
 	}
 
@@ -250,7 +242,7 @@ class ImmoRenter extends CommonObject
 	{
 		$this->lines=array();
 
-		// Load lines with object ImmoRenterLine
+		// Load lines with object ImmoRenter_TypeLine
 
 		return count($this->lines)?1:0;
 	}*/
@@ -264,7 +256,6 @@ class ImmoRenter extends CommonObject
 	 */
 	public function update(User $user, $notrigger = false)
 	{
-		$this->birth = dol_print_date($this->birth,'day');
 		return $this->updateCommon($user, $notrigger);
 	}
 
@@ -279,6 +270,103 @@ class ImmoRenter extends CommonObject
 	{
 		return $this->deleteCommon($user, $notrigger);
 	}
+	
+	/**
+	 *  Return list of renters' type
+	 *
+	 *  @return 	array	List of types of renters
+	 */
+	function liste_array()
+	{
+		global $conf,$langs;
+
+		$rentertypes = array();
+
+		$sql = "SELECT rowid, label";
+		$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immorenter_type";
+		$sql.= " WHERE entity IN (".getEntity('immorenter_type').")";
+
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$nump = $this->db->num_rows($resql);
+
+			if ($nump)
+			{
+				$i = 0;
+				while ($i < $nump)
+				{
+					$obj = $this->db->fetch_object($resql);
+
+					$rentertypes[$obj->rowid] = $langs->trans($obj->label);
+					$i++;
+				}
+			}
+		}
+		else
+		{
+			print $this->db->error();
+		}
+		return $rentertypes;
+	}
+	
+	/**
+	 * 	Return array of Renter objects for renter type this->id (or all if this->id not defined)
+	 *
+	 * 	@param	string	$excludefilter		Filter to exclude
+	 *  @param	int		$mode				0=Return array of renter instance
+	 *  									1=Return array of renter instance without extra data
+	 *  									2=Return array of renters id only
+	 * 	@return	mixed						Array of renters or -1 on error
+	 */
+	function listRentersForRenterType($excludefilter='', $mode=0)
+	{
+		global $conf, $user;
+
+		$ret=array();
+
+		$sql = "SELECT a.rowid";
+		$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immorenter as a";
+		$sql.= " WHERE a.entity IN (".getEntity('immorenter').")";
+		$sql.= " AND a.fk_immorenter_type = ".$this->id;
+		if (! empty($excludefilter)) $sql.=' AND ('.$excludefilter.')';
+
+		dol_syslog(get_class($this)."::listUsersForGroup", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			while ($obj = $this->db->fetch_object($resql))
+			{
+				if (! array_key_exists($obj->rowid, $ret))
+				{
+					if ($mode < 2)
+					{
+						$renterstatic=new ImmoRenter($this->db);
+						if ($mode == 1) {
+							$renterstatic->fetch($obj->rowid,'','','',false, false);
+						} else {
+							$renterstatic->fetch($obj->rowid);
+						}
+						$ret[$obj->rowid]=$renterstatic;
+					}
+					else $ret[$obj->rowid]=$obj->rowid;
+				}
+			}
+
+			$this->db->free($resql);
+
+			$this->renters=$ret;
+
+			return $ret;
+		}
+		else
+		{
+			$this->error=$this->db->lasterror();
+			return -1;
+		}
+	}
+
+
 
 	/**
 	 *  Return a link to the object card (with optionaly the picto)
@@ -301,11 +389,11 @@ class ImmoRenter extends CommonObject
         $result = '';
         $companylink = '';
 
-        $label = '<u>' . $langs->trans("ImmoRenter") . '</u>';
+        $label = '<u>' . $langs->trans("ImmoRenter_Type") . '</u>';
         $label.= '<br>';
         $label.= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 
-        $url = dol_buildpath('/immobilier/renter/immorenter_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/immobilier/immorenter_type_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {
@@ -320,7 +408,7 @@ class ImmoRenter extends CommonObject
         {
             if (! empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER))
             {
-                $label=$langs->trans("ShowImmoRenter");
+                $label=$langs->trans("ShowImmoRenter_Type");
                 $linkclose.=' alt="'.dol_escape_htmltag($label, 1).'"';
             }
             $linkclose.=' title="'.dol_escape_htmltag($label, 1).'"';
@@ -469,30 +557,40 @@ class ImmoRenter extends CommonObject
 
 	/**
 	 * Action executed by scheduler
-	 * CAN BE A CRON TASK
+	 * CAN BE A CRON TASK. In such a case, paramerts come from the schedule job setup field 'Parameters'
 	 *
 	 * @return	int			0 if OK, <>0 if KO (this function is used also by cron so only 0 is OK)
 	 */
+	//public function doScheduledJob($param1, $param2, ...)
 	public function doScheduledJob()
 	{
 		global $conf, $langs;
 
+		//$conf->global->SYSLOG_FILE = 'DOL_DATA_ROOT/dolibarr_mydedicatedlofile.log';
+
+		$error = 0;
 		$this->output = '';
 		$this->error='';
 
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
+		$now = dol_now();
+
+		$this->db->begin();
+
 		// ...
 
-		return 0;
+		$this->db->commit();
+
+		return $error;
 	}
 }
 
 /**
- * Class ImmoRenterLine. You can also remove this and generate a CRUD class for lines objects.
+ * Class ImmoRenter_TypeLine. You can also remove this and generate a CRUD class for lines objects.
  */
 /*
-class ImmoRenterLine
+class ImmoRenter_TypeLine
 {
 	// @var int ID
 	public $id;
