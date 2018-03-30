@@ -19,7 +19,7 @@ CREATE TABLE llx_immobilier_immorenter_type(
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL, 
 	label varchar(255), 
-	renters varchar(255), 
+	--renters varchar(255), 
 	rentok integer, 
 	note_public text, 
 	note_private text, 
