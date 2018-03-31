@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) ---Put here your own copyright and developer email---
+ * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,8 +55,8 @@ $ref = GETPOST('ref', 'alpha');
 
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
-//if ($user->societe_id > 0) $socid = $user->societe_id;
-//$result = restrictedArea($user, 'immobilier', $id);
+if ($user->societe_id > 0) $socid = $user->societe_id;
+$result = restrictedArea($user, 'immobilier', $id);
 
 // Get parameters
 $sortfield = GETPOST("sortfield",'alpha');
@@ -81,8 +81,8 @@ $extralabels = $extrafields->fetch_name_optionals_label('immoproperty');
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
-if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->ref);
-
+if ($id > 0 || ! empty($ref)) $upload_dir = $conf->immobilier->multidir_output[$object->entity] . "/property/" . dol_sanitizeFileName($object->ref);
+$modulepart='property';
 
 
 /*
@@ -146,14 +146,14 @@ if ($object->id)
 	dol_fiche_end();
 
 	$modulepart = 'immobilier';
-	//$permission = $user->rights->immobilier->create;
+	$permission = $user->rights->immobilier->write;
 	$permission = 1;
-	//$permtoedit = $user->rights->immobilier->create;
+	$permtoedit = $user->rights->immobilier->write;
 	$permtoedit = 1;
 	$param = '&id=' . $object->id;
 
 	//$relativepathwithnofile='immoproperty/' . dol_sanitizeFileName($object->id).'/';
-	$relativepathwithnofile='immoproperty/' . dol_sanitizeFileName($object->ref).'/';
+	$relativepathwithnofile='property/' . dol_sanitizeFileName($object->ref).'/';
 
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 }

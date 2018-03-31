@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2013		Olivier Geffroy		<jeff@jeffinfo.com>
  * Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro@zendsi.com>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018 	   Philippe GRAND 	    <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,9 @@
  */
 
 /**
- * \file    immobilier/property/diagnostic.php
+ * \file    immobilier/property/equipement.php
  * \ingroup immobilier
- * \brief   Diagnostic
+ * \brief   Equipement page
  */
 // Load Dolibarr environment
 $res=0;
@@ -41,8 +41,7 @@ dol_include_once('/immobilier/lib/immoproperty.lib.php');
 dol_include_once('/immobilier/class/immoproperty.class.php');
 dol_include_once('/immobilier/class/html.formimmobilier.class.php');
 
-// Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier"));
+$langs->load("immobilier@immobilier");
 
 $mesg = '';
 $id = GETPOST('rowid') ? GETPOST('rowid', 'int') : GETPOST('id', 'int');
@@ -53,7 +52,7 @@ if (! $user->rights->immobilier->read) {
 	accessforbidden();
 }
 
-$object = new Immoproperty($db);
+$object = new ImmoProperty($db);
 $result = $object->fetch($id);
 
 if ($result < 0) {
@@ -67,11 +66,11 @@ if ($result < 0) {
 $html = new Form($db);
 $htmlimmo = new FormImmobilier($db);
 
-llxheader('', $langs->trans("Property") . ' | ' . $langs->trans("Diagnostic"), '');
+llxheader('', $langs->trans("Property") . ' | ' . $langs->trans("Equipements"), '');
 
 $head = immopropertyPrepareHead($object);
 
-dol_fiche_head($head, 'diagnostic', $langs->trans("Property"), 0, 'building@immobilier');
+dol_fiche_head($head, 'equipement', $langs->trans("Property"), 0, 'building@immobilier');
 
 if ($result) {
 	if ($mesg)
@@ -82,36 +81,50 @@ if ($result) {
 	dol_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
 
 	print '<div class="fichecenter">';
-
+	print '<div class="fichehalfleft">';
+			
+	print '<div class="underbanner clearboth"></div>';
 	print '<table class="border tableforfield" width="100%">';
 
-	// Build date
+	// ADSL
 	print '<tr>';
-	print '<td class="titlefield">' . $langs->trans("BuildDate") . '</td>';
+	print '<td class="titlefield">' . $langs->trans("ADSL") . '</td>';
+	print '<td>';
+	if (! empty($conf->use_javascript_ajax))
+	{
+		print ajax_constantonoff('DISPLAY_MARGIN_RATES');
+	}
+	else
+	{
+		if (empty($conf->global->DISPLAY_MARGIN_RATES))
+		{
+			print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_DISPLAY_MARGIN_RATES">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+		}
+		else
+		{
+			print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_DISPLAY_MARGIN_RATES">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+		}
+	}
+	print '</td>';
+	print '</tr>';
+
+	print '</table>';
+	print '</div>';
+	print '<div class="fichehalfright"><div class="ficheaddleft">';
+		   
+	print '<div class="underbanner clearboth"></div>';
+	print '<table class="border tableforfield" width="100%">';
+
+	// ADSL
+	print '<tr>';
+	print '<td class="titlefield">' . $langs->trans("Cable") . '</td>';
 	print '<td>' . dol_print_date($object->datep,"day") . '</td>';
 	print '</tr>';
-
-	// Target
-	print '<tr>';
-	print '<td>'.$langs->trans("Target").'</td>';
-	if ($object->target == 0) $target = $langs->trans("PropertyForRent"); else $target = $langs->trans("PropertyForSale");  
-	print '<td>'.$target.'</td>';
-	print '</tr>';
-
-	print '<tr>';
-	print '<td>'.$langs->trans("DiagnosticsNecessary").'</td>';	
-	print '<td>';
-	print '- ' . $langs->trans("DPE") . '<br>';
-	if ($object->target == 0) print '- ' . $langs->trans("SurfaceHabitable") . '<br>';
-	if ($object->target == 0) print '- ' . $langs->trans("ERNMT") . '<br>';
-	if ($object->target == 0 && dol_print_date($object->datep,"day") < '01/01/1949') '- ' . print $langs->trans("Plomb") . '<br>';
-	if ($object->target == 0 && dol_print_date($object->datep,"day") < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
-	if ($object->target == 0 && dol_print_date($object->datep,"day") < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
-	if ($object->target == 0 && dol_print_date($object->datep,"day") < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
-	print '</tr>';
-	print '</table>';
 	
-	print '</div>';			
+	print "</table>\n";
+	print '</div>';
+			
+	print '</div></div>';
 	print '<div style="clear:both"></div>';
 	
 	dol_fiche_end();

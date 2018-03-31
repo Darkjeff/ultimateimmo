@@ -73,6 +73,12 @@ function immopropertyPrepareHead($object)
 	$head[$h][1] = $langs->trans("Diagnostic");
 	$head[$h][2] = 'diagnostic';
 	$h++;
+	
+	$head[$h][0] = dol_buildpath('/immobilier/property/equipement.php', 1) . '?id=' . $object->id;
+	$head[$h][1] = $langs->trans("Equipements");
+	$head[$h][2] = 'equipement';
+	$hselected = $h;
+	$h ++;
 
 	// Show more tabs from modules
 	// Entries must be declared in modules descriptor with line
