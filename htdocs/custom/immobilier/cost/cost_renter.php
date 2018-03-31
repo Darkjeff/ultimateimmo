@@ -185,7 +185,7 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=10,ic.amount,0)),2) AS 'Octobre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_cost as ic";
+$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "immobilier_immotypologie as it";
 $sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "immobilier_immobuilding as ii";
@@ -275,10 +275,10 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=10,ic.amount,0)),2) AS 'Octobre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_cost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immo_typologie as it";
-$sql .= " , " . MAIN_DB_PREFIX . "immo_property as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "immo_building as ii";
+$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immotypologie as it";
+$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immobuilding as ii";
 $sql .= " WHERE ic.datec >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.datec <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.cost_type = it.rowid ";
@@ -353,10 +353,7 @@ print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr>';
 
 
-
-
-$db->close ();
-
-llxFooter ( '' );
+llxFooter('');
+$db->close();
 
 ?>

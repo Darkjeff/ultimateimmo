@@ -2,6 +2,7 @@
 /* Copyright (C) 2001-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
+ * Copyright (C) 2018 	   Philippe GRAND 	    <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,26 +24,29 @@
  * \brief Page accueil ventilation
  */
 
-// Dolibarr environment
-$res = @include ("../main.inc.php");
-if (! $res && file_exists("../main.inc.php"))
-	$res = @include ("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php"))
-	$res = @include ("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php"))
-	$res = @include ("../../../main.inc.php");
-if (! $res)
-	die("Include of main fails");
+// Load Dolibarr environment
+$res=0;
+// Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
+if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+// Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
+$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
+while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
+if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
+if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+// Try main.inc.php using relative path
+if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
+if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
+if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
+if (! $res) die("Include of main fails");
+
 	
-	// Class
+// Class
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 $res = dol_include_once ( "/immobilier/core/modules/immobilier/modules_immobilier.php" );	
 
-// Langs
-$langs->load("immobilier@immobilier");
-$langs->load("bills");
-$langs->load("other");
+// Load traductions files requiredby by page
+$langs->loadLangs(array("immobilier@immobilier","other","bills"));
 
 $model='chargefourn';
 $action=GETPOST('action');
@@ -79,17 +83,15 @@ if ($action == 'builddoc') {
 /*
  * View
  */
-llxHeader('', 'Immobilier - charge par mois');
+llxHeader('', 'Immobilier - charges par mois');
 $formfile = new FormFile($db);
 
-$textprevyear = "<a href=\"cost_supplier.php?year=" . ($year_current - 1) . "\">" . img_previous() . "</a>";
-$textnextyear = " <a href=\"cost_supplier.php?year=" . ($year_current + 1) . "\">" . img_next() . "</a>";
+$textprevyear = '<a href="' .dol_buildpath('/immobilier/cost/cost_supplier.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
+$textnextyear = '<a href="' .dol_buildpath('/immobilier/cost/cost_supplier.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
 
 print load_fiche_titre("Charges $textprevyear " . $langs->trans("Year") . " $year_start $textnextyear");
 
 $y = $year_current;
-
-$var = true;
 
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre"><td width=350>' . $langs->trans("Type") . '</td>';
@@ -122,9 +124,9 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=10,ic.amount,0)),2) AS 'Octobre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_cost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immo_property as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "immo_building as ii";
+$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immobuilding as ii";
 $sql .= " , " . MAIN_DB_PREFIX . "societe as so";
 $sql .= " WHERE ic.datec >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.datec <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
@@ -196,9 +198,9 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=10,ic.amount,0)),2) AS 'Octobre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_cost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immo_property as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "immo_building as ii";
+$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immobuilding as ii";
 $sql .= " WHERE ic.datec >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.datec <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
@@ -239,7 +241,6 @@ print "</table>\n";
 
 print '</td></tr></table>';
 
-$var = true;
 	if (is_file($filedir.$filename)) {
 	print '&nbsp';
 	print '<table class="border" width="100%">';
