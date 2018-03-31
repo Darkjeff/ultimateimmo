@@ -23,7 +23,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `llx_immo_building`
+-- Structure de la table `llx_immobilier_immobuilding`
 --
 
 CREATE TABLE IF NOT EXISTS `llx_immobilier_immobuilding` (
