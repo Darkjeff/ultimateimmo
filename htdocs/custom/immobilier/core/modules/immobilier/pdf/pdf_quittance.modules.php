@@ -277,7 +277,7 @@ class pdf_quittance extends ModelePDFImmobilier
 				$text .= '</tr>';
 				
 				$sql = "SELECT p.rowid, p.fk_receipt, date_payment as dp, p.amount, p.comment as type, il.amount_total ";
-				$sql .= " FROM " . MAIN_DB_PREFIX . "immo_payment as p";
+				$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as p";
 				$sql .= ", " . MAIN_DB_PREFIX . "immobilier_immoreceipt as il ";
 				$sql .= " WHERE p.fk_receipt = " . $receipt->id;
 				$sql .= " AND p.fk_receipt = il.rowid";

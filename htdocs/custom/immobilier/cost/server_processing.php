@@ -18,11 +18,20 @@
  * Easy set variables
  */
 
- $res = @include ("../../main.inc.php"); // For root directory
-if (! $res)
-	$res = @include ("../../../main.inc.php"); // For "custom" directory
-if (! $res)
-	die("Include of main fails");
+// Load Dolibarr environment
+$res=0;
+// Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
+if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+// Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
+$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
+while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
+if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
+if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+// Try main.inc.php using relative path
+if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
+if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
+if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
+if (! $res) die("Include of main fails");
 
 dol_include_once("/immobilier/class/immocost.class.php");
 dol_include_once("/immobilier/class/immorenter.class.php");
@@ -30,7 +39,7 @@ dol_include_once('/immobilier/class/immoproperty.class.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 
 
-$receiptstatic = new Immocost($db);
+$receiptstatic = new ImmoCost($db);
 
 // DB table to use
 $table = 'llx_immo_cost';
@@ -49,7 +58,7 @@ $columns = array(
 		'db'        => 'reference',
 		'dt'        => 0,
 		'formatter' => function( $d, $row, $db ) {
-			$charge_static = new Immocost($db);
+			$charge_static = new ImmoCost($db);
 			$charge_static->id = $d;
 			$charge_static->nom = $d;
 			$charge_static->ref = $d;
@@ -64,7 +73,7 @@ $columns = array(
 		'db'        => 'nomlocal',
 		'dt'        => 2,
 		'formatter' => function( $d, $row, $db ) {
-			$propertystatic=new Immoproperty($db);
+			$propertystatic=new ImmoProperty($db);
 			$propertystatic->id = $row['property_id'];
 			$propertystatic->name = $row['nomlocal'];
 			return $propertystatic->getNomUrl(1);
@@ -87,7 +96,7 @@ $columns = array(
 		'db'        => 'dispatch',
 		'dt'        => 5,
 		'formatter' => function( $d, $row, $db ) {
-			$charge_static = new Immocost($db);
+			$charge_static = new ImmoCost($db);
 			return $charge_static->LibStatut ( $d, 5 );
 		}
 	),
@@ -136,7 +145,7 @@ $sql = "SELECT SQL_CALC_FOUND_ROWS ch.rowid as reference, ch.fk_property as idlo
 $sql .= ", ll.rowid as property_id, ll.name as nomlocal,";
 $sql .= " soc.rowid as soc_id,";
 $sql .= " soc.nom as company";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_cost as ch";
+$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ch";
 $sql .= " LEFT JOIN llx_immo_property as ll ON ch.fk_property = ll.rowid";
 $sql .= " LEFT JOIN llx_societe as soc ON soc.rowid = ch.fk_soc";
 
