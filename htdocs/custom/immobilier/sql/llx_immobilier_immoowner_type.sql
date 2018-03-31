@@ -14,27 +14,13 @@
 -- along with this program.  If not, see http://www.gnu.org/licenses/.
 
 
-CREATE TABLE llx_immobilier_immoreceipt(
+CREATE TABLE llx_immobilier_immoowner_type(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL, 
-	receipt varchar(255), 
-	rentamount double(24,8), 
-	chargesamount double(24,8), 
-	total_amount double(24,8) DEFAULT NULL, 
-	vat varchar(4),
-	echeance	datetime NOT NULL,	
-	fk_soc integer, 
-	fk_contract integer, 
-	fk_property integer, 
-	fk_renter integer, 
-	fk_owner integer, 
-	description text, 
+	label varchar(255),  
 	note_public text, 
 	note_private text, 
-	date_rent date NOT NULL, 
-	date_start date NOT NULL, 
-	date_end date NOT NULL, 
 	date_creation datetime NOT NULL, 
 	tms timestamp NOT NULL, 
 	fk_user_creat integer NOT NULL, 
