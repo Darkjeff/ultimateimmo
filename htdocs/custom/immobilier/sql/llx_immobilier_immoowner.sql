@@ -1,4 +1,4 @@
--- Copyright (C) ---Put here your own copyright and developer email---
+-- Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -23,7 +23,8 @@ CREATE TABLE llx_immobilier_immoowner(
 	note_public text, 
 	note_private text, 
 	date_creation datetime NOT NULL, 
-	tms timestamp NOT NULL, 
+	tms timestamp NOT NULL,
+	fk_immoowner_type integer,	
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
 	import_key varchar(14), 
