@@ -1,6 +1,4 @@
--- ============================================================================
--- Copyright (C) 2013      	Olivier Geffroy		<jeff@jeffinfo.com>
--- Copyright (C) 2016		Alexandre Spangaro	<aspangaro@zendsi.com>
+-- Copyright (C) ---Put here your own copyright and developer email---
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -13,22 +11,30 @@
 -- GNU General Public License for more details.
 --
 -- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
---
--- ============================================================================
+-- along with this program.  If not, see http://www.gnu.org/licenses/.
 
-CREATE TABLE IF NOT EXISTS llx_immobilier_immopayment (
-   rowid  			integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
-   fk_contract  	integer NOT NULL,
-   fk_property  	integer NOT NULL,
-   fk_renter  		integer NOT NULL,
-   amount  			double(24,8) NOT NULL DEFAULT 0,
-   fk_bank			integer NOT NULL,
-   fk_typepayment	integer NOT NULL,
-   num_payment		varchar(50),
-   comment  		text,
-   date_payment		datetime DEFAULT NULL,
-   fk_owner			integer NOT NULL DEFAULT 1,
-   fk_receipt		integer NOT NULL
-)ENGINE=InnoDB;
 
+CREATE TABLE llx_immobilier_immopayment(
+	-- BEGIN MODULEBUILDER FIELDS
+	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
+	ref varchar(128) NOT NULL, 
+	amount double(24,8) DEFAULT NULL, 
+	fk_contract integer, 
+	fk_property integer, 
+	fk_renter integer, 
+	fk_bank integer, 
+	fk_typepayment integer, 
+	fk_owner integer, 
+	fk_receipt integer, 
+	num_payment varchar(50), 
+	note_public text, 
+	note_private text, 
+	date_payment datetime NOT NULL, 
+	date_creation datetime NOT NULL, 
+	tms timestamp NOT NULL, 
+	fk_user_creat integer NOT NULL, 
+	fk_user_modif integer, 
+	import_key varchar(14), 
+	status integer NOT NULL
+	-- END MODULEBUILDER FIELDS
+) ENGINE=innodb;

@@ -79,11 +79,12 @@ class ImmoReceipt extends CommonObject
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
+		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
 		'receipt' => array('type'=>'varchar(255)', 'label'=>'Receipt', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
-		'rentamount' => array('type'=>'double(24,8)', 'label'=>'RentAmount', 'visible'=>-1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'isameasure'=>'1',),
-		'chargesamount' => array('type'=>'double(24,8)', 'label'=>'ChargesAmount', 'visible'=>-1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
+		'rentamount' => array('type'=>'double(24,8)', 'label'=>'RentAmount', 'enabled'=>1, 'visible'=>-1, 'position'=>40, 'notnull'=>-1, 'isameasure'=>'1',),
+		'chargesamount' => array('type'=>'double(24,8)', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>-1, 'position'=>42, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'total_amount' => array('type'=>'double(24,8)', 'label'=>'TotalAmount', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
-		'vat' => array('type'=>'varchar(4)', 'label'=>'Vat', 'visible'=>-1, 'enabled'=>1, 'position'=>48, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
+		'vat' => array('type'=>'varchar(4)', 'label'=>'Vat', 'enabled'=>1, 'visible'=>-1, 'position'=>48, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'enabled'=>1, 'visible'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToThirparty",),
 		'fk_contract' => array('type'=>'integer:Contract:societe/class/societe.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>52, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToThirparty",),
 		'fk_property' => array('type'=>'integer:Property:societe/class/societe.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>54, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToThirparty",),
@@ -92,9 +93,9 @@ class ImmoReceipt extends CommonObject
 		'description' => array('type'=>'text', 'label'=>'Descrption', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>62, 'notnull'=>-1,),
-		'date_rent' => array('type'=>'date', 'label'=>'DateRent', 'visible'=>-1, 'enabled'=>1, 'position'=>70, 'notnull'=>1,),
-		'date_start' => array('type'=>'date', 'label'=>'DateStart', 'visible'=>-1, 'enabled'=>1, 'position'=>72, 'notnull'=>1,),
-		'date_end' => array('type'=>'date', 'label'=>'DateEnd', 'visible'=>-1, 'enabled'=>1, 'position'=>74, 'notnull'=>1,),
+		'date_rent' => array('type'=>'date', 'label'=>'DateRent', 'enabled'=>1, 'visible'=>-1, 'position'=>70, 'notnull'=>1,),
+		'date_start' => array('type'=>'date', 'label'=>'DateStart', 'enabled'=>1, 'visible'=>-1, 'position'=>72, 'notnull'=>1,),
+		'date_end' => array('type'=>'date', 'label'=>'DateEnd', 'enabled'=>1, 'visible'=>-1, 'position'=>74, 'notnull'=>1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>500, 'notnull'=>1,),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1, 'foreignkey'=>'llx_user.rowid',),
@@ -104,10 +105,12 @@ class ImmoReceipt extends CommonObject
 	);
 	public $rowid;
 	public $ref;
+	public $label;
 	public $receipt;
 	public $rentamount;
 	public $chargesamount;
 	public $total_amount;
+	public $vat;
 	public $fk_soc;
 	public $fk_contract;
 	public $fk_property;

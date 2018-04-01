@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) ---Put here your own copyright and developer email---
+ * Copyright (C) 2018 Philippe GRAND 	   <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
  */
 
 /**
- * \file        class/immoproperty.class.php
+ * \file        class/immopayment.class.php
  * \ingroup     immobilier
- * \brief       This file is a CRUD class file for ImmoProperty (Create/Read/Update/Delete)
+ * \brief       This file is a CRUD class file for ImmoPayment (Create/Read/Update/Delete)
  */
 
 // Put here all includes required by your class file
@@ -28,36 +28,30 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
 //require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
 /**
- * Class for ImmoProperty
+ * Class for ImmoPayment
  */
-class ImmoProperty extends CommonObject
+class ImmoPayment extends CommonObject
 {
 	/**
 	 * @var string ID to identify managed object
 	 */
-	public $element = 'immoproperty';
+	public $element = 'immopayment';
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
-	public $table_element = 'immobilier_immoproperty';
+	public $table_element = 'immobilier_immopayment';
 	/**
-	 * @var string Name of table without prefix where object is stored
-	 */
-	public $fk_element='fk_property';
-	
-	public $fieldsforcombobox='ref';
-	/**
-	 * @var int  Does immoproperty support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	 * @var int  Does immopayment support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
 	public $ismultientitymanaged = 0;
 	/**
-	 * @var int  Does immoproperty support extrafields ? 0=No, 1=Yes
+	 * @var int  Does immopayment support extrafields ? 0=No, 1=Yes
 	 */
 	public $isextrafieldmanaged = 1;
 	/**
-	 * @var string String with name of icon for immoproperty. Must be the part after the 'object_' into object_immoproperty.png
+	 * @var string String with name of icon for immopayment. Must be the part after the 'object_' into object_immopayment.png
 	 */
-	public $picto = 'immoproperty@immobilier';
+	public $picto = 'immopayment@immobilier';
 
 
 	/**
@@ -66,6 +60,7 @@ class ImmoProperty extends CommonObject
 	 *  'enabled' is a condition when the field must be managed.
 	 *  'visible' says if field is visible in list (Examples: 0=Not visible, 1=Visible on list and create/update/view forms, 2=Visible on list only. Using a negative value means field is not shown by default on list but can be selected for viewing)
 	 *  'notnull' is set to 1 if not null in database. Set to -1 if we must set data to null if empty ('' or 0).
+	 *  'default' is a default value for creation (can still be replaced by the global setup of default values)
 	 *  'index' if we want an index in database.
 	 *  'foreignkey'=>'tablename.field' if the field is a foreign key (it is recommanded to name the field fk_...).
 	 *  'position' is the sort order of field.
@@ -73,8 +68,8 @@ class ImmoProperty extends CommonObject
 	 *  'isameasure' must be set to 1 if you want to have a total on list for this field. Field type must be summable like integer or double(24,8).
 	 *  'help' is a string visible as a tooltip on field
 	 *  'comment' is not used. You can store here any text of your choice. It is not used by application.
-	 *  'default' is a default value for creation (can still be replaced by the global setup of default values)
-	 *  'showoncombobox' if field must be shown into the label of combobox
+	 *  'showoncombobox' if value of the field must be visible into the label of the combobox that list record
+	 *  'arraykeyval' to set list of value if type is a list of predefined values. For example: array("0"=>"Draft","1"=>"Active","-1"=>"Cancel")
 	 */
 
 	// BEGIN MODULEBUILDER PROPERTIES
@@ -83,37 +78,38 @@ class ImmoProperty extends CommonObject
 	 */
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
-		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
-		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
-		'entity' => array('type'=>'integer', 'label'=>'Entity', 'enabled'=>1, 'visible'=>-1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
-		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>50, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
+		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
+		'amount' => array('type'=>'double(24,8)', 'label'=>'Amount', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
+		'fk_contract' => array('type'=>'integer', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>41, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToContract",),
+		'fk_property' => array('type'=>'integer', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>42, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
+		'fk_renter' => array('type'=>'integer', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>43, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToRenter",),
+		'fk_bank' => array('type'=>'integer', 'label'=>'Bank', 'enabled'=>1, 'visible'=>1, 'position'=>44, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToBank",),
+		'fk_typepayment' => array('type'=>'integer', 'label'=>'TypePayment', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToTypePayment",),
+		'fk_owner' => array('type'=>'integer', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>46, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
+		'fk_receipt' => array('type'=>'integer', 'label'=>'Receipt', 'enabled'=>1, 'visible'=>1, 'position'=>47, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToReceipt",),
+		'num_payment' => array('type'=>'varchar(50)', 'label'=>'NumPayment', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>62, 'notnull'=>-1,),
+		'date_payment' => array('type'=>'datetime', 'label'=>'DatePayment', 'enabled'=>1, 'visible'=>-1, 'position'=>70, 'notnull'=>1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>500, 'notnull'=>1,),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
-		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1,),
+		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1, 'foreignkey'=>'llx_user.rowid',),
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'enabled'=>1, 'visible'=>-2, 'position'=>511, 'notnull'=>-1,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1,),
 		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
-		'address' => array('type'=>'varchar(255)', 'label'=>'Address', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1,),
-		'building' => array('type'=>'varchar(32)', 'label'=>'Building', 'enabled'=>1, 'visible'=>1, 'position'=>32, 'notnull'=>-1,),
-		'staircase' => array('type'=>'varchar(8)', 'label'=>'Staircase', 'enabled'=>1, 'visible'=>1, 'position'=>34, 'notnull'=>-1,),
-		'fk_type_property' => array('type'=>'integer', 'label'=>'PropertyType', 'enabled'=>1, 'visible'=>-1, 'position'=>52, 'notnull'=>1,),
-		'numfloor' => array('type'=>'varchar(8)', 'label'=>'NumFloor', 'enabled'=>1, 'visible'=>1, 'position'=>36, 'notnull'=>-1,),
-		'numflat' => array('type'=>'varchar(8)', 'label'=>'NumFlat', 'enabled'=>1, 'visible'=>1, 'position'=>38, 'notnull'=>-1,),
-		'numdoor' => array('type'=>'varchar(8)', 'label'=>'NumDoor', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1,),
-		'area' => array('type'=>'varchar(8)', 'label'=>'Area', 'enabled'=>1, 'visible'=>1, 'position'=>42, 'notnull'=>-1,),
-		'zip' => array('type'=>'varchar(32)', 'label'=>'Zip', 'enabled'=>1, 'visible'=>1, 'position'=>44, 'notnull'=>-1,),
-		'town' => array('type'=>'varchar(64)', 'label'=>'Town', 'enabled'=>1, 'visible'=>1, 'position'=>46, 'notnull'=>-1,),
-		'fk_pays' => array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1,),
-		'datep' => array('type'=>'date', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>56, 'notnull'=>-1,),
-		'target' => array('type'=>'integer', 'label'=>'Target', 'enabled'=>1, 'visible'=>1, 'position'=>58, 'notnull'=>-1, 'comment'=>"Rent or sale",),
 	);
 	public $rowid;
 	public $ref;
-	public $label;
-	public $entity;
-	public $fk_soc;
+	public $amount;
+	public $fk_contract;
+	public $fk_property;
+	public $fk_renter;
+	public $fk_bank;
+	public $fk_typepayment;
+	public $fk_owner;
+	public $fk_receipt;
+	public $num_payment;
+	public $date_payment;
 	public $note_public;
 	public $note_private;
 	public $date_creation;
@@ -122,19 +118,9 @@ class ImmoProperty extends CommonObject
 	public $fk_user_modif;
 	public $import_key;
 	public $status;
-	public $address;
-	public $building;
-	public $staircase;
-	public $fk_type_property;
-	public $numfloor;
-	public $numflat;
-	public $numdoor;
-	public $area;
-	public $zip;
-	public $town;
-	public $fk_pays;
-	public $datep;
-	public $target;
+	public $nomlocal;
+	public $nomlocataire;
+	public $nomloyer;
 	// END MODULEBUILDER PROPERTIES
 
 
@@ -144,21 +130,21 @@ class ImmoProperty extends CommonObject
 	/**
 	 * @var int    Name of subtable line
 	 */
-	//public $table_element_line = 'immopropertydet';
+	//public $table_element_line = 'immopaymentdet';
 	/**
 	 * @var int    Field with ID of parent key if this field has a parent
 	 */
-	//public $fk_element = 'fk_immoproperty';
+	//public $fk_element = 'fk_immopayment';
 	/**
 	 * @var int    Name of subtable class that manage subtable lines
 	 */
-	//public $class_element_line = 'ImmoPropertyline';
+	//public $class_element_line = 'ImmoPaymentline';
 	/**
 	 * @var array  Array of child tables (child tables to delete before deleting a record)
 	 */
-	//protected $childtables=array('immopropertydet');
+	//protected $childtables=array('immopaymentdet');
 	/**
-	 * @var ImmoPropertyLine[]     Array of subtable lines
+	 * @var ImmoPaymentLine[]     Array of subtable lines
 	 */
 	//public $lines = array();
 
@@ -171,12 +157,21 @@ class ImmoProperty extends CommonObject
 	 */
 	public function __construct(DoliDB $db)
 	{
-		global $conf;
+		global $conf, $user;
 
 		$this->db = $db;
 
-		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID)) $this->fields['rowid']['visible']=0;
-		if (empty($conf->multicompany->enabled)) $this->fields['entity']['enabled']=0;
+		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible']=0;
+		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled']=0;
+
+		// Unset fields that are disabled
+		foreach($this->fields as $key => $val)
+		{
+			if (isset($val['enabled']) && empty($val['enabled']))
+			{
+				unset($this->fields[$key]);
+			}
+		}
 	}
 
 	/**
@@ -249,9 +244,168 @@ class ImmoProperty extends CommonObject
 	 */
 	public function fetch($id, $ref = null)
 	{
-		$result = $this->fetchCommon($id, $ref);
-		if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
-		return $result;
+		dol_syslog(__METHOD__, LOG_DEBUG);
+
+		$sql = 'SELECT';
+		$sql .= ' t.rowid,';
+		$sql .= " t.fk_contract,";
+		$sql .= " t.fk_property,";
+		$sql .= " t.fk_renter,";
+		$sql .= " t.amount,";
+		$sql .= " t.fk_bank,";
+		$sql .= " t.fk_typepayment,";
+		$sql .= " p.libelle as typepayment_label,";
+		$sql .= " t.num_payment,";
+		$sql .= " t.note_public,";
+		$sql .= " t.note_private,";
+		$sql .= " t.date_payment,";
+		$sql .= " t.fk_owner,";
+		$sql .= " t.fk_receipt,";
+		$sql .= " lc.lastname as nomlocataire,";
+		$sql .= " ll.label as nomlocal,";
+		$sql .= " lo.label as nomloyer ";
+
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
+		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorenter as lc";
+		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo";
+		$sql .= " , " . MAIN_DB_PREFIX . "c_paiement as p";		
+		
+		$sql .= " WHERE t.fk_renter = lc.rowid";
+		$sql .= " AND t.fk_property = ll.rowid";
+		$sql .= " AND t.fk_receipt = lo.rowid";
+		$sql .= " AND t.fk_typepayment = p.id";
+		
+		if (!empty($ref)) {
+			$sql .= ' AND t.ref = ' . '\'' . $ref . '\'';
+		} else {
+			$sql .= ' AND t.rowid = ' . $id;
+		}
+		
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$numrows = $this->db->num_rows($resql);
+			if ($numrows) {
+				$obj = $this->db->fetch_object($resql);
+
+				$this->id = $obj->rowid;
+				
+				$this->fk_contract			= $obj->fk_contract;
+				$this->fk_property			= $obj->fk_property;
+				$this->fk_renter			= $obj->fk_renter;
+				$this->amount				= $obj->amount;
+				$this->fk_bank				= $obj->fk_bank;
+				$this->fk_typepayment		= $obj->fk_typepayment;
+				$this->typepayment_label	= $obj->typepayment_label;
+				$this->num_payment			= $obj->num_payment;
+				$this->comment				= $obj->comment;
+				$this->date_payment			= $this->db->jdate($obj->date_payment);
+				$this->fk_owner				= $obj->fk_owner;
+				$this->fk_receipt			= $obj->fk_receipt;
+			}
+			$this->db->free($resql);
+
+			if ($numrows) {
+				return 1;
+			} else {
+				return 0;
+			}
+		} else {
+			$this->errors[] = 'Error ' . $this->db->lasterror();
+			dol_syslog(__METHOD__ . ' ' . join(',', $this->errors), LOG_ERR);
+
+			return - 1;
+		}
+	}
+	
+	/**
+	 * Load object in memory from the database
+	 *
+	 * @param string $sortorder Sort Order
+	 * @param string $sortfield Sort field
+	 * @param int    $limit     offset limit
+	 * @param int    $offset    offset limit
+	 * @param array  $filter    filter array
+	 * @param string $filtermode filter mode (AND or OR)
+	 *
+	 * @return int <0 if KO, >0 if OK
+	 */
+	public function fetchAll($sortorder='', $sortfield='', $limit=0, $offset=0, array $filter = array(), $filtermode='AND')
+	{
+		dol_syslog(__METHOD__, LOG_DEBUG);
+
+		$sql = 'SELECT';
+		$sql .= ' t.rowid,';
+		
+		$sql .= " t.fk_contract,";
+		$sql .= " t.fk_property,";
+		$sql .= " t.fk_renter,";
+		$sql .= " t.amount,";
+		$sql .= " t.comment,";
+		$sql .= " t.date_payment,";
+		$sql .= " t.fk_owner,";
+		$sql .= " t.fk_receipt";
+		$sql .= " , lc.lastname as nomlocataire , ll.label as nomlocal , lo.label as nomloyer ";
+
+		
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element. ' as t';
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immorenter as lc ON t.fk_renter = lc.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll ON t.fk_property = ll.rowid ";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo ON t.fk_receipt = lo.rowid";
+		
+		// Manage filter
+		$sqlwhere = array();
+		if (count($filter) > 0) {
+			foreach ($filter as $key => $value) {
+				$sqlwhere [] = $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+			}
+		}
+		if (count($sqlwhere) > 0) {
+			$sql .= ' WHERE ' . implode(' '.$filtermode.' ', $sqlwhere);
+		}
+		
+		if (!empty($sortfield)) {
+			$sql .= $this->db->order($sortfield,$sortorder);
+		}
+		if (!empty($limit)) {
+		 $sql .=  ' ' . $this->db->plimit($limit + 1, $offset);
+		}
+		$this->lines = array();
+
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$num = $this->db->num_rows($resql);
+
+			while ($obj = $this->db->fetch_object($resql)) {
+				$line = new ImmoPaymentLine();
+
+				$line->id = $obj->rowid;
+				
+				$line->fk_contract = $obj->fk_contract;
+				$line->fk_property = $obj->fk_property;
+				$line->fk_renter = $obj->fk_renter;
+				$line->amount = $obj->amount;
+				$line->comment = $obj->comment;
+				$line->date_payment = $this->db->jdate($obj->date_payment);
+				$line->fk_owner = $obj->fk_owner;
+				$line->fk_receipt = $obj->fk_receipt;
+				$line->nomlocataire = $obj->nomlocataire;
+				$line->nomlocal = $obj->nomlocal;
+				$line->nomloyer = $obj->nomloyer;
+
+				
+
+				$this->lines[] = $line;
+			}
+			$this->db->free($resql);
+
+			return $num;
+		} else {
+			$this->errors[] = 'Error ' . $this->db->lasterror();
+			dol_syslog(__METHOD__ . ' ' . join(',', $this->errors), LOG_ERR);
+
+			return - 1;
+		}
 	}
 
 	/**
@@ -263,7 +417,7 @@ class ImmoProperty extends CommonObject
 	{
 		$this->lines=array();
 
-		// Load lines with object ImmoPropertyLine
+		// Load lines with object ImmoPaymentLine
 
 		return count($this->lines)?1:0;
 	}*/
@@ -313,11 +467,11 @@ class ImmoProperty extends CommonObject
         $result = '';
         $companylink = '';
 
-        $label = '<u>' . $langs->trans("ImmoProperty") . '</u>';
+        $label = '<u>' . $langs->trans("ImmoPayment") . '</u>';
         $label.= '<br>';
         $label.= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 
-        $url = dol_buildpath('/immobilier/property/immoproperty_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/immobilier/payment/immopayment_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {
@@ -332,7 +486,7 @@ class ImmoProperty extends CommonObject
         {
             if (! empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER))
             {
-                $label=$langs->trans("ShowImmoProperty");
+                $label=$langs->trans("ShowImmoPayment");
                 $linkclose.=' alt="'.dol_escape_htmltag($label, 1).'"';
             }
             $linkclose.=' title="'.dol_escape_htmltag($label, 1).'"';
@@ -477,40 +631,100 @@ class ImmoProperty extends CommonObject
 	{
 		$this->initAsSpecimenCommon();
 	}
+	
+	function fetch_by_loyer($id) {
+		$sql = "SELECT ip.rowid as reference, ip.fk_contract, ip.fk_property,";
+		$sql .= "ip.fk_renter, ip.amount, ip.comment, ip.date_payment,";
+		$sql .= "ip.fk_owner, ip.fk_receipt";
+		$sql .= " , lc.lastname as nomlocataire , ll.name as nomlocal , lo.nom as nomloyer ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as ip ";
+		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorenter as lc ";
+		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll ";
+		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo ";
+		$sql .= "WHERE ip.fk_renter = lc.rowid AND ip.fk_property = ll.rowid AND ip.fk_receipt = lo.rowid AND lo.rowid = " . $id;
+		
+		dol_syslog ( get_class ( $this ) . "::fetch_by_loyer sql=" . $sql );
+		$resql = $this->db->query ( $sql );
+		if ($resql) {
+			if ($this->db->num_rows ( $resql )) {
+				$obj = $this->db->fetch_object ( $resql );
+				
+				$this->id = $obj->reference;
+				$this->ref = $obj->reference;
+				$this->fk_contract = $obj->fk_contract;
+				$this->fk_property = $obj->fk_property;
+				$this->nomlocal = $obj->nomlocal;
+				$this->fk_renter = $obj->fk_renter;
+				$this->nomlocataire = $obj->nomlocataire;
+				$this->amount = $obj->amount;
+				$this->comment = $obj->comment;
+				$this->date_paiement = $this->db->jdate ( $obj->date_payment );
+				$this->fk_receipt = $obj->fk_receipt;
+				$this->nomloyer = $obj->nomloyer;
+				$this->fk_owner = $obj->fk_owner;
+				
+				1;
+			} else {
+				return 0;
+			}
+			$this->db->free ( $resql );
+		} else {
+			$this->error = $this->db->error ();
+			return - 1;
+		}
+	}
 
 
 	/**
 	 * Action executed by scheduler
-	 * CAN BE A CRON TASK
+	 * CAN BE A CRON TASK. In such a case, paramerts come from the schedule job setup field 'Parameters'
 	 *
 	 * @return	int			0 if OK, <>0 if KO (this function is used also by cron so only 0 is OK)
 	 */
+	//public function doScheduledJob($param1, $param2, ...)
 	public function doScheduledJob()
 	{
 		global $conf, $langs;
 
+		//$conf->global->SYSLOG_FILE = 'DOL_DATA_ROOT/dolibarr_mydedicatedlofile.log';
+
+		$error = 0;
 		$this->output = '';
 		$this->error='';
 
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
+		$now = dol_now();
+
+		$this->db->begin();
+
 		// ...
 
-		return 0;
+		$this->db->commit();
+
+		return $error;
 	}
 }
 
 /**
- * Class ImmoPropertyLine. You can also remove this and generate a CRUD class for lines objects.
+ * Class ImmoPaymentLine. You can also remove this and generate a CRUD class for lines objects.
  */
-/*
-class ImmoPropertyLine
+
+class ImmoPaymentLine
 {
-	// @var int ID
+	/**
+	 * @var int ID
+	 */
 	public $id;
-	// @var mixed Sample line property 1
-	public $prop1;
-	// @var mixed Sample line property 2
-	public $prop2;
+	/**
+	 * @var int fk_contract
+	 */	
+	public $fk_contract;
+	public $fk_property;
+	public $fk_renter;
+	public $amount;
+	public $comment;
+	public $date_payment = '';
+	public $fk_owner;
+	public $fk_receipt;
 }
-*/
