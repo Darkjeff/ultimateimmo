@@ -29,17 +29,22 @@
  */
 function immoreceiptPrepareHead($object)
 {
-	global $db, $langs, $conf;
+	global $db, $langs, $conf, $user;
 
 	$langs->load("immobilier@immobilier");
 
 	$h = 0;
 	$head = array();
 
-	$head[$h][0] = dol_buildpath("/immobilier/receipt/immoreceipt_card.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath('/immobilier/receipt/immoreceipt_card.php', 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
+	
+	$head [$h] [0] = dol_buildpath('/immobilier/receipt/immoreceipt_mails.php', 1).'?id='.$object->id;
+	$head [$h] [1] = $langs->trans("Email");
+	$head [$h] [2] = 'mail';
+	$h ++;
 
 	if (isset($object->fields['note_public']) || isset($object->fields['note_private']))
 	{

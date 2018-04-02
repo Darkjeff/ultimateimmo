@@ -40,9 +40,8 @@ if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main
 if (! $res) die("Include of main fails");
 
 
-require_once '../core/lib/immobilier.lib.php';
-dol_include_once("/immobilier/class/immoreceipt.class.php");
-
+dol_include_once('/immobilier/lib/immoreceipt.lib.php');
+dol_include_once('/immobilier/class/immoreceipt.class.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 
@@ -220,10 +219,6 @@ if (($action == 'send' || $action == 'sendhtml') && ! GETPOST('addfile') && ! GE
 	}
 }
 
-
-
-
-
 /*
  * View
  */
@@ -236,67 +231,65 @@ $listofmethods['smtps']='SMTP/SMTPS socket library';
 
 llxheader('', $langs->trans("SendEmailReceit"), '');
 
-$receipt = new Immoreceipt($db);
+$receipt = new ImmoReceipt($db);
 $result = $receipt->fetch($id);
 	
-$head = receipt_prepare_head($receipt);
+$head = immoreceiptPrepareHead($receipt);
 dol_fiche_head($head, 'mail', $langs->trans("ReceiptSendMail"), 0, 'rent@immobilier');
 
 	// Show email send test form
 
-		//print load_fiche_titre($action == 'testhtml'?$langs->trans("DoTestSendHTML"):$langs->trans("DoTestSend"));
+	//print load_fiche_titre($action == 'testhtml'?$langs->trans("DoTestSendHTML"):$langs->trans("DoTestSend"));
 
-		// Cree l'objet formulaire mail
-		include_once DOL_DOCUMENT_ROOT.'/core/class/html.formmail.class.php';
-		$formmail = new FormMail($db);
-		$formmail->clear_attached_files();
-		$formmail->fromname = (isset($_POST['fromname'])?$_POST['fromname']:$conf->global->MAIN_MAIL_EMAIL_FROM);
-		$formmail->frommail = (isset($_POST['frommail'])?$_POST['frommail']:$conf->global->MAIN_MAIL_EMAIL_FROM);
-		$formmail->trackid='test';
-		$formmail->withfromreadonly=0;
-		$formmail->withsubstit=0;
-		$formmail->withfrom=1;
-		$formmail->witherrorsto=1;
-		$formmail->withto=(! empty($_POST['sendto'])?$_POST['sendto']:($receipt->emaillocataire));
-		$formmail->withtocc=(! empty($_POST['sendtocc'])?$_POST['sendtocc']:1);       // ! empty to keep field if empty
-		$formmail->withtoccc=(! empty($_POST['sendtoccc'])?$_POST['sendtoccc']:1);    // ! empty to keep field if empty
-		$formmail->withtopic=(isset($_POST['subject'])?$_POST['subject']:$langs->trans("SendReceipt"));
-		$formmail->withtopicreadonly=0;
-		$formmail->withfile=1;
-		$formmail->withbody=(isset($_POST['message'])?$_POST['message']:$langs->transnoentities("PredefinedMailSendReceipt"));
-		$formmail->withbodyreadonly=0;
-		$formmail->withcancel=1;
-		$formmail->withdeliveryreceipt=1;
-		$formmail->withfckeditor=($action == 'testhtml'?1:0);
-		$formmail->ckeditortoolbar='dolibarr_mailings';
+	// Cree l'objet formulaire mail
+	include_once DOL_DOCUMENT_ROOT.'/core/class/html.formmail.class.php';
+	$formmail = new FormMail($db);
+	$formmail->clear_attached_files();
+	$formmail->fromname = (isset($_POST['fromname'])?$_POST['fromname']:$conf->global->MAIN_MAIL_EMAIL_FROM);
+	$formmail->frommail = (isset($_POST['frommail'])?$_POST['frommail']:$conf->global->MAIN_MAIL_EMAIL_FROM);
+	$formmail->trackid='test';
+	$formmail->withfromreadonly=0;
+	$formmail->withsubstit=0;
+	$formmail->withfrom=1;
+	$formmail->witherrorsto=1;
+	$formmail->withto=(! empty($_POST['sendto'])?$_POST['sendto']:($receipt->emaillocataire));
+	$formmail->withtocc=(! empty($_POST['sendtocc'])?$_POST['sendtocc']:1);       // ! empty to keep field if empty
+	$formmail->withtoccc=(! empty($_POST['sendtoccc'])?$_POST['sendtoccc']:1);    // ! empty to keep field if empty
+	$formmail->withtopic=(isset($_POST['subject'])?$_POST['subject']:$langs->trans("SendReceipt"));
+	$formmail->withtopicreadonly=0;
+	$formmail->withfile=1;
+	$formmail->withbody=(isset($_POST['message'])?$_POST['message']:$langs->transnoentities("PredefinedMailSendReceipt"));
+	$formmail->withbodyreadonly=0;
+	$formmail->withcancel=1;
+	$formmail->withdeliveryreceipt=1;
+	$formmail->withfckeditor=($action == 'testhtml'?1:0);
+	$formmail->ckeditortoolbar='dolibarr_mailings';
+	
+	// file
+	// Tableau des substitutions
+	$formmail->add_attached_files(DOL_DATA_ROOT.'/immobilier/quittance_'.$id.'.pdf', 'quittance', 'application/pdf');
+	
+	// Tableau des parametres complementaires du post
+	$formmail->param["action"]=($action == 'testhtml'?"sendhtml":"send");
+	$formmail->param["models"]="body";
+	$formmail->param["mailid"]=0;
+	$formmail->param["returnurl"]=$_SERVER["PHP_SELF"]."?id=$id";
+
+	// Init list of files
+   /* if (GETPOST("mode")=='init')
+	{
 		
-		// file
-		// Tableau des substitutions
-		$formmail->add_attached_files(DOL_DATA_ROOT . '/immobilier/quittance_' . $id . '.pdf', 'quittance', 'application/pdf');
-		// Tableau des parametres complementaires du post
-		$formmail->param["action"]=($action == 'testhtml'?"sendhtml":"send");
-		$formmail->param["models"]="body";
-		$formmail->param["mailid"]=0;
-		$formmail->param["returnurl"]=$_SERVER["PHP_SELF"]."?id=$id";
+	}
+	
+	if (is_file($conf->immobilier->dir_output . '/quittance_' . $id . '.pdf')) {
+		//print 'tst';
+		print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immobilier&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+		print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+	}*/
 
-		// Init list of files
-       /* if (GETPOST("mode")=='init')
-		{
-			
-		}
-		
-		if (is_file($conf->immobilier->dir_output . '/quittance_' . $id . '.pdf')) {
-			//print 'tst';
-			print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immobilier&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
-			print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
-		}*/
+	print $formmail->get_form(($action == 'testhtml'?'addfilehtml':'addfile'),($action == 'testhtml'?'removefilehtml':'removefile'));
 
-		print $formmail->get_form(($action == 'testhtml'?'addfilehtml':'addfile'),($action == 'testhtml'?'removefilehtml':'removefile'));
-
-		print '<br>';
-
-
-
+	print '<br>';
 
 llxFooter();
 
