@@ -723,7 +723,7 @@ class ImmoPaymentLine
 	public $fk_property;
 	public $fk_renter;
 	public $amount;
-	public $comment;
+	public $note_public;
 	public $date_payment = '';
 	public $fk_owner;
 	public $fk_receipt;

@@ -80,17 +80,20 @@ class ImmoReceipt extends CommonObject
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
-		'receipt' => array('type'=>'varchar(255)', 'label'=>'Receipt', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
-		'rentamount' => array('type'=>'double(24,8)', 'label'=>'RentAmount', 'enabled'=>1, 'visible'=>-1, 'position'=>40, 'notnull'=>-1, 'isameasure'=>'1',),
-		'chargesamount' => array('type'=>'double(24,8)', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>-1, 'position'=>42, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
+		'rentamount' => array('type'=>'double(24,8)', 'label'=>'RentAmount', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'isameasure'=>'1',),
+		'chargesamount' => array('type'=>'double(24,8)', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>1, 'position'=>42, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'total_amount' => array('type'=>'double(24,8)', 'label'=>'TotalAmount', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
-		'vat' => array('type'=>'varchar(4)', 'label'=>'Vat', 'enabled'=>1, 'visible'=>-1, 'position'=>48, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
+		'balance' => array('type'=>'double(24,8)', 'label'=>'Balance', 'enabled'=>1, 'visible'=>1, 'position'=>41, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
+		'paiepartiel' => array('type'=>'double(24,8)', 'label'=>'PaiePartiel', 'enabled'=>1, 'visible'=>1, 'position'=>42, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
+		'echeance' => array('type'=>'double(24,8)', 'label'=>'Echeance', 'enabled'=>1, 'visible'=>1, 'position'=>43, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
+		'vat' => array('type'=>'double(24,8)', 'label'=>'Vat', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1,),
+		'paye' => array('type'=>'integer', 'label'=>'Paye', 'enabled'=>1, 'visible'=>-1, 'position'=>49, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'enabled'=>1, 'visible'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToThirparty",),
-		'fk_contract' => array('type'=>'integer:Contract:societe/class/societe.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>52, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToThirparty",),
-		'fk_property' => array('type'=>'integer:Property:societe/class/societe.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>54, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToThirparty",),
-		'fk_renter' => array('type'=>'integer:Renter:societe/class/societe.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>56, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToThirparty",),
-		'fk_owner' => array('type'=>'integer:Owner:societe/class/societe.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>58, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToThirparty",),
-		'description' => array('type'=>'text', 'label'=>'Descrption', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1,),
+		'fk_contract' => array('type'=>'integer', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>52, 'notnull'=>-1,),
+		'fk_property' => array('type'=>'integer', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>54, 'notnull'=>-1,),
+		'fk_renter' => array('type'=>'integer', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>56, 'notnull'=>-1, 'index'=>1,),
+		'fk_owner' => array('type'=>'integer', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>58, 'notnull'=>-1,),
+		'description' => array('type'=>'text', 'label'=>'Description', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>62, 'notnull'=>-1,),
 		'date_rent' => array('type'=>'date', 'label'=>'DateRent', 'enabled'=>1, 'visible'=>-1, 'position'=>70, 'notnull'=>1,),
@@ -101,16 +104,20 @@ class ImmoReceipt extends CommonObject
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1, 'foreignkey'=>'llx_user.rowid',),
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'enabled'=>1, 'visible'=>-2, 'position'=>511, 'notnull'=>-1,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1,),
+		'model_pdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'searchall'=>1,),
 		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
 	);
 	public $rowid;
 	public $ref;
 	public $label;
-	public $receipt;
 	public $rentamount;
 	public $chargesamount;
 	public $total_amount;
+	public $balance;
+	public $paiepartiel;
 	public $vat;
+	public $echeance;
+	public $paye;
 	public $fk_soc;
 	public $fk_contract;
 	public $fk_property;
@@ -127,7 +134,16 @@ class ImmoReceipt extends CommonObject
 	public $fk_user_creat;
 	public $fk_user_modif;
 	public $import_key;
+	public $model_pdf;
 	public $status;
+	
+	
+	public $renter_id;
+	public $nomlocataire;
+	public $prenomlocataire;
+	public $emaillocataire;
+	public $nomlocal;
+	public $property_id;
 	// END MODULEBUILDER PROPERTIES
 
 
@@ -251,9 +267,95 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function fetch($id, $ref = null)
 	{
-		$result = $this->fetchCommon($id, $ref);
-		if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
-		return $result;
+		dol_syslog(__METHOD__, LOG_DEBUG);
+
+		$sql = 'SELECT';
+		$sql .= ' t.rowid,';
+		
+		$sql .= " t.fk_contract,";
+		$sql .= " t.fk_property,";
+		$sql .= " t.label,";
+		$sql .= " t.fk_renter,";
+		$sql .= " t.total_amount,";
+		$sql .= " t.rentamount,";
+		$sql .= " t.balance,";
+		$sql .= " t.paiepartiel,";
+		$sql .= " t.chargesamount,";
+		$sql .= " t.vat,";
+		$sql .= " t.echeance,";
+		$sql .= " t.note_public,";
+		$sql .= " t.status,";
+		$sql .= " t.date_rent,";
+		$sql .= " t.date_start,";
+		$sql .= " t.date_end,";
+		$sql .= " t.fk_owner,";
+		$sql .= " t.paye,";
+		$sql .= " t.model_pdf,";
+		$sql .= " lc.rowid as renter_id,";
+		$sql .= " lc.lastname as nomlocataire,";
+		$sql .= " lc.email as emaillocataire,";
+		$sql .= " ll.label as nomlocal,";
+		$sql .= " ll.rowid as property_id,";
+		$sql .= " ic.tva as addtva";
+
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
+		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'immobilier_immorenter as lc ON t.fk_renter = lc.rowid';
+		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'immobilier_immoproperty as ll ON t.fk_property = ll.rowid';
+		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'immobilier_immocontrat as ic ON t.fk_contract = ic.rowid';
+		
+		if (null !== $ref) {
+			$sql .= ' WHERE t.ref = ' . '\'' . $ref . '\'';
+		} else {
+			$sql .= ' WHERE t.rowid = ' . $id;
+		}
+
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$numrows = $this->db->num_rows($resql);
+			if ($numrows) {
+				$obj = $this->db->fetch_object($resql);
+
+				$this->id				= $obj->rowid;
+
+				$this->fk_contract		= $obj->fk_contract;
+				$this->fk_property		= $obj->fk_property;
+				$this->label			= $obj->label;
+				$this->fk_renter		= $obj->fk_renter;
+				$this->total_amount		= $obj->total_amount;
+				$this->rentamount		= $obj->rentamount;
+				$this->balance			= $obj->balance;
+				$this->paiepartiel		= $obj->paiepartiel;
+				$this->charges			= $obj->charges;
+				$this->vat				= $obj->vat;
+				$this->echeance			= $this->db->jdate($obj->echeance);
+				$this->note_public		= $obj->note_public;
+				$this->status			= $obj->status;
+				$this->date_rent		= $this->db->jdate($obj->date_rent);
+				$this->date_start		= $this->db->jdate($obj->date_start);
+				$this->date_end			= $this->db->jdate($obj->date_end);
+				$this->fk_owner			= $obj->fk_owner;
+				$this->paye				= $obj->paye;
+				$this->renter_id		= $obj->renter_id;
+				$this->nomlocataire 	= $obj->nomlocataire;
+				$this->emaillocataire	= $obj->emaillocataire;
+				$this->nomlocal			= $obj->nomlocal;
+				$this->property_id		= $obj->property_id;
+				$this->modelpdf			= $obj->model_pdf;
+				$this->addtva			= $obj->addtva;
+			}
+			$this->db->free($resql);
+
+			if ($numrows) {
+				return 1;
+			} else {
+				return 0;
+			}
+		} else {
+			$this->errors[] = 'Error ' . $this->db->lasterror();
+			dol_syslog(__METHOD__ . ' ' . join(',', $this->errors), LOG_ERR);
+
+			return - 1;
+		}
 	}
 
 	/**

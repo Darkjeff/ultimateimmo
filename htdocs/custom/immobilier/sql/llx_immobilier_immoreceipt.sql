@@ -1,4 +1,4 @@
--- Copyright (C) ---Put here your own copyright and developer email---
+-- Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -19,11 +19,14 @@ CREATE TABLE llx_immobilier_immoreceipt(
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL, 
 	label varchar(255), 
-	receipt varchar(255), 
 	rentamount double(24,8), 
 	chargesamount double(24,8), 
 	total_amount double(24,8) DEFAULT NULL, 
-	vat varchar(4), 
+	balance double(24,8) DEFAULT NULL, 
+	paiepartiel double(24,8) DEFAULT NULL, 
+	echeance double(24,8) DEFAULT NULL, 
+	vat double(24,8), 
+	paye integer, 
 	fk_soc integer, 
 	fk_contract integer, 
 	fk_property integer, 
@@ -40,6 +43,7 @@ CREATE TABLE llx_immobilier_immoreceipt(
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
 	import_key varchar(14), 
+	model_pdf varchar(128) NOT NULL, 
 	status integer NOT NULL
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;
