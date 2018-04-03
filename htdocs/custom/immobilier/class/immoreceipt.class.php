@@ -79,7 +79,7 @@ class ImmoReceipt extends CommonObject
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
-		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
+		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text",),
 		'rentamount' => array('type'=>'double(24,8)', 'label'=>'RentAmount', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'isameasure'=>'1',),
 		'chargesamount' => array('type'=>'double(24,8)', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>1, 'position'=>42, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'total_amount' => array('type'=>'double(24,8)', 'label'=>'TotalAmount', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
