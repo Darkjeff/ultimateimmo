@@ -86,7 +86,7 @@ class ImmoProperty extends CommonObject
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'enabled'=>1, 'visible'=>-1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
-		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>50, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
+		'fk_owner' => array('type'=>'integer', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>50, 'notnull'=>1, 'index'=>1, 'searchall'=>1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>62, 'notnull'=>-1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>500, 'notnull'=>1,),
@@ -113,7 +113,7 @@ class ImmoProperty extends CommonObject
 	public $ref;
 	public $label;
 	public $entity;
-	public $fk_soc;
+	public $fk_owner;
 	public $note_public;
 	public $note_private;
 	public $date_creation;

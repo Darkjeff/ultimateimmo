@@ -68,6 +68,7 @@ $langs->loadLangs(array("immobilier@immobilier", "other", "compta", "bills"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
+$rowid 		= GETPOST('rowid', 'int');
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
@@ -617,17 +618,7 @@ elseif ($action == 'createall')
 else
 {
 	if (($id || $ref) && $action == 'edit')
-	//if ($action == 'edit')
 	{
-	
-		// Common attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_add.tpl.php';
-
-	// Other attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
-	
-	
-	print 'boujour';
 		print load_fiche_titre($langs->trans("ImmoReceipt"));
 		
 		$receipt = new ImmoReceipt($db);
@@ -783,8 +774,7 @@ else
 		print '</form>';
 	}
 	// Part to show record
-	//if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
-	if  ($action != 'edit' && $action != 'create')
+	if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
 	{
 		$res = $object->fetch_optionals();
 		$receipt = new ImmoReceipt($db);
@@ -944,9 +934,8 @@ else
 		$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as p";
 		$sql .= ", " . MAIN_DB_PREFIX . "immobilier_immoreceipt as il ";
 		$sql .= ", " . MAIN_DB_PREFIX . "c_paiement as pp";
-		//$sql .= " WHERE p.fk_receipt = " . $id;
-		$sql .= " WHERE p.fk_receipt = 1" ;
-				$sql .= " AND p.fk_receipt = il.rowid";
+		$sql .= " WHERE p.fk_receipt = " . $id;
+		$sql .= " AND p.fk_receipt = il.rowid";
 		$sql .= " AND p.fk_typepayment = pp.id";
 		$sql .= " ORDER BY dp DESC";
 

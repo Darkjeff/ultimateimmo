@@ -18,9 +18,11 @@
 ALTER TABLE llx_immobilier_immorent ADD INDEX idx_immobilier_immorent_rowid (rowid);
 ALTER TABLE llx_immobilier_immorent ADD INDEX idx_immobilier_immorent_ref (ref);
 ALTER TABLE llx_immobilier_immorent ADD INDEX idx_immobilier_immorent_entity (entity);
+ALTER TABLE llx_immobilier_immorent ADD INDEX idx_immobilier_immorent_preavis (preavis);
 ALTER TABLE llx_immobilier_immorent ADD INDEX idx_immobilier_immorent_vat (vat);
 ALTER TABLE llx_immobilier_immorent ADD INDEX idx_immobilier_immorent_fk_soc (fk_soc);
 ALTER TABLE llx_immobilier_immorent ADD INDEX idx_immobilier_immorent_fk_property (fk_property);
+ALTER TABLE llx_immobilier_immorent ADD CONSTRAINT llx_immobilier_immorent_fk_property FOREIGN KEY (fk_property) REFERENCES immobilier_immoproperty(rowid);
 ALTER TABLE llx_immobilier_immorent ADD INDEX idx_immobilier_immorent_fk_renter (fk_renter);
 ALTER TABLE llx_immobilier_immorent ADD INDEX idx_immobilier_immorent_status (status);
 -- END MODULEBUILDER INDEXES

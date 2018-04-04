@@ -20,7 +20,7 @@ CREATE TABLE llx_immobilier_immoproperty(
 	ref varchar(128) NOT NULL, 
 	label varchar(255), 
 	entity integer DEFAULT 1 NOT NULL, 
-	fk_soc integer NOT NULL, 
+	fk_owner integer NOT NULL, 
 	note_public text, 
 	note_private text, 
 	date_creation datetime NOT NULL, 

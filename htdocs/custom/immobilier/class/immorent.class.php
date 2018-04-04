@@ -83,19 +83,23 @@ class ImmoRent extends CommonObject
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'visible'=>-1, 'enabled'=>1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'visible'=>1, 'enabled'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>-1, 'enabled'=>1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
-		'notice' => array('type'=>'varchar(255)', 'label'=>'Notice', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>1,),
-		'rentamount' => array('type'=>'double(24,8)', 'label'=>'RentAmount', 'visible'=>-1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'isameasure'=>'1',),
-		'chargesamount' => array('type'=>'double(24,8)', 'label'=>'ChargesAmount', 'visible'=>-1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
-		'totalamount' => array('type'=>'double(24,8)', 'label'=>'TotalAmount', 'visible'=>-1, 'enabled'=>1, 'position'=>44, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
-		'deposit' => array('type'=>'double(24,8)', 'label'=>'Deposit', 'visible'=>-1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
+		'nomlocal' => array('type'=>'varchar(255)', 'label'=>'NomLocal', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>1,),
+		'nomlocataire' => array('type'=>'varchar(255)', 'label'=>'NomLocataire', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>1,),
+		'rentamount' => array('type'=>'varchar(30)', 'label'=>'RentAmount', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
+		'chargesamount' => array('type'=>'varchar(30)', 'label'=>'ChargesAmount', 'visible'=>1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1,),
+		'totalamount' => array('type'=>'varchar(30)', 'label'=>'TotalAmount', 'visible'=>1, 'enabled'=>1, 'position'=>44, 'notnull'=>-1,),
+		'deposit' => array('type'=>'varchar(30)', 'label'=>'Deposit', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1,),
+		'encours' => array('type'=>'varchar(30)', 'label'=>'Encours', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1,),
+		'preavis' => array('type'=>'varchar(128)', 'label'=>'Preavis', 'visible'=>1, 'enabled'=>1, 'position'=>47, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
 		'vat' => array('type'=>'varchar(4)', 'label'=>'Vat', 'visible'=>-1, 'enabled'=>1, 'position'=>48, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'fk_property' => array('type'=>'integer:Property:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>52, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
-		'fk_renter' => array('type'=>'integer:Renter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToRenter",),
+		'fk_property' => array('type'=>'integer', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>52, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
+		'fk_renter' => array('type'=>'integer', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToRenter",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>62, 'notnull'=>-1,),
+		'periode' => array('type'=>'varchar(128)', 'label'=>'Periode', 'visible'=>-1, 'enabled'=>1, 'position'=>62, 'notnull'=>-1,),
 		'date_start' => array('type'=>'date', 'label'=>'DateStart', 'visible'=>-1, 'enabled'=>1, 'position'=>70, 'notnull'=>1,),
-		'date_end' => array('type'=>'date', 'label'=>'DateEnd', 'visible'=>-1, 'enabled'=>1, 'position'=>72, 'notnull'=>1,),
+		'date_end' => array('type'=>'date', 'label'=>'date_end', 'visible'=>-1, 'enabled'=>1, 'position'=>72, 'notnull'=>1,),
 		'date_next_rent' => array('type'=>'date', 'label'=>'DateNextRent', 'visible'=>-1, 'enabled'=>1, 'position'=>74, 'notnull'=>1,),
 		'date_last_regul' => array('type'=>'date', 'label'=>'DateLastRegul', 'visible'=>-1, 'enabled'=>1, 'position'=>76, 'notnull'=>1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'visible'=>-2, 'enabled'=>1, 'position'=>500, 'notnull'=>1,),
@@ -108,17 +112,21 @@ class ImmoRent extends CommonObject
 	public $rowid;
 	public $ref;
 	public $entity;
-	public $notice;
+	public $nomlocal;
+	public $nomlocataire;
 	public $rentamount;
 	public $chargesamount;
 	public $totalamount;
 	public $deposit;
+	public $encours;
+	public $preavis;
 	public $vat;
 	public $fk_soc;
 	public $fk_property;
 	public $fk_renter;
 	public $note_public;
 	public $note_private;
+	public $periode;
 	public $date_start;
 	public $date_end;
 	public $date_next_rent;
@@ -243,9 +251,75 @@ class ImmoRent extends CommonObject
 	 */
 	public function fetch($id, $ref = null)
 	{
-		$result = $this->fetchCommon($id, $ref);
-		if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
-		return $result;
+		dol_syslog(__METHOD__, LOG_DEBUG);
+		
+		$sql = 'SELECT';
+		$sql .= " ic.rowid as reference,";
+		$sql .= " ic.fk_property,";
+		$sql .= " ic.fk_renter,";
+		$sql .= " ic.date_start,";
+		$sql .= " ic.date_end,";
+		$sql .= " ic.preavis,";
+		$sql .= " ic.date_next_rent,";
+		$sql .= " ic.date_last_regul,";
+		$sql .= " ic.totalamount,";
+		$sql .= " ic.rentamount,";
+		$sql .= " ic.chargesamount,";
+		$sql .= " ic.vat,";
+		$sql .= " ic.encours,";
+		$sql .= " ic.periode,";
+		$sql .= " ic.deposit,";
+		$sql .= " ic.note_public,";
+		$sql .= " ic.fk_user_creat,";
+		$sql .= " ic.fk_user_modif,";
+		$sql .= " lc.lastname as nomlocataire,";
+		$sql .= " lc.firstname as firstname_renter,";
+		$sql .= " ll.label as nomlocal";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immorent as ic";
+		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorenter as lc";
+		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+		$sql .= " WHERE ic.fk_renter = lc.rowid AND ic.fk_property = ll.rowid AND ic.rowid =".$id;
+		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql );
+		$resql = $this->db->query ( $sql );
+		if ($resql) 
+		{
+			if ($this->db->num_rows ( $resql )) 
+			{
+				$obj = $this->db->fetch_object ( $resql );
+				
+				$this->id = $obj->reference;
+				$this->ref = $obj->reference; // use for next prev refs
+				$this->fk_property 			= $obj->fk_property;
+				$this->nomlocal 			= $obj->nomlocal;
+				$this->fk_renter			= $obj->fk_renter;
+				$this->nomlocataire			= $obj->nomlocataire;
+				$this->firstname_renter		= $obj->firstname_renter;
+				$this->date_start			= $this->db->jdate ( $obj->date_start );
+				$this->date_end				= $this->db->jdate ( $obj->date_end );
+				$this->preavis				= $obj->preavis;
+				$this->date_next_rent		= $obj->date_next_rent;
+				$this->date_last_regul		= $obj->date_last_regul;
+				$this->totalamount			= $obj->totalamount;
+				$this->rentamount			= $obj->rentamount;
+				$this->chargesamount		= $obj->chargesamount;
+				$this->vat					= $obj->vat;
+				$this->encours				= $obj->encours;
+				$this->periode				= $obj->periode;
+				$this->deposit				= $obj->deposit;
+				$this->note_public			= $obj->note_public;
+				$this->datec 				= $this->db->jdate($obj->datec);
+				$this->tms 					= $this->db->jdate($obj->tms);
+				$this->fk_user_creat 		= $obj->fk_user_creat;
+				$this->fk_user_modif 		= $obj->fk_user_modif;
+			}
+			$this->db->free($resql);
+			return 1;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			return -1;
+		}
 	}
 
 	/**
@@ -426,10 +500,10 @@ class ImmoRent extends CommonObject
 			{
 				$obj = $this->db->fetch_object($result);
 				$this->id = $obj->rowid;
-				if ($obj->fk_user_author)
+				if ($obj->fk_user_creat)
 				{
 					$cuser = new User($this->db);
-					$cuser->fetch($obj->fk_user_author);
+					$cuser->fetch($obj->fk_user_creat);
 					$this->user_creation   = $cuser;
 				}
 

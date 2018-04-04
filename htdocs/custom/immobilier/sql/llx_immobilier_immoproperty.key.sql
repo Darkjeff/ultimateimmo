@@ -18,7 +18,7 @@
 ALTER TABLE llx_immobilier_immoproperty ADD INDEX idx_immobilier_immoproperty_rowid (rowid);
 ALTER TABLE llx_immobilier_immoproperty ADD INDEX idx_immobilier_immoproperty_ref (ref);
 ALTER TABLE llx_immobilier_immoproperty ADD INDEX idx_immobilier_immoproperty_entity (entity);
-ALTER TABLE llx_immobilier_immoproperty ADD INDEX idx_immobilier_immoproperty_fk_soc (fk_soc);
+ALTER TABLE llx_immobilier_immoproperty ADD INDEX idx_immobilier_immoproperty_fk_owner (fk_owner);
 ALTER TABLE llx_immobilier_immoproperty ADD INDEX idx_immobilier_immoproperty_status (status);
 -- END MODULEBUILDER INDEXES
 
