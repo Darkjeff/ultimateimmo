@@ -255,6 +255,7 @@ class ImmoRent extends CommonObject
 		
 		$sql = 'SELECT';
 		$sql .= " ic.rowid as reference,";
+		$sql .= " ic.ref,";
 		$sql .= " ic.fk_property,";
 		$sql .= " ic.fk_renter,";
 		$sql .= " ic.date_start,";
@@ -287,7 +288,7 @@ class ImmoRent extends CommonObject
 			{
 				$obj = $this->db->fetch_object ( $resql );
 				
-				$this->id = $obj->reference;
+				$this->rowid = $obj->reference;
 				$this->ref = $obj->reference; // use for next prev refs
 				$this->fk_property 			= $obj->fk_property;
 				$this->nomlocal 			= $obj->nomlocal;
