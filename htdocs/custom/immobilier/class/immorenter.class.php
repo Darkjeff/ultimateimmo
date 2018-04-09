@@ -82,8 +82,6 @@ class ImmoRenter extends CommonObject
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>-1, 'enabled'=>1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
 		'lastname' => array('type'=>'varchar(255)', 'label'=>'Lastname', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1,),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'fk_immorenter_type' => array('type'=>'integer', 'label'=>'ImmoRenterType', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'description' => array('type'=>'text', 'label'=>'Description', 'visible'=>-1, 'enabled'=>1, 'position'=>60, 'notnull'=>-1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>62, 'notnull'=>-1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'visible'=>-2, 'enabled'=>1, 'position'=>500, 'notnull'=>1,),
@@ -104,8 +102,6 @@ class ImmoRenter extends CommonObject
 	public $entity;
 	public $lastname;
 	public $fk_soc;
-	public $fk_immorenter_type;
-	public $description;
 	public $note_public;
 	public $note_private;
 	public $date_creation;
