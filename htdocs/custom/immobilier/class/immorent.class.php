@@ -247,12 +247,13 @@ class ImmoRent extends CommonObject
 	 * @param string $ref  Ref
 	 * @return int         <0 if KO, 0 if not found, >0 if OK
 	 */
-	public function fetch($id, $ref = null)
+	/*public function fetch($id, $ref = null)
 	{
 		dol_syslog(__METHOD__, LOG_DEBUG);
-		
+		$result = $this->fetchCommon($id, $ref);
+		if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
 		$sql = 'SELECT';
-		$sql .= " ic.rowid as reference,";
+		$sql .= " ic.rowid,";
 		$sql .= " ic.ref,";
 		$sql .= " ic.fk_property,";
 		$sql .= " ic.fk_renter,";
@@ -319,6 +320,20 @@ class ImmoRent extends CommonObject
 			$this->error="Error ".$this->db->lasterror();
 			return -1;
 		}
+	}*/
+	
+	/**
+	 * Load object in memory from the database
+	 *
+	 * @param int    $id   Id object
+	 * @param string $ref  Ref
+	 * @return int         <0 if KO, 0 if not found, >0 if OK
+	 */
+	public function fetch($id, $ref = null)
+	{
+		$result = $this->fetchCommon($id, $ref);
+		if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
+		return $result;
 	}
 
 	/**
