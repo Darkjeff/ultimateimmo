@@ -88,7 +88,7 @@ class ImmoRent extends CommonObject
 		'totalamount' => array('type'=>'varchar(30)', 'label'=>'TotalAmount', 'visible'=>1, 'enabled'=>1, 'position'=>44, 'notnull'=>-1,),
 		'deposit' => array('type'=>'varchar(30)', 'label'=>'Deposit', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1,),
 		'encours' => array('type'=>'varchar(30)', 'label'=>'Encours', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1,),
-		'preavis' => array('type'=>'varchar(128)', 'label'=>'Preavis', 'visible'=>1, 'enabled'=>1, 'position'=>47, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
+		'preavis' => array('type'=>'varchar(128)', 'label'=>'Preavis', 'visible'=>1, 'enabled'=>1, 'position'=>47, 'notnull'=>-1,),
 		'vat' => array('type'=>'varchar(4)', 'label'=>'Vat', 'visible'=>-1, 'enabled'=>1, 'position'=>48, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'fk_property' => array('type'=>'integer', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>52, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
