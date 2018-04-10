@@ -18,9 +18,7 @@ CREATE TABLE llx_immobilier_immorent(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL, 
-	entity integer DEFAULT 1 NOT NULL, 
-	nomlocal varchar(255) NOT NULL, 
-	nomlocataire varchar(255) NOT NULL, 
+	entity integer DEFAULT 1 NOT NULL,  
 	rentamount varchar(30), 
 	chargesamount varchar(30), 
 	totalamount varchar(30), 
