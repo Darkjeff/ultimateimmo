@@ -83,8 +83,6 @@ class ImmoRent extends CommonObject
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'visible'=>-1, 'enabled'=>1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'visible'=>1, 'enabled'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>-1, 'enabled'=>1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
-		'nomlocal' => array('type'=>'varchar(255)', 'label'=>'NomLocal', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>1,),
-		'nomlocataire' => array('type'=>'varchar(255)', 'label'=>'NomLocataire', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>1,),
 		'rentamount' => array('type'=>'varchar(30)', 'label'=>'RentAmount', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
 		'chargesamount' => array('type'=>'varchar(30)', 'label'=>'ChargesAmount', 'visible'=>1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1,),
 		'totalamount' => array('type'=>'varchar(30)', 'label'=>'TotalAmount', 'visible'=>1, 'enabled'=>1, 'position'=>44, 'notnull'=>-1,),
