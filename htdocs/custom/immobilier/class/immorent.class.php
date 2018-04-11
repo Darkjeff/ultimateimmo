@@ -239,88 +239,6 @@ class ImmoRent extends CommonObject
 	        return -1;
 	    }
 	}
-
-	/**
-	 * Load object in memory from the database
-	 *
-	 * @param int    $id   Id object
-	 * @param string $ref  Ref
-	 * @return int         <0 if KO, 0 if not found, >0 if OK
-	 */
-	/*public function fetch($id, $ref = null)
-	{
-		dol_syslog(__METHOD__, LOG_DEBUG);
-		$result = $this->fetchCommon($id, $ref);
-		if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
-		$sql = 'SELECT';
-		$sql .= " ic.rowid,";
-		$sql .= " ic.ref,";
-		$sql .= " ic.fk_property,";
-		$sql .= " ic.fk_renter,";
-		$sql .= " ic.date_start,";
-		$sql .= " ic.date_end,";
-		$sql .= " ic.preavis,";
-		$sql .= " ic.date_next_rent,";
-		$sql .= " ic.date_last_regul,";
-		$sql .= " ic.totalamount,";
-		$sql .= " ic.rentamount,";
-		$sql .= " ic.chargesamount,";
-		$sql .= " ic.vat,";
-		$sql .= " ic.encours,";
-		$sql .= " ic.periode,";
-		$sql .= " ic.deposit,";
-		$sql .= " ic.note_public,";
-		$sql .= " ic.fk_user_creat,";
-		$sql .= " ic.fk_user_modif,";
-		$sql .= " lc.lastname as nomlocataire,";
-		$sql .= " lc.firstname as firstname_renter,";
-		$sql .= " ll.label as nomlocal";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immorent as ic";
-		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorenter as lc";
-		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
-		$sql .= " WHERE ic.fk_renter = lc.rowid AND ic.fk_property = ll.rowid AND ic.rowid =".$id;
-		dol_syslog ( get_class ( $this ) . "::fetch sql=" . $sql );
-		$resql = $this->db->query ( $sql );
-		if ($resql) 
-		{
-			if ($this->db->num_rows ( $resql )) 
-			{
-				$obj = $this->db->fetch_object ( $resql );
-				
-				$this->rowid = $obj->reference;
-				$this->ref = $obj->reference; // use for next prev refs
-				$this->fk_property 			= $obj->fk_property;
-				$this->nomlocal 			= $obj->nomlocal;
-				$this->fk_renter			= $obj->fk_renter;
-				$this->nomlocataire			= $obj->nomlocataire;
-				$this->firstname_renter		= $obj->firstname_renter;
-				$this->date_start			= $this->db->jdate ( $obj->date_start );
-				$this->date_end				= $this->db->jdate ( $obj->date_end );
-				$this->preavis				= $obj->preavis;
-				$this->date_next_rent		= $obj->date_next_rent;
-				$this->date_last_regul		= $obj->date_last_regul;
-				$this->totalamount			= $obj->totalamount;
-				$this->rentamount			= $obj->rentamount;
-				$this->chargesamount		= $obj->chargesamount;
-				$this->vat					= $obj->vat;
-				$this->encours				= $obj->encours;
-				$this->periode				= $obj->periode;
-				$this->deposit				= $obj->deposit;
-				$this->note_public			= $obj->note_public;
-				$this->datec 				= $this->db->jdate($obj->datec);
-				$this->tms 					= $this->db->jdate($obj->tms);
-				$this->fk_user_creat 		= $obj->fk_user_creat;
-				$this->fk_user_modif 		= $obj->fk_user_modif;
-			}
-			$this->db->free($resql);
-			return 1;
-		}
-		else
-		{
-			$this->error="Error ".$this->db->lasterror();
-			return -1;
-		}
-	}*/
 	
 	/**
 	 * Function to concat keys of fields
@@ -392,6 +310,7 @@ class ImmoRent extends CommonObject
 		$array = array_splice($array, 0, count($array), $array[0]);
 		$array = implode(', t.', $array);
 
+		
 		$sql = 'SELECT '.$array.',';		
 		$sql.= ' lc.lastname as nomlocataire,';
 		$sql.= ' lc.firstname as firstname_renter,';
