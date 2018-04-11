@@ -92,7 +92,7 @@ class ImmoRent extends CommonObject
 		'vat' => array('type'=>'varchar(4)', 'label'=>'Vat', 'visible'=>-1, 'enabled'=>1, 'position'=>48, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>52, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
-		'fk_renter' => array('type'=>'integer:ImmoRent:immobilier/class/immorent.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToRenter",),
+		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToRenter",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>62, 'notnull'=>-1,),
 		'periode' => array('type'=>'varchar(128)', 'label'=>'Periode', 'visible'=>-1, 'enabled'=>1, 'position'=>62, 'notnull'=>-1,),
