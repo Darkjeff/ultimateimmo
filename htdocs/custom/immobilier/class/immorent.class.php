@@ -392,14 +392,13 @@ class ImmoRent extends CommonObject
 		$array = array_splice($array, 0, count($array), $array[0]);
 		$array = implode(', t.', $array);
 
-		$sql = 'SELECT '.$array.',';
-   // var_dump($array);		
+		$sql = 'SELECT '.$array.',';		
 		$sql.= ' lc.lastname as nomlocataire,';
 		$sql.= ' lc.firstname as firstname_renter,';
 		$sql.= ' ll.label as nomlocal';	
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element . ' as t';
-		$sql.= " INNER JOIN " . MAIN_DB_PREFIX . "immobilier_immorenter as lc ON t.fk_renter = lc.rowid";
-		$sql.= " INNER JOIN " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll ON t.fk_property = ll.rowid";
+		$sql.= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immorenter as lc ON t.fk_renter = lc.rowid";
+		$sql.= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll ON t.fk_property = ll.rowid";
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
