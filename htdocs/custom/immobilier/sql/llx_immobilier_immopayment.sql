@@ -1,4 +1,4 @@
--- Copyright (C) ---Put here your own copyright and developer email---
+-- Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>---
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,9 +17,10 @@
 CREATE TABLE llx_immobilier_immopayment(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL, 
+	ref varchar(128) NOT NULL,
+	entity integer DEFAULT 1 NOT NULL,	
 	amount double(24,8) DEFAULT NULL, 
-	fk_contract integer, 
+	fk_rent integer, 
 	fk_property integer, 
 	fk_renter integer, 
 	fk_bank integer, 

@@ -17,7 +17,8 @@
 CREATE TABLE llx_immobilier_immoreceipt(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL, 
+	ref varchar(128) NOT NULL,
+	entity integer DEFAULT 1 NOT NULL,	
 	label varchar(255), 
 	rentamount double(24,8), 
 	chargesamount double(24,8), 
