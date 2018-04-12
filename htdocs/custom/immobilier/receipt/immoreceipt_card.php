@@ -872,7 +872,7 @@ else
 		
 		// Contract
 		print '<tr><td>' . $langs->trans("Contract") . '</td>';
-		print '<td>' . $receipt->fk_contract . '</td></tr>';
+		print '<td>' . $receipt->fk_rent . '</td></tr>';
 		
 		// VAT
 		print '<tr><td>';
@@ -884,11 +884,11 @@ else
 
 		// Property
 		print '<tr><td>' . $langs->trans("Property") . ' </td>';
-		print '<td>' . $receipt->nomlocal . '</td></tr>';
+		print '<td>' . $receipt->fk_property . '</td></tr>';
 
 		// Renter
 		print '<tr><td>' . $langs->trans("Renter") . '</td>';
-		print '<td>' . $receipt->nomlocataire . '</td></tr>';
+		print '<td>' . $receipt->fk_renter . '</td></tr>';
 		
 		// Amount
 		print '<tr><td>' . $langs->trans("AmountTC") . '</td>';
@@ -930,7 +930,7 @@ else
 		print '<div class="ficheaddleft">';
 
 		// List of payments
-		$sql = "SELECT p.rowid, p.fk_receipt, date_payment as dp, p.amount, p.fk_typepayment, pp.libelle as typepayment_label, il.total_amount ";
+		$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_typepayment, pp.libelle as typepayment_label, il.total_amount ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as p";
 		$sql .= ", " . MAIN_DB_PREFIX . "immobilier_immoreceipt as il ";
 		$sql .= ", " . MAIN_DB_PREFIX . "c_paiement as pp";

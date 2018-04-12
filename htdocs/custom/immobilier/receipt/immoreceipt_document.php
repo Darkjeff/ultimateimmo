@@ -68,7 +68,6 @@ $pageprev = $page - 1;
 $pagenext = $page + 1;
 if (! $sortorder) $sortorder="ASC";
 if (! $sortfield) $sortfield="name";
-//if (! $sortfield) $sortfield="position_name";
 
 // Initialize technical objects
 $object=new ImmoReceipt($db);
@@ -83,7 +82,6 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be inclu
 
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
 if ($id > 0 || ! empty($ref)) $upload_dir = $conf->immobilier->multidir_output[$object->entity] . "/receipt/" . dol_sanitizeFileName($object->ref);
-$modulepart='receipt';
 
 
 /*
@@ -109,6 +107,7 @@ if ($object->id)
 	/*
 	 * Show tabs
 	 */
+	if (! empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immoreceiptPrepareHead($object);
 
 	dol_fiche_head($head, 'document', $langs->trans("ImmoReceipt"), -1, 'immoreceipt@immobilier');
@@ -146,9 +145,9 @@ if ($object->id)
 	dol_fiche_end();
 
 	$modulepart = 'immobilier';
-	$permission = $user->rights->immobilier->write;
+	$permission = $user->rights->immobilier->receipt->write;
 	$permission = 1;
-	$permtoedit = $user->rights->immobilier->write;
+	$permtoedit = $user->rights->immobilier->receipt->write;
 	$permtoedit = 1;
 	$param = '&id=' . $object->id;
 

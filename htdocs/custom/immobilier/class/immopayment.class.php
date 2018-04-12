@@ -80,11 +80,11 @@ class ImmoPayment extends CommonObject
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
 		'amount' => array('type'=>'double(24,8)', 'label'=>'Amount', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
-		'fk_contract' => array('type'=>'integer', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>41, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToContract",),
-		'fk_property' => array('type'=>'integer', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>42, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
-		'fk_renter' => array('type'=>'integer', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>43, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToRenter",),
+		'fk_rent' => array('type'=>'integer:ImmoRent:immobilier/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>41, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToContract",),
+		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>42, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
+		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>43, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToRenter",),
 		'fk_bank' => array('type'=>'integer', 'label'=>'Bank', 'enabled'=>1, 'visible'=>1, 'position'=>44, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToBank",),
-		'fk_typepayment' => array('type'=>'integer', 'label'=>'TypePayment', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToTypePayment",),
+		'fk_typepayment' => array('type'=>'integer:Cpaiement:compta/paiement/class/cpaiement.class.php', 'label'=>'TypePayment', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToTypePayment",),
 		'fk_owner' => array('type'=>'integer', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>46, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'fk_receipt' => array('type'=>'integer', 'label'=>'Receipt', 'enabled'=>1, 'visible'=>1, 'position'=>47, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToReceipt",),
 		'num_payment' => array('type'=>'varchar(50)', 'label'=>'NumPayment', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1,),
@@ -101,7 +101,7 @@ class ImmoPayment extends CommonObject
 	public $rowid;
 	public $ref;
 	public $amount;
-	public $fk_contract;
+	public $fk_rent;
 	public $fk_property;
 	public $fk_renter;
 	public $fk_bank;

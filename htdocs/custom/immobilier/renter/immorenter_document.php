@@ -82,7 +82,7 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be inclu
 
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
 if ($id > 0 || ! empty($ref)) $upload_dir = $conf->immobilier->multidir_output[$object->entity] . "/renter/" . dol_sanitizeFileName($object->ref);
-$modulepart='renter';
+//$modulepart='renter';
 
 /*
  * Actions
@@ -143,7 +143,7 @@ if ($object->id)
 
 	dol_fiche_end();
 
-	$modulepart = 'renter';
+	$modulepart = 'immobilier';
 	$permission = $user->rights->immobilier->renter->write;
 	$permission = 1;
 	$permtoedit = $user->rights->immobilier->renter->write;
