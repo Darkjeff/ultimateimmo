@@ -83,16 +83,16 @@ class ImmoRent extends CommonObject
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'visible'=>-1, 'enabled'=>1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'visible'=>1, 'enabled'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>-1, 'enabled'=>1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
-		'rentamount' => array('type'=>'varchar(30)', 'label'=>'RentAmount', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
-		'chargesamount' => array('type'=>'varchar(30)', 'label'=>'ChargesAmount', 'visible'=>1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1,),
-		'totalamount' => array('type'=>'varchar(30)', 'label'=>'TotalAmount', 'visible'=>1, 'enabled'=>1, 'position'=>44, 'notnull'=>-1,),
-		'deposit' => array('type'=>'varchar(30)', 'label'=>'Deposit', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1,),
-		'encours' => array('type'=>'varchar(30)', 'label'=>'Encours', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1,),
+		'rentamount' => array('type'=>'double(24,8)', 'label'=>'RentAmount', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'isameasure'=>1,),
+		'chargesamount' => array('type'=>'double(24,8)', 'label'=>'ChargesAmount', 'visible'=>1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1, 'isameasure'=>1,),
+		'totalamount' => array('type'=>'double(24,8)', 'label'=>'TotalAmount', 'visible'=>1, 'enabled'=>1, 'position'=>44, 'notnull'=>-1, 'isameasure'=>1,),
+		'deposit' => array('type'=>'double(24,8)', 'label'=>'Deposit', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1,),
+		'encours' => array('type'=>'double(24,8)', 'label'=>'Encours', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1,),
 		'preavis' => array('type'=>'varchar(128)', 'label'=>'Preavis', 'visible'=>1, 'enabled'=>1, 'position'=>47, 'notnull'=>-1,),
 		'vat' => array('type'=>'varchar(4)', 'label'=>'Vat', 'visible'=>-1, 'enabled'=>1, 'position'=>48, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>52, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
-		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToRenter",),
+		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'immobilier_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>62, 'notnull'=>-1,),
 		'periode' => array('type'=>'varchar(128)', 'label'=>'Periode', 'visible'=>-1, 'enabled'=>1, 'position'=>62, 'notnull'=>-1,),
@@ -316,8 +316,8 @@ class ImmoRent extends CommonObject
 		$sql.= ' lc.firstname as firstname_renter,';
 		$sql.= ' ll.label as nomlocal';	
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element . ' as t';
-		$sql.= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immorenter as lc ON t.fk_renter = lc.rowid";
-		$sql.= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll ON t.fk_property = ll.rowid";
+		$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immobilier_immorenter as lc ON t.fk_renter = lc.rowid';
+		$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immobilier_immoproperty as ll ON t.fk_property = ll.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);

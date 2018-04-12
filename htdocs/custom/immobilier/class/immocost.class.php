@@ -85,7 +85,7 @@ class ImmoCost extends CommonObject
 		'amount_vat' => array('type'=>'double(24,8)', 'label'=>'AmountVat', 'enabled'=>1, 'visible'=>1, 'position'=>42, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'enabled'=>1, 'visible'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToThirparty",),
 		'fk_property' => array('type'=>'integer', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>51, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
-		'fk_owner' => array('type'=>'integer', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>52, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
+		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>52, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'cost_type' => array('type'=>'integer', 'label'=>'CostType', 'enabled'=>1, 'visible'=>1, 'position'=>51, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
 		'description' => array('type'=>'text', 'label'=>'Description', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>61, 'notnull'=>-1,),

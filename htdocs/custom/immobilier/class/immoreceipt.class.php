@@ -89,10 +89,10 @@ class ImmoReceipt extends CommonObject
 		'vat' => array('type'=>'double(24,8)', 'label'=>'Vat', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1,),
 		'paye' => array('type'=>'integer', 'label'=>'Paye', 'enabled'=>1, 'visible'=>-1, 'position'=>49, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'enabled'=>1, 'visible'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToThirparty",),
-		'fk_contract' => array('type'=>'integer:ImmoRent:immobilier/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>52, 'notnull'=>-1,),
+		'fk_rent' => array('type'=>'integer:ImmoRent:immobilier/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>52, 'notnull'=>-1,),
 		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
-		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>56, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter", ),
-		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>58, 'notnull'=>-1,),
+		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>56, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter", ),
+		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>58, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'description' => array('type'=>'text', 'label'=>'Description', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>62, 'notnull'=>-1,),
@@ -119,7 +119,7 @@ class ImmoReceipt extends CommonObject
 	public $echeance;
 	public $paye;
 	public $fk_soc;
-	public $fk_contract;
+	public $fk_rent;
 	public $fk_property;
 	public $fk_renter;
 	public $fk_owner;
@@ -338,7 +338,7 @@ class ImmoReceipt extends CommonObject
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element . ' as t';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immobilier_immorenter as lc ON t.fk_renter = lc.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immobilier_immoproperty as ll ON t.fk_property = ll.rowid';
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immobilier_immocontrat as ic ON t.fk_contract = ic.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immobilier_immorent as ic ON t.fk_rent = ic.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
