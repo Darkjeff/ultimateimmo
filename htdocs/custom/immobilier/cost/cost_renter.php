@@ -113,9 +113,9 @@ $sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "immobilier_immobuilding as ii";
 $sql .= " WHERE lo.echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
+$sql .= "  AND lo.fk_property = ll.rowid AND ii.fk_property = ll.rowid ";
 //$sql .= "  AND lo.paye = 1 ";
-$sql .= " GROUP BY ll.fk_property";
+$sql .= " GROUP BY ii.fk_property";
 
 $resql = $db->query ( $sql );
 if ($resql) {
@@ -193,8 +193,8 @@ $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge récupérable/locative' ";
-$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
-$sql .= " GROUP BY ll.fk_property";
+$sql .= "  AND ic.fk_property = ll.rowid AND ii.fk_property = ll.rowid ";
+$sql .= " GROUP BY ii.fk_property";
 
 
 $resql = $db->query ( $sql );
@@ -255,9 +255,9 @@ $sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "immobilier_immobuilding as ii";
 $sql .= " WHERE lo.echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
+$sql .= "  AND lo.fk_property = ll.rowid AND ii.fk_property = ll.rowid ";
 //$sql .= "  AND lo.paye = 1 ";
-$sql .= " GROUP BY ll.fk_property";
+$sql .= " GROUP BY ii.fk_property";
 
 $resqlencaissement = $db->query ( $sql );
 
@@ -283,8 +283,8 @@ $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge récupérable/locative' ";
-$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
-$sql .= " GROUP BY ll.fk_property";
+$sql .= "  AND ic.fk_property = ll.rowid AND ic.fk_property = ii.fk_property ";
+$sql .= " GROUP BY ic.fk_property";
 
 $resqlpaiement = $db->query ( $sql );
 if ($resqlpaiement && $resqlencaissement) {

@@ -111,10 +111,10 @@ $sql .= " , " . MAIN_DB_PREFIX . "immobilier_immobuilding as ib";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.cost_type = it.rowid";
-$sql .= "  AND ic.fk_property = ii.rowid AND ii.fk_property = ib.fk_property";
+$sql .= "  AND ic.fk_property = ii.rowid AND ic.fk_property = ib.fk_property";
 
 
-$sql .= " GROUP BY ii.fk_property, it.type";
+$sql .= " GROUP BY ic.fk_property, it.type";
 
 $resql = $db->query ( $sql );
 if ($resql) {

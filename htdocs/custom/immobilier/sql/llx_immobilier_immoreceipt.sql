@@ -28,7 +28,7 @@ CREATE TABLE llx_immobilier_immoreceipt(
 	vat double(24,8), 
 	paye integer, 
 	fk_soc integer, 
-	fk_contract integer, 
+	fk_rent integer, 
 	fk_property integer, 
 	fk_renter integer, 
 	fk_owner integer, 

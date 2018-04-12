@@ -55,8 +55,8 @@ $ref = GETPOST('ref', 'alpha');
 
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
-//if ($user->societe_id > 0) $socid = $user->societe_id;
-//$result = restrictedArea($user, 'immobilier', $id);
+if ($user->societe_id > 0) $socid = $user->societe_id;
+$result = restrictedArea($user, 'immobilier', $id);
 
 // Get parameters
 $sortfield = GETPOST("sortfield",'alpha');
@@ -68,7 +68,6 @@ $pageprev = $page - 1;
 $pagenext = $page + 1;
 if (! $sortorder) $sortorder="ASC";
 if (! $sortfield) $sortfield="name";
-//if (! $sortfield) $sortfield="position_name";
 
 // Initialize technical objects
 $object=new ImmoCost($db);
@@ -82,7 +81,7 @@ $extralabels = $extrafields->fetch_name_optionals_label('immocost');
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
-if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->ref);
+if ($id > 0 || ! empty($ref)) $upload_dir = $conf->immobilier->multidir_output[$object->entity] . "/cost/" . dol_sanitizeFileName($object->ref);
 
 
 
@@ -109,6 +108,7 @@ if ($object->id)
 	/*
 	 * Show tabs
 	 */
+	if (! empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immocostPrepareHead($object);
 
 	dol_fiche_head($head, 'document', $langs->trans("ImmoCost"), -1, 'immocost@immobilier');
@@ -146,14 +146,14 @@ if ($object->id)
 	dol_fiche_end();
 
 	$modulepart = 'immobilier';
-	//$permission = $user->rights->immobilier->create;
+	$permission = $user->rights->immobilier->cost->write;
 	$permission = 1;
-	//$permtoedit = $user->rights->immobilier->create;
+	$permtoedit = $user->rights->immobilier->cost->write;
 	$permtoedit = 1;
 	$param = '&id=' . $object->id;
 
 	//$relativepathwithnofile='immocost/' . dol_sanitizeFileName($object->id).'/';
-	$relativepathwithnofile='immocost/' . dol_sanitizeFileName($object->ref).'/';
+	$relativepathwithnofile='cost/' . dol_sanitizeFileName($object->ref).'/';
 
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 }

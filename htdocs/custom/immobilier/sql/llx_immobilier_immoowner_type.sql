@@ -17,7 +17,8 @@
 CREATE TABLE llx_immobilier_immoowner_type(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL, 
+	ref varchar(128) NOT NULL,
+	entity integer DEFAULT 1 NOT NULL, 	
 	label varchar(255),  
 	note_public text, 
 	note_private text, 

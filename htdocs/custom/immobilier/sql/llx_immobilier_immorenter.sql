@@ -18,9 +18,12 @@ CREATE TABLE llx_immobilier_immorenter(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	ref varchar(128) NOT NULL, 
-	entity integer DEFAULT 1 NOT NULL, 
+	entity integer DEFAULT 1 NOT NULL,
+	civility_id integer NOT NULL,	
+	firstname varchar(255),
 	lastname varchar(255), 
-	fk_soc integer, 
+	fk_soc integer,
+	fk_owner integer,	
 	note_public text, 
 	note_private text, 
 	date_creation datetime NOT NULL, 
@@ -28,12 +31,10 @@ CREATE TABLE llx_immobilier_immorenter(
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
 	import_key varchar(14), 
-	status integer NOT NULL, 
-	firstname varchar(255), 
+	status integer NOT NULL,  
 	email varchar(255), 
 	birth date, 
 	phone varchar(30), 
-	phone_mobile varchar(30), 
-	civility_id integer NOT NULL
+	phone_mobile varchar(30) 	
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

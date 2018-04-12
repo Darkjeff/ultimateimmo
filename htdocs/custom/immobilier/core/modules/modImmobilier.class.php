@@ -105,8 +105,8 @@ class modImmobilier extends DolibarrModules
 		// Example: this->dirs = array("/immobilier/temp","/immobilier/subdir");
 		$this->dirs = array (
 			'/immobilier',
-			'/immobilier/charge',
-			'/immobilier/contrat',
+			'/immobilier/cost',
+			'/immobilier/rent',
 			'/immobilier/local',
 			'/immobilier/photo',
 			'/immobilier/property',
