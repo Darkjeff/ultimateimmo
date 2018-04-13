@@ -55,8 +55,8 @@ $ref = GETPOST('ref', 'alpha');
 
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
-//if ($user->societe_id > 0) $socid = $user->societe_id;
-//$result = restrictedArea($user, 'immobilier', $id);
+if ($user->societe_id > 0) $socid = $user->societe_id;
+$result = restrictedArea($user, 'immobilier', $id);
 
 // Get parameters
 $sortfield = GETPOST("sortfield",'alpha');
@@ -82,7 +82,7 @@ $extralabels = $extrafields->fetch_name_optionals_label('immopayment');
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
-if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->ref);
+if ($id > 0 || ! empty($ref)) $upload_dir = $conf->immobilier->multidir_output[$object->entity] . "/payment/" . dol_sanitizeFileName($object->ref);
 
 
 
@@ -146,9 +146,9 @@ if ($object->id)
 	dol_fiche_end();
 
 	$modulepart = 'immobilier';
-	//$permission = $user->rights->immobilier->create;
+	$permission = $user->rights->immobilier->payment->write;
 	$permission = 1;
-	//$permtoedit = $user->rights->immobilier->create;
+	$permtoedit = $user->rights->immobilier->payment->write;
 	$permtoedit = 1;
 	$param = '&id=' . $object->id;
 

@@ -22,7 +22,6 @@ CREATE TABLE llx_immobilier_immorenter(
 	civility_id integer NOT NULL,	
 	firstname varchar(255),
 	lastname varchar(255), 
-	fk_soc integer,
 	fk_owner integer,	
 	note_public text, 
 	note_private text, 

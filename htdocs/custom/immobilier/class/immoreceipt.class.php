@@ -89,8 +89,7 @@ class ImmoReceipt extends CommonObject
 		'echeance' => array('type'=>'date', 'label'=>'Echeance', 'enabled'=>1, 'visible'=>1, 'position'=>43, 'notnull'=>-1, 'default'=>'null',),
 		'vat' => array('type'=>'double(24,8)', 'label'=>'Vat', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1,),
 		'paye' => array('type'=>'integer', 'label'=>'Paye', 'enabled'=>1, 'visible'=>-1, 'position'=>49, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
-		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'enabled'=>1, 'visible'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'societe.rowid', 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'fk_rent' => array('type'=>'integer:ImmoRent:immobilier/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>52, 'notnull'=>-1,),
+		'fk_rent' => array('type'=>'integer:ImmoRent:immobilier/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>52, 'notnull'=>-1, 'foreignkey'=> 'immobilier_immorent.rowid',),
 		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
 		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>56, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter", ),
 		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>58, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
@@ -119,7 +118,6 @@ class ImmoReceipt extends CommonObject
 	public $vat;
 	public $echeance;
 	public $paye;
-	public $fk_soc;
 	public $fk_rent;
 	public $fk_property;
 	public $fk_renter;
@@ -262,67 +260,67 @@ class ImmoReceipt extends CommonObject
 	 * Function to concat keys of fields
 	 *
 	 * @return string
-	 */
+	 
 	private function get_field_list()
 	{
 	    $keys = array_keys($this->fields);
 	    return implode(',', $keys);
-	}
+	}*/
 	
 	/**
-	 * Function to load data into current object this
+	 * Function to load data from a SQL pointer into properties of current object $this
 	 *
 	 * @param   stdClass    $obj    Contain data of object from database
-	 */
-	private function set_vars_by_db(&$obj)
+	 
+	protected function setVarsFromFetchObj(&$obj)
 	{
-	    foreach ($this->fields as $field => $info)
-	    {
-	        if($this->isDate($info))
-	        {
-	            if(empty($obj->{$field}) || $obj->{$field} === '0000-00-00 00:00:00' || $obj->{$field} === '1000-01-01 00:00:00') $this->{$field} = 0;
-	            else $this->{$field} = strtotime($obj->{$field});
-	        }
-	        elseif($this->isArray($info))
-	        {
-	            $this->{$field} = @unserialize($obj->{$field});
-	            // Hack for data not in UTF8
-	            if($this->{$field } === FALSE) @unserialize(utf8_decode($obj->{$field}));
-	        }
-	        elseif($this->isInt($info))
-	        {
-	            $this->{$field} = (int) $obj->{$field};
-	        }
-	        elseif($this->isFloat($info))
-	        {
-	            $this->{$field} = (double) $obj->{$field};
-	        }
-	        elseif($this->isNull($info))
-	        {
-	            $val = $obj->{$field};
-	            // zero is not null
-	            $this->{$field} = (is_null($val) || (empty($val) && $val!==0 && $val!=='0') ? null : $val);
-	        }
-	        else
-	        {
-	            $this->{$field} = $obj->{$field};
-	        }
-
-	    }
-	}
+		foreach ($this->fields as $field => $info)
+		{
+			if($this->isDate($info))
+			{
+				if(empty($obj->{$field}) || $obj->{$field} === '0000-00-00 00:00:00' || $obj->{$field} === '1000-01-01 00:00:00') $this->{$field} = 0;
+				else $this->{$field} = strtotime($obj->{$field});
+			}
+			elseif($this->isArray($info))
+			{
+				$this->{$field} = @unserialize($obj->{$field});
+				// Hack for data not in UTF8
+				if($this->{$field } === FALSE) @unserialize(utf8_decode($obj->{$field}));
+			}
+			elseif($this->isInt($info))
+			{
+				if ($field == 'rowid') $this->id = (int) $obj->{$field};
+				else $this->{$field} = (int) $obj->{$field};
+			}
+			elseif($this->isFloat($info))
+			{
+				$this->{$field} = (double) $obj->{$field};
+			}
+			elseif($this->isNull($info))
+			{
+				$val = $obj->{$field};
+				// zero is not null
+				$this->{$field} = (is_null($val) || (empty($val) && $val!==0 && $val!=='0') ? null : $val);
+			}
+			else
+			{
+				$this->{$field} = $obj->{$field};
+			}
+		}*/
 	
 	/**
 	 * Load object in memory from the database
 	 *
-	 * @param int    $id   Id object
-	 * @param string $ref  Ref
-	 * @return int         <0 if KO, 0 if not found, >0 if OK
+	 * @param	int    $id				Id object
+	 * @param	string $ref				Ref
+	 * @param	string	$morewhere		More SQL filters (' AND ...')
+	 * @return 	int         			<0 if KO, 0 if not found, >0 if OK
 	 */
-	public function fetchCommon($id, $ref = null)
+	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
 		if (empty($id) && empty($ref)) return false;
 		
-		$array = preg_split("/[\s,]+/", $this->get_field_list());
+		$array = preg_split("/[\s,]+/", $this->getFieldList());
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), $array[0]);
 		$array = implode(', t.', $array);
@@ -342,39 +340,27 @@ class ImmoReceipt extends CommonObject
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
+		if ($morewhere) $sql.=$morewhere;
 
 		$res = $this->db->query($sql);
 		if ($res)
 		{
-    		if ($obj = $this->db->fetch_object($res))
-    		{
-    		    if ($obj)
-    		    {
-        			$this->id = $id;
-        			$this->set_vars_by_db($obj);
-
-        			$this->date_creation = $this->db->idate($obj->date_creation);
-        			$this->tms = $this->db->idate($obj->tms);
-
-        			return $this->id;
-    		    }
-    		    else
-    		    {
-    		        return 0;
-    		    }
-    		}
-    		else
-    		{
-    			$this->error = $this->db->lasterror();
-    			$this->errors[] = $this->error;
-    			return -1;
-    		}
+			$obj = $this->db->fetch_object($res);
+			if ($obj)
+			{
+				$this->setVarsFromFetchObj($obj);
+				return $this->id;
+			}
+			else
+			{
+				return 0;
+			}
 		}
 		else
 		{
-		    $this->error = $this->db->lasterror();
-		    $this->errors[] = $this->error;
-		    return -1;
+			$this->error = $this->db->lasterror();
+			$this->errors[] = $this->error;
+			return -1;
 		}
 	}
 	
