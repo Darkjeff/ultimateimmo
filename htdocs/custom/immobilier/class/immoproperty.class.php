@@ -105,7 +105,8 @@ class ImmoProperty extends CommonObject
 		'area' => array('type'=>'varchar(8)', 'label'=>'Area', 'enabled'=>1, 'visible'=>1, 'position'=>42, 'notnull'=>-1,),
 		'zip' => array('type'=>'varchar(32)', 'label'=>'Zip', 'enabled'=>1, 'visible'=>1, 'position'=>44, 'notnull'=>-1,),
 		'town' => array('type'=>'varchar(64)', 'label'=>'Town', 'enabled'=>1, 'visible'=>1, 'position'=>46, 'notnull'=>-1,),
-		'fk_pays' => array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1, 'foreignkey'=> 'c_country.rowid',),
+		//'fk_pays' => array('type'=>'integer:Ccountry:core/class/ccountry.class.php', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1, 'foreignkey'=> 'c_country.rowid',),
+		//'fk_pays' => array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1,),
 		'datep' => array('type'=>'date', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>56, 'notnull'=>-1,),
 		'target' => array('type'=>'integer', 'label'=>'Target', 'enabled'=>1, 'visible'=>1, 'position'=>58, 'notnull'=>-1, 'comment'=>"Rent or sale",),
 	);
@@ -258,6 +259,7 @@ class ImmoProperty extends CommonObject
 		$array = implode(', t.', $array);
 		
 		$sql = 'SELECT '.$array.',';
+		$sql.= ' t.fk_pays as country_id'.',';
 		$sql.= ' co.label as country, co.code as country_code';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as co ON t.fk_pays = co.rowid';
@@ -272,6 +274,9 @@ class ImmoProperty extends CommonObject
 			$obj = $this->db->fetch_object($res);
 			if ($obj)
 			{
+				$this->country_id   = $obj->country_id;
+				$this->country_code = $obj->country_id?$obj->country_code:'';
+				$this->country 		= $obj->country_id?($langs->trans('Country'.$obj->country_code)!='Country'.$obj->country_code?$langs->transnoentities('Country'.$obj->country_code):$obj->country):'';
 				$this->setVarsFromFetchObj($obj);
 				return $this->id;
 			}

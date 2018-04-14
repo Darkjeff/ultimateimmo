@@ -17,7 +17,7 @@
  */
 
 /**
- * \file    test/functional/immobilierFunctionalTest.php
+ * \file    test/functional/ImmobilierFunctionalTest.php
  * \ingroup immobilier
  * \brief   Example Selenium test.
  *
@@ -29,7 +29,7 @@ namespace test\functional;
 use PHPUnit_Extensions_Selenium2TestCase_WebDriverException;
 
 /**
- * Class immobilierFunctionalTest
+ * Class ImmobilierFunctionalTest
  *
  * Requires chromedriver for Google Chrome
  * Requires geckodriver for Mozilla Firefox
@@ -41,7 +41,7 @@ use PHPUnit_Extensions_Selenium2TestCase_WebDriverException;
  *
  * @package Testimmobilier
  */
-class immobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
+class ImmobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 {
 	// TODO: move to a global configuration file?
 	/** @var string Base URL of the webserver under test */
@@ -170,12 +170,12 @@ class immobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 		$module_status_image = $this->byXPath($module_status_image_path);
 		if (strstr($module_status_image->attribute('src'), 'switch_off.png')) {
 			// Enable the module
-			$this->byHref('modimmobilier')->click();
+			$this->byHref('modImmobilier')->click();
 		} else {
 			// Disable the module
-			$this->byHref('modimmobilier')->click();
+			$this->byHref('modImmobilier')->click();
 			// Reenable the module
-			$this->byHref('modimmobilier')->click();
+			$this->byHref('modImmobilier')->click();
 		}
 		// Page reloaded, we need a new Xpath
 		$module_status_image = $this->byXPath($module_status_image_path);
@@ -244,7 +244,7 @@ class immobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 		$this->url('/admin/triggers.php');
 		$this->authenticate();
 		return $this->assertContains(
-			'interface_99_modimmobilier_immobilierTriggers.class.php',
+			'interface_99_modImmobilier_ImmobilierTriggers.class.php',
 			$this->byTag('body')->text(),
 			"Trigger declared"
 		);
@@ -261,7 +261,7 @@ class immobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 		$this->authenticate();
 		return $this->assertContains(
 			'tick.png',
-			$this->byXPath('//td[text()="interface_99_modimmobilier_MyTrigger.class.php"]/following::img')->attribute('src'),
+			$this->byXPath('//td[text()="interface_99_modImmobilier_MyTrigger.class.php"]/following::img')->attribute('src'),
 			"Trigger enabled"
 		);
 	}

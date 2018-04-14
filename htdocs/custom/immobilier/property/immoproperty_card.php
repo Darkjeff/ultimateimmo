@@ -127,9 +127,24 @@ if (empty($reshook))
 	$autocopy='MAIN_MAIL_AUTOCOPY_IMMOPROPERTY_TO';
 	$trackid='immoproperty'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
+	
+	if ( ($action == 'update' && ! GETPOST("cancel",'alpha'))
+	|| ($action == 'updateedit') )
+	{
+		$tmparray=getCountry(GETPOST('country_id','int'),'all',$db,$langs,0);
+		if (! empty($tmparray['id']))
+		{
+			$mysoc->country_id   =$tmparray['id'];
+			$mysoc->country_code =$tmparray['code'];
+			$mysoc->country_label=$tmparray['label'];
+
+			$s=$mysoc->country_id.':'.$mysoc->country_code.':'.$mysoc->country_label;
+			dolibarr_set_const($db, "MAIN_INFO_SOCIETE_COUNTRY", $s,'chaine',0,'',$conf->entity);
+
+			activateModulesRequiredByCountry($mysoc->country_code);
+		}
+	}
 }
-
-
 
 
 /*
@@ -175,6 +190,23 @@ if ($action == 'create')
 
 	// Common attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_add.tpl.php';
+	
+	require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+	$object = new Societe($db);
+	$object->country_id	= GETPOST('country_id', 'int');
+	// We set country_id, country_code and country for the selected country
+	$object->country_id=GETPOST('country_id')?GETPOST('country_id'):$mysoc->country_id;
+	if ($object->country_id)
+	{
+		$tmparray=getCountry($object->country_id,'all');
+		$object->country_code=$tmparray['code'];
+		$object->country=$tmparray['label'];
+	}
+	// Country
+	print '<tr><td>'.fieldLabel('Country','selectcountry_id').'</td><td colspan="3" class="maxwidthonsmartphone">';
+	print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));
+	if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"),1);
+	print '</td></tr>';
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
@@ -209,6 +241,24 @@ if (($id || $ref) && $action == 'edit')
 
 	// Common attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_edit.tpl.php';
+	
+	require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+	$object = new Societe($db);
+	$object->country_id	= GETPOST('country_id', 'int');
+	// We set country_id, country_code and country for the selected country
+	$object->country_id=GETPOST('country_id')?GETPOST('country_id'):$mysoc->country_id;
+	if ($object->country_id)
+	{
+		$tmparray=getCountry($object->country_id,'all');
+		$object->country_code=$tmparray['code'];
+		$object->country=$tmparray['label'];
+	}
+	// Country
+	print '<tr><td>'.fieldLabel('Country','selectcountry_id').'</td><td colspan="3" class="maxwidthonsmartphone">';
+	print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));
+	if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"),1);
+	print '</td></tr>';
+
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
