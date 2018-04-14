@@ -189,24 +189,66 @@ if ($action == 'create')
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_add.tpl.php';
-	
-	require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
-	$object = new Societe($db);
-	$object->country_id	= GETPOST('country_id', 'int');
-	// We set country_id, country_code and country for the selected country
-	$object->country_id=GETPOST('country_id')?GETPOST('country_id'):$mysoc->country_id;
-	if ($object->country_id)
+	foreach($object->fields as $key => $val)
 	{
-		$tmparray=getCountry($object->country_id,'all');
-		$object->country_code=$tmparray['code'];
-		$object->country=$tmparray['label'];
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+
+		print '<tr id="field_'.$key.'">';
+		print '<td';
+		print ' class="titlefieldcreate';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '"';
+		print '>';
+		print $langs->trans($val['label']);
+		print '</td>';
+		print '<td>';
+		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
+		################### TEST 1 #############################		
+		elseif ($val['label'] == 'Country') 
+		{
+			$object = new ImmoProperty($db);			
+			// We set country_id, country_code and country for the selected country
+			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
+			if ($object->country_id)
+			{
+				$tmparray=$object->getCountry($object->country_id,'all');
+				$object->country_code=$tmparray['code'];
+				$object->country=$tmparray['label'];
+			}
+			// Country
+			print '<tr><td>'.fieldLabel('Country','selectcountry_id').'</td><td colspan="3" class="maxwidthonsmartphone">';
+			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));
+			if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"),1);
+			print '</td></tr>';
+			
+		}
+		################### FIN TEST 1 #############################
+		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
+		else $value = GETPOST($key, 'alpha');
+		print $object->showInputField($val, $key, $value, '', '', '', 0);
+		print '</td>';
+		print '</tr>';
 	}
-	// Country
-	print '<tr><td>'.fieldLabel('Country','selectcountry_id').'</td><td colspan="3" class="maxwidthonsmartphone">';
-	print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));
-	if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"),1);
-	print '</td></tr>';
+		################### TEST 2 #############################
+		$object = new ImmoProperty($db);
+		// We set country_id, country_code and country for the selected country
+		$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
+		if ($object->country_id)
+		{
+			$tmparray=$object->getCountry($object->country_id,'all');
+			$object->country_code=$tmparray['code'];
+			$object->country=$tmparray['label'];
+		}
+		// Country
+		print '<tr><td>'.fieldLabel('Country','selectcountry_id').'</td><td colspan="3" class="maxwidthonsmartphone">';
+		print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));
+		if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"),1);
+		print '</td></tr>';
+		################### TEST 2 #############################
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';

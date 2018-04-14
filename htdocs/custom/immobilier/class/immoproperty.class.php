@@ -106,7 +106,7 @@ class ImmoProperty extends CommonObject
 		'zip' => array('type'=>'varchar(32)', 'label'=>'Zip', 'enabled'=>1, 'visible'=>1, 'position'=>44, 'notnull'=>-1,),
 		'town' => array('type'=>'varchar(64)', 'label'=>'Town', 'enabled'=>1, 'visible'=>1, 'position'=>46, 'notnull'=>-1,),
 		//'fk_pays' => array('type'=>'integer:Ccountry:core/class/ccountry.class.php', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1, 'foreignkey'=> 'c_country.rowid',),
-		//'fk_pays' => array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1,),
+		'country' => array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1,),
 		'datep' => array('type'=>'date', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>56, 'notnull'=>-1,),
 		'target' => array('type'=>'integer', 'label'=>'Target', 'enabled'=>1, 'visible'=>1, 'position'=>58, 'notnull'=>-1, 'comment'=>"Rent or sale",),
 	);
@@ -133,7 +133,7 @@ class ImmoProperty extends CommonObject
 	public $area;
 	public $zip;
 	public $town;
-	public $fk_pays;
+	public $country;
 	public $datep;
 	public $target;
 	// END MODULEBUILDER PROPERTIES
@@ -255,14 +255,13 @@ class ImmoProperty extends CommonObject
 		
 		$array = preg_split("/[\s,]+/", $this->getFieldList());
 		$array[0] = 't.rowid';
-		$array = array_splice($array, 0, count($array), $array[0]);
+		$array = array_splice($array, 0, count($array), array($array[0]));
 		$array = implode(', t.', $array);
-		
+
 		$sql = 'SELECT '.$array.',';
-		$sql.= ' t.fk_pays as country_id'.',';
-		$sql.= ' co.label as country, co.code as country_code';
+		$sql.= ' c.rowid as country_id, c.code as country_code, c.label as country';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as co ON t.fk_pays = co.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country = c.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
@@ -274,9 +273,12 @@ class ImmoProperty extends CommonObject
 			$obj = $this->db->fetch_object($res);
 			if ($obj)
 			{
-				$this->country_id   = $obj->country_id;
-				$this->country_code = $obj->country_id?$obj->country_code:'';
-				$this->country 		= $obj->country_id?($langs->trans('Country'.$obj->country_code)!='Country'.$obj->country_code?$langs->transnoentities('Country'.$obj->country_code):$obj->country):'';
+				$this->country_id	= $obj->country_id;
+				$this->country_code	= $obj->country_code;
+				/*if ($langs->trans("Country".$obj->country_code) != "Country".$obj->country_code)
+					$this->country = $langs->transnoentitiesnoconv("Country".$obj->country_code);
+				else*/
+					$this->country=$obj->country;
 				$this->setVarsFromFetchObj($obj);
 				return $this->id;
 			}
@@ -518,6 +520,71 @@ class ImmoProperty extends CommonObject
 		{
 			dol_print_error($this->db);
 		}
+	}
+	
+	/**
+	 *    Return country label, code or id from an id, code or label
+	 *
+	 *    @param      int		$searchkey      Id or code of country to search
+	 *    @param      string	$withcode   	'0'=Return label,
+	 *    										'1'=Return code + label,
+	 *    										'2'=Return code from id,
+	 *    										'3'=Return id from code,
+	 * 	   										'all'=Return array('id'=>,'code'=>,'label'=>)
+	 *    @param      DoliDB	$dbtouse       	Database handler (using in global way may fail because of conflicts with some autoload features)
+	 *    @param      Translate	$outputlangs	Langs object for output translation
+	 *    @param      int		$entconv       	0=Return value without entities and not converted to output charset, 1=Ready for html output
+	 *    @param      int		$searchlabel    Label of country to search (warning: searching on label is not reliable)
+	 *    @return     mixed       				String with country code or translated country name or Array('id','code','label')
+	 */
+	function getCountry($searchkey, $withcode='', $dbtouse=0, $outputlangs='', $entconv=1, $searchlabel='')
+	{
+		global $db,$langs;
+
+		$result='';
+
+		// Check parameters
+		if (empty($searchkey) && empty($searchlabel))
+		{
+			if ($withcode === 'all') return array('id'=>'','code'=>'','label'=>'');
+			else return '';
+		}
+		if (! is_object($dbtouse)) $dbtouse=$db;
+		if (! is_object($outputlangs)) $outputlangs=$langs;
+
+		$sql = "SELECT rowid, code, label FROM ".MAIN_DB_PREFIX."c_country";
+		if (is_numeric($searchkey)) $sql.= " WHERE rowid=".$searchkey;
+		elseif (! empty($searchkey)) $sql.= " WHERE code='".$db->escape($searchkey)."'";
+		else $sql.= " WHERE label='".$db->escape($searchlabel)."'";
+
+		$resql=$dbtouse->query($sql);
+		if ($resql)
+		{
+			$obj = $dbtouse->fetch_object($resql);
+			if ($obj)
+			{
+				$label=((! empty($obj->label) && $obj->label!='-')?$obj->label:'');
+				if (is_object($outputlangs))
+				{
+					$outputlangs->load("dict");
+					if ($entconv) $label=($obj->code && ($outputlangs->trans("Country".$obj->code)!="Country".$obj->code))?$outputlangs->trans("Country".$obj->code):$label;
+					else $label=($obj->code && ($outputlangs->transnoentitiesnoconv("Country".$obj->code)!="Country".$obj->code))?$outputlangs->transnoentitiesnoconv("Country".$obj->code):$label;
+				}
+				if ($withcode == 1) $result=$label?"$obj->code - $label":"$obj->code";
+				else if ($withcode == 2) $result=$obj->code;
+				else if ($withcode == 3) $result=$obj->rowid;
+				else if ($withcode === 'all') $result=array('id'=>$obj->rowid,'code'=>$obj->code,'label'=>$label);
+				else $result=$label;
+			}
+			else
+			{
+				$result='NotDefined';
+			}
+			$dbtouse->free($resql);
+			return $result;
+		}
+		else dol_print_error($dbtouse,'');
+		return 'Error';
 	}
 
 	/**
