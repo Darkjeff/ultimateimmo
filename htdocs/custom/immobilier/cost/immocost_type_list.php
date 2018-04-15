@@ -219,6 +219,7 @@ $reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object
 $sql.=$hookmanager->resPrint;
 $sql=preg_replace('/, $/','', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
+
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."immocost_type_extrafields as ef on (t.rowid = ef.fk_object)";
 if ($object->ismultientitymanaged == 1) $sql.= " WHERE t.entity IN (".getEntity('immocost_type').")";
 else $sql.=" WHERE 1 = 1";

@@ -40,7 +40,7 @@ function immocost_typePrepareHead($object)
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
-
+	/*
 	if (isset($object->fields['note_public']) || isset($object->fields['note_private']))
 	{
 		$nbNote = 0;
@@ -51,9 +51,9 @@ function immocost_typePrepareHead($object)
 		if ($nbNote > 0) $head[$h][1].= ' <span class="badge">'.$nbNote.'</span>';
 		$head[$h][2] = 'note';
 		$h++;
-	}
+	}*/
 
-	require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+	/*require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 	require_once DOL_DOCUMENT_ROOT.'/core/class/link.class.php';
 	$upload_dir = $conf->immobilier->dir_output . "/immocost_type/" . dol_sanitizeFileName($object->ref);
 	$nbFiles = count(dol_dir_list($upload_dir,'files',0,'','(\.meta|_preview.*\.png)$'));
@@ -62,7 +62,7 @@ function immocost_typePrepareHead($object)
 	$head[$h][1] = $langs->trans('Documents');
 	if (($nbFiles+$nbLinks) > 0) $head[$h][1].= ' <span class="badge">'.($nbFiles+$nbLinks).'</span>';
 	$head[$h][2] = 'document';
-	$h++;
+	$h++;*/
 
 	$head[$h][0] = dol_buildpath("/immobilier/cost/immocost_type_agenda.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Events");
