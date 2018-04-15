@@ -17,25 +17,13 @@
 CREATE TABLE llx_immobilier_immocost(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL,
-	entity integer DEFAULT 1 NOT NULL,	
+	ref varchar(128) NOT NULL, 
+	entity integer DEFAULT 1 NOT NULL, 
 	label varchar(255), 
-	amount double(24,8) DEFAULT NULL, 
-	amount_ht double(24,8) DEFAULT NULL, 
-	amount_vat double(24,8) DEFAULT NULL,  
-	fk_property integer, 
-	fk_owner integer, 
-	cost_type integer,  
-	note_public text, 
-	note_private text, 
-	date_start date NOT NULL, 
-	date_end date NOT NULL, 
 	date_creation datetime NOT NULL, 
 	tms timestamp NOT NULL, 
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
-	import_key varchar(14), 
-	dispatch smallint(8), 
 	status integer NOT NULL
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

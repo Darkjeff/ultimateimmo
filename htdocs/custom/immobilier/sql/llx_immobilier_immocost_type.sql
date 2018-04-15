@@ -1,6 +1,4 @@
--- Immobilier
--- Copyright (C) 2013		Olivier Geffroy  <jeff@jeffinfo.com>
--- Copyright (C) 2018 	    Philippe GRAND 	 <philippe.grand@atoo-net.com>
+-- Copyright (C) 2018 	Philippe GRAND 	 <philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -13,13 +11,18 @@
 -- GNU General Public License for more details.
 --
 -- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-- along with this program.  If not, see http://www.gnu.org/licenses/.
 
-CREATE TABLE IF NOT EXISTS  llx_immobilier_immotypologie  (
-   rowid integer NOT NULL  AUTO_INCREMENT PRIMARY KEY,
-   ref varchar(128) NOT NULL, 
-   entity integer DEFAULT 1 NOT NULL,
-   label varchar(200) NOT NULL DEFAULT '',
-   active tinyint(4) DEFAULT 1 NOT NULL
-)ENGINE=InnoDB;
 
+CREATE TABLE llx_immobilier_immocost_type(
+	-- BEGIN MODULEBUILDER FIELDS
+	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
+	ref varchar(128) NOT NULL, 
+	label varchar(255), 
+	date_creation datetime NOT NULL, 
+	tms timestamp NOT NULL, 
+	fk_user_creat integer NOT NULL, 
+	fk_user_modif integer,  
+	status integer NOT NULL
+	-- END MODULEBUILDER FIELDS
+) ENGINE=innodb;

@@ -17,10 +17,7 @@
 -- BEGIN MODULEBUILDER INDEXES
 ALTER TABLE llx_immobilier_immocost ADD INDEX idx_immobilier_immocost_rowid (rowid);
 ALTER TABLE llx_immobilier_immocost ADD INDEX idx_immobilier_immocost_ref (ref);
-ALTER TABLE llx_immobilier_immocost ADD INDEX idx_immobilier_immocost_fk_soc (fk_soc);
-ALTER TABLE llx_immobilier_immocost ADD INDEX idx_immobilier_immocost_fk_property (fk_property);
-ALTER TABLE llx_immobilier_immocost ADD INDEX idx_immobilier_immocost_fk_owner (fk_owner);
-ALTER TABLE llx_immobilier_immocost ADD INDEX idx_immobilier_immocost_cost_type (cost_type);
+ALTER TABLE llx_immobilier_immocost ADD INDEX idx_immobilier_immocost_entity (entity);
 ALTER TABLE llx_immobilier_immocost ADD CONSTRAINT llx_immobilier_immocost_fk_user_creat FOREIGN KEY (fk_user_creat) REFERENCES llx_user(rowid);
 ALTER TABLE llx_immobilier_immocost ADD INDEX idx_immobilier_immocost_status (status);
 -- END MODULEBUILDER INDEXES
