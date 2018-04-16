@@ -32,6 +32,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
  */
 class ImmoCost_Type extends CommonObject
 {
+	public $fk_element='fk_cost_type';
 	/**
 	 * @var string ID to identify managed object
 	 */

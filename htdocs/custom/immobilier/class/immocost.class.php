@@ -86,7 +86,7 @@ class ImmoCost extends CommonObject
 		'amount_vat' => array('type'=>'price', 'label'=>'AmountVat', 'enabled'=>1, 'visible'=>1, 'position'=>42, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>51, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
 		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>52, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
-		'cost_type' => array('type'=>'integer', 'label'=>'CostType', 'enabled'=>1, 'visible'=>1, 'position'=>51, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
+		'fk_cost_type' => array('type'=>'integer:ImmoCost_Type:immobilier/class/immocost_type.class.php', 'label'=>'CostType', 'enabled'=>1, 'visible'=>1, 'position'=>51, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>61, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>62, 'notnull'=>-1,),
 		'date_start' => array('type'=>'date', 'label'=>'DateStart', 'enabled'=>1, 'visible'=>-1, 'position'=>70, 'notnull'=>1,),
@@ -108,7 +108,7 @@ class ImmoCost extends CommonObject
 	public $amount_vat;
 	public $fk_property;
 	public $fk_owner;
-	public $cost_type;
+	public $fk_cost_type;
 	public $note_public;
 	public $note_private;
 	public $date_start;
