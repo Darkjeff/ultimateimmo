@@ -39,7 +39,7 @@ CREATE TABLE llx_immobilier_immoproperty(
 	area varchar(8), 
 	zip varchar(32), 
 	town varchar(64), 
-	fk_pays integer, 
+	country_id integer, 
 	datep date, 
 	target integer
 	-- END MODULEBUILDER FIELDS

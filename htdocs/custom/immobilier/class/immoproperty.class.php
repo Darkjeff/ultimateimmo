@@ -106,7 +106,7 @@ class ImmoProperty extends CommonObject
 		'zip' => array('type'=>'varchar(32)', 'label'=>'Zip', 'enabled'=>1, 'visible'=>1, 'position'=>44, 'notnull'=>-1,),
 		'town' => array('type'=>'varchar(64)', 'label'=>'Town', 'enabled'=>1, 'visible'=>1, 'position'=>46, 'notnull'=>-1,),
 		//'fk_pays' => array('type'=>'integer:Ccountry:core/class/ccountry.class.php', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1, 'foreignkey'=> 'c_country.rowid',),
-		'country' => array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1,),
+		'country_id' => array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1,),
 		'datep' => array('type'=>'date', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>56, 'notnull'=>-1,),
 		'target' => array('type'=>'integer', 'label'=>'Target', 'enabled'=>1, 'visible'=>1, 'position'=>58, 'notnull'=>-1, 'comment'=>"Rent or sale",),
 	);
@@ -133,7 +133,7 @@ class ImmoProperty extends CommonObject
 	public $area;
 	public $zip;
 	public $town;
-	public $country;
+	public $country_id;
 	public $datep;
 	public $target;
 	// END MODULEBUILDER PROPERTIES
@@ -253,6 +253,8 @@ class ImmoProperty extends CommonObject
 	{
 		if (empty($id) && empty($ref)) return false;
 		
+		global $langs;
+		
 		$array = preg_split("/[\s,]+/", $this->getFieldList());
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), array($array[0]));
@@ -261,12 +263,13 @@ class ImmoProperty extends CommonObject
 		$sql = 'SELECT '.$array.',';
 		$sql.= ' c.rowid as country_id, c.code as country_code, c.label as country';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country = c.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country_id = c.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql.=$morewhere;
-
+		
+		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
 		if ($res)
 		{
@@ -275,9 +278,9 @@ class ImmoProperty extends CommonObject
 			{
 				$this->country_id	= $obj->country_id;
 				$this->country_code	= $obj->country_code;
-				/*if ($langs->trans("Country".$obj->country_code) != "Country".$obj->country_code)
+				if ($langs->trans("Country".$obj->country_code) != "Country".$obj->country_code)
 					$this->country = $langs->transnoentitiesnoconv("Country".$obj->country_code);
-				else*/
+				else
 					$this->country=$obj->country;
 				$this->setVarsFromFetchObj($obj);
 				return $this->id;

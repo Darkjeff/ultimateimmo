@@ -443,6 +443,13 @@ while ($i < min($num, $limit))
 	foreach($object->fields as $key => $val)
 	{
 		$align='';
+		if ($object->country_id)
+		{
+			include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+			$tmparray=getCountry($object->country_id,'all');
+			$object->country_code=$tmparray['code'];
+			$object->country=$tmparray['label'];
+		}
 		if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
 		if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
 		if ($key == 'status') $align.=($align?' ':'').'center';
@@ -451,7 +458,14 @@ while ($i < min($num, $limit))
 			print '<td';
 			if ($align) print ' class="'.$align.'"';
 			print '>';
-			print $object->showOutputField($val, $key, $obj->$key, '');
+			if ($val['label'] == 'Country') 
+			{ 
+				print $object->country;
+			}
+			else
+			{
+				print $object->showOutputField($val, $key, $obj->$key, '');
+			}
 			print '</td>';
 			if (! $i) $totalarray['nbfield']++;
 			if (! empty($val['isameasure']))
