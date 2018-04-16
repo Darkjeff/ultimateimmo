@@ -254,8 +254,8 @@ $sql.=$db->order($sortfield,$sortorder);
 $nbtotalofrecords = '';
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
 {
-	$result = $db->query($sql);
-	$nbtotalofrecords = $db->num_rows($result);
+	$resql = $db->query($sql);
+	$nbtotalofrecords = $db->num_rows($resql);
 }
 // if total resultset is smaller then paging size (filtering), goto and load page 0
 if (($page * $limit) > $nbtotalofrecords)
@@ -266,7 +266,7 @@ if (($page * $limit) > $nbtotalofrecords)
 // if total resultset is smaller the limit, no need to do paging.
 if (is_numeric($nbtotalofrecords) && $limit > $nbtotalofrecords)
 {
-	$resql = $result;
+	//$resql = $result;
 	$num = $nbtotalofrecords;
 }
 else
@@ -288,7 +288,7 @@ if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && 
 {
 	$obj = $db->fetch_object($resql);
 	$id = $obj->rowid;
-	header("Location: ".DOL_URL_ROOT.'/immobilier/owner_type/immoowner_type_card.php?id='.$id);
+	header("Location: ".dol_buildpath('/immobilier/owner_type/immoowner_type_card.php',1).'?id='.$id);
 	exit;
 }
 
