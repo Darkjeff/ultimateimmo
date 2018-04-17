@@ -65,6 +65,54 @@ header('Content-type: text/css');
 if (empty($dolibarr_nocache)) header('Cache-Control: max-age=3600, public, must-revalidate');
 else header('Cache-Control: no-cache');
 
+//$path='/cabinetmed';    // This value may be used in future for external module to overwrite theme
+//$theme='cabinetmed';
+$path='';    	// This value may be used in future for external module to overwrite theme
+$theme='eldy';	// Value of theme
+if (! empty($conf->global->MAIN_OVERWRITE_THEME_RES)) { $path='/'.$conf->global->MAIN_OVERWRITE_THEME_RES; $theme=$conf->global->MAIN_OVERWRITE_THEME_RES; }
+
+// Define image path files
+$dol_hide_topmenu=$conf->dol_hide_topmenu;
+$dol_hide_leftmenu=$conf->dol_hide_leftmenu;
+$dol_optimize_smallscreen=$conf->dol_optimize_smallscreen;
+$dol_no_mouse_hover=$conf->dol_no_mouse_hover;
+$dol_use_jmobile=$conf->dol_use_jmobile;
+?>
+
+legend
+{
+    font-weight: normal;
+	color: #442288;
+}
+
+div.mainmenu.properties {
+	background-image: url(<?php echo dol_buildpath('/immobilier/img/immoproperty.png',1) ?>);
+}
+
+div.mainmenu.renters {
+	background-image: url(<?php echo dol_buildpath('/immobilier/img/immorenter.png',1) ?>);
+}
+
+div.mainmenu.immorents {
+	background-image: url(<?php echo dol_buildpath('/immobilier/img/immorent.png',1) ?>);
+}
+
+div.mainmenu.immoreceipts {
+	background-image: url(<?php echo dol_buildpath('/immobilier/img/immoreceipt.png',1) ?>);
+}
+
+div.mainmenu.rentalloads {
+	background-image: url(<?php echo dol_buildpath('/immobilier/img/immocost.png',1) ?>);
+}
+
+div.mainmenu.result {
+	background-image: url(<?php echo dol_buildpath('/immobilier/img/immoresult.png',1) ?>);
+}
+
+.quatrevingtpercent, .inputsearch {
+	width: 80%;
+}
+
 ?>
 
 .myclasscss {
