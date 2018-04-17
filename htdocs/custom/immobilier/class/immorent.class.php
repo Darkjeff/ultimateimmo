@@ -83,23 +83,23 @@ class ImmoRent extends CommonObject
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'visible'=>-1, 'enabled'=>1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'visible'=>1, 'enabled'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>-1, 'enabled'=>1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
-		'rentamount' => array('type'=>'double(24,8)', 'label'=>'RentAmount', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'isameasure'=>1,),
-		'chargesamount' => array('type'=>'double(24,8)', 'label'=>'ChargesAmount', 'visible'=>1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1, 'isameasure'=>1,),
-		'totalamount' => array('type'=>'double(24,8)', 'label'=>'TotalAmount', 'visible'=>1, 'enabled'=>1, 'position'=>44, 'notnull'=>-1, 'isameasure'=>1,),
-		'deposit' => array('type'=>'double(24,8)', 'label'=>'Deposit', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1,),
-		'encours' => array('type'=>'double(24,8)', 'label'=>'Encours', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1,),
-		'preavis' => array('type'=>'varchar(128)', 'label'=>'Preavis', 'visible'=>1, 'enabled'=>1, 'position'=>47, 'notnull'=>-1,),
-		'vat' => array('type'=>'varchar(4)', 'label'=>'Vat', 'visible'=>-1, 'enabled'=>1, 'position'=>48, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
-		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>52, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
-		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>54, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'immobilier_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter",),
-		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>61, 'notnull'=>-1,),
-		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>62, 'notnull'=>-1,),
-		'periode' => array('type'=>'varchar(128)', 'label'=>'Periode', 'visible'=>-1, 'enabled'=>1, 'position'=>62, 'notnull'=>-1,),
-		'date_start' => array('type'=>'date', 'label'=>'DateStart', 'visible'=>-1, 'enabled'=>1, 'position'=>70, 'notnull'=>1,),
-		'date_end' => array('type'=>'date', 'label'=>'date_end', 'visible'=>-1, 'enabled'=>1, 'position'=>72, 'notnull'=>1,),
-		'date_next_rent' => array('type'=>'date', 'label'=>'DateNextRent', 'visible'=>-1, 'enabled'=>1, 'position'=>74, 'notnull'=>1,),
-		'date_last_regul' => array('type'=>'date', 'label'=>'DateLastRegul', 'visible'=>-1, 'enabled'=>1, 'position'=>76, 'notnull'=>1,),
+		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>25, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
+		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),		
+		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'immobilier_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter",),
+		'preavis' => array('type'=>'varchar(128)', 'label'=>'Preavis', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
+		'vat' => array('type'=>'varchar(4)', 'label'=>'Vat', 'visible'=>-1, 'enabled'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
+		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1,),
+		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>55, 'notnull'=>-1,),
+		'rentamount' => array('type'=>'price', 'label'=>'RentAmount', 'visible'=>1, 'enabled'=>1, 'position'=>60, 'notnull'=>-1, 'isameasure'=>1,),
+		'chargesamount' => array('type'=>'price', 'label'=>'ChargesAmount', 'visible'=>1, 'enabled'=>1, 'position'=>65, 'notnull'=>-1, 'isameasure'=>1,),
+		'totalamount' => array('type'=>'price', 'label'=>'TotalAmount', 'visible'=>1, 'enabled'=>1, 'position'=>70, 'notnull'=>-1, 'isameasure'=>1,),
+		'deposit' => array('type'=>'price', 'label'=>'Deposit', 'visible'=>1, 'enabled'=>1, 'position'=>75, 'notnull'=>-1,),
+		'encours' => array('type'=>'price', 'label'=>'Encours', 'visible'=>1, 'enabled'=>1, 'position'=>80, 'notnull'=>-1,),
+		'periode' => array('type'=>'varchar(128)', 'label'=>'Periode', 'visible'=>-1, 'enabled'=>1, 'position'=>85, 'notnull'=>-1,),
+		'date_start' => array('type'=>'date', 'label'=>'DateStart', 'visible'=>-1, 'enabled'=>1, 'position'=>90, 'notnull'=>1,),
+		'date_end' => array('type'=>'date', 'label'=>'date_end', 'visible'=>-1, 'enabled'=>1, 'position'=>95, 'notnull'=>1,),
+		'date_next_rent' => array('type'=>'date', 'label'=>'DateNextRent', 'visible'=>-1, 'enabled'=>1, 'position'=>100, 'notnull'=>1,),
+		'date_last_regul' => array('type'=>'date', 'label'=>'DateLastRegul', 'visible'=>-1, 'enabled'=>1, 'position'=>110, 'notnull'=>1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'visible'=>-2, 'enabled'=>1, 'position'=>500, 'notnull'=>1,),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'visible'=>-2, 'enabled'=>1, 'position'=>501, 'notnull'=>1,),
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'visible'=>-2, 'enabled'=>1, 'position'=>510, 'notnull'=>1,),
@@ -110,20 +110,20 @@ class ImmoRent extends CommonObject
 	public $rowid;
 	public $ref;
 	public $entity;
+	public $fk_property;
+	public $fk_owner;
+	public $fk_renter;
 	public $nomlocal;
 	public $nomlocataire;
+	public $preavis;
+	public $vat;
+	public $note_public;
+	public $note_private;
 	public $rentamount;
 	public $chargesamount;
 	public $totalamount;
 	public $deposit;
 	public $encours;
-	public $preavis;
-	public $vat;
-	public $fk_soc;
-	public $fk_property;
-	public $fk_renter;
-	public $note_public;
-	public $note_private;
 	public $periode;
 	public $date_start;
 	public $date_end;

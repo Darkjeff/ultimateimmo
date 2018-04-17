@@ -128,7 +128,7 @@ if (empty($reshook))
 	$trackid='immoproperty'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 	
-	if ( ($action == 'update' && ! GETPOST("cancel",'alpha'))
+	/*if ( ($action == 'update' && ! GETPOST("cancel",'alpha'))
 	|| ($action == 'updateedit') )
 	{
 		$tmparray=getCountry(GETPOST('country_id','int'),'all',$db,$langs,0);
@@ -143,7 +143,7 @@ if (empty($reshook))
 
 			activateModulesRequiredByCountry($mysoc->country_code);
 		}
-	}
+	}*/
 }
 
 
@@ -206,11 +206,9 @@ if ($action == 'create')
 		print '>';
 		print $langs->trans($val['label']);
 		print '</td>';
-		print '<td>';
-		################### TEST 1 #############################		
+		print '<td>';		
 		if ($val['label'] == 'Country') 
-		{
-			//$object = new ImmoProperty($db);			
+		{			
 			// We set country_id, country_code and country for the selected country
 			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
 			if ($object->country_id)
@@ -222,7 +220,6 @@ if ($action == 'create')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
-		################### FIN TEST 1 #############################
 		else
 		{
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
@@ -421,7 +418,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	$keyforbreak='fk_type_property';
+	$keyforbreak='note_private';
 	foreach($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form

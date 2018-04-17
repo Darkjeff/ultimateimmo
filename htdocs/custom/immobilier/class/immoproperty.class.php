@@ -84,49 +84,44 @@ class ImmoProperty extends CommonObject
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
+		'entity' => array('type'=>'integer', 'label'=>'Entity', 'enabled'=>1, 'visible'=>-1, 'position'=>15, 'notnull'=>1, 'index'=>1,),
+		'fk_property_type' => array('type'=>'integer:ImmoProperty_Type:immobilier/class/immoproperty_type.class.php', 'label'=>'PropertyType', 'enabled'=>1, 'visible'=>-1, 'position'=>20, 'notnull'=>1,),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
-		'entity' => array('type'=>'integer', 'label'=>'Entity', 'enabled'=>1, 'visible'=>-1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
-		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>50, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
-		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>61, 'notnull'=>-1,),
-		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>62, 'notnull'=>-1,),
+		'datep' => array('type'=>'date', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1,),
+		'target' => array('type'=>'integer', 'label'=>'Target', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'Location', '1'=>'Vente', '-1'=>'Autre'), 'comment'=>"Rent or sale",),
+		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
+		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>50, 'notnull'=>-1,),
+		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>55, 'notnull'=>-1,),
+		'address' => array('type'=>'varchar(255)', 'label'=>'Address', 'enabled'=>1, 'visible'=>1, 'position'=>60, 'notnull'=>-1,),
+		'building' => array('type'=>'varchar(32)', 'label'=>'Building', 'enabled'=>1, 'visible'=>1, 'position'=>65, 'notnull'=>-1,),
+		'staircase' => array('type'=>'varchar(8)', 'label'=>'Staircase', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1,),		
+		'numfloor' => array('type'=>'varchar(8)', 'label'=>'NumFloor', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1,),
+		'numflat' => array('type'=>'varchar(8)', 'label'=>'NumFlat', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1,),
+		'numdoor' => array('type'=>'varchar(8)', 'label'=>'NumDoor', 'enabled'=>1, 'visible'=>1, 'position'=>85, 'notnull'=>-1,),
+		'area' => array('type'=>'varchar(8)', 'label'=>'Area', 'enabled'=>1, 'visible'=>1, 'position'=>90, 'notnull'=>-1,),
+		'zip' => array('type'=>'varchar(32)', 'label'=>'Zip', 'enabled'=>1, 'visible'=>1, 'position'=>95, 'notnull'=>-1,),
+		'town' => array('type'=>'varchar(64)', 'label'=>'Town', 'enabled'=>1, 'visible'=>1, 'position'=>100, 'notnull'=>-1,),
+		'country_id' => array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>110, 'notnull'=>-1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>500, 'notnull'=>1,),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1,),
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'enabled'=>1, 'visible'=>-2, 'position'=>511, 'notnull'=>-1,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1,),
 		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
-		'address' => array('type'=>'varchar(255)', 'label'=>'Address', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1,),
-		'building' => array('type'=>'varchar(32)', 'label'=>'Building', 'enabled'=>1, 'visible'=>1, 'position'=>32, 'notnull'=>-1,),
-		'staircase' => array('type'=>'varchar(8)', 'label'=>'Staircase', 'enabled'=>1, 'visible'=>1, 'position'=>34, 'notnull'=>-1,),
-		'fk_property_type' => array('type'=>'integer:ImmoProperty_Type:immobilier/class/immoproperty_type.class.php', 'label'=>'PropertyType', 'enabled'=>1, 'visible'=>-1, 'position'=>52, 'notnull'=>1,),
-		'numfloor' => array('type'=>'varchar(8)', 'label'=>'NumFloor', 'enabled'=>1, 'visible'=>1, 'position'=>36, 'notnull'=>-1,),
-		'numflat' => array('type'=>'varchar(8)', 'label'=>'NumFlat', 'enabled'=>1, 'visible'=>1, 'position'=>38, 'notnull'=>-1,),
-		'numdoor' => array('type'=>'varchar(8)', 'label'=>'NumDoor', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1,),
-		'area' => array('type'=>'varchar(8)', 'label'=>'Area', 'enabled'=>1, 'visible'=>1, 'position'=>42, 'notnull'=>-1,),
-		'zip' => array('type'=>'varchar(32)', 'label'=>'Zip', 'enabled'=>1, 'visible'=>1, 'position'=>44, 'notnull'=>-1,),
-		'town' => array('type'=>'varchar(64)', 'label'=>'Town', 'enabled'=>1, 'visible'=>1, 'position'=>46, 'notnull'=>-1,),
-		//'fk_pays' => array('type'=>'integer:Ccountry:core/class/ccountry.class.php', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1, 'foreignkey'=> 'c_country.rowid',),
-		'country_id' => array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1,),
-		'datep' => array('type'=>'date', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>56, 'notnull'=>-1,),
-		'target' => array('type'=>'integer', 'label'=>'Target', 'enabled'=>1, 'visible'=>1, 'position'=>58, 'notnull'=>-1, 'comment'=>"Rent or sale",),
 	);
 	public $rowid;
 	public $ref;
-	public $label;
 	public $entity;
+	public $fk_property_type;
+	public $label;
+	public $datep;
+	public $target;
 	public $fk_owner;
 	public $note_public;
 	public $note_private;
-	public $date_creation;
-	public $tms;
-	public $fk_user_creat;
-	public $fk_user_modif;
-	public $import_key;
-	public $status;
 	public $address;
 	public $building;
 	public $staircase;
-	public $fk_property_type;
 	public $numfloor;
 	public $numflat;
 	public $numdoor;
@@ -134,8 +129,12 @@ class ImmoProperty extends CommonObject
 	public $zip;
 	public $town;
 	public $country_id;
-	public $datep;
-	public $target;
+	public $date_creation;
+	public $tms;
+	public $fk_user_creat;
+	public $fk_user_modif;
+	public $import_key;
+	public $status;
 	// END MODULEBUILDER PROPERTIES
 
 
