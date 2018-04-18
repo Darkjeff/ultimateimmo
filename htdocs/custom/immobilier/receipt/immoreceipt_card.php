@@ -131,8 +131,8 @@ if (empty($reshook))
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 
 	// Actions to send emails
-	$trigger_name='MYOBJECT_SENTBYMAIL';
-	$autocopy='MAIN_MAIL_AUTOCOPY_MYOBJECT_TO';
+	$trigger_name='IMMORECEIPT_SENTBYMAIL';
+	$autocopy='MAIN_MAIL_AUTOCOPY_IMMORECEIPT_TO';
 	$trackid='immoreceipt'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 }
@@ -341,7 +341,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<table class="border centpercent">'."\n";
 
 		// Common attributes
-		//$keyforbreak='fieldkeytoswithonsecondcolumn';
+		$keyforbreak='note_private';
 		include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
 
 		// Other attributes
