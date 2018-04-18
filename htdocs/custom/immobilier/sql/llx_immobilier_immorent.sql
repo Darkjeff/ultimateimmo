@@ -1,4 +1,4 @@
--- Copyright (C) ---Put here your own copyright and developer email---
+-- Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>---
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -20,8 +20,7 @@ CREATE TABLE llx_immobilier_immorent(
 	ref varchar(128) NOT NULL, 
 	entity integer DEFAULT 1 NOT NULL,
 	fk_property integer, 
-	fk_renter integer, 		
-	preavis varchar(128), 
+	fk_renter integer, 		 
 	vat varchar(4), 
 	fk_owner integer, 	
 	note_public text, 

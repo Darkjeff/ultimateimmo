@@ -51,17 +51,17 @@ $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 
 // Initialize technical objects
-$object=new ImmoRenter_Type($db);
+$object=new ImmoOwner_Type($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
-$hookmanager->initHooks(array('immorenter_typenote'));     // Note that conf->hooks_modules contains array
+$hookmanager->initHooks(array('immoowner_typenote'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immoowner_type');
 
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
-//if ($user->societe_id > 0) $socid = $user->societe_id;
-//$result = restrictedArea($user, 'immobilier', $id);
+if ($user->societe_id > 0) $socid = $user->societe_id;
+$result = restrictedArea($user, 'immobilier', $id);
 
 // Load object
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
