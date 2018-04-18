@@ -71,7 +71,7 @@ llxheader('', $langs->trans("Property") . ' | ' . $langs->trans("Diagnostic"), '
 
 $head = immopropertyPrepareHead($object);
 
-dol_fiche_head($head, 'diagnostic', $langs->trans("Property"), 0, 'building@immobilier');
+dol_fiche_head($head, 'diagnostic', $langs->trans("Property"), -1, 'building@immobilier');
 
 if ($result) {
 	if ($mesg)
@@ -82,8 +82,9 @@ if ($result) {
 	dol_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
 
 	print '<div class="fichecenter">';
-
-	print '<table class="border tableforfield" width="100%">';
+	print '<div class="fichehalfleft">';
+	print '<div class="underbanner clearboth"></div>';
+	print '<table class="border centpercent">'."\n";
 
 	// Build date
 	print '<tr>';
@@ -110,13 +111,15 @@ if ($result) {
 	if ($object->target == 0 && dol_print_date($object->datep,"day") < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
 	print '</tr>';
 	print '</table>';
-	
-	print '</div>';			
-	print '<div style="clear:both"></div>';
+	print '</div>';
+	print '<div class="fichehalfright">';
+	print '<div class="ficheaddleft">';
+	print '<div class="underbanner clearboth"></div>';
+	print '<table class="border centpercent">';
 	
 	dol_fiche_end();
 }
 
+// End of page
+llxFooter();
 $db->close();
-
-llxFooter('');

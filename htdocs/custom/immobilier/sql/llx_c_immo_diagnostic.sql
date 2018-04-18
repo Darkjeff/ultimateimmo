@@ -1,4 +1,5 @@
--- Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+-- Copyright (C) 2013		Olivier Geffroy  <jeff@jeffinfo.com>
+-- Copyright (C) 2018 	    Philippe GRAND 	 <philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -11,18 +12,13 @@
 -- GNU General Public License for more details.
 --
 -- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see http://www.gnu.org/licenses/.
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+CREATE TABLE IF NOT EXISTS  llx_c_immo_diagnostic  (
+   rowid integer NOT NULL  AUTO_INCREMENT PRIMARY KEY,
+   code	varchar(8) NOT NULL, 
+   entity integer DEFAULT 1 NOT NULL,
+   label varchar(200) NOT NULL DEFAULT '',
+   active tinyint(4) DEFAULT 1 NOT NULL
+)ENGINE=InnoDB;
 
-CREATE TABLE llx_immobilier_myobject(
-	-- BEGIN MODULEBUILDER FIELDS
-	rowid INTEGER AUTO_INCREMENT PRIMARY KEY,
-	entity INTEGER DEFAULT 1 NOT NULL,
-	label VARCHAR(255),
-	qty INTEGER,
-	status INTEGER,
-	date_creation DATETIME NOT NULL,
-	tms TIMESTAMP NOT NULL,
-	import_key VARCHAR(14)
-	-- END MODULEBUILDER FIELDS
-) ENGINE=innodb;

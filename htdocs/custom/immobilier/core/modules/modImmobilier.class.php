@@ -178,7 +178,34 @@ class modImmobilier extends DolibarrModules
 
 
         // Dictionaries
-		$this->dictionaries=array();
+		$this->dictionaries=array(
+			'langs'=>'immobilier@immobilier',
+			'tabname'=>array(
+				MAIN_DB_PREFIX."c_immo_diagnostic"
+			),
+			'tablib'=>array("DiagnosticImmo",
+            ),
+			'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'c_immo_diagnostic as f'
+			),
+			'tabsqlsort'=>array(
+				"label ASC"
+			),
+			'tabfield'=>array(
+				"code,label"
+			),
+			'tabfieldvalue'=>array(
+				"code,label"
+			),
+			'tabfieldinsert'=>array(
+				"code,label"
+			),
+			'tabrowid'=>array(
+				"rowid"
+			),
+			'tabcond'=>array(
+				'$conf->immobilier->enabled'
+			)
+		);
         /* Example:
         $this->dictionaries=array(
             'langs'=>'mylangfile@immobilier',
