@@ -115,6 +115,7 @@ if (empty($reshook))
 	$permissiontoadd = $user->rights->immobilier->write;
 	$permissiontodelete = $user->rights->immobilier->delete;
 	$backurlforlist = dol_buildpath('/immobilier/renter/immorenter_list.php',1);
+	$triggermodname = 'IMMOBILIER_MODIFY';
 
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
@@ -123,13 +124,13 @@ if (empty($reshook))
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 
 	// Actions to send emails
-	$trigger_name='IMMORENTER_SENTBYMAIL';
-	$autocopy='MAIN_MAIL_AUTOCOPY_IMMORENTER_TO';
-	$trackid='immo'.$object->id;
+	$trigger_name='IMMOBILIER_SENTBYMAIL';
+	$autocopy='MAIN_MAIL_AUTOCOPY_IMMOBILIER_TO';
+	$trackid='immorenter'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 }
 
-
+$modulepart = 'immobilier';
 
 
 /*
@@ -323,7 +324,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	$keyforbreak='note_private';
+	$keyforbreak='modelpdf';
 	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
 
 	// Other attributes
@@ -399,13 +400,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	    // Documents
 	    $objref = dol_sanitizeFileName($object->ref);
-	    //$relativepath = $comref . '/' . $comref . '.pdf';
-	    $filedir = $conf->immobilier->dir_output . '/' . get_exdir(0, 0, 0, 0, $object, 'immorenter');
+	    $relativepath = $objref . '/' . $objref . '.pdf';
+	    $filedir = $conf->immobilier->dir_output . '/renter/' . $objref;
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 	    $genallowed = $user->rights->immobilier->read;	// If you can read, you can build the PDF to read content
 	    $delallowed = $user->rights->immobilier->write;	// If you can create/edit, you can remove a file on card
-	    print $formfile->showdocuments('immorenter', $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $object->default_lang);
-
+	    print $formfile->showdocuments('immobilier', $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $object->default_lang, '', $object);
+		var_dump($object->modelpdf);
 	    // Show links to link elements
 	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immorenter'));
 	    $somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
@@ -433,7 +434,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Presend form
 	$modelmail='immorenter';
 	$defaulttopic='InformationMessage';
-	$diroutput = $conf->immorenter->dir_output.'/renter';
+	$diroutput = $conf->immobilier->dir_output.'/renter';
 	$trackid = 'immo'.$object->id;
 
 	include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';

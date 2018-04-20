@@ -84,6 +84,7 @@ class ImmoRenter extends CommonObject
 		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1,),
+		'modelpdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'visible'=>1, 'enabled'=>1, 'position'=>55, 'notnull'=>-1,),
 		'civility_id' => array('type'=>'integer', 'label'=>'Civility', 'visible'=>1, 'enabled'=>1, 'position'=>60, 'notnull'=>1, 'arrayofkeyval'=>array('0'=>'MME', '1'=>'MLE', '2'=>'MR')),
 		'firstname' => array('type'=>'varchar(255)', 'label'=>'Firstname', 'visible'=>1, 'enabled'=>1, 'position'=>65, 'notnull'=>-1, 'searchall'=>1,),
 		'lastname' => array('type'=>'varchar(255)', 'label'=>'Lastname', 'visible'=>1, 'enabled'=>1, 'position'=>70, 'notnull'=>-1, 'searchall'=>1,),
@@ -106,6 +107,7 @@ class ImmoRenter extends CommonObject
 	public $fk_owner;
 	public $note_public;
 	public $note_private;
+	public $modelpdf;
 	public $civility_id;
 	public $firstname;
 	public $lastname;
@@ -484,6 +486,39 @@ class ImmoRenter extends CommonObject
 
 		return 0;
 	}
+	
+	/**
+	 *  Create a document onto disk according to template module.
+	 *
+	 * 	@param	    string		$modele			Force model to use ('' to not force)
+	 * 	@param		Translate	$outputlangs	Object langs to use for output
+	 *  @param      int			$hidedetails    Hide details of lines
+	 *  @param      int			$hidedesc       Hide description
+	 *  @param      int			$hideref        Hide ref
+	 * 	@return     int         				0 if KO, 1 if OK
+	 */
+	public function generateDocument($modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
+	{
+		global $conf,$langs;
+
+		$langs->load("immobilier");
+
+		if (! dol_strlen($modele)) {
+
+			$modele = 'chargefourn';
+
+			if ($this->modelpdf) {
+				$modele = $this->modelpdf;
+			} elseif (! empty($conf->global->IMMOBILIER_ADDON_PDF)) {
+				$modele = $conf->global->IMMOBILIER_ADDON_PDF;
+			}
+		}
+
+		$modelpath = dol_buildpath ( '/immobilier/core/modules/immobilier/pdf/' );
+
+		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
+	}
+
 }
 
 /**

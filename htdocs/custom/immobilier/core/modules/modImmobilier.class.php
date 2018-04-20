@@ -137,7 +137,7 @@ class modImmobilier extends DolibarrModules
 		//                             1=>array('IMMOBILIER_MYNEWCONST2','chaine','myvalue','This is another constant to add',0, 'current', 1)
 		// );
 		$this->const = array(
-			1=>array('IMMOBILIER_MYCONSTANT', 'chaine', 'avalue', 'This is a constant to add', 1, 'allentities', 1)
+			1=>array('IMMOBILIER_ADDON_PDF', 'chaine', 'chargefourn', 'Name of the immobilier generation manager in PDF format', 1, 'allentities', 1)
 		);
 
 
