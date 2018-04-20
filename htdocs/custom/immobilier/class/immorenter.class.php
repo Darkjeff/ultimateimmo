@@ -496,7 +496,7 @@ class ImmoRenter extends CommonObject
 	 *  @param      int			$hidedesc       Hide description
 	 *  @param      int			$hideref        Hide ref
 	 * 	@return     int         				0 if KO, 1 if OK
-	 */
+	 
 	public function generateDocument($modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
 	{
 		global $conf,$langs;
@@ -505,7 +505,7 @@ class ImmoRenter extends CommonObject
 
 		if (! dol_strlen($modele)) {
 
-			$modele = 'chargefourn';
+			$modele = 'standard';
 
 			if ($this->modelpdf) {
 				$modele = $this->modelpdf;
@@ -517,7 +517,7 @@ class ImmoRenter extends CommonObject
 		$modelpath = dol_buildpath ( '/immobilier/core/modules/immobilier/pdf/' );
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
-	}
+	}*/
 
 }
 
