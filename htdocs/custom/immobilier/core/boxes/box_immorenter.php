@@ -17,7 +17,7 @@
  */
 
 /**
- * \file    modulebuilder/template/core/boxes/immobilierwidget1.php
+ * \file    modulebuilder/template/core/boxes/box_immorenter.php
  * \ingroup immobilier
  * \brief   Widget provided by Immobilier
  *
@@ -33,18 +33,18 @@ include_once DOL_DOCUMENT_ROOT . "/core/boxes/modules_boxes.php";
  * Warning: for the box to be detected correctly by dolibarr,
  * the filename should be the lowercase classname
  */
-class immobilierwidget1 extends ModeleBoxes
+class box_immorenter extends ModeleBoxes
 {
 	/**
 	 * @var string Alphanumeric ID. Populated by the constructor.
 	 */
-	public $boxcode = "immobilierbox";
+	public $boxcode = "lastrenters";
 
 	/**
 	 * @var string Box icon (in configuration page)
 	 * Automatically calls the icon named with the corresponding "object_" prefix
 	 */
-	public $boximg = "immobilier@immobilier";
+	public $boximg = "object_immorenter";
 
 	/**
 	 * @var string Box label (in configuration page)
@@ -91,7 +91,7 @@ class immobilierwidget1 extends ModeleBoxes
 
 		parent::__construct($db, $param);
 
-		$this->boxlabel = $langs->transnoentitiesnoconv("RenterWidget");
+		$this->boxlabel = $langs->transnoentitiesnoconv("BoxLatestRenters");
 
 		$this->param = $param;
 
@@ -107,22 +107,25 @@ class immobilierwidget1 extends ModeleBoxes
 	 */
 	public function loadBox($max = 5)
 	{
-		global $langs;
+		global $langs, $user, $db;
+		$langs->load("immobilier@immobilier");
 
 		// Use configuration value for max lines count
 		$this->max = $max;
 
-		dol_include_once('/immobilier/class/immorenter.class.php');						
+		dol_include_once('/immobilier/class/immorenter.class.php');	
+		// Initialize technical objects
+		$object=new ImmoRenter($this->db);		
 
 		// Populate the head at runtime
-		$text = $langs->trans("ImmobilierBoxDescription", $max);
+		$text = $langs->trans("BoxTitleLastModifiedRenters", $max);
 		$this->info_box_head = array(
 			// Title text
 			'text' => $text,
 			// Add a link
 			'sublink' => 'http://example.com',
 			// Sublink icon placed after the text
-			'subpicto' => 'object_immobilier@immobilier',
+			'subpicto' => 'object_immobilier',
 			// Sublink icon HTML alt text
 			'subtext' => '',
 			// Sublink HTML target
@@ -135,43 +138,84 @@ class immobilierwidget1 extends ModeleBoxes
 			'graph' => false
 		);
 		
-		/*if ($user->rights->immobilier->read)
-		{		*/
-			// Initialize technical objects
-			$object=new ImmoRenter($this->db);
+		if ($user->rights->immobilier->read)
+		{		
 			
-			$sql = "SELECT t.ref, t.lastname";		
+			$sql = "SELECT t.rowid, t.ref, t.firstname, t.lastname, t.email, t.phone_mobile, t.tms";		
 			$sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 			$sql.= " WHERE t.entity IN (".getEntity('immorenter').")";
+			$sql.= " ORDER BY t.tms DESC";
 			
 			$result = $this->db->query($sql);
-			if ($result) {
+			if ($result) 
+			{
 				$num = $this->db->num_rows($result);
 				
 				$line = 0;
 				while ($line < $num)
 				{
 					$objp = $this->db->fetch_object($result);
+					$datem = $this->db->jdate($objp->tms);
 					
-					$object->ref=$objp->ref;
+					$object->firstname=$objp->firstname;
 					$object->lastname=$objp->lastname;
+					$object->id = $objp->rowid;
+					$object->ref=$objp->ref;	
+					$object->email=$objp->email;
+					$object->phone_mobile=$objp->phone_mobile;
 					
 					$this->info_box_contents[$line][] = array(
 						'td' => '',
 						'text' => $object->getNomUrl(1),
 						'asis' => 1,
 					);
+					
+					$this->info_box_contents[$line][] = array(
+						'td' => '',
+						'text' => $object->firstname,
+						'url' => dol_buildpath('/immobilier/renter/immorenter_card.php', 1).'?id='.$objp->rowid,
+					);
 
 					$this->info_box_contents[$line][] = array(
 						'td' => '',
 						'text' => $object->lastname,
+						'url' => dol_buildpath('/immobilier/renter/immorenter_card.php', 1).'?id='.$objp->rowid,
+					);
+					
+					$this->info_box_contents[$line][] = array(
+						'td' => '',
+						'text' => $object->email,
+						'asis' => 1,
+					);
+					
+					$this->info_box_contents[$line][] = array(
+						'td' => '',
+						'text' => $object->phone_mobile,
 						'asis' => 1,
 					);
 
 					$line++;
 				}
-			}
-		//}
+				if ($num==0)
+                    $this->info_box_contents[$line][0] = array(
+                        'td' => 'align="center"',
+                        'text'=>$langs->trans("NoRecordedCustomers"),
+                    );
+
+                $this->db->free($result);
+            } else {
+                $this->info_box_contents[0][0] = array(
+                    'td' => '',
+                    'maxlength'=>500,
+                    'text' => ($this->db->error().' sql='.$sql),
+                );
+            }
+		}else {
+			$this->info_box_contents[0][0] = array(
+                'td' => 'align="left" class="nohover opacitymedium"',
+                'text' => $langs->trans("ReadPermissionNotAllowed")
+            );
+		}
 	}
 
 	/**
