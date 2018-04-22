@@ -39,6 +39,12 @@ function immobilierAdminPrepareHead()
 	$head[$h][1] = $langs->trans("Settings");
 	$head[$h][2] = 'settings';
 	$h++;
+	
+	$head[$h][0] = dol_buildpath("/immobilier/admin/property_extrafields.php", 1);
+    $head[$h][1] = $langs->trans("ExtraFieldsProperty");
+    $head[$h][2] = 'attributes';
+    $h++;
+	
 	$head[$h][0] = dol_buildpath("/immobilier/admin/about.php", 1);
 	$head[$h][1] = $langs->trans("About");
 	$head[$h][2] = 'about';

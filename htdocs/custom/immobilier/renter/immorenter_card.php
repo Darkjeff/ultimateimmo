@@ -60,7 +60,7 @@ dol_include_once('/immobilier/lib/immorenter.lib.php');
 $langs->loadLangs(array("immobilier@immobilier","other"));
 
 // Get parameters
-$id			= GETPOST('id', 'int');
+$id			= GETPOST('id', 'int')?GETPOST('id','int'):$rowid;
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
@@ -70,7 +70,7 @@ $backtopage = GETPOST('backtopage', 'alpha');
 $object=new ImmoRenter($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
-$hookmanager->initHooks(array('immorentercard'));     // Note that conf->hooks_modules contains array
+$hookmanager->initHooks(array('immorentercard','globalcard'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immorenter');
 $search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
@@ -104,7 +104,7 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be inclu
  * Put here all code to do according to value of "action" parameter
  */
 
-$parameters=array();
+$parameters=array('id'=>$id, 'rowid'=>$id);
 $reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
@@ -406,7 +406,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    $genallowed = $user->rights->immobilier->read;	// If you can read, you can build the PDF to read content
 	    $delallowed = $user->rights->immobilier->write;	// If you can create/edit, you can remove a file on card
 	    print $formfile->showdocuments('immobilier', $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $object->default_lang, '', $object);
-		var_dump($object->modelpdf);
+
 	    // Show links to link elements
 	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immorenter'));
 	    $somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
