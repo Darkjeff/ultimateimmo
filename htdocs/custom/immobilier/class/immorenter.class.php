@@ -82,6 +82,7 @@ class ImmoRenter extends CommonObject
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'visible'=>1, 'enabled'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>0, 'enabled'=>1, 'position'=>20, 'default'=>1, 'notnull'=>1, 'index'=>1,),
 		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
+		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1,),
 		'modelpdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'visible'=>1, 'enabled'=>1, 'position'=>55, 'notnull'=>-1,),
@@ -90,6 +91,7 @@ class ImmoRenter extends CommonObject
 		'lastname' => array('type'=>'varchar(255)', 'label'=>'Lastname', 'visible'=>1, 'enabled'=>1, 'position'=>70, 'notnull'=>-1, 'searchall'=>1,),
 		'email' => array('type'=>'varchar(255)', 'label'=>'Email', 'visible'=>1, 'enabled'=>1, 'position'=>75, 'notnull'=>-1,),
 		'birth' => array('type'=>'date', 'label'=>'BirthDay', 'visible'=>1, 'enabled'=>1, 'position'=>80, 'notnull'=>-1,),
+		'country_id' => array('type'=>'integer', 'label'=>'BirthCountry', 'enabled'=>1, 'visible'=>1, 'position'=>82, 'notnull'=>-1,),
 		'phone' => array('type'=>'varchar(30)', 'label'=>'Phone', 'visible'=>-1, 'enabled'=>1, 'position'=>85, 'notnull'=>-1,),
 		'phone_mobile' => array('type'=>'varchar(30)', 'label'=>'PhoneMobile', 'visible'=>1, 'enabled'=>1, 'position'=>90, 'notnull'=>-1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'visible'=>-2, 'enabled'=>1, 'position'=>500, 'notnull'=>1,),
@@ -105,6 +107,7 @@ class ImmoRenter extends CommonObject
 	public $ref;
 	public $entity;
 	public $fk_owner;
+	public $fk_soc;
 	public $note_public;
 	public $note_private;
 	public $modelpdf;
@@ -113,6 +116,7 @@ class ImmoRenter extends CommonObject
 	public $lastname;
 	public $email;
 	public $birth;
+	public $country_id;
 	public $phone;
 	public $phone_mobile;	
 	public $date_creation;
@@ -226,6 +230,63 @@ class ImmoRenter extends CommonObject
 	        return -1;
 	    }
 	}
+	
+	/**
+	 * Load object in memory from the database
+	 *
+	 * @param	int    $id				Id object
+	 * @param	string $ref				Ref
+	 * @param	string	$morewhere		More SQL filters (' AND ...')
+	 * @return 	int         			<0 if KO, 0 if not found, >0 if OK
+	 */
+	public function fetchCommon($id, $ref = null, $morewhere = '')
+	{
+		if (empty($id) && empty($ref)) return false;
+		
+		global $langs;
+		
+		$array = preg_split("/[\s,]+/", $this->getFieldList());
+		$array[0] = 't.rowid';
+		$array = array_splice($array, 0, count($array), array($array[0]));
+		$array = implode(', t.', $array);
+
+		$sql = 'SELECT '.$array.',';
+		$sql.= ' c.rowid as country_id, c.code as country_code, c.label as country';
+		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country_id = c.rowid';
+
+		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
+		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
+		if ($morewhere) $sql.=$morewhere;
+		
+		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
+		$res = $this->db->query($sql);
+		if ($res)
+		{
+			$obj = $this->db->fetch_object($res);
+			if ($obj)
+			{
+				$this->country_id	= $obj->country_id;
+				$this->country_code	= $obj->country_code;
+				if ($langs->trans("Country".$obj->country_code) != "Country".$obj->country_code)
+					$this->country = $langs->transnoentitiesnoconv("Country".$obj->country_code);
+				else
+					$this->country=$obj->country;
+				$this->setVarsFromFetchObj($obj);
+				return $this->id;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			$this->error = $this->db->lasterror();
+			$this->errors[] = $this->error;
+			return -1;
+		}
+	}
 
 	/**
 	 * Load object in memory from the database
@@ -278,6 +339,47 @@ class ImmoRenter extends CommonObject
 	public function delete(User $user, $notrigger = false)
 	{
 		return $this->deleteCommon($user, $notrigger);
+	}
+	
+	/**
+	 *    Set link to a third party
+	 *
+	 *    @param     int	$thirdpartyid		Id of user to link to
+	 *    @return    int						1=OK, -1=KO
+	 */
+	function setThirdPartyId($thirdpartyid)
+	{
+		global $conf, $langs;
+
+		$this->db->begin();
+
+		// Remove link to third party onto any other members
+		if ($thirdpartyid > 0)
+		{
+			$sql = "UPDATE ".MAIN_DB_PREFIX."immobilier_immorenter SET fk_soc = null";
+			$sql.= " WHERE fk_soc = '".$thirdpartyid."'";
+			$sql.= " AND entity = ".$conf->entity;
+			dol_syslog(get_class($this)."::setThirdPartyId", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+		}
+
+		// Add link to third party for current renter
+		$sql = "UPDATE ".MAIN_DB_PREFIX."immobilier_immorenter SET fk_soc = ".($thirdpartyid>0 ? $thirdpartyid : 'null');
+		$sql.= " WHERE rowid = ".$this->id;
+
+		dol_syslog(get_class($this)."::setThirdPartyId", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			$this->db->commit();
+			return 1;
+		}
+		else
+		{
+			$this->error=$this->db->error();
+			$this->db->rollback();
+			return -1;
+		}
 	}
 
 	/**
