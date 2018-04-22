@@ -45,6 +45,31 @@ function immobilierAdminPrepareHead()
     $head[$h][2] = 'attributes';
     $h++;
 	
+	$head[$h][0] = dol_buildpath("/immobilier/admin/renter_extrafields.php", 1);
+    $head[$h][1] = $langs->trans("ExtraFieldsRenter");
+    $head[$h][2] = 'attributes';
+    $h++;
+	
+	$head[$h][0] = dol_buildpath("/immobilier/admin/owner_extrafields.php", 1);
+    $head[$h][1] = $langs->trans("ExtraFieldsOwner");
+    $head[$h][2] = 'attributes';
+    $h++;
+	
+	$head[$h][0] = dol_buildpath("/immobilier/admin/payment_extrafields.php", 1);
+    $head[$h][1] = $langs->trans("ExtraFieldsPayment");
+    $head[$h][2] = 'attributes';
+    $h++;
+	
+	$head[$h][0] = dol_buildpath("/immobilier/admin/receipt_extrafields.php", 1);
+    $head[$h][1] = $langs->trans("ExtraFieldsReceipt");
+    $head[$h][2] = 'attributes';
+    $h++;
+	
+	$head[$h][0] = dol_buildpath("/immobilier/admin/rent_extrafields.php", 1);
+    $head[$h][1] = $langs->trans("ExtraFieldsRent");
+    $head[$h][2] = 'attributes';
+    $h++;
+	
 	$head[$h][0] = dol_buildpath("/immobilier/admin/about.php", 1);
 	$head[$h][1] = $langs->trans("About");
 	$head[$h][2] = 'about';
