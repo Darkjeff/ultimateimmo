@@ -25,7 +25,7 @@
 // Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
-//require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
+require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 //require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
 /**
@@ -83,6 +83,7 @@ class ImmoRenter extends CommonObject
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>0, 'enabled'=>1, 'position'=>20, 'default'=>1, 'notnull'=>1, 'index'=>1,),
 		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
+		'societe' => array('type'=>'varchar(128)', 'label'=>'Societe', 'visible'=>1, 'enabled'=>1, 'position'=>36, 'notnull'=>-1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1,),
 		'modelpdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'visible'=>1, 'enabled'=>1, 'position'=>55, 'notnull'=>-1,),
@@ -108,6 +109,7 @@ class ImmoRenter extends CommonObject
 	public $entity;
 	public $fk_owner;
 	public $fk_soc;
+	public $societe;
 	public $note_public;
 	public $note_private;
 	public $modelpdf;
@@ -256,6 +258,11 @@ class ImmoRenter extends CommonObject
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country_id = c.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
+		elseif ($ref || $fk_soc) {
+			$sql.= " AND t.entity IN (".getEntity('immorenter').")";
+			if ($ref) $sql.= " AND t.rowid='".$this->db->escape($ref)."'";
+			elseif ($fk_soc > 0) $sql.= " AND t.fk_soc=".$fk_soc;
+		}
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql.=$morewhere;
 		
@@ -590,36 +597,140 @@ class ImmoRenter extends CommonObject
 	}
 	
 	/**
-	 *  Create a document onto disk according to template module.
+	 *    Return country label, code or id from an id, code or label
 	 *
-	 * 	@param	    string		$modele			Force model to use ('' to not force)
-	 * 	@param		Translate	$outputlangs	Object langs to use for output
-	 *  @param      int			$hidedetails    Hide details of lines
-	 *  @param      int			$hidedesc       Hide description
-	 *  @param      int			$hideref        Hide ref
-	 * 	@return     int         				0 if KO, 1 if OK
-	 
-	public function generateDocument($modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
+	 *    @param      int		$searchkey      Id or code of country to search
+	 *    @param      string	$withcode   	'0'=Return label,
+	 *    										'1'=Return code + label,
+	 *    										'2'=Return code from id,
+	 *    										'3'=Return id from code,
+	 * 	   										'all'=Return array('id'=>,'code'=>,'label'=>)
+	 *    @param      DoliDB	$dbtouse       	Database handler (using in global way may fail because of conflicts with some autoload features)
+	 *    @param      Translate	$outputlangs	Langs object for output translation
+	 *    @param      int		$entconv       	0=Return value without entities and not converted to output charset, 1=Ready for html output
+	 *    @param      int		$searchlabel    Label of country to search (warning: searching on label is not reliable)
+	 *    @return     mixed       				String with country code or translated country name or Array('id','code','label')
+	 */
+	function getCountry($searchkey, $withcode='', $dbtouse=0, $outputlangs='', $entconv=1, $searchlabel='')
 	{
-		global $conf,$langs;
+		global $db,$langs;
 
-		$langs->load("immobilier");
+		$result='';
 
-		if (! dol_strlen($modele)) {
+		// Check parameters
+		if (empty($searchkey) && empty($searchlabel))
+		{
+			if ($withcode === 'all') return array('id'=>'','code'=>'','label'=>'');
+			else return '';
+		}
+		if (! is_object($dbtouse)) $dbtouse=$db;
+		if (! is_object($outputlangs)) $outputlangs=$langs;
 
-			$modele = 'standard';
+		$sql = "SELECT rowid, code, label FROM ".MAIN_DB_PREFIX."c_country";
+		if (is_numeric($searchkey)) $sql.= " WHERE rowid=".$searchkey;
+		elseif (! empty($searchkey)) $sql.= " WHERE code='".$db->escape($searchkey)."'";
+		else $sql.= " WHERE label='".$db->escape($searchlabel)."'";
 
-			if ($this->modelpdf) {
-				$modele = $this->modelpdf;
-			} elseif (! empty($conf->global->IMMOBILIER_ADDON_PDF)) {
-				$modele = $conf->global->IMMOBILIER_ADDON_PDF;
+		$resql=$dbtouse->query($sql);
+		if ($resql)
+		{
+			$obj = $dbtouse->fetch_object($resql);
+			if ($obj)
+			{
+				$label=((! empty($obj->label) && $obj->label!='-')?$obj->label:'');
+				if (is_object($outputlangs))
+				{
+					$outputlangs->load("dict");
+					if ($entconv) $label=($obj->code && ($outputlangs->trans("Country".$obj->code)!="Country".$obj->code))?$outputlangs->trans("Country".$obj->code):$label;
+					else $label=($obj->code && ($outputlangs->transnoentitiesnoconv("Country".$obj->code)!="Country".$obj->code))?$outputlangs->transnoentitiesnoconv("Country".$obj->code):$label;
+				}
+				if ($withcode == 1) $result=$label?"$obj->code - $label":"$obj->code";
+				else if ($withcode == 2) $result=$obj->code;
+				else if ($withcode == 3) $result=$obj->rowid;
+				else if ($withcode === 'all') $result=array('id'=>$obj->rowid,'code'=>$obj->code,'label'=>$label);
+				else $result=$label;
+			}
+			else
+			{
+				$result='NotDefined';
+			}
+			$dbtouse->free($resql);
+			return $result;
+		}
+		else dol_print_error($dbtouse,'');
+		return 'Error';
+	}
+	
+	/**
+	 *  Create a third party into database from a renter object
+	 *
+	 *  @param	Renter	$renter		Object renter
+	 * 	@param	string	$socname		Name of third party to force
+	 *	@param	string	$socalias	Alias name of third party to force
+	 *  @return int					<0 if KO, id of created account if OK
+	 */
+	function create_from_renter(Renter $renter, $socname='', $socalias='')
+	{
+		global $user,$langs;
+		
+		$customer=new Societe($this->db);
+		dol_syslog(get_class($this)."::create_from_renter", LOG_DEBUG);
+
+		$name = $socname?$socname:$this->societe;
+		if (empty($name)) $name=$this->getFullName($langs);
+
+		$alias = $socalias?$socalias:'';
+
+		// Positionne parametres
+		$customer->nom=$name;				// TODO deprecated
+		$customer->name=$name;
+		$customer->name_alias=$alias;
+		$customer->address=$this->address;
+		$customer->zip=$this->zip;
+		$customer->town=$this->town;
+		$customer->country_code=$this->country_code;
+		$customer->country_id=$this->country_id;
+		$customer->phone=$this->phone;       // Prof phone
+		$customer->email=$this->email;
+
+		$customer->client = 1;				// A renter is a customer by default
+		$customer->code_client = -1;
+		$customer->code_fournisseur = -1;
+
+		$customer->db->begin();
+
+		// Cree et positionne $customer->id
+		$result=$customer->create($user);
+		if ($result >= 0)
+		{
+			$sql = "UPDATE ".MAIN_DB_PREFIX."immobilier_immorenter";
+			$sql.= " SET fk_soc=".$customer->id;
+			$sql.= " WHERE rowid=".$this->id;
+
+			$resql=$this->db->query($sql);
+			if ($resql)
+			{
+				$this->db->commit();
+				return $this->id;
+			}
+			else
+			{
+				$this->error=$this->db->error();
+
+				$this->db->rollback();
+				return -1;
 			}
 		}
+		else
+		{
+			// $this->error deja positionne
+			dol_syslog(get_class($this)."::create_from_renter - 2 - ".$this->error." - ".join(',',$this->errors), LOG_ERR);
 
-		$modelpath = dol_buildpath ( '/immobilier/core/modules/immobilier/pdf/' );
+			$this->db->rollback();
+			return $result;
+		}
+	}
 
-		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
-	}*/
 
 }
 

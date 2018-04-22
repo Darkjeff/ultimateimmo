@@ -152,6 +152,28 @@ if (empty($reshook))
 			}
 		}
 	}
+	
+	// Create third party from a renter
+	if ($action == 'confirm_create_thirdparty' && $confirm == 'yes' && $user->rights->societe->creer)
+	{
+		if ($result > 0)
+		{
+			// User creation
+			$company = new Societe($db);
+			$result=$company->create_from_renter($object, GETPOST('companyname', 'alpha'), GETPOST('companyalias', 'alpha'));
+
+			if ($result < 0)
+			{
+				$langs->load("errors");
+				setEventMessages($langs->trans($company->error), null, 'errors');
+				setEventMessages($company->error, $company->errors, 'errors');
+			}
+		}
+		else
+		{
+			setEventMessages($object->error, $object->errors, 'errors');
+		}
+	}
 
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
@@ -242,6 +264,25 @@ if ($action == 'create')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
+		elseif ($val['label'] == 'Societe') 
+		{			
+			// Third party Dolibarr
+			if (! empty($conf->societe->enabled))
+			{
+				print '<tr><td>'.$langs->trans("LinkedToDolibarrThirdParty").'</td><td colspan="2" class="valeur">';
+				if ($object->fk_soc)
+				{
+					$company=new Societe($db);
+					$result=$company->fetch($object->fk_soc);
+					print $company->getNomUrl(1);
+				}
+				else
+				{
+					print $langs->trans("NoThirdPartyAssociatedToMember");
+				}
+				print '</td></tr>';
+			}
+		}
 		else
 		{
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
@@ -316,6 +357,25 @@ if (($id || $ref) && $action == 'edit')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
+		elseif ($val['label'] == 'Societe') 
+		{			
+			// Third party Dolibarr
+			if (! empty($conf->societe->enabled))
+			{
+				print '<tr><td>'.$langs->trans("LinkedToDolibarrThirdParty").'</td><td colspan="2" class="valeur">';
+				if ($object->fk_soc)
+				{
+					$company=new Societe($db);
+					$result=$company->fetch($object->fk_soc);
+					print $company->getNomUrl(1);
+				}
+				else
+				{
+					print $langs->trans("NoThirdPartyAssociatedToMember");
+				}
+				print '</td></tr>';
+			}
+		}
 		else
 		{
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
@@ -356,6 +416,23 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if ($action == 'delete')
 	{
 	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoRenter'), $langs->trans('ConfirmDeleteImmoRenter'), 'confirm_delete', '', 0, 1);
+	}
+	
+	// Confirm create third party
+	if ($action == 'create_thirdparty')
+	{
+		$companyalias='';
+		$fullname = $object->getFullName($langs);
+		$companyname=$fullname;
+		if (! empty($object->societe)) $companyalias=$object->societe;
+
+		// Create a form array
+		$formquestion=array(
+			array('label' => $langs->trans("NameToCreate"), 'type' => 'text', 'name' => 'companyname', 'value' => $companyname, 'morecss' => 'minwidth300', 'moreattr' => 'maxlength="128"'),
+			array('label' => $langs->trans("AliasNames"), 'type' => 'text', 'name' => 'companyalias', 'value' => $companyalias, 'morecss' => 'minwidth300', 'moreattr' => 'maxlength="128"')
+		);
+
+		print $form->formconfirm($_SERVER["PHP_SELF"]."?rowid=".$object->id, $langs->trans("CreateDolibarrThirdParty"), $langs->trans("ConfirmCreateThirdParty"), "confirm_create_thirdparty", $formquestion, 'yes');
 	}
 
 	// Confirmation of action xxxx
@@ -549,6 +626,20 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		{
     			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
     		}
+			
+			// Create third party
+			if (! empty($conf->societe->enabled) && ! $object->fk_soc)
+			{
+				if ($user->rights->societe->creer)
+				{
+					if ($object->statut != -1) print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER["PHP_SELF"].'?rowid='.$object->id.'&amp;action=create_thirdparty">'.$langs->trans("CreateDolibarrThirdParty").'</a></div>';
+					else print '<div class="inline-block divButAction"><a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("ValidateBefore")).'">'.$langs->trans("CreateDolibarrThirdParty").'</a></div>';
+				}
+				else
+				{
+					print '<div class="inline-block divButAction"><font class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans("CreateDolibarrThirdParty")."</font></div>";
+				}
+			}
 
     		/*
     		if ($user->rights->immobilier->create)
