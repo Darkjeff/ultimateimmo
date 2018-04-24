@@ -26,6 +26,7 @@ CREATE TABLE llx_immobilier_immopayment(
 	fk_bank integer, 
 	fk_typepayment integer, 
 	fk_owner integer, 
+	fk_soc integer,
 	fk_receipt integer, 
 	num_payment varchar(50), 
 	note_public text, 

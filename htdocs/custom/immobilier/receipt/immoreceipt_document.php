@@ -73,7 +73,7 @@ if (! $sortfield) $sortfield="name";
 $object=new ImmoReceipt($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
-$hookmanager->initHooks(array('immoreceiptdocument'));     // Note that conf->hooks_modules contains array
+$hookmanager->initHooks(array('immoreceiptdocument','globalcard'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immoreceipt');
 
@@ -107,7 +107,6 @@ if ($object->id)
 	/*
 	 * Show tabs
 	 */
-	if (! empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immoreceiptPrepareHead($object);
 
 	dol_fiche_head($head, 'document', $langs->trans("ImmoReceipt"), -1, 'immoreceipt@immobilier');

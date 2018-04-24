@@ -65,6 +65,7 @@ $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
+$socid 		= GETPOST('socid', 'int');
 
 // Initialize technical objects
 $object=new ImmoOwner($db);
@@ -398,14 +399,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    print '<a name="builddoc"></a>'; // ancre
 
 	    // Documents
-	    /*$objref = dol_sanitizeFileName($object->ref);
-	    $relativepath = $comref . '/' . $comref . '.pdf';
-	    $filedir = $conf->immobilier->dir_output . '/' . $objref;
-	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
+	    $relativepath = '/owner/' . dol_sanitizeFileName($object->ref).'/';		
+	    $filedir = $conf->immobilier->dir_output . $relativepath;
+	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;		
 	    $genallowed = $user->rights->immobilier->read;	// If you can read, you can build the PDF to read content
-	    $delallowed = $user->rights->immobilier->create;	// If you can create/edit, you can remove a file on card
-	    print $formfile->showdocuments('immobilier', $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
-		*/
+	    $delallowed = $user->rights->immobilier->write;	// If you can create/edit, you can remove a file on card
+	    print $formfile->showdocuments('immobilier', $relativepath, $filedir, $urlsource, $genallowed, $delallowed);
 
 	    // Show links to link elements
 	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immoowner'));
@@ -429,17 +428,17 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	//Select mail models is same action as presend
-	/*
+	
 	 if (GETPOST('modelselected')) $action = 'presend';
 
 	 // Presend form
-	 $modelmail='inventory';
+	 $modelmail='immoowner';
 	 $defaulttopic='InformationMessage';
-	 $diroutput = $conf->product->dir_output.'/inventory';
-	 $trackid = 'stockinv'.$object->id;
+	 $diroutput = $conf->immobilier->dir_output.'/owner';
+	 $trackid = 'immo'.$object->id;
 
 	 include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
-	 */
+	 
 }
 
 
