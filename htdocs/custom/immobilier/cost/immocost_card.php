@@ -66,6 +66,7 @@ $langs->loadLangs(array("immobilier@immobilier","other"));
 $id			= GETPOST('id', 'int');
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
+$massaction = GETPOST('massaction','alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 
@@ -99,7 +100,7 @@ $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
 // Load object
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
-
+$arrayfields=array();
 
 /*
  * Actions
@@ -197,6 +198,11 @@ if ($action == 'create')
 		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
 		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
 		elseif (in_array($val['type'], array('float', 'double(24,8)'))) $value = GETPOST($key, 'int');
+		elseif ($val['label'] == 'CostType'){ 
+			$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
+			$value=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
+			$value.=(count($arrayofmassactions) ? $form->showCheckAddButtons('checkforselect', 1) : '');
+		}
 		else $value = GETPOST($key, 'alpha');
 		print $object->showInputField($val, $key, $value, '', '', '', 0);
 		print '</td>';
@@ -235,7 +241,34 @@ if (($id || $ref) && $action == 'edit')
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_edit.tpl.php';
+	$object->fields = dol_sort_array($object->fields, 'position');
+
+	foreach($object->fields as $key => $val)
+	{
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+
+		print '<tr><td';
+		print ' class="titlefieldcreate';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '"';
+		print '>'.$langs->trans($val['label']).'</td>';
+		print '<td>';
+		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
+		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key,'none'):$object->$key;
+		elseif ($val['label'] == 'CostType'){ 
+			$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
+			$value=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
+		}
+		else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
+		//var_dump($val.' '.$key.' '.$value);
+		print $object->showInputField($val, $key, $value, '', '', '', 0);
+		print '</td>';
+		print '</tr>';
+	}
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';

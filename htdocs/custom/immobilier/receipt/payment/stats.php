@@ -16,9 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * $Id: index.php 10 2011-01-24 16:58:03Z hregis $
- * $Source: /cvsroot/dolibarr/dolibarr/htdocs/compta/ventilation/index.php,v $
  */
 
 /**
@@ -27,20 +24,26 @@
  * \brief Page accueil ventilation
  */
 
-// Dolibarr environment
-$res=@include("../main.inc.php");
+// Load Dolibarr environment
+$res=0;
+// Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
+if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+// Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
+$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
+while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
+if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
+if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+// Try main.inc.php using relative path
+if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
 if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res && file_exists("../../../../main.inc.php")) $res=@include("../../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
 // Class
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 
-// Langs
-$langs->load ( "immobilier@immobilier" );
-$langs->load ( "bills" );
-$langs->load ( "other" );
+// Load traductions files requiredby by page
+$langs->loadLangs(array("immobilier@immobilier","other","bills"));
 
 // Filter
 $year = $_GET ["year"];
@@ -57,8 +60,8 @@ if ($year == 0) {
  */
 llxHeader ( '', 'Compta - Ventilation' );
 
-$textprevyear = "<a href=\"stats.php?year=" . ($year_current - 1) . "\">" . img_previous () . "</a>";
-$textnextyear = " <a href=\"stats.php?year=" . ($year_current + 1) . "\">" . img_next () . "</a>";
+$textprevyear = '<a href="' .dol_buildpath('/immobilier/receipt/payment/stats.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
+$textnextyear = '<a href="' .dol_buildpath('/immobilier/receipt/payment/stats.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
 
 print_fiche_titre ( $langs->trans("Encaissement")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
 
@@ -88,7 +91,7 @@ print '<td align="center">'.$langs->trans("November").'</td>';
 print '<td align="center">'.$langs->trans("December").'</td>';
 print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ll.name AS nom_local,";
+$sql = "SELECT ll.label AS nom_local,";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=1,lp.amount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=2,lp.amount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=3,lp.amount,0)),2) AS 'Mars',";
@@ -102,8 +105,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=10,lp.amount,0)),2) AS 'Octobre',
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=11,lp.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_payment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "immo_property as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as lp";
+$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid ";
@@ -111,7 +114,7 @@ if ($user->id != 1) {
 	$sql .= " AND ll.fk_owner=".$user->id;
 }
 
-$sql .= " GROUP BY ll.name";
+$sql .= " GROUP BY ll.label";
 
 $resql = $db->query ( $sql );
 if ($resql) {
@@ -179,8 +182,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=10,lp.amount,0)),2) AS 'Octobre',
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=11,lp.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_payment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "immo_property as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as lp";
+$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid ";
@@ -223,8 +226,7 @@ print "</table>\n";
 
 print '</td></tr></table>';
 
-$db->close ();
-
-llxFooter ( '$Date: 2006/12/23 15:24:24 $ - $Revision: 1.11 $' );
+llxFooter('');
+$db->close();
 
 ?>
