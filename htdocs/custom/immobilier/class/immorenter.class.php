@@ -351,27 +351,27 @@ class ImmoRenter extends CommonObject
 	/**
 	 *    Set link to a third party
 	 *
-	 *    @param     int	$thirdpartyid		Id of user to link to
+	 *    @param     int	$socid		Id of user to link to
 	 *    @return    int						1=OK, -1=KO
 	 */
-	function setThirdPartyId($thirdpartyid)
+	function setThirdPartyId($socid)
 	{
 		global $conf, $langs;
 
 		$this->db->begin();
 
-		// Remove link to third party onto any other members
-		if ($thirdpartyid > 0)
+		// Remove link to third party onto any other renters
+		if ($socid > 0)
 		{
 			$sql = "UPDATE ".MAIN_DB_PREFIX."immobilier_immorenter SET fk_soc = null";
-			$sql.= " WHERE fk_soc = '".$thirdpartyid."'";
+			$sql.= " WHERE fk_soc = '".$socid."'";
 			$sql.= " AND entity = ".$conf->entity;
 			dol_syslog(get_class($this)."::setThirdPartyId", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 		}
 
 		// Add link to third party for current renter
-		$sql = "UPDATE ".MAIN_DB_PREFIX."immobilier_immorenter SET fk_soc = ".($thirdpartyid>0 ? $thirdpartyid : 'null');
+		$sql = "UPDATE ".MAIN_DB_PREFIX."immobilier_immorenter SET fk_soc = ".($socid>0 ? $socid : 'null');
 		$sql.= " WHERE rowid = ".$this->id;
 
 		dol_syslog(get_class($this)."::setThirdPartyId", LOG_DEBUG);
@@ -660,77 +660,6 @@ class ImmoRenter extends CommonObject
 		else dol_print_error($dbtouse,'');
 		return 'Error';
 	}
-	
-	/**
-	 *  Create a third party into database from a renter object
-	 *
-	 *  @param	Renter	$renter		Object renter
-	 * 	@param	string	$socname		Name of third party to force
-	 *	@param	string	$socalias	Alias name of third party to force
-	 *  @return int					<0 if KO, id of created account if OK
-	 */
-	function create_from_renter(Renter $renter, $socname='', $socalias='')
-	{
-		global $user,$langs;
-		
-		$customer=new Societe($this->db);
-		dol_syslog(get_class($this)."::create_from_renter", LOG_DEBUG);
-
-		$name = $socname?$socname:$this->societe;
-		if (empty($name)) $name=$this->getFullName($langs);
-
-		$alias = $socalias?$socalias:'';
-
-		// Positionne parametres
-		$customer->nom=$name;				// TODO deprecated
-		$customer->name=$name;
-		$customer->name_alias=$alias;
-		$customer->address=$this->address;
-		$customer->zip=$this->zip;
-		$customer->town=$this->town;
-		$customer->country_code=$this->country_code;
-		$customer->country_id=$this->country_id;
-		$customer->phone=$this->phone;       // Prof phone
-		$customer->email=$this->email;
-
-		$customer->client = 1;				// A renter is a customer by default
-		$customer->code_client = -1;
-		$customer->code_fournisseur = -1;
-
-		$customer->db->begin();
-
-		// Cree et positionne $customer->id
-		$result=$customer->create($user);
-		if ($result >= 0)
-		{
-			$sql = "UPDATE ".MAIN_DB_PREFIX."immobilier_immorenter";
-			$sql.= " SET fk_soc=".$customer->id;
-			$sql.= " WHERE rowid=".$this->id;
-
-			$resql=$this->db->query($sql);
-			if ($resql)
-			{
-				$this->db->commit();
-				return $this->id;
-			}
-			else
-			{
-				$this->error=$this->db->error();
-
-				$this->db->rollback();
-				return -1;
-			}
-		}
-		else
-		{
-			// $this->error deja positionne
-			dol_syslog(get_class($this)."::create_from_renter - 2 - ".$this->error." - ".join(',',$this->errors), LOG_ERR);
-
-			$this->db->rollback();
-			return $result;
-		}
-	}
-
 
 }
 
