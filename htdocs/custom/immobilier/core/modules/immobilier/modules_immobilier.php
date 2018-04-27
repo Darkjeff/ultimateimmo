@@ -43,13 +43,96 @@ abstract class ModelePDFImmobilier extends CommonDocGenerator
 	{
 		global $conf;
 
-		$type='order';
+		$type='';
 		$liste=array();
 
 		include_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 		$liste=getListOfModels($db,$type,$maxfilenamelength);
 
 		return $liste;
+	}
+}
+
+/**
+ *  Classe mere des modeles de numerotation des references de Immobilier
+ */
+abstract class ModeleNumRefImmobilier
+{
+	var $error='';
+
+	/**
+	 *  Return if a module can be used or not
+	 *
+	 *  @return		boolean     true if module can be used
+	 */
+	function isEnabled()
+	{
+		return true;
+	}
+
+	/**
+	 *  Renvoi la description par defaut du modele de numerotation
+	 *
+	 *  @return     string      Texte descripif
+	 */
+	function info()
+	{
+		global $langs;
+		$langs->load("immobilier@immobilier");
+		return $langs->trans("NoDescription");
+	}
+
+	/**
+	 *  Renvoi un exemple de numerotation
+	 *
+	 *  @return     string      Example
+	 */
+	function getExample()
+	{
+		global $langs;
+		$langs->load("immobilier@immobilier");
+		return $langs->trans("NoExample");
+	}
+
+	/**
+	 *  Test si les numeros deja en vigueur dans la base ne provoquent pas de
+	 *  de conflits qui empechera cette numerotation de fonctionner.
+	 *
+	 *  @return     boolean     false si conflit, true si ok
+	 */
+	function canBeActivated()
+	{
+		return true;
+	}
+
+	/**
+	 *  Renvoi prochaine valeur attribuee
+	 *
+	 *	@param	Societe		$objsoc		Object third party
+	 *	@param	Project		$project	Object project
+	 *	@return	string					Valeur
+	 */
+	function getNextValue($objsoc, $project)
+	{
+		global $langs;
+		return $langs->trans("NotAvailable");
+	}
+
+	/**
+	 *  Renvoi version du module numerotation
+	 *
+	 *  @return     string      Valeur
+	 */
+	function getVersion()
+	{
+		global $langs;
+		$langs->load("admin");
+
+		if ($this->version == 'development') return $langs->trans("VersionDevelopment");
+		if ($this->version == 'experimental') return $langs->trans("VersionExperimental");
+		if ($this->version == 'dolibarr') return DOL_VERSION;
+		if ($this->version) return $this->version;
+		return $langs->trans("NotAvailable");
 	}
 }
 
