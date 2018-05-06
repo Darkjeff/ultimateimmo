@@ -21,7 +21,8 @@
  * \ingroup immobilier
  * \brief PDF for immobilier
  */
-dol_include_once('/immobilier/core/modules/immobilier/immobilier_modules.php');
+ 
+dol_include_once('/immobilier/core/modules/immobilier/modules_immobilier.php');
 dol_include_once('/immobilier/class/immoreceipt.class.php');
 dol_include_once('/immobilier/class/immorenter.class.php');
 dol_include_once('/immobilier/class/immoproperty.class.php');
@@ -30,6 +31,7 @@ dol_include_once('/immobilier/class/immoowner.class.php');
 dol_include_once('/immobilier/class/immopayment.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
+
 class pdf_quittance extends ModelePDFImmobilier 
 {
 	var $emetteur; // Objet societe qui emet
@@ -80,7 +82,7 @@ class pdf_quittance extends ModelePDFImmobilier
 	 * file Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
-	function write_file($receipt, $outputlangs, $file, $socid, $courrier) {
+	function write_file(&$object, $outputlangs, $file, $socid, $courrier) {
 		global $user, $langs, $conf, $mysoc;
 		
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
@@ -97,8 +99,17 @@ class pdf_quittance extends ModelePDFImmobilier
 		// dol_syslog ( "pdf_quittance::debug loyer=" . var_export ( $receipt, true ) );
 		
 		// Definition of $dir and $file
-		$dir = $conf->immobilier->dir_output;
-		$file = $dir . '/' . $file;
+		if ($object->specimen)
+		{
+			$dir = $conf->immobilier->dir_output;
+			$file = $dir . "/SPECIMEN.pdf";
+		}
+		else
+		{
+			$objectref = dol_sanitizeFileName($object->ref);
+			$dir = $conf->immobilier->dir_output . "/" . $objectref;
+			$file = $dir . "/" . $objectref . ".pdf";
+		}
 		
 		if (! file_exists($dir)) {
 			if (create_exdir($dir) < 0) {
@@ -120,7 +131,7 @@ class pdf_quittance extends ModelePDFImmobilier
 			$pagenb = 0;
 			
 			$pdf->SetTitle($outputlangs->convToOutputCharset($receipt->nom));
-			$pdf->SetSubject($outputlangs->transnoentities("Quitance"));
+			$pdf->SetSubject($outputlangs->transnoentities("Quittance"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Immobilier module)');
 			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->fullname));
 			$pdf->SetKeyWords($outputlangs->convToOutputCharset($receipt->nom) . " " . $outputlangs->transnoentities("Document"));

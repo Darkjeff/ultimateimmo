@@ -187,6 +187,62 @@ class ImmoReceipt extends CommonObject
 		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID)) $this->fields['rowid']['visible']=0;
 		if (empty($conf->multicompany->enabled)) $this->fields['entity']['enabled']=0;
 	}
+	
+	/**
+	 *	Return next contract ref
+	 *
+	 *	@param	Societe		$soc	Thirdparty object
+	 *	@return string				Free reference for contract
+	 */
+	function getNextNumRef($soc)
+	{
+		global $langs, $conf;
+		$langs->load("sendings");
+
+		if (!empty($conf->global->IMMOBILIER_ADDON_NUMBER))
+		{
+			$mybool = false;
+
+			$file = $conf->global->IMMOBILIER_ADDON_NUMBER.".php";
+			$classname = $conf->global->IMMOBILIER_ADDON_NUMBER;
+
+			// Include file with class
+			$dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);
+
+			foreach ($dirmodels as $reldir) {
+
+				$dir = dol_buildpath($reldir."immobilier/core/modules/immobilier/");
+
+				// Load file with numbering class (if found)
+				$mybool|=@include_once $dir.$file;
+			}
+
+			if (! $mybool)
+			{
+				dol_print_error('',"Failed to include file ".$file);
+				return '';
+			}
+
+			$obj = new $classname();
+			$numref = "";
+			$numref = $obj->getNextValue($soc,$this);
+
+			if ( $numref != "")
+			{
+				return $numref;
+			}
+			else
+			{
+				dol_print_error($this->db,get_class($this)."::getNextNumRef ".$obj->error);
+				return "";
+			}
+		}
+		else
+		{
+			print $langs->trans("Error")." ".$langs->trans("Error_IMMOBILIER_ADDON_NUMBER_NotDefined");
+			return "";
+		}
+	}
 
 	/**
 	 * Create object into database

@@ -43,7 +43,7 @@ abstract class ModelePDFImmobilier extends CommonDocGenerator
 	{
 		global $conf;
 
-		$type='';
+		$type='immobilier';
 		$liste=array();
 
 		include_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
@@ -109,10 +109,10 @@ abstract class ModeleNumRefImmobilier
 	 *  Renvoi prochaine valeur attribuee
 	 *
 	 *	@param	Societe		$objsoc		Object third party
-	 *	@param	Project		$project	Object project
+	 *	@param	Receipt		$receipt	Object receipt
 	 *	@return	string					Valeur
 	 */
-	function getNextValue($objsoc, $project)
+	function getNextValue($objsoc, $receipt)
 	{
 		global $langs;
 		return $langs->trans("NotAvailable");

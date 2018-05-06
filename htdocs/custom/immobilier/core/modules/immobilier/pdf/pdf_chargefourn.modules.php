@@ -17,17 +17,19 @@
  */
 
 /**
- * \file immobilier/core/modules/immobilier/pdf/pdf_quitance.module.php
+ * \file immobilier/core/modules/immobilier/pdf/pdf_chargefourn.module.php
  * \ingroup immobilier
  * \brief PDF for immobilier
  */
-dol_include_once('/immobilier/core/modules/immobilier/immobilier_modules.php');
+dol_include_once('/immobilier/core/modules/immobilier/modules_immobilier.php');
 dol_include_once('/immobilier/class/immorenter.class.php');
 dol_include_once('/immobilier/class/local.class.php');
 dol_include_once('/immobilier/class/immorent.class.php');
 dol_include_once('/immobilier/class/immopayment.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
+require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
+
 class pdf_chargefourn extends ModelePDFImmobilier 
 {
 	var $emetteur; // Objet societe qui emet
@@ -43,7 +45,7 @@ class pdf_chargefourn extends ModelePDFImmobilier
 		$langs->load("immobilier@immobilier");
 		
 		$this->db = $db;
-		$this->name = 'quittance';
+		$this->name = 'chargefourn';
 		$this->description = $langs->trans('ChargeFournisseur');
 		
 		// Dimension page pour format A4 en portrait
@@ -78,26 +80,52 @@ class pdf_chargefourn extends ModelePDFImmobilier
 	 * file		Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
-	function write_file($year, $outputlangs, $filedir, $filename) {
+	function write_file(&$object, $outputlangs, $filedir, $filename, $year) {
 		global $user, $langs, $conf, $mysoc;
 		
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
 		
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
+		// Translations
+		$outputlangs->loadLangs(array("main", "dict", "immobilier@immobilier"));
+		
+		// Filter
+		$year = GETPOST("year",'int');
+		if ($year == 0) {
+			$current_year = strftime("%Y", time());
+			$start_year = $current_year;
+		} else {
+			$current_year = $year;
+			$start_year = $year;
+		}
 		
 		// Definition of $dir and $file
-		$dir = $filedir;
-		$file = $dir. $filename;
+		//$dir = $filedir;
+		//$file = $dir. $filename;
+		// Definition of $dir and $file
+		if ($object->specimen)
+		{
+			$dir = $conf->immobilier->dir_output;
+			$file = $dir . "/SPECIMEN.pdf";
+		}
+		else
+		{
+			$objectref = dol_sanitizeFileName($object->ref);
+			$dir = $conf->immobilier->dir_output . "/" . $objectref;
+			$file = $dir . "/" . $objectref . ".pdf";
+		}
 		
 		if (! file_exists($dir)) {
-			if (dol_mkdir($dir) < 0) {
+			if (dol_mkdir($dir) < 0) 
+			{
 				$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
 				return 0;
 			}
 		}
 		
-		if (file_exists($dir)) {
+		if (file_exists($dir)) 
+		{
 			
 			$pdf = pdf_getInstance($this->format, $this->unit, $this->orientation);
 			
@@ -130,6 +158,8 @@ class pdf_chargefourn extends ModelePDFImmobilier
 			$posY = $this->marge_haute;
 			$posX = $this->marge_gauche;
 			
+			$year = $current_year;
+			//var_dump($year);
 			// Total par immeuble
 			$sql = "SELECT ";
 			$sql .= " SUM(ic.montant_ttc) as total,";

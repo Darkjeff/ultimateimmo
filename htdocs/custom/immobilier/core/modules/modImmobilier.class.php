@@ -116,7 +116,7 @@ class modImmobilier extends DolibarrModules
 		);
 
 		// Config pages. Put here list of php page, stored into immobilier/admin directory, to use to setup module.
-		$this->config_page_url = array("setup.php@immobilier");
+		$this->config_page_url = array("immobilier.php@immobilier");
 
 		// Dependencies
 		$this->hidden = false;			// A condition to hide module
@@ -136,9 +136,29 @@ class modImmobilier extends DolibarrModules
 		// Example: $this->const=array(0=>array('IMMOBILIER_MYNEWCONST1','chaine','myvalue','This is a constant to add',1),
 		//                             1=>array('IMMOBILIER_MYNEWCONST2','chaine','myvalue','This is another constant to add',0, 'current', 1)
 		// );
-		$this->const = array(
-			1=>array('IMMOBILIER_ADDON_PDF', 'chaine', 'chargefourn', 'Name of the immobilier generation manager in PDF format', 1, 'allentities', 1)
-		);
+		$this->const = array();
+		$r=0;
+
+		$this->const[$r][0] = "IMMOBILIER_ADDON_PDF";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = "chargefourn";
+		$this->const[$r][3] = 'Name of the immobilier generation manager in PDF format';
+		$this->const[$r][4] = 0;
+		$r++;
+
+		$this->const[$r][0] = "IMMOBILIER_ADDON_NUMBER";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = "mod_immobilier_immo";
+		$this->const[$r][3] = 'Name for numbering manager for immobilier';
+		$this->const[$r][4] = 0;
+		$r++;
+
+		$this->const[$r][0] = "IMMOBILIER_ADDON_PDF_ODT_PATH";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = "DOL_DATA_ROOT/doctemplates/immobilier";
+		$this->const[$r][3] = "";
+		$this->const[$r][4] = 0;
+		$r++;
 
 
 		if (! isset($conf->immobilier) || ! isset($conf->immobilier->enabled))
