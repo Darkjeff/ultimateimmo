@@ -31,14 +31,61 @@ dol_include_once('/immobilier/class/immoowner.class.php');
 dol_include_once('/immobilier/class/immopayment.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
+require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
 
 class pdf_quittance extends ModelePDFImmobilier 
 {
-	var $emetteur; // Objet societe qui emet
+	 /**
+     * @var DoliDb Database handler
+     */
+    public $db;
+
+	/**
+     * @var string model name
+     */
+    public $name;
+
+	/**
+     * @var string model description (short text)
+     */
+    public $description;
+
+    /**
+     * @var int 	Save the name of generated file as the main doc when generating a doc with this template
+     */
+    public $update_main_doc_field;
+
+	/**
+     * @var string document type
+     */
+    public $type;
+
+	/**
+     * @var array() Minimum version of PHP required by module.
+	 * e.g.: PHP ≥ 5.3 = array(5, 3)
+     */
+	public $phpmin = array(5, 2);
+
+	/**
+     * Dolibarr version of the loaded document
+     * @public string
+     */
+	public $version = 'dolibarr';
+
+    public $page_largeur;
+    public $page_hauteur;
+    public $format;
+	public $marge_gauche;
+	public $marge_droite;
+	public $marge_haute;
+	public $marge_basse;
+
+    public $emetteur;	// Objet societe qui emet
 	
 	/**
-	 * \brief Constructor
-	 * \param db Database handler
+	 *	Constructor
+	 *
+	 *  @param		DoliDB		$db      Database handler
 	 */
 	function __construct($db) 
 	{
@@ -49,6 +96,7 @@ class pdf_quittance extends ModelePDFImmobilier
 		$this->db = $db;
 		$this->name = 'quittance';
 		$this->description = $langs->trans('Quittance');
+		$this->update_main_doc_field = 1;		// Save the name of generated file as the main doc when generating a doc with this template
 		
 		// Dimension page pour format A4 en portrait
 		$this->type = 'pdf';
@@ -59,15 +107,21 @@ class pdf_quittance extends ModelePDFImmobilier
 				$this->page_largeur,
 				$this->page_hauteur 
 		);
-		$this->marge_gauche = 15;
-		$this->marge_droite = 15;
-		$this->marge_haute = 10;
-		$this->marge_basse = 10;
-		$this->unit = 'mm';
-		$this->oriantation = 'P';
-		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
-		$this->milieu = $this->espaceH_dispo / 2;
-		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
+		$this->marge_gauche=isset($conf->global->MAIN_PDF_MARGIN_LEFT)?$conf->global->MAIN_PDF_MARGIN_LEFT:10;
+		$this->marge_droite=isset($conf->global->MAIN_PDF_MARGIN_RIGHT)?$conf->global->MAIN_PDF_MARGIN_RIGHT:10;
+		$this->marge_haute =isset($conf->global->MAIN_PDF_MARGIN_TOP)?$conf->global->MAIN_PDF_MARGIN_TOP:10;
+		$this->marge_basse =isset($conf->global->MAIN_PDF_MARGIN_BOTTOM)?$conf->global->MAIN_PDF_MARGIN_BOTTOM:10;
+		
+		$this->option_logo = 0;                    // Affiche logo
+		$this->option_tva = 0;                     // Gere option tva FACTURE_TVAOPTION
+		$this->option_modereg = 0;                 // Affiche mode reglement
+		$this->option_condreg = 0;                 // Affiche conditions reglement
+		$this->option_codeproduitservice = 0;      // Affiche code produit-service
+		$this->option_multilang = 1;               // Dispo en plusieurs langues
+		$this->option_escompte = 0;                // Affiche si il y a eu escompte
+		$this->option_credit_note = 0;             // Support credit notes
+		$this->option_freetext = 1;				   // Support add of a personalised text
+		$this->option_draft_watermark = 1;		   // Support add of a watermark on drafts
 		
 		// Get source company
 		$this->emetteur = $mysoc;
@@ -82,59 +136,78 @@ class pdf_quittance extends ModelePDFImmobilier
 	 * file Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
-	function write_file(&$object, $outputlangs, $file, $socid, $courrier) {
+	function write_file($object, $outputlangs, $file='', $socid=null, $courrier=null)
+	{
 		global $user, $langs, $conf, $mysoc;
 		
-		$default_font_size = pdf_getPDFFontSize($outputlangs);
+		// Translations
+		$outputlangs->loadLangs(array("main", "immobilier@immobilier", "companies"));
 		
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
 		
-		if (! is_object($receipt)) {
-			$id = $receipt;
-			$receipt = new Immoreceipt($this->db);
-			$ret = $receipt->fetch($id);
-		}
+		/*if (! is_object($object)) {
+			$id = $object;
+			$object = new Immoreceipt($this->db);
+			$ret = $object->fetch($id);
+		}*/
 		
-		// dol_syslog ( "pdf_quittance::debug loyer=" . var_export ( $receipt, true ) );
+		// dol_syslog ( "pdf_quittance::debug loyer=" . var_export ( $object, true ) );
 		
-		// Definition of $dir and $file
+		// Definition of $dir and $file		
 		if ($object->specimen)
 		{
-			$dir = $conf->immobilier->dir_output;
+			$dir = $conf->immobilier->dir_output."/receipt";
 			$file = $dir . "/SPECIMEN.pdf";
 		}
 		else
 		{
 			$objectref = dol_sanitizeFileName($object->ref);
-			$dir = $conf->immobilier->dir_output . "/" . $objectref;
+			$dir = $conf->immobilier->dir_output . "/receipt/" . $objectref;
 			$file = $dir . "/" . $objectref . ".pdf";
 		}
 		
-		if (! file_exists($dir)) {
-			if (create_exdir($dir) < 0) {
+		if (! file_exists($dir)) 
+		{
+			if (create_exdir($dir) < 0) 
+			{
 				$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
 				return 0;
 			}
 		}
 		
-		if (file_exists($dir)) {
+		if (file_exists($dir)) 
+		{
+			// Add pdfgeneration hook
+			if (! is_object($hookmanager))
+			{
+				include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
+				$hookmanager=new HookManager($this->db);
+			}
+			$hookmanager->initHooks(array('pdfgeneration'));
+			$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
+			global $action;
+			$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
 			
-			$pdf = pdf_getInstance($this->format, $this->unit, $this->orientation);
+			// Create pdf instance
+			$pdf=pdf_getInstance($this->format);
+			$default_font_size = pdf_getPDFFontSize($outputlangs);	// Must be after pdf_getInstance
 			
-			if (class_exists('TCPDF')) {
+			if (class_exists('TCPDF')) 
+			{
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
+			$pdf->SetFont(pdf_getPDFFont($outputlangs));
 			
 			$pdf->Open();
 			$pagenb = 0;
 			
-			$pdf->SetTitle($outputlangs->convToOutputCharset($receipt->nom));
+			$pdf->SetTitle($outputlangs->convToOutputCharset($object->nom));
 			$pdf->SetSubject($outputlangs->transnoentities("Quittance"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Immobilier module)');
 			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->fullname));
-			$pdf->SetKeyWords($outputlangs->convToOutputCharset($receipt->nom) . " " . $outputlangs->transnoentities("Document"));
+			$pdf->SetKeyWords($outputlangs->convToOutputCharset($object->nom) . " " . $outputlangs->transnoentities("Document"));
 			if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION)
 				$pdf->SetCompression(false);
 			
@@ -143,18 +216,19 @@ class pdf_quittance extends ModelePDFImmobilier
 			
 			// On recupere les infos societe
 			$renter = new ImmoRenter($this->db);
-			$result = $renter->fetch($receipt->fk_renter);
+			$result = $renter->fetch($object->fk_renter);
 			
 			$owner = new ImmoOwner($this->db);
-			$result = $owner->fetch($receipt->fk_owner);
+			$result = $owner->fetch($object->fk_owner);
 			
 			$property = new ImmoProperty($this->db);
-			$result = $property->fetch($receipt->fk_property);
+			$result = $property->fetch($object->fk_property);
 			
 			//$paiement = new Immopayment($this->db);
-			//$result = $paiement->fetch_by_loyer($receipt->id);
+			//$result = $paiement->fetch_by_loyer($object->id);
 			
-			if (! empty($receipt->id)) {
+			if (! empty($object->id)) 
+			{
 				// New page
 				$pdf->AddPage();
 				$pagenb ++;
@@ -222,7 +296,7 @@ class pdf_quittance extends ModelePDFImmobilier
 				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetXY($posX, $posY);
-				if ($receipt->paye != 1 ) {
+				if ($object->paye != 1 ) {
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Appel de loyer'), 1, 'C');
 				} else {
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Quittance de loyer'), 1, 'C');
@@ -233,7 +307,7 @@ class pdf_quittance extends ModelePDFImmobilier
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
 				
-				$period = 'Loyer ' . dol_print_date($receipt->echeance, '%b %Y');
+				$period = 'Loyer ' . dol_print_date($object->echeance, '%b %Y');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 				
 				/*
@@ -241,7 +315,7 @@ class pdf_quittance extends ModelePDFImmobilier
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
 	
-				$numquittance = 'Quittance n°: ' . 'ILQ' . $receipt->id;
+				$numquittance = 'Quittance n°: ' . 'ILQ' . $object->id;
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($numquittance), 1, 'ID');
 				*/
 
@@ -250,17 +324,17 @@ class pdf_quittance extends ModelePDFImmobilier
 				$pdf->SetXY($posX, $posY);
 
 				$montantpay = 0;
-				if (! empty($receipt->paiepartiel)) {
-					$montantpay = $receipt->paiepartiel;
+				if (! empty($object->paiepartiel)) {
+					$montantpay = $object->paiepartiel;
 				}
 				$text = 'Reçu de ' . $renter->civilite . '' .$renter->prenom. ' '.$renter->nom. ' la somme de ' . price($montantpay) . '€' . "\n";
 				;
 
 				$dtpaiement = $paiement->date_paiement;
 				if (empty($dtpaiement)) {
-					$dtpaiement = $receipt->echeance;
+					$dtpaiement = $object->echeance;
 				}
-				$text .= 'le ' . dol_print_date($dtpaiement, 'daytext') . ' pour loyer et accessoires des locaux sis à : ' . $property->address . ' en paiement du terme du ' . dol_print_date($receipt->date_start, 'daytext') . ' au ' . dol_print_date($receipt->date_end, 'daytext') . "\n";
+				$text .= 'le ' . dol_print_date($dtpaiement, 'daytext') . ' pour loyer et accessoires des locaux sis à : ' . $property->address . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
 
 				/*
 				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 1, 'L');
@@ -278,19 +352,19 @@ class pdf_quittance extends ModelePDFImmobilier
 				$text .= '<tr>';
 				$text .= '<td colspan="2">';
 
-				$text .= ' - Loyer nu : ' . price($receipt->rent) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
-				if ($receipt->vat > 0) {
-				$text .= ' - TVA : ' . price($receipt->vat) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
+				$text .= ' - Loyer nu : ' . price($object->rent) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
+				if ($object->vat > 0) {
+				$text .= ' - TVA : ' . price($object->vat) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
 				} 
-				$text .= ' - Charges / Provisions de Charges : ' . price($receipt->charges) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
-				$text .= ' - Montant total du terme : ' . price($receipt->amount_total) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
+				$text .= ' - Charges / Provisions de Charges : ' . price($object->charges) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
+				$text .= ' - Montant total du terme : ' . price($object->amount_total) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
 				$text .= '</td>';
 				$text .= '</tr>';
 				
 				$sql = "SELECT p.rowid, p.fk_receipt, date_payment as dp, p.amount, p.comment as type, il.amount_total ";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as p";
 				$sql .= ", " . MAIN_DB_PREFIX . "immobilier_immoreceipt as il ";
-				$sql .= " WHERE p.fk_receipt = " . $receipt->id;
+				$sql .= " WHERE p.fk_receipt = " . $object->id;
 				$sql .= " AND p.fk_receipt = il.rowid";
 				$sql .= " ORDER BY dp DESC";
 				
@@ -320,11 +394,11 @@ class pdf_quittance extends ModelePDFImmobilier
 						$i ++;
 					}
 					
-					if ($receipt->paye == 0) {
+					if ($object->paye == 0) {
 						$text .= "<br><tr><td align=\"left\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\">" . price($totalpaye) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
-						$text .= "<tr><td align=\"left\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($receipt->amount_total) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
+						$text .= "<tr><td align=\"left\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($object->amount_total) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
 						
-						$resteapayer = $receipt->amount_total - $totalpaye;
+						$resteapayer = $object->amount_total - $totalpaye;
 						
 						$text .= "<tr><td align=\"left\">" . $langs->trans("RemainderToPay") . " :</td>";
 						$text .= "<td align=\"right\">" . price($resteapayer, 2) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
@@ -339,8 +413,8 @@ class pdf_quittance extends ModelePDFImmobilier
 				// Tableau Loyer et solde
 				$sql = "SELECT il.name, il.balance";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt as il ";
-				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<'" . $this->db->idate($receipt->date_start) . "'";
-				$sql .= " AND fk_property=" . $receipt->fk_property . " AND fk_renter=" . $receipt->fk_renter;
+				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<'" . $this->db->idate($object->date_start) . "'";
+				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
 				$sql .= " ORDER BY echeance ASC";
 				
 				dol_syslog(get_class($this) . ':: loyerAntierieur sql=' . $sql, LOG_DEBUG);
@@ -401,14 +475,15 @@ class pdf_quittance extends ModelePDFImmobilier
 				// Tableau total somme due
 				$sql = "SELECT SUM(il.balance) as total";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt as il ";
-				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<='" . $this->db->idate($receipt->date_start) . "'";
-				$sql .= " AND fk_property=" . $receipt->fk_property . " AND fk_renter=" . $receipt->fk_renter;
+				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<='" . $this->db->idate($object->date_start) . "'";
+				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
 				$sql .= " GROUP BY fk_property,fk_renter";
 				
 				// print $sql;
 				dol_syslog(get_class($this) . ':: total somme due', LOG_DEBUG);
 				$resql = $this->db->query($sql);
-				if ($resql) {
+				if ($resql) 
+				{
 					$num = $this->db->num_rows($resql);
 					
 					if ($num > 0) {
@@ -455,7 +530,7 @@ class pdf_quittance extends ModelePDFImmobilier
 				$sql .= " SUM(charge_ex) as charge,";
 				$sql .= " GROUP_CONCAT(CommCharge SEPARATOR '$') as CommCharge";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "immo_loyer";
-				$sql .= " WHERE local_id=" . $receipt->local_id . " AND locataire_id=" . $receipt->locataire_id;
+				$sql .= " WHERE local_id=" . $object->local_id . " AND locataire_id=" . $object->locataire_id;
 				$sql .= " GROUP BY YEAR(echeance)";
 				
 				// print $sql;
@@ -523,6 +598,7 @@ class pdf_quittance extends ModelePDFImmobilier
 					}
 				}*/
 			}
+			$this->db->free($resql);
 			
 			$pdf->Close();
 			
@@ -531,12 +607,12 @@ class pdf_quittance extends ModelePDFImmobilier
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 			
 			return 1; // Pas d'erreur
-		} else {
-			$this->error = $langs->trans("ErrorConstantNotDefined", "AGF_OUTPUTDIR");
+		}
+		else
+		{
+			$this->error=$outputlangs->transnoentities("ErrorCanNotCreateDir",$dir);
 			return 0;
 		}
-		$this->error = $langs->trans("ErrorUnknown");
-		return 0; // Erreur par defaut
 	}
 	
 	/**
@@ -546,7 +622,8 @@ class pdf_quittance extends ModelePDFImmobilier
 	 * \param showaddress 0=no, 1=yes
 	 * \param outputlangs Object lang for output
 	 */
-	function _pagehead(&$pdf, $object, $showaddress = 1, $outputlangs) {
+	function _pagehead(&$pdf, $object, $showaddress = 1, $outputlangs) 
+	{
 		global $conf, $langs;
 		
 		$outputlangs->load("main");

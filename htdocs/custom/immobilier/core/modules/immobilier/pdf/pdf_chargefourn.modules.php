@@ -21,6 +21,7 @@
  * \ingroup immobilier
  * \brief PDF for immobilier
  */
+ 
 dol_include_once('/immobilier/core/modules/immobilier/modules_immobilier.php');
 dol_include_once('/immobilier/class/immorenter.class.php');
 dol_include_once('/immobilier/class/local.class.php');
@@ -32,11 +33,57 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
 
 class pdf_chargefourn extends ModelePDFImmobilier 
 {
-	var $emetteur; // Objet societe qui emet
+	/**
+     * @var DoliDb Database handler
+     */
+    public $db;
+
+	/**
+     * @var string model name
+     */
+    public $name;
+
+	/**
+     * @var string model description (short text)
+     */
+    public $description;
+
+    /**
+     * @var int 	Save the name of generated file as the main doc when generating a doc with this template
+     */
+    public $update_main_doc_field;
+
+	/**
+     * @var string document type
+     */
+    public $type;
+
+	/**
+     * @var array() Minimum version of PHP required by module.
+	 * e.g.: PHP ≥ 5.3 = array(5, 3)
+     */
+	public $phpmin = array(5, 2);
+
+	/**
+     * Dolibarr version of the loaded document
+     * @public string
+     */
+	public $version = 'dolibarr';
+
+    public $page_largeur;
+    public $page_hauteur;
+    public $format;
+	public $marge_gauche;
+	public $marge_droite;
+	public $marge_haute;
+	public $marge_basse;
+
+    public $emetteur;	// Objet societe qui emet
 	
 	/**
-	 * \brief		Constructor
-	 * \param		db		Database handler
+	 *	Constructor
+	 *
+	 *  @param		DoliDB		$db      Database handler
 	 */
 	function __construct($db) 
 	{
@@ -47,6 +94,7 @@ class pdf_chargefourn extends ModelePDFImmobilier
 		$this->db = $db;
 		$this->name = 'chargefourn';
 		$this->description = $langs->trans('ChargeFournisseur');
+		$this->update_main_doc_field = 1;		// Save the name of generated file as the main doc when generating a doc with this template
 		
 		// Dimension page pour format A4 en portrait
 		$this->type = 'pdf';
@@ -57,15 +105,21 @@ class pdf_chargefourn extends ModelePDFImmobilier
 				$this->page_largeur,
 				$this->page_hauteur 
 		);
-		$this->marge_gauche = 15;
-		$this->marge_droite = 15;
-		$this->marge_haute = 10;
-		$this->marge_basse = 10;
-		$this->unit = 'mm';
-		$this->oriantation = 'P';
-		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
-		$this->milieu = $this->espaceH_dispo / 2;
-		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
+		$this->marge_gauche=isset($conf->global->MAIN_PDF_MARGIN_LEFT)?$conf->global->MAIN_PDF_MARGIN_LEFT:10;
+		$this->marge_droite=isset($conf->global->MAIN_PDF_MARGIN_RIGHT)?$conf->global->MAIN_PDF_MARGIN_RIGHT:10;
+		$this->marge_haute =isset($conf->global->MAIN_PDF_MARGIN_TOP)?$conf->global->MAIN_PDF_MARGIN_TOP:10;
+		$this->marge_basse =isset($conf->global->MAIN_PDF_MARGIN_BOTTOM)?$conf->global->MAIN_PDF_MARGIN_BOTTOM:10;
+		
+		$this->option_logo = 0;                    // Affiche logo
+		$this->option_tva = 0;                     // Gere option tva FACTURE_TVAOPTION
+		$this->option_modereg = 0;                 // Affiche mode reglement
+		$this->option_condreg = 0;                 // Affiche conditions reglement
+		$this->option_codeproduitservice = 0;      // Affiche code produit-service
+		$this->option_multilang = 1;               // Dispo en plusieurs langues
+		$this->option_escompte = 0;                // Affiche si il y a eu escompte
+		$this->option_credit_note = 0;             // Support credit notes
+		$this->option_freetext = 1;				   // Support add of a personalised text
+		$this->option_draft_watermark = 1;		   // Support add of a watermark on drafts
 		
 		// Get source company
 		$this->emetteur = $mysoc;
@@ -80,10 +134,9 @@ class pdf_chargefourn extends ModelePDFImmobilier
 	 * file		Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
-	function write_file(&$object, $outputlangs, $filedir, $filename, $year) {
+	function write_file(&$object, $outputlangs, $filedir='', $filename='', $year='') 
+	{
 		global $user, $langs, $conf, $mysoc;
-		
-		$default_font_size = pdf_getPDFFontSize($outputlangs);
 		
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
@@ -92,31 +145,32 @@ class pdf_chargefourn extends ModelePDFImmobilier
 		
 		// Filter
 		$year = GETPOST("year",'int');
-		if ($year == 0) {
+		if ($year == 0) 
+		{
 			$current_year = strftime("%Y", time());
 			$start_year = $current_year;
-		} else {
+		} 
+		else 
+		{
 			$current_year = $year;
 			$start_year = $year;
 		}
 		
 		// Definition of $dir and $file
-		//$dir = $filedir;
-		//$file = $dir. $filename;
-		// Definition of $dir and $file
 		if ($object->specimen)
 		{
-			$dir = $conf->immobilier->dir_output;
+			$dir = $conf->immobilier->dir_output."/receipt";
 			$file = $dir . "/SPECIMEN.pdf";
 		}
 		else
 		{
 			$objectref = dol_sanitizeFileName($object->ref);
-			$dir = $conf->immobilier->dir_output . "/" . $objectref;
+			$dir = $conf->immobilier->dir_output . "/receipt/" . $objectref;
 			$file = $dir . "/" . $objectref . ".pdf";
 		}
 		
-		if (! file_exists($dir)) {
+		if (! file_exists($dir)) 
+		{
 			if (dol_mkdir($dir) < 0) 
 			{
 				$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
@@ -126,10 +180,23 @@ class pdf_chargefourn extends ModelePDFImmobilier
 		
 		if (file_exists($dir)) 
 		{
+			// Add pdfgeneration hook
+			if (! is_object($hookmanager))
+			{
+				include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
+				$hookmanager=new HookManager($this->db);
+			}
+			$hookmanager->initHooks(array('pdfgeneration'));
+			$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
+			global $action;
+			$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
 			
-			$pdf = pdf_getInstance($this->format, $this->unit, $this->orientation);
+			// Create pdf instance
+			$pdf=pdf_getInstance($this->format);
+			$default_font_size = pdf_getPDFFontSize($outputlangs);	// Must be after pdf_getInstance
 			
-			if (class_exists('TCPDF')) {
+			if (class_exists('TCPDF')) 
+			{
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
@@ -164,14 +231,14 @@ class pdf_chargefourn extends ModelePDFImmobilier
 			$sql = "SELECT ";
 			$sql .= " SUM(ic.montant_ttc) as total,";
 			$sql .= " ii.nom as nomimmeuble";
-			$sql .= " FROM " . MAIN_DB_PREFIX . "immo_charge as ic";
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "immobilier_immolocal as ll ON ic.local_id = ll.rowid";
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "immobilier_immoproperty as ii ON ll.immeuble_id = ii.rowid";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll ON ic.local_id = ll.rowid";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "immobilier_immobuilding as ii ON ll.immeuble_id = ii.rowid";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "immobilier_immotypologie as it ON it.rowid = ic.type AND ic.type=23";
 			$sql .= " WHERE ic.date_acq >= '" . $this->db->idate(dol_get_first_day($year, 1, false)) . "'";
 			$sql .= "  AND ic.date_acq <= '" . $this->db->idate(dol_get_last_day($year, 12, false)) . "'";
 			if ($user->id != 1) {
-				$sql .= " AND ic.proprietaire_id=" . $user->id;
+				$sql .= " AND ic.owner_id=" . $user->id;
 			}
 			$sql .= " GROUP BY ii.nom";
 			$sql .= " ORDER BY ii.nom";

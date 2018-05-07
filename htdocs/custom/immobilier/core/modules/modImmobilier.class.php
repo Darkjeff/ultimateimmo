@@ -141,7 +141,7 @@ class modImmobilier extends DolibarrModules
 
 		$this->const[$r][0] = "IMMOBILIER_ADDON_PDF";
 		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = "chargefourn";
+		$this->const[$r][2] = "quittance";
 		$this->const[$r][3] = 'Name of the immobilier generation manager in PDF format';
 		$this->const[$r][4] = 0;
 		$r++;

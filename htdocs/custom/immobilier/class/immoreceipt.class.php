@@ -24,8 +24,6 @@
 
 // Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
-//require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
-//require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
 /**
  * Class for ImmoReceipt
@@ -648,7 +646,23 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function initAsSpecimen()
 	{
-		$this->initAsSpecimenCommon();
+		 global $user, $langs, $conf;
+
+        $now=dol_now();
+
+        // Initialise parameters
+        $this->id = 0;
+        $this->ref = 'SPECIMEN';
+        $this->specimen = 1;
+        $this->fk_soc = 1;
+        $this->date_rent = $now;
+        $this->date_creation = $now;
+        $this->date_start = $now;
+        $this->date_end = $now + (3600 * 24 * 365);
+        $this->note_public = 'SPECIMEN';
+		$this->rentamount = 20000;
+        $this->chargesamount = 20000;
+        $this->total_amount = 50000;
 	}
 
 

@@ -109,10 +109,10 @@ abstract class ModeleNumRefImmobilier
 	 *  Renvoi prochaine valeur attribuee
 	 *
 	 *	@param	Societe		$objsoc		Object third party
-	 *	@param	Receipt		$receipt	Object receipt
+	 *	@param	Receipt		$object		Object receipt
 	 *	@return	string					Valeur
 	 */
-	function getNextValue($objsoc, $receipt)
+	function getNextValue($objsoc, $object)
 	{
 		global $langs;
 		return $langs->trans("NotAvailable");

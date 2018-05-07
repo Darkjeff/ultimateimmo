@@ -138,7 +138,7 @@ else if ($action == 'specimen')
 
 		$module = new $classname($db);
 
-		if ($module->write_file($receipt, $langs, 0, 0, 0) > 0)
+		if ($module->write_file($receipt, $langs) > 0)
 		{
 			header("Location: ".DOL_URL_ROOT."/document.php?modulepart=immobilier&file=SPECIMEN.pdf");
 			return;
@@ -238,7 +238,7 @@ clearstatcache();
 foreach ($dirmodels as $reldir)
 {
 	$dir = dol_buildpath($reldir."immobilier/core/modules/immobilier/");
-//var_dump($dir);
+
 	if (is_dir($dir))
 	{
 		$handle = opendir($dir);
