@@ -203,13 +203,13 @@ $sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 $sql.= " INNER JOIN ".MAIN_DB_PREFIX."immobilier_immoproperty_type as tp ON tp.rowid = t.fk_property_type";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."immobilier_immobuilding as b ON b.fk_property = t.fk_property";
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."immoproperty_extrafields as ef on (t.rowid = ef.fk_object)";
-/*if ($object->ismultientitymanaged == 1) $sql.= " WHERE t.entity IN (".getEntity('immoproperty').")";
-else $sql.=" WHERE 1 = 1";*/
 if ($action == 'building') {
-$sql .= " WHERE tp.rowid = 6";
+$sql .= " WHERE tp.label = 'Immeuble'";
 } else {
-$sql .= " WHERE tp.rowid <> 6";
+$sql .= " WHERE tp.label <> 'Immeuble'";
 }
+if ($object->ismultientitymanaged == 1) $sql .= "AND t.entity in (".getEntity('immoproperty').")";
+
 foreach($search as $key => $val)
 {
 	$mode_search=(($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
