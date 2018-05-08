@@ -39,14 +39,15 @@ if (! $res) die("Include of main fails");
 global $langs, $user;
 
 // Libraries
-require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
+require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 dol_include_once('/immobilier/lib/immobilier.lib.php');
 dol_include_once('/immobilier/class/immoreceipt.class.php');
 dol_include_once('/immobilier/core/modules/immobilier/pdf/pdf_chargefourn.module.php');
 dol_include_once('/immobilier/core/modules/immobilier/pdf/pdf_quittance.module.php');
 
 // Translations
-$langs->loadLangs(array("admin", "immobilier@immobilier"));
+$langs->loadLangs(array("admin", "errors", "immobilier@immobilier"));
 
 // Access control
 if (! $user->admin) accessforbidden();
@@ -204,6 +205,8 @@ $dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
 
 $form=new Form($db);
 
+$dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
+
 $page_name = "ImmobilierSetup";
 llxHeader('', $langs->trans($page_name));
 
@@ -291,7 +294,8 @@ foreach ($dirmodels as $reldir)
 						// Info
 						$htmltooltip='';
 						$htmltooltip.=''.$langs->trans("Version").': <b>'.$module->getVersion().'</b><br>';
-						$nextval=$module->getNextValue($objsoc, $receipt);
+						$receipt->type=0;
+						$nextval=$module->getNextValue($mysoc, $receipt);
                         if ("$nextval" != $langs->trans("NotAvailable")) {  // Keep " on nextval
                             $htmltooltip.=''.$langs->trans("NextValue").': ';
                             if ($nextval) {

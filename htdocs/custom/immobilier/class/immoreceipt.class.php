@@ -195,7 +195,7 @@ class ImmoReceipt extends CommonObject
 	function getNextNumRef($soc)
 	{
 		global $langs, $conf;
-		$langs->load("sendings");
+		$langs->load("immobilier@immobilier");
 
 		if (!empty($conf->global->IMMOBILIER_ADDON_NUMBER))
 		{
@@ -663,6 +663,42 @@ class ImmoReceipt extends CommonObject
 		$this->rentamount = 20000;
         $this->chargesamount = 20000;
         $this->total_amount = 50000;
+	}
+	
+	/**
+	 *  Create an intervention document on disk using template defined into IMMOBILIER_ADDON_PDF
+	 *
+	 *  @param	string		$modele			Force template to use ('' by default)
+	 *  @param	Translate	$outputlangs	Objet lang to use for translation
+	 *  @param  int			$hidedetails    Hide details of lines
+	 *  @param  int			$hidedesc       Hide description
+	 *  @param  int			$hideref        Hide ref
+	 *  @return int         				0 if KO, 1 if OK
+	 */
+	public function generateDocument($modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
+	{
+		global $conf,$langs;
+
+		$langs->load("immobilier@immobilier");
+
+		if (! dol_strlen($modele)) 
+		{
+
+			$modele = '';
+
+			if ($this->modelpdf) 
+			{
+				$modele = $this->modelpdf;
+			} 
+			elseif (! empty($conf->global->IMMOBILIER_ADDON_PDF)) 
+			{
+				$modele = $conf->global->IMMOBILIER_ADDON_PDF;
+			}
+		}
+
+		$modelpath = "immobilier/core/modules/immobilier/pdf/";
+
+		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
 	}
 
 

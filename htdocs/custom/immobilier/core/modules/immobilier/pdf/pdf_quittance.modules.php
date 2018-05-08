@@ -138,7 +138,7 @@ class pdf_quittance extends ModelePDFImmobilier
 	 */
 	function write_file($object, $outputlangs, $file='', $socid=null, $courrier=null)
 	{
-		global $user, $langs, $conf, $mysoc;
+		global $user, $langs, $conf, $mysoc, $hookmanager;
 		
 		// Translations
 		$outputlangs->loadLangs(array("main", "immobilier@immobilier", "companies"));
@@ -192,6 +192,7 @@ class pdf_quittance extends ModelePDFImmobilier
 			// Create pdf instance
 			$pdf=pdf_getInstance($this->format);
 			$default_font_size = pdf_getPDFFontSize($outputlangs);	// Must be after pdf_getInstance
+			$heightforfreetext= (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT)?$conf->global->MAIN_PDF_FREETEXT_HEIGHT:5);	// Height reserved to output the free text on last page
 			
 			if (class_exists('TCPDF')) 
 			{
@@ -199,15 +200,21 @@ class pdf_quittance extends ModelePDFImmobilier
 				$pdf->setPrintFooter(false);
 			}
 			$pdf->SetFont(pdf_getPDFFont($outputlangs));
+			// Set path to the background PDF File
+			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND))
+			{
+				$pagecount = $pdf->setSourceFile($conf->mycompany->dir_output.'/'.$conf->global->MAIN_ADD_PDF_BACKGROUND);
+				$tplidx = $pdf->importPage(1);
+			}
 			
 			$pdf->Open();
 			$pagenb = 0;
 			
-			$pdf->SetTitle($outputlangs->convToOutputCharset($object->nom));
+			$pdf->SetTitle($outputlangs->convToOutputCharset($object->label));
 			$pdf->SetSubject($outputlangs->transnoentities("Quittance"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Immobilier module)');
-			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->fullname));
-			$pdf->SetKeyWords($outputlangs->convToOutputCharset($object->nom) . " " . $outputlangs->transnoentities("Document"));
+			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->firstname)." ".$outputlangs->convToOutputCharset($user->lastname));
+			$pdf->SetKeyWords($outputlangs->convToOutputCharset($object->label) . " " . $outputlangs->transnoentities("Document"));
 			if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION)
 				$pdf->SetCompression(false);
 			
@@ -278,8 +285,8 @@ class pdf_quittance extends ModelePDFImmobilier
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$this->str = $renter->civilite . ' ' .$renter->nom. ' '.$renter->prenom. "\n";
-				$this->str .= $property->name . "\n";
+				$this->str = $renter->civilite . ' ' .$renter->lastname. ' '.$renter->firstname. "\n";
+				$this->str .= $property->label . "\n";
 				$this->str .= $property->address . "\n";
 				$this->str .= $property->zip . ' ' . $property->town;
 				$pdf->MultiCell(80, 20, $outputlangs->convToOutputCharset($this->str), 1, 'L');

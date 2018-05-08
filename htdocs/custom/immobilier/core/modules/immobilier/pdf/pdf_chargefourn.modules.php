@@ -134,14 +134,15 @@ class pdf_chargefourn extends ModelePDFImmobilier
 	 * file		Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
-	function write_file(&$object, $outputlangs, $filedir='', $filename='', $year='') 
+	function write_file($object, $outputlangs, $filedir='', $filename='', $year='') 
 	{
-		global $user, $langs, $conf, $mysoc;
+		global $user, $langs, $conf, $mysoc, $hookmanager;
 		
-		if (! is_object($outputlangs))
-			$outputlangs = $langs;
 		// Translations
 		$outputlangs->loadLangs(array("main", "dict", "immobilier@immobilier"));
+		
+		if (! is_object($outputlangs))
+			$outputlangs = $langs;		
 		
 		// Filter
 		$year = GETPOST("year",'int');
@@ -194,16 +195,26 @@ class pdf_chargefourn extends ModelePDFImmobilier
 			// Create pdf instance
 			$pdf=pdf_getInstance($this->format);
 			$default_font_size = pdf_getPDFFontSize($outputlangs);	// Must be after pdf_getInstance
+			$heightforfreetext= (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT)?$conf->global->MAIN_PDF_FREETEXT_HEIGHT:5);	// Height reserved to output the free text on last page
 			
 			if (class_exists('TCPDF')) 
 			{
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
+			$pdf->SetFont(pdf_getPDFFont($outputlangs));
+			// Set path to the background PDF File
+			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND))
+			{
+				$pagecount = $pdf->setSourceFile($conf->mycompany->dir_output.'/'.$conf->global->MAIN_ADD_PDF_BACKGROUND);
+				$tplidx = $pdf->importPage(1);
+			}
 			
 			$pdf->Open();
 			$pagenb = 0;
 			
+			$immoRent = new ImmoRent($this->db);
+			//var_dump($immoRent);
 			$pdf->SetTitle($outputlangs->convToOutputCharset($loyer->nom));
 			$pdf->SetSubject($outputlangs->transnoentities("ChargeFournisseur"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Immobilier module)');
