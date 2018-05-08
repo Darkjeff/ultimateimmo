@@ -157,19 +157,19 @@ class pdf_quittance extends ModelePDFImmobilier
 		// Definition of $dir and $file		
 		if ($object->specimen)
 		{
-			$dir = $conf->immobilier->dir_output;
+			$dir = $conf->immobilier->dir_output."/receipt";
 			$file = $dir . "/SPECIMEN.pdf";
 		}
 		else
 		{
 			$objectref = dol_sanitizeFileName($object->ref);
-			$dir = $conf->immobilier->dir_output . "/" . $objectref;
+			$dir = $conf->immobilier->dir_output . "/receipt/" . $objectref;
 			$file = $dir . "/" . $objectref . ".pdf";
 		}
 		
 		if (! file_exists($dir)) 
 		{
-			if (create_exdir($dir) < 0) 
+			if (dol_mkdir($dir) < 0) 
 			{
 				$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
 				return 0;
@@ -239,7 +239,7 @@ class pdf_quittance extends ModelePDFImmobilier
 				// New page
 				$pdf->AddPage();
 				$pagenb ++;
-				$this->_pagehead($pdf, $agf, 1, $outputlangs);
+				$this->_pagehead($pdf, $object, 1, $outputlangs);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$pdf->MultiCell(0, 3, '', 0, 'J');
 				$pdf->SetTextColor(0, 0, 0);
