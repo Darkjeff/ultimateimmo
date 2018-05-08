@@ -43,9 +43,13 @@ ImmobilierAbout = À propos de Immobilier
 ImmobilierAboutPage = Page à propos de Immobilier
 
 #
-# Page d'exemple
+# Menu
 #
-MyPageName = Nom de ma page
+MenuImmoProperty = Biens immobiliers
+MenuNewImmoProperty = Nouveau bien
+MenuListImmoProperty = Liste
+MenuImmoPropertyType = Type de bien
+MenuNewImmoPropertyType = Nouveau type
 
 #
 # Box d'exemple
@@ -55,17 +59,21 @@ MyWidgetDescription = Description de mon widget
 
 ImmoRenter = Locataire
 BirthDay = Date de Naissance
-ImmoProperty = Bien Immobilier 
+ImmoProperty = Bien immobilier
+ImmoProperties = Biens immobiliers
 Building = Immeuble
 Staircase = Escalier
 NumFloor = Etage
 NumFlat = Numéro Appartement
 NumDoor = Porte n°
-Area = surface
+Area = Surface
 PropertyParent = Bien Parent
 DateBuilt = Date de construction
-Target = cible
+Target = Cible
 ImmoOwner = Propriétaire
 Civility = Titre
+
+PropertyType = Type de bien immobilier
+
 
 
