@@ -28,6 +28,12 @@ ModuleImmobilierDesc = Description de Immobilier
 ImmobilierSetup = Configuration du module Immobilier
 Settings = Réglages
 ImmobilierSetupPage = Page de configuration du module Immobilier
+ExtraFieldsProperty = Attributs supplémentaires (Propriétés)
+ExtraFieldsRenter = Attributs supplémentaires (Locataires)
+ExtraFieldsOwner = Attributs supplémentaires (Propriétaires)
+ExtraFieldsPayment =  = Attributs supplémentaires (Paiements)
+ExtraFieldsReceipt = Attributs supplémentaires (Quittances)
+ExtraFieldsRent =  = Attributs supplémentaires (Locations)
 
 #
 # Page À propos
