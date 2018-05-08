@@ -84,7 +84,7 @@ print load_fiche_titre($langs->trans("ImmobilierSetup"),$linkback,'title_setup')
 
 $head = immobilierAdminPrepareHead();
 
-dol_fiche_head($head, 'attributes', $langs->trans("Module113050Name"), 0, 'building@immobilier');
+dol_fiche_head($head, 'attributes_payment', $langs->trans("ModuleImmobilierName"), 0, 'building@immobilier');
 
 require DOL_DOCUMENT_ROOT.'/core/tpl/admin_extrafields_view.tpl.php';
 

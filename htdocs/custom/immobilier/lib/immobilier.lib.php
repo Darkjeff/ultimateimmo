@@ -42,32 +42,32 @@ function immobilierAdminPrepareHead()
 	
 	$head[$h][0] = dol_buildpath("/immobilier/admin/property_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsProperty");
-    $head[$h][2] = 'attributes';
+    $head[$h][2] = 'attributes_property';
     $h++;
 	
 	$head[$h][0] = dol_buildpath("/immobilier/admin/renter_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsRenter");
-    $head[$h][2] = 'attributes';
+    $head[$h][2] = 'attributes_renter';
     $h++;
 	
 	$head[$h][0] = dol_buildpath("/immobilier/admin/owner_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsOwner");
-    $head[$h][2] = 'attributes';
+    $head[$h][2] = 'attributes_owner';
     $h++;
 	
 	$head[$h][0] = dol_buildpath("/immobilier/admin/payment_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsPayment");
-    $head[$h][2] = 'attributes';
+    $head[$h][2] = 'attributes_payment';
     $h++;
 	
 	$head[$h][0] = dol_buildpath("/immobilier/admin/receipt_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsReceipt");
-    $head[$h][2] = 'attributes';
+    $head[$h][2] = 'attributes_receipt';
     $h++;
 	
 	$head[$h][0] = dol_buildpath("/immobilier/admin/rent_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsRent");
-    $head[$h][2] = 'attributes';
+    $head[$h][2] = 'attributes_rent';
     $h++;
 	
 	$head[$h][0] = dol_buildpath("/immobilier/admin/about.php", 1);
