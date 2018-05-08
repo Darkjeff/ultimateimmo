@@ -22,19 +22,6 @@
  *		\brief      Page to create/edit/view immoproperty
  */
 
-//if (! defined('NOREQUIREUSER'))          define('NOREQUIREUSER','1');
-//if (! defined('NOREQUIREDB'))            define('NOREQUIREDB','1');
-//if (! defined('NOREQUIRESOC'))           define('NOREQUIRESOC','1');
-//if (! defined('NOREQUIRETRAN'))          define('NOREQUIRETRAN','1');
-//if (! defined('NOSCANGETFORINJECTION'))  define('NOSCANGETFORINJECTION','1');			// Do not check anti CSRF attack test
-//if (! defined('NOSCANPOSTFORINJECTION')) define('NOSCANPOSTFORINJECTION','1');		// Do not check anti CSRF attack test
-//if (! defined('NOCSRFCHECK'))            define('NOCSRFCHECK','1');			// Do not check anti CSRF attack test done when option MAIN_SECURITY_CSRF_WITH_TOKEN is on.
-//if (! defined('NOSTYLECHECK'))           define('NOSTYLECHECK','1');			// Do not check style html tag into posted data
-//if (! defined('NOTOKENRENEWAL'))         define('NOTOKENRENEWAL','1');		// Do not check anti POST attack test
-//if (! defined('NOREQUIREMENU'))          define('NOREQUIREMENU','1');			// If there is no need to load and show top and left menu
-//if (! defined('NOREQUIREHTML'))          define('NOREQUIREHTML','1');			// If we don't need to load the html.form.class.php
-//if (! defined('NOREQUIREAJAX'))          define('NOREQUIREAJAX','1');         // Do not load ajax.lib.php library
-//if (! defined("NOLOGIN"))                define("NOLOGIN",'1');				// If this page is public (can be called outside logged session)
 
 // Load Dolibarr environment
 $res=0;
@@ -128,22 +115,36 @@ if (empty($reshook))
 	$trackid='immoproperty'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 	
-	/*if ( ($action == 'update' && ! GETPOST("cancel",'alpha'))
-	|| ($action == 'updateedit') )
+	if ($action == 'makebuilding') 
 	{
-		$tmparray=getCountry(GETPOST('country_id','int'),'all',$db,$langs,0);
-		if (! empty($tmparray['id']))
+		$error = 0;
+
+		$db->begin();
+
+		$result = $object->fetch($id);
+		$building = $object->label;
+
+		// todo debug insert into
+		$sql1 = 'INSERT INTO '.MAIN_DB_PREFIX.'immobilier_immobuilding(';
+		$sql1 .= 'name,';
+		$sql1 .= 'fk_property';
+		$sql1 .= ') VALUES (';
+		$sql1 .= ' '.(! isset($object->label)?'NULL':"'".$db->escape($object->label)."'").',';
+		$sql1 .= ''.$id;
+		$sql1 .= ')';
+		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
+		$resql1 = $db->query($sql1);
+		if (! $resql1) 
 		{
-			$mysoc->country_id   =$tmparray['id'];
-			$mysoc->country_code =$tmparray['code'];
-			$mysoc->country_label=$tmparray['label'];
-
-			$s=$mysoc->country_id.':'.$mysoc->country_code.':'.$mysoc->country_label;
-			dolibarr_set_const($db, "MAIN_INFO_SOCIETE_COUNTRY", $s,'chaine',0,'',$conf->entity);
-
-			activateModulesRequiredByCountry($mysoc->country_code);
+			$error ++;
+			setEventMessages($db->lasterror(), null, 'errors');
+		} 
+		else 
+		{
+			$db->commit();
+			setEventMessages($db->lasterror(), null, 'errors');
 		}
-	}*/
+	}
 }
 
 
@@ -527,19 +528,19 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
     		}
 
-    		/*
-    		if ($user->rights->immobilier->create)
+    		
+    		if ($user->rights->immobilier->write)
     		{
     			if ($object->status == 1)
     		 	{
-    		 		print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=disable">'.$langs->trans("Disable").'</a>'."\n";
+    		 		print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=makebuilding&id='.$id.'">'.$langs->trans("BienPrincipal").'</a>'."\n";
     		 	}
     		 	else
     		 	{
-    		 		print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=enable">'.$langs->trans("Enable").'</a>'."\n";
+    		 		print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('BienPrincipal').'</a>'."\n";
     		 	}
     		}
-    		*/
+    		
 
     		if ($user->rights->immobilier->delete)
     		{
