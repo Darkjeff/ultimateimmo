@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Copyright (C) 2012-2013 Florian Henry <florian.henry@open-concept.pro>
  * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
@@ -157,13 +157,13 @@ class pdf_quittance extends ModelePDFImmobilier
 		// Definition of $dir and $file		
 		if ($object->specimen)
 		{
-			$dir = $conf->immobilier->dir_output."/receipt";
+			$dir = $conf->immobilier->dir_output;
 			$file = $dir . "/SPECIMEN.pdf";
 		}
 		else
 		{
 			$objectref = dol_sanitizeFileName($object->ref);
-			$dir = $conf->immobilier->dir_output . "/receipt/" . $objectref;
+			$dir = $conf->immobilier->dir_output . "/" . $objectref;
 			$file = $dir . "/" . $objectref . ".pdf";
 		}
 		
