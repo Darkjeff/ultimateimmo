@@ -218,7 +218,7 @@ print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
 // Configuration header
 $head = immobilierAdminPrepareHead();
 
-dol_fiche_head($head, 'settings', $langs->trans("ModuleImmobilierName"), 0, "building@immobilier");
+dol_fiche_head($head, 'settings', $langs->trans("ModuleImmobilierName"), -1, "building@immobilier");
 
 
 /*
