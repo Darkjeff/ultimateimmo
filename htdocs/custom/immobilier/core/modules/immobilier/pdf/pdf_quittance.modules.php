@@ -334,7 +334,7 @@ class pdf_quittance extends ModelePDFImmobilier
 				if (! empty($object->paiepartiel)) {
 					$montantpay = $object->paiepartiel;
 				}
-				$text = 'Reçu de ' . $renter->civilite . '' .$renter->prenom. ' '.$renter->nom. ' la somme de ' . price($montantpay) . '€' . "\n";
+				$text = 'Reçu de ' . $renter->civilite . '' .$renter->firstname. ' '.$renter->lastname. ' la somme de ' . price($montantpay) . '€' . "\n";
 				;
 
 				$dtpaiement = $paiement->date_paiement;

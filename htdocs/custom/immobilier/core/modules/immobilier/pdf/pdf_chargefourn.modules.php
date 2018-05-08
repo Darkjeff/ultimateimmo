@@ -213,8 +213,9 @@ class pdf_chargefourn extends ModelePDFImmobilier
 			$pdf->Open();
 			$pagenb = 0;
 			
-			$immoRent = new ImmoRent($this->db);
-			//var_dump($immoRent);
+			$immorent = new ImmoRent($this->db);
+			$result = $immorent->fetch($object->fk_rent);
+			//var_dump($immorent);
 			$pdf->SetTitle($outputlangs->convToOutputCharset($loyer->nom));
 			$pdf->SetSubject($outputlangs->transnoentities("ChargeFournisseur"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Immobilier module)');

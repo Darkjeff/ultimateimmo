@@ -88,6 +88,10 @@ class ImmoOwner extends CommonObject
 		'civility_id' => array('type'=>'integer', 'label'=>'Civility', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>1, 'arrayofkeyval'=>array('0'=>'MME', '1'=>'MLE', '2'=>'MR')),
 		'firstname' => array('type'=>'varchar(255)', 'label'=>'Firstname', 'visible'=>-1, 'enabled'=>1, 'position'=>55, 'notnull'=>1,),
 		'lastname' => array('type'=>'varchar(255)', 'label'=>'Lastname', 'visible'=>-1, 'enabled'=>1, 'position'=>60, 'notnull'=>1, 'searchall'=>1,),
+		'address' => array('type'=>'varchar(255)', 'label'=>'Address', 'enabled'=>1, 'visible'=>1, 'position'=>61, 'notnull'=>-1,),
+		'zip' => array('type'=>'varchar(32)', 'label'=>'Zip', 'enabled'=>1, 'visible'=>1, 'position'=>62, 'notnull'=>-1,),
+		'town' => array('type'=>'varchar(64)', 'label'=>'Town', 'enabled'=>1, 'visible'=>1, 'position'=>63, 'notnull'=>-1,),
+		'country_id' => array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>64, 'notnull'=>-1,),
 		'email' => array('type'=>'varchar(255)', 'label'=>'Email', 'visible'=>-1, 'enabled'=>1, 'position'=>65, 'notnull'=>1, 'searchall'=>1,),
 		'birth' => array('type'=>'date', 'label'=>'BirthDay', 'visible'=>-1, 'enabled'=>1, 'position'=>70, 'notnull'=>-1,),
 		'phone' => array('type'=>'varchar(30)', 'label'=>'Phone', 'visible'=>-1, 'enabled'=>1, 'position'=>75, 'notnull'=>-1,),
@@ -111,6 +115,10 @@ class ImmoOwner extends CommonObject
 	public $civility_id;
 	public $firstname;
 	public $lastname;
+	public $address;
+	public $zip;
+	public $town;
+	public $country_id;
 	public $email;
 	public $birth;
 	public $phone;
@@ -225,6 +233,63 @@ class ImmoOwner extends CommonObject
 	        $this->db->rollback();
 	        return -1;
 	    }
+	}
+	
+	/**
+	 * Load object in memory from the database
+	 *
+	 * @param	int    $id				Id object
+	 * @param	string $ref				Ref
+	 * @param	string	$morewhere		More SQL filters (' AND ...')
+	 * @return 	int         			<0 if KO, 0 if not found, >0 if OK
+	 */
+	public function fetchCommon($id, $ref = null, $morewhere = '')
+	{
+		if (empty($id) && empty($ref)) return false;
+		
+		global $langs;
+		
+		$array = preg_split("/[\s,]+/", $this->getFieldList());
+		$array[0] = 't.rowid';
+		$array = array_splice($array, 0, count($array), array($array[0]));
+		$array = implode(', t.', $array);
+
+		$sql = 'SELECT '.$array.',';
+		$sql.= ' c.rowid as country_id, c.code as country_code, c.label as country';
+		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country_id = c.rowid';
+
+		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
+		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
+		if ($morewhere) $sql.=$morewhere;
+		
+		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
+		$res = $this->db->query($sql);
+		if ($res)
+		{
+			$obj = $this->db->fetch_object($res);
+			if ($obj)
+			{
+				$this->country_id	= $obj->country_id;
+				$this->country_code	= $obj->country_code;
+				if ($langs->trans("Country".$obj->country_code) != "Country".$obj->country_code)
+					$this->country = $langs->transnoentitiesnoconv("Country".$obj->country_code);
+				else
+					$this->country=$obj->country;
+				$this->setVarsFromFetchObj($obj);
+				return $this->id;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			$this->error = $this->db->lasterror();
+			$this->errors[] = $this->error;
+			return -1;
+		}
 	}
 
 	/**
