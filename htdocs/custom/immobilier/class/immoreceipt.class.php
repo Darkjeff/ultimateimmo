@@ -92,7 +92,8 @@ class ImmoReceipt extends CommonObject
 		'balance' => array('type'=>'price', 'label'=>'Balance', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'paiepartiel' => array('type'=>'price', 'label'=>'PaiePartiel', 'enabled'=>1, 'visible'=>1, 'position'=>85, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'echeance' => array('type'=>'date', 'label'=>'Echeance', 'enabled'=>1, 'visible'=>1, 'position'=>90, 'notnull'=>-1, 'default'=>'null',),
-		'vat' => array('type'=>'integer', 'label'=>'Vat', 'enabled'=>1, 'visible'=>1, 'position'=>95, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes'),),
+		'vat_amount' => array('type'=>'price', 'label'=>'VatAmount', 'enabled'=>1, 'visible'=>1, 'position'=>95, 'notnull'=>-1,),
+		'vat_tx' => array('type'=>'integer', 'label'=>'VatTx', 'enabled'=>1, 'visible'=>1, 'position'=>96, 'notnull'=>-1,),
 		'paye' => array('type'=>'integer', 'label'=>'Paye', 'enabled'=>1, 'visible'=>-1, 'position'=>100, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes'),),
 		'date_rent' => array('type'=>'date', 'label'=>'DateRent', 'enabled'=>1, 'visible'=>-1, 'position'=>110, 'notnull'=>1,),
 		'date_start' => array('type'=>'date', 'label'=>'DateStart', 'enabled'=>1, 'visible'=>-1, 'position'=>120, 'notnull'=>1,),
@@ -121,7 +122,8 @@ class ImmoReceipt extends CommonObject
 	public $total_amount;
 	public $balance;
 	public $paiepartiel;
-	public $vat;
+	public $vat_amount;
+	public $vat_tx;
 	public $echeance;
 	public $paye;
 	public $date_rent;
