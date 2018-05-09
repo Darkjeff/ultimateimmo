@@ -161,7 +161,49 @@ if ($action == 'create')
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_add.tpl.php';
+	$object->fields = dol_sort_array($object->fields, 'position');
+	foreach($object->fields as $key => $val)
+	{
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+
+		print '<tr id="field_'.$key.'">';
+		print '<td';
+		print ' class="titlefieldcreate';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '"';
+		print '>';
+		print $langs->trans($val['label']);
+		print '</td>';
+		print '<td>';		
+		if ($val['label'] == 'Country') 
+		{			
+			// We set country_id, country_code and country for the selected country
+			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
+			if ($object->country_id)
+			{
+				$tmparray=$object->getCountry($object->country_id,'all');
+				$object->country_code=$tmparray['code'];
+				$object->country=$tmparray['label'];
+			}
+			// Country
+			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
+		}
+		else
+		{
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
+			
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
+			else $value = GETPOST($key, 'alpha');
+			print $object->showInputField($val, $key, $value, '', '', '', 0);
+		}
+		print '</td>';
+		print '</tr>';
+		
+	}
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
@@ -195,7 +237,46 @@ if (($id || $ref) && $action == 'edit')
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_edit.tpl.php';
+	$object->fields = dol_sort_array($object->fields, 'position');
+
+	foreach($object->fields as $key => $val)
+	{
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+
+		print '<tr><td';
+		print ' class="titlefieldcreate';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '"';
+		print '>'.$langs->trans($val['label']).'</td>';
+		print '<td>';
+		if ($val['label'] == 'Country') 
+		{			
+			// We set country_id, country_code and country for the selected country
+			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
+			if ($object->country_id)
+			{
+				$tmparray=$object->getCountry($object->country_id,'all');
+				$object->country_code=$tmparray['code'];
+				$object->country=$tmparray['label'];
+			}
+			// Country
+			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
+		}
+		else
+		{
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key,'none'):$object->$key;
+			else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
+		//var_dump($val.' '.$key.' '.$value);
+		print $object->showInputField($val, $key, $value, '', '', '', 0);
+		}
+		print '</td>';
+		print '</tr>';
+	}
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
@@ -311,7 +392,79 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Common attributes
 	$keyforbreak='note_private';
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
+	foreach($object->fields as $key => $val)
+	{
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
+
+		$value=$object->$key;
+
+		print '<tr><td';
+		print ' class="titlefield';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '"';
+		print '>'.$langs->trans($val['label']).'</td>';
+		print '<td>';		
+		print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		//print dol_escape_htmltag($object->$key, 1, 1);
+		print '</td>';
+		print '</tr>';
+
+		if (! empty($keyforbreak) && $key == $keyforbreak) break;						// key used for break on second column
+	}
+	print '</table>';
+	print '</div>';
+	print '<div class="fichehalfright">';
+	print '<div class="ficheaddleft">';
+	print '<div class="underbanner clearboth"></div>';
+	print '<table class="border centpercent">';
+
+	$alreadyoutput = 1;
+	foreach($object->fields as $key => $val)
+	{
+		if ($alreadyoutput)
+		{
+			if (! empty($keyforbreak) && $key == $keyforbreak) $alreadyoutput = 0;		// key used for break on second column
+			continue;
+		}
+
+		if (abs($val['visible']) != 1) continue;	// Discard such field from form
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
+
+		$value=$object->$key;
+		if ($object->country_id)
+		{
+			include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+			$tmparray=getCountry($object->country_id,'all');
+			$object->country_code=$tmparray['code'];
+			$object->country=$tmparray['label'];
+		}
+
+		print '<tr><td';
+		print ' class="titlefield';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['label'] == 'Country') 
+		{ 
+			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
+			print $object->country;
+		}
+		else
+		{
+			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+			print '"';
+			print '>'.$langs->trans($val['label']).'</td>';
+			print '<td>';
+			print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		}
+		//print dol_escape_htmltag($object->$key, 1, 1);
+		print '</td>';
+		print '</tr>';
+	}
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
