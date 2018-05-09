@@ -345,8 +345,71 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<table class="border centpercent">'."\n";
 
 		// Common attributes
-		$keyforbreak='note_private';
+		$keyforbreak='date_end';
 		include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
+		// List of payments
+			$sql = "SELECT p.rowid, p.fk_receipt, date_payment as dp, p.amount, p.fk_typepayment, pp.libelle as typepayment_label, il.total_amount ";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as p";
+			$sql .= ", " . MAIN_DB_PREFIX . "immobilier_immoreceipt as il ";
+			$sql .= ", " . MAIN_DB_PREFIX . "c_paiement as pp";
+			$sql .= " WHERE p.fk_receipt = " . $id;
+			$sql .= " AND p.fk_receipt = il.rowid";
+			$sql .= " AND p.fk_typepayment = pp.id";
+			$sql .= " ORDER BY dp DESC";
+			
+			$resql = $db->query($sql);
+			if ($resql) {
+				$num = $db->num_rows($resql);
+				$i = 0;
+				$total = 0;
+				print '<table class="nobordernopadding" width="100%">';
+				;
+				print '<tr class="liste_titre">';
+				print '<td>'.$langs->trans("RefPayment").'</td>';
+				print '<td>'.$langs->trans("Date").'</td>';
+				print '<td>'.$langs->trans("Type").'</td>';
+				print '<td align="right">'.$langs->trans("Amount").'</td>';
+				if ($user->admin) print '<td>&nbsp;</td>';
+				print '</tr>';
+				
+				while ( $i < $num ) 
+				{
+					$objp = $db->fetch_object($resql);
+
+					print '<tr class="oddeven"><td>';
+					print '<a href="'.dol_buildpath('/immobilier/payment/immopayment_card.php',1).'?action=update&amp;id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
+					print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
+					print '<td>'.$objp->typepayment_label.'</td>';
+					print '<td align="right">' . price($objp->amount)."&nbsp;".$langs->trans("Currency".$conf->currency)."</td>\n";
+					
+					print '<td align="right">';
+					if ($user->admin) {
+						print '<a href="'.dol_buildpath('/immobilier/payment/immopayment_card.php',1).'?id='.$objp->rowid. "&amp;action=delete&amp;receipt=".$id.'">';
+						print img_delete();
+						print '</a>';
+					}
+					print '</td>';
+					print '</tr>';
+					$totalpaye += $objp->amount;
+					$i ++;
+				}
+				
+				if ($object->paye == 0) 
+				{
+					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\"><b>" . price($totalpaye) . "</b></td></tr>\n";
+					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($object->total_amount) . "</td></tr>\n";
+					
+					$remaintopay = $object->total_amount - $totalpaye;
+					
+					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("RemainderToPay") . " :</td>";
+					print '<td align="right"'.($remaintopay?' class="amountremaintopay"':'').'>'.price($remaintopay)."</td></tr>\n";
+				}
+				print "</table>";
+				$db->free($resql);
+			} else {
+				dol_print_error($db);
+			}
+
 
 		// Other attributes
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
