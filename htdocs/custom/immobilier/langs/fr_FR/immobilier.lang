@@ -57,10 +57,11 @@ MenuNewImmoPropertyType = Nouveau type
 MyWidget = Mon widget
 MyWidgetDescription = Description de mon widget
 
-ImmoRenter = Locataire
 BirthDay = Date de Naissance
 ImmoProperty = Bien immobilier
+Property = Bien immobilier
 ImmoProperties = Biens immobiliers
+PropertyType = Type de bien immobilier
 Building = Immeuble
 Staircase = Escalier
 NumFloor = Etage
@@ -72,8 +73,17 @@ DateBuilt = Date de construction
 Target = Cible
 ImmoOwner = Propriétaire
 Civility = Titre
+Deposit = Dépôt de garantie
+ListOfRents = Liste des locations
+ImmoRenter = Locataire
+Renter = Locataire
+RentAmount = Montant du loyer
+ChargesAmount = Montant des charges
+TotalAmount = Montant total
+Encours = Encours
 
-PropertyType = Type de bien immobilier
+
+
 
 
 

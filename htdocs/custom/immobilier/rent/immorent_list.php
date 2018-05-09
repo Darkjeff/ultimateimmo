@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018      Philippe GRAND       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 dol_include_once('/immobilier/class/immorent.class.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","other"));
+$langs->loadLangs(array("immobilier@immobilier","companies","other"));
 
 $action     = GETPOST('action','alpha')?GETPOST('action','alpha'):'view';				// The action 'add', 'create', 'edit', 'update', 'view', ...
 $massaction = GETPOST('massaction','alpha');											// The bulk action (combo box choice into lists)
@@ -196,7 +196,7 @@ $now=dol_now();
 
 //$help_url="EN:Module_ImmoRent|FR:Module_ImmoRent_FR|ES:Módulo_ImmoRent";
 $help_url='';
-$title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoRents"));
+$title = $langs->trans("ListOfRents");
 
 
 // Build and execute select

@@ -1,6 +1,6 @@
 <?php
-/* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+/* Copyright (C) 2017 Laurent Destailleur <eldy@users.sourceforge.net>
+ * Copyright (C) 2018 Philippe GRAND      <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ class ImmoRent extends CommonObject
 		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),		
 		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'immobilier_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'vat' => array('type'=>'integer', 'label'=>'Vat', 'visible'=>-1, 'enabled'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
+		'vat' => array('type'=>'integer', 'label'=>'VAT', 'visible'=>-1, 'enabled'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>55, 'notnull'=>-1,),
 		'rentamount' => array('type'=>'price', 'label'=>'RentAmount', 'visible'=>1, 'enabled'=>1, 'position'=>60, 'notnull'=>-1, 'isameasure'=>1,),
@@ -161,8 +161,6 @@ class ImmoRent extends CommonObject
 	 * @var ImmoRentLine[]     Array of subtable lines
 	 */
 	//public $lines = array();
-
-
 
 	/**
 	 * Constructor
@@ -239,7 +237,7 @@ class ImmoRent extends CommonObject
 	        return -1;
 	    }
 	}
-	
+
 	/**
 	 * Function to concat keys of fields
 	 *
@@ -250,7 +248,7 @@ class ImmoRent extends CommonObject
 	    $keys = array_keys($this->fields);
 	    return implode(',', $keys);
 	}
-	
+
 	/**
 	 * Function to load data into current object this
 	 *
@@ -304,14 +302,13 @@ class ImmoRent extends CommonObject
 	public function fetchCommon($id, $ref = null)
 	{
 		if (empty($id) && empty($ref)) return false;
-		
+
 		$array = preg_split("/[\s,]+/", $this->get_field_list());
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), $array[0]);
 		$array = implode(', t.', $array);
 
-		
-		$sql = 'SELECT '.$array.',';		
+		$sql = 'SELECT '.$array.',';
 		$sql.= ' lc.lastname as nomlocataire,';
 		$sql.= ' lc.firstname as firstname_renter,';
 		$sql.= ' ll.label as nomlocal';	
