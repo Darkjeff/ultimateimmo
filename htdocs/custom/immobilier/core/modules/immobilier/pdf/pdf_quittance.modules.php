@@ -363,19 +363,19 @@ class pdf_quittance extends ModelePDFImmobilier
 				$text .= '<tr>';
 				$text .= '<td colspan="2">';
 
-				$text .= ' - Loyer nu : ' . price($object->rent) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
+				$text .= ' - Loyer nu : ' . price($object->rentamount) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
 				if ($object->vat > 0) {
 				$text .= ' - TVA : ' . price($object->vat) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
 				} 
-				$text .= ' - Charges / Provisions de Charges : ' . price($object->charges) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
-				$text .= ' - Montant total du terme : ' . price($object->amount_total) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
+				$text .= ' - Charges / Provisions de Charges : ' . price($object->chargesamount) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
+				$text .= ' - Montant total du terme : ' . price($object->total_amount) . ' ' . $langs->trans("Currency" . $conf->currency) . "<BR>";
 				$text .= '</td>';
 				$text .= '</tr>';
 				
-				$sql = "SELECT p.rowid, p.fk_receipt, date_payment as dp, p.amount, p.comment as type, il.amount_total ";
-				$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as p";
-				$sql .= ", " . MAIN_DB_PREFIX . "immobilier_immoreceipt as il ";
-				$sql .= " WHERE p.fk_receipt = " . $object->id;
+				$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.amount, p.note_public as type, il.total_amount ";
+				$sql .= " FROM " .MAIN_DB_PREFIX."immobilier_immopayment as p";
+				$sql .= ", " .MAIN_DB_PREFIX."immobilier_immoreceipt as il ";
+				$sql .= " WHERE p.fk_receipt = ".$object->id;
 				$sql .= " AND p.fk_receipt = il.rowid";
 				$sql .= " ORDER BY dp DESC";
 				
@@ -391,7 +391,7 @@ class pdf_quittance extends ModelePDFImmobilier
 					//$text .= '<td align="left">' . $langs->trans("Commentaire") . '</td>';
 					$text .= '<td align="right">' . $langs->trans("Amount") . '</td>';
 					$text .= "</tr>";
-					$var = True;
+					
 					while ( $i < $num ) {
 						$objp = $this->db->fetch_object($resql);
 						
@@ -405,11 +405,12 @@ class pdf_quittance extends ModelePDFImmobilier
 						$i ++;
 					}
 					
-					if ($object->paye == 0) {
+					if ($object->paye == 0) 
+					{
 						$text .= "<br><tr><td align=\"left\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\">" . price($totalpaye) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
-						$text .= "<tr><td align=\"left\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($object->amount_total) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
+						$text .= "<tr><td align=\"left\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($object->total_amount) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
 						
-						$resteapayer = $object->amount_total - $totalpaye;
+						$resteapayer = $object->total_amount - $totalpaye;
 						
 						$text .= "<tr><td align=\"left\">" . $langs->trans("RemainderToPay") . " :</td>";
 						$text .= "<td align=\"right\">" . price($resteapayer, 2) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
@@ -422,16 +423,17 @@ class pdf_quittance extends ModelePDFImmobilier
 				$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1, 1);
 				
 				// Tableau Loyer et solde
-				$sql = "SELECT il.name, il.balance";
-				$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt as il ";
+				$sql = "SELECT il.label, il.balance";
+				$sql .= " FROM " .MAIN_DB_PREFIX."immobilier_immoreceipt as il";
 				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<'" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
 				$sql .= " ORDER BY echeance ASC";
 				
-				dol_syslog(get_class($this) . ':: loyerAntierieur sql=' . $sql, LOG_DEBUG);
+				dol_syslog(get_class($this) . ':: loyerAnterieur sql=' . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				
-				if ($resql) {
+				if ($resql) 
+				{
 					$num = $this->db->num_rows($resql);
 					
 					if ($num > 0) {
@@ -453,16 +455,16 @@ class pdf_quittance extends ModelePDFImmobilier
 						$text = '<table>';
 						
 						// print $sql;
-						dol_syslog(get_class($this) . ':: loyerAntierieur sql=' . $sql, LOG_DEBUG);
+						dol_syslog(get_class($this) . ':: loyerAnterieur sql=' . $sql, LOG_DEBUG);
 						$resql = $this->db->query($sql);
 						
 						$i = 0;
 						$total = 0;
-						$var = True;
-						while ( $i < $num ) {
+						while ( $i < $num ) 
+						{
 							$objp = $this->db->fetch_object($resql);
 							
-							$text .= '<tr>';
+							$text .= '<tr class="oddeven">';
 							$text .= '<td>' . $objp->name . "</td>";
 							$text .= "<td align=\"right\">" . price($objp->balance) . ' ' . $langs->trans("Currency" . $conf->currency) . "</td>";
 							$text .= "</tr>";
@@ -485,9 +487,9 @@ class pdf_quittance extends ModelePDFImmobilier
 				
 				// Tableau total somme due
 				$sql = "SELECT SUM(il.balance) as total";
-				$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt as il ";
+				$sql .= " FROM " .MAIN_DB_PREFIX."immobilier_immoreceipt as il";
 				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<='" . $this->db->idate($object->date_start) . "'";
-				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
+				$sql .= " AND fk_property=".$object->fk_property." AND fk_renter=".$object->fk_renter;
 				$sql .= " GROUP BY fk_property,fk_renter";
 				
 				// print $sql;
@@ -511,7 +513,7 @@ class pdf_quittance extends ModelePDFImmobilier
 						if ($objp->total > 0) {
 							$title = 'Total somme due';
 						} else {
-							$title = 'Total somme à rembouser';
+							$title = 'Total somme à rembourser';
 						}
 						
 						$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($title), 1, 'C');
