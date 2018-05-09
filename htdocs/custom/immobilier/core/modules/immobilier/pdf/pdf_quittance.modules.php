@@ -347,14 +347,14 @@ class pdf_quittance extends ModelePDFImmobilier
 				}
 				$text .= 'le ' . dol_print_date($dtpaiement, 'daytext') . ' pour loyer et accessoires des locaux sis à : ' . $property->address . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
 
-				/*
+				
 				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 1, 'L');
 
 				$posY = $pdf->getY();
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetXY($posX, $posY);
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Détail'), 1, 'C');
-				*/
+				
 
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
@@ -376,10 +376,9 @@ class pdf_quittance extends ModelePDFImmobilier
 				$sql .= " FROM " .MAIN_DB_PREFIX."immobilier_immopayment as p";
 				$sql .= ", " .MAIN_DB_PREFIX."immobilier_immoreceipt as il ";
 				$sql .= " WHERE p.fk_receipt = ".$object->id;
-				$sql .= " AND p.fk_receipt = il.rowid";
 				$sql .= " ORDER BY dp DESC";
 				
-				// print $sql;
+				//print $sql;
 				dol_syslog(get_class($this) . ':: Paiement', LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
