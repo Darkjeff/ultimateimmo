@@ -570,7 +570,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 		$genallowed = $user->rights->immobilier->read;	// If you can read, you can build the PDF to read content
 		$delallowed = $user->rights->immobilier->write;	// If you can create/edit, you can remove a file on card
-		print $formfile->showdocuments('immobilier', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
+		print $formfile->showdocuments('immobilier', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
 
 		// Show links to link elements
 		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoproperty'));
