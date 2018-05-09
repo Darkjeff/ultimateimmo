@@ -29,9 +29,10 @@ dol_include_once('/immobilier/class/immoproperty.class.php');
 dol_include_once('/immobilier/class/immorent.class.php');
 dol_include_once('/immobilier/class/immoowner.class.php');
 dol_include_once('/immobilier/class/immopayment.class.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
+require_once (DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+require_once (DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
+require_once (DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
+require_once (DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
 
 class pdf_quittance extends ModelePDFImmobilier 
 {
@@ -103,10 +104,7 @@ class pdf_quittance extends ModelePDFImmobilier
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = $formatarray['width'];
 		$this->page_hauteur = $formatarray['height'];
-		$this->format = array (
-				$this->page_largeur,
-				$this->page_hauteur 
-		);
+		$this->format = array($this->page_largeur,$this->page_hauteur);
 		$this->marge_gauche=isset($conf->global->MAIN_PDF_MARGIN_LEFT)?$conf->global->MAIN_PDF_MARGIN_LEFT:10;
 		$this->marge_droite=isset($conf->global->MAIN_PDF_MARGIN_RIGHT)?$conf->global->MAIN_PDF_MARGIN_RIGHT:10;
 		$this->marge_haute =isset($conf->global->MAIN_PDF_MARGIN_TOP)?$conf->global->MAIN_PDF_MARGIN_TOP:10;
@@ -258,7 +256,13 @@ class pdf_quittance extends ModelePDFImmobilier
 				$this->str = $owner->getFullName($outputlangs) . "\n";
 				$this->str .= $owner->address . "\n";
 				$this->str .= $owner->zip . ' ' . $owner->town;
-				$this->str .= ' - ' . $owner->country . "\n\n";
+				if ($owner->country_id)
+				{
+					$tmparray=$owner->getCountry($owner->country_id,'all');
+					$owner->country_code=$tmparray['code'];
+					$owner->country=$tmparray['label'];
+				}
+				$this->str .= ' - '.$owner->country."\n\n";
 				if ($owner->phone) {
 					$this->str .= $outputlangs->transnoentities('Téléphone') . ' ' . $owner->phone . "\n";
 				}

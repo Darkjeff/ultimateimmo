@@ -551,7 +551,73 @@ class ImmoOwner extends CommonObject
 
 		return 0;
 	}
+	
+	/**
+	 *    Return country label, code or id from an id, code or label
+	 *
+	 *    @param      int		$searchkey      Id or code of country to search
+	 *    @param      string	$withcode   	'0'=Return label,
+	 *    										'1'=Return code + label,
+	 *    										'2'=Return code from id,
+	 *    										'3'=Return id from code,
+	 * 	   										'all'=Return array('id'=>,'code'=>,'label'=>)
+	 *    @param      DoliDB	$dbtouse       	Database handler (using in global way may fail because of conflicts with some autoload features)
+	 *    @param      Translate	$outputlangs	Langs object for output translation
+	 *    @param      int		$entconv       	0=Return value without entities and not converted to output charset, 1=Ready for html output
+	 *    @param      int		$searchlabel    Label of country to search (warning: searching on label is not reliable)
+	 *    @return     mixed       				String with country code or translated country name or Array('id','code','label')
+	 */
+	function getCountry($searchkey, $withcode='', $dbtouse=0, $outputlangs='', $entconv=1, $searchlabel='')
+	{
+		global $db,$langs;
+
+		$result='';
+
+		// Check parameters
+		if (empty($searchkey) && empty($searchlabel))
+		{
+			if ($withcode === 'all') return array('id'=>'','code'=>'','label'=>'');
+			else return '';
+		}
+		if (! is_object($dbtouse)) $dbtouse=$db;
+		if (! is_object($outputlangs)) $outputlangs=$langs;
+
+		$sql = "SELECT rowid, code, label FROM ".MAIN_DB_PREFIX."c_country";
+		if (is_numeric($searchkey)) $sql.= " WHERE rowid=".$searchkey;
+		elseif (! empty($searchkey)) $sql.= " WHERE code='".$db->escape($searchkey)."'";
+		else $sql.= " WHERE label='".$db->escape($searchlabel)."'";
+
+		$resql=$dbtouse->query($sql);
+		if ($resql)
+		{
+			$obj = $dbtouse->fetch_object($resql);
+			if ($obj)
+			{
+				$label=((! empty($obj->label) && $obj->label!='-')?$obj->label:'');
+				if (is_object($outputlangs))
+				{
+					$outputlangs->load("dict");
+					if ($entconv) $label=($obj->code && ($outputlangs->trans("Country".$obj->code)!="Country".$obj->code))?$outputlangs->trans("Country".$obj->code):$label;
+					else $label=($obj->code && ($outputlangs->transnoentitiesnoconv("Country".$obj->code)!="Country".$obj->code))?$outputlangs->transnoentitiesnoconv("Country".$obj->code):$label;
+				}
+				if ($withcode == 1) $result=$label?"$obj->code - $label":"$obj->code";
+				else if ($withcode == 2) $result=$obj->code;
+				else if ($withcode == 3) $result=$obj->rowid;
+				else if ($withcode === 'all') $result=array('id'=>$obj->rowid,'code'=>$obj->code,'label'=>$label);
+				else $result=$label;
+			}
+			else
+			{
+				$result='NotDefined';
+			}
+			$dbtouse->free($resql);
+			return $result;
+		}
+		else dol_print_error($dbtouse,'');
+		return 'Error';
+	}
 }
+
 
 /**
  * Class ImmoOwnerLine. You can also remove this and generate a CRUD class for lines objects.
