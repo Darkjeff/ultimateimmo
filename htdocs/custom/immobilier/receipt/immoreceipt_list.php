@@ -61,7 +61,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 dol_include_once('/immobilier/class/immoreceipt.class.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","other"));
+$langs->loadLangs(array("immobilier@immobilier","companies","other"));
 
 $action     = GETPOST('action','alpha')?GETPOST('action','alpha'):'view';				// The action 'add', 'create', 'edit', 'update', 'view', ...
 $massaction = GETPOST('massaction','alpha');											// The bulk action (combo box choice into lists)

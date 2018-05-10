@@ -482,7 +482,7 @@ class modImmobilier extends DolibarrModules
 		// Add here entries to declare new menus
 
 		/* BEGIN MODULEBUILDER TOPMENU */
-								
+
 		$this->menu[$r++]=array('fk_menu'=>'',							// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'top',							// This is a Top menu entry
 								'titre'=>'Properties',
@@ -495,7 +495,7 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-								
+
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=properties',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
@@ -514,7 +514,7 @@ class modImmobilier extends DolibarrModules
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'MenuNewImmoProperty',
 								'mainmenu'=>'properties',
-								'leftmenu'=>'immobilier_immoproperty',
+								'leftmenu'=>'immobilier_immoproperty_new',
 								'url'=>'/immobilier/property/immoproperty_card.php?action=create',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1100+$r,
@@ -522,13 +522,12 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-								
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=properties,fk_leftmenu=immobilier_immoproperty',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'MenuListImmoProperty',
 								'mainmenu'=>'properties',
-								'leftmenu'=>'immobilier_immoproperty',
+								'leftmenu'=>'immobilier_immoproperty_list',
 								'url'=>'/immobilier/property/immoproperty_list.php?action=building',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1100+$r,
@@ -536,7 +535,7 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-								
+
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=properties',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
@@ -550,13 +549,12 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-								
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=properties,fk_leftmenu=immobilier_immoproperty_type',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'MenuNewImmoPropertyType',
 								'mainmenu'=>'properties',
-								'leftmenu'=>'immobilier_immoproperty_type',
+								'leftmenu'=>'immobilier_immoproperty_type_new',
 								'url'=>'/immobilier/property/immoproperty_type_card.php?action=create',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1100+$r,
@@ -564,7 +562,20 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-								
+		$this->menu[$r++]=array(
+								'fk_menu'=>'fk_mainmenu=properties,fk_leftmenu=immobilier_immoproperty_type',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+								'type'=>'left',							// This is a Left menu entry
+								'titre'=>'MenuListImmoPropertyType',
+								'mainmenu'=>'properties',
+								'leftmenu'=>'immobilier_immoproperty_type_list',
+								'url'=>'/immobilier/property/immoproperty_type_list.php',
+								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+								'position'=>1100+$r,
+								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
+								'target'=>'',
+								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
+
 		$this->menu[$r++]=array(
 								'fk_menu'=>'',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'top',							// This is a Left menu entry
@@ -578,11 +589,11 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-								
+
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immorents',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'List ImmoRent',
+								'titre'=>'MenuImmoRent',
 								'mainmenu'=>'immorents',
 								'leftmenu'=>'immobilier_immorent',
 								'url'=>'/immobilier/rent/immorent_list.php',
@@ -592,13 +603,12 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-								
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immorents,fk_leftmenu=immobilier_immorent',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'New ImmoRent',
+								'titre'=>'MenuNewImmoRent',
 								'mainmenu'=>'immorents',
-								'leftmenu'=>'immobilier_immorent',
+								'leftmenu'=>'immobilier_immorent_new',
 								'url'=>'/immobilier/rent/immorent_card.php?action=create',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1200+$r,
@@ -606,11 +616,24 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-								
+		$this->menu[$r++]=array(
+								'fk_menu'=>'fk_mainmenu=immorents,fk_leftmenu=immobilier_immorent',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+								'type'=>'left',							// This is a Left menu entry
+								'titre'=>'MenuListImmoRent',
+								'mainmenu'=>'immorents',
+								'leftmenu'=>'immobilier_immorent_list',
+								'url'=>'/immobilier/rent/immorent_list.php',
+								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+								'position'=>1200+$r,
+								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
+								'target'=>'',
+								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
+
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immorents',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'List ImmoOwner',
+								'titre'=>'MenuImmoOwner',
 								'mainmenu'=>'immorents',
 								'leftmenu'=>'immobilier_immoowner',
 								'url'=>'/immobilier/owner/immoowner_list.php',
@@ -623,9 +646,9 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immorents,fk_leftmenu=immobilier_immoowner',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'New ImmoOwner',
+								'titre'=>'MenuNewImmoOwner',
 								'mainmenu'=>'immorents',
-								'leftmenu'=>'immobilier_immoowner',
+								'leftmenu'=>'immobilier_immoowner_new',
 								'url'=>'/immobilier/owner/immoowner_card.php?action=create',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1300+$r,
@@ -633,11 +656,24 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-								
+		$this->menu[$r++]=array(
+								'fk_menu'=>'fk_mainmenu=immorents,fk_leftmenu=immobilier_immoowner',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+								'type'=>'left',							// This is a Left menu entry
+								'titre'=>'MenuListImmoOwner',
+								'mainmenu'=>'immorents',
+								'leftmenu'=>'immobilier_immoowner_list',
+								'url'=>'/immobilier/owner/immoowner_list.php',
+								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+								'position'=>1300+$r,
+								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
+								'target'=>'',
+								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
+
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immorents',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'List ImmoOwner_Type',
+								'titre'=>'MenuImmoOwnerType',
 								'mainmenu'=>'immorents',
 								'leftmenu'=>'immobilier_immoowner_type',
 								'url'=>'/immobilier/owner_type/immoowner_type_list.php',
@@ -650,10 +686,23 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immorents,fk_leftmenu=immobilier_immoowner_type',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'New ImmoOwner_Type',
+								'titre'=>'MenuNewImmoOwnerType',
 								'mainmenu'=>'immorents',
-								'leftmenu'=>'immobilier_immoowner_type',
+								'leftmenu'=>'immobilier_immoowner_type_new',
 								'url'=>'/immobilier/owner_type/immoowner_type_card.php?action=create',
+								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+								'position'=>1300+$r,
+								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
+								'target'=>'',
+								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both 
+		$this->menu[$r++]=array(
+								'fk_menu'=>'fk_mainmenu=immorents,fk_leftmenu=immobilier_immoowner_type',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+								'type'=>'left',							// This is a Left menu entry
+								'titre'=>'MenuListImmoOwnerType',
+								'mainmenu'=>'immorents',
+								'leftmenu'=>'immobilier_immoowner_type_list',
+								'url'=>'/immobilier/owner_type/immoowner_type_list.php',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1300+$r,
 								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
@@ -664,7 +713,7 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immorents',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'List ImmoRenter',
+								'titre'=>'MenuImmoRenter',
 								'mainmenu'=>'immorents',
 								'leftmenu'=>'immobilier_immorenter',
 								'url'=>'/immobilier/renter/immorenter_list.php',
@@ -677,9 +726,9 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immorents,fk_leftmenu=immobilier_immorenter',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'New ImmoRenter',
+								'titre'=>'MenuNewImmoRenter',
 								'mainmenu'=>'immorents',
-								'leftmenu'=>'immobilier_immorenter',
+								'leftmenu'=>'immobilier_immorenter_new',
 								'url'=>'/immobilier/renter/immorenter_card.php?action=create',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1300+$r,
@@ -687,7 +736,20 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-		
+		$this->menu[$r++]=array(
+								'fk_menu'=>'fk_mainmenu=immorents,fk_leftmenu=immobilier_immorenter',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+								'type'=>'left',							// This is a Left menu entry
+								'titre'=>'MenuListImmoRenter',
+								'mainmenu'=>'immorents',
+								'leftmenu'=>'immobilier_immorenter_list',
+								'url'=>'/immobilier/renter/immorenter_list.php',
+								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+								'position'=>1300+$r,
+								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
+								'target'=>'',
+								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
+
 
 		/* END MODULEBUILDER TOPMENU */
 
@@ -717,8 +779,7 @@ class modImmobilier extends DolibarrModules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
 		*/
-										
-               		
+
 		$this->menu[$r++]=array(
 								'fk_menu'=>'',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'top',							// This is a Left menu entry
@@ -774,12 +835,11 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both 
-		
 
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immoreceipts',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'List ImmoPayment',
+								'titre'=>'MenuImmoPayment',
 								'mainmenu'=>'immoreceipts',
 								'leftmenu'=>'immobilier_immopayment',
 								'url'=>'/immobilier/payment/immopayment_list.php',
@@ -792,9 +852,9 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immoreceipts,fk_leftmenu=immobilier_immopayment',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'New ImmoPayment',
+								'titre'=>'MenuNewImmoPayment',
 								'mainmenu'=>'immoreceipts',
-								'leftmenu'=>'immobilier_immopayment',
+								'leftmenu'=>'immobilier_immopayment_new',
 								'url'=>'/immobilier/payment/immopayment_card.php?action=create',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1400+$r,
@@ -802,7 +862,20 @@ class modImmobilier extends DolibarrModules
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-								
+		$this->menu[$r++]=array(
+								'fk_menu'=>'fk_mainmenu=immoreceipts,fk_leftmenu=immobilier_immopayment',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+								'type'=>'left',							// This is a Left menu entry
+								'titre'=>'MenuListImmoPayment',
+								'mainmenu'=>'immoreceipts',
+								'leftmenu'=>'immobilier_immopayment_list',
+								'url'=>'/immobilier/payment/immopayment_list.php',
+								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+								'position'=>1400+$r,
+								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
+								'target'=>'',
+								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
+
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immoreceipts',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
@@ -821,7 +894,7 @@ class modImmobilier extends DolibarrModules
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'New ImmoCost',
 								'mainmenu'=>'immoreceipts',
-								'leftmenu'=>'immobilier_immocost',
+								'leftmenu'=>'immobilier_immocost_new_cost',
 								'url'=>'/immobilier/cost/immocost_card.php?action=create',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1400+$r,
@@ -835,7 +908,7 @@ class modImmobilier extends DolibarrModules
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'RenterCost',
 								'mainmenu'=>'immoreceipts',
-								'leftmenu'=>'immobilier_immocost',
+								'leftmenu'=>'immobilier_immocost_renter_cost',
 								'url'=>'/immobilier/cost/cost_renter.php',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1400+$r,
@@ -850,7 +923,7 @@ class modImmobilier extends DolibarrModules
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'StatisticsCost',
 								'mainmenu'=>'immoreceipts',
-								'leftmenu'=>'immobilier_immocost',
+								'leftmenu'=>'immobilier_immocost_stats_cost',
 								'url'=>'/immobilier/cost/stats.php?action=create',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1400+$r,
@@ -864,7 +937,7 @@ class modImmobilier extends DolibarrModules
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'StatisticsResult',
 								'mainmenu'=>'immoreceipts',
-								'leftmenu'=>'immobilier_immocost',
+								'leftmenu'=>'immobilier_immocost_stats_result',
 								'url'=>'/immobilier/result/result.php',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1400+$r,

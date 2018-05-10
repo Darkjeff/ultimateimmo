@@ -90,7 +90,7 @@ class ImmoProperty extends CommonObject
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
 		'datep' => array('type'=>'date', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1,),
 		'target' => array('type'=>'integer', 'label'=>'Target', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'Location', '1'=>'Vente', '-1'=>'Autre'), 'comment'=>"Rent or sale",),
-		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
+		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>50, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>55, 'notnull'=>-1,),

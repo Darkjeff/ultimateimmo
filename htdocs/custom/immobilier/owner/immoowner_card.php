@@ -43,7 +43,7 @@ dol_include_once('/immobilier/class/immoowner.class.php');
 dol_include_once('/immobilier/lib/immoowner.lib.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","other"));
+$langs->loadLangs(array("immobilier@immobilier","companies","other"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');

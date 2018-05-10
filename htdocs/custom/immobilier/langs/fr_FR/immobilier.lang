@@ -50,6 +50,22 @@ MenuNewImmoProperty = Nouveau bien
 MenuListImmoProperty = Liste
 MenuImmoPropertyType = Type de bien
 MenuNewImmoPropertyType = Nouveau type
+MenuListImmoPropertyType = Liste
+MenuImmoRent = Locations
+MenuNewImmoRent = Nouvelle location
+MenuListImmoRent = Liste
+MenuImmoOwner = Propriétaires
+MenuNewImmoOwner = Nouveau propriétaire
+MenuListImmoOwner = Liste
+MenuImmoOwnerType = Type de propriétaire
+MenuNewImmoOwnerType = Nouveau type
+MenuListImmoOwnerType = Liste
+MenuImmoRenter = Locataires
+MenuNewImmoRenter = Nouveau locataire
+MenuListImmoRenter = Liste
+MenuImmoPayment = Paiements
+MenuNewImmoPayment = Nouveau paiement
+MenuListImmoPayment = Liste
 
 #
 # Autres
