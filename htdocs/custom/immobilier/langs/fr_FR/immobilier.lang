@@ -52,16 +52,17 @@ MenuImmoPropertyType = Type de bien
 MenuNewImmoPropertyType = Nouveau type
 
 #
-# Box d'exemple
+# Autres
 #
-MyWidget = Mon widget
-MyWidgetDescription = Description de mon widget
-
 BirthDay = Date de Naissance
 ImmoProperty = Bien immobilier
 Property = Bien immobilier
 ImmoProperties = Biens immobiliers
+NewImmoPropertyType = Nouveau type de bien
 PropertyType = Type de bien immobilier
+PropertyTypeStatusDraft=Draft
+PropertyTypeStatusActive=Active
+PropertyTypeStatusCancel=Cancel
 Building = Immeuble
 Staircase = Escalier
 NumFloor = Etage
