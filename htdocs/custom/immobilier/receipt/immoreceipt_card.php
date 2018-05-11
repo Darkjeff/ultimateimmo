@@ -102,6 +102,17 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 
 if (empty($reshook))
 {
+	
+	/*
+	 * 	Classify paid
+	 */
+	if ($action == 'paid') 
+	{
+		$receipt = new Immoreceipt($db);
+		$receipt->fetch($id);
+		$result = $receipt->set_paid($user);
+		Header("Location: " .$_SERVER['PHP_SELF']."?id=".$id);
+	}
 	$error=0;
 
 	$permissiontoadd = $user->rights->immobilier->write;
@@ -113,6 +124,87 @@ if (empty($reshook))
 
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
+	
+	if ($action == 'addall') 
+	{		
+		$error=0;
+		$dateech = dol_mktime(12,0,0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
+		$dateperiod = dol_mktime(12,0,0, GETPOST("periodmonth"), GETPOST("periodday"), GETPOST("periodyear"));
+		$dateperiodend = dol_mktime(12,0,0, GETPOST("periodendmonth"), GETPOST("periodendday"), GETPOST("periodendyear"));
+		
+		if (empty($dateech)) 
+		{
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), null, 'errors');
+			$action = 'create';
+		} 
+		elseif (empty($dateperiod)) 
+		{
+			$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Period")) . '</div>';
+			$action = 'create';
+		}
+		elseif (empty($dateperiodend)) 
+		{
+			$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Periodend")) . '</div>';
+			$action = 'create';
+		} 
+		else 
+		{
+			
+			$mesLignesCochees = GETPOST('mesCasesCochees');
+			
+			foreach ( $mesLignesCochees as $maLigneCochee ) 
+			{				
+				$receipt = new Immoreceipt($db);
+				
+				$maLigneCourante = split("_", $maLigneCochee);
+				$monId = $maLigneCourante[0];
+				$monLocal = $maLigneCourante[1];
+				$monLocataire = $maLigneCourante[2];
+				$monMontant = $maLigneCourante[3];
+				$monLoyer = $maLigneCourante[4];
+				$monCharges = $maLigneCourante[5];
+				$monTVA = $maLigneCourante[7];
+				$monOwner = $maLigneCourante[6];
+				
+				// main info loyer
+				$receipt->label = GETPOST('label', 'alpha');
+				$receipt->echeance = $dateech;
+				$receipt->date_start = $dateperiod;
+				$receipt->date_end = $dateperiodend;
+				
+				// main info contrat
+				$receipt->fk_rent = $monId;
+				$receipt->fk_property = $monLocal;
+				$receipt->fk_renter = $monLocataire;
+				$receipt->fk_owner = $monOwner;
+				If ($monTVA == Oui) {
+				$receipt->total_amount = $monMontant * 1.2;
+				$receipt->vat = $monMontant * 0.2;}
+				Else {
+				$receipt->total_amount = $monMontant;}
+				
+				$receipt->rentamount = $monLoyer;
+				$receipt->chargesamount = $monCharges;
+				$receipt->status=0;
+				$receipt->paye=0;
+				
+				$result = $receipt->create($user);
+				if ($result < 0) 
+				{
+					$error++;
+					setEventMessages(null, $receipt->errors, 'errors');
+					$action='createall';
+				}
+			}
+		}
+		
+		if (empty($error)) 
+		{
+			setEventMessages($langs->trans("SocialContributionAdded"), null, 'mesgs');
+			Header("Location: " . dol_buildpath('/immobilier/receipt/immoreceipt_list.php',1));
+			exit();
+		}
+	}
 	
 	// Build doc
 	if ($action == 'builddoc' && $user->rights->immobilier->write)
@@ -182,24 +274,69 @@ if ($action == 'create')
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_add.tpl.php';
-	/*print "<tr>";
-	print '<td class="fieldrequired"><label for="rent">' . $langs->trans("Rent") . '</label></td><td>';
-	print '<input name="rent" id="rent" size="30" value="' . $object->label . '"</td>';
-	print '</td></tr>';
+	$object->fields = dol_sort_array($object->fields, 'position');
+	$year_current = strftime("%Y", dol_now());
+	$pastmonth = strftime("%m", dol_now());
+	$pastmonthyear = $year_current;
+	if ($pastmonth == 0) 
+	{
+		$pastmonth = 12;
+		$pastmonthyear --;
+	}
 	
-	print '<tr><td><label for="datev">' . $langs->trans("DateValue") . '</label></td><td>';
-	print $form->select_date((empty($datev) ? - 1 : $datev), "datev", '', '', '', 'add', 1, 1);
-	print '</td></tr>';
+	$datesp = dol_mktime(0, 0, 0, $datespmonth, $datespday, $datespyear);
+	$dateep = dol_mktime(23, 59, 59, $dateepmonth, $dateepday, $dateepyear);
 	
-	print "<tr>";
-	print '<td class="fieldrequired"><label for="datesp">' . $langs->trans("DateStartPeriod") . '</label></td><td>';
-	print $form->select_date($datesp, "datesp", '', '', '', 'add');
-	print '</td></tr>';
-	
-	print '<tr><td class="fieldrequired"><label for="dateep">' . $langs->trans("DateEndPeriod") . '</label></td><td>';
-	print $form->select_date($dateep, "dateep", '', '', '', 'add');
-	print '</td></tr>';*/
+	if (empty($datesp) || empty($dateep)) // We define date_start and date_end
+	{
+		$datesp = dol_get_first_day($pastmonthyear, $pastmonth, false);
+		$dateep = dol_get_last_day($pastmonthyear, $pastmonth, false);
+	}
+	foreach($object->fields as $key => $val)
+	{
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+
+		print '<tr id="field_'.$key.'">';
+		print '<td';
+		print ' class="titlefieldcreate';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '"';
+		print '>';
+		print $langs->trans($val['label']);
+		print '</td>';
+		print '<td>';
+		
+		if ($val['label'] == 'DateRent') 
+		{			
+			// DateRent
+			print $form->select_date((empty($datev) ? - 1 : $datev), "datev", '', '', '', 'add', 1, 1);	
+		}
+		elseif ($val['label'] == 'DateStart') 
+		{			
+			// date_start
+			print $form->select_date($datesp, "datesp", '', '', '', 'add');	
+		}
+		elseif ($val['label'] == 'DateEnd') 
+		{			
+			// date_end
+			print $form->select_date($dateep, "dateep", '', '', '', 'add');
+		}
+		else 
+		{
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
+			
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
+			else $value = GETPOST($key, 'alpha');
+			print $object->showInputField($val, $key, $value, '', '', '', 0);
+		}
+		print '</td>';
+		print '</tr>';
+		
+	}
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
@@ -216,37 +353,157 @@ if ($action == 'create')
 
 	print '</form>';
 }
-
-// Part to edit record
-if (($id || $ref) && $action == 'edit')
+elseif ($action == 'createall') 
 {
-	print load_fiche_titre($langs->trans("newrental", $langs->transnoentitiesnoconv("ImmoReceipt")));
-	
+	//llxheader('', $langs->trans("newrental"), '');
 	print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
-	print '<input type="hidden" name="action" value="update">';
-	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-	print '<input type="hidden" name="id" value="'.$object->id.'">';
+	print '<input type="hidden" name="action" value="addall">';
 	
-	dol_fiche_head();
+	print '<table class="border" width="100%">';
 	
-	print '<table class="border centpercent">'."\n";
-
-	// Common attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_edit.tpl.php';
-
-	// Other attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
-
+	print "<tr class=\"liste_titre\">";
+	
+	print '<td align="left">';
+	print $langs->trans("NomLoyer");
+	print '</td><td align="center">';
+	print $langs->trans("Echeance");
+	print '</td><td align="center">';
+	print $langs->trans("Periode_du");
+	print '</td><td align="center">';
+	print $langs->trans("Periode_au");
+	print '</td><td align="left">';
+	print '&nbsp;';
+	print '</td>';
+	print "</tr>\n";
+	
+	print '<tr class="oddeven" valign="top">';
+	
+	/*
+	 * Nom du loyer
+	 */
+	print '<td><input name="label" size="30" value="' . GETPOST('label') . '"</td>';
+	
+	// Due date
+	print '<td align="center">';
+	print $form->select_date(! empty($dateech) ? $dateech : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
+	print '</td>';
+	print '<td align="center">';
+	print $form->select_date(! empty($dateperiod) ? $dateperiod : '-1', 'period', 0, 0, 0, 'fiche_loyer', 1);
+	print '</td>';
+	print '<td align="center">';
+	print $form->select_date(! empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', 0, 0, 0, 'fiche_loyer', 1);
+	print '</td>';
+	
+	print '<td align="center"><input type="submit" class="button" value="' . $langs->trans("Add") . '"></td></tr>';
+	
 	print '</table>';
+	
+	/*
+	 * List agreement
+	 */
+	$sql = "SELECT c.rowid as reference, loc.lastname as nom, l.address  , l.label as local, loc.status as status, c.totalamount as total,";
+	$sql .= "c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner";
+	$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immorenter loc";
+	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorent as c";
+	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as l";
+	$sql .= " WHERE preavis = 0 AND loc.rowid = c.fk_renter and l.rowid = c.fk_property  ";
+	$resql = $db->query($sql);
+	if ($resql) 
+	{
+		$num = $db->num_rows($resql);
+		
+		$i = 0;
+		$total = 0;
+		
+		print '<br><table class="noborder" width="100%">';
+		print '<tr class="liste_titre">';
+		print '<td>' . $langs->trans('Contract') . '</td>';
+		print '<td>' . $langs->trans('Property') . '</td>';
+		print '<td>' . $langs->trans('Nomlocal') . '</td>';
+		print '<td>' . $langs->trans('Renter') . '</td>';
+		print '<td>' . $langs->trans('NameRenter') . '</td>';
+		print '<td align="right">' . $langs->trans('AmountTC') . '</td>';
+		print '<td align="right">' . $langs->trans('Rent') . '</td>';
+		print '<td align="right">' . $langs->trans('Charges') . '</td>';
+		print '<td align="right">' . $langs->trans('VATIsUsed') . '</td>';
+		print '<td align="right">' . $langs->trans('nameowner') . '</td>';
+		print '<td align="right">' . $langs->trans('Select') . '</td>';
+		print "</tr>\n";
+		
+		if ($num > 0) 
+		{				
+			while ( $i < $num ) 
+			{
+				$objp = $db->fetch_object($resql);
 
-	dol_fiche_end();
+				print '<tr class="oddeven">';					
+				print '<td>' . $objp->reference . '</td>';
+				print '<td>' . $objp->reflocal . '</td>';
+				print '<td>' . $objp->local . '</td>';
+				print '<td>' . $objp->reflocataire . '</td>';
+				print '<td>' . $objp->nom . '</td>';
+				
+				print '<td align="right">' . price($objp->total) . '</td>';
+				print '<td align="right">' . price($objp->rentamount) . '</td>';
+				print '<td align="right">' . price($objp->chargesamount) . '</td>';
+				print '<td align="right">' . yn($objp->vat) . '</td>';
+				print '<td align="right">' . $objp->fk_owner . '</td>';
+				
+				// Colonne choix contrat
+				print '<td align="center">';
+				
+				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->reference . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->fk_owner . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
+				print '</td>';
+				print '</tr>';
+				
+				$i ++;
+			}
+		}
+		
+		print "</table>\n";
+		$db->free($resql);
+	} 
 
-	print '<div class="center"><input type="submit" class="button" name="save" value="'.$langs->trans("Save").'">';
-	print ' &nbsp; <input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
-	print '</div>';
-
+	else 
+	{
+		dol_print_error($db);
+	}
 	print '</form>';
+}
+else
+{
+	// Part to edit record
+	if (($id || $ref) && $action == 'edit')
+	{
+		print load_fiche_titre($langs->trans("newrental", $langs->transnoentitiesnoconv("ImmoReceipt")));
+		
+		print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
+		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+		print '<input type="hidden" name="action" value="update">';
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+		print '<input type="hidden" name="id" value="'.$object->id.'">';
+		
+		dol_fiche_head();
+		
+		print '<table class="border centpercent">'."\n";
+
+		// Common attributes
+		include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_edit.tpl.php';
+
+		// Other attributes
+		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
+
+		print '</table>';
+
+		dol_fiche_end();
+
+		print '<div class="center"><input type="submit" class="button" name="save" value="'.$langs->trans("Save").'">';
+		print ' &nbsp; <input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
+		print '</div>';
+
+		print '</form>';
+	}
 }
 
 // Part to show record
