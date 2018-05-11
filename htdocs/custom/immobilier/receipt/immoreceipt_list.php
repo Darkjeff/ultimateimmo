@@ -22,24 +22,6 @@
  *		\brief      List page for immoreceipt
  */
 
-//if (! defined('NOREQUIREUSER'))          define('NOREQUIREUSER','1');
-//if (! defined('NOREQUIREDB'))            define('NOREQUIREDB','1');
-//if (! defined('NOREQUIRESOC'))           define('NOREQUIRESOC','1');
-//if (! defined('NOREQUIRETRAN'))          define('NOREQUIRETRAN','1');
-//if (! defined('NOSCANGETFORINJECTION'))  define('NOSCANGETFORINJECTION','1');			// Do not check anti CSRF attack test
-//if (! defined('NOSCANPOSTFORINJECTION')) define('NOSCANPOSTFORINJECTION','1');		// Do not check anti CSRF attack test
-//if (! defined('NOCSRFCHECK'))            define('NOCSRFCHECK','1');			// Do not check anti CSRF attack test done when option MAIN_SECURITY_CSRF_WITH_TOKEN is on.
-//if (! defined('NOSTYLECHECK'))           define('NOSTYLECHECK','1');			// Do not check style html tag into posted data
-//if (! defined('NOIPCHECK'))              define('NOIPCHECK','1');				// Do not check IP defined into conf $dolibarr_main_restrict_ip
-//if (! defined('NOTOKENRENEWAL'))         define('NOTOKENRENEWAL','1');		// Do not check anti POST attack test
-//if (! defined('NOREQUIREMENU'))          define('NOREQUIREMENU','1');			// If there is no need to load and show top and left menu
-//if (! defined('NOREQUIREHTML'))          define('NOREQUIREHTML','1');			// If we don't need to load the html.form.class.php
-//if (! defined('NOREQUIREAJAX'))          define('NOREQUIREAJAX','1');         // Do not load ajax.lib.php library
-//if (! defined("NOLOGIN"))                define("NOLOGIN",'1');				// If this page is public (can be called outside logged session)
-//if (! defined("MAIN_LANG_DEFAULT"))      define('MAIN_LANG_DEFAULT','auto');
-//if (! defined("MAIN_AUTHENTICATION_MODE")) define('MAIN_AUTHENTICATION_MODE','aloginmodule');
-
-
 // Load Dolibarr environment
 $res=0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
@@ -159,6 +141,82 @@ if (empty($reshook))
 {
 	// Selection of new fields
 	include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
+	
+	if ($action == 'validaterent') 
+	{	
+		$error = 0;
+		
+		$db->begin();
+		
+		$sql1 = "UPDATE " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo ";
+		$sql1 .= " SET lo.paiepartiel=";
+		$sql1 .= "(SELECT SUM(p.amount)";
+		$sql1 .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as p";
+		$sql1 .= " WHERE lo.rowid = p.fk_receipt";
+		$sql1 .= " GROUP BY p.fk_receipt )";
+		
+		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
+		$resql1 = $db->query($sql1);
+		if (! $resql1) 
+		{
+			$error ++;
+			setEventMessages($db->lasterror(), null, 'errors');
+		} 
+		else 
+		{			
+			$sql1 = "UPDATE " . MAIN_DB_PREFIX . "immobilier_immoreceipt ";
+			$sql1 .= " SET paye=1";
+			$sql1 .= " WHERE total_amount=paiepartiel";
+			
+			// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
+			$resql1 = $db->query($sql1);
+			if (! $resql1) 
+			{
+				$error ++;
+				setEventMessages($db->lasterror(), null, 'errors');
+			}
+			
+			if (! $error) 
+			{
+				$sql1 = "UPDATE " . MAIN_DB_PREFIX . "immobilier_immoreceipt ";
+				$sql1 .= " SET balance=total_amount-paiepartiel";
+				
+				// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
+				$resql1 = $db->query($sql1);
+				if (! $resql1) 
+				{
+					$error ++;
+					setEventMessages($db->lasterror(), null, 'errors');
+				}
+				
+				if (! $error) 
+				{
+					$sql1 = "UPDATE " . MAIN_DB_PREFIX . "immobilier_immorent as ir";
+					$sql1 .= " SET ir.encours=";
+					$sql1 .= "(SELECT SUM(il.balance)";
+					$sql1 .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt as il";
+					$sql1 .= " WHERE ir.rowid = il.fk_rent";
+					$sql1 .= " GROUP BY il.fk_rent )";
+					
+					$resql1 = $db->query($sql1);
+				if (! $resql1) 
+				{
+					$error ++;
+					setEventMessage($db->lasterror(), 'errors');
+				}
+					
+					$db->commit();
+					
+					setEventMessages($langs->trans("RentUpdatedSuccessfully"), null, 'mesgs');
+				}
+			} 
+			else 
+			{
+				$db->rollback();
+				setEventMessages($db->lasterror(), null, 'errors');
+			}
+		}
+	}
 
 	// Purge search criteria
 	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') ||GETPOST('button_removefilter','alpha')) // All tests are required to be compatible with all browsers
