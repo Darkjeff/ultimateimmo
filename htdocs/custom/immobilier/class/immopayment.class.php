@@ -307,7 +307,7 @@ class ImmoPayment extends CommonObject
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'immobilier_immorenter as lc ON t.fk_renter = lc.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'immobilier_immoproperty as ll ON t.fk_property = ll.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'immobilier_immoreceipt as lo ON t.fk_receipt = lo.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as p ON t.typepayment = p.id';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as p ON t.fk_typepayment = p.id';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
