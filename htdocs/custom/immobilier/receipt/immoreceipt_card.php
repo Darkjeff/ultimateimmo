@@ -248,17 +248,17 @@ if (empty($reshook))
 		$receipt->label 		= GETPOST('label');
 		If ($receipt->addtva != 0) 
 		{
-			$receipt->total_amount 	= (GETPOST('rentamount') + GETPOST('charges'))*1.2;
+			$receipt->total_amount 	= (GETPOST('rentamount') + GETPOST('chargesamount'))*1.2;
 		}
 		else 
 		{
-			$receipt->total_amount 	= GETPOST('rentamount') + GETPOST('charges');
+			$receipt->total_amount 	= GETPOST('rentamount') + GETPOST('chargesamount');
 		}
 		$receipt->rentamount 	= GETPOST('rentamount');
-		$receipt->charges 		= GETPOST('charges');
+		$receipt->chargesamount 		= GETPOST('chargesamount');
 		If ($receipt->addtva != 0) 
 		{
-			$receipt->vat_amount 		= (GETPOST('rentamount') + GETPOST('charges'))*0.2;
+			$receipt->vat_amount 		= (GETPOST('rentamount') + GETPOST('chargesamount'))*0.2;
 		}
 		else 
 		{
@@ -664,6 +664,30 @@ else
 			print "</td>";
 			
 			print "</tr>";
+			
+			// Due date
+			print '<tr><td>' . $langs->trans("Echeance") . '</td>';
+			print '<td align="left">';
+			print $form->select_date($object->echeance, 'ech', 0, 0, 0, 'fiche_loyer', 1);
+			print '</td>';
+			print '<tr><td>' . $langs->trans("Periode_du") . '</td>';
+			print '<td align="left">';
+			print $form->select_date($object->date_start, 'period', 0, 0, 0, 'fiche_loyer', 1);
+			print '</td>';
+			print '<tr><td>' . $langs->trans("Periode_au") . '</td>';
+			print '<td align="left">';
+			print $form->select_date($object->date_end, 'periodend', 0, 0, 0, 'fiche_loyer', 1);
+			print '</td>';
+			print '<tr><td>' . $langs->trans("Comment") . '</td>';
+			print '<td><input name="commentaire" size="70" value="' . $object->comment . '"</td></tr>';
+			
+			// Status loyer
+			print '<tr><td>statut</td>';
+			print '<td align="left" nowrap="nowrap">';
+			print $object->LibStatut($object->paye, 5);
+			print "</td></tr>";
+			
+			print '<tr><td colspan="2">&nbsp;</td></tr>';
 
 
 		// Other attributes
