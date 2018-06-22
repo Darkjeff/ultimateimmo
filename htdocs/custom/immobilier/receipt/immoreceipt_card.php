@@ -482,11 +482,11 @@ elseif ($action == 'createall')
 	 * List agreement
 	 */
 	$sql = "SELECT c.rowid as reference, loc.lastname as nom, l.address  , l.label as local, loc.status as status, c.totalamount as total,";
-	$sql .= "c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner";
+	$sql .= "c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.status , c.vat, l.fk_owner";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immorenter loc";
 	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorent as c";
 	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as l";
-	$sql .= " WHERE preavis = 0 AND loc.rowid = c.fk_renter and l.rowid = c.fk_property  ";
+	$sql .= " WHERE c.status = 1 AND loc.rowid = c.fk_renter and l.rowid = c.fk_property  ";
 	$resql = $db->query($sql);
 	if ($resql) 
 	{
