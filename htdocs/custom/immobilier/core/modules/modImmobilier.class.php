@@ -798,7 +798,7 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immoreceipts',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'List ImmoReceipt',
+								'titre'=>'MenuListImmoReceipt',
 								'mainmenu'=>'immoreceipts',
 								'leftmenu'=>'immobilier_immoreceipt',
 								'url'=>'/immobilier/receipt/immoreceipt_list.php',
@@ -812,7 +812,7 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immoreceipts,fk_leftmenu=immobilier_immoreceipt',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'New ImmoReceipt',
+								'titre'=>'MenuNewImmoReceipt',
 								'mainmenu'=>'immoreceipts',
 								'leftmenu'=>'immobilier_immoreceipt',
 								'url'=>'/immobilier/receipt/immoreceipt_card.php?action=create',
@@ -826,7 +826,7 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immoreceipts,fk_leftmenu=immobilier_immoreceipt',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'AllReceiptperContract',
+								'titre'=>'MenuAllReceiptperContract',
 								'mainmenu'=>'immoreceipts',
 								'leftmenu'=>'immobilier_immoreceipt',
 								'url'=>'/immobilier/receipt/immoreceipt_card.php?action=createall',
@@ -840,7 +840,7 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immoreceipts,fk_leftmenu=immobilier_immoreceipt',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'Validate',
+								'titre'=>'MenuValidateReceipt',
 								'mainmenu'=>'immoreceipts',
 								'leftmenu'=>'immobilier_immoreceipt',
 								'url'=>'/immobilier/receipt/immoreceipt_list.php?action=validaterent',
@@ -854,7 +854,7 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immoreceipts,fk_leftmenu=immobilier_immoreceipt',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'StatisticsPayment',
+								'titre'=>'MenuStatisticPayment',
 								'mainmenu'=>'immoreceipts',
 								'leftmenu'=>'immobilier_immoreceipt',
 								'url'=>'/immobilier/receipt/payment/stats.php?action=create',

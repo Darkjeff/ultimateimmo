@@ -33,6 +33,35 @@ IMMOBILIER_MYPARAM1Tooltip = My param 1 tooltip
 IMMOBILIER_MYPARAM2=My param 2
 IMMOBILIER_MYPARAM2Tooltip=My param 2 tooltip
 
+#
+# Menu
+#
+MenuImmoProperty = Biens immobiliers
+MenuNewImmoProperty = Nouveau bien
+MenuListImmoProperty = List
+MenuImmoPropertyType = Type de bien
+MenuNewImmoPropertyType = Nouveau type
+MenuListImmoPropertyType = List
+MenuImmoRent = Locations
+MenuNewImmoRent = Nouvelle location
+MenuListImmoRent = List
+MenuImmoOwner = Owners
+MenuNewImmoOwner = New Owner
+MenuListImmoOwner = List
+MenuImmoOwnerType = Owner Type
+MenuNewImmoOwnerType = New Owner Type
+MenuListImmoOwnerType = Liste
+MenuImmoRenter = Renters
+MenuNewImmoRenter = New Renter
+MenuListImmoRenter = List
+MenuImmoPayment = Payment
+MenuNewImmoPayment = New Payment
+MenuListImmoPayment = Payments
+MenuListImmoReceipt = Receipts
+MenuNewImmoReceipt = New receipt
+MenuAllReceiptperContract = Generate the receipts
+MenuValidateReceipt = Validate the receipts
+MenuStatisticPayment = Statistics
 
 #
 # About page

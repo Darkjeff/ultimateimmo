@@ -66,6 +66,11 @@ MenuListImmoRenter = Liste
 MenuImmoPayment = Paiements
 MenuNewImmoPayment = Nouveau paiement
 MenuListImmoPayment = Liste
+MenuListImmoReceipt = Quittances
+MenuNewImmoReceipt = Nouvelle quittance
+MenuAllReceiptperContract = Générer les quittances
+MenuValidateReceipt = Valider les quittances
+MenuStatisticPayment = Statistiques
 
 #
 # Autres
