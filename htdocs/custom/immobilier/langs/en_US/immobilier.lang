@@ -62,6 +62,8 @@ MenuNewImmoReceipt = New receipt
 MenuAllReceiptperContract = Generate the receipts
 MenuValidateReceipt = Validate the receipts
 MenuStatisticPayment = Statistics
+MenuListImmoCost = Charges locatives
+MenuNewImmoCost = Nouvelle charge 
 
 #
 # About page

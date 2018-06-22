@@ -71,6 +71,8 @@ MenuNewImmoReceipt = Nouvelle quittance
 MenuAllReceiptperContract = Générer les quittances
 MenuValidateReceipt = Valider les quittances
 MenuStatisticPayment = Statistiques
+MenuListImmoCost = Charges locatives
+MenuNewImmoCost = Nouvelle charge 
 
 #
 # Autres

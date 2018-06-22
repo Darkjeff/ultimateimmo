@@ -908,7 +908,7 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immoreceipts',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'List ImmoCost',
+								'titre'=>'MenuListImmoCost',
 								'mainmenu'=>'immoreceipts',
 								'leftmenu'=>'immobilier_immocost',
 								'url'=>'/immobilier/cost/immocost_list.php',
@@ -921,7 +921,7 @@ class modImmobilier extends DolibarrModules
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immoreceipts,fk_leftmenu=immobilier_immocost',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
-								'titre'=>'New ImmoCost',
+								'titre'=>'MenuNewImmoCost',
 								'mainmenu'=>'immoreceipts',
 								'leftmenu'=>'immobilier_immocost_new_cost',
 								'url'=>'/immobilier/cost/immocost_card.php?action=create',
