@@ -42,6 +42,41 @@ ImmobilierAbout = About Immobilier
 ImmobilierAboutPage = Immobilier about page
 
 #
+# Miscellaneous
+#
+BirthDay = Birthday
+ImmoProperty = Property
+Property = Property
+Properties = Properties
+ImmoProperties = Properties
+ImmoRents = Rents
+ImmoReceipts = Receipts
+NewImmoPropertyType = Nouveau type de bien
+PropertyType = Type de bien immobilier
+PropertyTypeStatusDraft=Draft
+PropertyTypeStatusActive=Active
+PropertyTypeStatusCancel=Cancel
+Building = Immeuble
+Staircase = Escalier
+NumFloor = Etage
+NumFlat = Numéro Appartement
+NumDoor = Porte n°
+Area = Surface
+PropertyParent = Bien Parent
+DateBuilt = Date de construction
+Target = Cible
+ImmoOwner = Propriétaire
+Civility = Titre
+Deposit = Dépôt de garantie
+ListOfRents = Liste des locations
+ImmoRenter = Locataire
+Renter = Locataire
+RentAmount = Montant du loyer
+ChargesAmount = Montant des charges
+TotalAmount = Montant total
+Encours = Encours
+
+#
 # Sample page
 #
 MyPageName = My page name
