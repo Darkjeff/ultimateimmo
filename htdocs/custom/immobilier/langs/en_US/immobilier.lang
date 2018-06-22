@@ -64,6 +64,9 @@ MenuValidateReceipt = Validate the receipts
 MenuStatisticPayment = Statistics
 MenuListImmoCost = Charges locatives
 MenuNewImmoCost = Nouvelle charge 
+MenuRenterCost = Renter Cost
+MenuStatisticsCost = Cost: Statistics 
+MenuStatisticsResult = Results: Statistics 
 
 #
 # About page

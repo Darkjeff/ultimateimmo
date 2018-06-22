@@ -73,6 +73,9 @@ MenuValidateReceipt = Valider les quittances
 MenuStatisticPayment = Statistiques
 MenuListImmoCost = Charges locatives
 MenuNewImmoCost = Nouvelle charge 
+MenuRenterCost = Coût Locataire
+MenuStatisticsCost = Coût : statistiques
+MenuStatisticsResult = Résultats : statistiques
 
 #
 # Autres
