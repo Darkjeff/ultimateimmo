@@ -188,17 +188,12 @@ if (empty($reshook))
 					$monOwner = $maLigneCourante[6];
 					
 					// main info loyer
+					// 
+					$receipt->ref = $monId;
 					$receipt->label = GETPOST('label', 'alpha');
-					$receipt->echeance = $dateech;
-					$receipt->date_start = $dateperiod;
-					$receipt->date_end = $dateperiodend;
-					
-					// main info contract
-					$receipt->fk_rent = $monId;
-					$receipt->fk_property = $monLocal;
-					$receipt->fk_renter = $monLocataire;
-					$receipt->fk_owner = $monOwner;
-					if ($maTVA == Oui) 
+                	$receipt->rentamount = $monLoyer;
+					$receipt->chargesamount = $mesCharges;
+               		if ($maTVA == Oui) 
 					{
 						$receipt->total_amount = $monMontant * 1.2;
 						$receipt->vat_amount = $monMontant * 0.2;
@@ -206,10 +201,26 @@ if (empty($reshook))
 					else 
 					{
 						$receipt->total_amount = $monMontant;
+                    	$receipt->vat_amount = 0;
 					}
+                	$receipt->echeance = $dateech;
+					$receipt->date_start = $dateperiod;
+					$receipt->date_end = $dateperiodend;
+                	$receipt->date_creation = $dateech;
 					
-					$receipt->rentamount = $monLoyer;
-					$receipt->chargesamount = $mesCharges;
+					// main info contract
+					$receipt->fk_rent = $monId;
+					$receipt->fk_property = $monLocal;
+					$receipt->fk_renter = $monLocataire;
+					$receipt->fk_owner = $monOwner;
+                	$receipt->fk_soc = $monOwner;
+                	$receipt->fk_user_creat = $monOwner;
+                	$receipt->fk_user_modif = $monOwner;
+					$receipt->import_key=0;
+                	$receipt->model_pdf=0;
+                	$receipt->entity=0;
+					$receipt->vat_tx=0;
+					
 					$receipt->status=0;
 					$receipt->paye=0;
 					
@@ -226,7 +237,7 @@ if (empty($reshook))
 		
 		if (empty($error)) 
 		{
-			setEventMessages($langs->trans("SocialContributionAdded"), null, 'mesgs');
+			setEventMessages($langs->trans("ReceiptGenerated"), null, 'mesgs');
 			Header("Location: " . dol_buildpath('/immobilier/receipt/immoreceipt_list.php',1));
 			exit();
 		}
