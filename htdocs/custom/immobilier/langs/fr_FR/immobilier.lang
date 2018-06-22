@@ -76,6 +76,8 @@ MenuNewImmoCost = Nouvelle charge
 MenuRenterCost = Coût Locataire
 MenuStatisticsCost = Coût : statistiques
 MenuStatisticsResult = Résultats : statistiques
+MenuListImmoCostType = Types de coût
+MenuNewImmoCostType = Nouveau type de coût
 
 #
 # Autres
