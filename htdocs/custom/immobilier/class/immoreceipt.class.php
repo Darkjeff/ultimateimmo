@@ -263,6 +263,176 @@ class ImmoReceipt extends CommonObject
 	 * @param  	int 	$fromid     Id of object to clone
 	 * @return 	mixed 				New object created, <0 if KO
 	 */
+
+public function generate(User $user, $notrigger = false)
+	{
+		dol_syslog(__METHOD__, LOG_DEBUG);
+
+		$error = 0;
+
+		// Clean parameters
+		
+
+		if (isset($this->ref)) {
+			 $this->ref = trim($this->ref);
+		}
+		if (isset($this->label)) {
+			 $this->label = trim($this->label);
+		}
+		if (isset($this->rentamount)) {
+			 $this->rentamount = trim($this->rentamount);
+		}
+		if (isset($this->chargesamount)) {
+			 $this->chargesamount = trim($this->chargesamount);
+		}
+		if (isset($this->total_amount)) {
+			 $this->total_amount = trim($this->total_amount);
+		}
+		if (isset($this->balance)) {
+			 $this->balance = trim($this->balance);
+		}
+		if (isset($this->paiepartiel)) {
+			 $this->paiepartiel = trim($this->paiepartiel);
+		}
+		if (isset($this->vat)) {
+			 $this->vat = trim($this->vat);
+		}
+		if (isset($this->fk_rent)) {
+			 $this->fk_rent = trim($this->fk_rent);
+		}
+		if (isset($this->fk_property)) {
+			 $this->fk_property = trim($this->fk_property);
+		}
+		
+		if (isset($this->fk_renter)) {
+			 $this->fk_renter = trim($this->fk_renter);
+		}
+		if (isset($this->note_public)) {
+			 $this->note_public = trim($this->note_public);
+		}
+		if (isset($this->status)) {
+			 $this->status = trim($this->status);
+		}
+		if (isset($this->fk_owner)) {
+			 $this->fk_owner = trim($this->fk_owner);
+		}
+		if (isset($this->paye)) {
+			 $this->paye = trim($this->paye);
+		}
+
+		
+
+		// Check parameters
+		// Put here code to add control on parameters values
+
+		// Insert request
+		$sql = 'INSERT INTO ' . MAIN_DB_PREFIX . $this->table_element . '(';
+		
+
+		$sql.= 'ref,';
+		$sql.= 'label,';
+		$sql.= 'rentamount,';
+		$sql.= 'chargesamount,';
+		$sql.= 'total_amount,';
+		$sql.= 'balance,';
+		$sql.= 'paiepartiel,';
+		$sql.= 'echeance,';
+		$sql.= 'vat,';
+		$sql.= 'paye,';
+		$sql.= 'fk_soc,';
+		$sql.= 'fk_rent,';
+		$sql.= 'fk_property,';
+		$sql.= 'fk_renter,';
+		$sql.= 'fk_owner,';
+		$sql.= 'description,';
+		$sql.= 'note_public,';
+		$sql.= 'note_private,';
+		$sql.= 'date_rent,';
+		$sql.= 'date_start,';
+		$sql.= 'date_end,';
+		$sql.= 'date_creation,';
+		$sql.= 'fk_user_creat,';
+		$sql.= 'fk_user_modif,';
+		$sql.= 'import_key,';
+		$sql.= 'model_pdf,';
+		$sql.= 'status,';
+		$sql.= 'entity,';
+		$sql.= 'vat_amount,';
+		$sql.= 'vat_tx';
+
+		
+		$sql .= ') VALUES (';
+		
+		$sql .= ' '.(! isset($this->ref)?'NULL':"'".$this->db->escape($this->ref)."'").',';
+		$sql .= ' '.(! isset($this->label)?'NULL':"'".$this->db->escape($this->label)."'").',';
+		$sql .= ' '.(! isset($this->rentamount)?'NULL':"'".$this->rentamount."'").',';
+		$sql .= ' '.(! isset($this->chargesamount)?'NULL':"'".$this->chargesamount."'").',';
+		$sql .= ' '.(! isset($this->total_amount)?'NULL':"'".$this->total_amount."'").',';
+		$sql .= ' '.(empty($this->balance)?'0':"'".$this->balance."'").',';
+		$sql .= ' '.(empty($this->paiepartiel)?'0':"'".$this->paiepartiel."'").',';
+		$sql .= ' '.(! isset($this->echeance) || dol_strlen($this->echeance)==0?'NULL':"'".$this->db->idate($this->echeance)."'").',';
+		$sql .= ' '.(empty($this->vat)?'0':"'".$this->vat."'").',';
+		$sql .= ' '.(! isset($this->paye)?'NULL':$this->paye).',';
+		$sql .= ' '.(! isset($this->fk_soc)?'NULL':$this->fk_soc).',';
+		$sql .= ' '.(! isset($this->fk_rent)?'NULL':$this->fk_rent).',';
+		$sql .= ' '.(! isset($this->fk_property)?'NULL':$this->fk_property).',';
+		$sql .= ' '.(! isset($this->fk_renter)?'NULL':$this->fk_renter).',';
+		$sql .= ' '.(! isset($this->fk_owner)?'NULL':$this->fk_owner).',';
+		$sql .= ' '.(! isset($this->description)?'NULL':"'".$this->db->escape($this->description)."'").',';
+		$sql .= ' '.(! isset($this->note_public)?'NULL':"'".$this->db->escape($this->note_public)."'").',';
+		$sql .= ' '.(! isset($this->note_private)?'NULL':"'".$this->db->escape($this->note_private)."'").',';
+		$sql .= ' '.(! isset($this->date_rent) || dol_strlen($this->date_rent)==0?'NULL':"'".$this->db->idate($this->date_rent)."'").',';
+		$sql .= ' '.(! isset($this->date_start) || dol_strlen($this->date_start)==0?'NULL':"'".$this->db->idate($this->date_start)."'").',';
+		$sql .= ' '.(! isset($this->date_end) || dol_strlen($this->date_end)==0?'NULL':"'".$this->db->idate($this->date_end)."'").',';
+		$sql .= ' '.(! isset($this->date_creation) || dol_strlen($this->date_creation)==0?'NULL':"'".$this->db->idate($this->date_creation)."'").',';
+		$sql .= ' '.(! isset($this->fk_user_creat)?'NULL':$this->fk_user_creat).',';
+		$sql .= ' '.(! isset($this->fk_user_modif)?'NULL':$this->fk_user_modif).',';
+		$sql .= ' '.(! isset($this->import_key)?'NULL':$this->import_key).',';
+		$sql .= ' '.(! isset($this->model_pdf)?'NULL':$this->model_pdf).',';
+		$sql .= ' '.(! isset($this->status)?'NULL':$this->status).',';
+		$sql .= ' '.(! isset($this->entity)?'NULL':$this->entity).',';
+		$sql .= ' '.(! isset($this->vat_amount)?'NULL':"'".$this->vat_amount."'").',';
+		$sql .= ' '.(! isset($this->vat_tx)?'NULL':$this-vat_tx);
+
+		
+		$sql .= ')';
+
+		$this->db->begin();
+
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			$error ++;
+			$this->errors[] = 'Error ' . $this->db->lasterror();
+			dol_syslog(__METHOD__ . ' ' . join(',', $this->errors), LOG_ERR);
+		}
+
+		if (!$error) {
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . $this->table_element);
+
+			if (!$notrigger) {
+				// Uncomment this and change MYOBJECT to your own tag if you
+				// want this action to call a trigger.
+
+				//// Call triggers
+				//$result=$this->call_trigger('MYOBJECT_CREATE',$user);
+				//if ($result < 0) $error++;
+				//// End call triggers
+			}
+		}
+
+		// Commit or rollback
+		if ($error) {
+			$this->db->rollback();
+
+			return - 1 * $error;
+		} else {
+			$this->db->commit();
+
+			return $this->id;
+		}
+	}
+
+
 	public function createFromClone(User $user, $fromid)
 	{
 		global $hookmanager, $langs;
