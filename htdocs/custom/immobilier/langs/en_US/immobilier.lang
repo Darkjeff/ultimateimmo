@@ -114,6 +114,8 @@ RentAmount = Montant du loyer
 ChargesAmount = Montant des charges
 TotalAmount = Montant total
 Encours = Encours
+VatAmount = VAT amount
+VatTx = VAT rate
 
 #
 # Sample page
