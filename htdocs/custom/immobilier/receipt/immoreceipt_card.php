@@ -448,7 +448,7 @@ if ($action == 'create')
 		$dateep = dol_get_last_day($pastmonthyear, $pastmonth, false);
 	}
 
-	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
+	print '<form name="fiche_loyer" method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="add">';
 	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
@@ -570,7 +570,7 @@ elseif ($action == 'createall')
 	/*
 	 * List agreement
 	 */
-	$sql = "SELECT c.rowid as reference, loc.lastname as nom, l.address  , l.label as local, loc.status as status, c.totalamount as total,";
+	$sql = "SELECT c.rowid as reference, loc.lastname as nom, l.address, l.label as local, loc.status as status, c.totalamount as total,";
 	$sql .= "c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.status , c.vat, l.fk_owner";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immorenter loc";
 	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorent as c";
@@ -645,6 +645,17 @@ else
 	if (($id || $ref) && $action == 'edit')
 	{
 		print load_fiche_titre($langs->trans("newrental", $langs->transnoentitiesnoconv("ImmoReceipt")));
+		
+		$receipt = new ImmoReceipt($db);
+		$result = $receipt->fetch($id);
+		
+		if ($action == 'delete') 
+		{
+			// Param url = id de la periode à supprimer - id session
+			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+			if ($ret == 'html')
+				print '<br>';
+		}
 		
 		print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
 		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
