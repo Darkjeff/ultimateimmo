@@ -78,32 +78,32 @@ class ImmoReceipt extends CommonObject
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>0, 'enabled'=>1, 'position'=>20, 'default'=>1, 'notnull'=>1, 'index'=>1,),
-		'fk_rent' => array('type'=>'integer:ImmoRent:immobilier/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'foreignkey'=> 'immobilier_immorent.rowid',),
-		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
-		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'immobilier_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter", ),
-		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
-		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
+		'fk_rent' => array('type'=>'integer:ImmoRent:immobilier/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>1, 'foreignkey'=> 'immobilier_immorent.rowid',),
+		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>35, 'notnull'=>1, 'index'=>1,'foreignkey'=> 'immobilier_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
+		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>1, 'index'=>1,'foreignkey'=> 'immobilier_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter", ),
+		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>1, 'index'=>1, 'help'=>"LinkToOwner",),
+		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>50, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>55, 'notnull'=>-1,),
-		'date_rent' => array('type'=>'date', 'label'=>'DateRent', 'enabled'=>1, 'visible'=>-1, 'position'=>56, 'notnull'=>-1,),
-		'date_start' => array('type'=>'date', 'label'=>'DateStart', 'enabled'=>1, 'visible'=>-1, 'position'=>57, 'notnull'=>-1,),
-		'date_end' => array('type'=>'date', 'label'=>'DateEnd', 'enabled'=>1, 'visible'=>-1, 'position'=>58, 'notnull'=>-1,),
-		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>59, 'notnull'=>-1,),
+		'date_rent' => array('type'=>'date', 'label'=>'DateRent', 'enabled'=>1, 'visible'=>-1, 'position'=>56, 'notnull'=>1,),
+		'date_start' => array('type'=>'date', 'label'=>'DateStart', 'enabled'=>1, 'visible'=>-1, 'position'=>57, 'notnull'=>1,),
+		'date_end' => array('type'=>'date', 'label'=>'DateEnd', 'enabled'=>1, 'visible'=>-1, 'position'=>58, 'notnull'=>1,),
+		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>59, 'notnull'=>1,),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>60, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text",),
-		'rentamount' => array('type'=>'price', 'label'=>'RentAmount', 'enabled'=>1, 'visible'=>1, 'position'=>65, 'notnull'=>-1,),
-		'chargesamount' => array('type'=>'price', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
-		'total_amount' => array('type'=>'price', 'label'=>'TotalAmount', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
+		'rentamount' => array('type'=>'price', 'label'=>'RentAmount', 'enabled'=>1, 'visible'=>1, 'position'=>65, 'notnull'=>1,),
+		'chargesamount' => array('type'=>'price', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>1, 'isameasure'=>'1', 'help'=>"Help text",),
+		'total_amount' => array('type'=>'price', 'label'=>'TotalAmount', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'balance' => array('type'=>'price', 'label'=>'Balance', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'paiepartiel' => array('type'=>'price', 'label'=>'PaiePartiel', 'enabled'=>1, 'visible'=>1, 'position'=>85, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
-		'echeance' => array('type'=>'date', 'label'=>'Echeance', 'enabled'=>1, 'visible'=>1, 'position'=>90, 'notnull'=>-1, 'default'=>'null',),
-		'vat_amount' => array('type'=>'price', 'label'=>'VatAmount', 'enabled'=>1, 'visible'=>1, 'position'=>95, 'notnull'=>-1,),
-		'vat_tx' => array('type'=>'integer', 'label'=>'VatTx', 'enabled'=>1, 'visible'=>1, 'position'=>96, 'notnull'=>-1,),
-		'paye' => array('type'=>'integer', 'label'=>'Paye', 'enabled'=>1, 'visible'=>-1, 'position'=>100, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes'),),
+		'echeance' => array('type'=>'date', 'label'=>'Echeance', 'enabled'=>1, 'visible'=>1, 'position'=>90, 'notnull'=>1, 'default'=>'null',),
+		'vat_amount' => array('type'=>'price', 'label'=>'VatAmount', 'enabled'=>1, 'visible'=>1, 'position'=>95, 'notnull'=>1,),
+		'vat_tx' => array('type'=>'integer', 'label'=>'VatTx', 'enabled'=>1, 'visible'=>1, 'position'=>96, 'notnull'=>1,),
+		'paye' => array('type'=>'integer', 'label'=>'Paye', 'enabled'=>1, 'visible'=>-1, 'position'=>100, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes'),),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1, 'foreignkey'=>'llx_user.rowid',),
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'enabled'=>1, 'visible'=>-2, 'position'=>511, 'notnull'=>-1,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1,),
-		'model_pdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'searchall'=>1,),
+		'model_pdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1, 'index'=>1, 'searchall'=>1,),
 		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
 	);
 	public $rowid;
@@ -256,182 +256,6 @@ class ImmoReceipt extends CommonObject
 		return $this->createCommon($user, $notrigger);
 	}
 
-	/**
-	 * Clone and object into another one
-	 *
-	 * @param  	User 	$user      	User that creates
-	 * @param  	int 	$fromid     Id of object to clone
-	 * @return 	mixed 				New object created, <0 if KO
-	 */
-
-public function generate(User $user, $notrigger = false)
-	{
-		dol_syslog(__METHOD__, LOG_DEBUG);
-
-		$error = 0;
-
-		// Clean parameters
-		
-
-		if (isset($this->ref)) {
-			 $this->ref = trim($this->ref);
-		}
-		if (isset($this->label)) {
-			 $this->label = trim($this->label);
-		}
-		if (isset($this->rentamount)) {
-			 $this->rentamount = trim($this->rentamount);
-		}
-		if (isset($this->chargesamount)) {
-			 $this->chargesamount = trim($this->chargesamount);
-		}
-		if (isset($this->total_amount)) {
-			 $this->total_amount = trim($this->total_amount);
-		}
-		if (isset($this->balance)) {
-			 $this->balance = trim($this->balance);
-		}
-		if (isset($this->paiepartiel)) {
-			 $this->paiepartiel = trim($this->paiepartiel);
-		}
-		if (isset($this->vat)) {
-			 $this->vat = trim($this->vat);
-		}
-		if (isset($this->fk_rent)) {
-			 $this->fk_rent = trim($this->fk_rent);
-		}
-		if (isset($this->fk_property)) {
-			 $this->fk_property = trim($this->fk_property);
-		}
-		
-		if (isset($this->fk_renter)) {
-			 $this->fk_renter = trim($this->fk_renter);
-		}
-		if (isset($this->note_public)) {
-			 $this->note_public = trim($this->note_public);
-		}
-		if (isset($this->status)) {
-			 $this->status = trim($this->status);
-		}
-		if (isset($this->fk_owner)) {
-			 $this->fk_owner = trim($this->fk_owner);
-		}
-		if (isset($this->paye)) {
-			 $this->paye = trim($this->paye);
-		}
-
-		
-
-		// Check parameters
-		// Put here code to add control on parameters values
-
-		// Insert request
-		$sql = 'INSERT INTO ' . MAIN_DB_PREFIX . $this->table_element . '(';
-		
-
-		$sql.= 'ref,';
-		$sql.= 'label,';
-		$sql.= 'rentamount,';
-		$sql.= 'chargesamount,';
-		$sql.= 'total_amount,';
-		$sql.= 'balance,';
-		$sql.= 'paiepartiel,';
-		$sql.= 'echeance,';
-		$sql.= 'vat,';
-		$sql.= 'paye,';
-		$sql.= 'fk_soc,';
-		$sql.= 'fk_rent,';
-		$sql.= 'fk_property,';
-		$sql.= 'fk_renter,';
-		$sql.= 'fk_owner,';
-		$sql.= 'description,';
-		$sql.= 'note_public,';
-		$sql.= 'note_private,';
-		$sql.= 'date_rent,';
-		$sql.= 'date_start,';
-		$sql.= 'date_end,';
-		$sql.= 'date_creation,';
-		$sql.= 'fk_user_creat,';
-		$sql.= 'fk_user_modif,';
-		$sql.= 'import_key,';
-		$sql.= 'model_pdf,';
-		$sql.= 'status,';
-		$sql.= 'entity,';
-		$sql.= 'vat_amount,';
-		$sql.= 'vat_tx';
-
-		
-		$sql .= ') VALUES (';
-		
-		$sql .= ' '.(! isset($this->ref)?'NULL':"'".$this->db->escape($this->ref)."'").',';
-		$sql .= ' '.(! isset($this->label)?'NULL':"'".$this->db->escape($this->label)."'").',';
-		$sql .= ' '.(! isset($this->rentamount)?'NULL':"'".$this->rentamount."'").',';
-		$sql .= ' '.(! isset($this->chargesamount)?'NULL':"'".$this->chargesamount."'").',';
-		$sql .= ' '.(! isset($this->total_amount)?'NULL':"'".$this->total_amount."'").',';
-		$sql .= ' '.(empty($this->balance)?'0':"'".$this->balance."'").',';
-		$sql .= ' '.(empty($this->paiepartiel)?'0':"'".$this->paiepartiel."'").',';
-		$sql .= ' '.(! isset($this->echeance) || dol_strlen($this->echeance)==0?'NULL':"'".$this->db->idate($this->echeance)."'").',';
-		$sql .= ' '.(empty($this->vat)?'0':"'".$this->vat."'").',';
-		$sql .= ' '.(! isset($this->paye)?'NULL':$this->paye).',';
-		$sql .= ' '.(! isset($this->fk_soc)?'NULL':$this->fk_soc).',';
-		$sql .= ' '.(! isset($this->fk_rent)?'NULL':$this->fk_rent).',';
-		$sql .= ' '.(! isset($this->fk_property)?'NULL':$this->fk_property).',';
-		$sql .= ' '.(! isset($this->fk_renter)?'NULL':$this->fk_renter).',';
-		$sql .= ' '.(! isset($this->fk_owner)?'NULL':$this->fk_owner).',';
-		$sql .= ' '.(! isset($this->description)?'NULL':"'".$this->db->escape($this->description)."'").',';
-		$sql .= ' '.(! isset($this->note_public)?'NULL':"'".$this->db->escape($this->note_public)."'").',';
-		$sql .= ' '.(! isset($this->note_private)?'NULL':"'".$this->db->escape($this->note_private)."'").',';
-		$sql .= ' '.(! isset($this->date_rent) || dol_strlen($this->date_rent)==0?'NULL':"'".$this->db->idate($this->date_rent)."'").',';
-		$sql .= ' '.(! isset($this->date_start) || dol_strlen($this->date_start)==0?'NULL':"'".$this->db->idate($this->date_start)."'").',';
-		$sql .= ' '.(! isset($this->date_end) || dol_strlen($this->date_end)==0?'NULL':"'".$this->db->idate($this->date_end)."'").',';
-		$sql .= ' '.(! isset($this->date_creation) || dol_strlen($this->date_creation)==0?'NULL':"'".$this->db->idate($this->date_creation)."'").',';
-		$sql .= ' '.(! isset($this->fk_user_creat)?'NULL':$this->fk_user_creat).',';
-		$sql .= ' '.(! isset($this->fk_user_modif)?'NULL':$this->fk_user_modif).',';
-		$sql .= ' '.(! isset($this->import_key)?'NULL':$this->import_key).',';
-		$sql .= ' '.(! isset($this->model_pdf)?'NULL':$this->model_pdf).',';
-		$sql .= ' '.(! isset($this->status)?'NULL':$this->status).',';
-		$sql .= ' '.(! isset($this->entity)?'NULL':$this->entity).',';
-		$sql .= ' '.(! isset($this->vat_amount)?'NULL':"'".$this->vat_amount."'").',';
-		$sql .= ' '.(! isset($this->vat_tx)?'NULL':$this-vat_tx);
-
-		
-		$sql .= ')';
-
-		$this->db->begin();
-
-		$resql = $this->db->query($sql);
-		if (!$resql) {
-			$error ++;
-			$this->errors[] = 'Error ' . $this->db->lasterror();
-			dol_syslog(__METHOD__ . ' ' . join(',', $this->errors), LOG_ERR);
-		}
-
-		if (!$error) {
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . $this->table_element);
-
-			if (!$notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action to call a trigger.
-
-				//// Call triggers
-				//$result=$this->call_trigger('MYOBJECT_CREATE',$user);
-				//if ($result < 0) $error++;
-				//// End call triggers
-			}
-		}
-
-		// Commit or rollback
-		if ($error) {
-			$this->db->rollback();
-
-			return - 1 * $error;
-		} else {
-			$this->db->commit();
-
-			return $this->id;
-		}
-	}
-
 
 	public function createFromClone(User $user, $fromid)
 	{
@@ -479,19 +303,19 @@ public function generate(User $user, $notrigger = false)
 	 * Function to concat keys of fields
 	 *
 	 * @return string
-	 
+	 */
 	private function get_field_list()
 	{
 	    $keys = array_keys($this->fields);
 	    return implode(',', $keys);
-	}*/
+	}
 	
 	/**
 	 * Function to load data from a SQL pointer into properties of current object $this
 	 *
 	 * @param   stdClass    $obj    Contain data of object from database
-	 
-	protected function setVarsFromFetchObj(&$obj)
+	 */
+	public function setVarsFromFetchObj(&$obj)
 	{
 		foreach ($this->fields as $field => $info)
 		{
@@ -525,7 +349,8 @@ public function generate(User $user, $notrigger = false)
 			{
 				$this->{$field} = $obj->{$field};
 			}
-		}*/
+		}
+	}
 	
 	/**
 	 * Load object in memory from the database
@@ -538,7 +363,6 @@ public function generate(User $user, $notrigger = false)
 	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
 		if (empty($id) && empty($ref)) return false;
-		
 		$array = preg_split("/[\s,]+/", $this->getFieldList());
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), $array[0]);
@@ -553,8 +377,8 @@ public function generate(User $user, $notrigger = false)
 		$sql.= ' ll.rowid as property_id,';
 		$sql.= ' ic.vat as addtva';	
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element . ' as t';
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immobilier_immorenter as lc ON t.fk_renter = lc.rowid';
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immobilier_immoproperty as ll ON t.fk_property = ll.rowid';
+		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'immobilier_immorenter as lc ON t.fk_renter = lc.rowid';
+		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'immobilier_immoproperty as ll ON t.fk_property = ll.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'immobilier_immorent as ic ON t.fk_rent = ic.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;

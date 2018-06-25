@@ -147,6 +147,7 @@ if (empty($reshook))
 	
 	if ($action == 'addall') 
 	{		
+    
 		$error=0;
 		$dateech = dol_mktime(12,0,0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
 		$dateperiod = dol_mktime(12,0,0, GETPOST("periodmonth"), GETPOST("periodday"), GETPOST("periodyear"));
@@ -225,9 +226,11 @@ if (empty($reshook))
 					$receipt->paye=0;
 					
 					$result = $receipt->create($user);
+                 
 					if ($result < 0) 
 					{
 						$error++;
+                   
 						setEventMessages(null, $receipt->errors, 'errors');
 						$action='createall';
 					}
@@ -237,10 +240,12 @@ if (empty($reshook))
 		
 		if (empty($error)) 
 		{
-			setEventMessages($langs->trans("ReceiptGenerated"), null, 'mesgs');
-			Header("Location: " . dol_buildpath('/immobilier/receipt/immoreceipt_list.php',1));
+			setEventMessages($langs->trans("testreceipts"), null, 'mesgs');
+			//Header("Location: " . dol_buildpath('/immobilier/receipt/immoreceipt_list.php',1));
 			exit();
 		}
+        
+        
 	}
 	
 	/*
@@ -293,6 +298,7 @@ if (empty($reshook))
 			$mesg = '<div class="error">' . $receipt->error . '</div>';
 		}
 	}
+
 	
 	// Build doc
 	if ($action == 'builddoc' && $user->rights->immobilier->write)
