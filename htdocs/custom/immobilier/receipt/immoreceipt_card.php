@@ -60,6 +60,9 @@ $socid		= GETPOST('socid','int');
 
 // Initialize technical objects
 $object=new ImmoReceipt($db);
+/*print '<pre>';
+var_dump($object);
+print '</pre>';*/
 $extrafields = new ExtraFields($db);
 $diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immoreceiptcard','globalcard'));     // Note that conf->hooks_modules contains array
@@ -108,7 +111,7 @@ if (empty($reshook))
 	 */
 	if ($action == 'paid') 
 	{
-		$receipt = new Immoreceipt($db);
+		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
 		$result = $receipt->set_paid($user);
 		Header("Location: " .$_SERVER['PHP_SELF']."?id=".$id);
@@ -119,7 +122,7 @@ if (empty($reshook))
 	 */
 	if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes') 
 	{
-		$receipt = new Immoreceipt($db);
+		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
 		$result = $receipt->delete($user);
 		if ($result > 0) 
@@ -131,6 +134,73 @@ if (empty($reshook))
 		{
 			$mesg = '<div class="error">' . $receipt->error . '</div>';
 		}
+	}
+
+	/*
+	 * Action generate quittance
+	 */
+	if ($action == 'quittance') 
+	{
+		// Define output language
+		$outputlangs = $langs;
+		
+		$file = 'quittance_' . $id . '.pdf';
+		
+		$result = immobilier_pdf_create($db, $id, '', 'quittance', $outputlangs, $file);
+		
+		if ($result > 0) 
+		{
+			Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
+			exit();
+		} 
+		else 
+		{
+			setEventMessages($receipt->error, $receipt->errors, 'errors');
+		}
+	}
+
+	/*
+	 * Add rental
+	 */
+	if ($action == 'add' && ! $cancel) 
+	{
+		$error = 0;
+		
+		$datev = dol_mktime(12, 0, 0, GETPOST("datevmonth"), GETPOST("datevday"), GETPOST("datevyear"));
+		$datesp = dol_mktime(12, 0, 0, GETPOST("datespmonth"), GETPOST("datespday"), GETPOST("datespyear"));
+		$dateep = dol_mktime(12, 0, 0, GETPOST("dateepmonth"), GETPOST("dateepday"), GETPOST("dateepyear"));
+		
+		$object->label = GETPOST("label");
+		$object->datesp = $datesp;
+		$object->dateep = $dateep;
+		$object->datev = $datev;
+		
+		if (empty($datev) || empty($datesp) || empty($dateep)) 
+		{
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("Date")), $object->errors, 'errors');
+			$error ++;
+		}
+		
+		if (! $error) 
+		{
+			$db->begin();
+			
+			$ret = $object->create($user);
+			if ($ret > 0) 
+			{
+				$db->commit();
+				header("Location: index.php");
+				exit();
+			} 
+			else 
+			{
+				$db->rollback();
+				setEventMessages($object->error, $object->errors, 'errors');
+				$action = "create";
+			}
+		}
+		
+		$action = 'create';
 	}
 	
 	$error=0;
@@ -155,17 +225,17 @@ if (empty($reshook))
 		
 		if (empty($dateech)) 
 		{
-			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), null, 'errors');
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), $object->errors, 'errors');
 			$action = 'create';
 		} 
 		elseif (empty($dateperiod)) 
 		{
-			$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Period")) . '</div>';
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Period")), $object->errors, 'errors');
 			$action = 'create';
 		}
 		elseif (empty($dateperiodend)) 
 		{
-			$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Periodend")) . '</div>';
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periodend")), $object->errors, 'errors');
 			$action = 'create';
 		} 
 		else 
@@ -176,7 +246,7 @@ if (empty($reshook))
 				
 				foreach ( $mesLignesCochees as $maLigneCochee ) 
 				{				
-					$receipt = new Immoreceipt($db);
+					$receipt = new ImmoReceipt($db);
 					
 					$maLigneCourante = split("_", $maLigneCochee);
 					$monId = $maLigneCourante[0];
@@ -189,11 +259,11 @@ if (empty($reshook))
 					$monOwner = $maLigneCourante[6];
 					
 					// main info loyer
-					// 
-					$receipt->ref = $monId;
 					$receipt->label = GETPOST('label', 'alpha');
-                	$receipt->rentamount = $monLoyer;
-					$receipt->chargesamount = $mesCharges;
+					$receipt->echeance = $dateech;
+					$receipt->date_start = $dateperiod;
+					$receipt->date_end = $dateperiodend;
+
                		if ($maTVA == Oui) 
 					{
 						$receipt->total_amount = $monMontant * 1.2;
@@ -204,10 +274,13 @@ if (empty($reshook))
 						$receipt->total_amount = $monMontant;
                     	$receipt->vat_amount = 0;
 					}
-                	$receipt->echeance = $dateech;
-					$receipt->date_start = $dateperiod;
-					$receipt->date_end = $dateperiodend;
+
+                    $receipt->ref = $monId;				
+                	$receipt->rentamount = $monLoyer;
+					$receipt->chargesamount = $mesCharges;
+                    $receipt->vat_amount = 0;
                 	$receipt->date_creation = $dateech;
+               		$receipt->date_rent = $dateech;
 					
 					// main info contract
 					$receipt->fk_rent = $monId;
@@ -219,8 +292,7 @@ if (empty($reshook))
                 	$receipt->fk_user_modif = $monOwner;
 					$receipt->import_key=0;
                 	$receipt->model_pdf=0;
-                	$receipt->entity=0;
-					$receipt->vat_tx=0;
+                	$receipt->vat_tx=0;
 					
 					$receipt->status=0;
 					$receipt->paye=0;
@@ -240,7 +312,7 @@ if (empty($reshook))
 		
 		if (empty($error)) 
 		{
-			setEventMessages($langs->trans("testreceipts"), null, 'mesgs');
+			setEventMessages($langs->trans("SocialContributionAdded"), null, 'mesgs');
 			Header("Location: " . dol_buildpath('/immobilier/receipt/immoreceipt_list.php',1));
 			exit();
 		}
@@ -258,10 +330,10 @@ if (empty($reshook))
 		$dateperiod = @dol_mktime(12,0,0, GETPOST("periodmonth"), GETPOST("periodday"), GETPOST("periodyear"));
 		$dateperiodend = @dol_mktime(12,0,0, GETPOST("periodendmonth"), GETPOST("periodendday"), GETPOST("periodendyear"));
 
-		$receipt = new Immoreceipt($db);
+		$receipt = new ImmoReceipt($db);
 		$result = $receipt->fetch($id);
 		
-		$receipt->label 		= GETPOST('label');
+		$receipt->label 			= GETPOST('label');
 		If ($receipt->addtva != 0) 
 		{
 			$receipt->total_amount 	= (GETPOST('rentamount') + GETPOST('chargesamount'))*1.2;
@@ -270,15 +342,15 @@ if (empty($reshook))
 		{
 			$receipt->total_amount 	= GETPOST('rentamount') + GETPOST('chargesamount');
 		}
-		$receipt->rentamount 	= GETPOST('rentamount');
-		$receipt->chargesamount 		= GETPOST('chargesamount');
+		$receipt->rentamount 		= GETPOST('rentamount');
+		$receipt->chargesamount 	= GETPOST('chargesamount');
 		If ($receipt->addtva != 0) 
 		{
-			$receipt->vat_amount 		= (GETPOST('rentamount') + GETPOST('chargesamount'))*0.2;
+			$receipt->vat_amount 	= (GETPOST('rentamount') + GETPOST('chargesamount'))*0.2;
 		}
 		else 
 		{
-			$receipt->vat_amount 		= 0;
+			$receipt->vat_amount 	= 0;
 		}
 		
 		$receipt->echeance 		= $dateech;
@@ -291,7 +363,7 @@ if (empty($reshook))
 		header("Location: " . dol_buildpath('/immobilier/receipt/immoreceipt_card.php',1) . '?id='.$receipt->id);
 		if ($id > 0) 
 		{
-			// $mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
+			$mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
 		} 
 		else 
 		{
