@@ -1,50 +1,83 @@
--- Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- phpMyAdmin SQL Dump
+-- version 4.2.12deb2+deb8u2
+-- http://www.phpmyadmin.net
 --
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
---
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
---
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see http://www.gnu.org/licenses/.
+-- Client :  localhost
+-- Généré le :  Lun 25 Juin 2018 à 14:59
+-- Version du serveur :  5.5.59-0+deb8u1
+-- Version de PHP :  5.6.33-0+deb8u1
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
 
-CREATE TABLE llx_immobilier_immoreceipt(
-	-- BEGIN MODULEBUILDER FIELDS
-	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL,
-	entity integer DEFAULT 1 NOT NULL,	
-	label varchar(255), 
-	fk_rent integer, 
-	fk_property integer, 
-	fk_renter integer, 
-	fk_owner integer,  
-	fk_soc integer,
-	note_public text, 
-	note_private text,
-	rentamount double(24,8), 
-	chargesamount double(24,8), 
-	total_amount double(24,8) DEFAULT NULL, 
-	balance double(24,8) DEFAULT NULL, 
-	paiepartiel double(24,8) DEFAULT NULL, 
-	echeance double(24,8) DEFAULT NULL, 
-	vat_amount double(24,8),
-	vat_tx integer,	
-	paye integer,  	
-	date_rent date NOT NULL, 
-	date_start date NOT NULL, 
-	date_end date NOT NULL, 
-	date_creation datetime NOT NULL, 
-	tms timestamp NOT NULL, 
-	fk_user_creat integer NOT NULL, 
-	fk_user_modif integer, 
-	import_key varchar(14), 
-	model_pdf varchar(128) NOT NULL, 
-	status integer NOT NULL
-	-- END MODULEBUILDER FIELDS
-) ENGINE=innodb;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Base de données :  `dbv7immo`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `llx_immobilier_immoreceipt`
+--
+
+CREATE TABLE IF NOT EXISTS `llx_immobilier_immoreceipt` (
+`rowid` int(11) NOT NULL,
+  `ref` varchar(128) NOT NULL,
+  `entity` int(11) NOT NULL DEFAULT '1',
+  `label` varchar(255) DEFAULT NULL,
+  `fk_rent` int(11) DEFAULT NULL,
+  `fk_property` int(11) DEFAULT NULL,
+  `fk_renter` int(11) DEFAULT NULL,
+  `fk_owner` int(11) DEFAULT NULL,
+  `fk_soc` int(11) DEFAULT NULL,
+  `note_public` text,
+  `note_private` text,
+  `rentamount` double(24,8) DEFAULT NULL,
+  `chargesamount` double(24,8) DEFAULT NULL,
+  `total_amount` double(24,8) DEFAULT NULL,
+  `balance` double(24,8) DEFAULT NULL,
+  `paiepartiel` double(24,8) DEFAULT NULL,
+  `echeance` datetime DEFAULT NULL,
+  `vat_amount` double(24,8) DEFAULT NULL,
+  `vat_tx` int(11) DEFAULT NULL,
+  `paye` int(11) DEFAULT NULL,
+  `date_rent` datetime DEFAULT NULL,
+  `date_start` datetime DEFAULT NULL,
+  `date_end` date DEFAULT NULL,
+  `date_creation` datetime DEFAULT NULL,
+  `tms` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `fk_user_creat` int(11) NOT NULL,
+  `fk_user_modif` int(11) DEFAULT NULL,
+  `import_key` varchar(14) DEFAULT NULL,
+  `model_pdf` varchar(128) DEFAULT NULL,
+  `status` int(11) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+
+--
+-- Index pour les tables exportées
+--
+
+--
+-- Index pour la table `llx_immobilier_immoreceipt`
+--
+ALTER TABLE `llx_immobilier_immoreceipt`
+ ADD PRIMARY KEY (`rowid`);
+
+--
+-- AUTO_INCREMENT pour les tables exportées
+--
+
+--
+-- AUTO_INCREMENT pour la table `llx_immobilier_immoreceipt`
+--
+ALTER TABLE `llx_immobilier_immoreceipt`
+MODIFY `rowid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
