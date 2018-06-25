@@ -241,7 +241,7 @@ if (empty($reshook))
 		if (empty($error)) 
 		{
 			setEventMessages($langs->trans("testreceipts"), null, 'mesgs');
-			//Header("Location: " . dol_buildpath('/immobilier/receipt/immoreceipt_list.php',1));
+			Header("Location: " . dol_buildpath('/immobilier/receipt/immoreceipt_list.php',1));
 			exit();
 		}
         
