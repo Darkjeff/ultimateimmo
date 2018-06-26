@@ -988,7 +988,7 @@ else
 
 			dol_fiche_end();
 
-			if (is_file($conf->immobilier->dir_output . '/receipt/' . $id . '.pdf')) 
+			if (is_file($conf->immobilier->dir_output . '/receipt/quittance_' . $id . '.pdf')) 
 			{		
 				print '&nbsp';
 				print '<table class="border" width="100%">';
