@@ -240,10 +240,9 @@ if (empty($reshook))
 		} 
 		else 
 		{
-			if (is_array($mesLignesCochees) || is_object($mesLignesCochees))
-			{
-				$mesLignesCochees = GETPOST('mesCasesCochees');
-				
+			$mesLignesCochees = GETPOST('mesCasesCochees');
+			if (is_array($mesLignesCochees))
+			{							
 				foreach ( $mesLignesCochees as $maLigneCochee ) 
 				{				
 					$receipt = new ImmoReceipt($db);
@@ -577,6 +576,7 @@ elseif ($action == 'createall')
 	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as l";
 	$sql .= " WHERE c.status = 1 AND loc.rowid = c.fk_renter and l.rowid = c.fk_property  ";
 	$resql = $db->query($sql);
+
 	if ($resql) 
 	{
 		$num = $db->num_rows($resql);
