@@ -988,8 +988,8 @@ else
 
 			dol_fiche_end();
 
-			if (is_file($conf->immobilier->dir_output . '/quittance_' . $id . '.pdf')) 
-			{
+			if (is_file($conf->immobilier->dir_output . '/receipt/' . $id . '.pdf')) 
+			{		
 				print '&nbsp';
 				print '<table class="border" width="100%">';
 				print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("LinkedDocuments") . '</td></tr>';

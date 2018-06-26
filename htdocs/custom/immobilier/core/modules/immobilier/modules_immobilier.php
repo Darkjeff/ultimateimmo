@@ -71,7 +71,7 @@ abstract class ModeleNumRefImmobilier
 	}
 
 	/**
-	 *  Renvoi la description par defaut du modele de numerotation
+	 *  Return default description of numbering model
 	 *
 	 *  @return     string      Texte descripif
 	 */
@@ -83,7 +83,7 @@ abstract class ModeleNumRefImmobilier
 	}
 
 	/**
-	 *  Renvoi un exemple de numerotation
+	 *  Return numbering example
 	 *
 	 *  @return     string      Example
 	 */
@@ -95,8 +95,7 @@ abstract class ModeleNumRefImmobilier
 	}
 
 	/**
-	 *  Test si les numeros deja en vigueur dans la base ne provoquent pas de
-	 *  de conflits qui empechera cette numerotation de fonctionner.
+	 *  Test if existing numbers make problems with numbering
 	 *
 	 *  @return     boolean     false si conflit, true si ok
 	 */
@@ -106,11 +105,11 @@ abstract class ModeleNumRefImmobilier
 	}
 
 	/**
-	 *  Renvoi prochaine valeur attribuee
+	 *  Return next value
 	 *
-	 *	@param	Societe		$objsoc		Object third party
-	 *	@param	Receipt		$object		Object receipt
-	 *	@return	string					Valeur
+	 *	@param	Societe		$objsoc		thirdparty Object
+	 *	@param	Receipt		$object		receipt Object
+	 *	@return	string					Value
 	 */
 	function getNextValue($objsoc, $object)
 	{
@@ -119,7 +118,7 @@ abstract class ModeleNumRefImmobilier
 	}
 
 	/**
-	 *  Renvoi version du module numerotation
+	 *  Return numbering version module
 	 *
 	 *  @return     string      Valeur
 	 */
@@ -182,7 +181,7 @@ function immobilier_pdf_create($db, $id, $message, $typeModele, $outputlangs, $f
  * \param modele modele à utiliser
  * \param		outputlangs		objet lang a utiliser pour traduction
  * \return int <0 if KO, >0 if OK
- */
+ 
 function chargefourn_pdf_create($db, $year, $typeModele, $outputlangs, $filedir, $filename) {
 	global $conf, $langs;
 	$langs->load ( 'immobilier@immobilier' );
@@ -214,3 +213,4 @@ function chargefourn_pdf_create($db, $year, $typeModele, $outputlangs, $filedir,
 		return - 1;
 	}
 }
+*/
