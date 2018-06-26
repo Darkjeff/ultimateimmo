@@ -47,7 +47,7 @@ dol_include_once('/immobilier/core/modules/immobilier/modules_immobilier.php');
 dol_include_once('/immobilier/class/immorent.class.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier", "other", "compta", "bills"));
+$langs->loadLangs(array("immobilier@immobilier", "other", "compta", "bills", "contracts"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -60,9 +60,8 @@ $socid		= GETPOST('socid','int');
 
 // Initialize technical objects
 $object=new ImmoReceipt($db);
-/*print '<pre>';
-var_dump($object);
-print '</pre>';*/
+$immorent=new ImmoRent($db);
+
 $extrafields = new ExtraFields($db);
 $diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immoreceiptcard','globalcard'));     // Note that conf->hooks_modules contains array
@@ -590,12 +589,12 @@ elseif ($action == 'createall')
 		print '<td>' . $langs->trans('Property') . '</td>';
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
-		print '<td>' . $langs->trans('NameRenter') . '</td>';
-		print '<td align="right">' . $langs->trans('AmountTC') . '</td>';
-		print '<td align="right">' . $langs->trans('Rent') . '</td>';
-		print '<td align="right">' . $langs->trans('Charges') . '</td>';
+		print '<td>' . $langs->trans('RenterName') . '</td>';
+		print '<td align="right">' . $langs->trans('TotalAmount') . '</td>';
+		print '<td align="right">' . $langs->trans('RentAmount') . '</td>';
+		print '<td align="right">' . $langs->trans('ChargesAmount') . '</td>';
 		print '<td align="right">' . $langs->trans('VATIsUsed') . '</td>';
-		print '<td align="right">' . $langs->trans('nameowner') . '</td>';
+		print '<td align="right">' . $langs->trans('OwnerName') . '</td>';
 		print '<td align="right">' . $langs->trans('Select') . '</td>';
 		print "</tr>\n";
 		
@@ -604,9 +603,13 @@ elseif ($action == 'createall')
 			while ( $i < $num ) 
 			{
 				$objp = $db->fetch_object($resql);
-
-				print '<tr class="oddeven">';					
-				print '<td>' . $objp->reference . '</td>';
+				$immorent->ref=$objp->reference;
+				$immorent->id=$objp->reference;	
+				print '<tr class="oddeven">';
+				if ($objp->reference > 0)
+				{						
+					print '<td>' . $immorent->getNomUrl(0) . '</td>';
+				}
 				print '<td>' . $objp->reflocal . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->reflocataire . '</td>';
