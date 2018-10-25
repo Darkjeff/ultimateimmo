@@ -196,7 +196,7 @@ $now=dol_now();
 
 //$help_url="EN:Module_ImmoProperty|FR:Module_ImmoProperty_FR|ES:Módulo_ImmoProperty";
 $help_url='';
-$title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoProperty_Types"));
+$title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoPropertyTypes"));
 
 
 // Build and execute select

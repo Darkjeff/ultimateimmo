@@ -95,6 +95,7 @@ PropertyType = Type de bien immobilier
 PropertyTypeStatusDraft=Draft
 PropertyTypeStatusActive=Active
 PropertyTypeStatusCancel=Cancel
+ImmoPropertyTypes = types of properties
 Building = Immeuble
 Staircase = Escalier
 NumFloor = Etage
