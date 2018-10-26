@@ -139,7 +139,7 @@ class ImmoOwner_Type extends CommonObject
 	 */
 	public function __construct(DoliDB $db)
 	{
-		global $conf, $user;
+		global $conf, $user, $langs;
 
 		$this->db = $db;
 		$this->status = 1;
