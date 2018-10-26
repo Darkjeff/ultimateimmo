@@ -108,6 +108,7 @@ PropertyParent = Bien Parent
 DateBuilt = Date de construction
 Target = Cible
 ImmoOwner = Propriétaire
+ImmoOwner_Type = Type de Propriétaire
 Civility = Titre
 Deposit = Dépôt de garantie
 ListOfRents = Liste des locations
