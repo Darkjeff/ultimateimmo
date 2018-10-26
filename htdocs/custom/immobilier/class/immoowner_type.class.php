@@ -155,6 +155,9 @@ class ImmoOwner_Type extends CommonObject
 				unset($this->fields[$key]);
 			}
 		}
+		
+		// Translate some data
+		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
 	}
 
 	/**
