@@ -199,7 +199,7 @@ $now=dol_now();
 
 //$help_url="EN:Module_ImmoRenter_Type|FR:Module_ImmoRenter_Type_FR|ES:Módulo_ImmoRenter_Type";
 $help_url='';
-$title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoOwner_Types"));
+$title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoOwnerType"));
 
 
 // Build and execute select

@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018  Philippe GRAND 	   <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ class ImmoProperty extends CommonObject
 	 * @var string Name of table without prefix where object is stored
 	 */
 	public $fk_element='fk_property';
-	
+
 	public $fieldsforcombobox='ref';
 	/**
 	 * @var int  Does immoproperty support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
@@ -96,7 +96,7 @@ class ImmoProperty extends CommonObject
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>55, 'notnull'=>-1,),
 		'address' => array('type'=>'varchar(255)', 'label'=>'Address', 'enabled'=>1, 'visible'=>1, 'position'=>60, 'notnull'=>-1,),
 		'building' => array('type'=>'varchar(32)', 'label'=>'Building', 'enabled'=>1, 'visible'=>1, 'position'=>65, 'notnull'=>-1,),
-		'staircase' => array('type'=>'varchar(8)', 'label'=>'Staircase', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1,),		
+		'staircase' => array('type'=>'varchar(8)', 'label'=>'Staircase', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1,),
 		'numfloor' => array('type'=>'varchar(8)', 'label'=>'NumFloor', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1,),
 		'numflat' => array('type'=>'varchar(8)', 'label'=>'NumFlat', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1,),
 		'numdoor' => array('type'=>'varchar(8)', 'label'=>'NumDoor', 'enabled'=>1, 'visible'=>1, 'position'=>85, 'notnull'=>-1,),
@@ -179,18 +179,9 @@ class ImmoProperty extends CommonObject
 
 		$this->db = $db;
 
-		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible']=0;
-		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled']=0;
+		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID)) $this->fields['rowid']['visible']=0;
+		if (empty($conf->multicompany->enabled)) $this->fields['entity']['enabled']=0;
 
-		// Unset fields that are disabled
-		foreach($this->fields as $key => $val)
-		{
-			if (isset($val['enabled']) && empty($val['enabled']))
-			{
-				unset($this->fields[$key]);
-			}
-		}
-		
 		// Translate some data
 		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
 	}
@@ -267,9 +258,9 @@ class ImmoProperty extends CommonObject
 	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
 		if (empty($id) && empty($ref)) return false;
-		
+
 		global $langs;
-		
+
 		$array = preg_split("/[\s,]+/", $this->getFieldList());
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), array($array[0]));
@@ -283,7 +274,7 @@ class ImmoProperty extends CommonObject
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql.=$morewhere;
-		
+
 		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
 		if ($res)
@@ -312,7 +303,7 @@ class ImmoProperty extends CommonObject
 			return -1;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -539,7 +530,7 @@ class ImmoProperty extends CommonObject
 			dol_print_error($this->db);
 		}
 	}
-	
+
 	/**
 	 *    Return country label, code or id from an id, code or label
 	 *

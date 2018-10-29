@@ -94,7 +94,7 @@ if ($id > 0 || ! empty($ref))
 
 	$head = immoowner_typePrepareHead($object);
 
-	dol_fiche_head($head, 'note', $langs->trans("ImmoOwner_Type"), -1, 'immoowner_type@immobilier');
+	dol_fiche_head($head, 'note', $langs->trans("ImmoOwnerType"), -1, 'immoowner_type@immobilier');
 
 	// Object card
 	// ------------------------------------------------------------

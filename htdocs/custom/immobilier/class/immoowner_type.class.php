@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018 Philippe GRAND 	   <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,7 +155,7 @@ class ImmoOwner_Type extends CommonObject
 				unset($this->fields[$key]);
 			}
 		}
-		
+
 		// Translate some data
 		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
 	}
@@ -272,7 +272,7 @@ class ImmoOwner_Type extends CommonObject
 	{
 		return $this->deleteCommon($user, $notrigger);
 	}
-	
+
 	/**
 	 *  Return list of renters' type
 	 *
@@ -311,7 +311,7 @@ class ImmoOwner_Type extends CommonObject
 		}
 		return $rentertypes;
 	}
-	
+
 	/**
 	 * 	Return array of Renter objects for renter type this->id (or all if this->id not defined)
 	 *
@@ -391,7 +391,7 @@ class ImmoOwner_Type extends CommonObject
         $result = '';
         $companylink = '';
 
-        $label = '<u>' . $langs->trans("ImmoOwner_Type") . '</u>';
+        $label = '<u>' . $langs->trans("ImmoOwnerType") . '</u>';
         $label.= '<br>';
         $label.= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 

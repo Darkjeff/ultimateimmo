@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018  Philippe GRAND 	   <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,8 +136,8 @@ class ImmoReceipt extends CommonObject
 	public $import_key;
 	public $model_pdf;
 	public $status;
-	
-	
+
+
 	public $renter_id;
 	public $nomlocataire;
 	public $prenomlocataire;
@@ -180,14 +180,17 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function __construct(DoliDB $db)
 	{
-		global $conf, $user;
+		global $conf, $user, $langs;
 
 		$this->db = $db;
 
 		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID)) $this->fields['rowid']['visible']=0;
 		if (empty($conf->multicompany->enabled)) $this->fields['entity']['enabled']=0;
+
+		// Translate some data
+		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
 	}
-	
+
 	/**
 	 *	Return next contract ref
 	 *
@@ -298,7 +301,7 @@ class ImmoReceipt extends CommonObject
 	        return -1;
 	    }
 	}
-	
+
 	/**
 	 * Function to concat keys of fields
 	 *
@@ -309,7 +312,7 @@ class ImmoReceipt extends CommonObject
 	    $keys = array_keys($this->fields);
 	    return implode(',', $keys);
 	}
-	
+
 	/**
 	 * Function to load data from a SQL pointer into properties of current object $this
 	 *
@@ -351,7 +354,7 @@ class ImmoReceipt extends CommonObject
 			}
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -368,14 +371,14 @@ class ImmoReceipt extends CommonObject
 		$array = array_splice($array, 0, count($array), $array[0]);
 		$array = implode(', t.', $array);
 
-		
-		$sql = 'SELECT '.$array.',';		
+
+		$sql = 'SELECT '.$array.',';
 		$sql.= ' lc.rowid as renter_id,';
 		$sql.= ' lc.lastname as nomlocataire,';
 		$sql.= ' lc.email as emaillocataire,';
 		$sql.= ' ll.label as nomlocal,';
 		$sql.= ' ll.rowid as property_id,';
-		$sql.= ' ic.vat as addtva';	
+		$sql.= ' ic.vat as addtva';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element . ' as t';
 		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'immobilier_immorenter as lc ON t.fk_renter = lc.rowid';
 		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'immobilier_immoproperty as ll ON t.fk_property = ll.rowid';
@@ -406,7 +409,7 @@ class ImmoReceipt extends CommonObject
 			return -1;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -519,13 +522,13 @@ class ImmoReceipt extends CommonObject
 
 		return $result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param unknown $user
 	 * @return number
 	 */
-	public function set_paid($user) 
+	public function set_paid($user)
 	{
 		$sql = 'UPDATE ' .MAIN_DB_PREFIX.$this->table_element.' SET';
 		$sql .= ' paye=1';
@@ -678,7 +681,7 @@ class ImmoReceipt extends CommonObject
         $this->chargesamount = 20000;
         $this->total_amount = 50000;
 	}
-	
+
 	/**
 	 *  Create an intervention document on disk using template defined into IMMOBILIER_ADDON_PDF
 	 *
@@ -695,16 +698,16 @@ class ImmoReceipt extends CommonObject
 
 		$langs->load("immobilier@immobilier");
 
-		if (! dol_strlen($modele)) 
+		if (! dol_strlen($modele))
 		{
 
 			$modele = '';
 
-			if ($this->modelpdf) 
+			if ($this->modelpdf)
 			{
 				$modele = $this->modelpdf;
-			} 
-			elseif (! empty($conf->global->IMMOBILIER_ADDON_PDF)) 
+			}
+			elseif (! empty($conf->global->IMMOBILIER_ADDON_PDF))
 			{
 				$modele = $conf->global->IMMOBILIER_ADDON_PDF;
 			}
