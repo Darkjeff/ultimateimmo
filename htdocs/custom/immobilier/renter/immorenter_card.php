@@ -214,7 +214,14 @@ if ($action == 'create')
 		print '>';
 		print $langs->trans($val['label']);
 		print '</td>';
-		print '<td>';		
+		print '<td>';
+		if ($val['label'] == 'ThirdParty') 
+		{
+			if ($conf->societe->enabled)
+			{				
+				print ' <a href="'.DOL_URL_ROOT.'/societe/card.php?action=create&backtopage='.urlencode($_SERVER["PHP_SELF"].'?action=create').'">'.$langs->trans("AddThirdParty").'</a>';
+			}
+		}
 		if ($val['label'] == 'BirthCountry') 
 		{			
 			// We set country_id, country_code and country for the selected country
