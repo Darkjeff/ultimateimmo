@@ -491,12 +491,12 @@ if (isset($totalarray['pos']))
 	while ($i < $totalarray['nbfield'])
 	{
 		$i++;
-		if (! empty($totalarray['pos'][$i]))  print '<td align="left">'.price($totalarray['val'][$totalarray['pos'][$i]]).'</td>';
+		if (! empty($totalarray['pos'][$i]))  print '<td align="left"><strong>'.price($totalarray['val'][$totalarray['pos'][$i]]).'</strong></td>';
 		else
 		{
 			if ($i == 1)
 			{
-				if ($num < $limit) print '<td align="left">'.$langs->trans("Total").'</td>';
+				if ($num < $limit) print '<td align="left"><strong>'.$langs->trans("Total").'</strong></td>';
 				else print '<td align="left">'.$langs->trans("Totalforthispage").'</td>';
 			}
 			else print '<td></td>';
