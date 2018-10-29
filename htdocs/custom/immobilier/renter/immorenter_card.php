@@ -217,12 +217,18 @@ if ($action == 'create')
 		print '<td>';
 		if ($val['label'] == 'ThirdParty') 
 		{
+			$text=$form->select_company(GETPOST('socid','int'), 'socid', $filteronlist, 'SelectThirdParty', 1, 0, array(), 0, 'minwidth300');
+			if (empty($conf->dol_use_jmobile))
+			{
+				$texthelp=$langs->trans("IfNeedToUseOhterObjectKeepEmpty");
+				print $form->textwithtooltip($text.' '.img_help(),$texthelp,1);
+			}
 			if ($conf->societe->enabled)
 			{				
 				print ' <a href="'.DOL_URL_ROOT.'/societe/card.php?action=create&backtopage='.urlencode($_SERVER["PHP_SELF"].'?action=create').'">'.$langs->trans("AddThirdParty").'</a>';
 			}
 		}
-		if ($val['label'] == 'BirthCountry') 
+		elseif ($val['label'] == 'BirthCountry') 
 		{			
 			// We set country_id, country_code and country for the selected country
 			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
