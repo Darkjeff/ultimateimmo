@@ -92,6 +92,7 @@ ImmoProperties = Properties
 ImmoRents = Rents
 NewImmoRent = New ImmoRent 
 ImmoReceipts = Receipts
+NewImmoReceipt = New Receipt
 NewImmoPropertyType = New Property Type
 PropertyType = Property type
 PropertyTypeStatusDraft=Draft

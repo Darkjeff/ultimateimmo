@@ -141,7 +141,7 @@ if ($object->id > 0)
 	$head = immoproperty_typePrepareHead($object);
 
 
-	dol_fiche_head($head, 'agenda', $langs->trans("ImmoProperty_type"), -1, 'immoproperty_type@immobilier');
+	dol_fiche_head($head, 'agenda', $langs->trans("Propertytype"), -1, 'immoproperty_type@immobilier');
 
 	// Object card
 	// ------------------------------------------------------------

@@ -94,6 +94,7 @@ ImmoProperties = Biens immobiliers
 ImmoRents = Locations
 NewImmoRent = Nouvelle location
 ImmoReceipts = Quittances
+NewImmoReceipt = Nouvelle quittance
 NewImmoPropertyType = Nouveau type de bien
 PropertyType = Type de bien immobilier
 PropertyTypeStatusDraft=Draft

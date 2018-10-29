@@ -287,7 +287,7 @@ class ImmoProperty_Type extends CommonObject
         $result = '';
         $companylink = '';
 
-        $label = '<u>' . $langs->trans("ImmoProperty_Type") . '</u>';
+        $label = '<u>' . $langs->trans("PropertyType") . '</u>';
         $label.= '<br>';
         $label.= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 
