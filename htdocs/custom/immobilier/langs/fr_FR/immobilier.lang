@@ -108,6 +108,7 @@ PropertyParent = Bien Parent
 DateBuilt = Date de construction
 Target = Cible
 ImmoOwner = Propriétaire
+ImmoOwners = Propriétaires
 ImmoOwner_Type = Type de Propriétaire
 ImmoOwner_Types = Types de Propriétaire
 Civility = Titre
