@@ -86,7 +86,6 @@ class ImmoRenter extends CommonObject
 		'societe' => array('type'=>'varchar(128)', 'label'=>'Societe', 'visible'=>1, 'enabled'=>1, 'position'=>36, 'notnull'=>-1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1,),
-		'modelpdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'visible'=>1, 'enabled'=>1, 'position'=>55, 'notnull'=>-1,),
 		'civility_id' => array('type'=>'integer', 'label'=>'Civility', 'visible'=>1, 'enabled'=>1, 'position'=>60, 'notnull'=>1, 'arrayofkeyval'=>array('0'=>'MME', '1'=>'MLE', '2'=>'MR')),
 		'firstname' => array('type'=>'varchar(255)', 'label'=>'Firstname', 'visible'=>1, 'enabled'=>1, 'position'=>65, 'notnull'=>-1, 'searchall'=>1,),
 		'lastname' => array('type'=>'varchar(255)', 'label'=>'Lastname', 'visible'=>1, 'enabled'=>1, 'position'=>70, 'notnull'=>-1, 'searchall'=>1,),
@@ -112,7 +111,6 @@ class ImmoRenter extends CommonObject
 	public $societe;
 	public $note_public;
 	public $note_private;
-	public $modelpdf;
 	public $civility_id;
 	public $firstname;
 	public $lastname;
