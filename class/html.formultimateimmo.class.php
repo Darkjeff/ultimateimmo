@@ -17,14 +17,14 @@
  */
 
 /**
- * \file 	immobilier/class/html.formimmobilier.class.php
- * \brief 	Fichier de la classe des fonctions predefinie de composants html immobilier
+ * \file 	ultimateimmo/class/html.formultimateimmo.class.php
+ * \brief 	Fichier de la classe des fonctions predefinie de composants html ultimateimmo
  */
 
 /**
  * Class to manage building of HTML components
  */
-class FormImmobilier extends Form {
+class FormUltimateimmo extends Form {
 	public  $error;
 	
 	/**
