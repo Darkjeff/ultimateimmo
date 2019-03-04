@@ -17,9 +17,9 @@
  */
 
 /**
- * \file    immobilier/admin/about.php
- * \ingroup immobilier
- * \brief   About page of module Immobilier.
+ * \file    ultimateimmo/admin/about.php
+ * \ingroup ultimateimmo
+ * \brief   About page of module ultimateimmo.
  */
 
 // Load Dolibarr environment
@@ -39,12 +39,12 @@ if (! $res) die("Include of main fails");
 // Libraries
 require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
-require_once '../lib/immobilier.lib.php';
+require_once '../lib/ultimateimmo.lib.php';
 
 // Translations
 $langs->load("errors");
 $langs->load("admin");
-$langs->load("immobilier@immobilier");
+$langs->load("ultimateimmo@ultimateimmo");
 
 // Access control
 if (! $user->admin) {
@@ -69,20 +69,20 @@ $backtopage = GETPOST('backtopage', 'alpha');
 
 $form = new Form($db);
 
-$page_name = "ImmobilierAbout";
+$page_name = "UltimateimmoAbout";
 llxHeader('', $langs->trans($page_name));
 
 // Subheader
 $linkback = '<a href="'.($backtopage?$backtopage:DOL_URL_ROOT.'/admin/modules.php').'">'.$langs->trans("BackToModuleList").'</a>';
 
-print load_fiche_titre($langs->trans($page_name), $linkback, 'object_immobilier@immobilier');
+print load_fiche_titre($langs->trans($page_name), $linkback, 'object_ultimateimmo@ultimateimmo');
 
 // Configuration header
-$head = immobilierAdminPrepareHead();
-dol_fiche_head($head, 'about', '', 0, 'immobilier@immobilier');
+$head = ultimateimmoAdminPrepareHead();
+dol_fiche_head($head, 'about', '', 0, 'ultimateimmo@ultimateimmo');
 
-dol_include_once('/immobilier/core/modules/modImmobilier.class.php');
-$tmpmodule = new modImmobilier($db);
+dol_include_once('/ultimateimmo/core/modules/modUltimateimmo.class.php');
+$tmpmodule = new modUltimateimmo($db);
 print $tmpmodule->getDescLong();
 
 // Page end

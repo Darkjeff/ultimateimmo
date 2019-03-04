@@ -20,8 +20,8 @@
  */
 
 /**
- *      \file       immobilier/admin/receipt_extrafields.php
- *		\ingroup    immobilier
+ *      \file       ultimateimmo/admin/receipt_extrafields.php
+ *		\ingroup    ultimateimmo
  *		\brief      Page to setup extra fields of receipts
  */
 
@@ -41,11 +41,11 @@ if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main
 if (! $res) die("Include of main fails");
 
 // Libraries
-dol_include_once('/immobilier/lib/immobilier.lib.php');
+dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
 require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","admin"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","admin"));
 
 $extrafields = new ExtraFields($db);
 $form = new Form($db);
@@ -57,7 +57,7 @@ foreach ($tmptype2label as $key => $val) $type2label[$key]=$langs->transnoentiti
 
 $action=GETPOST('action', 'alpha');
 $attrname=GETPOST('attrname', 'alpha');
-$elementtype='immobilier_immoreceipt'; // Must be the $table_element of the class that manage extrafield
+$elementtype='ultimateimmo_immoreceipt'; // Must be the $table_element of the class that manage extrafield
 
 if (!$user->admin) accessforbidden();
 
@@ -77,14 +77,14 @@ require DOL_DOCUMENT_ROOT.'/core/actions_extrafields.inc.php';
 $textobject = $langs->transnoentitiesnoconv("Receipts");
 
 $help_url='';
-llxHeader('', $langs->trans('ImmobilierSetup'));
+llxHeader('', $langs->trans('UltimateimmoSetup'));
 
 $linkback='<a href="'.DOL_URL_ROOT.'/admin/modules.php?restore_lastsearch_values=1">'.$langs->trans("BackToModuleList").'</a>';
-print load_fiche_titre($langs->trans("ImmobilierSetup"),$linkback,'title_setup');
+print load_fiche_titre($langs->trans("UltimateimmoSetup"),$linkback,'title_setup');
 
 $head = immobilierAdminPrepareHead();
 
-dol_fiche_head($head, 'attributes_receipt', $langs->trans("ModuleImmobilierName"), 0, 'building@immobilier');
+dol_fiche_head($head, 'attributes_receipt', $langs->trans("ModuleUltimateimmoName"), 0, 'building@ultimateimmo');
 
 require DOL_DOCUMENT_ROOT.'/core/tpl/admin_extrafields_view.tpl.php';
 

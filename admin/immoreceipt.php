@@ -17,8 +17,8 @@
  */
 
 /**
- * \file    immobilier/admin/immoreceipt.php
- * \ingroup immobilier
+ * \file    ultimateimmo/admin/immoreceipt.php
+ * \ingroup ultimateimmo
  * \brief   immoreceipt setup page.
  */
 
@@ -41,13 +41,13 @@ global $langs, $user;
 // Libraries
 require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
-dol_include_once('/immobilier/lib/immobilier.lib.php');
-dol_include_once('/immobilier/class/immoreceipt.class.php');
-dol_include_once('/immobilier/core/modules/immobilier/pdf/pdf_chargefourn.module.php');
-dol_include_once('/immobilier/core/modules/immobilier/pdf/pdf_quittance.module.php');
+dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
+dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_chargefourn.module.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_quittance.module.php');
 
 // Translations
-$langs->loadLangs(array("admin", "errors", "immobilier@immobilier"));
+$langs->loadLangs(array("admin", "errors", "ultimateimmo@ultimateimmo"));
 
 // Access control
 if (! $user->admin) accessforbidden();
@@ -58,11 +58,11 @@ $backtopage = GETPOST('backtopage', 'alpha');
 $value = GETPOST('value','alpha');
 $label = GETPOST('label','alpha');
 $scandir = GETPOST('scan_dir','alpha');
-$type='immobilier';
+$type='ultimateimmo';
 
-if (empty($conf->global->IMMOBILIER_ADDON_NUMBER))
+if (empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER))
 {
-    $conf->global->IMMOBILIER_ADDON_NUMBER='mod_immobilier_simple';
+    $conf->global->ULTIMATEIMMO_ADDON_NUMBER='mod_ultimateimmo_simple';
 }
 
 
@@ -88,18 +88,18 @@ if ($action == 'updateMask')
 	}
 }
 
-else if ($action == 'set_IMMOBILIER_FREE_TEXT')
+else if ($action == 'set_ULTIMATEIMMO_FREE_TEXT')
 {
-	$freetext=GETPOST('IMMOBILIER_FREE_TEXT','none');	// No alpha here, we want exact string
-	$res = dolibarr_set_const($db, "IMMOBILIER_FREE_TEXT",$freetext,'chaine',0,'',$conf->entity);
+	$freetext=GETPOST('ULTIMATEIMMO_FREE_TEXT','none');	// No alpha here, we want exact string
+	$res = dolibarr_set_const($db, "ULTIMATEIMMO_FREE_TEXT",$freetext,'chaine',0,'',$conf->entity);
 	if ($res <= 0)
 	{
 		$error++;
 		setEventMessages($langs->trans("Error"), null, 'errors');
 	}
 
-	$draft=GETPOST('IMMOBILIER_DRAFT_WATERMARK','alpha');
-	$res = dolibarr_set_const($db, "IMMOBILIER_DRAFT_WATERMARK",trim($draft),'chaine',0,'',$conf->entity);
+	$draft=GETPOST('ULTIMATEIMMO_DRAFT_WATERMARK','alpha');
+	$res = dolibarr_set_const($db, "ULTIMATEIMMO_DRAFT_WATERMARK",trim($draft),'chaine',0,'',$conf->entity);
 	if ($res <= 0)
 	{
 		$error++;
@@ -124,7 +124,7 @@ else if ($action == 'specimen')
 	$dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
 	foreach($dirmodels as $reldir)
 	{
-	    $file=dol_buildpath($reldir."immobilier/core/modules/immobilier/pdf/pdf_".$modele.".modules.php",0);
+	    $file=dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf/pdf_".$modele.".modules.php",0);
 		if (file_exists($file))
 		{
 			$filefound=1;
@@ -141,7 +141,7 @@ else if ($action == 'specimen')
 
 		if ($module->write_file($receipt, $langs) > 0)
 		{
-			header("Location: ".DOL_URL_ROOT."/document.php?modulepart=immobilier&file=SPECIMEN.pdf");
+			header("Location: ".DOL_URL_ROOT."/document.php?modulepart=ultimateimmo&file=SPECIMEN.pdf");
 			return;
 		}
 		else
@@ -168,18 +168,18 @@ else if ($action == 'del')
 	$ret = delDocumentModel($value, $type);
 	if ($ret > 0)
 	{
-        if ($conf->global->IMMOBILIER_ADDON_PDF == "$value") dolibarr_del_const($db, 'IMMOBILIER_ADDON_PDF',$conf->entity);
+        if ($conf->global->ULTIMATEIMMO_ADDON_PDF == "$value") dolibarr_del_const($db, 'ULTIMATEIMMO_ADDON_PDF',$conf->entity);
 	}
 }
 
 // Set default model
 else if ($action == 'setdoc')
 {
-	if (dolibarr_set_const($db, "IMMOBILIER_ADDON_PDF",$value,'chaine',0,'',$conf->entity))
+	if (dolibarr_set_const($db, "ULTIMATEIMMO_ADDON_PDF",$value,'chaine',0,'',$conf->entity))
 	{
 		// La constante qui a ete lue en avant du nouveau set
 		// on passe donc par une variable pour avoir un affichage coherent
-		$conf->global->IMMOBILIER_ADDON_PDF = $value;
+		$conf->global->ULTIMATEIMMO_ADDON_PDF = $value;
 	}
 
 	// On active le modele
@@ -192,7 +192,7 @@ else if ($action == 'setdoc')
 
 else if ($action == 'setmodel')
 {
-	dolibarr_set_const($db, "IMMOBILIER_ADDON_NUMBER",$value,'chaine',0,'',$conf->entity);
+	dolibarr_set_const($db, "ULTIMATEIMMO_ADDON_NUMBER",$value,'chaine',0,'',$conf->entity);
 }
 
 
@@ -207,7 +207,7 @@ $form=new Form($db);
 
 $dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
 
-$page_name = "ImmobilierSetup";
+$page_name = "UltimateimmoSetup";
 llxHeader('', $langs->trans($page_name));
 
 // Subheader
@@ -216,16 +216,16 @@ $linkback = '<a href="'.($backtopage?$backtopage:DOL_URL_ROOT.'/admin/modules.ph
 print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
 
 // Configuration header
-$head = immobilierAdminPrepareHead();
+$head = UltimateimmoAdminPrepareHead();
 
-dol_fiche_head($head, 'settings', $langs->trans("ModuleImmobilierName"), -1, "building@immobilier");
+dol_fiche_head($head, 'settings', $langs->trans("ModuleUltimateimmoName"), -1, "building@ultimateimmo");
 
 
 /*
- * Immobilier numbering model
+ * ultimateimmo numbering model
  */
 
-print load_fiche_titre($langs->trans("ImmobilierNumberingModeles"),'','');
+print load_fiche_titre($langs->trans("UltimateimmoNumberingModeles"),'','');
 
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
@@ -240,7 +240,7 @@ clearstatcache();
 
 foreach ($dirmodels as $reldir)
 {
-	$dir = dol_buildpath($reldir."immobilier/core/modules/immobilier/");
+	$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/");
 
 	if (is_dir($dir))
 	{
@@ -249,7 +249,7 @@ foreach ($dirmodels as $reldir)
 		{
 			while (($file = readdir($handle))!==false)
 			{
-				if (substr($file, 0, 15) == 'mod_immobilier_' && substr($file, dol_strlen($file)-3, 3) == 'php')
+				if (substr($file, 0, 15) == 'mod_ultimateimmo_' && substr($file, dol_strlen($file)-3, 3) == 'php')
 				{
 					$file = substr($file, 0, dol_strlen($file)-4);
 
@@ -276,7 +276,7 @@ foreach ($dirmodels as $reldir)
                         print '</td>'."\n";
 
 						print '<td align="center">';
-						if ($conf->global->IMMOBILIER_ADDON_NUMBER == $file)
+						if ($conf->global->ULTIMATEIMMO_ADDON_NUMBER == $file)
 						{
 							print img_picto($langs->trans("Activated"),'switch_on');
 						}
@@ -322,13 +322,13 @@ foreach ($dirmodels as $reldir)
 print "</table><br>\n";
 
 /*
- *  Documents models for immobilier
+ *  Documents models for ultimateimmo
  */
 
-print load_fiche_titre($langs->trans("TemplatePDFImmobilier"), '', '');
+print load_fiche_titre($langs->trans("TemplatePDFUltimateimmo"), '', '');
 
 // Defini tableau def des modeles
-$type='immobilier';
+$type='ultimateimmo';
 $def = array();
 
 $sql = "SELECT nom";
@@ -367,7 +367,7 @@ clearstatcache();
 
 foreach ($dirmodels as $reldir)
 {
-	$dir = dol_buildpath($reldir."immobilier/core/modules/immobilier/pdf");
+	$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf");
 
 	if (is_dir($dir))
 	{
@@ -425,7 +425,7 @@ foreach ($dirmodels as $reldir)
 
 		    				// Default
 		    				print "<td align=\"center\">";
-		    				if ($conf->global->IMMOBILIER_ADDON_PDF == "$name")
+		    				if ($conf->global->ULTIMATEIMMO_ADDON_PDF == "$name")
 		    				{
 		    					print img_picto($langs->trans("Default"),'on');
 		    				}
@@ -513,7 +513,7 @@ print "</td></tr>\n";
 
 print '<tr><td>';
 print $form->textwithpicto($langs->trans("WatermarkOnDraftImmoCards"), $htmltext, 1, 'help', '', 0, 2, 'watermarktooltip').'<br>';
-print '<input size="50" class="flat" type="text" name="IMMOBILIER_DRAFT_WATERMARK" value="'.$conf->global->IMMOBILIER_DRAFT_WATERMARK.'">';
+print '<input size="50" class="flat" type="text" name="ULTIMATEIMMO_DRAFT_WATERMARK" value="'.$conf->global->ULTIMATEIMMO_DRAFT_WATERMARK.'">';
 print "</td></tr>\n";
 
 print '</table>';
