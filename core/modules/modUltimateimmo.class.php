@@ -201,11 +201,11 @@ class modUltimateimmo extends DolibarrModules
 		$this->dictionaries=array(
 			'langs'=>'ultimateimmo@ultimateimmo',
 			'tabname'=>array(
-				MAIN_DB_PREFIX."c_immo_diagnostic"
+				MAIN_DB_PREFIX."c_ultimateimmo_diagnostic"
 			),
 			'tablib'=>array("DiagnosticImmo",
 			),
-			'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'c_immo_diagnostic as f'
+			'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_diagnostic as f'
 			),
 			'tabsqlsort'=>array(
 				"label ASC"
