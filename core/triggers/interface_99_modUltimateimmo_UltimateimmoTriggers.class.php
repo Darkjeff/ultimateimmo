@@ -16,15 +16,15 @@
  */
 
 /**
- * \file    core/triggers/interface_99_modimmobilier_immobilierTriggers.class.php
- * \ingroup immobilier
+ * \file    core/triggers/interface_99_ultimateimmo_ultimateimmoTriggers.class.php
+ * \ingroup ultimateimmo
  * \brief   Example trigger.
  *
  * Put detailed description here.
  *
  * \remarks You can create other triggers by copying this one.
  * - File name should be either:
- *      - interface_99_modimmobilier_MyTrigger.class.php
+ *      - interface_99_modultimateimmo_MyTrigger.class.php
  *      - interface_99_all_MyTrigger.class.php
  * - The file must stay in core/triggers
  * - The class name must be InterfaceMytrigger
@@ -36,7 +36,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/triggers/dolibarrtriggers.class.php';
 
 
 /**
- *  Class of triggers for immobilier module
+ *  Class of triggers for ultimateimmo module
  */
 class InterfaceimmobilierTriggers extends DolibarrTriggers
 {
@@ -56,10 +56,10 @@ class InterfaceimmobilierTriggers extends DolibarrTriggers
 
 		$this->name = preg_replace('/^Interface/i', '', get_class($this));
 		$this->family = "demo";
-		$this->description = "immobilier triggers.";
+		$this->description = "ultimateimmo triggers.";
 		// 'development', 'experimental', 'dolibarr' or version
 		$this->version = 'development';
-		$this->picto = 'immobilier@immobilier';
+		$this->picto = 'ultimateimmo@ultimateimmo';
 	}
 
 	/**
@@ -97,7 +97,7 @@ class InterfaceimmobilierTriggers extends DolibarrTriggers
 	 */
 	public function runTrigger($action, $object, User $user, Translate $langs, Conf $conf)
 	{
-        if (empty($conf->immobilier->enabled)) return 0;     // Module not active, we do nothing
+        if (empty($conf->ultimateimmo->enabled)) return 0;     // Module not active, we do nothing
 
 	    // Put here code you want to execute when a Dolibarr business events occurs.
 		// Data and type of action are stored into $object and $action

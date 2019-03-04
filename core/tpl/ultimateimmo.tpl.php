@@ -16,8 +16,8 @@
  */
 
 /**
- * \file    core/tpl/mytemplate.tpl.php
- * \ingroup immobilier
+ * \file    core/tpl/ultimateimmo.tpl.php
+ * \ingroup Ultimateimmo
  * \brief   Example template.
  *
  * Put detailed description here.
