@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+/* Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,17 @@
  */
 
 /**
- * \file    immobilier/class/actions_immobilier.class.php
- * \ingroup immobilier
+ * \file    ultimateimmo/class/actions_immobilier.class.php
+ * \ingroup ultimateimmo
  * \brief   Example hook overload.
  *
  * Put detailed description here.
  */
 
 /**
- * Class ActionsImmobilier
+ * Class ActionsUltimateimmo
  */
-class ActionsImmobilier
+class ActionsUltimateimmo
 {
     /**
      * @var DoliDB Database handler.
@@ -150,7 +150,7 @@ class ActionsImmobilier
         /* print_r($parameters); print_r($object); echo "action: " . $action; */
 	    if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))		// do something only for the context 'somecontext1' or 'somecontext2'
 	    {
-	        $this->resprints = '<option value="0"'.($disabled?' disabled="disabled"':'').'>'.$langs->trans("ImmobilierMassAction").'</option>';
+	        $this->resprints = '<option value="0"'.($disabled?' disabled="disabled"':'').'>'.$langs->trans("UltimateimmoMassAction").'</option>';
 	    }
 
 	    if (! $error) {
