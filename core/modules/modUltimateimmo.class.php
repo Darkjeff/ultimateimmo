@@ -1037,7 +1037,7 @@ class modUltimateimmo extends DolibarrModules
 	 */
 	public function init($options='')
 	{
-		//$this->_load_tables('/ultimateimmo/sql/');
+		$this->_load_tables('/ultimateimmo/sql/');
 
 		// Create extrafields
 		include_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';

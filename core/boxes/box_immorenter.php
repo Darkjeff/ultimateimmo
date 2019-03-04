@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2004-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
 
 /**
  * \file    modulebuilder/template/core/boxes/box_immorenter.php
- * \ingroup immobilier
- * \brief   Widget provided by Immobilier
+ * \ingroup ultimateimmo
+ * \brief   Widget provided by ultimateimmo
  *
  * Put detailed description here.
  */
@@ -54,7 +54,7 @@ class box_immorenter extends ModeleBoxes
 	/**
 	 * @var string[] Module dependencies
 	 */
-	public $depends = array('immobilier');
+	public $depends = array('ultimateimmo');
 
 	/**
 	 * @var DoliDb Database handler
@@ -87,7 +87,7 @@ class box_immorenter extends ModeleBoxes
 		global $user, $conf, $langs;
 		
 		// Load traductions files requiredby by page
-		$langs->loadLangs(array("immobilier@immobilier","boxes"));
+		$langs->loadLangs(array("ultimateimmo@ultimateimmo","boxes"));
 
 		parent::__construct($db, $param);
 
@@ -96,7 +96,7 @@ class box_immorenter extends ModeleBoxes
 		$this->param = $param;
 
 		//$this->enabled = $conf->global->FEATURES_LEVEL > 0;         // Condition when module is enabled or not
-		$this->hidden = ! ($user->rights->immobilier->read);   // Condition when module is visible by user (test on permission)
+		$this->hidden = ! ($user->rights->ultimateimmo->read);   // Condition when module is visible by user (test on permission)
 	}
 
 	/**
@@ -108,12 +108,12 @@ class box_immorenter extends ModeleBoxes
 	public function loadBox($max = 5)
 	{
 		global $langs, $user, $db;
-		$langs->load("immobilier@immobilier");
+		$langs->load("ultimateimmo@ultimateimmo");
 
 		// Use configuration value for max lines count
 		$this->max = $max;
 
-		dol_include_once('/immobilier/class/immorenter.class.php');	
+		dol_include_once('/ultimateimmo/class/immorenter.class.php');	
 		// Initialize technical objects
 		$object=new ImmoRenter($this->db);		
 
@@ -125,7 +125,7 @@ class box_immorenter extends ModeleBoxes
 			// Add a link
 			'sublink' => 'http://example.com',
 			// Sublink icon placed after the text
-			'subpicto' => 'object_immobilier',
+			'subpicto' => 'object_ultimateimmo',
 			// Sublink icon HTML alt text
 			'subtext' => '',
 			// Sublink HTML target
@@ -138,7 +138,7 @@ class box_immorenter extends ModeleBoxes
 			'graph' => false
 		);
 		
-		if ($user->rights->immobilier->read)
+		if ($user->rights->ultimateimmo->read)
 		{		
 			
 			$sql = "SELECT t.rowid, t.ref, t.firstname, t.lastname, t.email, t.phone_mobile, t.tms";		
@@ -173,13 +173,13 @@ class box_immorenter extends ModeleBoxes
 					$this->info_box_contents[$line][] = array(
 						'td' => '',
 						'text' => $object->firstname,
-						'url' => dol_buildpath('/immobilier/renter/immorenter_card.php', 1).'?id='.$objp->rowid,
+						'url' => dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?id='.$objp->rowid,
 					);
 
 					$this->info_box_contents[$line][] = array(
 						'td' => '',
 						'text' => $object->lastname,
-						'url' => dol_buildpath('/immobilier/renter/immorenter_card.php', 1).'?id='.$objp->rowid,
+						'url' => dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?id='.$objp->rowid,
 					);
 					
 					$this->info_box_contents[$line][] = array(
