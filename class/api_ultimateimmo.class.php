@@ -18,24 +18,24 @@
 
 use Luracast\Restler\RestException;
 
-dol_include_once('/immobilier/class/immorenter.class.php');
+dol_include_once('/ultimateimmo/class/immorenter.class.php');
 
 
 
 /**
- * \file    immobilier/class/api_immobilier.class.php
- * \ingroup immobilier
+ * \file    ultimateimmo/class/api_immobilier.class.php
+ * \ingroup ultimateimmo
  * \brief   File for API management of immorenter.
  */
 
 /**
- * API class for immobilier immorenter
+ * API class for ultimateimmo immorenter
  *
  * @smart-auto-routing false
  * @access protected
  * @class  DolibarrApiAccess {@requires user,external}
  */
-class ImmobilierApi extends DolibarrApi
+class UltimateimmoApi extends DolibarrApi
 {
     /**
      * @var array   $FIELDS     Mandatory fields, checked when create and update object
@@ -121,7 +121,7 @@ class ImmobilierApi extends DolibarrApi
 
         $sql = "SELECT s.rowid";
         if ((!DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) || $search_sale > 0) $sql .= ", sc.fk_soc, sc.fk_user"; // We need these fields in order to filter by sale (including the case where the user can only see his prospects)
-        $sql.= " FROM ".MAIN_DB_PREFIX."immorenter as s";
+        $sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immorenter as s";
 
         if ((!DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) || $search_sale > 0) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc"; // We need this table joined to the select in order to filter by sale
         $sql.= ", ".MAIN_DB_PREFIX."c_stcomm as st";
