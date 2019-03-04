@@ -20,9 +20,9 @@
  */
 
 /**
- *	\file       htdocs/immobilier/template/immobilierindex.php
- *	\ingroup    immobilier
- *	\brief      Home page of immobilier top menu
+ *	\file       htdocs/ultimateimmo/template/ultimateimmoindex.php
+ *	\ingroup    ultimateimmo
+ *	\brief      Home page of ultimateimmo top menu
  */
 
 // Load Dolibarr environment
@@ -41,18 +41,18 @@ if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main
 if (! $res) die("Include of main fails");
 
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
-dol_include_once('/immobilier/class/immoowner.class.php');
-dol_include_once('/immobilier/class/immoowner_type.class.php');
-dol_include_once('/immobilier/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
+dol_include_once('/ultimateimmo/class/immoowner_type.class.php');
+dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 
-$langs->loadLangs(array("immobilier@immobilier"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo"));
 
 $action=GETPOST('action', 'alpha');
 $id = GETPOST('id','int')?GETPOST('id','int'):GETPOST('rowid','int');
 
 
 // Securite acces client
-if (! $user->rights->immobilier->read) accessforbidden();
+if (! $user->rights->ultimateimmo->read) accessforbidden();
 $socid=GETPOST('socid','int');
 if (isset($user->societe_id) && $user->societe_id > 0)
 {
@@ -81,9 +81,9 @@ $staticowner=new ImmoOwner($db);
 $statictype=new ImmoOwner_Type($db);
 $immopropertystatic=new ImmoProperty($db);
 
-llxHeader("",$langs->trans("ImmobilierArea"));
+llxHeader("",$langs->trans("UltimateimmoArea"));
 
-print load_fiche_titre($langs->trans("ImmobilierArea"),'','immobilier.png@immobilier');
+print load_fiche_titre($langs->trans("UltimateimmoArea"),'','ultimateimmo.png@ultimateimmo');
 
 $Immoowners=array();
 $OwnerToValidate=array();
@@ -96,8 +96,8 @@ $ImmoownerType=array();
 // Liste les proprietaires
 $sql = "SELECT t.rowid, t.label,";
 $sql.= " d.status, count(d.rowid) as somme";
-$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immoowner_type as t";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."immobilier_immoowner as d";
+$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immoowner_type as t";
+$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_immoowner as d";
 $sql.= " ON t.rowid = d.fk_immoowner_type";
 $sql.= " AND d.entity IN (".getEntity('immoowner').")";
 $sql.= " WHERE t.entity IN (".getEntity('immoowner_type').")";
@@ -132,7 +132,7 @@ $now=dol_now();
 // current rule: uptodate = the end date is in future whatever is type
 // old rule: uptodate = if type does not need payment, that end date is null, if type need payment that end date is in future)
 $sql = "SELECT count(*) as somme , d.fk_immoowner_type";
-$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immoowner as d, ".MAIN_DB_PREFIX."immobilier_immoowner_type as t";
+$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immoowner as d, ".MAIN_DB_PREFIX."ultimateimmo_immoowner_type as t";
 $sql.= " WHERE d.entity IN (".getEntity('immoowner').")";
 //$sql.= " AND d.statut = 1 AND ((t.subscription = 0 AND d.datefin IS NULL) OR d.datefin >= '".$db->idate($now)."')";
 $sql.= " AND d.status = 1 AND d.datefin >= '".$db->idate($now)."'";
@@ -223,7 +223,7 @@ $tot=0;
 $numb=0;
 
 $sql = "SELECT c.notice, c.date_start as datestart";
-$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immoowner as d, ".MAIN_DB_PREFIX."immobilier_immoproperty as c";
+$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immoowner as d, ".MAIN_DB_PREFIX."ultimateimmo_immoproperty as c";
 $sql.= " WHERE d.entity IN (".getEntity('immoowner').")";
 $sql.= " AND d.rowid = c.fk_soc";
 if(isset($date_select) && $date_select != '')
@@ -260,7 +260,7 @@ krsort($Total);
 foreach ($Total as $key=>$value)
 {
     print '<tr class="oddeven">';
-    print '<td><a href=\"'.dol_buildpath('/immobilier/property/immoproperty_list.php',1).'?date_select=$key\">$key</a></td>';
+    print '<td><a href=\"'.dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1).'?date_select=$key\">$key</a></td>';
     print "<td align=\"right\">".$Number[$key]."</td>";
     print "<td align=\"right\">".price($value)."</td>";
     print "<td align=\"right\">".price(price2num($value/$Number[$key],'MT'))."</td>";
@@ -289,7 +289,7 @@ $max=5;
 $sql = "SELECT a.rowid, a.status, a.lastname, a.firstname, a.fk_soc,";
 $sql.= " a.tms as datem, a.date_creation,";
 $sql.= " ta.rowid as typeid, ta.label";
-$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immoowner as a, ".MAIN_DB_PREFIX."immobilier_immoowner_type as ta";
+$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immoowner as a, ".MAIN_DB_PREFIX."ultimateimmo_immoowner_type as ta";
 $sql.= " WHERE a.entity IN (".getEntity('immoowner').")";
 $sql.= " AND a.fk_immoowner_type = ta.rowid";
 $sql.= $db->order("a.tms","DESC");
