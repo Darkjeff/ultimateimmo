@@ -1,0 +1,141 @@
+# Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+# Générique
+#
+
+# Module label 'ModuleImmobilierName'
+ModuleImmobilierName = Immobilier
+# Module description 'ModuleImmobilierDesc'
+ModuleImmobilierDesc = Description de Immobilier
+
+#
+# Page d'administration
+#
+ImmobilierSetup = Configuration du module Immobilier
+Settings = Réglages
+ImmobilierSetupPage = Page de configuration du module Immobilier
+ImmobilierNumberingModeles = Modèles de numérotation des quittances
+TemplatePDFImmobilier = Modèles de document des quittances
+WatermarkOnDraftImmoCards = Filigrane sur les brouillons de quittances (aucun si vide)
+ExtraFieldsProperty = Attributs supplémentaires (Propriétés)
+ExtraFieldsRenter = Attributs supplémentaires (Locataires)
+ExtraFieldsOwner = Attributs supplémentaires (Propriétaires)
+ExtraFieldsPayment =  = Attributs supplémentaires (Paiements)
+ExtraFieldsReceipt = Attributs supplémentaires (Quittances)
+ExtraFieldsRent =  = Attributs supplémentaires (Locations)
+
+#
+# Page À propos
+#
+About = À propos
+ImmobilierAbout = À propos de Immobilier
+ImmobilierAboutPage = Page à propos de Immobilier
+
+#
+# Menu
+#
+MenuImmoProperty = Biens immobiliers
+MenuNewImmoProperty = Nouveau bien
+MenuListImmoProperty = Liste
+MenuImmoPropertyType = Type de bien
+MenuNewImmoPropertyType = Nouveau type
+MenuListImmoPropertyType = Liste
+MenuImmoRent = Locations
+MenuNewImmoRent = Nouvelle location
+MenuListImmoRent = Liste
+MenuImmoOwner = Propriétaires
+MenuNewImmoOwner = Nouveau propriétaire
+MenuListImmoOwner = Liste
+MenuImmoOwnerType = Type de propriétaire
+MenuNewImmoOwnerType = Nouveau type
+MenuListImmoOwnerType = Liste
+MenuImmoRenter = Locataires
+MenuNewImmoRenter = Nouveau locataire
+MenuListImmoRenter = Liste
+MenuImmoPayment = Paiements
+MenuNewImmoPayment = Nouveau paiement
+MenuListImmoPayment = Liste
+MenuListImmoReceipt = Quittances
+MenuNewImmoReceipt = Nouvelle quittance
+MenuAllReceiptperContract = Générer les quittances
+MenuValidateReceipt = Valider les quittances
+MenuStatisticPayment = Statistiques
+MenuListImmoCost = Charges locatives
+MenuNewImmoCost = Nouvelle charge 
+MenuRenterCost = Coût Locataire
+MenuStatisticsCost = Coût : statistiques
+MenuStatisticsResult = Résultats : statistiques
+MenuListImmoCostType = Types de coût
+MenuNewImmoCostType = Nouveau type de coût
+
+#
+# Autres
+#
+BirthDay = Date de Naissance
+BirthCountry = Lieu de naissance
+ImmoProperty = Bien immobilier
+Property = Bien immobilier
+Properties = Biens
+ImmoProperties = Biens immobiliers
+ImmoRents = Locations
+ImmoRenters = Locataires
+ImmoCost = Quittance
+ImmoCosts = Charges locatives
+ImmoCostType = Types de coûts
+ImmoReceipts = Quittances
+ImmoReceipt = Quittance
+ImmoPayments = Paiements
+ImmoPayment = Paiement
+TypePayment = Type de paiement
+NumPayment = Numéro de paiement
+NewImmoPropertyType = Nouveau type de bien
+ImmoProperty_Type = Type de bien immobilier
+PropertyTypeStatusDraft=Draft
+PropertyTypeStatusActive=Active
+PropertyTypeStatusCancel=Cancel
+Building = Immeuble
+Staircase = Escalier
+NumFloor = Etage
+NumFlat = Numéro Appartement
+NumDoor = Porte n°
+Area = Surface
+PropertyParent = Bien Parent
+DateBuilt = Date de construction
+Target = Cible
+ImmoOwner = Propriétaire
+Civility = Titre
+Deposit = Dépôt de garantie
+ListOfRents = Liste des locations
+ImmoRenter = Locataire
+Renter = Locataire
+RenterCost = Coût/locataire
+RentAmount = Montant du loyer
+ChargesAmount = Montant des charges
+TotalAmount = Montant total
+Encours = Encours
+date_end = Date de fin
+DateNextRent = Date prochain loyer
+DateLastRegul = Date dernière régulation
+VatAmount = Montant TVA
+HtAmount = Montant HT
+VatTx = Taux TVA
+
+
+
+
+
+

@@ -1,0 +1,143 @@
+# Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+# Generic
+#
+
+# Module label 'ModuleImmobilierName'
+ModuleImmobilierName = Immobilier
+# Module description 'ModuleImmobilierDesc'
+ModuleImmobilierDesc = Immobilier description
+
+#
+# Admin page
+#
+ImmobilierSetup = Immobilier setup
+Settings = Settings
+ImmobilierSetupPage = Immobilier setup page
+ImmobilierNumberingModeles = Numbering model for receipt.
+TemplatePDFImmobilier = Template for receipt
+WatermarkOnDraftImmoCards = Watermark On Draft receipt (none if empty)
+IMMOBILIER_MYPARAM1 = My param 1
+IMMOBILIER_MYPARAM1Tooltip = My param 1 tooltip
+IMMOBILIER_MYPARAM2=My param 2
+IMMOBILIER_MYPARAM2Tooltip=My param 2 tooltip
+
+#
+# Menu
+#
+MenuImmoProperty = Biens immobiliers
+MenuNewImmoProperty = Nouveau bien
+MenuListImmoProperty = List
+MenuImmoPropertyType = Type de bien
+MenuNewImmoPropertyType = Nouveau type
+MenuListImmoPropertyType = List
+MenuImmoRent = Locations
+MenuNewImmoRent = Nouvelle location
+MenuListImmoRent = List
+MenuImmoOwner = Owners
+MenuNewImmoOwner = New Owner
+MenuListImmoOwner = List
+MenuImmoOwnerType = Owner Type
+MenuNewImmoOwnerType = New Owner Type
+MenuListImmoOwnerType = Liste
+MenuImmoRenter = Renters
+MenuNewImmoRenter = New Renter
+MenuListImmoRenter = List
+MenuImmoPayment = Payment
+MenuNewImmoPayment = New Payment
+MenuListImmoPayment = Payments
+MenuListImmoReceipt = Receipts
+MenuNewImmoReceipt = New receipt
+MenuAllReceiptperContract = Generate the receipts
+MenuValidateReceipt = Validate the receipts
+MenuStatisticPayment = Statistics
+MenuListImmoCost = Charges locatives
+MenuNewImmoCost = Nouvelle charge 
+MenuRenterCost = Renter Cost
+MenuStatisticsCost = Cost: Statistics 
+MenuStatisticsResult = Results: Statistics
+MenuListImmoCostType = Cost type
+MenuNewImmoCostType = New cost type 
+
+#
+# About page
+#
+About = About
+ImmobilierAbout = About Immobilier
+ImmobilierAboutPage = Immobilier about page
+
+#
+# Miscellaneous
+#
+BirthDay = Birthday
+BirthCountry = Birth country
+ImmoProperty = Property
+Property = Property
+Properties = Properties
+ImmoProperties = Properties
+ImmoRents = Rents
+ImmoRenters = Renters
+ImmoCost = Quittance
+ImmoCosts = Charges locatives
+ImmoCostType = Types de coûts
+ImmoReceipts = Receipts
+ImmoReceipt = Receipt
+ImmoPayments = Payments
+ImmoPayment = Payment
+TypePayment = Payment type
+NumPayment = Payment number
+NewImmoPropertyType = Nouveau type de bien
+ImmoProperty_Type = Type de bien immobilier
+PropertyTypeStatusDraft=Draft
+PropertyTypeStatusActive=Active
+PropertyTypeStatusCancel=Cancel
+Building = Immeuble
+Staircase = Escalier
+NumFloor = Etage
+NumFlat = Numéro Appartement
+NumDoor = Porte n°
+Area = Surface
+PropertyParent = Bien Parent
+DateBuilt = Date de construction
+Target = Cible
+ImmoOwner = Propriétaire
+Civility = Titre
+Deposit = Dépôt de garantie
+ListOfRents = Liste des locations
+ImmoRenter = Renter
+Renter = Renter
+RenterCost = Cost/Renter
+RentAmount = Montant du loyer
+ChargesAmount = Montant des charges
+TotalAmount = Total amount
+Encours = Encours
+date_end = Date end
+DateNextRent = Date next rent
+DateLastRegul = Date last regul
+VatAmount = VAT amount
+VatTx = VAT rate
+
+#
+# Sample page
+#
+MyPageName = My page name
+
+#
+# Sample widget
+#
+MyWidget = My widget
+MyWidgetDescription = My widget description
