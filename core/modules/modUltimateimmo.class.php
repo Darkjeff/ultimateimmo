@@ -35,7 +35,7 @@ include_once DOL_DOCUMENT_ROOT .'/core/modules/DolibarrModules.class.php';
 /**
  *  Description and activation class for module Ultimateimmo
  */
-class modImmobilier extends DolibarrModules
+class modUltimateimmo extends DolibarrModules
 {
 	// @codingStandardsIgnoreEnd
 	/**
