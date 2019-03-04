@@ -1,7 +1,7 @@
 <?php
 /**
- * Copyright (C) 2012-2013 Florian Henry <florian.henry@open-concept.pro>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2012-2013 Florian Henry  <florian.henry@open-concept.pro>
+ * Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,24 +17,24 @@
  */
 
 /**
- * \file immobilier/core/modules/immobilier/pdf/pdf_quitance.module.php
- * \ingroup immobilier
- * \brief PDF for immobilier
+ * \file ultimateimmo/core/modules/ultimateimmo/pdf/pdf_quitance.module.php
+ * \ingroup ultimateimmo
+ * \brief PDF for ultimateimmo
  */
  
-dol_include_once('/immobilier/core/modules/immobilier/modules_immobilier.php');
-dol_include_once('/immobilier/class/immoreceipt.class.php');
-dol_include_once('/immobilier/class/immorenter.class.php');
-dol_include_once('/immobilier/class/immoproperty.class.php');
-dol_include_once('/immobilier/class/immorent.class.php');
-dol_include_once('/immobilier/class/immoowner.class.php');
-dol_include_once('/immobilier/class/immopayment.class.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
+dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
+dol_include_once('/ultimateimmo/class/immorenter.class.php');
+dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immorent.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
+dol_include_once('/ultimateimmo/class/immopayment.class.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
 
-class pdf_quittance extends ModelePDFImmobilier 
+class pdf_quittance extends ModelePDFUltimateimmo 
 {
 	 /**
      * @var DoliDb Database handler
@@ -92,7 +92,7 @@ class pdf_quittance extends ModelePDFImmobilier
 	{
 		global $conf, $langs, $mysoc;
 		
-		$langs->load("immobilier@immobilier");
+		$langs->load("ultimateimmo@ultimateimmo");
 		
 		$this->db = $db;
 		$this->name = 'quittance';
@@ -139,7 +139,7 @@ class pdf_quittance extends ModelePDFImmobilier
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 		
 		// Translations
-		$outputlangs->loadLangs(array("main", "immobilier@immobilier", "companies"));
+		$outputlangs->loadLangs(array("main", "ultimateimmo@ultimateimmo", "companies"));
 		
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
@@ -155,13 +155,13 @@ class pdf_quittance extends ModelePDFImmobilier
 		// Definition of $dir and $file	
 		if ($object->specimen)
 		{
-			$dir = $conf->immobilier->dir_output."/";			
+			$dir = $conf->ultimateimmo->dir_output."/";			
 			$file = $dir . "/SPECIMEN.pdf";
 		}
 		else
 		{
 			$objectref = dol_sanitizeFileName($object->ref);
-			$dir = $conf->immobilier->dir_output . "/receipt/" . $objectref;
+			$dir = $conf->ultimateimmo->dir_output . "/receipt/" . $objectref;
 			$file = $dir . "/" . $objectref . ".pdf";
 		}
 		
@@ -210,7 +210,7 @@ class pdf_quittance extends ModelePDFImmobilier
 			
 			$pdf->SetTitle($outputlangs->convToOutputCharset($object->label));
 			$pdf->SetSubject($outputlangs->transnoentities("Quittance"));
-			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Immobilier module)');
+			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (ultimateimmo module)');
 			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->firstname)." ".$outputlangs->convToOutputCharset($user->lastname));
 			$pdf->SetKeyWords($outputlangs->convToOutputCharset($object->label) . " " . $outputlangs->transnoentities("Document"));
 			if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION)
@@ -373,8 +373,8 @@ class pdf_quittance extends ModelePDFImmobilier
 				$text .= '</tr>';
 				
 				$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.amount, p.note_public as type, il.total_amount ";
-				$sql .= " FROM " .MAIN_DB_PREFIX."immobilier_immopayment as p";
-				$sql .= ", " .MAIN_DB_PREFIX."immobilier_immoreceipt as il ";
+				$sql .= " FROM " .MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
+				$sql .= ", " .MAIN_DB_PREFIX."ultimateimmo_immoreceipt as il ";
 				$sql .= " WHERE p.fk_receipt = ".$object->id;
 				$sql .= " ORDER BY dp DESC";
 				
@@ -423,7 +423,7 @@ class pdf_quittance extends ModelePDFImmobilier
 				
 				// Tableau Loyer et solde
 				$sql = "SELECT il.label, il.balance";
-				$sql .= " FROM " .MAIN_DB_PREFIX."immobilier_immoreceipt as il";
+				$sql .= " FROM " .MAIN_DB_PREFIX."ultimateimmo_immoreceipt as il";
 				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<'" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
 				$sql .= " ORDER BY echeance ASC";
@@ -486,7 +486,7 @@ class pdf_quittance extends ModelePDFImmobilier
 				
 				// Tableau total somme due
 				$sql = "SELECT SUM(il.balance) as total";
-				$sql .= " FROM " .MAIN_DB_PREFIX."immobilier_immoreceipt as il";
+				$sql .= " FROM " .MAIN_DB_PREFIX."ultimateimmo_immoreceipt as il";
 				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<='" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=".$object->fk_property." AND fk_renter=".$object->fk_renter;
 				$sql .= " GROUP BY fk_property,fk_renter";

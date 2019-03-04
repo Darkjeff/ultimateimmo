@@ -1,6 +1,7 @@
 <?php
 /* Copyright (C) 2010-2012	Regis Houssin		<regis.houssin@capnetworks.com>
  * Copyright (C) 2010		Laurent Destailleur	<eldy@users.sourceforge.net>
+ * Copyright (C) 2018-2019  Philippe GRAND       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,18 +19,18 @@
  */
 
 /**
- *	\file       htdocs/core/modules/immobilier/mod_immobilier_simple.php
- *	\ingroup    immobilier
- *	\brief      File with class to manage the numbering module Simple for immobilier references
+ *	\file       htdocs/core/modules/ultimateimmo/mod_ultimateimmo_simple.php
+ *	\ingroup    ultimateimmo
+ *	\brief      File with class to manage the numbering module Simple for ultimateimmo references
  */
 
-dol_include_once('/immobilier/core/modules/immobilier/modules_immobilier.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
 
 
 /**
- * 	Class to manage the numbering module Simple for immobilier references
+ * 	Class to manage the numbering module Simple for ultimateimmo references
  */
-class mod_immobilier_simple extends ModeleNumRefImmobilier
+class mod_ultimateimmo_simple extends ModeleNumRefUltimateimmo
 {
 	/**
      * Dolibarr version of the loaded document
@@ -96,7 +97,7 @@ class mod_immobilier_simple extends ModeleNumRefImmobilier
 
 		$posindice=8;
 		$sql = "SELECT MAX(CAST(SUBSTRING(ref FROM ".$posindice.") AS SIGNED)) as max";
-        $sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immoreceipt";
+        $sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immoreceipt";
 		$sql.= " WHERE ref LIKE '".$db->escape($this->prefix)."____-%'";
         $sql.= " AND entity = ".$conf->entity;
 		
@@ -130,7 +131,7 @@ class mod_immobilier_simple extends ModeleNumRefImmobilier
 		// D'abord on recupere la valeur max
 		$posindice=8;
 		$sql = "SELECT MAX(CAST(SUBSTRING(ref FROM ".$posindice.") AS SIGNED)) as max";
-		$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immoreceipt";
+		$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immoreceipt";
 		$sql.= " WHERE ref LIKE '".$db->escape($this->prefix)."____-%'";
 		$sql.= " AND entity = ".$conf->entity;
 
@@ -143,7 +144,7 @@ class mod_immobilier_simple extends ModeleNumRefImmobilier
 		}
 		else
 		{
-			dol_syslog("mod_immobilier_simple::getNextValue", LOG_DEBUG);
+			dol_syslog("mod_ultimateimmo_simple::getNextValue", LOG_DEBUG);
 			return -1;
 		}
 
@@ -155,7 +156,7 @@ class mod_immobilier_simple extends ModeleNumRefImmobilier
 		if ($max >= (pow(10, 4) - 1)) $num=$max+1;	// If counter > 9999, we do not format on 4 chars, we take number as it is
 		else $num = sprintf("%04s",$max+1);
 
-		dol_syslog("mod_immobilier_simple::getNextValue return ".$this->prefix.$yymm."-".$num);
+		dol_syslog("mod_ultimateimmo_simple::getNextValue return ".$this->prefix.$yymm."-".$num);
 		return $this->prefix.$yymm."-".$num;
     }
 
@@ -167,7 +168,7 @@ class mod_immobilier_simple extends ModeleNumRefImmobilier
      *  @param  object	$object	Object object
      *  @return string      		Next not used reference
      */
-    function immobilier_get_num($object='')
+    function ultimateimmo_get_num($object='')
     {
         return $this->getNextValue($object);
     }

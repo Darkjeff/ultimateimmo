@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2013-2016	Olivier Geffroy    <jeff@jeffinfo.com>
  * Copyright (C) 2015-2016  Alexandre Spangaro <aspangaro@zendsi.com>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2019  Philippe GRAND 	   <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,17 @@
  */
 
 /**
- * \file		immobilier/core/modules/modules_immobilier.php
- * \ingroup		Immobilier
+ * \file		ultimateimmo/core/modules/modules_ultimateimmo.php
+ * \ingroup		ultimateimmo
  * \brief		File that contain parent class for projects models
  * 				and parent class for projects numbering models
  */
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
 
 /**
- *	Parent class for immobilier models
+ *	Parent class for ultimateimmo models
  */
-abstract class ModelePDFImmobilier extends CommonDocGenerator 
+abstract class ModelePDFUltimateimmo extends CommonDocGenerator 
 {
 	public $error = '';
 	
@@ -43,7 +43,7 @@ abstract class ModelePDFImmobilier extends CommonDocGenerator
 	{
 		global $conf;
 
-		$type='immobilier';
+		$type='ultimateimmo';
 		$liste=array();
 
 		include_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
@@ -54,9 +54,9 @@ abstract class ModelePDFImmobilier extends CommonDocGenerator
 }
 
 /**
- *  Classe mere des modeles de numerotation des references de Immobilier
+ *  Classe mere des modeles de numerotation des references de ultimateimmo
  */
-abstract class ModeleNumRefImmobilier
+abstract class ModeleNumRefUltimateimmo
 {
 	/**
 	 * @var string Error code (or message)
@@ -81,7 +81,7 @@ abstract class ModeleNumRefImmobilier
 	function info()
 	{
 		global $langs;
-		$langs->load("immobilier@immobilier");
+		$langs->load("ultimateimmo@ultimateimmo");
 		return $langs->trans("NoDescription");
 	}
 
@@ -93,7 +93,7 @@ abstract class ModeleNumRefImmobilier
 	function getExample()
 	{
 		global $langs;
-		$langs->load("immobilier@immobilier");
+		$langs->load("ultimateimmo@ultimateimmo");
 		return $langs->trans("NoExample");
 	}
 
@@ -140,10 +140,10 @@ abstract class ModeleNumRefImmobilier
 }
 
 /**
- *  Create an receipt document on disk using template defined into IMMOBILIER_ADDON_PDF
+ *  Create an receipt document on disk using template defined into ULTIMATEIMMO_ADDON_PDF
  *
- *  @param	DoliDB		$db  			objet base de donnee
- *  @param	Object		$object			Object immobilier
+ *  @param	DoliDB		$db  			objet base de donnees
+ *  @param	Object		$object			Object ultimateimmo
  *  @param	string		$modele			force le modele a utiliser ('' par defaut)
  *  @param	Translate	$outputlangs	objet lang a utiliser pour traduction
  *  @param  int			$hidedetails    Hide details of lines
@@ -155,7 +155,7 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
 {
     // phpcs:enable
 	global $conf, $langs, $user;
-	$langs->load("immobilier@immobilier");
+	$langs->load("ultimateimmo@ultimateimmo");
 
 	$error=0;
 
@@ -164,9 +164,9 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
 	// Positionne modele sur le nom du modele de fichinter a utiliser
 	if (! dol_strlen($modele))
 	{
-		if (! empty($conf->global->IMMOBILIER_ADDON_PDF))
+		if (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF))
 		{
-			$modele = $conf->global->IMMOBILIER_ADDON_PDF;
+			$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
 		}
 		else
 		{
@@ -193,7 +193,7 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
     	    $file = $prefix."_".$modele.".modules.php";
 
     		// On verifie l'emplacement du modele
-	        $file=dol_buildpath($reldir."immoblier/core/modules/immobilier/doc/".$file,0);
+	        $file=dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/doc/".$file,0);
     		if (file_exists($file))
     		{
     			$filefound=1;
@@ -227,7 +227,7 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
 		else
 		{
 			$outputlangs->charset_output=$sav_charset_output;
-			dol_print_error($db,"immobilier_pdf_create Error: ".$obj->error);
+			dol_print_error($db,"ultimateimmo_pdf_create Error: ".$obj->error);
 			return 0;
 		}
 	}
@@ -245,13 +245,13 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
  * \param		outputlangs		objet lang a utiliser pour traduction
  * \return int <0 if KO, >0 if OK
  */
-function immobilier_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file) 
+function ultimateimmo_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file) 
 {
 	global $conf, $langs;
-	$langs->load ( 'immobilier@immobilier' );
+	$langs->load ( 'ultimateimmo@ultimateimmo' );
 	
 	// Charge le modele
-	$nomModele = dol_buildpath ( '/immobilier/core/modules/immobilier/pdf/pdf_' . $typeModele . '.modules.php' );
+	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
 	
 	if (file_exists ( $nomModele )) {
 		require_once ($nomModele);
@@ -287,10 +287,10 @@ function immobilier_pdf_create($db, $id, $message, $typeModele, $outputlangs, $f
  */
 function chargefourn_pdf_create($db, $year, $typeModele, $outputlangs, $filedir, $filename) {
 	global $conf, $langs;
-	$langs->load ( 'immobilier@immobilier' );
+	$langs->load ( 'ultimateimmo@ultimateimmo' );
 
 	// Charge le modele
-	$nomModele = dol_buildpath ( '/immobilier/core/modules/immobilier/pdf/pdf_' . $typeModele . '.modules.php' );
+	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
 
 	if (file_exists ( $nomModele )) {
 		require_once ($nomModele);
