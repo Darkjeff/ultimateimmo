@@ -814,7 +814,7 @@ class modUltimateimmo extends DolibarrModules
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'MenuNewImmoReceipt',
 								'mainmenu'=>'immoreceipts',
-								'leftmenu'=>'ultimateimmo_immoreceipt',
+								'leftmenu'=>'ultimateimmo_immoreceipt_create',
 								'url'=>'/ultimateimmo/receipt/immoreceipt_card.php?action=create',
 								'langs'=>'ultimateimmo@ultimateimmo',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1400+$r,
@@ -828,7 +828,7 @@ class modUltimateimmo extends DolibarrModules
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'MenuAllReceiptperContract',
 								'mainmenu'=>'immoreceipts',
-								'leftmenu'=>'ultimateimmo_immoreceipt',
+								'leftmenu'=>'ultimateimmo_immoreceipt_createall',
 								'url'=>'/ultimateimmo/receipt/immoreceipt_card.php?action=createall',
 								'langs'=>'ultimateimmo@ultimateimmo',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1400+$r,
@@ -842,7 +842,7 @@ class modUltimateimmo extends DolibarrModules
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'MenuValidateReceipt',
 								'mainmenu'=>'immoreceipts',
-								'leftmenu'=>'ultimateimmo_immoreceipt',
+								'leftmenu'=>'ultimateimmo_immoreceipt_validaterent',
 								'url'=>'/ultimateimmo/receipt/immoreceipt_list.php?action=validaterent',
 								'langs'=>'ultimateimmo@ultimateimmo',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1400+$r,
