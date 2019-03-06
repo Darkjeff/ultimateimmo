@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+/* Copyright (C) 2018-2019 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 /**
  * \file    lib/immoowner_type.lib.php
- * \ingroup immobilier
+ * \ingroup ultimateimmo
  * \brief   Library files with common functions for ImmoOwner_Type
  */
 
@@ -31,12 +31,12 @@ function immoowner_typePrepareHead($object)
 {
 	global $db, $langs, $conf;
 
-	$langs->load("immobilier@immobilier");
+	$langs->load("ultimateimmo@ultimateimmo");
 
 	$h = 0;
 	$head = array();
 
-	$head[$h][0] = dol_buildpath("/immobilier/owner_type/immoowner_type_card.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/owner_type/immoowner_type_card.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
@@ -46,7 +46,7 @@ function immoowner_typePrepareHead($object)
 		$nbNote = 0;
 		if (!empty($object->note_private)) $nbNote++;
 		if (!empty($object->note_public)) $nbNote++;
-		$head[$h][0] = dol_buildpath('/immobilier/owner_type/immoowner_type_note.php', 1).'?id='.$object->id;
+		$head[$h][0] = dol_buildpath('/ultimateimmo/owner_type/immoowner_type_note.php', 1).'?id='.$object->id;
 		$head[$h][1] = $langs->trans('Notes');
 		if ($nbNote > 0) $head[$h][1].= ' <span class="badge">'.$nbNote.'</span>';
 		$head[$h][2] = 'note';
@@ -56,12 +56,12 @@ function immoowner_typePrepareHead($object)
 	// Show more tabs from modules
 	// Entries must be declared in modules descriptor with line
 	//$this->tabs = array(
-	//	'entity:+tabname:Title:@immobilier:/immobilier/mypage.php?id=__ID__'
+	//	'entity:+tabname:Title:@ultimateimmo:/ultimateimmo/mypage.php?id=__ID__'
 	//); // to add new tab
 	//$this->tabs = array(
-	//	'entity:-tabname:Title:@immobilier:/immobilier/mypage.php?id=__ID__'
+	//	'entity:-tabname:Title:@ultimateimmo:/ultimateimmo/mypage.php?id=__ID__'
 	//); // to remove a tab
-	complete_head_from_modules($conf, $langs, $object, $head, $h, 'immoowner_type@immobilier');
+	complete_head_from_modules($conf, $langs, $object, $head, $h, 'immoowner_type@ultimateimmo');
 
 	return $head;
 }

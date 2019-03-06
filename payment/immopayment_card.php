@@ -18,7 +18,7 @@
 
 /**
  *   	\file       immopayment_card.php
- *		\ingroup    immobilier
+ *		\ingroup    ultimateimmo
  *		\brief      Page to create/edit/view immopayment
  */
 
@@ -39,11 +39,11 @@ if (! $res) die("Include of main fails");
 
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
-dol_include_once('/immobilier/class/immopayment.class.php');
-dol_include_once('/immobilier/lib/immopayment.lib.php');
+dol_include_once('/ultimateimmo/class/immopayment.class.php');
+dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","other", "contracts"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","other", "contracts"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -56,7 +56,7 @@ $socid 		= GETPOST('socid', 'int');
 // Initialize technical objects
 $object=new ImmoPayment($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immopaymentcard'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immopayment');
@@ -75,7 +75,7 @@ if (empty($action) && empty($id) && empty($ref)) $action='view';
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
 //if ($user->societe_id > 0) $socid = $user->societe_id;
-//$result = restrictedArea($user, 'immobilier', $id);
+//$result = restrictedArea($user, 'ultimateimmo', $id);
 
 // fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
@@ -99,9 +99,9 @@ if (empty($reshook))
 {
 	$error=0;
 
-	$permissiontoadd = $user->rights->immobilier->write;
-	$permissiontodelete = $user->rights->immobilier->delete;
-	$backurlforlist = dol_buildpath('/immobilier/payment/immopayment_list.php',1);
+	$permissiontoadd = $user->rights->ultimateimmo->write;
+	$permissiontodelete = $user->rights->ultimateimmo->delete;
+	$backurlforlist = dol_buildpath('/ultimateimmo/payment/immopayment_list.php',1);
 
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
@@ -258,7 +258,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     $res = $object->fetch_optionals($object->id, $extralabels);
 
 	$head = immopaymentPrepareHead($object);
-	dol_fiche_head($head, 'card', $langs->trans("ImmoPayment"), -1, 'immopayment@immobilier');
+	dol_fiche_head($head, 'card', $langs->trans("ImmoPayment"), -1, 'immopayment@ultimateimmo');
 
 	$formconfirm = '';
 
@@ -295,13 +295,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/immobilier/payment/immopayment_list.php', 1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref='<div class="refidno">';
 	/*
 	// Ref bis
-	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->immobilier->creer, 'string', '', 0, 1);
-	$morehtmlref.=$form->editfieldval("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->immobilier->creer, 'string', '', null, null, '', 1);
+	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', 0, 1);
+	$morehtmlref.=$form->editfieldval("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', null, null, '', 1);
 	// Thirdparty
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $soc->getNomUrl(1);
 	// Project
@@ -309,7 +309,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	{
 	    $langs->load("projects");
 	    $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
-	    if ($user->rights->immobilier->write)
+	    if ($user->rights->ultimateimmo->write)
 	    {
 	        if ($action != 'classify')
 	            $morehtmlref.='<a href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
@@ -377,7 +377,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     	    // Send
             print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
 
-    		if ($user->rights->immobilier->write)
+    		if ($user->rights->ultimateimmo->write)
     		{
     			print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
     		}
@@ -387,7 +387,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
 
     		/*
-    		if ($user->rights->immobilier->create)
+    		if ($user->rights->ultimateimmo->create)
     		{
     			if ($object->status == 1)
     		 	{
@@ -400,7 +400,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
     		*/
 
-    		if ($user->rights->immobilier->delete)
+    		if ($user->rights->ultimateimmo->delete)
     		{
     			print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
     		}
@@ -425,11 +425,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	    // Documents
 	    $relativepath = '/payment/' . dol_sanitizeFileName($object->ref).'/';
-	    $filedir = $conf->immobilier->dir_output . $relativepath;
+	    $filedir = $conf->ultimateimmo->dir_output . $relativepath;
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-	    $genallowed = $user->rights->immobilier->read;	// If you can read, you can build the PDF to read content
-	    $delallowed = $user->rights->immobilier->write;	// If you can create/edit, you can remove a file on card
-	    print $formfile->showdocuments('immobilier', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
+	    $genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
+	    $delallowed = $user->rights->ultimateimmo->write;	// If you can create/edit, you can remove a file on card
+	    print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
 
 	    // Show links to link elements
 	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immopayment'));
@@ -440,7 +440,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	    $MAXEVENT = 10;
 
-	    $morehtmlright = '<a href="'.dol_buildpath('/immobilier/payment/immopayment_info.php', 1).'?id='.$object->id.'">';
+	    $morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_info.php', 1).'?id='.$object->id.'">';
 	    $morehtmlright.= $langs->trans("SeeAll");
 	    $morehtmlright.= '</a>';
 
@@ -458,7 +458,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	 // Presend form
 	 $modelmail='immopayment';
 	 $defaulttopic='InformationMessage';
-	 $diroutput = $conf->immobilier->dir_output.'/payment';
+	 $diroutput = $conf->ultimateimmo->dir_output.'/payment';
 	 $trackid = 'immo'.$object->id;
 
 	 include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';

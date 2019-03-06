@@ -18,7 +18,7 @@
 
 /**
  * \file        class/immoproperty.class.php
- * \ingroup     immobilier
+ * \ingroup     ultimateimmo
  * \brief       This file is a CRUD class file for ImmoProperty (Create/Read/Update/Delete)
  */
 
@@ -39,7 +39,7 @@ class ImmoProperty extends CommonObject
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
-	public $table_element = 'immobilier_immoproperty';
+	public $table_element = 'ultimateimmo_immoproperty';
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
@@ -57,7 +57,7 @@ class ImmoProperty extends CommonObject
 	/**
 	 * @var string String with name of icon for immoproperty. Must be the part after the 'object_' into object_immoproperty.png
 	 */
-	public $picto = 'immoproperty@immobilier';
+	public $picto = 'immoproperty@ultimateimmo';
 
 
 	/**
@@ -85,12 +85,12 @@ class ImmoProperty extends CommonObject
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'enabled'=>1, 'visible'=>-1, 'position'=>15, 'notnull'=>1, 'index'=>1,),
-		'fk_property_type' => array('type'=>'integer:ImmoProperty_Type:immobilier/class/immoproperty_type.class.php', 'label'=>'ImmoProperty_Type', 'enabled'=>1, 'visible'=>-1, 'position'=>20, 'notnull'=>1,),
-		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'PropertyParent', 'enabled'=>1, 'visible'=>-1, 'position'=>25, 'notnull'=>-1,),
+		'fk_property_type' => array('type'=>'integer:ImmoProperty_Type:ultimateimmo/class/immoproperty_type.class.php', 'label'=>'ImmoProperty_Type', 'enabled'=>1, 'visible'=>-1, 'position'=>20, 'notnull'=>1,),
+		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'PropertyParent', 'enabled'=>1, 'visible'=>-1, 'position'=>25, 'notnull'=>-1,),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
 		'datep' => array('type'=>'date', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1,),
 		'target' => array('type'=>'integer', 'label'=>'Target', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'Location', '1'=>'Vente', '-1'=>'Autre'), 'comment'=>"Rent or sale",),
-		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>1, 'index'=>1, 'help'=>"LinkToOwner",),
+		'fk_owner' => array('type'=>'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>50, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>55, 'notnull'=>-1,),
@@ -549,7 +549,7 @@ class ImmoProperty extends CommonObject
 		$label.= '<br>';
         $label.= '<b>' . $langs->trans('Label') . ':</b> ' . $this->label;
 
-        $url = dol_buildpath('/immobilier/property/immoproperty_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/ultimateimmo/property/immoproperty_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {

@@ -18,7 +18,7 @@
 
 /**
  *   	\file       immocost_type_card.php
- *		\ingroup    immobilier
+ *		\ingroup    ultimateimmo
  *		\brief      Page to create/edit/view immocost_type
  */
 
@@ -39,11 +39,11 @@ if (! $res) die("Include of main fails");
 
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
-dol_include_once('/immobilier/class/immocost_type.class.php');
-dol_include_once('/immobilier/lib/immocost_type.lib.php');
+dol_include_once('/ultimateimmo/class/immocost_type.class.php');
+dol_include_once('/ultimateimmo/lib/immocost_type.lib.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","other"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","other"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -56,7 +56,7 @@ $backtopage = GETPOST('backtopage', 'alpha');
 // Initialize technical objects
 $object=new ImmoCost_Type($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immocost_typecard','globalcard'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immocost_type');
@@ -75,7 +75,7 @@ if (empty($action) && empty($id) && empty($ref)) $action='view';
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
 //if ($user->societe_id > 0) $socid = $user->societe_id;
-//$result = restrictedArea($user, 'immobilier', $id);
+//$result = restrictedArea($user, 'ultimateimmo', $id);
 
 // fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
@@ -99,9 +99,9 @@ if (empty($reshook))
 {
 	$error=0;
 
-	$permissiontoadd = $user->rights->immobilier->write;
-	$permissiontodelete = $user->rights->immobilier->delete;
-	$backurlforlist = dol_buildpath('/immobilier/cost_type/immocost_type_list.php',1);
+	$permissiontoadd = $user->rights->ultimateimmo->write;
+	$permissiontodelete = $user->rights->ultimateimmo->delete;
+	$backurlforlist = dol_buildpath('/ultimateimmo/cost_type/immocost_type_list.php',1);
 	$triggermodname = 'IMMOBILIER_MODIFY';
 
 	// Actions cancel, add, update or delete
@@ -218,7 +218,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     $res = $object->fetch_optionals();
 
 	$head = immocost_typePrepareHead($object);
-	dol_fiche_head($head, 'card', $langs->trans("MenuListImmoCostType"), -1, 'immobilier@immobilier');
+	dol_fiche_head($head, 'card', $langs->trans("MenuListImmoCostType"), -1, 'ultimateimmo@ultimateimmo');
 
 	$formconfirm = '';
 
@@ -255,13 +255,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/immobilier/cost_type/immocost_type_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/cost_type/immocost_type_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref='<div class="refidno">';
 	/*
 	// Ref bis
-	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->immobilier->creer, 'string', '', 0, 1);
-	$morehtmlref.=$form->editfieldval("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->immobilier->creer, 'string', '', null, null, '', 1);
+	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', 0, 1);
+	$morehtmlref.=$form->editfieldval("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', null, null, '', 1);
 	// Thirdparty
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $soc->getNomUrl(1);
 	// Project
@@ -269,7 +269,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	{
 	    $langs->load("projects");
 	    $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
-	    if ($user->rights->immobilier->write)
+	    if ($user->rights->ultimateimmo->write)
 	    {
 	        if ($action != 'classify')
 	            $morehtmlref.='<a href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
@@ -337,7 +337,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     	    // Send
            // print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
 
-    		if ($user->rights->immobilier->write)
+    		if ($user->rights->ultimateimmo->write)
     		{
     			print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
     		}
@@ -347,7 +347,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
 
     		/*
-    		if ($user->rights->immobilier->create)
+    		if ($user->rights->ultimateimmo->create)
     		{
     			if ($object->status == 1)
     		 	{
@@ -360,7 +360,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
     		*/
 
-    		if ($user->rights->immobilier->delete)
+    		if ($user->rights->ultimateimmo->delete)
     		{
     			print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
     		}
@@ -386,11 +386,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    // Documents
 	    /*$objref = dol_sanitizeFileName($object->ref);
 	    $relativepath = $comref . '/' . $comref . '.pdf';
-	    $filedir = $conf->immobilier->dir_output . '/' . $objref;
+	    $filedir = $conf->ultimateimmo->dir_output . '/' . $objref;
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-	    $genallowed = $user->rights->immobilier->read;	// If you can read, you can build the PDF to read content
-	    $delallowed = $user->rights->immobilier->create;	// If you can create/edit, you can remove a file on card
-	    print $formfile->showdocuments('immobilier', $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
+	    $genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
+	    $delallowed = $user->rights->ultimateimmo->create;	// If you can create/edit, you can remove a file on card
+	    print $formfile->showdocuments('ultimateimmo', $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
 		*/
 
 	    // Show links to link elements
@@ -402,7 +402,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	    $MAXEVENT = 10;
 
-	    $morehtmlright = '<a href="'.dol_buildpath('/immobilier/cost_type/immocost_type_info.php', 1).'?id='.$object->id.'">';
+	    $morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/cost_type/immocost_type_info.php', 1).'?id='.$object->id.'">';
 	    $morehtmlright.= $langs->trans("SeeAll");
 	    $morehtmlright.= '</a>';
 

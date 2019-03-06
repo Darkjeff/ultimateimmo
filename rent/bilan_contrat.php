@@ -2,6 +2,7 @@
 /* Copyright (C) 2004      Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2005-2006 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
+ * Copyright (C) 2018-2019 Philippe GRAND       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +19,8 @@
  */
 
 /**
- * \file htdocs/custom/immobilier/fiche_locataire.php
- * \ingroup immobilier
+ * \file htdocs/custom/ultimateimmo/fiche_locataire.php
+ * \ingroup ultimateimmo
  * \brief Page fiche locataire
  */
 
@@ -31,11 +32,11 @@ if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main
 if (! $res) die("Include of main fails");
 
 // Class
-dol_include_once ( "/immobilier/class/immorent.class.php" );
-require_once ('../core/lib/immobilier.lib.php');
+dol_include_once ( "/ultimateimmo/class/immorent.class.php" );
+require_once ('../core/lib/ultimateimmo.lib.php');
 
 // Langs
-$langs->load ( "immobilier@immobilier" );
+$langs->load ( "ultimateimmo@ultimateimmo" );
 
 $id = GETPOST ( 'id', 'int' );
 $ref = GETPOST('ref', 'alpha');
@@ -51,19 +52,19 @@ $limit = $conf->liste_limit;
 
 llxheader ( '', $langs->trans ( "bilancontrat" ), '' );
 
-$contrat = new Rent ( $db );
+$contrat = new ImmoRent ( $db );
 $result = $contrat->fetch ( $id );
 $head = rent_prepare_head ( $contrat );
 
 dol_fiche_head ( $head, 'bilan', $langs->trans ( "Bilan" ), 0, 'agreement' );
 
-$sql = "(SELECT l.date_start as date , l.amount_total as debit, 0 as credit , l.name as des";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_receipt as l";
-$sql .= " WHERE l.fk_contract =" . $id;
+$sql = "(SELECT l.date_start as date , l.total_amount as debit, 0 as credit , l.label as des";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as l";
+$sql .= " WHERE l.fk_rent =" . $id;
 $sql .= ")";
-$sql .= "UNION (SELECT p.date_payment as date, 0 as debit , p.amount as credit, p.comment as des";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_payment as p";
-$sql .= " WHERE p.fk_contract =" . $id;
+$sql .= "UNION (SELECT p.date_payment as date, 0 as debit , p.amount as credit, p.note_public as des";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
+$sql .= " WHERE p.fk_rent =" . $id;
 $sql .= ")";
 $sql .= "ORDER BY date";
 

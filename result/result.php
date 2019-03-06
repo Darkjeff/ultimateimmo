@@ -47,7 +47,7 @@ require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier", "bills", "other"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "bills", "other"));
 
 // Filter
 $year = $_GET ["year"];
@@ -64,8 +64,8 @@ if ($year == 0) {
  */
 llxHeader ( '', 'Compta - Ventilation' );
 
-$textprevyear = '<a href="' .dol_buildpath('/immobilier/result/result.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
-$textnextyear = '<a href="' .dol_buildpath('/immobilier/result/result.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
+$textprevyear = '<a href="' .dol_buildpath('/ultimateimmo/result/result.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
+$textnextyear = '<a href="' .dol_buildpath('/ultimateimmo/result/result.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
 
 print_fiche_titre ( $langs->trans("Encaissement")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
 
@@ -108,8 +108,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=10,lp.amount,0)),2) AS 'Octobre',
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=11,lp.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid";
@@ -182,8 +182,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=10,lo.chargesamount,0)),2) AS 'O
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=11,lo.chargesamount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=12,lo.chargesamount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lo.chargesamount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
@@ -241,8 +241,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=10,lp.amount,0)),2) AS 'Octobre',
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=11,lp.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid";
@@ -264,8 +264,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=10,lo.chargesamount,0)),2) AS 'O
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=11,lo.chargesamount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=12,lo.chargesamount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lo.chargesamount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
@@ -370,9 +370,9 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre'
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
@@ -433,8 +433,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=10,lp.amount,0)),2) AS 'Octobre',
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=11,lp.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid ";
@@ -457,8 +457,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=10,lo.chargesamount,0)),2) AS 'O
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=11,lo.chargesamount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=12,lo.chargesamount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lo.chargesamount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
@@ -481,9 +481,9 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre'
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
@@ -601,9 +601,9 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre'
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
@@ -666,8 +666,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=10,lp.amount,0)),2) AS 'Octobre',
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=11,lp.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid";
@@ -690,8 +690,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=10,lo.chargesamount,0)),2) AS 'O
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=11,lo.chargesamount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=12,lo.chargesamount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lo.chargesamount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
@@ -715,9 +715,9 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre'
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
@@ -747,9 +747,9 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre'
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";

@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+/* Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
  */
 
 /**
- * \file    immobilier/css/immobilier.css.php
- * \ingroup immobilier
+ * \file    ultimateimmo/css/ultimateimmo.css.php
+ * \ingroup ultimateimmo
  * \brief   CSS file for module Immobilier.
  */
 
@@ -86,27 +86,27 @@ legend
 }
 
 div.mainmenu.properties {
-	background-image: url(<?php echo dol_buildpath('/immobilier/img/immoproperty.png',1) ?>);
+	background-image: url(<?php echo dol_buildpath('/ultimateimmo/img/immoproperty.png',1) ?>);
 }
 
 div.mainmenu.renters {
-	background-image: url(<?php echo dol_buildpath('/immobilier/img/immorenter.png',1) ?>);
+	background-image: url(<?php echo dol_buildpath('/ultimateimmo/img/immorenter.png',1) ?>);
 }
 
 div.mainmenu.immorents {
-	background-image: url(<?php echo dol_buildpath('/immobilier/img/immorent.png',1) ?>);
+	background-image: url(<?php echo dol_buildpath('/ultimateimmo/img/immorent.png',1) ?>);
 }
 
 div.mainmenu.immoreceipts {
-	background-image: url(<?php echo dol_buildpath('/immobilier/img/immoreceipt.png',1) ?>);
+	background-image: url(<?php echo dol_buildpath('/ultimateimmo/img/immoreceipt.png',1) ?>);
 }
 
 div.mainmenu.rentalloads {
-	background-image: url(<?php echo dol_buildpath('/immobilier/img/immocost.png',1) ?>);
+	background-image: url(<?php echo dol_buildpath('/ultimateimmo/img/immocost.png',1) ?>);
 }
 
 div.mainmenu.result {
-	background-image: url(<?php echo dol_buildpath('/immobilier/img/immoresult.png',1) ?>);
+	background-image: url(<?php echo dol_buildpath('/ultimateimmo/img/immoresult.png',1) ?>);
 }
 
 .quatrevingtpercent, .inputsearch {

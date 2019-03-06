@@ -18,7 +18,7 @@
 
 /**
  *  \file       immorenter_document.php
- *  \ingroup    immobilier
+ *  \ingroup    ultimateimmo
  *  \brief      Tab for documents linked to ImmoRenter
  */
 
@@ -41,11 +41,11 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
-dol_include_once('/immobilier/class/immorenter.class.php');
-dol_include_once('/immobilier/lib/immorenter.lib.php');
+dol_include_once('/ultimateimmo/class/immorenter.class.php');
+dol_include_once('/ultimateimmo/lib/immorenter.lib.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","companies","other","mails"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","companies","other","mails"));
 
 
 $action=GETPOST('action','aZ09');
@@ -56,7 +56,7 @@ $ref = GETPOST('ref', 'alpha');
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
 if ($user->societe_id > 0) $socid = $user->societe_id;
-$result = restrictedArea($user, 'immobilier', $id);
+$result = restrictedArea($user, 'ultimateimmo', $id);
 
 // Get parameters
 $sortfield = GETPOST("sortfield",'alpha');
@@ -72,7 +72,7 @@ if (! $sortfield) $sortfield="name";
 // Initialize technical objects
 $object=new ImmoRenter($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immorenterdocument','globalcard'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immorenter');
@@ -81,8 +81,8 @@ $extralabels = $extrafields->fetch_name_optionals_label('immorenter');
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
-if ($id > 0 || ! empty($ref)) $upload_dir = $conf->immobilier->multidir_output[$object->entity] . "/renter/" . dol_sanitizeFileName($object->ref);
-//$modulepart='immobilier';
+if ($id > 0 || ! empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity] . "/renter/" . dol_sanitizeFileName($object->ref);
+//$modulepart='ultimateimmo';
 
 /*
  * Actions
@@ -109,7 +109,7 @@ if ($object->id)
 	if (! empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immorenterPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoRenter"), -1, 'immobilier@immobilier');
+	dol_fiche_head($head, 'document', $langs->trans("ImmoRenter"), -1, 'ultimateimmo@ultimateimmo');
 
 
 	// Construit liste des fichiers
@@ -122,7 +122,7 @@ if ($object->id)
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/immobilier/renter/immorenter_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/renter/immorenter_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
@@ -143,10 +143,10 @@ if ($object->id)
 
 	dol_fiche_end();
 
-	$modulepart = 'immobilier';
-	$permission = $user->rights->immobilier->renter->write;
+	$modulepart = 'ultimateimmo';
+	$permission = $user->rights->ultimateimmo->renter->write;
 	$permission = 1;
-	$permtoedit = $user->rights->immobilier->renter->write;
+	$permtoedit = $user->rights->ultimateimmo->renter->write;
 	$permtoedit = 1;
 	$param = '&id=' . $object->id;
 

@@ -18,7 +18,7 @@
 
 /**
  * \file        class/immoproperty_type.class.php
- * \ingroup     immobilier
+ * \ingroup     ultimateimmo
  * \brief       This file is a CRUD class file for ImmoProperty_Type (Create/Read/Update/Delete)
  */
 
@@ -40,7 +40,7 @@ class ImmoProperty_Type extends CommonObject
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
-	public $table_element = 'immobilier_immoproperty_type';
+	public $table_element = 'ultimateimmo_immoproperty_type';
 	/**
 	 * @var int  Does immocost_type support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
@@ -52,7 +52,7 @@ class ImmoProperty_Type extends CommonObject
 	/**
 	 * @var string String with name of icon for immocost_type. Must be the part after the 'object_' into object_immocost_type.png
 	 */
-	public $picto = 'immoproperty_type@immobilier';
+	public $picto = 'immoproperty_type@ultimateimmo';
 
 
 	/**
@@ -323,7 +323,7 @@ class ImmoProperty_Type extends CommonObject
 		$label.= '<br>';
 		$label.= '<b>' . $langs->trans('Label') . ':</b> ' . $this->label;
 
-        $url = dol_buildpath('/immobilier/property/immoproperty_type_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/ultimateimmo/property/immoproperty_type_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {

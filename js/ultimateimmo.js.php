@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+/* Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +30,9 @@ if (!defined('NOREQUIREAJAX'))  define('NOREQUIREAJAX','1');
 
 
 /**
- * \file    immobilier/js/immobilier.js.php
- * \ingroup immobilier
- * \brief   JavaScript file for module Immobilier.
+ * \file    ultimateimmo/js/ultimateimmo.js.php
+ * \ingroup ultimateimmo
+ * \brief   JavaScript file for module Ultimateimmo.
  */
 
 // Load Dolibarr environment
@@ -57,6 +57,6 @@ if (empty($dolibarr_nocache)) header('Cache-Control: max-age=3600, public, must-
 else header('Cache-Control: no-cache');
 ?>
 
-/* Javascript library of module Immobilier */
+/* Javascript library of module Ultimateimmo */
 
 

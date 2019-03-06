@@ -18,7 +18,7 @@
 
 /**
  *  \file       immopayment_document.php
- *  \ingroup    immobilier
+ *  \ingroup    ultimateimmo
  *  \brief      Tab for documents linked to ImmoPayment
  */
 
@@ -41,11 +41,11 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
-dol_include_once('/immobilier/class/immopayment.class.php');
-dol_include_once('/immobilier/lib/immopayment.lib.php');
+dol_include_once('/ultimateimmo/class/immopayment.class.php');
+dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","companies","other","mails"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","companies","other","mails"));
 
 
 $action=GETPOST('action','aZ09');
@@ -56,7 +56,7 @@ $ref = GETPOST('ref', 'alpha');
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
 if ($user->societe_id > 0) $socid = $user->societe_id;
-$result = restrictedArea($user, 'immobilier', $id);
+$result = restrictedArea($user, 'ultimateimmo', $id);
 
 // Get parameters
 $sortfield = GETPOST("sortfield",'alpha');
@@ -72,7 +72,7 @@ if (! $sortfield) $sortfield="name";
 // Initialize technical objects
 $object=new ImmoPayment($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immopaymentdocument'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immopayment');
@@ -81,7 +81,7 @@ $extralabels = $extrafields->fetch_name_optionals_label('immopayment');
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
-if ($id > 0 || ! empty($ref)) $upload_dir = $conf->immobilier->multidir_output[$object->entity] . "/payment/" . dol_sanitizeFileName($object->ref);
+if ($id > 0 || ! empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity] . "/payment/" . dol_sanitizeFileName($object->ref);
 
 
 
@@ -110,7 +110,7 @@ if ($object->id)
 	 */
 	$head = immopaymentPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoPayment"), -1, 'immobilier@immobilier');
+	dol_fiche_head($head, 'document', $langs->trans("ImmoPayment"), -1, 'ultimateimmo@ultimateimmo');
 
 
 	// Construit liste des fichiers
@@ -123,7 +123,7 @@ if ($object->id)
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/immobilier/payment/immopayment_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/payment/immopayment_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
@@ -144,10 +144,10 @@ if ($object->id)
 
 	dol_fiche_end();
 
-	$modulepart = 'immobilier';
-	$permission = $user->rights->immobilier->payment->write;
+	$modulepart = 'ultimateimmo';
+	$permission = $user->rights->ultimateimmo->payment->write;
 	$permission = 1;
-	$permtoedit = $user->rights->immobilier->payment->write;
+	$permtoedit = $user->rights->ultimateimmo->payment->write;
 	$permtoedit = 1;
 	$param = '&id=' . $object->id;
 

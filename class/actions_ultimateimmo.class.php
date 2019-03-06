@@ -16,7 +16,7 @@
  */
 
 /**
- * \file    ultimateimmo/class/actions_immobilier.class.php
+ * \file    ultimateimmo/class/actions_ultimateimmo.class.php
  * \ingroup ultimateimmo
  * \brief   Example hook overload.
  *

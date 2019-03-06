@@ -43,7 +43,7 @@ if (! $res) die("Include of main fails");
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","other","bills"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","other","bills"));
 
 // Filter
 $year=$_GET["year"];
@@ -63,8 +63,8 @@ else
  */
 llxHeader ( '', 'Immobilier - charge par mois' );
 
-$textprevyear = '<a href="' .dol_buildpath('/immobilier/cost/stats.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
-$textnextyear = '<a href="' .dol_buildpath('/immobilier/cost/stats.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
+$textprevyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/stats.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
+$textnextyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/stats.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
 
 print load_fiche_titre ( "Charges $textprevyear " . $langs->trans ( "Year" ) . " $year_start $textnextyear" );
 

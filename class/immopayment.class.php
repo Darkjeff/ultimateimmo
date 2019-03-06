@@ -18,7 +18,7 @@
 
 /**
  * \file        class/immopayment.class.php
- * \ingroup     immobilier
+ * \ingroup     ultimateimmo
  * \brief       This file is a CRUD class file for ImmoPayment (Create/Read/Update/Delete)
  */
 
@@ -40,7 +40,7 @@ class ImmoPayment extends CommonObject
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
-	public $table_element = 'immobilier_immopayment';
+	public $table_element = 'ultimateimmo_immopayment';
 	/**
 	 * @var int  Does immopayment support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
@@ -52,7 +52,7 @@ class ImmoPayment extends CommonObject
 	/**
 	 * @var string String with name of icon for immopayment. Must be the part after the 'object_' into object_immopayment.png
 	 */
-	public $picto = 'immopayment@immobilier';
+	public $picto = 'immopayment@ultimateimmo';
 
 
 	/**
@@ -81,12 +81,12 @@ class ImmoPayment extends CommonObject
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>0, 'enabled'=>1, 'position'=>20, 'default'=>1, 'notnull'=>1, 'index'=>1,),		
-		'fk_rent' => array('type'=>'integer:ImmoRent:immobilier/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>25, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToContract",),
-		'fk_receipt' => array('type'=>'integer:ImmoReceipt:immobilier/class/immoreceipt.class.php', 'label'=>'ImmoReceipt', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToReceipt",),
-		'fk_owner' => array('type'=>'integer:ImmoOwner:immobilier/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
+		'fk_rent' => array('type'=>'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>25, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToContract",),
+		'fk_receipt' => array('type'=>'integer:ImmoReceipt:ultimateimmo/class/immoreceipt.class.php', 'label'=>'ImmoReceipt', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToReceipt",),
+		'fk_owner' => array('type'=>'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>36, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'fk_property' => array('type'=>'integer:ImmoProperty:immobilier/class/immoproperty.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
-		'fk_renter' => array('type'=>'integer:ImmoRenter:immobilier/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToRenter",),
+		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
+		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToRenter",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>50, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1,),
 		'amount' => array('type'=>'price', 'label'=>'Amount', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
@@ -623,7 +623,7 @@ class ImmoPayment extends CommonObject
 		$label.= '<br>';
         $label.= '<b>' . $langs->trans('DatePayment') . ':</b> ' . $this->date_payment;
 
-        $url = dol_buildpath('/immobilier/payment/immopayment_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {

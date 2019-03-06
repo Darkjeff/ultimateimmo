@@ -19,7 +19,7 @@
 
 /**
  *      \file       scripts/immorenter.php
- *		\ingroup    immobilier
+ *		\ingroup    ultimateimmo
  *      \brief      This file is an example for a command line script to work on ImmoRenter
  */
 
@@ -76,7 +76,7 @@ $db->begin();
 
 
 // Examples for manipulating class ImmoRenter
-dol_include_once("/immobilier/class/immorenter.class.php");
+dol_include_once("/ultimateimmo/class/immorenter.class.php");
 $immorenter=new ImmoRenter($db);
 
 // Example for inserting creating object in database

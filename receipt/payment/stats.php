@@ -2,6 +2,7 @@
 /* Copyright (C) 2001-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
+ * Copyright (C) 2018-2019 Philippe GRAND       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +44,7 @@ if (! $res) die("Include of main fails");
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","other","bills"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","other","bills"));
 
 // Filter
 $year = $_GET ["year"];
@@ -60,8 +61,8 @@ if ($year == 0) {
  */
 llxHeader ( '', 'Compta - Ventilation' );
 
-$textprevyear = '<a href="' .dol_buildpath('/immobilier/receipt/payment/stats.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
-$textnextyear = '<a href="' .dol_buildpath('/immobilier/receipt/payment/stats.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
+$textprevyear = '<a href="' .dol_buildpath('/ultimateimmo/receipt/payment/stats.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
+$textnextyear = '<a href="' .dol_buildpath('/ultimateimmo/receipt/payment/stats.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
 
 print_fiche_titre ( $langs->trans("Encaissement")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
 
@@ -105,8 +106,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=10,lp.amount,0)),2) AS 'Octobre',
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=11,lp.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid ";
@@ -182,8 +183,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=10,lp.amount,0)),2) AS 'Octobre',
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=11,lp.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid ";
@@ -226,7 +227,7 @@ print "</table>\n";
 
 print '</td></tr></table>';
 
-llxFooter('');
+llxFooter();
 $db->close();
 
 ?>

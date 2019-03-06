@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) ---Put here your own copyright and developer email---
+ * Copyright (C) 2018-2019 Philippe GRAND       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 /**
  *  \file       immoproperty_note.php
- *  \ingroup    immobilier
+ *  \ingroup    ultimateimmo
  *  \brief      Car with notes on ImmoProperty
  */
 
@@ -37,11 +37,11 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
-dol_include_once('/immobilier/class/immoproperty.class.php');
-dol_include_once('/immobilier/lib/immoproperty.lib.php');
+dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","companies"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","companies"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -53,7 +53,7 @@ $backtopage = GETPOST('backtopage', 'alpha');
 // Initialize technical objects
 $object=new ImmoProperty($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immopropertynote'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immoproperty');
@@ -61,14 +61,14 @@ $extralabels = $extrafields->fetch_name_optionals_label('immoproperty');
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
 //if ($user->societe_id > 0) $socid = $user->societe_id;
-//$result = restrictedArea($user, 'immobilier', $id);
+//$result = restrictedArea($user, 'ultimateimmo', $id);
 
 // Load object
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
-if ($id > 0 || ! empty($ref)) $upload_dir = $conf->immobilier->multidir_output[$object->entity] . "/" . $object->id;
+if ($id > 0 || ! empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity] . "/" . $object->id;
 
 $permissionnote=1;
-//$permissionnote=$user->rights->immobilier->creer;	// Used by the include of actions_setnotes.inc.php
+//$permissionnote=$user->rights->ultimateimmo->creer;	// Used by the include of actions_setnotes.inc.php
 
 
 /*
@@ -94,11 +94,11 @@ if ($id > 0 || ! empty($ref))
 
 	$head = immopropertyPrepareHead($object);
 
-	dol_fiche_head($head, 'note', $langs->trans("ImmoProperty"), -1, 'immoproperty@immobilier');
+	dol_fiche_head($head, 'note', $langs->trans("ImmoProperty"), -1, 'immoproperty@ultimateimmo');
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/immobilier/immoproperty_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/immoproperty_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref='<div class="refidno">';
 	/*
@@ -112,7 +112,7 @@ if ($id > 0 || ! empty($ref))
 	{
 	    $langs->load("projects");
 	    $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
-	    if ($user->rights->immobilier->creer)
+	    if ($user->rights->ultimateimmo->creer)
 	    {
 	        if ($action != 'classify')
 	            //$morehtmlref.='<a href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';

@@ -18,7 +18,7 @@
 
 /**
  * \file        class/immocost_type.class.php
- * \ingroup     immobilier
+ * \ingroup     ultimateimmo
  * \brief       This file is a CRUD class file for ImmoCost_Type (Create/Read/Update/Delete)
  */
 
@@ -39,7 +39,7 @@ class ImmoCost_Type extends CommonObject
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
-	public $table_element = 'immobilier_immocost_type';
+	public $table_element = 'ultimateimmo_immocost_type';
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
@@ -55,7 +55,7 @@ class ImmoCost_Type extends CommonObject
 	/**
 	 * @var string String with name of icon for immocost_type. Must be the part after the 'object_' into object_immocost_type.png
 	 */
-	public $picto = 'immocost_type@immobilier';
+	public $picto = 'immocost_type@ultimateimmo';
 
 
 	/**
@@ -285,7 +285,7 @@ class ImmoCost_Type extends CommonObject
 		$label.= '<br>';
         $label.= '<b>' . $langs->trans('Label') . ':</b> ' . $this->label;
 
-        $url = dol_buildpath('/immobilier/cost_type/immocost_type_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/ultimateimmo/cost_type/immocost_type_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {

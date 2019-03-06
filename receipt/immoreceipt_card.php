@@ -18,7 +18,7 @@
 
 /**
  *   	\file       immoreceipt_card.php
- *		\ingroup    immobilier
+ *		\ingroup    ultimateimmo
  *		\brief      Page to create/edit/view immoreceipt
  */
 
@@ -41,14 +41,14 @@ include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
-dol_include_once('/immobilier/class/immoreceipt.class.php');
-dol_include_once('/immobilier/lib/immoreceipt.lib.php');
-dol_include_once('/immobilier/core/modules/immobilier/modules_immobilier.php');
-dol_include_once('/immobilier/class/immorent.class.php');
-dol_include_once('/immobilier/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
+dol_include_once('/ultimateimmo/lib/immoreceipt.lib.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_immobilier.php');
+dol_include_once('/ultimateimmo/class/immorent.class.php');
+dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 
 // Load translation files required by the page
-$langs->loadLangs(array("immobilier@immobilier", "other", "compta", "bills", "contracts"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "compta", "bills", "contracts"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -64,7 +64,7 @@ $backtopage = GETPOST('backtopage', 'alpha');
 $object=new ImmoReceipt($db);
 
 $extrafields = new ExtraFields($db);
-$diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immoreceiptcard','globalcard'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
@@ -87,7 +87,7 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be inclu
 //if ($user->societe_id > 0) access_forbidden();
 //if ($user->societe_id > 0) $socid = $user->societe_id;
 //$isdraft = (($object->statut == ImmoReceipt::STATUS_DRAFT) ? 1 : 0);
-//$result = restrictedArea($user, 'immobilier', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
+//$result = restrictedArea($user, 'ultimateimmo', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
 
 
 /*
@@ -104,12 +104,12 @@ if (empty($reshook))
 {
 	$error=0;
 
-	$permissiontoadd = $user->rights->immobilier->write;
-	$permissiontodelete = $user->rights->immobilier->delete || ($permissiontoadd && $object->status == 0);
-    $backurlforlist = dol_buildpath('/immobilier/receipt/immoreceipt_list.php',1);
+	$permissiontoadd = $user->rights->ultimateimmo->write;
+	$permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && $object->status == 0);
+    $backurlforlist = dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1);
 	if (empty($backtopage)) {
 	    if (empty($id)) $backtopage = $backurlforlist;
-	    else $backtopage = dol_buildpath('/immobilier/receipt/immoreceipt_card.php',1).($id > 0 ? $id : '__ID__');
+	    else $backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php',1).($id > 0 ? $id : '__ID__');
     	}
 	$triggermodname = 'ULTIMATEIMMO_IMMORECEIPT_MODIFY';	// Name of trigger action code to execute when we modify record
 
@@ -289,7 +289,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     $res = $object->fetch_optionals();
 
 	$head = immoreceiptPrepareHead($object);
-	dol_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'immoreceipt@immobilier');
+	dol_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'immoreceipt@ultimateimmo');
 
 	$formconfirm = '';
 
@@ -335,13 +335,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/immobilier/receipt/immoreceipt_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref='<div class="refidno">';
 	/*
 	// Ref bis
-	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->immobilier->creer, 'string', '', 0, 1);
-	$morehtmlref.=$form->editfieldval("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->immobilier->creer, 'string', '', null, null, '', 1);
+	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', 0, 1);
+	$morehtmlref.=$form->editfieldval("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', null, null, '', 1);
 	// Thirdparty
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $soc->getNomUrl(1);
 	// Project
@@ -349,7 +349,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	{
 	    $langs->load("projects");
 	    $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
-	    if ($user->rights->immobilier->write)
+	    if ($user->rights->ultimateimmo->write)
 	    {
 	        if ($action != 'classify')
 	            $morehtmlref.='<a href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
@@ -415,7 +415,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
             print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
 
             // Modify
-    		if ($user->rights->immobilier->write)
+    		if ($user->rights->ultimateimmo->write)
     		{
     			print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
     		}
@@ -425,13 +425,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
 
     		// Clone
-    		if ($user->rights->immobilier->write)
+    		if ($user->rights->ultimateimmo->write)
     		{
     			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&amp;socid=' . $object->socid . '&amp;action=clone&amp;object=order">' . $langs->trans("ToClone") . '</a></div>';
     		}
 
     		/*
-    		if ($user->rights->immobilier->write)
+    		if ($user->rights->ultimateimmo->write)
     		{
     			if ($object->status == 1)
     		 	{
@@ -444,7 +444,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
     		*/
 
-    		if ($user->rights->immobilier->delete)
+    		if ($user->rights->ultimateimmo->delete)
     		{
     			print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
     		}
@@ -470,11 +470,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    // Documents
 	    /*$objref = dol_sanitizeFileName($object->ref);
 	    $relativepath = $comref . '/' . $comref . '.pdf';
-	    $filedir = $conf->immobilier->dir_output . '/' . $objref;
+	    $filedir = $conf->ultimateimmo->dir_output . '/' . $objref;
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-	    $genallowed = $user->rights->immobilier->read;	// If you can read, you can build the PDF to read content
-	    $delallowed = $user->rights->immobilier->create;	// If you can create/edit, you can remove a file on card
-	    print $formfile->showdocuments('immobilier', $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
+	    $genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
+	    $delallowed = $user->rights->ultimateimmo->create;	// If you can create/edit, you can remove a file on card
+	    print $formfile->showdocuments('ultimateimmo', $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
 		*/
 
 	    // Show links to link elements
@@ -486,7 +486,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	    $MAXEVENT = 10;
 
-	    $morehtmlright = '<a href="'.dol_buildpath('/immobilier/receipt/immoreceipt_info.php', 1).'?id='.$object->id.'">';
+	    $morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1).'?id='.$object->id.'">';
 	    $morehtmlright.= $langs->trans("SeeAll");
 	    $morehtmlright.= '</a>';
 

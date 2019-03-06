@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) ---Put here your own copyright and developer email---
+ * Copyright (C) 2018-2019 Philippe GRAND       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 
 /**
  *      \file       scripts/immorenter_type.php
- *		\ingroup    immobilier
+ *		\ingroup    ultimateimmo
  *      \brief      This file is an example for a command line script to work on ImmoRenter_Type
  */
 
@@ -81,7 +81,7 @@ $db->begin();
 
 
 // Examples for manipulating class ImmoRenter_Type
-dol_include_once("/immobilier/class/immorenter_type.class.php");
+dol_include_once("/ultimateimmo/class/immorenter_type.class.php");
 $immorenter_type=new ImmoRenter_Type($db);
 
 // Example for inserting creating object in database

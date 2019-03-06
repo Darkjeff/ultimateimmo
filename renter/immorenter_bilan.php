@@ -1,6 +1,7 @@
 ﻿<?php
 /* Copyright (C) 2013-2016 Olivier Geffroy		<jeff@jeffinfo.com>
  * Copyright (C) 2015-2016 Alexandre Spangaro	<aspangaro@zendsi.com>
+ * Copyright (C) 2018-2019 Philippe GRAND 	    <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +18,8 @@
  */
 
 /**
- * \file 		immobilier/renter/bilan.php
- * \ingroup 	immobilier
+ * \file 		ultimateimmo/renter/bilan.php
+ * \ingroup 	ultimateimmo
  * \brief 		Page fiche locataire
  */
 $res = @include ("../../main.inc.php"); // For root directory
@@ -28,12 +29,12 @@ if (! $res)
 	die("Include of main fails");
 	
 // Class
-dol_include_once ( "/immobilier/class/immorent.class.php" );
+dol_include_once ( "/ultimateimmo/class/immorent.class.php" );
 require_once ('../class/immorenter.class.php');
-require_once ('../core/lib/immobilier.lib.php');
+require_once ('../core/lib/ultimateimmo.lib.php');
 
 // Langs
-$langs->load ( "immobilier@immobilier" );
+$langs->load ( "ultimateimmo@ultimateimmo" );
 
 $id = GETPOST ( 'id', 'int' );
 $ref = GETPOST('ref', 'alpha');
@@ -45,7 +46,7 @@ $limit = $conf->liste_limit;
 /*
  * Bilan Renter
  */
-$object = new Renter($db);
+$object = new ImmoRenter($db);
 $object->fetch($id, $ref);
 
 llxheader ( '', $langs->trans("Renter").' | '.$langs->trans("Bilan"), '' );
@@ -64,12 +65,12 @@ print '<table class="border centpercent">';
 
 print '<div class="underbanner clearboth"></div>';
 	
-$sql = "(SELECT l.date_start as date , l.amount_total as debit, 0 as credit , l.name as des";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_receipt as l";
+$sql = "(SELECT l.date_start as date , l.total_amount as debit, 0 as credit , l.label as des";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as l";
 $sql .= " WHERE l.fk_renter =" . $id;
 $sql .= ")";
-$sql .= "UNION (SELECT p.date_payment as date, 0 as debit, p.amount as credit, p.comment as des";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immo_payment as p";
+$sql .= "UNION (SELECT p.date_payment as date, 0 as debit, p.amount as credit, p.note_public as des";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 $sql .= " WHERE p.fk_renter =" . $id;
 $sql .= ")";
 $sql .= "ORDER BY date";
@@ -87,12 +88,12 @@ if ($result) {
 	print '<td>' . $langs->trans ( "Description" ) . '</td>';
 	print "</tr>\n";
 
-	$sql2 = "SELECT SUM(l.amount_total) as debit, 0 as credit ";
-	$sql2 .= " FROM " . MAIN_DB_PREFIX . "immo_receipt as l";
+	$sql2 = "SELECT SUM(l.total_amount) as debit, 0 as credit ";
+	$sql2 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as l";
 	$sql2 .= " WHERE l.fk_renter =" . $id;
 
 	$sql3 .= "SELECT 0 as debit , sum(p.amount) as credit";
-	$sql3 .= " FROM " . MAIN_DB_PREFIX . "immo_payment as p";
+	$sql3 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 	$sql3 .= " WHERE p.fk_renter =" . $id;
 
 	$result2 = $db->query ( $sql2 );

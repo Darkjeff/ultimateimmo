@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+# Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,19 +17,19 @@
 # Générique
 #
 
-# Module label 'ModuleImmobilierName'
-ModuleImmobilierName = Immobilier
-# Module description 'ModuleImmobilierDesc'
-ModuleImmobilierDesc = Description de Immobilier
+# Module label 'ModuleUltimateimmoName'
+ModuleUltimateimmoName = Ultimateimmo
+# Module description 'ModuleUltimateimmoDesc'
+ModuleUltimateimmoDesc = Description de Ultimateimmo
 
 #
 # Page d'administration
 #
-ImmobilierSetup = Configuration du module Immobilier
+UltimateimmoSetup = Configuration du module Ultimateimmo
 Settings = Réglages
-ImmobilierSetupPage = Page de configuration du module Immobilier
-ImmobilierNumberingModeles = Modèles de numérotation des quittances
-TemplatePDFImmobilier = Modèles de document des quittances
+UltimateimmoSetupPage = Page de configuration du module Ultimateimmo
+UltimateimmoNumberingModeles = Modèles de numérotation des quittances
+TemplatePDFUltimateimmo = Modèles de document des quittances
 WatermarkOnDraftImmoCards = Filigrane sur les brouillons de quittances (aucun si vide)
 ExtraFieldsProperty = Attributs supplémentaires (Propriétés)
 ExtraFieldsRenter = Attributs supplémentaires (Locataires)
@@ -42,12 +42,13 @@ ExtraFieldsRent =  = Attributs supplémentaires (Locations)
 # Page À propos
 #
 About = À propos
-ImmobilierAbout = À propos de Immobilier
-ImmobilierAboutPage = Page à propos de Immobilier
+UltimateimmoAbout = À propos de Ultimateimmo
+UltimateimmoAboutPage = Page à propos de Ultimateimmo
 
 #
 # Menu
 #
+ImmoProperties = Biens immo
 MenuImmoProperty = Biens immobiliers
 MenuNewImmoProperty = Nouveau bien
 MenuListImmoProperty = Liste

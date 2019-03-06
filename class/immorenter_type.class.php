@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2019 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 /**
  * \file        class/immorenter_type.class.php
- * \ingroup     immobilier
+ * \ingroup     ultimateimmo
  * \brief       This file is a CRUD class file for ImmoRenter_Type (Create/Read/Update/Delete)
  */
 
@@ -39,7 +39,7 @@ class ImmoRenter_Type extends CommonObject
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
-	public $table_element = 'immobilier_immorenter_type';
+	public $table_element = 'ultimateimmo_immorenter_type';
 	/**
 	 * @var int  Does immorenter_type support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
@@ -51,7 +51,7 @@ class ImmoRenter_Type extends CommonObject
 	/**
 	 * @var string String with name of icon for immorenter_type. Must be the part after the 'object_' into object_immorenter_type.png
 	 */
-	public $picto = 'immorenter_type@immobilier';
+	public $picto = 'immorenter_type@ultimateimmo';
 
 
 	/**
@@ -393,7 +393,7 @@ class ImmoRenter_Type extends CommonObject
         $label.= '<br>';
         $label.= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 
-        $url = dol_buildpath('/immobilier/renter_type/immorenter_type_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/ultimateimmo/renter_type/immorenter_type_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {

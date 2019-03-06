@@ -3,7 +3,7 @@
  * Copyright (C) 2005-2006 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2014      Florian Henry        <florian.henry@open-concept.pro>
- * Copyright (C) 2018 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2019 Philippe GRAND 		<philippe.grand@atoo-net.com>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,20 +40,20 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
-dol_include_once("/immobilier/class/immocost.class.php");
-dol_include_once("/immobilier/class/immoproperty.class.php");
-dol_include_once("/immobilier/class/immoreceipt.class.php");
-dol_include_once("/immobilier/class/immo_costdet.class.php");
-dol_include_once('/immobilier/class/immorent.class.php');
-require_once ('../core/lib/immobilier.lib.php');
-dol_include_once('/immobilier/class/html.immobilier.php');
+dol_include_once("/ultimateimmo/class/immocost.class.php");
+dol_include_once("/ultimateimmo/class/immoproperty.class.php");
+dol_include_once("/ultimateimmo/class/immoreceipt.class.php");
+dol_include_once("/ultimateimmo/class/immo_costdet.class.php");
+dol_include_once('/ultimateimmo/class/immorent.class.php');
+require_once ('../core/lib/ultimateimmo.lib.php');
+dol_include_once('/ultimateimmo/class/html.ultimateimmo.php');
 
-$res = dol_include_once("/immobilier/core/modules/immobilier/modules_immobilier.php");
+$res = dol_include_once("/ultimateimmo/core/modules/ultimateimmo/modules_immobilier.php");
 if (! $res)
-	die("Include of immobilier");
+	die("Include of ultimateimmo");
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","bills","compta"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","bills","compta"));
 
 $mesg = '';
 $id = GETPOST('id', 'int');
@@ -114,7 +114,7 @@ if ($action == 'ventil') {
 	if (empty($error)) {
 		$db->commit();
 		setEventMessage($langs->trans("SocialContributionAdded"), 'mesgs');
-		Header("Location: " . dol_buildpath('/immobilier/cost/immocost_card.php',1)."?id=" . $id);
+		Header("Location: " . dol_buildpath('/ultimateimmo/cost/immocost_card.php',1)."?id=" . $id);
 	} else {
 		$db->rollback();
 	}

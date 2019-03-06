@@ -18,7 +18,7 @@
 
 /**
  *   	\file       immocost_type_list.php
- *		\ingroup    immobilier
+ *		\ingroup    ultimateimmo
  *		\brief      List page for immocost_type
  */
 
@@ -40,10 +40,10 @@ if (! $res) die("Include of main fails");
 require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
-dol_include_once('/immobilier/class/immocost_type.class.php');
+dol_include_once('/ultimateimmo/class/immocost_type.class.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","other"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","other"));
 
 $action     = GETPOST('action','aZ09')?GETPOST('action','aZ09'):'view';				// The action 'add', 'create', 'edit', 'update', 'view', ...
 $massaction = GETPOST('massaction','alpha');											// The bulk action (combo box choice into lists)
@@ -70,7 +70,7 @@ $pagenext = $page + 1;
 // Initialize technical objects
 $object=new ImmoCost_Type($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction=$conf->immobilier->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immocost_typelist'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immocost_type');
@@ -87,7 +87,7 @@ if ($user->societe_id > 0)	// Protection if external user
 	//$socid = $user->societe_id;
 	accessforbidden();
 }
-//$result = restrictedArea($user, 'immobilier', $id, '');
+//$result = restrictedArea($user, 'ultimateimmo', $id, '');
 
 // Initialize array of search criterias
 $search_all=trim(GETPOST("search_all",'alpha'));
@@ -161,9 +161,9 @@ if (empty($reshook))
 	// Mass actions
 	$objectclass='ImmoCost_Type';
 	$objectlabel='ImmoCost_Type';
-	$permtoread = $user->rights->immobilier->read;
-	$permtodelete = $user->rights->immobilier->delete;
-	$uploaddir = $conf->immobilier->dir_output;
+	$permtoread = $user->rights->ultimateimmo->read;
+	$permtodelete = $user->rights->ultimateimmo->delete;
+	$uploaddir = $conf->ultimateimmo->dir_output;
 	include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
 }
 
@@ -271,7 +271,7 @@ if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && 
 {
 	$obj = $db->fetch_object($resql);
 	$id = $obj->rowid;
-	header("Location: ".dol_buildpath('/immobilier/cost_type/immocost_type_card.php',1).'?id='.$id);
+	header("Location: ".dol_buildpath('/ultimateimmo/cost_type/immocost_type_card.php',1).'?id='.$id);
 	exit;
 }
 
@@ -314,7 +314,7 @@ $arrayofmassactions =  array(
 	//'presend'=>$langs->trans("SendByMail"),
 	//'builddoc'=>$langs->trans("PDFMerge"),
 );
-if ($user->rights->immobilier->delete) $arrayofmassactions['predelete']=$langs->trans("Delete");
+if ($user->rights->ultimateimmo->delete) $arrayofmassactions['predelete']=$langs->trans("Delete");
 if (in_array($massaction, array('presend','predelete'))) $arrayofmassactions=array();
 $massactionbutton=$form->selectMassAction('', $arrayofmassactions);
 
@@ -539,8 +539,8 @@ if (in_array('builddoc',$arrayofmassactions) && ($nbtotalofrecords === '' || $nb
 	$urlsource.=str_replace('&amp;','&',$param);
 
 	$filedir=$diroutputmassaction;
-	$genallowed=$user->rights->immobilier->read;
-	$delallowed=$user->rights->immobilier->write;
+	$genallowed=$user->rights->ultimateimmo->read;
+	$delallowed=$user->rights->ultimateimmo->write;
 
 	print $formfile->showdocuments('massfilesarea_immobilier','',$filedir,$urlsource,0,$delallowed,'',1,1,0,48,1,$param,$title,'','','',null,$hidegeneratedfilelistifempty);
 }

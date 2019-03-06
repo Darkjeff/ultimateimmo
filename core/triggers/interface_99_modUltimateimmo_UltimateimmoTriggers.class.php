@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+/* Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/triggers/dolibarrtriggers.class.php';
 /**
  *  Class of triggers for ultimateimmo module
  */
-class InterfaceimmobilierTriggers extends DolibarrTriggers
+class InterfaceUltimateimmoTriggers extends DolibarrTriggers
 {
 	/**
 	 * @var DoliDB Database handler

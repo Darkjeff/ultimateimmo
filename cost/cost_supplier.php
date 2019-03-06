@@ -43,10 +43,10 @@ if (! $res) die("Include of main fails");
 // Class
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
-$res = dol_include_once ( "/immobilier/core/modules/immobilier/modules_immobilier.php" );	
+$res = dol_include_once ( "/ultimateimmo/core/modules/ultimateimmo/modules_immobilier.php" );	
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("immobilier@immobilier","other","bills"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","other","bills"));
 
 $model='chargefourn';
 $action=GETPOST('action');
@@ -63,7 +63,7 @@ if ($year == 0) {
 }
 
 $filename = 'chargefourn_' . dol_sanitizeFileName($year_start) . '.pdf';
-$filedir = $conf->immobilier->dir_output . '/chargefourn/';
+$filedir = $conf->ultimateimmo->dir_output . '/chargefourn/';
 
 
 
@@ -86,8 +86,8 @@ if ($action == 'builddoc') {
 llxHeader('', 'Immobilier - charges par mois');
 $formfile = new FormFile($db);
 
-$textprevyear = '<a href="' .dol_buildpath('/immobilier/cost/cost_supplier.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
-$textnextyear = '<a href="' .dol_buildpath('/immobilier/cost/cost_supplier.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
+$textprevyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/cost_supplier.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
+$textnextyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/cost_supplier.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
 
 print load_fiche_titre("Charges $textprevyear " . $langs->trans("Year") . " $year_start $textnextyear");
 
@@ -124,8 +124,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=10,ic.amount,0)),2) AS 'Octobre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "societe as so";
 $sql .= " WHERE ic.datec >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.datec <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
@@ -197,8 +197,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=10,ic.amount,0)),2) AS 'Octobre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE ic.datec >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.datec <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND ic.fk_property = ll.rowid ";
@@ -246,7 +246,7 @@ print '</td></tr></table>';
 	// afficher
 	$legende = $langs->trans("Ouvrir");
 	print '<tr><td width="200" align="center">' . $langs->trans("ChargeFourn") . '</td><td> ';
-	print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immobilier&file=chargefourn/chargefourn_' . $year_start . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+	print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=ultimateimmo&file=chargefourn/chargefourn_' . $year_start . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 	print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 	print '</td></tr></table>';
 }

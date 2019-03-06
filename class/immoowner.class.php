@@ -18,7 +18,7 @@
 
 /**
  * \file        class/immoowner.class.php
- * \ingroup     immobilier
+ * \ingroup     ultimateimmo
  * \brief       This file is a CRUD class file for ImmoOwner (Create/Read/Update/Delete)
  */
 
@@ -40,7 +40,7 @@ class ImmoOwner extends CommonObject
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
-	public $table_element = 'immobilier_immoowner';
+	public $table_element = 'ultimateimmo_immoowner';
 	/**
 	 * @var int  Does immoowner support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
@@ -52,7 +52,7 @@ class ImmoOwner extends CommonObject
 	/**
 	 * @var string String with name of icon for immoowner. Must be the part after the 'object_' into object_immoowner.png
 	 */
-	public $picto = 'immoowner@immobilier';
+	public $picto = 'immoowner@ultimateimmo';
 
 
 	/**
@@ -82,7 +82,7 @@ class ImmoOwner extends CommonObject
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>-1, 'enabled'=>1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'societe' => array('type'=>'varchar(128)', 'label'=>'Societe', 'visible'=>1, 'enabled'=>1, 'position'=>36, 'notnull'=>-1,),
-		'fk_owner_type' => array('type'=>'integer:ImmoOwner_Type:immobilier/class/immoowner_type.class.php', 'label'=>'MenuImmoOwnerType', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwnerType",),
+		'fk_owner_type' => array('type'=>'integer:ImmoOwner_Type:ultimateimmo/class/immoowner_type.class.php', 'label'=>'MenuImmoOwnerType', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwnerType",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>45, 'notnull'=>-1,),
 		'civility_id' => array('type'=>'integer', 'label'=>'Civility', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>1, 'arrayofkeyval'=>array('0'=>'MME', '1'=>'MLE', '2'=>'MR')),
@@ -539,7 +539,7 @@ class ImmoOwner extends CommonObject
 		$label.= '<br>';
         $label.= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->lastname;
 
-        $url = dol_buildpath('/immobilier/owner/immoowner_card.php',1).'?id='.$this->id;
+        $url = dol_buildpath('/ultimateimmo/owner/immoowner_card.php',1).'?id='.$this->id;
 
         if ($option != 'nolink')
         {

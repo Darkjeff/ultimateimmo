@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2013		Olivier Geffroy		<jeff@jeffinfo.com>
  * Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro@zendsi.com>
- * Copyright (C) 2018 	   Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2019 	Philippe GRAND 	    <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  */
 
 /**
- * \file    immobilier/property/equipement.php
- * \ingroup immobilier
+ * \file    ultimateimmo/property/equipement.php
+ * \ingroup ultimateimmo
  * \brief   Equipement page
  */
 // Load Dolibarr environment
@@ -37,18 +37,18 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
-dol_include_once('/immobilier/lib/immoproperty.lib.php');
-dol_include_once('/immobilier/class/immoproperty.class.php');
-dol_include_once('/immobilier/class/html.formimmobilier.class.php');
+dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
+dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/html.formimmobilier.class.php');
 
-$langs->load("immobilier@immobilier");
+$langs->load("ultimateimmo@ultimateimmo");
 
 $mesg = '';
 $id = GETPOST('rowid') ? GETPOST('rowid', 'int') : GETPOST('id', 'int');
 $action = GETPOST('action', 'alpha');
 
 // Security check
-if (! $user->rights->immobilier->read) {
+if (! $user->rights->ultimateimmo->read) {
 	accessforbidden();
 }
 
@@ -70,13 +70,13 @@ llxheader('', $langs->trans("Property") . ' | ' . $langs->trans("Equipements"), 
 
 $head = immopropertyPrepareHead($object);
 
-dol_fiche_head($head, 'equipement', $langs->trans("Property"), 0, 'building@immobilier');
+dol_fiche_head($head, 'equipement', $langs->trans("Property"), 0, 'building@ultimateimmo');
 
 if ($result) {
 	if ($mesg)
 		print $mesg . "<br>";
 	
-	$linkback = '<a href="' .dol_buildpath('/immobilier/property/immoproperty_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	dol_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
 

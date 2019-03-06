@@ -2,6 +2,7 @@
 /* Copyright (C) 2001-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013 Olivier Geffroy  <jeff@jeffinfo.com>
+ * Copyright (C) 2018 Philippe GRAND   <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +39,7 @@ if (! $res) die("Include of main fails");
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 
 // Langs
-$langs->load ( "immobilier@immobilier" );
+$langs->load ( "ultimateimmo@ultimateimmo" );
 $langs->load ( "bills" );
 $langs->load ( "other" );
 
@@ -103,8 +104,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lo.echeance)=10,lo.rentamount,0)),2) AS 'Octobre',
 $sql .= "  ROUND(SUM(IF(MONTH(lo.echeance)=11,lo.rentamount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.echeance)=12,lo.rentamount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lo.rentamount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lo.echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
@@ -180,8 +181,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(lo.echeance)=10,lo.rentamount,0)),2) AS 'Octobre',
 $sql .= "  ROUND(SUM(IF(MONTH(lo.echeance)=11,lo.rentamount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.echeance)=12,lo.rentamount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(lo.rentamount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lo.echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
@@ -224,8 +225,7 @@ print "</table>\n";
 
 print '</td></tr></table>';
 
-$db->close ();
-
-llxFooter ( '$Date: 2006/12/23 15:24:24 $ - $Revision: 1.11 $' );
+llxFooter();
+$db->close();
 
 ?>
