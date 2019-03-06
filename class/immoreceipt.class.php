@@ -100,16 +100,15 @@ class ImmoReceipt extends CommonObject
 		'chargesamount' => array('type'=>'price', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'total_amount' => array('type'=>'price', 'label'=>'TotalAmount', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'balance' => array('type'=>'price', 'label'=>'Balance', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
-		'paiepartiel' => array('type'=>'price', 'label'=>'PaiePartiel', 'enabled'=>1, 'visible'=>1, 'position'=>85, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
+		'partial_payment' => array('type'=>'price', 'label'=>'PartialPayment', 'enabled'=>1, 'visible'=>1, 'position'=>85, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'vat_amount' => array('type'=>'price', 'label'=>'VatAmount', 'enabled'=>1, 'visible'=>1, 'position'=>95, 'notnull'=>-1,),
 		'vat_tx' => array('type'=>'integer', 'label'=>'VatTx', 'enabled'=>1, 'visible'=>1, 'position'=>96, 'notnull'=>-1,),
-		'paye' => array('type'=>'integer', 'label'=>'Paye', 'enabled'=>1, 'visible'=>-1, 'position'=>100, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1, 'foreignkey'=>'llx_user.rowid',),
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'enabled'=>1, 'visible'=>-2, 'position'=>511, 'notnull'=>-1,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1,),
 		'model_pdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1, 'index'=>1, 'searchall'=>1,),
-		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Brouillon', '1'=>'Actif', '-1'=>'Annuler')),
+		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'ImmoUnpaid', '1'=>'ImmoPaid')),
 	);
 	public $rowid;
 	public $ref;
@@ -129,10 +128,9 @@ class ImmoReceipt extends CommonObject
 	public $chargesamount;
 	public $total_amount;
 	public $balance;
-	public $paiepartiel;
+	public $partial_payment;
 	public $vat_amount;
 	public $vat_tx;
-	public $paye;
 	public $tms;
 	public $fk_user_creat;
 	public $fk_user_modif;
@@ -516,8 +514,8 @@ class ImmoReceipt extends CommonObject
 		{
 			global $langs;
 			//$langs->load("ultimateimmo");
-			$this->labelstatus[1] = $langs->trans('Enabled');
-			$this->labelstatus[0] = $langs->trans('Disabled');
+			$this->labelstatus[1] = $langs->trans('ImmoPaid');
+			$this->labelstatus[0] = $langs->trans('ImmoUnpaid');
 		}
 
 		if ($mode == 0)

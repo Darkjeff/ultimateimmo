@@ -134,6 +134,9 @@ DateLastRegul = Date dernière régulation
 VatAmount = Montant TVA
 HtAmount = Montant HT
 VatTx = Taux TVA
+ImmoUnpaid = Impayée
+ImmoPaid = Payée
+PartialPayment = Paiement partiel
 
 
 
