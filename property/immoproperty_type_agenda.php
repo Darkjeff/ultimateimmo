@@ -244,7 +244,7 @@ if ($object->id > 0)
         if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param.='&contextpage='.$contextpage;
         if ($limit > 0 && $limit != $conf->liste_limit) $param.='&limit='.$limit;
 
-		print load_fiche_titre($langs->trans("ActionsOnImmoProperty"),'','');
+		//print load_fiche_titre($langs->trans("ActionsOnImmoProperty"),'','');
 
         // List of all actions
 		$filters=array();

@@ -25,7 +25,7 @@ CREATE TABLE llx_ultimateimmo_immopayment(
 	fk_property integer, 
 	fk_renter integer, 
 	fk_bank integer, 
-	fk_typepayment integer, 
+	fk_mode_reglement integer, 
 	fk_owner integer, 
 	fk_soc integer,
 	fk_receipt integer, 

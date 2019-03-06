@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS `llx_ultimateimmo_immoreceipt` (
   `fk_soc` int(11) DEFAULT NULL,
   `note_public` text,
   `note_private` text,
+  `date_echeance` datetime DEFAULT NULL,
   `rentamount` double(24,8) DEFAULT NULL,
   `chargesamount` double(24,8) DEFAULT NULL,
   `total_amount` double(24,8) DEFAULT NULL,

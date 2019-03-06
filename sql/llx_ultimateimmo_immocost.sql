@@ -23,7 +23,7 @@ CREATE TABLE llx_ultimateimmo_immocost(
 	fk_property integer,
 	fk_owner integer,
 	fk_soc integer,	
-	cost_type integer,
+	fk_cost_type integer,
 	note_public text, 
 	note_private text, 
 	amount double(24,8) DEFAULT NULL, 
