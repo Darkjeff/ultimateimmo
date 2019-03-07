@@ -647,6 +647,23 @@ class ImmoReceipt extends CommonObject
 
 		return $error;
 	}
+
+	/**
+	 * @param unknown $user
+	 * @return number
+	 */
+	public function set_paid($user) 
+	{
+		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element.' SET';
+		$sql .= ' status=1';
+		$sql .= ' WHERE rowid = ' . $this->id;
+		$return = $this->db->query ( $sql );
+		$this->db->commit ();
+		if ($return)
+			return 1;
+			else
+				return - 1;
+	}
 }
 
 /**
