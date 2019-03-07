@@ -513,7 +513,7 @@ class ImmoReceipt extends CommonObject
 		if (empty($this->labelstatus))
 		{
 			global $langs;
-			//$langs->load("ultimateimmo");
+			$langs->load("ultimateimmo@ultimateimmo");
 			$this->labelstatus[1] = $langs->trans('ImmoPaid');
 			$this->labelstatus[0] = $langs->trans('ImmoUnpaid');
 		}
@@ -561,8 +561,8 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function info($id)
 	{
-		$sql = 'SELECT rowid, date_creation as datec, tms as datem,';
-		$sql.= ' fk_user_creat, fk_user_modif';
+		$sql = 'SELECT t.rowid, t.date_creation as datec, t.tms as datem,';
+		$sql.= ' t.fk_user_creat, t.fk_user_modif';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
 		$sql.= ' WHERE t.rowid = '.$id;
 		$result=$this->db->query($sql);
