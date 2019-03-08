@@ -247,18 +247,21 @@ if (empty($reshook))
 		
 		if (empty($dateech)) 
 		{
+			$error++;
 			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), 'errors');
-			$action = 'create';
+			$action = 'createall';
 		} 
 		elseif (empty($dateperiod)) 
 		{
-			$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Period")) . '</div>';
-			$action = 'create';
+			$error++;
+			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_du")), 'errors');
+			$action = 'createall';
 		} 
 		elseif (empty($dateperiodend)) 
 		{
-			$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Periodend")) . '</div>';
-			$action = 'create';
+			$error++;
+			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_au")), 'errors');
+			$action = 'createall';
 		} 
 		else 
 		{
