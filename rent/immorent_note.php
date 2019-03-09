@@ -94,7 +94,7 @@ if ($id > 0 || ! empty($ref))
 
 	$head = immorentPrepareHead($object);
 
-	dol_fiche_head($head, 'note', $langs->trans("ImmoRent"), -1, 'immorent@ultimateimmo');
+	dol_fiche_head($head, 'note', $langs->trans("ImmoRents"), -1, 'immorent@ultimateimmo');
 
 	// Object card
 	// ------------------------------------------------------------

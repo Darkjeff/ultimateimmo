@@ -141,7 +141,7 @@ if ($object->id > 0)
 	$head = immorentPrepareHead($object);
 
 
-	dol_fiche_head($head, 'agenda', $langs->trans("ImmoRent"), -1, 'immorent@ultimateimmo');
+	dol_fiche_head($head, 'agenda', $langs->trans("ImmoRents"), -1, 'immorent@ultimateimmo');
 
 	// Object card
 	// ------------------------------------------------------------
@@ -245,7 +245,7 @@ if ($object->id > 0)
         if ($limit > 0 && $limit != $conf->liste_limit) $param.='&limit='.$limit;
 
 
-		print load_fiche_titre($langs->trans("ActionsOnImmoRent"),'','');
+		//print load_fiche_titre($langs->trans("ActionsOnImmoRent"),'','');
 
         // List of all actions
 		$filters=array();

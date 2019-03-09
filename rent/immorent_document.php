@@ -111,7 +111,7 @@ if ($object->id)
 	if (! empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immorentPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoRent"), -1, 'ultimateimmo@ultimateimmo');
+	dol_fiche_head($head, 'document', $langs->trans("ImmoRents"), -1, 'ultimateimmo@ultimateimmo');
 
 
 	// Construit liste des fichiers

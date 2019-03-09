@@ -513,6 +513,7 @@ while ($i < min($num, $limit))
 // Show total line
 if (isset($totalarray['pos']))
 {
+	var_dump($totalarray);
 	print '<tr class="liste_total">';
 	$i=0;
 	while ($i < $totalarray['nbfield'])
