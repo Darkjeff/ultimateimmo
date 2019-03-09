@@ -43,7 +43,7 @@ include_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/lib/immoreceipt.lib.php');
-dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_immobilier.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 

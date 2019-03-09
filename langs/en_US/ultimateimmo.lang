@@ -135,6 +135,8 @@ ImmoUnpaid = Unpaid
 ImmoPaid = Paid
 PartialPayment = Partial Payment
 NomLoyer = Rent name
+DeleteImmoReceipt = Delete receipt
+ConfirmDeleteImmoReceipt = Are you sure you want to delete this receipt ?
 
 #
 # Sample page

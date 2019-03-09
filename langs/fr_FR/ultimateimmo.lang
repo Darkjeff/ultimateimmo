@@ -138,6 +138,8 @@ ImmoUnpaid = Impayée
 ImmoPaid = Payée
 PartialPayment = Paiement partiel
 NomLoyer = Dénomination du loyer
+DeleteImmoReceipt = Suppression de Quittance
+ConfirmDeleteImmoReceipt = Etes vous sûr de vouloir supprimer cette quittance ? ?
 
 
 

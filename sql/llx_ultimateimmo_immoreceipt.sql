@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `llx_ultimateimmo_immoreceipt` (
   `fk_user_modif` int(11) DEFAULT NULL,
   `import_key` varchar(14) DEFAULT NULL,
   `model_pdf` varchar(128) DEFAULT NULL,
-  `status` int(11) NOT NULL
+  `status` int(11) NULL DEFAULT '0'
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 --

@@ -108,7 +108,7 @@ class ImmoReceipt extends CommonObject
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'enabled'=>1, 'visible'=>-2, 'position'=>511, 'notnull'=>-1,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1,),
 		'model_pdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1, 'index'=>1, 'searchall'=>1,),
-		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'ImmoUnpaid', '1'=>'ImmoPaid')),
+		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>-1, 'default'=>'0','index'=>1, 'arrayofkeyval'=>array('0'=>'ImmoUnpaid', '1'=>'ImmoPaid')),
 	);
 	public $rowid;
 	public $ref;
