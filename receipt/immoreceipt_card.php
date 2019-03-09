@@ -358,6 +358,8 @@ if (empty($reshook))
 		$result = $receipt->fetch($id);
 		
 		$receipt->label 			= GETPOST('label');
+		$receipt->rentamount 		= GETPOST('rentamount');
+		$receipt->chargesamount 	= GETPOST('chargesamount');
 		if ($receipt->vat_tx != 0)
 		{
 			$receipt->total_amount 	= (GETPOST('rentamount') + GETPOST('chargesamount'))*1.2;
@@ -366,8 +368,7 @@ if (empty($reshook))
 		{
 			$receipt->total_amount 	= GETPOST('rentamount') + GETPOST('chargesamount');
 		}
-		$receipt->rentamount 		= GETPOST('rentamount');
-		$receipt->chargesamount 	= GETPOST('chargesamount');
+		
 		if ($receipt->vat_tx != 0)
 		{
 			$receipt->vat_amount 	= (GETPOST('rentamount') + GETPOST('chargesamount'))*0.2;
@@ -377,7 +378,7 @@ if (empty($reshook))
 			$receipt->vat_amount 	= 0;
 		}
 
-		$receipt->date_echeance 		= $dateech;
+		$receipt->date_echeance = $dateech;
 		$receipt->note_public 	= GETPOST('note_public');
 		$receipt->status 		= GETPOST('status');
 		$receipt->date_start 	= $dateperiod;
@@ -667,7 +668,7 @@ elseif ($action == 'createall')
 				// Colonne choix contrat
 				print '<td class="center">';
 
-				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->reference . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total_amount . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->fk_owner . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
+				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->reference . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->fk_owner . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
 				print '</td>';
 				print '</tr>';
 

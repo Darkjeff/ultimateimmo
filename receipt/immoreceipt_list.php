@@ -465,7 +465,7 @@ while ($i < min($num, $limit))
 	    $cssforfield='';
 	    if (in_array($val['type'], array('date','datetime','timestamp'))) $cssforfield.=($cssforfield?' ':'').'center';
 	    elseif ($key == 'status') $cssforfield.=($cssforfield?' ':'').'center';
-
+		
 	    if (in_array($val['type'], array('timestamp'))) $cssforfield.=($cssforfield?' ':'').'nowrap';
 	    elseif ($key == 'ref') $cssforfield.=($cssforfield?' ':'').'nowrap';
 
@@ -495,7 +495,7 @@ while ($i < min($num, $limit))
 	$reshook=$hookmanager->executeHooks('printFieldListValue', $parameters, $object);    // Note that $action and $object may have been modified by hook
 	print $hookmanager->resPrint;
 	// Action column
-	print '<td class="nowrap" align="center">';
+	print '<td class="nowrap center">';
 	if ($massactionbutton || $massaction)   // If we are in select mode (massactionbutton defined) or if we have already selected and sent an action ($massaction) defined
 	{
 		$selected=0;
@@ -513,7 +513,6 @@ while ($i < min($num, $limit))
 // Show total line
 if (isset($totalarray['pos']))
 {
-	var_dump($totalarray);
 	print '<tr class="liste_total">';
 	$i=0;
 	while ($i < $totalarray['nbfield'])
