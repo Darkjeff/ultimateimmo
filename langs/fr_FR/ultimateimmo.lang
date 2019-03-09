@@ -137,6 +137,7 @@ VatTx = Taux TVA
 ImmoUnpaid = Impayée
 ImmoPaid = Payée
 PartialPayment = Paiement partiel
+NomLoyer = Dénomination du loyer
 
 
 

@@ -272,8 +272,8 @@ if (empty($reshook))
 				
 				$receipt = new ImmoReceipt($db);
 				
-				$maLigneCourante = str_split("_", $maLigneCochee);
-				
+				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
+				//print_r($maLigneCourante);exit;
 				$monId = $maLigneCourante[0];
 				$monLocal = $maLigneCourante[1];
 				$monLocataire = $maLigneCourante[2];
@@ -289,12 +289,12 @@ if (empty($reshook))
 				$receipt->date_end = $dateperiodend;
 				
 				// main info contrat
-				$receipt->ref = $monId;
+				$receipt->ref = GETPOST('ref', 'alpha');
 				$receipt->fk_rent = $monId;
 				$receipt->fk_property = $monLocal;
 				$receipt->fk_renter = $monLocataire;
 				$receipt->fk_owner = $user->id;
-				
+				//var_dump($receipt);exit;
 				if ($maTVA == Oui) 
 				{
 					$receipt->total_amount = $monMontant * 1.2;
@@ -565,35 +565,34 @@ if ($action == 'create')
 }
 /* *************************************************************************** */
 /*                                                                             */
-/* Mode add all contracts                                                       */
+/* Mode add all contracts                                                      */
 /*                                                                             */
 /* *************************************************************************** */
 
 elseif ($action == 'createall') 
 {
-		//llxheader('', $langs->trans("newrental"), '');
 		print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
 		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 		print '<input type="hidden" name="action" value="addall">';
 		
 		print '<table class="border" width="100%">';
 		
-		print "<tr class=\"liste_titre\">";
+		print '<tr class="liste_titre">';
 		
-		print '<td align="left">';
+		print '<td class="left">';
 		print $langs->trans("NomLoyer");
-		print '</td><td align="center">';
+		print '</td><td class="center">';
 		print $langs->trans("Echeance");
-		print '</td><td align="center">';
+		print '</td><td class="center">';
 		print $langs->trans("Periode_du");
-		print '</td><td align="center">';
+		print '</td><td class="center">';
 		print $langs->trans("Periode_au");
-		print '</td><td align="left">';
+		print '</td><td class="left">';
 		print '&nbsp;';
 		print '</td>';
 		print "</tr>\n";
 		
-		print '<tr ' . $bc[$var] . ' valign="top">';
+		print '<tr clas="oddeven" valign="top">';
 		
 		/*
 		 * Nom du loyer
@@ -601,28 +600,28 @@ elseif ($action == 'createall')
 		print '<td><input name="label" size="30" value="' . GETPOST('label') . '"</td>';
 		
 		// Due date
-		print '<td align="center">';
+		print '<td class="center">';
 		print $form->select_date(! empty($dateech) ? $dateech : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
 		print '</td>';
-		print '<td align="center">';
+		print '<td class="center">';
 		print $form->select_date(! empty($dateperiod) ? $dateperiod : '-1', 'period', 0, 0, 0, 'fiche_loyer', 1);
 		print '</td>';
-		print '<td align="center">';
+		print '<td class="center">';
 		print $form->select_date(! empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', 0, 0, 0, 'fiche_loyer', 1);
 		print '</td>';
 		
-		print '<td align="center"><input type="submit" class="button" value="' . $langs->trans("Add") . '"></td></tr>';
+		print '<td class="center"><input type="submit" class="button" value="' . $langs->trans("Add") . '"></td></tr>';
 		
 		print '</table>';
 		
 		/*
 		 * List agreement
 		 */
-		$sql = "SELECT c.rowid as reference, loc.lastname as nom, l.address  , l.label as local, loc.status as statut, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.status, c.vat, l.fk_owner";
+		$sql = "SELECT c.rowid as reference, loc.lastname as nom, l.address  , l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter loc";
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
-		$sql .= " WHERE c.status = 1 AND loc.rowid = c.fk_renter and l.rowid = c.fk_property  ";
+		$sql .= " WHERE loc.rowid = c.fk_renter and l.rowid = c.fk_property  ";
 		$resql = $db->query($sql);
 		if ($resql)
 	{
@@ -638,12 +637,12 @@ elseif ($action == 'createall')
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
 		print '<td>' . $langs->trans('RenterName') . '</td>';
-		print '<td align="right">' . $langs->trans('TotalAmount') . '</td>';
-		print '<td align="right">' . $langs->trans('RentAmount') . '</td>';
-		print '<td align="right">' . $langs->trans('ChargesAmount') . '</td>';
-		print '<td align="right">' . $langs->trans('VATIsUsed') . '</td>';
-		print '<td align="right">' . $langs->trans('OwnerName') . '</td>';
-		print '<td align="right">' . $langs->trans('Select') . '</td>';
+		print '<td class="right">' . $langs->trans('TotalAmount') . '</td>';
+		print '<td class="right">' . $langs->trans('RentAmount') . '</td>';
+		print '<td class="right">' . $langs->trans('ChargesAmount') . '</td>';
+		print '<td class="right">' . $langs->trans('VATIsUsed') . '</td>';
+		print '<td class="right">' . $langs->trans('OwnerName') . '</td>';
+		print '<td class="right">' . $langs->trans('Select') . '</td>';
 		print "</tr>\n";
 
 		if ($num > 0)
@@ -651,28 +650,24 @@ elseif ($action == 'createall')
 			while ( $i < $num )
 			{
 				$objp = $db->fetch_object($resql);
-				$immorent->ref=$objp->reference;
-				$immorent->id=$objp->reference;
 				print '<tr class="oddeven">';
-				if ($objp->reference > 0)
-				{
-					print '<td>' . $immorent->getNomUrl(0) . '</td>';
-				}
+
+				print '<td>' . $objp->reference . '</td>';
 				print '<td>' . $objp->reflocal . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->reflocataire . '</td>';
 				print '<td>' . $objp->nom . '</td>';
 
-				print '<td align="right">' . price($objp->total) . '</td>';
-				print '<td align="right">' . price($objp->rentamount) . '</td>';
-				print '<td align="right">' . price($objp->chargesamount) . '</td>';
-				print '<td align="right">' . yn($objp->vat) . '</td>';
-				print '<td align="right">' . $objp->fk_owner . '</td>';
+				print '<td class="right">' . price($objp->total) . '</td>';
+				print '<td class="right">' . price($objp->rentamount) . '</td>';
+				print '<td class="right">' . price($objp->chargesamount) . '</td>';
+				print '<td class="right">' . yn($objp->vat) . '</td>';
+				print '<td class="right">' . $objp->fk_owner . '</td>';
 
 				// Colonne choix contrat
-				print '<td align="center">';
+				print '<td class="center">';
 
-				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->reference . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->fk_owner . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
+				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->reference . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total_amount . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->fk_owner . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
 				print '</td>';
 				print '</tr>';
 
@@ -706,7 +701,7 @@ else
 			// Param url = id de la periode à supprimer - id session
 			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
 			if ($ret == 'html')
-				print '<br>';
+			print '<br>';
 		}
 
 		print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
@@ -769,7 +764,7 @@ else
 				print '<td>'.$langs->trans("RefPayment").'</td>';
 				print '<td>'.$langs->trans("Date").'</td>';
 				print '<td>'.$langs->trans("Type").'</td>';
-				print '<td align="right">'.$langs->trans("Amount").'</td>';
+				print '<td class="right">'.$langs->trans("Amount").'</td>';
 				if ($user->admin) print '<td>&nbsp;</td>';
 				print '</tr>';
 
@@ -780,7 +775,7 @@ else
 					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?action=update&amp;id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
 					print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
 					print '<td>'.$objp->type.'</td>';
-					print '<td align="right">' . price($objp->amount)."&nbsp;".$langs->trans("Currency".$conf->currency)."</td>\n";
+					print '<td class="right">' . price($objp->amount)."&nbsp;".$langs->trans("Currency".$conf->currency)."</td>\n";
 
 					print '<td>';
 					if ($user->admin)
@@ -790,44 +785,44 @@ else
 						print '</a>';
 					}
 					print '</td>';
-					print "</tr>";
+					print '</tr>';
 					$totalpaye += $objp->amount;
 					$i ++;
 				}
 
 				if ($object->status == 0)
 				{
-					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\"><b>" . price($totalpaye) . "</b></td><td>&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
-					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\" bgcolor=\"#d0d0d0\">" . price($object->total_amount) . "</td><td bgcolor=\"#d0d0d0\">&nbsp;" . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
+					print '<tr><td colspan="3" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . price($totalpaye) . '</b></td><td>&nbsp;' . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
+					print '<tr><td colspan="3" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right" bgcolor="#d0d0d0">' . price($object->total_amount) . '</td><td bgcolor="#d0d0d0">&nbsp;' . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
 
 					$remaintopay = $object->total_amount - $totalpaye;
 
-					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("RemainderToPay") . " :</td>";
-					print '<td align="right"'.($remaintopay?' class="amountremaintopay"':'').'>'.price($remaintopay)."</td></tr>\n";
+					print '<tr><td colspan="3" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
+					print '<td class="right"'.($remaintopay?' class="amountremaintopay"':'').'>'.price($remaintopay)."</td></tr>\n";
 				}
 
-				print "</table>";
+				print '</table>';
 				$db->free($resql);
 			}
 			else
 			{
 				dol_print_error($db);
 			}
-			print "</td>";
+			print '</td>';
 
-			print "</tr>";
+			print '</tr>';
 
 			// Due date
 			print '<tr><td>' . $langs->trans("Echeance") . '</td>';
-			print '<td align="left">';
+			print '<td class="left">';
 			print $form->select_date($object->date_echeance, 'ech', 0, 0, 0, 'fiche_loyer', 1);
 			print '</td>';
 			print '<tr><td>' . $langs->trans("Periode_du") . '</td>';
-			print '<td align="left">';
+			print '<td class="left">';
 			print $form->select_date($object->date_start, 'period', 0, 0, 0, 'fiche_loyer', 1);
 			print '</td>';
 			print '<tr><td>' . $langs->trans("Periode_au") . '</td>';
-			print '<td align="left">';
+			print '<td class="left">';
 			print $form->select_date($object->date_end, 'periodend', 0, 0, 0, 'fiche_loyer', 1);
 			print '</td>';
 			print '<tr><td>' . $langs->trans("Comment") . '</td>';
@@ -835,7 +830,7 @@ else
 
 			// Status loyer
 			print '<tr><td>statut</td>';
-			print '<td align="left" nowrap="nowrap">';
+			print '<td class="left" nowrap="nowrap">';
 			print $object->LibStatut($object->status, 5);
 			print "</td></tr>";
 
@@ -984,7 +979,7 @@ else
 				print '<td>'.$langs->trans("RefPayment").'</td>';
 				print '<td>'.$langs->trans("Date").'</td>';
 				print '<td>'.$langs->trans("Type").'</td>';
-				print '<td align="right">'.$langs->trans("Amount").'</td>';
+				print '<td class="right">'.$langs->trans("Amount").'</td>';
 				if ($user->admin) print '<td>&nbsp;</td>';
 				print '</tr>';
 
@@ -996,9 +991,9 @@ else
 					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?action=update&amp;id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
 					print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
 					print '<td>'.$objp->type.'</td>';
-					print '<td align="right">' . price($objp->amount)."&nbsp;".$langs->trans("Currency".$conf->currency)."</td>\n";
+					print '<td class="right">' . price($objp->amount)."&nbsp;".$langs->trans("Currency".$conf->currency)."</td>\n";
 
-					print '<td align="right">';
+					print '<td class="right">';
 					if ($user->admin) {
 						print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?id='.$objp->rowid. "&amp;action=delete&amp;receipt=".$id.'">';
 						print img_delete();
@@ -1013,13 +1008,13 @@ else
 
 				if ($object->status == 0)
 				{
-					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\"><b>" . price($totalpaye) . "</b></td></tr>\n";
-					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($object->total_amount) . "</td></tr>\n";
+					print "<tr><td colspan=\"3\" class=\"right\">" . $langs->trans("AlreadyPaid") . " :</td><td class=\"right\"><b>" . price($totalpaye) . "</b></td></tr>\n";
+					print "<tr><td colspan=\"3\" class=\"right\">" . $langs->trans("AmountExpected") . " :</td><td class=\"right\">" . price($object->total_amount) . "</td></tr>\n";
 
 					$remaintopay = $object->total_amount - $totalpaye;
 
-					print "<tr><td colspan=\"3\" align=\"right\">" . $langs->trans("RemainderToPay") . " :</td>";
-					print '<td align="right"'.($remaintopay?' class="amountremaintopay"':'').'>'.price($remaintopay)."</td></tr>\n";
+					print "<tr><td colspan=\"3\" class=\"right\">" . $langs->trans("RemainderToPay") . " :</td>";
+					print '<td class="right"'.($remaintopay?' class="amountremaintopay"':'').'>'.price($remaintopay)."</td></tr>\n";
 				}
 				print "</table>";
 				$db->free($resql);
@@ -1047,9 +1042,9 @@ else
 				print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("LinkedDocuments") . '</td></tr>';
 				// afficher
 				$legende = $langs->trans("Ouvrir");
-				print '<tr><td width="200" align="center">' . $langs->trans("Quittance") . '</td><td> ';
+				print '<tr><td width="200" class="center">' . $langs->trans("Quittance") . '</td><td> ';
 				print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=ultimateimmo&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
-				print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
+				print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" class="absmiddle" hspace="2px" ></a>';
 				print '</td></tr></table>';
 			}
 

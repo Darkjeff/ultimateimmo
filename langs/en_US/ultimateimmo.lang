@@ -134,6 +134,7 @@ VatTx = VAT rate
 ImmoUnpaid = Unpaid
 ImmoPaid = Paid
 PartialPayment = Partial Payment
+NomLoyer = Rent name
 
 #
 # Sample page
