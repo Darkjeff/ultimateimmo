@@ -424,8 +424,8 @@ class ImmoPayment extends CommonObject
         			$this->id = $id;
         			$this->set_vars_by_db($obj);
 
-        			$this->date_creation = $this->db->idate($obj->date_creation);
-        			$this->tms = $this->db->idate($obj->tms);
+        			$this->date_creation = $this->db->jdate($obj->date_creation);
+        			$this->tms = $this->db->jdate($obj->tms);
 					
 					$this->date_payment = $this->db->jdate($obj->date_payment);
 					$this->setVarsFromFetchObj($obj);

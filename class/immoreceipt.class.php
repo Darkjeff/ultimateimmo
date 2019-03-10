@@ -376,12 +376,12 @@ class ImmoReceipt extends CommonObject
         			$this->id = $id;
         			$this->set_vars_by_db($obj);
 
-        			$this->date_rent = $this->db->idate($obj->date_rent);
-					$this->date_start = $this->db->idate($obj->date_start);
-					$this->date_end = $this->db->idate($obj->date_end);
-					$this->date_creation = $this->db->idate($obj->date_creation);
-					$this->date_echeance = $this->db->idate($obj->date_echeance);
-        			$this->tms = $this->db->idate($obj->tms);
+        			$this->date_rent = $this->db->jdate($obj->date_rent);
+					$this->date_start = $this->db->jdate($obj->date_start);
+					$this->date_end = $this->db->jdate($obj->date_end);
+					$this->date_creation = $this->db->jdate($obj->date_creation);
+					$this->date_echeance = $this->db->jdate($obj->date_echeance);
+        			$this->tms = $this->db->jdate($obj->tms);
 
 					$this->setVarsFromFetchObj($obj);
 					
@@ -638,8 +638,8 @@ class ImmoReceipt extends CommonObject
 		{
 			global $langs;
 			$langs->load("ultimateimmo@ultimateimmo");
-			$this->labelstatus[1] = $langs->trans('ImmoPaid');
 			$this->labelstatus[0] = $langs->trans('ImmoUnpaid');
+			$this->labelstatus[1] = $langs->trans('ImmoPaid');		
 		}
 
 		if ($mode == 0)
@@ -653,27 +653,27 @@ class ImmoReceipt extends CommonObject
 		elseif ($mode == 2)
 		{
 			if ($status == 1) return img_picto($this->labelstatus[$status],'statut4', '', false, 0, 0, '', 'valignmiddle').' '.$this->labelstatus[$status];
-			elseif ($status == 0) return img_picto($this->labelstatus[$status],'statut5', '', false, 0, 0, '', 'valignmiddle').' '.$this->labelstatus[$status];
+			elseif ($status == 0) return img_picto($this->labelstatus[$status],'statut6', '', false, 0, 0, '', 'valignmiddle').' '.$this->labelstatus[$status];
 		}
 		elseif ($mode == 3)
 		{
 			if ($status == 1) return img_picto($this->labelstatus[$status],'statut4', '', false, 0, 0, '', 'valignmiddle');
-			elseif ($status == 0) return img_picto($this->labelstatus[$status],'statut5', '', false, 0, 0, '', 'valignmiddle');
+			elseif ($status == 0) return img_picto($this->labelstatus[$status],'statut6', '', false, 0, 0, '', 'valignmiddle');
 		}
 		elseif ($mode == 4)
 		{
 			if ($status == 1) return img_picto($this->labelstatus[$status],'statut4', '', false, 0, 0, '', 'valignmiddle').' '.$this->labelstatus[$status];
-			elseif ($status == 0) return img_picto($this->labelstatus[$status],'statut5', '', false, 0, 0, '', 'valignmiddle').' '.$this->labelstatus[$status];
+			elseif ($status == 0) return img_picto($this->labelstatus[$status],'statut6', '', false, 0, 0, '', 'valignmiddle').' '.$this->labelstatus[$status];
 		}
 		elseif ($mode == 5)
 		{
 			if ($status == 1) return $this->labelstatus[$status].' '.img_picto($this->labelstatus[$status],'statut4', '', false, 0, 0, '', 'valignmiddle');
-			elseif ($status == 0) return $this->labelstatus[$status].' '.img_picto($this->labelstatus[$status],'statut5', '', false, 0, 0, '', 'valignmiddle');
+			elseif ($status == 0) return $this->labelstatus[$status].' '.img_picto($this->labelstatus[$status],'statut6', '', false, 0, 0, '', 'valignmiddle');
 		}
 		elseif ($mode == 6)
 		{
 			if ($status == 1) return $this->labelstatus[$status].' '.img_picto($this->labelstatus[$status],'statut4', '', false, 0, 0, '', 'valignmiddle');
-			elseif ($status == 0) return $this->labelstatus[$status].' '.img_picto($this->labelstatus[$status],'statut5', '', false, 0, 0, '', 'valignmiddle');
+			elseif ($status == 0) return $this->labelstatus[$status].' '.img_picto($this->labelstatus[$status],'statut6', '', false, 0, 0, '', 'valignmiddle');
 		}
 	}
 
