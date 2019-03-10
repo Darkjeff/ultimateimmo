@@ -282,7 +282,7 @@ class ImmoReceipt extends CommonObject
 	        return -1;
 	    }
 	}
-	
+
 	/**
 	 * Function to concat keys of fields
 	 *
@@ -293,7 +293,7 @@ class ImmoReceipt extends CommonObject
 	    $keys = array_keys($this->fields);
 	    return implode(',', $keys);
 	}
-	
+
 	/**
 	 * Function to load data into current object this
 	 *
@@ -335,7 +335,7 @@ class ImmoReceipt extends CommonObject
 
 	    }
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -347,7 +347,7 @@ class ImmoReceipt extends CommonObject
 	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
 		if (empty($id) && empty($ref)) return false;
-		
+
 		global $langs;
 
 		$array = preg_split("/[\s,]+/", $this->get_field_list());
@@ -358,13 +358,13 @@ class ImmoReceipt extends CommonObject
 		$sql = 'SELECT '.$array.',';
 		$sql.= ' rt.rentamount,';
 		$sql.= ' rt.chargesamount,';
-		$sql.= ' rt.totalamount';		
+		$sql.= ' rt.totalamount';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element . ' as t';
 		$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorent as rt ON t.fk_rent = rt.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
-		
+
 		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
 		if ($res)
@@ -384,7 +384,7 @@ class ImmoReceipt extends CommonObject
         			$this->tms = $this->db->jdate($obj->tms);
 
 					$this->setVarsFromFetchObj($obj);
-					
+
 					return $this->id;
     		    }
     		    else
@@ -639,7 +639,7 @@ class ImmoReceipt extends CommonObject
 			global $langs;
 			$langs->load("ultimateimmo@ultimateimmo");
 			$this->labelstatus[0] = $langs->trans('ImmoUnpaid');
-			$this->labelstatus[1] = $langs->trans('ImmoPaid');		
+			$this->labelstatus[1] = $langs->trans('ImmoPaid');
 		}
 
 		if ($mode == 0)
@@ -741,6 +741,42 @@ class ImmoReceipt extends CommonObject
 		$this->initAsSpecimenCommon();
 	}
 
+	/**
+	 *  Create an intervention document on disk using template defined into ULTIMATEIMMO_ADDON_PDF
+	 *
+	 *  @param	string		$modele			Force template to use ('' by default)
+	 *  @param	Translate	$outputlangs	Objet lang to use for translation
+	 *  @param  int			$hidedetails    Hide details of lines
+	 *  @param  int			$hidedesc       Hide description
+	 *  @param  int			$hideref        Hide ref
+	 *  @return int         				0 if KO, 1 if OK
+	 */
+	public function generateDocument($modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
+	{
+		global $conf,$langs;
+
+		$langs->load("ultimateimmo@ultimateimmo");
+
+		if (! dol_strlen($modele))
+		{
+
+			$modele = '';
+
+			if ($this->modelpdf)
+			{
+				$modele = $this->modelpdf;
+			}
+			elseif (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF))
+			{
+				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
+			}
+		}
+
+		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
+
+		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
+	}
+
 
 	/**
 	 * Action executed by scheduler
@@ -776,7 +812,7 @@ class ImmoReceipt extends CommonObject
 	 * @param unknown $user
 	 * @return number
 	 */
-	public function set_paid($user) 
+	public function set_paid($user)
 	{
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element.' SET';
 		$sql .= ' status=1';
