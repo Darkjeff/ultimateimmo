@@ -75,14 +75,14 @@ dol_fiche_head($head, 'equipement', $langs->trans("Property"), 0, 'building@ulti
 if ($result) {
 	if ($mesg)
 		print $mesg . "<br>";
-	
+
 	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	dol_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
 
 	print '<div class="fichecenter">';
 	print '<div class="fichehalfleft">';
-			
+
 	print '<div class="underbanner clearboth"></div>';
 	print '<table class="border tableforfield" width="100%">';
 
@@ -111,22 +111,22 @@ if ($result) {
 	print '</table>';
 	print '</div>';
 	print '<div class="fichehalfright"><div class="ficheaddleft">';
-		   
+
 	print '<div class="underbanner clearboth"></div>';
 	print '<table class="border tableforfield" width="100%">';
 
 	// ADSL
 	print '<tr>';
 	print '<td class="titlefield">' . $langs->trans("Cable") . '</td>';
-	print '<td>' . dol_print_date($object->datep,"day") . '</td>';
+	print '<td>' . dol_print_date($db->jdate($object->datep), 'day') . '</td>';
 	print '</tr>';
-	
+
 	print "</table>\n";
 	print '</div>';
-			
+
 	print '</div></div>';
 	print '<div style="clear:both"></div>';
-	
+
 	dol_fiche_end();
 }
 

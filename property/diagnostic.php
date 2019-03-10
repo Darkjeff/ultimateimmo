@@ -76,7 +76,7 @@ dol_fiche_head($head, 'diagnostic', $langs->trans("Property"), -1, 'building@ult
 if ($result) {
 	if ($mesg)
 		print $mesg . "<br>";
-	
+
 	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	dol_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
@@ -89,26 +89,26 @@ if ($result) {
 	// Build date
 	print '<tr>';
 	print '<td class="titlefield">' . $langs->trans("BuildDate") . '</td>';
-	print '<td>' . dol_print_date($object->datep,"day") . '</td>';
+	print '<td>' . dol_print_date($db->jdate($object->datep), 'day') . '</td>';
 	print '</tr>';
 
 	// Target
 	print '<tr>';
 	print '<td>'.$langs->trans("Target").'</td>';
-	if ($object->target == 0) $target = $langs->trans("PropertyForRent"); else $target = $langs->trans("PropertyForSale");  
+	if ($object->target == 0) $target = $langs->trans("PropertyForRent"); else $target = $langs->trans("PropertyForSale");
 	print '<td>'.$target.'</td>';
 	print '</tr>';
 
 	print '<tr>';
-	print '<td>'.$langs->trans("DiagnosticsNecessary").'</td>';	
+	print '<td>'.$langs->trans("DiagnosticsNecessary").'</td>';
 	print '<td>';
 	print '- ' . $langs->trans("DPE") . '<br>';
 	if ($object->target == 0) print '- ' . $langs->trans("SurfaceHabitable") . '<br>';
 	if ($object->target == 0) print '- ' . $langs->trans("ERNMT") . '<br>';
-	if ($object->target == 0 && dol_print_date($object->datep,"day") < '01/01/1949') '- ' . print $langs->trans("Plomb") . '<br>';
-	if ($object->target == 0 && dol_print_date($object->datep,"day") < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
-	if ($object->target == 0 && dol_print_date($object->datep,"day") < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
-	if ($object->target == 0 && dol_print_date($object->datep,"day") < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
+	if ($object->target == 0 && dol_print_date($db->jdate($object->datep), 'day') < '01/01/1949') '- ' . print $langs->trans("Plomb") . '<br>';
+	if ($object->target == 0 && dol_print_date($db->jdate($object->datep), 'day') < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
+	if ($object->target == 0 && dol_print_date($db->jdate($object->datep), 'day') < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
+	if ($object->target == 0 && dol_print_date($db->jdate($object->datep), 'day') < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
 	print '</tr>';
 	print '</table>';
 	print '</div>';
@@ -116,7 +116,7 @@ if ($result) {
 	print '<div class="ficheaddleft">';
 	print '<div class="underbanner clearboth"></div>';
 	print '<table class="border centpercent">';
-	
+
 	dol_fiche_end();
 }
 
