@@ -784,15 +784,16 @@ class ImmoPayment extends CommonObject
 		$this->initAsSpecimenCommon();
 	}
 	
-	function fetch_by_loyer($id) {
-		$sql = "SELECT ip.rowid as reference, ip.fk_contract, ip.fk_property,";
-		$sql .= "ip.fk_renter, ip.amount, ip.comment, ip.date_payment,";
+	public function fetch_by_loyer($id) 
+	{
+		$sql = "SELECT ip.rowid as reference, ip.fk_rent, ip.fk_property,";
+		$sql .= "ip.fk_renter, ip.amount, ip.note_public, ip.date_payment,";
 		$sql .= "ip.fk_owner, ip.fk_receipt";
-		$sql .= " , lc.lastname as nomlocataire , ll.name as nomlocal , lo.nom as nomloyer ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immopayment as ip ";
-		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorenter as lc ";
-		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll ";
-		$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo ";
+		$sql .= " , lc.lastname as nomlocataire , ll.label as nomlocal , lo.label as nomloyer ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as ip ";
+		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ";
+		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ";
+		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo ";
 		$sql .= "WHERE ip.fk_renter = lc.rowid AND ip.fk_property = ll.rowid AND ip.fk_receipt = lo.rowid AND lo.rowid = " . $id;
 		
 		dol_syslog ( get_class ( $this ) . "::fetch_by_loyer sql=" . $sql );
@@ -803,13 +804,13 @@ class ImmoPayment extends CommonObject
 				
 				$this->id = $obj->reference;
 				$this->ref = $obj->reference;
-				$this->fk_contract = $obj->fk_contract;
+				$this->fk_rent = $obj->fk_rent;
 				$this->fk_property = $obj->fk_property;
 				$this->nomlocal = $obj->nomlocal;
 				$this->fk_renter = $obj->fk_renter;
 				$this->nomlocataire = $obj->nomlocataire;
 				$this->amount = $obj->amount;
-				$this->comment = $obj->comment;
+				$this->note_public = $obj->note_public;
 				$this->date_paiement = $this->db->jdate ( $obj->date_payment );
 				$this->fk_receipt = $obj->fk_receipt;
 				$this->nomloyer = $obj->nomloyer;

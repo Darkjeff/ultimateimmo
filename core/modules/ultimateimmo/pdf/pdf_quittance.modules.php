@@ -260,8 +260,8 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$property = new ImmoProperty($this->db);
 			$result = $property->fetch($object->fk_property);
 
-			//$paiement = new Immopayment($this->db);
-			//$result = $paiement->fetch_by_loyer($object->id);
+			$paiement = new Immopayment($this->db);
+			$result = $paiement->fetch_by_loyer($object->id);
 
 			if (! empty($object->id))
 			{
@@ -366,13 +366,15 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->SetXY($posX, $posY);
 
 				$montantpay = 0;
-				if (! empty($object->paiepartiel)) {
-					$montantpay = $object->paiepartiel;
+				
+				if (! empty($object->partial_payment)) {
+					$montantpay = $object->partial_payment;
 				}
 				$text = 'Reçu de ' . $renter->civilite . '' .$renter->firstname. ' '.$renter->lastname. ' la somme de ' . price($montantpay) . '€' . "\n";
 				;
 
-				$dtpaiement = $paiement->date_paiement;
+				$dtpaiement = $paiement->date_payment;
+				var_dump($paiement);exit;
 				if (empty($dtpaiement)) {
 					$dtpaiement = $object->echeance;
 				}
