@@ -46,6 +46,7 @@ dol_include_once('/ultimateimmo/lib/immoreceipt.lib.php');
 dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
 
 // Load translation files required by the page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "compta", "bills", "contracts"));
@@ -273,7 +274,7 @@ if (empty($reshook))
 				$receipt = new ImmoReceipt($db);
 				
 				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
-				//print_r($maLigneCourante);exit;
+				
 				$monId = $maLigneCourante[0];
 				$monLocal = $maLigneCourante[1];
 				$monLocataire = $maLigneCourante[2];
@@ -281,6 +282,7 @@ if (empty($reshook))
 				$monLoyer = $maLigneCourante[4];
 				$mesCharges = $maLigneCourante[5];
 				$maTVA = $maLigneCourante[6];
+				$monProprio = $maLigneCourante[7];
 				
 				// main info loyer
 				$receipt->label = GETPOST('label', 'alpha');
@@ -308,6 +310,7 @@ if (empty($reshook))
 				
 				$receipt->rentamount = $monLoyer;
 				$receipt->chargesamount = $mesCharges;
+				$receipt->fk_owner = $monProprio;
 				$receipt->status=0;
 				//$receipt->paye=0;
 				//var_dump($receipt);exit;
@@ -618,7 +621,7 @@ elseif ($action == 'createall')
 		/*
 		 * List agreement
 		 */
-		$sql = "SELECT c.rowid as reference, loc.lastname as rentername, o.lastname as ownername, l.address  , l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner, o.rowid, loc.fk_owner";
+		$sql = "SELECT c.rowid as contract, loc.lastname as rentername, o.lastname as ownername, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.vat, l.fk_owner, o.rowid, loc.fk_owner";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter loc";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c on loc.rowid = c.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l on loc.rowid = l.rowid";
@@ -641,9 +644,9 @@ elseif ($action == 'createall')
 		print '<td>' . $langs->trans('RenterName') . '</td>';
 		print '<td>' . $langs->trans('Owner') . '</td>';
 		print '<td>' . $langs->trans('OwnerName') . '</td>';
-		print '<td class="right">' . $langs->trans('TotalAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('RentAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('ChargesAmount') . '</td>';
+		print '<td class="right">' . $langs->trans('TotalAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('VATIsUsed') . '</td>';		
 		print '<td class="right">' . $langs->trans('Select') . '</td>';
 		print "</tr>\n";
@@ -654,24 +657,26 @@ elseif ($action == 'createall')
 			{
 				$objp = $db->fetch_object($resql);
 				print '<tr class="oddeven">';
+				$immoowner=new ImmoOwner($db);
+				$result=$immoowner->fetch($objp->fk_owner);
 
-				print '<td>' . $objp->reference . '</td>';
+				print '<td>' . $objp->contract . '</td>';
 				print '<td>' . $objp->reflocal . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->reflocataire . '</td>';
 				print '<td>' . $objp->rentername . '</td>';
 				print '<td>' . $objp->fk_owner . '</td>';
-				print '<td>' . $objp->ownername . '</td>';
+				print '<td>' . $immoowner->getNomUrl(1) . '</td>';
 
-				print '<td class="right">' . price($objp->total) . '</td>';
 				print '<td class="right">' . price($objp->rentamount) . '</td>';
 				print '<td class="right">' . price($objp->chargesamount) . '</td>';
+				print '<td class="right">' . price($objp->total) . '</td>';
 				print '<td class="right">' . yn($objp->vat) . '</td>';
 				
 				// Colonne choix contrat
 				print '<td class="center">';
 
-				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->reference . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->fk_owner . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
+				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contract . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner .  '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
 				print '</td>';
 				print '</tr>';
 
