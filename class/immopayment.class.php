@@ -80,7 +80,7 @@ class ImmoPayment extends CommonObject
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
-		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>0, 'enabled'=>1, 'position'=>20, 'default'=>1, 'notnull'=>1, 'index'=>1,),		
+		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>0, 'enabled'=>1, 'position'=>20, 'default'=>1, 'notnull'=>1, 'index'=>1,),
 		'fk_rent' => array('type'=>'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>25, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToContract",),
 		'fk_receipt' => array('type'=>'integer:ImmoReceipt:ultimateimmo/class/immoreceipt.class.php', 'label'=>'ImmoReceipt', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToReceipt",),
 		'fk_owner' => array('type'=>'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
@@ -91,7 +91,7 @@ class ImmoPayment extends CommonObject
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1,),
 		'amount' => array('type'=>'price', 'label'=>'Amount', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'fk_mode_reglement' => array('type'=>'integer', 'label'=>'TypePayment', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Carte bancaire', '1'=>'Chèque', '2'=>'Espèces', '3'=>'CAF'), 'help'=>"LinkToTypePayment",),
-		'fk_bank' => array('type'=>'integer:Account:compta/bank/class/account.class.php', 'label'=>'Bank', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToBank",),				
+		'fk_bank' => array('type'=>'integer:Account:compta/bank/class/account.class.php', 'label'=>'Bank', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToBank",),
 		'num_payment' => array('type'=>'varchar(50)', 'label'=>'NumPayment', 'enabled'=>1, 'visible'=>-1, 'position'=>85, 'notnull'=>-1,),
 		'date_payment' => array('type'=>'date', 'label'=>'DatePayment', 'enabled'=>1, 'visible'=>-1, 'position'=>90, 'notnull'=>1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>500, 'notnull'=>1,),
@@ -168,11 +168,11 @@ class ImmoPayment extends CommonObject
 
 		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID)) $this->fields['rowid']['visible']=0;
 		if (empty($conf->multicompany->enabled)) $this->fields['entity']['enabled']=0;
-		
+
 		// Translate some data
 		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
@@ -329,7 +329,7 @@ class ImmoPayment extends CommonObject
 	        return -1;
 	    }
 	}
-	
+
 	/**
 	 * Function to concat keys of fields
 	 *
@@ -340,7 +340,7 @@ class ImmoPayment extends CommonObject
 	    $keys = array_keys($this->fields);
 	    return implode(',', $keys);
 	}
-	
+
 	/**
 	 * Function to load data into current object this
 	 *
@@ -382,7 +382,7 @@ class ImmoPayment extends CommonObject
 
 	    }
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -393,13 +393,13 @@ class ImmoPayment extends CommonObject
 	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
 		if (empty($id) && empty($ref)) return false;
-		
+
 		$array = preg_split("/[\s,]+/", $this->get_field_list());
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), $array[0]);
 		$array = implode(', t.', $array);
-		
-		$sql = 'SELECT '.$array.',';		
+
+		$sql = 'SELECT '.$array.',';
 		$sql.= ' lc.lastname as nomlocataire,';
 		$sql.= ' ll.label as nomlocal,';
 		$sql.= ' lo.label as nomloyer ';
@@ -408,7 +408,7 @@ class ImmoPayment extends CommonObject
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'immobilier_immoproperty as ll ON t.fk_property = ll.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'immobilier_immoreceipt as lo ON t.fk_receipt = lo.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as cp ON t.fk_mode_reglement = cp.id AND cp.entity IN ('.getEntity('c_paiement').')';;
-		
+
 		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
@@ -426,7 +426,7 @@ class ImmoPayment extends CommonObject
 
         			$this->date_creation = $this->db->jdate($obj->date_creation);
         			$this->tms = $this->db->jdate($obj->tms);
-					
+
 					$this->date_payment = $this->db->jdate($obj->date_payment);
 					$this->setVarsFromFetchObj($obj);
 
@@ -451,7 +451,7 @@ class ImmoPayment extends CommonObject
 		    return -1;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -465,7 +465,7 @@ class ImmoPayment extends CommonObject
 		if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
 		return $result;
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -484,7 +484,7 @@ class ImmoPayment extends CommonObject
 
 		$sql = 'SELECT';
 		$sql .= ' t.rowid,';
-		
+
 		$sql .= " t.fk_contract,";
 		$sql .= " t.fk_property,";
 		$sql .= " t.fk_renter,";
@@ -495,12 +495,12 @@ class ImmoPayment extends CommonObject
 		$sql .= " t.fk_receipt";
 		$sql .= " , lc.lastname as nomlocataire , ll.label as nomlocal , lo.label as nomloyer ";
 
-		
+
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element. ' as t';
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immorenter as lc ON t.fk_renter = lc.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll ON t.fk_property = ll.rowid ";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo ON t.fk_receipt = lo.rowid";
-		
+
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {
@@ -511,7 +511,7 @@ class ImmoPayment extends CommonObject
 		if (count($sqlwhere) > 0) {
 			$sql .= ' WHERE ' . implode(' '.$filtermode.' ', $sqlwhere);
 		}
-		
+
 		if (!empty($sortfield)) {
 			$sql .= $this->db->order($sortfield,$sortorder);
 		}
@@ -528,7 +528,7 @@ class ImmoPayment extends CommonObject
 				$line = new ImmoPaymentLine();
 
 				$line->id = $obj->rowid;
-				
+
 				$line->fk_contract = $obj->fk_contract;
 				$line->fk_property = $obj->fk_property;
 				$line->fk_renter = $obj->fk_renter;
@@ -541,7 +541,7 @@ class ImmoPayment extends CommonObject
 				$line->nomlocal = $obj->nomlocal;
 				$line->nomloyer = $obj->nomloyer;
 
-				
+
 
 				$this->lines[] = $line;
 			}
@@ -783,8 +783,8 @@ class ImmoPayment extends CommonObject
 	{
 		$this->initAsSpecimenCommon();
 	}
-	
-	public function fetch_by_loyer($id) 
+
+	public function fetch_by_loyer($id)
 	{
 		$sql = "SELECT ip.rowid as reference, ip.fk_rent, ip.fk_property,";
 		$sql .= "ip.fk_renter, ip.amount, ip.note_public, ip.date_payment,";
@@ -795,13 +795,13 @@ class ImmoPayment extends CommonObject
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ";
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo ";
 		$sql .= "WHERE ip.fk_renter = lc.rowid AND ip.fk_property = ll.rowid AND ip.fk_receipt = lo.rowid AND lo.rowid = " . $id;
-		
+
 		dol_syslog ( get_class ( $this ) . "::fetch_by_loyer sql=" . $sql );
 		$resql = $this->db->query ( $sql );
 		if ($resql) {
 			if ($this->db->num_rows ( $resql )) {
 				$obj = $this->db->fetch_object ( $resql );
-				
+
 				$this->id = $obj->reference;
 				$this->ref = $obj->reference;
 				$this->fk_rent = $obj->fk_rent;
@@ -811,11 +811,11 @@ class ImmoPayment extends CommonObject
 				$this->nomlocataire = $obj->nomlocataire;
 				$this->amount = $obj->amount;
 				$this->note_public = $obj->note_public;
-				$this->date_paiement = $this->db->jdate ( $obj->date_payment );
+				$this->date_payment = $this->db->jdate ( $obj->date_payment );
 				$this->fk_receipt = $obj->fk_receipt;
 				$this->nomloyer = $obj->nomloyer;
 				$this->fk_owner = $obj->fk_owner;
-				
+
 				1;
 			} else {
 				return 0;
@@ -871,7 +871,7 @@ class ImmoPaymentLine
 	public $id;
 	/**
 	 * @var int fk_contract
-	 */	
+	 */
 	public $fk_contract;
 	public $fk_property;
 	public $fk_renter;
