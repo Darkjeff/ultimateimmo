@@ -103,7 +103,7 @@ if (empty($reshook))
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$backurlforlist = dol_buildpath('/ultimateimmo/renter/immorenter_list.php',1);
 	$triggermodname = 'IMMOBILIER_MODIFY';
-	
+
 	/*if ($action == 'setsocid')
 	{
 		$error=0;
@@ -215,13 +215,13 @@ if ($action == 'create')
 		print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
-		
-		if ($val['label'] == 'BirthDay') 
+
+		if ($val['label'] == 'BirthDay')
 		{
 			print $form->selectDate(($object->birth ? $object->birth : -1),'birth','','',1,'formsoc');
 		}
-		elseif ($val['label'] == 'BirthCountry') 
-		{			
+		elseif ($val['label'] == 'BirthCountry')
+		{
 			// We set country_id, country_code and country for the selected country
 			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
 			if ($object->country_id)
@@ -231,19 +231,19 @@ if ($action == 'create')
 				$object->country=$tmparray['label'];
 			}
 			// Country
-			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
+			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));
 		}
 		else
 		{
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
-			
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
+
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
 			else $value = GETPOST($key, 'alpha');
 			print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
 		print '</td>';
 		print '</tr>';
-		
+
 	}
 
 	// Other attributes
@@ -294,12 +294,12 @@ if (($id || $ref) && $action == 'edit')
 		print '"';
 		print '>'.$langs->trans($val['label']).'</td>';
 		print '<td>';
-		if ($val['label'] == 'BirthDay') 
+		if ($val['label'] == 'BirthDay')
 		{
 			print $form->selectDate(($object->birth ? $object->birth : -1),'birth','','',1,'formsoc');
 		}
-		elseif ($val['label'] == 'BirthCountry') 
-		{			
+		elseif ($val['label'] == 'BirthCountry')
+		{
 			// We set country_id, country_code and country for the selected country
 			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
 			if ($object->country_id)
@@ -309,7 +309,7 @@ if (($id || $ref) && $action == 'edit')
 				$object->country=$tmparray['label'];
 			}
 			// Country
-			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
+			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));
 		}
 		else
 		{
@@ -453,7 +453,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
 		print '>'.$langs->trans($val['label']).'</td>';
-		print '<td>';		
+		print '<td>';
 		print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
@@ -493,14 +493,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<tr><td';
 		print ' class="titlefield';
 		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['label'] == 'BirthCountry') 
-		{ 
+		if ($val['label'] == 'BirthCountry')
+		{
 			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
 		}
-		elseif ($val['label'] == 'BirthDay') 
+		elseif ($val['label'] == 'BirthDay')
 		{
-			$object->birth = dol_print_date($object->birth,'day');
+			$object->birth = dol_print_date($db->jdate($object->birth), 'day');
 			print '<tr><td width="25%">'.$langs->trans('BirthDay').'</td><td>';
 			print $object->birth;
 		}
@@ -550,7 +550,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		{
     			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
     		}
-			
+
     		/*
     		if ($user->rights->ultimateimmo->create)
     		{
