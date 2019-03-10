@@ -425,8 +425,8 @@ class ImmoOwner extends CommonObject
 					$this->id = $id;
 					$this->set_vars_by_db($obj);
 					
-					$this->date_creation = $this->db->idate($obj->date_creation);
-					$this->tms = $this->db->idate($obj->tms);
+					$this->date_creation = $this->db->jdate($obj->date_creation);
+					$this->tms = $this->db->jdate($obj->tms);
 					
 					$this->birth = $this->db->jdate($obj->birth);
 					
