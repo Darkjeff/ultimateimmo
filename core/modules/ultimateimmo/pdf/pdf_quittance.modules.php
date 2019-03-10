@@ -374,11 +374,11 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				;
 
 				$dtpaiement = $paiement->date_payment;
-				var_dump($paiement);exit;
+				//var_dump(dol_print_date($dtpaiement, 'day'));exit;
 				if (empty($dtpaiement)) {
 					$dtpaiement = $object->echeance;
 				}
-				$text .= 'le ' . dol_print_date($this->db->jdate($dtpaiement), 'day') . ' pour loyer et accessoires des locaux sis à : ' . $property->address . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
+				$text .= 'le ' . dol_print_date($dtpaiement, 'day') . ' pour loyer et accessoires des locaux sis à : ' . $property->address . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
 
 
 				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 1, 'L');
