@@ -294,7 +294,7 @@ if (empty($reshook))
 				$receipt->fk_property = $monLocal;
 				$receipt->fk_renter = $monLocataire;
 				$receipt->fk_owner = $user->id;
-				//var_dump($receipt);exit;
+				
 				if ($maTVA == Oui) 
 				{
 					$receipt->total_amount = $monMontant * 1.2;
@@ -310,7 +310,7 @@ if (empty($reshook))
 				$receipt->chargesamount = $mesCharges;
 				$receipt->status=0;
 				//$receipt->paye=0;
-				
+				//var_dump($receipt);exit;
 				$result = $receipt->create($user);
 				if ($result < 0) {
 					$error++;
@@ -618,14 +618,15 @@ elseif ($action == 'createall')
 		/*
 		 * List agreement
 		 */
-		$sql = "SELECT c.rowid as reference, loc.lastname as nom, l.address  , l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner";
+		$sql = "SELECT c.rowid as reference, loc.lastname as rentername, o.lastname as ownername, l.address  , l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner, o.rowid, loc.fk_owner";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter loc";
-		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
-		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
-		$sql .= " WHERE loc.rowid = c.fk_renter and l.rowid = c.fk_property  ";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c on loc.rowid = c.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l on loc.rowid = l.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as o on loc.rowid = o.rowid";
+		$sql .= " WHERE loc.rowid = c.fk_renter and l.rowid = c.fk_property and o.rowid = loc.fk_owner ";
 		$resql = $db->query($sql);
 		if ($resql)
-	{
+		{
 		$num = $db->num_rows($resql);
 
 		$i = 0;
@@ -638,11 +639,12 @@ elseif ($action == 'createall')
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
 		print '<td>' . $langs->trans('RenterName') . '</td>';
+		print '<td>' . $langs->trans('Owner') . '</td>';
+		print '<td>' . $langs->trans('OwnerName') . '</td>';
 		print '<td class="right">' . $langs->trans('TotalAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('RentAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('ChargesAmount') . '</td>';
-		print '<td class="right">' . $langs->trans('VATIsUsed') . '</td>';
-		print '<td class="right">' . $langs->trans('OwnerName') . '</td>';
+		print '<td class="right">' . $langs->trans('VATIsUsed') . '</td>';		
 		print '<td class="right">' . $langs->trans('Select') . '</td>';
 		print "</tr>\n";
 
@@ -657,14 +659,15 @@ elseif ($action == 'createall')
 				print '<td>' . $objp->reflocal . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->reflocataire . '</td>';
-				print '<td>' . $objp->nom . '</td>';
+				print '<td>' . $objp->rentername . '</td>';
+				print '<td>' . $objp->fk_owner . '</td>';
+				print '<td>' . $objp->ownername . '</td>';
 
 				print '<td class="right">' . price($objp->total) . '</td>';
 				print '<td class="right">' . price($objp->rentamount) . '</td>';
 				print '<td class="right">' . price($objp->chargesamount) . '</td>';
 				print '<td class="right">' . yn($objp->vat) . '</td>';
-				print '<td class="right">' . $objp->fk_owner . '</td>';
-
+				
 				// Colonne choix contrat
 				print '<td class="center">';
 

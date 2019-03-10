@@ -141,6 +141,8 @@ CloneImmoReceipt = Clone this Receipt
 ConfirmCloneImmoReceipt = Are you sure you want to clone this receipt ?
 DeleteImmoPayment = Delete payment
 ConfirmDeleteImmoPayment = Are you sure you want to delete this payment ?
+OwnerName = Owner Name
+RenterName = Renter Name
 
 #
 # Sample page
