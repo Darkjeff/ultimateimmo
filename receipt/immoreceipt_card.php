@@ -92,7 +92,7 @@ if ($user->societe_id > 0) $socid = $user->societe_id;
 //$result = restrictedArea($user, 'ultimateimmo', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
 
 
-/*
+/**
  * Actions
  *
  * Put here all code to do according to value of "action" parameter
@@ -104,7 +104,7 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 
 if (empty($reshook))
 {
-	/*
+	/**
 	 * 	Classify paid
 	 */
 	if ($action == 'paid') 
@@ -112,10 +112,10 @@ if (empty($reshook))
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
 		$result = $receipt->set_paid($user);
-		Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
+		Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 	}
 
-	/*
+	/**
 	 *	Delete rental
 	 */
 	if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes') {
@@ -129,11 +129,11 @@ if (empty($reshook))
 		}
 		else
 		{
-			$mesg = '<div class="error">' . $receipt->error . '</div>';
+			setEventMessages($receipt->error, $receipt->errors, 'errors');
 		}
 	}
 
-	/*
+	/**
 	 * Action generate quitance
 	 */
 	if ($action == 'quittance') 
@@ -147,16 +147,16 @@ if (empty($reshook))
 		
 		if ($result > 0) 
 		{
-			Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
+			Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 			exit();
 		} 
 		else 
 		{
-			setEventMessage($agf->error, 'errors');
+			setEventMessages($langs->trans("ErrorFieldRequired"), null, 'errors');
 		}
 	}
 
-	/*
+	/**
 	 * Action generate charge locative
 	 */
 	if ($action == 'chargeloc') 
@@ -170,12 +170,12 @@ if (empty($reshook))
 		
 		if ($result > 0) 
 		{
-			Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
+			Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 			exit();
 		} 
 		else 
 		{
-			setEventMessage($agf->error, 'errors');
+			setEventMessages($langs->trans("ErrorFieldRequired"), null, 'errors');
 		}
 	}
 	
@@ -199,7 +199,7 @@ if (empty($reshook))
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 	
-	/*
+	/**
 	 * Add all rental
 	 */
 
@@ -229,12 +229,11 @@ if (empty($reshook))
 			$action = 'createall';
 		} 
 		else 
-		{
-			
+		{		
 			$mesLignesCochees = GETPOST('mesCasesCochees');
 			
-			foreach ( $mesLignesCochees as $maLigneCochee ) {
-				
+			foreach ( $mesLignesCochees as $maLigneCochee ) 
+			{				
 				$receipt = new ImmoReceipt($db);
 				
 				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
@@ -279,89 +278,22 @@ if (empty($reshook))
 				//$receipt->paye=0;
 				//var_dump($receipt);exit;
 				$result = $receipt->create($user);
-				if ($result < 0) {
+				if ($result < 0) 
+				{
 					$error++;
-					setEventMessages(null,$receipt->errors, 'errors');
+					setEventMessages(null, $receipt->errors, 'errors');
 					$action='createall';
 				}
 			}
 		}
 		
-		if (empty($error)) {
-			setEventMessage($langs->trans("SocialContributionAdded"), 'mesgs');
+		if (empty($error)) 
+		{
+			setEventMessages($langs->trans("SocialContributionAdded"), null, 'mesgs');
 			Header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1));
 			exit();
 		}
 	}
-
-	/*
-	 * Edit Receipt
-	 */
-
-	/*if ($action == 'update')
-	{
-		$dateech = @dol_mktime(12,0,0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
-		$dateperiod = @dol_mktime(12,0,0, GETPOST("periodmonth"), GETPOST("periodday"), GETPOST("periodyear"));
-		$dateperiodend = @dol_mktime(12,0,0, GETPOST("periodendmonth"), GETPOST("periodendday"), GETPOST("periodendyear"));
-		if (! $dateech)
-		 {
-		 $mesg='<div class="error">'.$langs->trans("ErrorFieldRequired",$langs->transnoentities("DateDue")).'</div>';
-		 $action = 'update';
-		 }
-		 elseif (! $dateperiod)
-		 {
-		 $mesg='<div class="error">'.$langs->trans("ErrorFieldRequired",$langs->transnoentities("Period")).'</div>';
-		 $action = 'update';
-		 }
-		 elseif (! $dateperiodend)
-		 {
-		 $mesg='<div class="error">'.$langs->trans("ErrorFieldRequired",$langs->transnoentities("Periodend")).'</div>';
-		 $action = 'update';
-		 }
-		 else
-		 {
-		 
-		$receipt = new ImmoReceipt($db);
-		$result = $receipt->fetch($id);
-		
-		$receipt->label 			= GETPOST('label');
-		$receipt->rentamount 		= GETPOST('rentamount');
-		$receipt->chargesamount 	= GETPOST('chargesamount');
-		if ($receipt->vat_tx != 0)
-		{
-			$receipt->total_amount 	= (GETPOST('rentamount') + GETPOST('chargesamount'))*1.2;
-		}
-		else
-		{
-			$receipt->total_amount 	= GETPOST('rentamount') + GETPOST('chargesamount');
-		}
-		
-		if ($receipt->vat_tx != 0)
-		{
-			$receipt->vat_amount 	= (GETPOST('rentamount') + GETPOST('chargesamount'))*0.2;
-		}
-		else
-		{
-			$receipt->vat_amount 	= 0;
-		}
-
-		$receipt->date_echeance = $dateech;
-		$receipt->note_public 	= GETPOST('note_public');
-		$receipt->status 		= GETPOST('status');
-		$receipt->date_start 	= $dateperiod;
-		$receipt->date_end 		= $dateperiodend;
-		
-		$result = $receipt->update($user);
-		Header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php',1).'?id=' . $receipt->id);
-		if ($id > 0)
-		{
-			$mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
-		}
-		else
-		{
-			$mesg = '<div class="error">' . $receipt->error . '</div>';
-		}
-	}*/
 	
 	// Build doc
 	if ($action == 'builddoc' && $user->rights->ultimateimmo->write)
