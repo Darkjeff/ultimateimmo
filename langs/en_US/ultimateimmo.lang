@@ -143,6 +143,7 @@ DeleteImmoPayment = Delete payment
 ConfirmDeleteImmoPayment = Are you sure you want to delete this payment ?
 OwnerName = Owner Name
 RenterName = Renter Name
+SendImmoReceiptRef = Submission of receipt %s
 
 #
 # Sample page

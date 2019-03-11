@@ -348,7 +348,7 @@ print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sort
 $topicmail="SendImmoReceiptRef";
 $modelmail="immoreceipt";
 $objecttmp=new ImmoReceipt($db);
-$trackid='xxxx'.$object->id;
+$trackid='receipt'.$object->id;
 include DOL_DOCUMENT_ROOT.'/core/tpl/massactions_pre.tpl.php';
 
 if ($sall)
@@ -567,7 +567,7 @@ if (in_array('builddoc',$arrayofmassactions) && ($nbtotalofrecords === '' || $nb
 
 	$filedir=$diroutputmassaction;
 	$genallowed=$user->rights->ultimateimmo->read;
-	$delallowed=$user->rights->ultimateimmo->create;
+	$delallowed=$user->rights->ultimateimmo->write;
 
 	print $formfile->showdocuments('massfilesarea_ultimateimmo','',$filedir,$urlsource,0,$delallowed,'',1,1,0,48,1,$param,$title,'','','',null,$hidegeneratedfilelistifempty);
 }

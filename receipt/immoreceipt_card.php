@@ -221,7 +221,7 @@ if (empty($reshook))
     $backurlforlist = dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1);
 	if (empty($backtopage)) {
 	    if (empty($id)) $backtopage = $backurlforlist;
-	    else $backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php',1).($id > 0 ? $id : '__ID__');
+	    else $backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php',1).'?id='.($id > 0 ? $id : '__ID__');
     	}
 	$triggermodname = 'ULTIMATEIMMO_IMMORECEIPT_MODIFY';	// Name of trigger action code to execute when we modify record
 
@@ -334,12 +334,12 @@ if (empty($reshook))
 	 * Edit Receipt
 	 */
 
-	if ($action == 'update')
+	/*if ($action == 'update')
 	{
 		$dateech = @dol_mktime(12,0,0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
 		$dateperiod = @dol_mktime(12,0,0, GETPOST("periodmonth"), GETPOST("periodday"), GETPOST("periodyear"));
 		$dateperiodend = @dol_mktime(12,0,0, GETPOST("periodendmonth"), GETPOST("periodendday"), GETPOST("periodendyear"));
-		/*if (! $dateech)
+		if (! $dateech)
 		 {
 		 $mesg='<div class="error">'.$langs->trans("ErrorFieldRequired",$langs->transnoentities("DateDue")).'</div>';
 		 $action = 'update';
@@ -356,7 +356,7 @@ if (empty($reshook))
 		 }
 		 else
 		 {
-		 */
+		 
 		$receipt = new ImmoReceipt($db);
 		$result = $receipt->fetch($id);
 		
@@ -397,7 +397,7 @@ if (empty($reshook))
 		{
 			$mesg = '<div class="error">' . $receipt->error . '</div>';
 		}
-	}
+	}*/
 	
 	// Build doc
 	if ($action == 'builddoc' && $user->rights->ultimateimmo->write)
@@ -752,7 +752,7 @@ else
 
 			/*
 			 * Paiements
-			 */
+			 
 			$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.amount, pp.libelle as type, il.total_amount ";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 			$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il ";
@@ -797,9 +797,9 @@ else
 					print '</tr>';
 					$totalpaye += $objp->amount;
 					$i ++;
-				}
+				}*/
 
-				if ($object->status == 0)
+			/*	if ($object->status == 0)
 				{
 					print '<tr><td colspan="3" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . price($totalpaye) . '</b></td><td>&nbsp;' . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
 					print '<tr><td colspan="3" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right" bgcolor="#d0d0d0">' . price($object->total_amount) . '</td><td bgcolor="#d0d0d0">&nbsp;' . $langs->trans("Currency" . $conf->currency) . "</td></tr>\n";
@@ -843,7 +843,7 @@ else
 			print $object->LibStatut($object->status, 5);
 			print "</td></tr>";
 
-			print '<tr><td colspan="2">&nbsp;</td></tr>';
+			print '<tr><td colspan="2">&nbsp;</td></tr>';*/
 
 		// Other attributes
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
@@ -951,8 +951,8 @@ else
 					}
 				}
 			}
-			*/
-			$morehtmlref.='</div>';
+			
+			$morehtmlref.='</div>';*/
 
 
 			dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
