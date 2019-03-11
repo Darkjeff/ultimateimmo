@@ -177,7 +177,7 @@ if (empty($reshook))
 
 	/*
 	 * Add rental
-	 */
+	
 	if ($action == 'add' && ! $cancel) 
 	{
 		$error = 0;
@@ -212,7 +212,7 @@ if (empty($reshook))
 		}
 		
 		$action = 'create';
-	}
+	} */
 	
 	$error=0;
 

@@ -73,6 +73,7 @@ $pagenext = $page + 1;
 $object = new ImmoReceipt($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
+
 $hookmanager->initHooks(array('immoreceiptlist'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immoreceipt');	// Load $extrafields->attributes['immoreceipt']
@@ -164,7 +165,7 @@ if (empty($reshook))
 	$objectlabel='ImmoReceipt';
 	$permtoread = $user->rights->ultimateimmo->read;
 	$permtodelete = $user->rights->ultimateimmo->delete;
-	$uploaddir = $conf->ultimateimmo->dir_output;
+	$uploaddir = $conf->ultimateimmo->dir_output . '/receipt/';
 	include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
 }
 
@@ -310,8 +311,8 @@ include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_param.tpl.php';
 
 // List of mass actions available
 $arrayofmassactions =  array(
-	//'presend'=>$langs->trans("SendByMail"),
-	//'builddoc'=>$langs->trans("PDFMerge"),
+	'presend'=>$langs->trans("SendByMail"),
+	'builddoc'=>$langs->trans("PDFMerge"),
 );
 if ($user->rights->ultimateimmo->delete) $arrayofmassactions['predelete']=$langs->trans("Delete");
 if (GETPOST('nomassaction','int') || in_array($massaction, array('presend','predelete'))) $arrayofmassactions=array();
@@ -328,18 +329,18 @@ print '<input type="hidden" name="page" value="'.$page.'">';
 print '<input type="hidden" name="contextpage" value="'.$contextpage.'">';
 
 $newcardbutton='';
-//if ($user->rights->ultimateimmo->creer)
-//{
-	$newcardbutton='<a class="butActionNew" href="immoreceipt_card.php?action=create&backtopage='.urlencode($_SERVER['PHP_SELF']).'"><span class="valignmiddle">'.$langs->trans('New').'</span>';
+if ($user->rights->ultimateimmo->write)
+{
+	$newcardbutton='<a class="butActionNew" href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?action=create&backtopage='.urlencode($_SERVER['PHP_SELF']).'"><span class="valignmiddle">'.$langs->trans('New').'</span>';
 	$newcardbutton.= '<span class="fa fa-plus-circle valignmiddle"></span>';
 	$newcardbutton.= '</a>';
-//}
-//else
-//{
-//    $newcardbutton='<a class="butActionNewRefused" href="#">'.$langs->trans('New');
-//    $newcardbutton.= '<span class="fa fa-plus-circle valignmiddle"></span>';
-//    $newcardbutton.= '</a>';
-//}
+}
+else
+{
+    $newcardbutton='<a class="butActionNewRefused" href="#">'.$langs->trans('New');
+    $newcardbutton.= '<span class="fa fa-plus-circle valignmiddle"></span>';
+    $newcardbutton.= '</a>';
+}
 
 print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, $newcardbutton, '', $limit);
 

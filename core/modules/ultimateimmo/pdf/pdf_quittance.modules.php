@@ -437,7 +437,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$i ++;
 					}
 
-					if ($object->paye == 0)
+					if ($object->status == 0)
 					{
 						$text .= "<br><tr><td align=\"left\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\">" . price($totalpaye) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
 						$text .= "<tr><td align=\"left\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($object->total_amount) . " " . $langs->trans("Currency" . $conf->currency) . "</td></tr>";
