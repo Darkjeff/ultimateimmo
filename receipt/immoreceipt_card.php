@@ -159,7 +159,8 @@ if (empty($reshook))
 	/*
 	 * Action generate charge locative
 	 */
-	if ($action == 'chargeloc') {
+	if ($action == 'chargeloc') 
+	{
 		// Define output language
 		$outputlangs = $langs;
 		
@@ -167,52 +168,16 @@ if (empty($reshook))
 		
 		$result = ultimateimmo_pdf_create($db, $id, '', 'chargeloc', $outputlangs, $file);
 		
-		if ($result > 0) {
+		if ($result > 0) 
+		{
 			Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 			exit();
-		} else {
+		} 
+		else 
+		{
 			setEventMessage($agf->error, 'errors');
 		}
 	}
-
-	/*
-	 * Add rental
-	
-	if ($action == 'add' && ! $cancel) 
-	{
-		$error = 0;
-		
-		$datev = dol_mktime(12, 0, 0, GETPOST("datevmonth"), GETPOST("datevday"), GETPOST("datevyear"));
-		$datesp = dol_mktime(12, 0, 0, GETPOST("datespmonth"), GETPOST("datespday"), GETPOST("datespyear"));
-		$dateep = dol_mktime(12, 0, 0, GETPOST("dateepmonth"), GETPOST("dateepday"), GETPOST("dateepyear"));
-		
-		$object->nom = GETPOST("nom");
-		$object->datesp = $datesp;
-		$object->dateep = $dateep;
-		$object->datev = $datev;
-		
-		if (empty($datev) || empty($datesp) || empty($dateep)) {
-			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("Date")), 'errors');
-			$error ++;
-		}
-		
-		if (! $error) {
-			$db->begin();
-			
-			$ret = $object->create($user);
-			if ($ret > 0) {
-				$db->commit();
-				header("Location: index.php");
-				exit();
-			} else {
-				$db->rollback();
-				setEventMessages($object->error, $object->errors, 'errors');
-				$action = "create";
-			}
-		}
-		
-		$action = 'create';
-	} */
 	
 	$error=0;
 
@@ -239,8 +204,7 @@ if (empty($reshook))
 	 */
 
 	if ($action == 'addall') 
-	{
-		
+	{		
 		$error=0;
 		$dateech = dol_mktime(12,0,0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
 		$dateperiod = dol_mktime(12,0,0, GETPOST("periodmonth"), GETPOST("periodday"), GETPOST("periodyear"));
@@ -249,19 +213,19 @@ if (empty($reshook))
 		if (empty($dateech)) 
 		{
 			$error++;
-			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), 'errors');
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), null, 'errors');
 			$action = 'createall';
 		} 
 		elseif (empty($dateperiod)) 
 		{
 			$error++;
-			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_du")), 'errors');
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_du")), null, 'errors');
 			$action = 'createall';
 		} 
 		elseif (empty($dateperiodend)) 
 		{
 			$error++;
-			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_au")), 'errors');
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_au")), null, 'errors');
 			$action = 'createall';
 		} 
 		else 
