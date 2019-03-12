@@ -197,11 +197,9 @@ else if ($action == 'setmodel')
 
 
 
-/*
+/**
  * View
  */
-
-$dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
 
 $form=new Form($db);
 
