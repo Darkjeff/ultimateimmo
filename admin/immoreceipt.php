@@ -219,7 +219,7 @@ $head = UltimateimmoAdminPrepareHead();
 dol_fiche_head($head, 'settings', $langs->trans("ModuleUltimateimmoName"), -1, "building@ultimateimmo");
 
 
-/*
+/**
  * ultimateimmo numbering model
  */
 
@@ -247,7 +247,7 @@ foreach ($dirmodels as $reldir)
 		{
 			while (($file = readdir($handle))!==false)
 			{
-				if (substr($file, 0, 15) == 'mod_ultimateimmo_' && substr($file, dol_strlen($file)-3, 3) == 'php')
+				if (substr($file, 0, 17) == 'mod_ultimateimmo_' && substr($file, dol_strlen($file)-3, 3) == 'php')
 				{
 					$file = substr($file, 0, dol_strlen($file)-4);
 
