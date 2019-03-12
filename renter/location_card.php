@@ -410,7 +410,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	$keyforbreak='modelpdf';
+	$keyforbreak='note_private';
 	foreach($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
@@ -568,6 +568,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         if ($result)
         {
             $locationstatic=new ImmoRent($db);
+			$locationstatic->fetch($id);
 
             $num = $db->num_rows($result);
             $i = 0;
@@ -592,7 +593,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
             {
                 $objp = $db->fetch_object($result);
 
-                $locationstatic->ref=$objp->crowid;
+                $locationstatic->ref;
                 $locationstatic->id=$objp->crowid;
 
                 print '<tr class="oddeven">';
