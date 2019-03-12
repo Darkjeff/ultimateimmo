@@ -129,6 +129,7 @@ if (empty($reshook))
 		}
 		else
 		{
+			$langs->load("errors");
 			setEventMessages($receipt->error, $receipt->errors, 'errors');
 		}
 	}
@@ -818,15 +819,15 @@ else
 
 				if ($object->status == 0)
 				{
-					print "<tr><td colspan=\"3\" class=\"right\">" . $langs->trans("AlreadyPaid") . " :</td><td class=\"right\"><b>" . price($totalpaye) . "</b></td></tr>\n";
-					print "<tr><td colspan=\"3\" class=\"right\">" . $langs->trans("AmountExpected") . " :</td><td class=\"right\">" . price($object->total_amount) . "</td></tr>\n";
+					print '<tr><td colspan="3" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . price($totalpaye) . '</b>'."</td></tr>\n";
+					print '<tr><td colspan="3" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . price($object->total_amount) . "</td></tr>\n";
 
 					$remaintopay = $object->total_amount - $totalpaye;
 
-					print "<tr><td colspan=\"3\" class=\"right\">" . $langs->trans("RemainderToPay") . " :</td>";
+					print '<tr><td colspan="3" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
 					print '<td class="right"'.($remaintopay?' class="amountremaintopay"':'').'>'.price($remaintopay)."</td></tr>\n";
 				}
-				print "</table>";
+				print '</table>';
 				$db->free($resql);
 			}
 			else
@@ -866,7 +867,7 @@ else
 			{
 				print '<div class="tabsAction">'."\n";
 				$parameters=array();
-				$reshook=$hookmanager->executeHooks('addMoreActionsButtons',$parameters,$object,$action);    // Note that $action and $object may have been modified by hook
+				$reshook=$hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
 				if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 				if (empty($reshook))
@@ -946,7 +947,7 @@ else
 				print '<div class="fichecenter"><div class="fichehalfleft">';
 				print '<a name="builddoc"></a>'; // ancre
 
-				// Documents
+				// Documents generes
 				$relativepath = '/receipt/' . dol_sanitizeFileName($object->ref).'/';
 				$filedir = $conf->ultimateimmo->dir_output . $relativepath;
 				$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
