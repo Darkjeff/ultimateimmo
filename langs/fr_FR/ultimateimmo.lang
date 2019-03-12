@@ -48,7 +48,7 @@ UltimateimmoAboutPage = Page à propos de Ultimateimmo
 #
 # Menu
 #
-ImmoProperties = Biens immo
+ImmoProperties = Biens
 MenuImmoProperty = Biens immobiliers
 MenuNewImmoProperty = Nouveau bien
 MenuListImmoProperty = Liste
