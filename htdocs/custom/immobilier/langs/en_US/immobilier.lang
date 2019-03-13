@@ -17,17 +17,17 @@
 # Generic
 #
 
-# Module label 'ModuleImmobilierName'
-ModuleImmobilierName = Immobilier
-# Module description 'ModuleImmobilierDesc'
-ModuleImmobilierDesc = Immobilier description
+# Module label 'ModuleReal Estate'
+ModuleImmobilierName = Real Estate
+# Module description 'ModuleReal EstateDesc'
+ModuleImmobilierDesc = Real estate description
 
 #
 # Admin page
 #
-ImmobilierSetup = Immobilier setup
+ImmobilierSetup = Real Estate setup
 Settings = Settings
-ImmobilierSetupPage = Immobilier setup page
+ImmobilierSetupPage = Real Estate setup page
 ImmobilierNumberingModeles = Numbering model for receipt.
 TemplatePDFImmobilier = Template for receipt
 WatermarkOnDraftImmoCards = Watermark On Draft receipt (none if empty)
@@ -39,23 +39,23 @@ IMMOBILIER_MYPARAM2Tooltip=My param 2 tooltip
 #
 # Menu
 #
-MenuImmoProperty = Biens immobiliers
-MenuNewImmoProperty = Nouveau bien
+MenuImmoProperty = Real estate
+MenuNewImmoProperty = New property
 MenuListImmoProperty = List
-MenuImmoPropertyType = Type de bien
-MenuNewImmoPropertyType = Nouveau type
+MenuImmoPropertyType = Type of property
+MenuNewImmoPropertyType = New type
 MenuListImmoPropertyType = List
 MenuImmoRent = Locations
-MenuNewImmoRent = Nouvelle location
+MenuNewImmoRent = New location
 MenuListImmoRent = List
 MenuImmoOwner = Owners
 MenuNewImmoOwner = New Owner
 MenuListImmoOwner = List
 MenuImmoOwnerType = Owner Type
 MenuNewImmoOwnerType = New Owner Type
-MenuListImmoOwnerType = Liste
-MenuImmoRenter = Renters
-MenuNewImmoRenter = New Renter
+MenuListImmoOwnerType = List
+MenuImmoRenter = Tenants
+MenuNewImmoRenter = New Tenant
 MenuListImmoRenter = List
 MenuImmoPayment = Payment
 MenuNewImmoPayment = New Payment
@@ -65,20 +65,20 @@ MenuNewImmoReceipt = New receipt
 MenuAllReceiptperContract = Generate the receipts
 MenuValidateReceipt = Validate the receipts
 MenuStatisticPayment = Statistics
-MenuListImmoCost = Charges locatives
-MenuNewImmoCost = Nouvelle charge 
-MenuRenterCost = Renter Cost
-MenuStatisticsCost = Cost: Statistics 
+MenuListImmoCost = Rental charges
+MenuNewImmoCost = New Load
+MenuRenterCost = Cost Renter
+MenuStatisticsCost = Cost: Statistics
 MenuStatisticsResult = Results: Statistics
 MenuListImmoCostType = Cost type
-MenuNewImmoCostType = New cost type 
+MenuNewImmoCostType = New cost type
 
 #
 # About page
 #
 About = About
-ImmobilierAbout = About Immobilier
-ImmobilierAboutPage = Immobilier about page
+ImmobilierAbout = About Real Estate
+ImmobilierAboutPage = Real Estate About Page
 
 #
 # Miscellaneous
@@ -104,7 +104,7 @@ NumFloor = Floor number
 NumFlat = Flat number
 NumDoor = Door number
 Area = Area
-PropertyParent = Parent Property 
+PropertyParent = Parent Property
 DateBuilt = Construction date
 Target = Target
 ImmoOwner = Owner
@@ -114,13 +114,13 @@ ImmoOwnerTypes = Owner Types
 Civility = Civility
 Deposit = Deposit
 ListOfRents = List Of Rents
-ImmoRenter = Renter
-ImmoRenters = Renters
-Renter = Renter
-RentAmount = Montant du loyer
-ChargesAmount = Montant des charges
-TotalAmount = Montant total
-Encours = Encours
+ImmoRenter = Tenant
+ImmoRenters = Tenants
+Renter = Tenant
+RentAmount = Rent Amount
+ChargesAmount = Amount of charges
+TotalAmount = Total amount
+Encours = Outstanding
 VatAmount = VAT amount
 VatTx = VAT rate
 
