@@ -104,6 +104,7 @@ class ImmoReceipt extends CommonObject
 		'vat_amount' => array('type'=>'price', 'label'=>'VatAmount', 'enabled'=>1, 'visible'=>1, 'position'=>95, 'notnull'=>-1,),
 		'vat_tx' => array('type'=>'integer', 'label'=>'VatTx', 'enabled'=>1, 'visible'=>1, 'position'=>96, 'notnull'=>-1,),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
+		'fk_statut' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>-2, 'position'=>509, 'notnull'=>-1,),
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1, 'foreignkey'=>'llx_user.rowid',),
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'enabled'=>1, 'visible'=>-2, 'position'=>511, 'notnull'=>-1,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1,),
@@ -132,6 +133,7 @@ class ImmoReceipt extends CommonObject
 	public $vat_amount;
 	public $vat_tx;
 	public $tms;
+	public $fk_statut;
 	public $fk_user_creat;
 	public $fk_user_modif;
 	public $import_key;
@@ -282,7 +284,7 @@ class ImmoReceipt extends CommonObject
 	        return -1;
 	    }
 	}
-
+	
 	/**
 	 * Function to concat keys of fields
 	 *
@@ -293,7 +295,7 @@ class ImmoReceipt extends CommonObject
 	    $keys = array_keys($this->fields);
 	    return implode(',', $keys);
 	}
-
+	
 	/**
 	 * Function to load data into current object this
 	 *
@@ -335,7 +337,7 @@ class ImmoReceipt extends CommonObject
 
 	    }
 	}
-
+	
 	/**
 	 * Load object in memory from the database
 	 *
@@ -347,7 +349,7 @@ class ImmoReceipt extends CommonObject
 	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
 		if (empty($id) && empty($ref)) return false;
-
+		
 		global $langs;
 
 		$array = preg_split("/[\s,]+/", $this->get_field_list());
@@ -358,13 +360,13 @@ class ImmoReceipt extends CommonObject
 		$sql = 'SELECT '.$array.',';
 		$sql.= ' rt.rentamount,';
 		$sql.= ' rt.chargesamount,';
-		$sql.= ' rt.totalamount';
+		$sql.= ' rt.totalamount';		
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element . ' as t';
 		$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorent as rt ON t.fk_rent = rt.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
-
+		
 		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
 		if ($res)
@@ -384,7 +386,7 @@ class ImmoReceipt extends CommonObject
         			$this->tms = $this->db->jdate($obj->tms);
 
 					$this->setVarsFromFetchObj($obj);
-
+					
 					return $this->id;
     		    }
     		    else
@@ -537,6 +539,183 @@ class ImmoReceipt extends CommonObject
 		return $this->deleteCommon($user, $notrigger);
 		//return $this->deleteCommon($user, $notrigger, 1);
 	}
+	
+	/**
+	 *  Returns the reference to the following non used Receipt depending on the active numbering module
+	 *  defined into ULTIMATEIMMO_ADDON_NUMBER
+	 *
+	 *  @param	Societe		$soc  	Object thirdparty
+	 *  @return string      		Receipt free reference
+	 */
+	function getNextNumRef($soc)
+	{
+		global $langs, $conf;
+		$langs->load("ultimateimmo@ultimateimmo");
+
+		if (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER))
+		{
+			$mybool=false;
+
+			$file = $conf->global->ULTIMATEIMMO_ADDON_NUMBER.".php";
+			$classname = $conf->global->ULTIMATEIMMO_ADDON_NUMBER;
+
+			// Include file with class
+			$dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
+			foreach ($dirmodels as $reldir)
+			{
+				$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/");
+
+				// Load file with numbering class (if found)
+				$mybool|=@include_once $dir.$file;
+			}
+
+            if ($mybool === false)
+            {
+                dol_print_error('',"Failed to include file ".$file);
+                return '';
+            }
+
+			$obj = new $classname();
+			$numref = $obj->getNextValue($soc,$this);
+
+			if ($numref != "")
+			{
+				return $numref;
+			}
+			else
+			{
+				$this->error=$obj->error;
+				//dol_print_error($this->db,get_class($this)."::getNextNumRef ".$obj->error);
+				return "";
+			}
+		}
+		else
+		{
+			print $langs->trans("Error")." ".$langs->trans("Error_ULTIMATEIMMO_ADDON_NUMBER_NotDefined");
+			return "";
+		}
+	}
+	
+	/**
+	 *  Set status to validated
+	 *
+	 *  @param	User	$user       Object user that validate
+	 *  @param	int		$notrigger	1=Does not execute triggers, 0=execute triggers
+	 *  @return int         		<0 if KO, 0=Nothing done, >=0 if OK
+	 */
+	function valid($user, $notrigger=0)
+	{
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+
+		global $conf;
+
+		$error=0;
+
+		// Protection
+		if ($this->statut == self::STATUS_VALIDATED)
+		{
+			dol_syslog(get_class($this)."::valid action abandonned: already validated", LOG_WARNING);
+			return 0;
+		}
+
+		if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->write))))
+		{
+			$this->error='ErrorPermissionDenied';
+			dol_syslog(get_class($this)."::valid ".$this->error, LOG_ERR);
+			return -1;
+		}
+
+		$now=dol_now();
+
+		$this->db->begin();
+
+		// Numbering module definition
+		$soc = new Societe($this->db);
+		$soc->fetch($this->socid);
+
+		// Define new ref
+		if (! $error && (preg_match('/^[\(]?PROV/i', $this->ref) || empty($this->ref))) // empty should not happened, but when it occurs, the test save life
+		{
+			$num = $this->getNextNumRef($soc);
+		}
+		else
+		{
+			$num = $this->ref;
+		}
+		$this->newref = $num;
+
+		$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immoreceipt";
+		$sql.= " SET ref = '".$num."',";
+		$sql.= " fk_statut = ".self::STATUS_VALIDATED.", date_valid='".$this->db->idate($now)."', fk_user_valid=".$user->id;
+		$sql.= " WHERE rowid = ".$this->id." AND fk_statut = ".self::STATUS_DRAFT;
+
+		dol_syslog(get_class($this)."::valid", LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if (! $resql)
+		{
+			dol_print_error($this->db);
+			$this->error=$this->db->lasterror();
+			$error++;
+		}
+
+		// Trigger calls
+		if (! $error && ! $notrigger)
+		{
+			// Call trigger
+			//$result=$this->call_trigger('PROPAL_VALIDATE',$user);
+			if ($result < 0) { $error++; }
+			// End call triggers
+		}
+
+		if (! $error)
+		{
+			$this->oldref = $this->ref;
+
+			// Rename directory if dir was a temporary ref
+			if (preg_match('/^[\(]?PROV/i', $this->ref))
+			{
+				// Rename of directory ($this->ref = old ref, $num = new ref)
+				// to not lose the linked files
+				$oldref = dol_sanitizeFileName($this->ref);
+				$newref = dol_sanitizeFileName($num);
+				$dirsource = $conf->ultimateimmo->multidir_output[$this->entity].'/'.$oldref;
+				$dirdest = $conf->ultimateimmo->multidir_output[$this->entity].'/'.$newref;
+
+				if (file_exists($dirsource))
+				{
+					dol_syslog(get_class($this)."::validate rename dir ".$dirsource." into ".$dirdest);
+					if (@rename($dirsource, $dirdest))
+					{
+						dol_syslog("Rename ok");
+						// Rename docs starting with $oldref with $newref
+						$listoffiles=dol_dir_list($dirdest, 'files', 1, '^'.preg_quote($oldref,'/'));
+						foreach($listoffiles as $fileentry)
+						{
+							$dirsource=$fileentry['name'];
+							$dirdest=preg_replace('/^'.preg_quote($oldref,'/').'/',$newref, $dirsource);
+							$dirsource=$fileentry['path'].'/'.$dirsource;
+							$dirdest=$fileentry['path'].'/'.$dirdest;
+							@rename($dirsource, $dirdest);
+						}
+					}
+				}
+			}
+
+			$this->ref=$num;
+			$this->brouillon=0;
+			$this->statut = self::STATUS_VALIDATED;
+			$this->user_valid_id=$user->id;
+			$this->datev=$now;
+
+			$this->db->commit();
+			return 1;
+		}
+		else
+		{
+			$this->db->rollback();
+			return -1;
+		}
+	}
 
 	/**
 	 *  Return a link to the object card (with optionaly the picto)
@@ -639,7 +818,7 @@ class ImmoReceipt extends CommonObject
 			global $langs;
 			$langs->load("ultimateimmo@ultimateimmo");
 			$this->labelstatus[0] = $langs->trans('ImmoUnpaid');
-			$this->labelstatus[1] = $langs->trans('ImmoPaid');
+			$this->labelstatus[1] = $langs->trans('ImmoPaid');		
 		}
 
 		if ($mode == 0)
@@ -741,42 +920,6 @@ class ImmoReceipt extends CommonObject
 		$this->initAsSpecimenCommon();
 	}
 
-	/**
-	 *  Create an intervention document on disk using template defined into ULTIMATEIMMO_ADDON_PDF
-	 *
-	 *  @param	string		$modele			Force template to use ('' by default)
-	 *  @param	Translate	$outputlangs	Objet lang to use for translation
-	 *  @param  int			$hidedetails    Hide details of lines
-	 *  @param  int			$hidedesc       Hide description
-	 *  @param  int			$hideref        Hide ref
-	 *  @return int         				0 if KO, 1 if OK
-	 */
-	public function generateDocument($modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
-	{
-		global $conf,$langs;
-
-		$langs->load("ultimateimmo@ultimateimmo");
-
-		if (! dol_strlen($modele))
-		{
-
-			$modele = '';
-
-			if ($this->modelpdf)
-			{
-				$modele = $this->modelpdf;
-			}
-			elseif (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF))
-			{
-				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
-			}
-		}
-
-		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
-
-		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
-	}
-
 
 	/**
 	 * Action executed by scheduler
@@ -812,7 +955,7 @@ class ImmoReceipt extends CommonObject
 	 * @param unknown $user
 	 * @return number
 	 */
-	public function set_paid($user)
+	public function set_paid($user) 
 	{
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element.' SET';
 		$sql .= ' status=1';

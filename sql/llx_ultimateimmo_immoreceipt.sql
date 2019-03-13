@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `llx_ultimateimmo_immoreceipt` (
   `date_end` datetime DEFAULT NULL,
   `date_creation` datetime DEFAULT NULL,
   `tms` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `fk_statut` int(6) NULL DEFAULT '0',
   `fk_user_creat` int(11) NOT NULL,
   `fk_user_modif` int(11) DEFAULT NULL,
   `import_key` varchar(14) DEFAULT NULL,
