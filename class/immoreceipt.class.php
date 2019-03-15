@@ -56,6 +56,17 @@ class ImmoReceipt extends CommonObject
 	 * @var string String with name of icon for immoreceipt. Must be the part after the 'object_' into object_immoreceipt.png
 	 */
 	public $picto = 'immoreceipt@ultimateimmo';
+	
+	/**
+	 * Draft status
+	 */
+	const STATUS_DRAFT = 0;
+	
+	/**
+	 * Validated status
+	 */
+	const STATUS_VALIDATED = 1;
+
 
 
 	/**
@@ -790,6 +801,40 @@ class ImmoReceipt extends CommonObject
 
 		return $result;
 	}
+	
+	/**
+	 *  Create a document onto disk according to template module.
+	 *
+	 * 	@param	    string		$modele			Force model to use ('' to not force)
+	 * 	@param		Translate	$outputlangs	Object langs to use for output
+	 *  @param      int			$hidedetails    Hide details of lines
+	 *  @param      int			$hidedesc       Hide description
+	 *  @param      int			$hideref        Hide ref
+         *  @param   null|array  $moreparams     Array to provide more information
+	 * 	@return     int         				0 if KO, 1 if OK
+	 */
+	public function generateDocument($modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0, $moreparams=null)
+	{
+		global $conf,$langs;
+
+		$langs->load("ultimateimmo@ultimateimmo");
+
+		if (! dol_strlen($modele)) {
+
+			$modele = 'quittance';
+
+			if ($this->modelpdf) {
+				$modele = $this->modelpdf;
+			} elseif (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) {
+				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
+			}
+		}
+
+		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
+
+		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref,$moreparams);
+	}
+
 
 	/**
 	 *  Return label of the status

@@ -685,28 +685,38 @@ else
 				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
 			}
 
-			// Confirmation of action xxxx
-			if ($action == 'xxx')
+			// Confirmation of validation
+			if ($action == 'validate')
 			{
-				$formquestion=array();
-				/*
-				$forcecombo=0;
-				if ($conf->browser->name == 'ie') $forcecombo = 1;	// There is a bug in IE10 that make combo inside popup crazy
-				$formquestion = array(
-					// 'text' => $langs->trans("ConfirmClone"),
-					// array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
-					// array('type' => 'checkbox', 'name' => 'update_prices', 'label' => $langs->trans("PuttingPricesUpToDate"), 'value' => 1),
-					// array('type' => 'other',    'name' => 'idwarehouse',   'label' => $langs->trans("SelectWarehouseForStockDecrease"), 'value' => $formproduct->selectWarehouses(GETPOST('idwarehouse')?GETPOST('idwarehouse'):'ifone', 'idwarehouse', '', 1, 0, 0, '', 0, $forcecombo))
-				);
-				*/
-				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('XXX'), $text, 'confirm_xxx', $formquestion, 0, 1, 220);
-			}
+				// We verifie whether the object is provisionally numbering
+				$ref = substr($object->ref, 1, 4);
+				if ($ref == 'PROV') {
+					$numref = $object->getNextNumRef($soc);
+					if (empty($numref)) {
+						$error ++;
+						setEventMessages($object->error, $object->errors, 'errors');
+					}
+				} else {
+					$numref = $object->ref;
+				}
 
-			// Call Hook formConfirm
-			$parameters = array('lineid' => $lineid);
-			$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-			if (empty($reshook)) $formconfirm.=$hookmanager->resPrint;
-			elseif ($reshook > 0) $formconfirm=$hookmanager->resPrint;
+				$text = $langs->trans('ConfirmValidateReceipt', $numref);
+				if (! empty($conf->notification->enabled))
+				{
+					require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';
+					$notify = new Notify($db);
+					$text .= '<br>';
+					$text .= $notify->confirmMessage('ULTIMATEIMMO_VALIDATE', $object->socid, $object);
+				}
+
+				// Call Hook formConfirm
+				$parameters = array('lineid' => $lineid);
+				$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+				if (empty($reshook)) $formconfirm.=$hookmanager->resPrint;
+				elseif ($reshook > 0) $formconfirm=$hookmanager->resPrint;
+
+				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
+			}
 
 			// Print form confirm
 			print $formconfirm;
@@ -716,49 +726,7 @@ else
 			// ------------------------------------------------------------
 			$linkback = '<a href="' .dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
-			$morehtmlref='<div class="refidno">';
-			/*
-			// Ref bis
-			$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', 0, 1);
-			$morehtmlref.=$form->editfieldval("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', null, null, '', 1);
-			// Thirdparty
-			$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $soc->getNomUrl(1);
-			// Project
-			if (! empty($conf->projet->enabled))
-			{
-				$langs->load("projects");
-				$morehtmlref.='<br>'.$langs->trans('Project') . ' ';
-				if ($user->rights->ultimateimmo->write)
-				{
-					if ($action != 'classify')
-						$morehtmlref.='<a href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
-					if ($action == 'classify') {
-						//$morehtmlref.=$form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'projectid', 0, 0, 1, 1);
-						$morehtmlref.='<form method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'">';
-						$morehtmlref.='<input type="hidden" name="action" value="classin">';
-						$morehtmlref.='<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-						$morehtmlref.=$formproject->select_projects($object->socid, $object->fk_project, 'projectid', 0, 0, 1, 0, 1, 0, 0, '', 1);
-						$morehtmlref.='<input type="submit" class="button valignmiddle" value="'.$langs->trans("Modify").'">';
-						$morehtmlref.='</form>';
-					} else {
-						$morehtmlref.=$form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'none', 0, 0, 0, 1);
-					}
-				} else {
-					if (! empty($object->fk_project)) {
-						$proj = new Project($db);
-						$proj->fetch($object->fk_project);
-						$morehtmlref.=$proj->getNomUrl();
-					} else {
-						$morehtmlref.='';
-					}
-				}
-			}
-			
-			$morehtmlref.='</div>';*/
-
-
 			dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
-
 
 			print '<div class="fichecenter">';
 			print '<div class="fichehalfleft">';
@@ -768,6 +736,28 @@ else
 			// Common attributes
 			$keyforbreak='note_private';
 			include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
+			
+			// Other attributes
+			include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
+			
+			// Add symbol of currency 
+			$cursymbolbefore=$cursymbolafter='';
+			if ($object->multicurrency_code)
+			{
+				$currency_symbol=$langs->getCurrencySymbol($object->multicurrency_code);
+				$listofcurrenciesbefore=array('$','£','S/.','¥');
+				if (in_array($currency_symbol,$listofcurrenciesbefore)) $cursymbolbefore.=$currency_symbol;
+				else
+				{
+					$tmpcur=$currency_symbol;
+					$cursymbolafter.=($tmpcur == $currency_symbol ? ' '.$tmpcur : $tmpcur);
+				}
+			}
+			else
+			{
+				$cursymbolafter = $langs->getCurrencySymbol($conf->currency);
+			}
+			
 			// List of payments
 			$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, pp.libelle as type, il.total_amount ";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
@@ -802,7 +792,7 @@ else
 					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?action=update&amp;id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
 					print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
 					print '<td>'.$objp->type.'</td>';
-					print '<td class="right">' . price($objp->amount)."&nbsp;".$langs->trans("Currency".$conf->currency)."</td>\n";
+					print '<td class="right">' . $cursymbolbefore.price($objp->amount, 0, $outputlangs).' '.$cursymbolafter."</td>\n";
 
 					print '<td class="right">';
 					if ($user->admin) {
@@ -819,13 +809,13 @@ else
 
 				if ($object->status == 0)
 				{
-					print '<tr><td colspan="3" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . price($totalpaye) . '</b>'."</td></tr>\n";
-					print '<tr><td colspan="3" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . price($object->total_amount) . "</td></tr>\n";
+					print '<tr><td colspan="3" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs).' '.$cursymbolafter . '</b>'."</td></tr>\n";
+					print '<tr><td colspan="3" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs).' '.$cursymbolafter . "</td></tr>\n";
 
 					$remaintopay = $object->total_amount - $totalpaye;
 
 					print '<tr><td colspan="3" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
-					print '<td class="right"'.($remaintopay?' class="amountremaintopay"':'').'>'.price($remaintopay)."</td></tr>\n";
+					print '<td class="right"'.($remaintopay?' class="amountremaintopay"':'').'>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs).' '.$cursymbolafter."</td></tr>\n";
 				}
 				print '</table>';
 				$db->free($resql);
@@ -834,9 +824,6 @@ else
 			{
 				dol_print_error($db);
 			}
-
-			// Other attributes
-			include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
 
 			print '</table>';
 			print '</div>';
