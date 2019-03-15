@@ -766,6 +766,7 @@ else
 			$sql .= " WHERE p.fk_receipt = " . $id;
 			$sql .= " AND p.fk_receipt = il.rowid";
 			$sql .= " AND type = pp.id";
+			//$sql .= " AND p.amount <> '" .price(0, 0, $outputlangs)."'";
 			$sql .= " ORDER BY dp DESC";
 
 			$resql = $db->query($sql);
@@ -784,12 +785,12 @@ else
 				if ($user->admin) print '<td>&nbsp;</td>';
 				print '</tr>';
 
-				while ( $i <= $num )
+				while ( $i < $num )
 				{
 					$objp = $db->fetch_object($resql);
 
 					print '<tr class="oddeven"><td>';
-					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?action=update&amp;id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
+					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?action=edit&amp;id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
 					print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
 					print '<td>'.$objp->type.'</td>';
 					print '<td class="right">' . $cursymbolbefore.price($objp->amount, 0, $outputlangs).' '.$cursymbolafter."</td>\n";
@@ -859,6 +860,18 @@ else
 
 				if (empty($reshook))
 				{
+					// Validate
+					//var_dump($object->total_ttc);exit;
+					if ($object->statut == ImmoReceipt::STATUS_DRAFT )
+					{
+						if ($user->rights->ultimateimmo->write)
+						{
+							print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
+						}
+						else
+							print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('Validate') . '</a></div>';
+					}
+				
 					// Send
 					print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
 
