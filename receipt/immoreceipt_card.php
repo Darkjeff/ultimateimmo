@@ -861,7 +861,6 @@ else
 				if (empty($reshook))
 				{
 					// Validate
-					//var_dump($object->total_ttc);exit;
 					if ($object->statut == ImmoReceipt::STATUS_DRAFT )
 					{
 						if ($user->rights->ultimateimmo->write)

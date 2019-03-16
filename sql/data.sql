@@ -1,4 +1,6 @@
--- Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+-- ============================================================================
+-- Copyright (C) 2014-2019   Philippe Grand		<philippe.grand@atoo-net.com>
+-- Copyright (C) 2014-2017   Regis Houssin		<regis.houssin@capnetworks.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -11,4 +13,14 @@
 -- GNU General Public License for more details.
 --
 -- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see http://www.gnu.org/licenses/.
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+INSERT INTO llx_c_ultimateimmo_immoreceipt_status(rowid,code,label,active) VALUES (0,'STATUS_DRAFT','Brouillon',1);
+
+INSERT INTO llx_c_ultimateimmo_immoreceipt_status(rowid,code,label,active) VALUES (1,'STATUS_VALIDATED','Validée',1);
+
+
+
+
+
+
