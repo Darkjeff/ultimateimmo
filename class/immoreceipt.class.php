@@ -275,8 +275,39 @@ class ImmoReceipt extends CommonObject
 			$sql = 'INSERT INTO '.MAIN_DB_PREFIX.$this->table_element;
 			$sql.= ' ('.implode( ", ", $keys ).')';
 			$sql.= ' VALUES ('.implode( ", ", $values ).')';
-
+			
 			$res = $this->db->query($sql);
+			if ($res)
+			{
+				$error=0;
+
+				$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX.$this->table_element);
+				
+				// Load object modContract
+				$module=(! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
+				if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
+				{
+					$module = substr($module, 0, dol_strlen($module)-4);			
+				}
+				$result=dol_include_once('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php');
+				
+				if ($result > 0)
+				{
+					$modCodeUltimateimmo = new $module();
+
+					if (! empty($modCodeUltimateimmo->code_auto)) {
+						// Force the ref to a draft value if numbering module is an automatic numbering
+						$sql = 'UPDATE '.MAIN_DB_PREFIX."ultimateimmo_immoreceipt SET ref='(PROV".$this->id.")' WHERE rowid=".$this->id;
+						if ($this->db->query($sql))
+						{
+							if ($this->id)
+							{
+								$this->ref="(PROV".$this->id.")";//ça passe bien par ici...
+							}
+						}
+					}
+				}
+			}
 			if ($res===false) {
 				$error++;
 				$this->errors[] = $this->db->lasterror();
