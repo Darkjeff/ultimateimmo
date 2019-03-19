@@ -40,10 +40,12 @@ CREATE TABLE IF NOT EXISTS `llx_ultimateimmo_immoreceipt` (
   `date_start` datetime DEFAULT NULL,
   `date_end` datetime DEFAULT NULL,
   `date_creation` datetime DEFAULT NULL,
+  `date_valid` datetime DEFAULT NULL,
   `tms` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `fk_statut` int(6) NULL DEFAULT '0',
   `fk_user_creat` int(11) NOT NULL,
   `fk_user_modif` int(11) DEFAULT NULL,
+  `fk_user_valid` int(11) DEFAULT NULL,
   `import_key` varchar(14) DEFAULT NULL,
   `model_pdf` varchar(128) DEFAULT NULL,
   `status` int(11) NULL DEFAULT '0'
@@ -59,15 +61,4 @@ CREATE TABLE IF NOT EXISTS `llx_ultimateimmo_immoreceipt` (
 ALTER TABLE `llx_ultimateimmo_immoreceipt`
  ADD PRIMARY KEY (`rowid`);
 
---
--- AUTO_INCREMENT pour les tables exportées
---
 
---
--- AUTO_INCREMENT pour la table `llx_ultimateimmo_immoreceipt`
---
-ALTER TABLE `llx_ultimateimmo_immoreceipt`
-MODIFY `rowid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

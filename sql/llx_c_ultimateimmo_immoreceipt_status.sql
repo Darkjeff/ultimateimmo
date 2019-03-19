@@ -15,7 +15,7 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 CREATE TABLE IF NOT EXISTS llx_c_ultimateimmo_immoreceipt_status (
-  id              smallint    PRIMARY KEY,
+  rowid           int(11) NOT NULL,
   code            varchar(12) NOT NULL,
   label           varchar(30),
   active          tinyint DEFAULT 1  NOT NULL

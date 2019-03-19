@@ -133,6 +133,39 @@ if (empty($reshook))
 			setEventMessages($receipt->error, $receipt->errors, 'errors');
 		}
 	}
+	
+	// Validation
+	if ($action == 'confirm_validate' && $confirm == 'yes' && $user->rights->ultimateimmo->write)
+	{
+		$result = $object->valid($user);
+		
+		if ($result >= 0)
+		{
+			if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE))
+			{
+				// Define output language
+				$outputlangs = $langs;
+				$newlang = '';
+				if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id','aZ09')) $newlang = GETPOST('lang_id','aZ09');
+				if ($conf->global->MAIN_MULTILANGS && empty($newlang))	$newlang = $object->thirdparty->default_lang;
+				if (! empty($newlang)) 
+				{
+					$outputlangs = new Translate("", $conf);
+					$outputlangs->setDefaultLang($newlang);
+				}
+				$model=$object->model_pdf;
+				$ret = $object->fetch($id); // Reload to get new records
+				$object->generateDocument($model, $outputlangs, $hidedetails, $hidedesc, $hideref);
+			}
+
+		} 
+		else 
+		{
+			$langs->load("errors");
+			if (count($object->errors) > 0) setEventMessages($object->error, $object->errors, 'errors');
+			else setEventMessages($langs->trans($object->error), null, 'errors');
+		}
+	}
 
 	/**
 	 * Action generate quitance
@@ -666,6 +699,9 @@ else
 		if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
 		{
 			$res = $object->fetch_optionals();
+			
+			$soc = new Societe($db);
+			$soc->fetch($object->socid);
 
 			$head = immoreceiptPrepareHead($object);
 			dol_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'immoreceipt@ultimateimmo');
@@ -689,18 +725,22 @@ else
 			if ($action == 'validate')
 			{
 				// We verifie whether the object is provisionally numbering
-				$ref = substr($object->ref, 1, 4);
+				$ref = substr($object->ref, 1, 4);		
 				if ($ref == 'PROV') {
-					$numref = $object->getNextNumRef($soc);
-					if (empty($numref)) {
+					$numref = $object->getNextNumRef($soc);					
+					if (empty($numref)) 
+					{
 						$error ++;
 						setEventMessages($object->error, $object->errors, 'errors');
 					}
-				} else {
+				} 
+				else 
+				{
 					$numref = $object->ref;
 				}
 
 				$text = $langs->trans('ConfirmValidateReceipt', $numref);
+				
 				if (! empty($conf->notification->enabled))
 				{
 					require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';

@@ -106,7 +106,8 @@ class ImmoReceipt extends CommonObject
 		'date_start' => array('type'=>'date', 'label'=>'DateStart', 'enabled'=>1, 'visible'=>-1, 'position'=>57, 'notnull'=>-1,),
 		'date_end' => array('type'=>'date', 'label'=>'DateEnd', 'enabled'=>1, 'visible'=>-1, 'position'=>58, 'notnull'=>-1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>59, 'notnull'=>-1,),
-		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>60, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text",),
+		'date_valid' => array('type'=>'datetime', 'label'=>'DateValidation', 'enabled'=>1, 'visible'=>-2, 'position'=>60, 'notnull'=>-1,),
+		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>62, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text",),
 		'rentamount' => array('type'=>'price', 'label'=>'RentAmount', 'enabled'=>1, 'visible'=>1, 'position'=>65, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'chargesamount' => array('type'=>'price', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'total_amount' => array('type'=>'price', 'label'=>'TotalAmount', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
@@ -118,6 +119,7 @@ class ImmoReceipt extends CommonObject
 		'fk_statut' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>-2, 'position'=>509, 'notnull'=>-1,),
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1, 'foreignkey'=>'llx_user.rowid',),
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'enabled'=>1, 'visible'=>-2, 'position'=>511, 'notnull'=>-1,),
+		'fk_user_valid' => array('type'=>'integer', 'label'=>'UserValid', 'enabled'=>1, 'visible'=>-2, 'position'=>512, 'notnull'=>-1,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1,),
 		'model_pdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1, 'index'=>1, 'searchall'=>1,),
 		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>-1, 'default'=>'0','index'=>1, 'arrayofkeyval'=>array('0'=>'ImmoUnpaid', '1'=>'ImmoPaid')),
@@ -135,6 +137,7 @@ class ImmoReceipt extends CommonObject
 	public $date_start;
 	public $date_end;
 	public $date_creation;
+	public $date_valid;
 	public $label;
 	public $rentamount;
 	public $chargesamount;
@@ -147,6 +150,7 @@ class ImmoReceipt extends CommonObject
 	public $fk_statut;
 	public $fk_user_creat;
 	public $fk_user_modif;
+	public $fk_user_valid;
 	public $import_key;
 	public $model_pdf;
 	public $status;
@@ -688,13 +692,14 @@ class ImmoReceipt extends CommonObject
 	{
 		global $langs, $conf;
 		$langs->load("ultimateimmo@ultimateimmo");
-
-		if (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER))
+		
+		$classname = $conf->global->ULTIMATEIMMO_ADDON_NUMBER;
+		
+		if (! empty($classname))
 		{
 			$mybool=false;
 
-			$file = $conf->global->ULTIMATEIMMO_ADDON_NUMBER.".php";
-			$classname = $conf->global->ULTIMATEIMMO_ADDON_NUMBER;
+			$file = $classname.".php";
 
 			// Include file with class
 			$dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
@@ -728,6 +733,7 @@ class ImmoReceipt extends CommonObject
 		}
 		else
 		{
+			$langs->load("errors");
 			print $langs->trans("Error")." ".$langs->trans("Error_ULTIMATEIMMO_ADDON_NUMBER_NotDefined");
 			return "";
 		}
@@ -815,12 +821,12 @@ class ImmoReceipt extends CommonObject
 				// to not lose the linked files
 				$oldref = dol_sanitizeFileName($this->ref);
 				$newref = dol_sanitizeFileName($num);
-				$dirsource = $conf->ultimateimmo->multidir_output[$this->entity].'/'.$oldref;
-				$dirdest = $conf->ultimateimmo->multidir_output[$this->entity].'/'.$newref;
+				$dirsource = $conf->ultimateimmo->dir_output.'/'.$oldref;
+				$dirdest = $conf->ultimateimmo->dir_output.'/'.$newref;
 
 				if (file_exists($dirsource))
 				{
-					dol_syslog(get_class($this)."::validate rename dir ".$dirsource." into ".$dirdest);
+					dol_syslog(get_class($this)."::valid rename dir ".$dirsource." into ".$dirdest);
 					if (@rename($dirsource, $dirdest))
 					{
 						dol_syslog("Rename ok");
@@ -850,6 +856,7 @@ class ImmoReceipt extends CommonObject
 		else
 		{
 			$this->db->rollback();
+			dol_syslog(get_class($this)."::valid ".$this->error,LOG_ERR);
 			return -1;
 		}
 	}

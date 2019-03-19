@@ -105,7 +105,7 @@ class InterfaceUltimateimmoTriggers extends DolibarrTriggers
         if ($action == 'ULTIMATEIMMO_VALIDATE') 
 		{          
 			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
-			break;
+			
 		}
 
 		return 0;

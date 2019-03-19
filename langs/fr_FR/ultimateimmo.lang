@@ -147,6 +147,7 @@ ConfirmDeleteImmoPayment = Etes vous sûr de vouloir supprimer ce règlement ?
 OwnerName = Nom du propriétaire
 RenterName = Nom du locataire
 SendImmoReceiptRef = Envoi de la quittance %s
+ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
 
 
 

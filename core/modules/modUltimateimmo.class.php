@@ -1051,7 +1051,7 @@ class modUltimateimmo extends DolibarrModules
 		//$result5=$extrafields->addExtraField('myattr5', "New Attr 5 label", 'text',    1, 10, 'user',         0, 0, '', '', 1, '', 0, 0, '', '', 'ultimateimmo@ultimateimmo', '$conf->ultimateimmo->enabled');
 
 		$sql = array(
-				"INSERT INTO ".MAIN_DB_PREFIX."c_ultimateimmo_immoreceipt_status (id, code, label, active) VALUES
+				"INSERT IGNORE INTO ".MAIN_DB_PREFIX."c_ultimateimmo_immoreceipt_status (rowid, code, label, active) VALUES
 					(0, 'STATUS_DRAFT', '".$langs->trans("Draft")."', 1),
 					(1, 'STATUS_VALIDATED', '".$langs->trans("Validate")."', 1);"
 		);
