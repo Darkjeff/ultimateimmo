@@ -66,6 +66,16 @@ class ImmoReceipt extends CommonObject
 	 * Validated status
 	 */
 	const STATUS_VALIDATED = 1;
+	
+	/**
+	 * Unpaid status
+	 */
+	const STATUS_UNPAID = 2;
+	
+	/**
+	 * Paid status
+	 */
+	const STATUS_PAID = 3;
 
 
 
@@ -790,7 +800,7 @@ class ImmoReceipt extends CommonObject
 		$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immoreceipt";
 		$sql.= " SET ref = '".$num."',";
 		$sql.= " fk_statut = ".self::STATUS_VALIDATED.", date_valid='".$this->db->idate($now)."', fk_user_valid=".$user->id;
-		$sql.= " WHERE rowid = ".$this->id." AND fk_statut = ".self::STATUS_DRAFT;
+		$sql.= " WHERE rowid = ".$this->id;
 
 		dol_syslog(get_class($this)."::valid", LOG_DEBUG);
 		$resql=$this->db->query($sql);

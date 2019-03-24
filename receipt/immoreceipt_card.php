@@ -88,6 +88,7 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be inclu
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
 if ($user->societe_id > 0) $socid = $user->societe_id;
+
 //$isdraft = (($object->statut == ImmoReceipt::STATUS_DRAFT) ? 1 : 0);
 //$result = restrictedArea($user, 'ultimateimmo', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
 
@@ -269,7 +270,7 @@ if (empty($reshook))
 			foreach ( $mesLignesCochees as $maLigneCochee ) 
 			{				
 				$receipt = new ImmoReceipt($db);
-				
+				//var_dump($receipt);exit;
 				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
 				
 				$monId = $maLigneCourante[0];
@@ -280,6 +281,7 @@ if (empty($reshook))
 				$mesCharges = $maLigneCourante[5];
 				$maTVA = $maLigneCourante[6];
 				$monProprio = $maLigneCourante[7];
+				$socProprio = $maLigneCourante[8];
 				
 				// main info loyer
 				$receipt->label = GETPOST('label', 'alpha');
@@ -308,6 +310,7 @@ if (empty($reshook))
 				$receipt->rentamount = $monLoyer;
 				$receipt->chargesamount = $mesCharges;
 				$receipt->fk_owner = $monProprio;
+				$receipt->fk_soc = $socProprio;
 				$receipt->status=0;
 				//$receipt->paye=0;
 				//var_dump($receipt);exit;
@@ -551,7 +554,7 @@ elseif ($action == 'createall')
 		/*
 		 * List agreement
 		 */
-		$sql = "SELECT c.rowid as contract, loc.lastname as rentername, o.lastname as ownername, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.vat, l.fk_owner, o.rowid, loc.fk_owner";
+		$sql = "SELECT c.rowid as contract, loc.lastname as rentername, o.lastname as ownername, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.vat, l.fk_owner, o.rowid, o.fk_soc, loc.fk_owner";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter loc";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c on loc.rowid = c.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l on loc.rowid = l.rowid";
@@ -587,8 +590,12 @@ elseif ($action == 'createall')
 			{
 				$objp = $db->fetch_object($resql);
 				print '<tr class="oddeven">';
-				$immoowner=new ImmoOwner($db);
-				$result=$immoowner->fetch($objp->fk_owner);
+
+				if ($objp->fk_soc)
+				{
+					$company=new Societe($db);
+					$result=$company->fetch($objp->fk_soc);
+				}
 
 				print '<td>' . $objp->contract . '</td>';
 				print '<td>' . $objp->reflocal . '</td>';
@@ -596,17 +603,17 @@ elseif ($action == 'createall')
 				print '<td>' . $objp->reflocataire . '</td>';
 				print '<td>' . $objp->rentername . '</td>';
 				print '<td>' . $objp->fk_owner . '</td>';
-				print '<td>' . $immoowner->getNomUrl(1) . '</td>';
-
+				print '<td>' . $objp->fk_soc . '</td>';
+//var_dump($objp->fk_soc);exit;
 				print '<td class="right">' . price($objp->rentamount) . '</td>';
 				print '<td class="right">' . price($objp->chargesamount) . '</td>';
 				print '<td class="right">' . price($objp->total) . '</td>';
 				print '<td class="right">' . yn($objp->vat) . '</td>';
-				
+			
 				// Colonne choix contrat
 				print '<td class="center">';
 
-				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contract . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner .  '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
+				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contract . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner .  '_' . $objp->fk_soc . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
 				print '</td>';
 				print '</tr>';
 
