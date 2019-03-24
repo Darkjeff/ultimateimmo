@@ -217,11 +217,19 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
 			global $action;
 			$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+			
+			// Set nblignes with the new facture lines content after hook
+			$nblignes = count($object->lines);
+			//$nbpayments = count($object->getListOfPayments()); TODO : add method
 
 			// Create pdf instance
 			$pdf=pdf_getInstance($this->format);
 			$default_font_size = pdf_getPDFFontSize($outputlangs);	// Must be after pdf_getInstance
+			$pdf->SetAutoPageBreak(1, 0);
+
+			$heightforinfotot = 50+(4*$nbpayments);	// Height reserved to output the info and total part and payment part
 			$heightforfreetext= (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT)?$conf->global->MAIN_PDF_FREETEXT_HEIGHT:5);	// Height reserved to output the free text on last page
+			$heightforfooter = $this->marge_basse + (empty($conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS)?12:22);	// Height reserved to output the footer (value include bottom margin)
 
 			if (class_exists('TCPDF'))
 			{
@@ -229,8 +237,9 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->setPrintFooter(false);
 			}
 			$pdf->SetFont(pdf_getPDFFont($outputlangs));
+			
 			// Set path to the background PDF File
-			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND))
+			if (! empty($conf->global->MAIN_ADD_PDF_BACKGROUND))
 			{
 				$pagecount = $pdf->setSourceFile($conf->mycompany->dir_output.'/'.$conf->global->MAIN_ADD_PDF_BACKGROUND);
 				$tplidx = $pdf->importPage(1);
@@ -244,11 +253,9 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (ultimateimmo module)');
 			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->firstname)." ".$outputlangs->convToOutputCharset($user->lastname));
 			$pdf->SetKeyWords($outputlangs->convToOutputCharset($object->label) . " " . $outputlangs->transnoentities("Document"));
-			if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION)
-				$pdf->SetCompression(false);
+			if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) $pdf->SetCompression(false);
 
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
-			$pdf->SetAutoPageBreak(1, 0);
 
 			// On recupere les infos societe
 			$renter = new ImmoRenter($this->db);
@@ -272,70 +279,20 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$pdf->MultiCell(0, 3, '', 0, 'J');
 				$pdf->SetTextColor(0, 0, 0);
-
-				$posY = $this->marge_haute;
-				$posX = $this->marge_gauche;
-
-				// Bloc Owner
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 15);
-				$pdf->SetXY($posX, $posY + 3);
-				$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset('Bailleur'), 1, 'C');
-
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$this->str = $owner->getFullName($outputlangs) . "\n";
-				$this->str .= $owner->address . "\n";
-				$this->str .= $owner->zip . ' ' . $owner->town;
-				if ($owner->country_id)
-				{
-					$tmparray=$owner->getCountry($owner->country_id,'all');
-					$owner->country_code=$tmparray['code'];
-					$owner->country=$tmparray['label'];
-				}
-				$this->str .= ' - '.$owner->country."\n\n";
-				if ($owner->phone) {
-					$this->str .= $outputlangs->transnoentities('Téléphone') . ' ' . $owner->phone . "\n";
-				}
-				if ($owner->fax) {
-					$this->str .= $outputlangs->transnoentities('Fax') . ' ' . $owner->fax . "\n";
-				}
-				if ($owner->email) {
-					$this->str .= $outputlangs->transnoentities('EMail') . ' ' . $owner->email . "\n";
-				}
-				if ($owner->url) {
-					$this->str .= $outputlangs->transnoentities('Url') . ' ' . $owner->url . "\n";
-				}
-
-				$pdf->MultiCell(80, 20, $outputlangs->convToOutputCharset($this->str), 1, 'L');
-
-				// Bloc Locataire
-				$posX = $this->page_largeur - $this->marge_droite - 80;
-				$posY = $pdf->getY() - 20;
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 15);
-				$pdf->SetXY($posX, $posY);
-				$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset('Locataire Destinataire'), 1, 'C');
-
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$this->str = $renter->civilite . ' ' .$renter->lastname. ' '.$renter->firstname. "\n";
-				$this->str .= $property->label . "\n";
-				$this->str .= $property->address . "\n";
-				$this->str .= $property->zip . ' ' . $property->town;
-				$pdf->MultiCell(80, 20, $outputlangs->convToOutputCharset($this->str), 1, 'L');
-
-				$text .= "\n";
-				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";
-
-				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
-
-				// Bloc Quittance de loyer
-				$posX = $this->marge_gauche;
-				$posY = $pdf->getY() + 10;
+				
+				$hautcadre=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 38 : 40;
 				$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
+				$posY = $this->marge_haute + $hautcadre +50;
+				$posX = $this->marge_gauche;			
 
+				
+				$text .= "\n";
+				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
+				$pdf->SetXY($posX, $posY-12);
+				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
+				
+				// Bloc Quittance de loyer
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetXY($posX, $posY);
 				if ($object->paye != 1 ) {
@@ -661,18 +618,430 @@ class pdf_quittance extends ModelePDFUltimateimmo
 	}
 
 	/**
-	 * \brief Show header of page
-	 * \param pdf Object PDF
-	 * \param object Object invoice
-	 * \param showaddress 0=no, 1=yes
-	 * \param outputlangs Object lang for output
+	 *  Show top header of page.
+	 *
+	 *  @param	PDF			$pdf     		Object PDF
+	 *  @param  Object		$object     	Object to show
+	 *  @param  int	    	$showaddress    0=no, 1=yes
+	 *  @param  Translate	$outputlangs	Object lang for output
+	 *  @return	void
 	 */
-	function _pagehead(&$pdf, $object, $showaddress = 1, $outputlangs)
+	private function _pagehead(&$pdf, $object, $showaddress, $outputlangs)
 	{
 		global $conf, $langs;
 
-		$outputlangs->load("main");
+		// Translations
+		$outputlangs->loadLangs(array("main", "bills", "propal", "companies"));
 
-		pdf_pagehead($pdf, $outputlangs, $pdf->page_hauteur);
+		$default_font_size = pdf_getPDFFontSize($outputlangs);
+
+		pdf_pagehead($pdf, $outputlangs, $this->page_hauteur);
+
+		// Show Draft Watermark
+		if($object->statut==ImmoReceipt::STATUS_DRAFT && (! empty($conf->global->FACTURE_DRAFT_WATERMARK)) )
+        {
+		      pdf_watermark($pdf, $outputlangs, $this->page_hauteur, $this->page_largeur, 'mm', $conf->global->FACTURE_DRAFT_WATERMARK);
+        }
+
+		$pdf->SetTextColor(0, 0, 60);
+		$pdf->SetFont('', 'B', $default_font_size + 3);
+
+		$w = 110;
+
+		$posy=$this->marge_haute;
+        $posx=$this->page_largeur-$this->marge_droite-$w;
+
+		$pdf->SetXY($this->marge_gauche, $posy);
+
+		// Logo
+		if (empty($conf->global->PDF_DISABLE_MYCOMPANY_LOGO))
+		{
+			$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
+			if ($this->emetteur->logo)
+			{
+				if (is_readable($logo))
+				{
+				    $height=pdf_getHeightForLogo($logo);
+					$pdf->Image($logo, $this->marge_gauche, $posy, 0, $height);	// width=0 (auto)
+				}
+				else
+				{
+					$pdf->SetTextColor(200, 0, 0);
+					$pdf->SetFont('', 'B', $default_font_size - 2);
+					$pdf->MultiCell($w, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
+					$pdf->MultiCell($w, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
+				}
+			}
+			else
+			{
+				$text=$this->emetteur->name;
+				$pdf->MultiCell($w, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
+			}
+		}
+
+		$pdf->SetFont('', 'B', $default_font_size + 3);
+		$pdf->SetXY($posx, $posy);
+		$pdf->SetTextColor(0, 0, 60);
+		$title=$outputlangs->transnoentities("Quittance");
+		$pdf->MultiCell($w, 3, $title, '', 'R');
+
+		$pdf->SetFont('', 'B', $default_font_size);
+
+		$posy+=5;
+		$pdf->SetXY($posx, $posy);
+		$pdf->SetTextColor(0, 0, 60);
+		$textref=$outputlangs->transnoentities("Ref")." : " . $outputlangs->convToOutputCharset($object->ref);
+		if ($object->statut == ImmoReceipt::STATUS_DRAFT)
+		{
+			$pdf->SetTextColor(128, 0, 0);
+			$textref.=' - '.$outputlangs->transnoentities("NotValidated");
+		}
+		$pdf->MultiCell($w, 4, $textref, '', 'R');
+
+		$posy+=1;
+		$pdf->SetFont('', '', $default_font_size - 2);
+
+		if ($object->ref_client)
+		{
+			$posy+=4;
+			$pdf->SetXY($posx, $posy);
+			$pdf->SetTextColor(0, 0, 60);
+			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("RefCustomer")." : " . $outputlangs->convToOutputCharset($object->ref_client), '', 'R');
+		}
+
+		if ($object->type != 2)
+		{
+			$posy+=3;
+			$pdf->SetXY($posx, $posy);
+			$pdf->SetTextColor(0, 0, 60);
+			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("DateDue")." : " . dol_print_date($object->date_lim_reglement, "day", false, $outputlangs, true), '', 'R');
+		}
+
+		if ($object->thirdparty->code_client)
+		{
+			$posy+=3;
+			$pdf->SetXY($posx, $posy);
+			$pdf->SetTextColor(0, 0, 60);
+			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("CustomerCode")." : " . $outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
+		}
+
+		$posy+=1;
+
+		$top_shift = 0;
+		// Show list of linked objects
+		$current_y = $pdf->getY();
+		$posy = pdf_writeLinkedObjects($pdf, $object, $outputlangs, $posx, $posy, $w, 3, 'R', $default_font_size);
+		if ($current_y < $pdf->getY())
+		{
+			$top_shift = $pdf->getY() - $current_y;
+		}
+
+		if ($showaddress)
+		{
+			// Sender properties
+			$owner = new ImmoOwner($this->db);
+			$result = $owner->fetch($object->fk_owner);
+			if ($owner->country_id)
+			{
+				$tmparray=$owner->getCountry($owner->country_id,'all');
+				$owner->country_code=$tmparray['code'];
+				$owner->country=$tmparray['label'];
+			}
+			$carac_emetteur = pdf_build_address($outputlangs, $owner, $object->thirdparty, '', 0, 'source', $object);
+
+			// Show sender
+			$posy=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 42;
+			$posy+=$top_shift;
+			$posx=$this->marge_gauche;
+			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT)) $posx=$this->page_largeur-$this->marge_droite-80;
+
+			$hautcadre=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 38 : 40;
+			$widthrecbox=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 92 : 82;
+
+
+			// Show sender frame
+			$pdf->SetTextColor(0, 0, 0);
+			$pdf->SetFont('', '', $default_font_size + 5);
+			$pdf->SetXY($posx, $posy-5);
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Bailleur'), 1, 'C');
+			$posy=$pdf->getY();
+			$pdf->SetXY($posx, $posy);
+			$pdf->SetFillColor(230, 230, 230);
+			$pdf->MultiCell($widthrecbox, $hautcadre, "", 1, 'R', 1);
+			$pdf->SetTextColor(0, 0, 60);
+
+			// Show sender name
+			$pdf->SetXY($posx+2, $posy+3);
+			$pdf->SetFont('', 'B', $default_font_size);
+			$pdf->MultiCell($widthrecbox-2, 4, $outputlangs->convToOutputCharset($owner->getFullName($outputlangs)), 0, 'L');
+			$posy=$pdf->getY();
+
+			// Show sender information
+			$pdf->SetXY($posx+2, $posy);
+			$pdf->SetFont('', '', $default_font_size - 1);
+			$pdf->MultiCell($widthrecbox-2, 4, $carac_emetteur, 0, 'L');
+			$posy=$pdf->getY();
+			
+
+			//Recipient name
+			$renter = new ImmoRenter($this->db);
+			$result = $renter->fetch($object->fk_renter);
+			$carac_client_name= $outputlangs->convToOutputCharset($renter->getFullName($outputlangs));
+			
+			$property = new ImmoProperty($this->db);
+			$result = $property->fetch($object->fk_property);
+			$carac_client .= $property->label . "\n";
+			$carac_client .= $property->address . "\n";
+			$carac_client .= $property->zip . ' ' . $property->town;
+
+			// Show recipient
+			$widthrecbox=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 92 : 100;
+			if ($this->page_largeur < 210) $widthrecbox=84;	// To work with US executive format
+			$posy=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 42;
+			$posy+=$top_shift;
+			$posx=$this->page_largeur-$this->marge_droite-$widthrecbox;
+			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT)) $posx=$this->marge_gauche;
+
+			// Bloc Locataire
+			$pdf->SetTextColor(0, 0, 0);
+			$pdf->SetFont('', '', $default_font_size + 5);
+			$pdf->SetXY($posx, $posy-5);
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Locataire Destinataire'), 1, 'C');
+			$posy=$pdf->getY();
+			$pdf->Rect($posx, $posy, $widthrecbox, $hautcadre);
+
+			// Show recipient name
+			$pdf->SetXY($posx+2, $posy+3);
+			$pdf->SetFont('', 'B', $default_font_size);
+			$pdf->MultiCell($widthrecbox, 2, $carac_client_name, 0, 'L');
+
+			$posy = $pdf->getY();
+
+			// Show recipient information
+			$pdf->SetFont('', '', $default_font_size - 1);
+			$pdf->SetXY($posx+2, $posy);
+			$pdf->MultiCell($widthrecbox, 4, $carac_client, 0, 'L');
+			
+			
+		}
+
+		$pdf->SetTextColor(0, 0, 0);
+		return $top_shift;
+	}
+
+	/**
+	 *   	Show footer of page. Need this->emetteur object
+     *
+	 *   	@param	PDF			$pdf     			PDF
+	 * 		@param	Object		$object				Object to show
+	 *      @param	Translate	$outputlangs		Object lang for output
+	 *      @param	int			$hidefreetext		1=Hide free text
+	 *      @return	int								Return height of bottom margin including footer text
+	 */
+	private function _pagefoot(&$pdf, $object, $outputlangs, $hidefreetext = 0)
+	{
+		global $conf;
+		$showdetails=$conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS;
+		return pdf_pagefoot($pdf, $outputlangs, 'INVOICE_FREE_TEXT', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, $showdetails, $hidefreetext);
+	}
+
+	/**
+	 *  Define Array Column Field
+	 *
+	 *  @param	object			$object    		common object
+	 *  @param	outputlangs		$outputlangs    langs
+     *  @param	int			   $hidedetails		Do not show line details
+     *  @param	int			   $hidedesc		Do not show desc
+     *  @param	int			   $hideref			Do not show ref
+     *  @return	null
+     */
+    public function defineColumnField($object, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
+    {
+	    global $conf, $hookmanager;
+
+	    // Default field style for content
+	    $this->defaultContentsFieldsStyle = array(
+	        'align' => 'R', // R,C,L
+	        'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+	    );
+
+	    // Default field style for content
+	    $this->defaultTitlesFieldsStyle = array(
+	        'align' => 'C', // R,C,L
+	        'padding' => array(0.5,0,0.5,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+	    );
+
+	    /*
+	     * For exemple
+	    $this->cols['theColKey'] = array(
+	        'rank' => $rank, // int : use for ordering columns
+	        'width' => 20, // the column width in mm
+	        'title' => array(
+	            'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+	            'label' => ' ', // the final label : used fore final generated text
+	            'align' => 'L', // text alignement :  R,C,L
+	            'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+	        ),
+	        'content' => array(
+	            'align' => 'L', // text alignement :  R,C,L
+	            'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+	        ),
+	    );
+	    */
+
+	    $rank=0; // do not use negative rank
+	    $this->cols['desc'] = array(
+	        'rank' => $rank,
+	        'width' => false, // only for desc
+	        'status' => true,
+	        'title' => array(
+	            'textkey' => 'Designation', // use lang key is usefull in somme case with module
+	            'align' => 'L',
+	            // 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+	            // 'label' => ' ', // the final label
+	            'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+	        ),
+	        'content' => array(
+	            'align' => 'L',
+	        ),
+	    );
+
+	    // PHOTO
+        $rank = $rank + 10;
+        $this->cols['photo'] = array(
+            'rank' => $rank,
+            'width' => (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH)?20:$conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH), // in mm
+            'status' => false,
+            'title' => array(
+                'textkey' => 'Photo',
+                'label' => ' '
+            ),
+            'content' => array(
+                'padding' => array(0,0,0,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+            ),
+            'border-left' => false, // remove left line separator
+        );
+
+	    if (! empty($conf->global->MAIN_GENERATE_INVOICES_WITH_PICTURE) && !empty($this->atleastonephoto))
+	    {
+	        $this->cols['photo']['status'] = true;
+	    }
+
+
+	    $rank = $rank + 10;
+	    $this->cols['vat'] = array(
+	        'rank' => $rank,
+	        'status' => false,
+	        'width' => 16, // in mm
+	        'title' => array(
+	            'textkey' => 'VAT'
+	        ),
+	        'border-left' => true, // add left line separator
+	    );
+
+	    if (empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT) && empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT_COLUMN))
+	    {
+	        $this->cols['vat']['status'] = true;
+	    }
+
+	    $rank = $rank + 10;
+	    $this->cols['subprice'] = array(
+	        'rank' => $rank,
+	        'width' => 19, // in mm
+	        'status' => true,
+	        'title' => array(
+	            'textkey' => 'PriceUHT'
+	        ),
+	        'border-left' => true, // add left line separator
+	    );
+
+	    $rank = $rank + 10;
+	    $this->cols['qty'] = array(
+	        'rank' => $rank,
+	        'width' => 16, // in mm
+	        'status' => true,
+	        'title' => array(
+	            'textkey' => 'Qty'
+	        ),
+	        'border-left' => true, // add left line separator
+	    );
+
+	    $rank = $rank + 10;
+	    $this->cols['progress'] = array(
+	        'rank' => $rank,
+	        'width' => 19, // in mm
+	        'status' => false,
+	        'title' => array(
+	            'textkey' => 'Progress'
+	        ),
+	        'border-left' => true, // add left line separator
+	    );
+
+	    if($this->situationinvoice)
+	    {
+	        $this->cols['progress']['status'] = true;
+	    }
+
+	    $rank = $rank + 10;
+	    $this->cols['unit'] = array(
+	        'rank' => $rank,
+	        'width' => 11, // in mm
+	        'status' => false,
+	        'title' => array(
+	            'textkey' => 'Unit'
+	        ),
+	        'border-left' => true, // add left line separator
+	    );
+	    if($conf->global->PRODUCT_USE_UNITS){
+	        $this->cols['unit']['status'] = true;
+	    }
+
+	    $rank = $rank + 10;
+	    $this->cols['discount'] = array(
+	        'rank' => $rank,
+	        'width' => 13, // in mm
+	        'status' => false,
+	        'title' => array(
+	            'textkey' => 'ReductionShort'
+	        ),
+	        'border-left' => true, // add left line separator
+	    );
+	    if ($this->atleastonediscount){
+	        $this->cols['discount']['status'] = true;
+	    }
+
+	    $rank = $rank + 10;
+	    $this->cols['totalexcltax'] = array(
+	        'rank' => $rank,
+	        'width' => 26, // in mm
+	        'status' => true,
+	        'title' => array(
+	            'textkey' => 'TotalHT'
+	        ),
+	        'border-left' => true, // add left line separator
+	    );
+
+
+	    $parameters=array(
+	        'object' => $object,
+	        'outputlangs' => $outputlangs,
+	        'hidedetails' => $hidedetails,
+	        'hidedesc' => $hidedesc,
+	        'hideref' => $hideref
+	    );
+
+	    $reshook=$hookmanager->executeHooks('defineColumnField', $parameters, $this);    // Note that $object may have been modified by hook
+	    if ($reshook < 0)
+	    {
+	        setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+	    }
+	    elseif (empty($reshook))
+	    {
+	        $this->cols = array_replace($this->cols, $hookmanager->resArray); // array_replace is used to preserve keys
+	    }
+	    else
+	    {
+	        $this->cols = $hookmanager->resArray;
+	    }
 	}
 }
