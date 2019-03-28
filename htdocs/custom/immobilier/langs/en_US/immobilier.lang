@@ -39,7 +39,7 @@ IMMOBILIER_MYPARAM2Tooltip=My param 2 tooltip
 #
 # Menu
 #
-MenuImmoProperty = Real estate
+MenuImmoProperty = Properties
 MenuNewImmoProperty = New property
 MenuListImmoProperty = List
 MenuImmoPropertyType = Type of property
@@ -89,7 +89,7 @@ Property = Property
 Properties = Properties
 ImmoProperties = Properties
 ImmoRent = Rent contract
-ImmoRents = Rents
+ImmoRents = Owners
 NewImmoRent = New Rent contract
 ImmoReceipts = Receipts
 NewImmoPropertyType = New Property Type
@@ -109,7 +109,7 @@ DateBuilt = Construction date
 Target = Target
 ImmoOwner = Owner
 ImmoOwners = Owners
-ImmoOwnerType = Owner Type 
+ImmoOwnerType = Owner Type
 ImmoOwnerTypes = Owner Types
 Civility = Civility
 Deposit = Deposit

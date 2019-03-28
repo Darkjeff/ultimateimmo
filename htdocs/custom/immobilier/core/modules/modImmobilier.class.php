@@ -485,7 +485,7 @@ class modImmobilier extends DolibarrModules
 
 		$this->menu[$r++]=array('fk_menu'=>'',							// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'top',							// This is a Top menu entry
-								'titre'=>'Properties',
+								'titre'=>'MenuImmoProperty',
 								'mainmenu'=>'properties',
 								'leftmenu'=>'',
 								'url'=>'/immobilier/property/immoproperty_list.php',
@@ -590,7 +590,7 @@ class modImmobilier extends DolibarrModules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
 
-		$this->menu[$r++]=array(
+/*		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immorents',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'MenuImmoRent',
@@ -628,7 +628,7 @@ class modImmobilier extends DolibarrModules
 								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
-								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
+								'user'=>2);		*/						// 0=Menu for internal users, 1=external users, 2=both
 
 		$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immorents',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
@@ -710,7 +710,7 @@ class modImmobilier extends DolibarrModules
 								'target'=>'',
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both 
 
-		$this->menu[$r++]=array(
+		/*$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=immorents',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'MenuImmoRenter',
@@ -748,7 +748,7 @@ class modImmobilier extends DolibarrModules
 								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
-								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
+								'user'=>2);	*/							// 0=Menu for internal users, 1=external users, 2=both
 
 
 		/* END MODULEBUILDER TOPMENU */
@@ -780,7 +780,7 @@ class modImmobilier extends DolibarrModules
 								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
 		*/
 
-		$this->menu[$r++]=array(
+		/*$this->menu[$r++]=array(
 								'fk_menu'=>'',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'top',							// This is a Left menu entry
 								'titre'=>'ImmoReceipts',
@@ -1015,7 +1015,9 @@ class modImmobilier extends DolibarrModules
 								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->immobilier->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
-								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
+								'user'=>2);							// 0=Menu for internal users, 1=external users, 2=both
+
+		*/
 		/* END MODULEBUILDER LEFTMENU MYOBJECT */
 
 
