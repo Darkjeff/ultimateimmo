@@ -582,7 +582,7 @@ class modImmobilier extends DolibarrModules
 								'titre'=>'ImmoRents',
 								'mainmenu'=>'immorents',
 								'leftmenu'=>'',
-								'url'=>'/immobilier/rent/immorent_list.php',
+								'url'=>'/immobilier/owner/immoowner_list.php',
 								'langs'=>'immobilier@immobilier',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1200+$r,
 								'enabled'=>'$conf->immobilier->enabled',  // Define condition to show or hide menu entry. Use '$conf->immobilier->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
