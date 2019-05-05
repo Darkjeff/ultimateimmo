@@ -164,6 +164,7 @@ if (empty($reshook))
 	$objectclass='ImmoReceipt';
 	$objectlabel='ImmoReceipt';
 	$permtoread = $user->rights->ultimateimmo->read;
+	$permtocreate = $user->rights->ultimateimmo->write;
 	$permtodelete = $user->rights->ultimateimmo->delete;
 	$uploaddir = $conf->ultimateimmo->dir_output . '/receipt/';
 	include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
@@ -311,7 +312,7 @@ include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_param.tpl.php';
 
 // List of mass actions available
 $arrayofmassactions =  array(
-	'validate'=>$langs->trans("Validate"),
+	'valid'=>$langs->trans("Validate"),
 	'presend'=>$langs->trans("SendByMail"),
 	'builddoc'=>$langs->trans("PDFMerge"),
 );
@@ -330,7 +331,7 @@ print '<input type="hidden" name="page" value="'.$page.'">';
 print '<input type="hidden" name="contextpage" value="'.$contextpage.'">';
 
 $newcardbutton='';
-if ($user->rights->ultimateimmo->write)
+if ($permtocreate)
 {
 	$newcardbutton='<a class="butActionNew" href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?action=create&backtopage='.urlencode($_SERVER['PHP_SELF']).'"><span class="valignmiddle">'.$langs->trans('New').'</span>';
 	$newcardbutton.= '<span class="fa fa-plus-circle valignmiddle"></span>';
