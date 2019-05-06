@@ -39,7 +39,7 @@ if (! $res) die("Include of main fails");
 
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
-dol_include_once('/ultimateimmo/class/html.formimmobilier.class.php');
+dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo"));
@@ -65,7 +65,7 @@ if ($result < 0) {
  */
 
 $html = new Form($db);
-$htmlimmo = new FormImmobilier($db);
+$htmlimmo = new FormUltimateimmo($db);
 
 llxheader('', $langs->trans("Property") . ' | ' . $langs->trans("Diagnostic"), '');
 
