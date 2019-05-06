@@ -201,29 +201,29 @@ class modUltimateimmo extends DolibarrModules
 		$this->dictionaries=array(
 			'langs'=>'ultimateimmo@ultimateimmo',
 			'tabname'=>array(
-				MAIN_DB_PREFIX."c_ultimateimmo_diagnostic"
+				MAIN_DB_PREFIX."c_ultimateimmo_diagnostic", MAIN_DB_PREFIX."c_ultimateimmo_immorent_type"
 			),
-			'tablib'=>array("DiagnosticImmo",
+			'tablib'=>array("DiagnosticImmo", "ImmorentType"
 			),
-			'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_diagnostic as f'
+			'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_diagnostic as f', 'SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_immorent_type as f'
 			),
 			'tabsqlsort'=>array(
-				"label ASC"
+				"label ASC", "label ASC"
 			),
 			'tabfield'=>array(
-				"code,label"
+				"code,label", "code,label"
 			),
 			'tabfieldvalue'=>array(
-				"code,label"
+				"code,label", "code,label"
 			),
 			'tabfieldinsert'=>array(
-				"code,label"
+				"code,label", "code,label"
 			),
 			'tabrowid'=>array(
-				"rowid"
+				"rowid", "rowid"
 			),
 			'tabcond'=>array(
-				'$conf->ultimateimmo->enabled'
+				'$conf->ultimateimmo->enabled', '$conf->ultimateimmo->enabled'
 			)
 		);
 		/* Example:
