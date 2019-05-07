@@ -15,9 +15,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-INSERT INTO llx_c_ultimateimmo_immoreceipt_status(rowid,code,label,active) VALUES (0,'STATUS_DRAFT','Brouillon',1);
-
-INSERT INTO llx_c_ultimateimmo_immoreceipt_status(rowid,code,label,active) VALUES (1,'STATUS_VALIDATED','Validée',1);
+INSERT INTO llx_c_ultimateimmo_immoreceipt_status(rowid,code,label,active) VALUES (0, 'STATUS_DRAFT', 'Brouillon', 1),(1, 'STATUS_VALIDATED', 'Validée', 1);
 
 INSERT INTO llx_c_ultimateimmo_immorent_type(rowid,code,label,active) VALUES (1, 'EMPTY_HOUSING', 'Logement vide', 1),(2, 'FURNISHED_APARTMENT', 'Logement meublé', 1);
 
