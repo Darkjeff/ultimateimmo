@@ -968,8 +968,8 @@ class ImmoReceipt extends CommonObject
 
 			$modele = 'quittance';
 
-			if ($this->modelpdf) {
-				$modele = $this->modelpdf;
+			if ($this->model_pdf) {
+				$modele = $this->model_pdf;
 			} elseif (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) {
 				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
 			}
