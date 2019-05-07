@@ -88,7 +88,7 @@ class ImmoRent extends CommonObject
 		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'immobilier_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter",),
 		'fk_bank' => array('type'=>'integer:Account:compta/bank/class/account.class.php', 'label'=>'Account', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'bank_account.id', 'searchall'=>1, 'help'=>"LinkToAccount",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'location_type_id' => array('type'=>'integer', 'label'=>'ImmorentType', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1,),
+		'location_type_id' => array('type'=>'integer', 'label'=>'ImmorentType', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'arrayofkeyval'=>array('1'=>'EmptyHousing', '2'=>'FurnishedApartment')),
 		'vat' => array('type'=>'integer', 'label'=>'VAT', 'visible'=>-1, 'enabled'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>55, 'notnull'=>-1,),
@@ -118,7 +118,7 @@ class ImmoRent extends CommonObject
 	public $fk_renter;
 	public $fk_bank;
 	public $fk_soc;
-	public $location_type_id
+	public $location_type_id;
 	public $nomlocal;
 	public $nomlocataire;
 	public $vat;
@@ -184,6 +184,7 @@ class ImmoRent extends CommonObject
 		
 		// Translate some data
 		$this->fields['vat']['arrayofkeyval']=array(0=>$langs->trans('No'), 1=>$langs->trans('Yes'));
+		$this->fields['location_type_id']['arrayofkeyval']=array(1=>$langs->trans('EmptyHousing'), 2=>$langs->trans('FurnishedApartment'));
 		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
 	}
 
@@ -321,7 +322,7 @@ class ImmoRent extends CommonObject
 		$array = implode(', t.', $array);
 
 		$sql = 'SELECT '.$array.',';
-		$sql.= ' c.rowid as location_type_id, c.code as location_type_code, c.label as location_type';
+		$sql.= ' c.rowid as location_type_id, c.code as location_type_code, c.label as location_type,';
 		$sql.= ' lc.lastname as nomlocataire,';
 		$sql.= ' lc.firstname as firstname_renter,';
 		$sql.= ' ll.label as nomlocal';		
@@ -335,6 +336,7 @@ class ImmoRent extends CommonObject
 		
 		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
+		
 		if ($res)
 		{
     		if ($obj = $this->db->fetch_object($res))
@@ -349,6 +351,7 @@ class ImmoRent extends CommonObject
 					
 					$this->location_type_id	= $obj->location_type_id;
 					$this->location_type_code = $obj->location_type_code;
+					$this->location_type = $obj->location_type;
 
 					$this->setVarsFromFetchObj($obj);
 					
