@@ -131,6 +131,73 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 /*
  * Actions
  */
+ 
+ if ($action == 'validaterent') {
+	
+	$error = 0;
+	
+	$db->begin();
+	
+	$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo ";
+	$sql1 .= " SET lo.partial_payment=";
+	$sql1 .= "(SELECT SUM(p.amount)";
+	$sql1 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
+	$sql1 .= " WHERE lo.rowid = p.fk_receipt";
+	$sql1 .= " GROUP BY p.fk_receipt )";
+	
+	// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
+	$resql1 = $db->query($sql1);
+	if (! $resql1) {
+		$error ++;
+		setEventMessage($db->lasterror(), 'errors');
+	} else {
+		
+		$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
+		$sql1 .= " SET paye=1";
+		$sql1 .= " WHERE total_amount=partial_payment";
+		
+		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
+		$resql1 = $db->query($sql1);
+		if (! $resql1) {
+			$error ++;
+			setEventMessage($db->lasterror(), 'errors');
+		}
+		
+		if (! $error) {
+			$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
+			$sql1 .= " SET balance=total_amount-partial_payment";
+			
+			// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
+			$resql1 = $db->query($sql1);
+			if (! $resql1) {
+				$error ++;
+				setEventMessage($db->lasterror(), 'errors');
+			}
+			
+			if (! $error) {
+				$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immorent as ir";
+				$sql1 .= " SET ir.encours=";
+				$sql1 .= "(SELECT SUM(il.balance)";
+				$sql1 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
+				$sql1 .= " WHERE ir.rowid = il.fk_rent";
+				$sql1 .= " GROUP BY il.fk_rent )";
+				
+				$resql1 = $db->query($sql1);
+			if (! $resql1) {
+				$error ++;
+				setEventMessage($db->lasterror(), 'errors');
+			}
+				
+				$db->commit();
+				
+				setEventMessage('Loyer mis a jour avec succes', 'mesgs');
+			}
+		} else {
+			$db->rollback();
+			setEventMessage($db->lasterror(), 'errors');
+		}
+	}
+}
 
 if (GETPOST('cancel','alpha')) { $action='list'; $massaction=''; }
 if (! GETPOST('confirmmassaction','alpha') && $massaction != 'presend' && $massaction != 'confirm_presend') { $massaction=''; }

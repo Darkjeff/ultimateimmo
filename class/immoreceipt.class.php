@@ -123,6 +123,7 @@ class ImmoReceipt extends CommonObject
 		'total_amount' => array('type'=>'price', 'label'=>'TotalAmount', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'balance' => array('type'=>'price', 'label'=>'Balance', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'partial_payment' => array('type'=>'price', 'label'=>'PartialPayment', 'enabled'=>1, 'visible'=>1, 'position'=>85, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
+		'paye' => array('type'=>'integer', 'label'=>'Paye', 'enabled'=>1, 'visible'=>1, 'position'=>90, 'notnull'=>-1,),
 		'vat_amount' => array('type'=>'price', 'label'=>'VatAmount', 'enabled'=>1, 'visible'=>1, 'position'=>95, 'notnull'=>-1,),
 		'vat_tx' => array('type'=>'integer', 'label'=>'VatTx', 'enabled'=>1, 'visible'=>1, 'position'=>96, 'notnull'=>-1,),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
@@ -155,6 +156,7 @@ class ImmoReceipt extends CommonObject
 	public $total_amount;
 	public $balance;
 	public $partial_payment;
+	public $paye;
 	public $vat_amount;
 	public $vat_tx;
 	public $tms;

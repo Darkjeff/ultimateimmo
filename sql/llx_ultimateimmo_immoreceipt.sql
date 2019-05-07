@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS `llx_ultimateimmo_immoreceipt` (
   `total_amount` double(24,8) DEFAULT NULL,
   `balance` double(24,8) DEFAULT NULL,
   `partial_payment` double(24,8) DEFAULT NULL,
+  `paye` int(11) NULL DEFAULT '0',
   `vat_amount` double(24,8) DEFAULT NULL,
   `vat_tx` int(11) DEFAULT NULL,
   `date_rent` datetime DEFAULT NULL,
