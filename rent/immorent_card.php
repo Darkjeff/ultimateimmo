@@ -323,6 +323,21 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<div class="clearboth"></div><br>';
 
 	dol_fiche_end();
+	
+	if (is_file($conf->ultimateimmo->dir_output . '/receipt/quittance_' . $id . '.pdf'))
+	{
+		print '&nbsp';
+		print '<table class="border" width="100%">';
+		print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("LinkedDocuments") . '</td></tr>';
+		// afficher
+		$legende = $langs->trans("Ouvrir");
+		print '<tr><td width="200" class="center">' . $langs->trans("Quittance") . '</td><td> ';
+		print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=ultimateimmo&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+		print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" class="absmiddle" hspace="2px" ></a>';
+		print '</td></tr></table>';
+	}
+
+	print '</div>';
 
 
 	// Buttons for actions

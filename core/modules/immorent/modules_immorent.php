@@ -18,7 +18,7 @@
  */
 
 /**
- * \file		ultimateimmo/core/modules/modules_ultimateimmo.php
+ * \file		ultimateimmo/core/modules/modules_immorent.php
  * \ingroup		ultimateimmo
  * \brief		File that contain parent class for projects models
  * 				and parent class for projects numbering models
@@ -28,7 +28,7 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
 /**
  *	Parent class for ultimateimmo models
  */
-abstract class ModelePDFUltimateimmo extends CommonDocGenerator 
+abstract class ModelePDFImmorent extends CommonDocGenerator 
 {
 	public $error = '';
 	
@@ -43,7 +43,7 @@ abstract class ModelePDFUltimateimmo extends CommonDocGenerator
 	{
 		global $conf;
 
-		$type='ultimateimmo';
+		$type='immorent';
 		$liste=array();
 
 		include_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
@@ -140,7 +140,7 @@ abstract class ModeleNumRefUltimateimmo
 }
 
 /**
- *  Create an receipt document on disk using template defined into ULTIMATEIMMO_ADDON_PDF
+ *  Create a rent document on disk using template defined into IMMORENT_ADDON_PDF
  *
  *  @param	DoliDB		$db  			objet base de donnees
  *  @param	Object		$object			Object ultimateimmo
@@ -151,7 +151,7 @@ abstract class ModeleNumRefUltimateimmo
  *  @param  int			$hideref        Hide ref
  *  @return int         				0 if KO, 1 if OK
  */
-function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
+function immorent_create($db, $object, $modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
 {
     // phpcs:enable
 	global $conf, $langs, $user;
@@ -164,13 +164,13 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
 	// Positionne modele sur le nom du modele de fichinter a utiliser
 	if (! dol_strlen($modele))
 	{
-		if (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF))
+		if (! empty($conf->global->IMMORENT_ADDON_PDF))
 		{
-			$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
+			$modele = $conf->global->IMMORENT_ADDON_PDF;
 		}
 		else
 		{
-			$modele = 'quittance';
+			$modele = 'bail_vide';
 		}
 	}
 
@@ -193,7 +193,7 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
     	    $file = $prefix."_".$modele.".modules.php";
 
     		// On verifie l'emplacement du modele
-	        $file=dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf/".$file,0);
+	        $file=dol_buildpath($reldir."ultimateimmo/core/modules/immorent/pdf/".$file,0);
     		if (file_exists($file))
     		{
     			$filefound=1;
@@ -227,7 +227,7 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
 		else
 		{
 			$outputlangs->charset_output=$sav_charset_output;
-			dol_print_error($db,"ultimateimmo_pdf_create Error: ".$obj->error);
+			dol_print_error($db,"immorent_pdf_create Error: ".$obj->error);
 			return 0;
 		}
 	}
@@ -245,13 +245,13 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
  * \param		outputlangs		objet lang a utiliser pour traduction
  * \return int <0 if KO, >0 if OK
  */
-function ultimateimmo_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file) 
+function immorent_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file) 
 {
 	global $conf, $langs;
 	$langs->load ( 'ultimateimmo@ultimateimmo' );
 	
 	// Charge le modele
-	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
+	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/immorent/pdf/pdf_' . $typeModele . '.modules.php' );
 	
 	if (file_exists ( $nomModele )) {
 		require_once ($nomModele);
@@ -265,45 +265,6 @@ function ultimateimmo_pdf_create($db, $id, $message, $typeModele, $outputlangs, 
 		// output format that does not support UTF8.
 		$sav_charset_output = $outputlangs->charset_output;
 		if ($obj->write_file ( $id, $outputlangs, $file, $socid, $courrier ) > 0) {
-			$outputlangs->charset_output = $sav_charset_output;
-			return 1;
-		} else {
-			$outputlangs->charset_output = $sav_charset_output;
-			dol_print_error ( $db, "pdf_create Error: " . $obj->error );
-			return - 1;
-		}
-	} else {
-		dol_print_error ( '', $langs->trans ( "Error" ) . " " . $langs->trans ( "ErrorFileDoesNotExists", $file ) );
-		return - 1;
-	}
-}
-
-/**
- * \brief Crée un document PDF
- * \param db objet base de donnees
- * \param modele modele à utiliser
- * \param		outputlangs		objet lang a utiliser pour traduction
- * \return int <0 if KO, >0 if OK
- */
-function chargefourn_pdf_create($db, $year, $typeModele, $outputlangs, $filedir, $filename) {
-	global $conf, $langs;
-	$langs->load ( 'ultimateimmo@ultimateimmo' );
-
-	// Charge le modele
-	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
-
-	if (file_exists ( $nomModele )) {
-		require_once ($nomModele);
-
-		$classname = "pdf_" . $typeModele;
-
-		$obj = new $classname ( $db );
-		$obj->message = $message;
-
-		// We save charset_output to restore it because write_file can change it if needed for
-		// output format that does not support UTF8.
-		$sav_charset_output = $outputlangs->charset_output;
-		if ($obj->write_file ( $year, $outputlangs, $filedir, $filename) > 0) {
 			$outputlangs->charset_output = $sav_charset_output;
 			return 1;
 		} else {
