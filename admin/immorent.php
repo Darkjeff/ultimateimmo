@@ -219,7 +219,7 @@ dol_fiche_head($head, 'emptyhousing', $langs->trans("ModuleUltimateimmoName"), -
 
 
 /**
- * ultimateimmo numbering model
+ * immorent numbering model
  */
 
 print load_fiche_titre($langs->trans("UltimateimmoNumberingModeles"),'','');
@@ -319,13 +319,13 @@ foreach ($dirmodels as $reldir)
 print "</table><br>\n";
 
 /*
- *  Documents models for ultimateimmo
+ *  Documents models for immorent
  */
 
 print load_fiche_titre($langs->trans("TemplatePDFUltimateimmo"), '', '');
 
 // Defini tableau def des modeles
-$type='ultimateimmo';
+$type='immorent';
 $def = array();
 
 $sql = "SELECT nom";

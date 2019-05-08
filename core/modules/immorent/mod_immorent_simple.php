@@ -28,9 +28,9 @@ dol_include_once('/ultimateimmo/core/modules/immorent/modules_immorent.php');
 
 
 /**
- * 	Class to manage the numbering module Simple for ultimateimmo references
+ * 	Class to manage the numbering module Simple for immorent references
  */
-class mod_immorent_simple extends ModeleNumRefUltimateimmo
+class mod_immorent_simple extends ModeleNumRefImmorent
 {
 	/**
      * Dolibarr version of the loaded document

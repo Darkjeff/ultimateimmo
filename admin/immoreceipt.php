@@ -216,7 +216,7 @@ print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
 // Configuration header
 $head = UltimateimmoAdminPrepareHead();
 
-dol_fiche_head($head, 'settings', $langs->trans("ModuleUltimateimmoName"), -1, "building@ultimateimmo");
+dol_fiche_head($head, 'quittance', $langs->trans("ModuleUltimateimmoName"), -1, "building@ultimateimmo");
 
 
 /**

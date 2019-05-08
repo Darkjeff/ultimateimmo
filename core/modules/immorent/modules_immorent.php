@@ -26,7 +26,7 @@
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
 
 /**
- *	Parent class for ultimateimmo models
+ *	Parent class for immorent models
  */
 abstract class ModelePDFImmorent extends CommonDocGenerator 
 {
@@ -54,9 +54,9 @@ abstract class ModelePDFImmorent extends CommonDocGenerator
 }
 
 /**
- *  Classe mere des modeles de numerotation des references de ultimateimmo
+ *  Classe mere des modeles de numerotation des references de immorent
  */
-abstract class ModeleNumRefUltimateimmo
+abstract class ModeleNumRefImmorent
 {
 	/**
 	 * @var string Error code (or message)
