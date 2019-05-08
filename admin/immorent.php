@@ -57,7 +57,7 @@ $backtopage = GETPOST('backtopage', 'alpha');
 $value = GETPOST('value','alpha');
 $label = GETPOST('label','alpha');
 $scandir = GETPOST('scan_dir','alpha');
-$type='ultimateimmo';
+$type='immorent';
 
 if (empty($conf->global->IMMORENT_ADDON_NUMBER))
 {
@@ -140,7 +140,7 @@ else if ($action == 'specimen')
 
 		if ($module->write_file($rent, $langs) > 0)
 		{
-			header("Location: ".DOL_URL_ROOT."/document.php?modulepart=ultimateimmo&file=SPECIMEN.pdf");
+			header("Location: ".DOL_URL_ROOT."/document.php?modulepart=immorent&file=SPECIMEN.pdf");
 			return;
 		}
 		else
