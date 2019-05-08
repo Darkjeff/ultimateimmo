@@ -719,7 +719,7 @@ class ImmoReceipt extends CommonObject
 			$dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
 			foreach ($dirmodels as $reldir)
 			{
-				$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/");
+				$dir = dol_buildpath($reldir."ultimateimmo/core/modules/immoreceipt/");
 
 				// Load file with numbering class (if found)
 				$mybool|=@include_once $dir.$file;
@@ -977,7 +977,7 @@ class ImmoReceipt extends CommonObject
 			}
 		}
 
-		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
+		$modelpath = "ultimateimmo/core/modules/immoreceipt/pdf/";
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref,$moreparams);
 	}
