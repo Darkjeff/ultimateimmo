@@ -24,13 +24,13 @@
  *	\brief      File with class to manage the numbering module Simple for ultimateimmo references
  */
 
-dol_include_once('/ultimateimmo/core/modules/immoreceipt/modules_immoreceipt.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
 
 
 /**
  * 	Class to manage the numbering module Simple for ultimateimmo references
  */
-class mod_immoreceipt_simple extends ModeleNumRefUltimateimmo
+class mod_ultimateimmo_simple extends ModeleNumRefUltimateimmo
 {
 	/**
      * Dolibarr version of the loaded document
@@ -144,7 +144,7 @@ class mod_immoreceipt_simple extends ModeleNumRefUltimateimmo
 		}
 		else
 		{
-			dol_syslog("mod_immoreceipt_simple::getNextValue", LOG_DEBUG);
+			dol_syslog("mod_ultimateimmo_simple::getNextValue", LOG_DEBUG);
 			return -1;
 		}
 
@@ -156,7 +156,7 @@ class mod_immoreceipt_simple extends ModeleNumRefUltimateimmo
 		if ($max >= (pow(10, 4) - 1)) $num=$max+1;	// If counter > 9999, we do not format on 4 chars, we take number as it is
 		else $num = sprintf("%04s",$max+1);
 
-		dol_syslog("mod_immoreceipt_simple::getNextValue return ".$this->prefix.$yymm."-".$num);
+		dol_syslog("mod_ultimateimmo_simple::getNextValue return ".$this->prefix.$yymm."-".$num);
 		return $this->prefix.$yymm."-".$num;
     }
 
@@ -168,7 +168,7 @@ class mod_immoreceipt_simple extends ModeleNumRefUltimateimmo
      *  @param  object	$object	Object object
      *  @return string      		Next not used reference
      */
-    function immoreceipt_get_num($object='')
+    function ultimateimmo_get_num($object='')
     {
         return $this->getNextValue($object);
     }

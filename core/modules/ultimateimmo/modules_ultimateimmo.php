@@ -193,7 +193,7 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
     	    $file = $prefix."_".$modele.".modules.php";
 
     		// On verifie l'emplacement du modele
-	        $file=dol_buildpath($reldir."ultimateimmo/core/modules/immoreceipt/pdf/".$file,0);
+	        $file=dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf/".$file,0);
     		if (file_exists($file))
     		{
     			$filefound=1;
@@ -227,7 +227,7 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
 		else
 		{
 			$outputlangs->charset_output=$sav_charset_output;
-			dol_print_error($db,"immoreceipt_pdf_create Error: ".$obj->error);
+			dol_print_error($db,"ultimateimmo_pdf_create Error: ".$obj->error);
 			return 0;
 		}
 	}
@@ -245,13 +245,13 @@ function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, 
  * \param		outputlangs		objet lang a utiliser pour traduction
  * \return int <0 if KO, >0 if OK
  */
-function immoreceipt_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file) 
+function ultimateimmo_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file) 
 {
 	global $conf, $langs;
 	$langs->load ( 'ultimateimmo@ultimateimmo' );
 	
 	// Charge le modele
-	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/immoreceipt/pdf/pdf_' . $typeModele . '.modules.php' );
+	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
 	
 	if (file_exists ( $nomModele )) {
 		require_once ($nomModele);

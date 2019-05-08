@@ -43,7 +43,7 @@ include_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/lib/immoreceipt.lib.php');
-dol_include_once('/ultimateimmo/core/modules/immoreceipt/modules_immoreceipt.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
@@ -177,7 +177,7 @@ if (empty($reshook))
 		
 		$file = 'quittance_' . $id . '.pdf';
 		
-		$result = immoreceipt_pdf_create($db, $id, '', 'quittance', $outputlangs, $file);
+		$result = ultimateimmo_pdf_create($db, $id, '', 'quittance', $outputlangs, $file);
 		
 		if ($result > 0) 
 		{
@@ -200,7 +200,7 @@ if (empty($reshook))
 		
 		$file = 'chargeloc_' . $id . '.pdf';
 		
-		$result = immoreceipt_pdf_create($db, $id, '', 'chargeloc', $outputlangs, $file);
+		$result = ultimateimmo_pdf_create($db, $id, '', 'chargeloc', $outputlangs, $file);
 		
 		if ($result > 0) 
 		{
@@ -888,7 +888,7 @@ else
 				// afficher
 				$legende = $langs->trans("Ouvrir");
 				print '<tr><td width="200" class="center">' . $langs->trans("Quittance") . '</td><td> ';
-				print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immoreceipt&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+				print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=ultimateimmo&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 				print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" class="absmiddle" hspace="2px" ></a>';
 				print '</td></tr></table>';
 			}

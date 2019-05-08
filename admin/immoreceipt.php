@@ -58,11 +58,11 @@ $backtopage = GETPOST('backtopage', 'alpha');
 $value = GETPOST('value','alpha');
 $label = GETPOST('label','alpha');
 $scandir = GETPOST('scan_dir','alpha');
-$type='immoreceipt';
+$type='ultimateimmo';
 
 if (empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER))
 {
-    $conf->global->ULTIMATEIMMO_ADDON_NUMBER='mod_immoreceipt_simple';
+    $conf->global->ULTIMATEIMMO_ADDON_NUMBER='mod_ultimateimmo_simple';
 }
 
 
@@ -124,7 +124,7 @@ else if ($action == 'specimen')
 	$dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
 	foreach($dirmodels as $reldir)
 	{
-	    $file=dol_buildpath($reldir."ultimateimmo/core/modules/immoreceipt/pdf/pdf_".$modele.".modules.php",0);
+	    $file=dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf/pdf_".$modele.".modules.php",0);
 		if (file_exists($file))
 		{
 			$filefound=1;
@@ -141,7 +141,7 @@ else if ($action == 'specimen')
 
 		if ($module->write_file($receipt, $langs) > 0)
 		{
-			header("Location: ".DOL_URL_ROOT."/document.php?modulepart=immoreceipt&file=SPECIMEN.pdf");
+			header("Location: ".DOL_URL_ROOT."/document.php?modulepart=ultimateimmo&file=SPECIMEN.pdf");
 			return;
 		}
 		else
@@ -238,7 +238,7 @@ clearstatcache();
 
 foreach ($dirmodels as $reldir)
 {
-	$dir = dol_buildpath($reldir."ultimateimmo/core/modules/immoreceipt/");
+	$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/");
 
 	if (is_dir($dir))
 	{
@@ -247,7 +247,7 @@ foreach ($dirmodels as $reldir)
 		{
 			while (($file = readdir($handle))!==false)
 			{
-				if (substr($file, 0, 17) == 'mod_immoreceipt_' && substr($file, dol_strlen($file)-3, 3) == 'php')
+				if (substr($file, 0, 17) == 'mod_ultimateimmo_' && substr($file, dol_strlen($file)-3, 3) == 'php')
 				{
 					$file = substr($file, 0, dol_strlen($file)-4);
 
@@ -326,7 +326,7 @@ print "</table><br>\n";
 print load_fiche_titre($langs->trans("TemplatePDFUltimateimmo"), '', '');
 
 // Defini tableau def des modeles
-$type='immoreceipt';
+$type='ultimateimmo';
 $def = array();
 
 $sql = "SELECT nom";
@@ -365,7 +365,7 @@ clearstatcache();
 
 foreach ($dirmodels as $reldir)
 {
-	$dir = dol_buildpath($reldir."ultimateimmo/core/modules/immoreceipt/pdf");
+	$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf");
 
 	if (is_dir($dir))
 	{

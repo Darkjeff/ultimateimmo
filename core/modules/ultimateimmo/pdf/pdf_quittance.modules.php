@@ -22,7 +22,7 @@
  * \brief PDF for ultimateimmo
  */
 
-dol_include_once('/ultimateimmo/core/modules/immoreceipt/modules_immoreceipt.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
