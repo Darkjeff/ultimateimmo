@@ -39,7 +39,7 @@ if (! $res) die("Include of main fails");
 
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
-dol_include_once('/ultimateimmo/core/modules/immorent/modules_immorent.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/lib/immorent.lib.php');
 
@@ -109,7 +109,7 @@ if (empty($reshook))
 		
 		$file = 'bail_vide_' . $id . '.pdf';
 		
-		$result = immorent_pdf_create($db, $id, '', 'bail_vide', $outputlangs, $file);
+		$result = ultimateimmo_pdf_create($db, $id, '', 'bail_vide', $outputlangs, $file);
 		
 		if ($result > 0) 
 		{
@@ -333,7 +333,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		// afficher
 		$legende = $langs->trans("Ouvrir");
 		print '<tr><td width="200" class="center">' . $langs->trans("EmptyHousing") . '</td><td> ';
-		print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=immorent&file=bail_vide' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+		print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=ultimateimmo&file=bail_vide' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 		print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" class="absmiddle" hspace="2px" ></a>';
 		print '</td></tr></table>';
 	}

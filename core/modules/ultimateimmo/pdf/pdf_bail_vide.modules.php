@@ -22,19 +22,20 @@
  * \brief PDF for ultimateimmo
  */
 
-dol_include_once('/ultimateimmo/core/modules/immorent/modules_immorent.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
+dol_include_once('/ultimateimmo/class/immoowner_type.class.php');
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
 
-class pdf_bail_vide extends ModelePDFImmorent
+class pdf_bail_vide extends ModelePDFUltimateimmo
 {
 	 /**
      * @var DoliDb Database handler
@@ -168,477 +169,609 @@ class pdf_bail_vide extends ModelePDFImmorent
 	function write_file($object, $outputlangs, $file='', $socid=null, $courrier=null)
 	{
 		global $user, $langs, $conf, $mysoc, $hookmanager;
-		
-		if (! is_object($outputlangs)) $outputlangs=$langs;
 
 		// Translations
-		$outputlangs->loadLangs(array("main", "ultimateimmo@ultimateimmo", "companies" , "errors"));
+		$outputlangs->loadLangs(array("main", "ultimateimmo@ultimateimmo", "companies"));
 
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
 
-		if ($conf->ultimateimmo->dir_output)
+		/*if (! is_object($object)) {
+			$id = $object;
+			$object = new Immoreceipt($this->db);
+			$ret = $object->fetch($id);
+		}*/
+
+		// dol_syslog ( "pdf_quittance::debug loyer=" . var_export ( $object, true ) );
+
+		// Definition of $dir and $file
+		if ($object->specimen)
 		{
-			// Definition of $dir and $file
-			if ($object->specimen)
-			{
-				$dir = $conf->ultimateimmo->dir_output."/";
-				$file = $dir . "/SPECIMEN.pdf";
-			}
-			else
-			{
-				$objectref = dol_sanitizeFileName($object->ref);
-				$dir = $conf->ultimateimmo->dir_output . "/rent/" . $objectref;
-				$file = $dir . "/" . $objectref . ".pdf";
-			}
-
-			if (! file_exists($dir))
-			{
-				if (dol_mkdir($dir) < 0)
-				{
-					$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
-					return 0;
-				}
-			}
-
-			if (file_exists($dir))
-			{
-				// Add pdfgeneration hook
-				if (! is_object($hookmanager))
-				{
-					include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
-					$hookmanager=new HookManager($this->db);
-				}
-				$hookmanager->initHooks(array('pdfgeneration'));
-				$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
-				global $action;
-				$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
-				
-				// Set nblignes with the new facture lines content after hook
-				$nblignes = count($object->lines);
-				//$nbpayments = count($object->getListOfPayments()); TODO : add method
-
-				// Create pdf instance
-				$pdf=pdf_getInstance($this->format);
-				$default_font_size = pdf_getPDFFontSize($outputlangs);	// Must be after pdf_getInstance
-
-				$heightforinfotot = 20;	// Height reserved to output the info and total part
-				$heightforfreetext= (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT)?$conf->global->MAIN_PDF_FREETEXT_HEIGHT:5);	// Height reserved to output the free text on last page
-				$heightforfooter = $this->marge_basse + (empty($conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS)?12:22);	// Height reserved to output the footer (value include bottom margin)
-				$pdf->SetAutoPageBreak(1, 0);
-				
-				if (class_exists('TCPDF'))
-				{
-					$pdf->setPrintHeader(false);
-					$pdf->setPrintFooter(false);
-				}
-				$pdf->SetFont(pdf_getPDFFont($outputlangs));
-				
-				// Set path to the background PDF File
-				if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND))
-				{
-					$pagecount = $pdf->setSourceFile($conf->mycompany->dir_output.'/'.$conf->global->MAIN_ADD_PDF_BACKGROUND);
-					$tplidx = $pdf->importPage(1);
-				}
-
-				$pdf->Open();
-				$pagenb=0;
-				$pdf->SetDrawColor(128,128,128);
-				
-				//Generation de l entete du fichier
-				$pdf->SetTitle($outputlangs->convToOutputCharset($object->label));
-				$pdf->SetSubject($outputlangs->transnoentities("EmptyHousing"));
-				$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (ultimateimmo module)');
-				$pdf->SetAuthor($outputlangs->convToOutputCharset($user->firstname)." ".$outputlangs->convToOutputCharset($user->lastname));
-				$pdf->SetKeyWords($outputlangs->convToOutputCharset($object->label) . " " . $outputlangs->transnoentities("Document"));
-				if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) $pdf->SetCompression(false);
-
-				$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
-
-				// On recupere les infos societe
-				$renter = new ImmoRenter($this->db);
-				$result = $renter->fetch($object->fk_renter);
-
-				$owner = new ImmoOwner($this->db);
-				$result = $owner->fetch($object->fk_owner);
-
-				$property = new ImmoProperty($this->db);
-				$result = $property->fetch($object->fk_property);
-
-				$paiement = new Immopayment($this->db);
-				$result = $paiement->fetch_by_loyer($object->id);
-				
-				$tab_height = 130;
-				$tab_height_newpage = 150;
-				$tab_width = $this->page_largeur-$this->marge_gauche-$this->marge_droite;
-				
-				// Affiche notes
-				$notetoshow=empty($object->note_public)?'':$object->note_public;
-				if (! empty($conf->global->MAIN_ADD_SALE_REP_SIGNATURE_IN_ORDER_NOTE))
-				{
-					// Get first sale rep
-					if (is_object($object->thirdparty))
-					{
-						$salereparray=$object->thirdparty->getSalesRepresentatives($user);
-						$salerepobj=new User($this->db);
-						$salerepobj->fetch($salereparray[0]['id']);
-						if (! empty($salerepobj->signature)) $notetoshow=dol_concatdesc($notetoshow, $salerepobj->signature);
-					}
-				}
-				
-				$pagenb = $pdf->getPage();
-				if ($notetoshow && empty($conf->global->MAIN_PUBLIC_NOTE_IN_ADDRESS))
-				{
-					$pageposbeforenote = $pagenb;
-					if($desc_incoterms)
-					{
-						$tab_top_note +=4;
-					}
-
-					$substitutionarray=pdf_getSubstitutionArray($outputlangs, null, $object);
-					complete_substitutions_array($substitutionarray, $outputlangs, $object);
-					$notetoshow = make_substitutions($notetoshow, $substitutionarray, $outputlangs);
-
-					$pdf->startTransaction();
-
-					$pdf->SetFont('','', $default_font_size - 1);   // Dans boucle pour gerer multi-page
-					$pdf->writeHTMLCell($tab_width, 3, $this->marge_gauche+1, $tab_top_note, dol_htmlentitiesbr($notetoshow), 0, 1);
-					// Description
-					$pageposafternote=$pdf->getPage();
-					$posyafter = $pdf->GetY();
-					$nexY = $pdf->GetY();
-					$height_note=$nexY-$tab_top_note;
-
-					// Rect prend une longueur en 3eme et 4eme param
-					$pdf->SetDrawColor(192,192,192);
-					$pdf->RoundedRect($this->marge_gauche, $tab_top_note-1, $tab_width, $height_note+1, $roundradius, $round_corner = '1111', 'S', $this->border_style, $bgcolor);
-
-					if ($pageposafternote > $pageposbeforenote)
-					{
-						$pdf->rollbackTransaction(true);
-
-						// prepair pages to receive notes
-						while ($pagenb < $pageposafternote)
-						{
-							$pdf->AddPage();
-							$pagenb++;
-							if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-							if (empty($conf->global->ULTIMATE_FICHINTER_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
-							// $this->_pagefoot($pdf,$object,$outputlangs,1);
-							$pdf->setTopMargin($tab_top_newpage);
-							// The only function to edit the bottom margin of current page to set it.
-							$pdf->setPageOrientation('', 1, $heightforfooter + $heightforfreetext);
-						}
-
-						// back to start
-						$pdf->setPage($pageposbeforenote);
-						$pdf->setPageOrientation('', 1, $heightforfooter + $heightforfreetext);
-						$pdf->SetFont('','', $default_font_size - 1);
-						$pdf->writeHTMLCell($tab_width, 3, $this->marge_gauche+1, $tab_top_note, dol_htmlentitiesbr($notetoshow), 0, 1);
-						$pageposafternote=$pdf->getPage();
-
-						$posyafter = $pdf->GetY();
-						$nexY = $pdf->GetY();
-
-						if ($posyafter > ($this->page_hauteur - ($heightforfooter+$heightforfreetext+20)))	// There is no space left for total+free text
-						{
-							$pdf->AddPage('','',true);
-							$pagenb++;
-							$pageposafternote++;
-							$pdf->setPage($pageposafternote);
-							$pdf->setTopMargin($tab_top_newpage);
-							// The only function to edit the bottom margin of current page to set it.
-							$pdf->setPageOrientation('', 1, $heightforfooter + $heightforfreetext);
-							//$posyafter = $tab_top_newpage;
-						}
-
-
-						// apply note frame to previus pages
-						$i = $pageposbeforenote;
-						while ($i < $pageposafternote)
-						{
-							$pdf->setPage($i);
-
-							$pdf->SetDrawColor(128,128,128);
-							// Draw note frame
-							if ($i > $pageposbeforenote)
-							{
-								$height_note = $this->page_hauteur - ($tab_top_newpage + $heightforfooter);
-								$pdf->RoundedRect($this->marge_gauche, $tab_top_newpage-1, $tab_width, $height_note+1, $roundradius, $round_corner = '1111', 'S', array());
-							}
-							else
-							{
-								$height_note = $this->page_hauteur - ($tab_top_note + $heightforfooter);
-								$pdf->RoundedRect($this->marge_gauche, $tab_top_note-1, $tab_width, $height_note+1, $roundradius, $round_corner = '1111', 'S', array());
-							}
-
-							// Add footer
-							$pdf->setPageOrientation('', 1, 0);	// The only function to edit the bottom margin of current page to set it.
-							$this->_pagefoot($pdf,$object,$outputlangs,1);
-
-							$i++;
-						}
-
-						// apply note frame to last page
-						$pdf->setPage($pageposafternote);
-						if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-						if (empty($conf->global->ULTIMATE_FICHINTER_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
-						$height_note=$posyafter-$tab_top_newpage;
-						$pdf->RoundedRect($this->marge_gauche, $tab_top_newpage-1, $tab_width, $height_note+1, $roundradius, $round_corner = '1111', 'S', array());
-					}
-					else // No pagebreak
-					{
-						$pdf->commitTransaction();
-						$posyafter = $pdf->GetY();
-						$height_note=$posyafter-$tab_top_note;
-						$pdf->RoundedRect($this->marge_gauche, $tab_top_note-1, $tab_width, $height_note+1, $roundradius, $round_corner = '1111', 'S', array());
-
-						if($posyafter > ($this->page_hauteur - ($heightforfooter+$heightforfreetext+20)) )
-						{
-							// not enough space, need to add page
-							$pdf->AddPage('','',true);
-							$pagenb++;
-							$pageposafternote++;
-							$pdf->setPage($pageposafternote);
-							if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-							if (empty($conf->global->ULTIMATE_ORDERS_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
-
-							$posyafter = $tab_top_newpage;
-						}
-					}
-
-					$tab_height = $tab_height - $height_note;
-					$tab_top = $posyafter + 10;
-
-					}
-					else
-					{
-						$height_note=0;
-					}
-
-					$iniY = $tab_top + 7;
-					$curY = $tab_top + 8;
-					$nexY = $tab_top + 8;
-
-					$nblines = count($object->lines);
-
-					// Use new auto column system
-					$this->prepareArrayColumnField($object,$outputlangs,$hidedetails,$hidedesc,$hideref);
-
-					// Loop on each lines
-					$pageposbeforeprintlines=$pdf->getPage();
-					$pagenb = $pageposbeforeprintlines;
-					$line_number=1;
-					for ($i = 0; $i < $nblines; $i++)
-					{
-						$objectligne = $object->lines[$i];
-
-						$valide = $objectligne->id ? $objectligne->fetch($objectligne->id) : 0;
-
-						if ($valide > 0 || $object->specimen)
-						{
-							// Description of intervention line
-							$curX = $this->getColumnContentXStart('desc');
-							$text_length = $tab_width;
-							$curY = $nexY;
-							$pdf->SetFont('','', $default_font_size - 1);   // Into loop to work with multipage
-							$pdf->SetTextColorArray($textcolor);
-
-							$pdf->setTopMargin($tab_top_newpage);
-							//If we aren't on last lines footer space needed is on $heightforfooter
-							if ($i != $nblines-1)
-							{
-								$bMargin=$heightforfooter;
-							}
-							else
-							{
-								//We are on last item, need to check all footer (freetext, ...)
-								$bMargin=$heightforfooter+$heightforfreetext+$heightforinfotot;
-							}
-							$pdf->setPageOrientation('', 1,  $bMargin);	// The only function to edit the bottom margin of current page to set it.
-							$pageposbefore=$pdf->getPage();
-
-							$showpricebeforepagebreak=1;
-							$posYStartDescription=0;
-							$posYAfterDescription=0;
-
-							$pdf->startTransaction();
-
-							// Description of product line
-							$desc=dol_htmlentitiesbr($objectligne->desc,1);
-							$posYStartDescription = $curY;
-							$pdf->writeHTMLCell($text_length, 0, $curX, $curY, $desc, 0, 1, 0);
-							$posYAfterDescription=$pdf->GetY();
-
-							$pageposafter=$pdf->getPage();
-
-							if ($pageposafter > $pageposbefore)	// There is a pagebreak
-							{
-								$pdf->rollbackTransaction(true);
-								$pageposafter=$pageposbefore;
-
-								$pdf->setPageOrientation('', 1, $heightforfooter);	// The only function to edit the bottom margin of current page to set it.
-								$desc=dol_htmlentitiesbr($objectligne->desc,1);
-								$posYStartDescription = $curY;
-								$pdf->writeHTMLCell($text_length, 0, $curX, $curY, $desc, 0, 1, 0);
-								$posYAfterDescription=$pdf->GetY();
-								$pageposafter=$pdf->getPage();
-
-								if ($posYAfterDescription > ($this->page_hauteur - $bMargin))	// There is no space left for total+free text
-								{
-									if ($i == ($nblines-1))	// No more lines, and no space left to show total, so we create a new page
-									{
-										$pdf->AddPage('','',true);
-										if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-										if (empty($conf->global->ULTIMATE_FICHINTER_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
-										$pdf->setPage($pageposafter+1);
-									}
-								}
-								else
-								{
-									// We found a page break
-									$showpricebeforepagebreak=1;
-								}
-							}
-							else	// No pagebreak
-							{
-								$pdf->commitTransaction();
-							}
-
-							$nexY = $pdf->GetY()+2;
-							$pageposafter=$pdf->getPage();
-							$pdf->setPage($pageposbefore);
-							$pdf->setTopMargin($this->marge_haute);
-							$pdf->setPageOrientation('', 1, 0);	// The only function to edit the bottom margin of current page to set it.
-
-							// We suppose that a too long description is moved completely on next page
-							if ($pageposafter > $pageposbefore) {
-								$pdf->setPage($pageposafter); $curY = $tab_top_newpage;
-							}
-					
-					//  DESIGNATION DES PARTIES
-				/*	$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
-					$pdf->SetXY($posX, $posY);
-					$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('I. DESIGNATION DES PARTIES'), 1, 'C');
-					$posY = $pdf->getY();
-					
-					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-					$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset("Le présent contrat est conclu entre les soussignés :
-	- [nom et prénom, ou dénomination du bailleur/ domicile ou siège social/ qualité du bailleur (personne physique,
-	personne morale (1))/ adresse électronique (facultatif)] (2) désigné (s) ci-après le bailleur ;
-	- le cas échéant, représenté par le mandataire :
-	- [nom ou raison sociale et adresse du mandataire ainsi que l'activité exercée] ;
-	- le cas échéant, [numéro et lieu de délivrance de la carte professionnelle/ nom et adresse du garant] (3).
-	- [nom et prénom du ou des locataires ou, en cas de colocation, des colocataires, adresse électronique (facultatif)]
-	désigné (s) ci-après le locataire
-	Il a été convenu ce qui suit :"), 1, 'C');
-					$posY = $pdf->getY();
-					//   OBJET DU CONTRAT
-					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
-					$pdf->SetXY($posX, $posY);
-					$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('II. OBJET DU CONTRAT'), 1, 'C');
-					$posY = $pdf->getY();
-					
-					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-					$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset("Le présent contrat a pour objet la location d'un logement ainsi déterminé :
-	A. Consistance du logement
-	- localisation du logement : [exemples : adresse/ bâtiment/ étage/ porte etc.] ;
-	- type d'habitat : [immeuble collectif ou individuel] ;
-	- régime juridique de l'immeuble : [mono propriété ou copropriété] ;
-	- période de construction : [exemples : avant 1949, de 1949 à 1974, de 1975 à 1989, de 1989 à 2005, depuis 2005] ;
-	- surface habitable : [...] m2 ;
-	- nombre de pièces principales : [...] ;
-	- le cas échéant, Autres parties du logement : [exemples : grenier, comble aménagé ou non, terrasse, balcon, loggia,
-	jardin etc.] ;
-	- le cas échéant, Eléments d'équipements du logement : [exemples : cuisine équipée, détail des installations sanitaires
-	etc.] ;
-	- modalité de production de chauffage : [individuel ou collectif] (4) ;
-	- modalité de production d'eau chaude sanitaire : [individuelle ou collective] (5)"), 1, 'C');
-					$posY = $pdf->getY();
-					$pageposafter=$pdf->getPage();*/
-
-					// Detect if some page were added automatically and output _tableau for past pages
-						while ($pagenb < $pageposafter)
-						{
-							$pdf->setPage($pagenb);
-							if ($pagenb == $pageposbeforeprintlines)
-							{
-								$this->_tableau($pdf, $tab_top, $this->page_hauteur - $tab_top - $heightforfooter, 0, $outputlangs, 0, 1);
-							}
-							else
-							{
-								$this->_tableau($pdf, $tab_top_newpage, $this->page_hauteur - $tab_top_newpage - $heightforfooter, 0, $outputlangs, 0, 1);
-							}
-							$this->_pagefoot($pdf,$object,$outputlangs,1);
-							$pagenb++;
-							$pdf->setPage($pagenb);
-							$pdf->setPageOrientation('', 1, 0);	// The only function to edit the bottom margin of current page to set it.
-							if (empty($conf->global->ULTIMATE_FICHINTER_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
-						}
-						if (isset($object->lines[$i+1]->pagebreak) && $object->lines[$i+1]->pagebreak)
-						{
-							if ($pagenb == $pageposafter)
-							{
-								$this->_tableau($pdf, $tab_top, $this->page_hauteur - $tab_top - $heightforfooter, 0, $outputlangs, 0, 1);
-							}
-							else
-							{
-								$this->_tableau($pdf, $tab_top_newpage, $this->page_hauteur - $tab_top_newpage - $heightforfooter, 0, $outputlangs, 0, 1);
-							}
-							$this->_pagefoot($pdf,$object,$outputlangs,1);
-							// New page
-							$pdf->AddPage();
-							if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-							$pagenb++;
-							if (empty($conf->global->ULTIMATE_FICHINTER_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
-						}
-					}
-				}
-
-				// Show square
-				if ($pagenb == $pageposbeforeprintlines)
-				{
-					$this->_tableau($pdf, $tab_top, $this->page_hauteur - $tab_top - $heightforinfotot - $heightforcustomercomment - $heightforagreement - $heightforfreetext - $heightforfooter - 4, 0, $outputlangs, 0, 0);
-				}
-				else
-				{
-					$this->_tableau($pdf, $tab_top_newpage, $this->page_hauteur - $tab_top_newpage - $heightforinfotot - $heightforcustomercomment - $heightforagreement - $heightforfreetext - $heightforfooter -4, 0, $outputlangs, 0, 0);
-				}
-				$bottomlasttab=$this->page_hauteur - $heightforinfotot - $heightforcustomercomment - $heightforagreement - $heightforfreetext - $heightforfooter + 1;
-
-				// Pied de page
-				$this->_pagefoot($pdf,$object,$outputlangs);
-				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
-
-				$pdf->Close();
-
-				$pdf->Output($file,'F');
-
-				// Add pdfgeneration hook
-				$hookmanager->initHooks(array('pdfgeneration'));
-				$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
-				global $action;
-				$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-
-				if (! empty($conf->global->MAIN_UMASK))
-				@chmod($file, octdec($conf->global->MAIN_UMASK));
-			
-				$this->result = array('fullpath'=>$file);
-
-				return 1;
-			}
-			else
-			{
-				$this->error=$langs->trans("ErrorCanNotCreateDir",$dir);
-				return 0;
-			}
+			$dir = $conf->ultimateimmo->dir_output."/";
+			$file = $dir . "/SPECIMEN.pdf";
 		}
 		else
 		{
-			$this->error=$langs->trans("ErrorConstantNotDefined","FICHEINTER_OUTPUTDIR");
+			$objectref = dol_sanitizeFileName($object->ref);
+			$dir = $conf->ultimateimmo->dir_output . "/rent/" . $objectref;
+			$file = $dir . "/" . $objectref . ".pdf";
+		}
+
+		if (! file_exists($dir))
+		{
+			if (dol_mkdir($dir) < 0)
+			{
+				$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
+				return 0;
+			}
+		}
+
+		if (file_exists($dir))
+		{
+			// Add pdfgeneration hook
+			if (! is_object($hookmanager))
+			{
+				include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
+				$hookmanager=new HookManager($this->db);
+			}
+			$hookmanager->initHooks(array('pdfgeneration'));
+			$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
+			global $action;
+			$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+			
+			// Set nblignes with the new facture lines content after hook
+			$nblignes = count($object->lines);
+			//$nbpayments = count($object->getListOfPayments()); TODO : add method
+
+			// Create pdf instance
+			$pdf=pdf_getInstance($this->format);
+			$default_font_size = pdf_getPDFFontSize($outputlangs);	// Must be after pdf_getInstance
+			$pdf->SetAutoPageBreak(1, 0);
+
+			$heightforinfotot = 50+(4*$nbpayments);	// Height reserved to output the info and total part and payment part
+			$heightforfreetext= (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT)?$conf->global->MAIN_PDF_FREETEXT_HEIGHT:5);	// Height reserved to output the free text on last page
+			$heightforfooter = $this->marge_basse + (empty($conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS)?12:22);	// Height reserved to output the footer (value include bottom margin)
+
+			if (class_exists('TCPDF'))
+			{
+				$pdf->setPrintHeader(false);
+				$pdf->setPrintFooter(false);
+			}
+			$pdf->SetFont(pdf_getPDFFont($outputlangs));
+			
+			// Set path to the background PDF File
+			if (! empty($conf->global->MAIN_ADD_PDF_BACKGROUND))
+			{
+				$pagecount = $pdf->setSourceFile($conf->mycompany->dir_output.'/'.$conf->global->MAIN_ADD_PDF_BACKGROUND);
+				$tplidx = $pdf->importPage(1);
+			}
+
+			$pdf->Open();
+			$pagenb = 0;
+
+			$pdf->SetTitle($outputlangs->convToOutputCharset($object->label));
+			$pdf->SetSubject($outputlangs->transnoentities("EmptyHousing"));
+			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (ultimateimmo module)');
+			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->firstname)." ".$outputlangs->convToOutputCharset($user->lastname));
+			$pdf->SetKeyWords($outputlangs->convToOutputCharset($object->label) . " " . $outputlangs->transnoentities("Document"));
+			if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) $pdf->SetCompression(false);
+
+			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
+
+			// On recupere les infos societe
+			$renter = new ImmoRenter($this->db);
+			$result = $renter->fetch($object->fk_renter);
+
+			$owner = new ImmoOwner($this->db);
+			$result = $owner->fetch($object->fk_owner);
+			
+			$ownertype = new ImmoOwner_Type($this->db);
+			$result = $ownertype->fetch($object->fk_owner_type);
+
+			$property = new ImmoProperty($this->db);
+			$result = $property->fetch($object->fk_property);
+
+			$paiement = new Immopayment($this->db);
+			$result = $paiement->fetch_by_loyer($object->id);
+
+			if (! empty($object->id))
+			{
+				// New page
+				$pdf->AddPage();
+				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				$pagenb++;
+				$this->_pagehead($pdf, $object, 1, $outputlangs);
+				$pdf->SetFont('', '', $default_font_size - 1);
+				$pdf->SetTextColor(0, 0, 0);
+
+				$tab_top = 90;
+				$tab_top_newpage = (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)?42:10);
+				$tab_height = 130;
+				$tab_height_newpage = 150;
+				
+				$hautcadre=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 38 : 40;
+				$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
+				$posY = $this->marge_haute + $hautcadre +50;
+				$posX = $this->marge_gauche;	
+				
+				$iniY = $tab_top + 7;
+				$curY = $tab_top + 7;
+				$nexY = $tab_top + 7;
+				
+				$sql = "SELECT io.rowid, io.fk_owner_type, it.rowid, it.ref, it.label ";
+				$sql .= " FROM " .MAIN_DB_PREFIX."ultimateimmo_immoowner as io";
+				$sql .= " JOIN " .MAIN_DB_PREFIX."ultimateimmo_immoowner_type as it ";
+				$sql .= " WHERE it.rowid = io.fk_owner_type";
+
+				dol_syslog(get_class($this) . ':: pdf_bail_vide', LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				
+				if ($resql) 
+				{
+					$num = $this->db->num_rows($resql);
+					while ( $i < $num ) 
+					{
+						$objp = $this->db->fetch_object($resql);
+						//var_dump($objp->label);exit;
+						$i++;
+					}
+				}
+				$text .= "\n";
+				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
+				$pdf->SetXY($posX, $posY-12);
+				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
+				
+				// Le contrat type de location ou de colocation contient les éléments suivants :
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('I. DESIGNATION DES PARTIES'), 1, 'C');
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				$carac_emetteur = pdf_build_address($outputlangs, $owner, $object->thirdparty, '', 0, 'source', $object);
+				$text = $outputlangs->transnoentities(" Le présent contrat est conclu entre les soussignés :\n");
+				// [nom et prénom, ou dénomination du bailleur/ domicile ou siège social/ qualité du bailleur (personne physique, personne morale (1))/ adresse électronique (facultatif)] (2)
+				$text .= $outputlangs->convToOutputCharset($owner->getFullName($outputlangs)). ' '.$carac_emetteur."\n"; 
+				$text .= 'En tant que '.$objp->label.' désigné (s) ci-après le bailleur' ;	
+				
+$text .= $outputlangs->transnoentities("
+- le cas échéant, représenté par le mandataire :
+- [nom ou raison sociale et adresse du mandataire ainsi que l'activité exercée] ;
+- le cas échéant, [numéro et lieu de délivrance de la carte professionnelle/ nom et adresse du garant] (3).
+- [nom et prénom du ou des locataires ou, en cas de colocation, des colocataires, adresse électronique (facultatif)]
+désigné (s) ci-après le locataire
+Il a été convenu ce qui suit :");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				//$pdf->writeHTMLCell($widthbox, 3, $this->marge_gauche, $tab_top + 5, $outputlangs->convToOutputCharset($text), 0, 1);
+				
+				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// New page
+				$pdf->AddPage();
+				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				$pagenb++;
+				$pdf->setTopMargin($tab_top_newpage);
+				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
+				
+				// Le contrat type de location ou de colocation contient les éléments suivants :
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetXY($posX, $tab_top_newpage);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('II. OBJET DU CONTRAT'), 1, 'C');
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities("Le présent contrat a pour objet la location d'un logement ainsi déterminé :
+A. Consistance du logement
+- localisation du logement : [exemples : adresse/ bâtiment/ étage/ porte etc.] ;
+- type d'habitat : [immeuble collectif ou individuel] ;
+- régime juridique de l'immeuble : [mono propriété ou copropriété] ;
+- période de construction : [exemples : avant 1949, de 1949 à 1974, de 1975 à 1989, de 1989 à 2005, depuis 2005] ;
+- surface habitable : [...] m2 ;
+- nombre de pièces principales : [...] ;
+- le cas échéant, Autres parties du logement : [exemples : grenier, comble aménagé ou non, terrasse, balcon, loggia,
+jardin etc.] ;
+- le cas échéant, Eléments d'équipements du logement : [exemples : cuisine équipée, détail des installations sanitaires
+etc.] ;
+- modalité de production de chauffage : [individuel ou collectif] (4) ;
+- modalité de production d'eau chaude sanitaire : [individuelle ou collective] (5).
+B. Destination des locaux : [usage d'habitation ou usage mixte professionnel et d'habitation]
+C. Le cas échéant, Désignation des locaux et équipements accessoires de l'immeuble à usage privatif du
+locataire : [exemples : cave, parking, garage etc.]
+D. Le cas échéant, Enumération des locaux, parties, équipements et accessoires de l'immeuble à usage
+commun : [Garage à vélo, ascenseur, espaces verts, aires et équipements de jeux, laverie, local poubelle,
+gardiennage, autres prestations et services collectifs etc.]
+E. Le cas échéant, Equipement d'accès aux technologies de l'information et de la communication : [exemples :
+modalités de réception de la télévision dans l'immeuble, modalités de raccordement internet etc.]");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// New page
+				$pdf->AddPage();
+				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				$pagenb++;
+				$pdf->setTopMargin($tab_top_newpage);
+				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
+				
+				// Le contrat type de location ou de colocation contient les éléments suivants :
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetXY($posX, $tab_top_newpage);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('III. DATE DE PRISE D\'EFFET ET DUREE DU CONTRAT'), 1, 'C');
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities(" La durée du contrat et sa date de prise d'effet sont ainsi définies :
+A. Date de prise d'effet du contrat : [...]
+B. Durée du contrat : [durée minimale de trois ou six ans selon la qualité du bailleur] ou [durée réduite et minimale d'un an lorsqu'un événement précis (6) le justifie]
+C. Le cas échéant, Evénement et raison justifiant la durée réduite du contrat de location : [...]
+En l'absence de proposition de renouvellement du contrat, celui-ci est, à son terme, reconduit tacitement pour 3 ou 6 ans et dans les mêmes conditions. Le locataire peut mettre fin au bail à tout moment, après avoir donné congé. Le bailleur, quant à lui, peut mettre fin au bail à son échéance et après avoir donné congé, soit pour reprendre le logement en vue de l'occuper lui-même ou une personne de sa famille, soit pour le vendre, soit pour un motif sérieux et légitime.");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// New page
+				$pdf->AddPage();
+				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				$pagenb++;
+				$pdf->setTopMargin($tab_top_newpage);
+				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
+				
+				// Le contrat type de location ou de colocation contient les éléments suivants :
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetXY($posX, $tab_top_newpage);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('IV. CONDITIONS FINANCIERES'), 1, 'C');
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities(" Les parties conviennent des conditions financières suivantes :
+A. Loyer
+1° Fixation du loyer initial :
+a) Montant du loyer mensuel : [...] (7) ;
+b) Le cas échant, Modalités particulières de fixation initiale du loyer applicables dans certaines zones tendues (8) :
+- le loyer du logement objet du présent contrat est soumis au décret fixant annuellement le montant maximum d'évolution des loyers à la relocation : [Oui/ Non].
+- le loyer du logement objet du présent contrat est soumis au loyer de référence majoré fixé par arrêté préfectoral : [Oui/Non].
+- montant du loyer de référence : [...] €/ m2/ Montant du loyer de référence majoré : [...] €/ m2 ;
+- le cas échéant Complément de loyer : [si un complément de loyer est prévu, indiquer le montant du loyer de base, nécessairement égal au loyer de référence majoré, le montant du complément de loyer et les caractéristiques du logement justifiant le complément de loyer].
+c) Le cas échéant, informations relatives au loyer du dernier locataire : [montant du dernier loyer acquitté par le précédent locataire, date de versement et date de la dernière révision du loyer] (9).
+2° Le cas échéant, Modalités de révision :
+a) Date de révision : [...].
+b) Date ou trimestre de référence de l'IRL : [...].
+B. Charges récupérables
+1. Modalité de règlement des charges récupérables : [Provisions sur charges avec régularisation annuelle ou paiement périodique des charges sans provision/ En cas de colocation, les parties peuvent convenir de la récupération des charges par le bailleur sous la forme d'un forfait].
+2. Le cas échéant, Montant des provisions sur charges ou, en cas de colocation, du forfait de charge : [...].
+3. Le cas échéant, En cas de colocation et si les parties en conviennent, modalités de révision du forfait de charges :
+[...] (10).
+C. Le cas échéant, contribution pour le partage des économies de charges : (11)
+1. Montant et durée de la participation du locataire restant à courir au jour de la signature du contrat : [...].
+2. Eléments propres à justifier les travaux réalisés donnant lieu à cette contribution : [...].
+D. Le cas échéant, En cas de colocation souscription par le bailleur d'une assurance pour le compte des colocataires (12) : [Oui/ Non]");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// New page
+				$pdf->AddPage();
+				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				$pagenb++;
+				$pdf->setTopMargin($tab_top_newpage);
+				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities(" 1. Montant total annuel récupérable au titre de l'assurance pour compte des colocataires : [...] (13).
+2. Montant récupérable par douzième : [...].
+E. Modalités de paiement
+- périodicité du paiement : [... (14)] ;
+- paiement [à échoir/ à terme échu] ;
+- date ou période de paiement : [...] ;
+- le cas échéant, Lieu de paiement : [...] ;
+- le cas échéant, Montant total dû à la première échéance de paiement pour une période complète de location :
+[détailler la somme des montants relatifs au loyer, aux charges récupérable, à la contribution pour le partage des économies de charges et, en cas de colocation, à l'assurance récupérable pou le compte des colocataires].
+F. Le cas échéant, exclusivement lors d'un renouvellement de contrat, modalités de réévaluation d'un loyer manifestement sous-évalué
+1. Montant de la hausse ou de la baisse de loyer mensuelle : [...].
+2. Modalité d'application annuelle de la hausse : [par tiers ou par sixième selon la durée du contrat et le montant de la hausse de loyer].
+");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');				
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				$posY = $pdf->getY();
+				
+				// Le contrat type de location ou de colocation contient les éléments suivants :
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('V. TRAVAUX'), 1, 'C');
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities(" A. Le cas échéant, Montant et nature des travaux d'amélioration ou de mise en conformité avec les caractéristiques de
+décence effectués depuis la fin du dernier contrat de location ou depuis le dernier renouvellement : [...] (15)
+B. Le cas échéant, Majoration du loyer en cours de bail consécutive à des travaux d'amélioration entrepris par le
+bailleur : [nature des travaux, modalités d'exécution, délai de réalisation ainsi que montant de la majoration du loyer]
+(16)
+C. Le cas échéant, Diminution de loyer en cours de bail consécutive à des travaux entrepris par le locataire : [durée de cette diminution et, en cas de départ anticipé du locataire, modalités de son dédommagement sur justification des dépenses effectuées].");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// New page
+				$pdf->AddPage();
+				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				$pagenb++;
+				$pdf->setTopMargin($tab_top_newpage);
+				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
+				
+				// Le contrat type de location ou de colocation contient les éléments suivants :
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetXY($posX, $tab_top_newpage);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('VI. GARANTIES'), 1, 'C');
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities("Le cas échéant, Montant du dépôt de garantie de l'exécution des obligations du locataire/ Garantie autonome :
+[inférieur ou égal à un mois de loyers hors charges].");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				$posY = $pdf->getY();
+				
+				// Le contrat type de location ou de colocation contient les éléments suivants :
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('VII. LE CAS ECHEANT, CLAUSE DE SOLIDARITE'), 1, 'C');
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities("Modalités particulières des obligations en cas de pluralité de locataires : [clause prévoyant la solidarité des locataires et l'indivisibilité de leurs obligations en cas de pluralité de locataires].");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				$posY = $pdf->getY();
+				
+				// Le contrat type de location ou de colocation contient les éléments suivants :
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('VIII. LE CAS ECHEANT, CLAUSE RESOLUTOIRE'), 1, 'C');
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities("Modalités de résiliation de plein droit du contrat : [clause prévoyant la résiliation de plein droit du contrat de location pour un défaut de paiement du loyer ou des charges aux termes convenus, le non versement du dépôt de garantie, la non-souscription d'une assurance des risques locatifs ou le non-respect de l'obligation d'user paisiblement des locaux loués, résultant de troubles de voisinage constatés par une décision de justice passée en force de chose jugée].");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// New page
+				$pdf->AddPage();
+				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				$pagenb++;
+				$pdf->setTopMargin($tab_top_newpage);
+				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
+				
+				// Le contrat type de location ou de colocation contient les éléments suivants :
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetXY($posX, $tab_top_newpage);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('IX. LE CAS ECHEANT, HONORAIRES DE LOCATION'), 1, 'C');
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities(" A. Dispositions applicables
+Il est rappelé les dispositions du I de l'article 5 (I) de la loi du 6 juillet 1989, alinéas 1 à 3 : La rémunération des personnes mandatées pour se livrer ou prêter leur concours à l'entremise ou à la négociation d'une mise en location d'un logement, tel que défini aux articles 2 et 25-3, est à la charge exclusive du bailleur, à l'exception des honoraires liés aux prestations mentionnées aux deuxième et troisième alinéas du présent I.
+Les honoraires des personnes mandatées pour effectuer la visite du preneur, constituer son dossier et rédiger un bail sont partagés entre le bailleur et le preneur. Le montant toutes taxes comprises imputé au preneur pour ces prestations ne peut excéder celui imputé au bailleur et demeure inférieur ou égal à un plafond par mètre carré de surface habitable
+de la chose louée fixé par voie réglementaire et révisable chaque année, dans des conditions définies par décret. Ces honoraires sont dus à la signature du bail.
+Les honoraires des personnes mandatées pour réaliser un état des lieux sont partagés entre le bailleur et le preneur.
+Le montant toutes taxes comprises imputé au locataire pour cette prestation ne peut excéder celui imputé au bailleur et demeure inférieur ou égal à un plafond par mètre carré de surface habitable de la chose louée fixé par voie réglementaire et révisable chaque année, dans des conditions définies par décret. Ces honoraires sont dus à compter de la réalisation de la prestation.
+Plafonds applicables :
+- montant du plafond des honoraires imputables aux locataires en matière de prestation de visite du preneur, de constitution de son dossier et de rédaction de bail : [...] €/ m2 de surface habitable ;
+- montant du plafond des honoraires imputables aux locataires en matière d'établissement de l'état des lieux d'entrée :
+[...] €/ m2 de surface habitable.");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// New page
+				$pdf->AddPage();
+				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				$pagenb++;
+				$pdf->setTopMargin($tab_top_newpage);
+				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities("B. Détail et répartition des honoraires
+1. Honoraires à la charge du bailleur :
+- prestations de visite du preneur, de constitution de son dossier et de rédaction de bail : [détail des prestations effectivement réalisées et montant des honoraires toutes taxes comprises dus à la signature du bail] ;
+- le cas échéant, Prestation de réalisation de l'état des lieux d'entrée : [montant des honoraires toutes taxes comprises dus à compter de la réalisation de la prestation] ;
+- autres prestations : [détail des prestations et conditions de rémunération].
+2. Honoraires à la charge du locataire :
+- prestations de visite du preneur, de constitution de son dossier et de rédaction de bail : [détail des prestations effectivement réalisées et montant des honoraires toutes taxes comprises dus à la signature du bail] ;
+- le cas échéant, Prestation de réalisation de l'état des lieux d'entrée : [montant des honoraires toutes taxes comprises dus à compter de la réalisation de la prestation].");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$posY = $pdf->getY();
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$posY = $pdf->getY();
+				
+				// Le contrat type de location ou de colocation contient les éléments suivants :
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('X. AUTRES CONDITIONS PARTICULIERES'), 1, 'C');
+
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities("[A définir par les parties]");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// New page
+				$pdf->AddPage();
+				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				$pagenb++;
+				$pdf->setTopMargin($tab_top_newpage);
+				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
+				
+				// Le contrat type de location ou de colocation contient les éléments suivants :
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetXY($posX, $tab_top_newpage);
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('XI. ANNEXES'), 1, 'C');
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities("Sont annexées et jointes au contrat de location les pièces suivantes :
+A. Le cas échéant, un extrait du règlement concernant la destination de l'immeuble, la jouissance et l'usage des parties privatives et communes, et précisant la quote-part afférente au lot loué dans chacune des catégories de charges
+B. Un dossier de diagnostic technique comprenant
+- un diagnostic de performance énergétique ;
+- un constat de risque d'exposition au plomb pour les immeubles construits avant le 1er janvier 1949 ;
+- une copie d'un état mentionnant l'absence ou la présence de matériaux ou de produits de la construction contenant de l'amiante (18) ;
+- un état de l'installation intérieure d'électricité et de gaz, dont l'objet est d'évaluer les risques pouvant porter atteinte à la sécurité des personnes (19) ;
+- le cas échéant, un état des risques naturels et technologiques pour le zones couvertes par un plan de prévention des risques technologiques ou par un plan de prévention des risques naturels prévisibles, prescrit ou approuvé, ou dans des zones de sismicité (20).
+C. Une notice d'information relative aux droits et obligations des locataires et des bailleurs
+D. Un état des lieux (21)
+E. Le cas échéant, Une autorisation préalable de mise en location (22)
+F. Le cas échéant, Les références aux loyers habituellement constatés dans le voisinage pour des logements comparables (23)");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities("Le [date], à [lieu],");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities("Signature du bailleur [ou de son mandataire, le cas échéant]");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+
+				$period = $outputlangs->transnoentities('');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$text = $outputlangs->transnoentities("Signature du locataire");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+			}
+			$this->db->free($resql);
+
+			$pdf->Close();
+
+			$pdf->Output($file, 'F');
+			if (! empty($conf->global->MAIN_UMASK))
+				@chmod($file, octdec($conf->global->MAIN_UMASK));
+
+			return 1; // Pas d'erreur
+		}
+		else
+		{
+			$this->error=$outputlangs->transnoentities("ErrorCanNotCreateDir",$dir);
 			return 0;
 		}
 	}
+
 	
 	/**
 	 *   Show table for lines
@@ -699,7 +832,7 @@ class pdf_bail_vide extends ModelePDFImmorent
 		global $conf, $langs;
 
 		// Translations
-		$outputlangs->loadLangs(array("main", "bills", "propal", "companies"));
+		$outputlangs->loadLangs(array("main", "bills", "propal", "companies", "dict"));
 
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
 
@@ -750,7 +883,7 @@ class pdf_bail_vide extends ModelePDFImmorent
 		$pdf->SetFont('', 'B', $default_font_size + 3);
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetTextColor(0, 0, 60);
-		$title=$outputlangs->transnoentities("Quittance");
+		$title=$outputlangs->transnoentities("Bail");
 		$pdf->MultiCell($w, 3, $title, '', 'R');
 
 		$pdf->SetFont('', 'B', $default_font_size);
@@ -809,14 +942,14 @@ class pdf_bail_vide extends ModelePDFImmorent
 			// Sender properties
 			$owner = new ImmoOwner($this->db);
 			$result = $owner->fetch($object->fk_owner);
-			if ($owner->country_id)
+			/*if ($owner->country_id)
 			{
 				$tmparray=$owner->getCountry($owner->country_id,'all');
 				$owner->country_code=$tmparray['code'];
 				$owner->country=$tmparray['label'];
-			}
+			}*/
 			$carac_emetteur = pdf_build_address($outputlangs, $owner, $object->thirdparty, '', 0, 'source', $object);
-
+//var_dump($carac_emetteur);exit;
 			// Show sender
 			$posy=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 42;
 			$posy+=$top_shift;
@@ -972,130 +1105,6 @@ class pdf_bail_vide extends ModelePDFImmorent
 	        'content' => array(
 	            'align' => 'L',
 	        ),
-	    );
-
-	    // PHOTO
-        $rank = $rank + 10;
-        $this->cols['photo'] = array(
-            'rank' => $rank,
-            'width' => (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH)?20:$conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH), // in mm
-            'status' => false,
-            'title' => array(
-                'textkey' => 'Photo',
-                'label' => ' '
-            ),
-            'content' => array(
-                'padding' => array(0,0,0,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-            ),
-            'border-left' => false, // remove left line separator
-        );
-
-	    if (! empty($conf->global->MAIN_GENERATE_INVOICES_WITH_PICTURE) && !empty($this->atleastonephoto))
-	    {
-	        $this->cols['photo']['status'] = true;
-	    }
-
-
-	    $rank = $rank + 10;
-	    $this->cols['vat'] = array(
-	        'rank' => $rank,
-	        'status' => false,
-	        'width' => 16, // in mm
-	        'title' => array(
-	            'textkey' => 'VAT'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    if (empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT) && empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT_COLUMN))
-	    {
-	        $this->cols['vat']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['subprice'] = array(
-	        'rank' => $rank,
-	        'width' => 19, // in mm
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'PriceUHT'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    $rank = $rank + 10;
-	    $this->cols['qty'] = array(
-	        'rank' => $rank,
-	        'width' => 16, // in mm
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'Qty'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    $rank = $rank + 10;
-	    $this->cols['progress'] = array(
-	        'rank' => $rank,
-	        'width' => 19, // in mm
-	        'status' => false,
-	        'title' => array(
-	            'textkey' => 'Progress'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    if($this->situationinvoice)
-	    {
-	        $this->cols['progress']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['unit'] = array(
-	        'rank' => $rank,
-	        'width' => 11, // in mm
-	        'status' => false,
-	        'title' => array(
-	            'textkey' => 'Unit'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-	    if($conf->global->PRODUCT_USE_UNITS){
-	        $this->cols['unit']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['discount'] = array(
-	        'rank' => $rank,
-	        'width' => 13, // in mm
-	        'status' => false,
-	        'title' => array(
-	            'textkey' => 'ReductionShort'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-	    if ($this->atleastonediscount){
-	        $this->cols['discount']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['totalexcltax'] = array(
-	        'rank' => $rank,
-	        'width' => 26, // in mm
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'TotalHT'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-
-	    $parameters=array(
-	        'object' => $object,
-	        'outputlangs' => $outputlangs,
-	        'hidedetails' => $hidedetails,
-	        'hidedesc' => $hidedesc,
-	        'hideref' => $hideref
 	    );
 
 	    $reshook=$hookmanager->executeHooks('defineColumnField', $parameters, $this);    // Note that $object may have been modified by hook

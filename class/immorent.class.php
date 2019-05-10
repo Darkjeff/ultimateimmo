@@ -325,6 +325,7 @@ class ImmoRent extends CommonObject
 
 		$sql = 'SELECT '.$array.',';
 		$sql.= ' c.rowid as location_type_id, c.code as location_type_code, c.label as location_type,';
+		$sql.= ' s.rowid as socid, s.nom as name,';
 		$sql.= ' lc.lastname as nomlocataire,';
 		$sql.= ' lc.firstname as firstname_renter,';
 		$sql.= ' ll.label as nomlocal';		
@@ -332,6 +333,7 @@ class ImmoRent extends CommonObject
 		$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
 		$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_immorent_type as c ON t.location_type_id = c.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'societe as s ON t.fk_soc = s.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
@@ -350,6 +352,7 @@ class ImmoRent extends CommonObject
 
         			$this->date_creation = $this->db->jdate($obj->date_creation);
         			$this->tms = $this->db->jdate($obj->tms);
+					$this->socid = $obj->name;
 					
 					$this->location_type_id	= $obj->location_type_id;
 					$this->location_type_code = $obj->location_type_code;
@@ -516,12 +519,12 @@ class ImmoRent extends CommonObject
 
 			if ($this->model_pdf) {
 				$modele = $this->model_pdf;
-			} elseif (! empty($conf->global->IMMORENT_ADDON_PDF)) {
-				$modele = $conf->global->IMMORENT_ADDON_PDF;
+			} elseif (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) {
+				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
 			}
 		}
 
-		$modelpath = "ultimateimmo/core/modules/immorent/pdf/";
+		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref,$moreparams);
 	}

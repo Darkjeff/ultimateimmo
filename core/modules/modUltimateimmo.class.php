@@ -159,21 +159,6 @@ class modUltimateimmo extends DolibarrModules
 		$this->const[$r][3] = "";
 		$this->const[$r][4] = 0;
 		$r++;
-		
-		$this->const[$r][0] = "IMMORENT_ADDON_PDF";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = "bail_vide";
-		$this->const[$r][3] = 'Name of the immorent generation manager in PDF format';
-		$this->const[$r][4] = 0;
-		$r++;
-
-		$this->const[$r][0] = "IMMORENT_ADDON_NUMBER";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = "mod_immorent_simple";
-		$this->const[$r][3] = 'Name for numbering manager for immorent';
-		$this->const[$r][4] = 0;
-		$r++;
-
 
 		if (! isset($conf->ultimateimmo) || ! isset($conf->ultimateimmo->enabled))
 		{

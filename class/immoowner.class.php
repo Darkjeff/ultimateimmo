@@ -433,9 +433,13 @@ class ImmoOwner extends CommonObject
 					$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
 					if ($langs->trans("Country".$obj->country_code) != "Country".$obj->country_code)
+					{
 						$this->country = $langs->transnoentitiesnoconv("Country".$obj->country_code);
+					}
 					else
+					{
 						$this->country=$obj->country;
+					}
 					$this->setVarsFromFetchObj($obj);
 					
 					return $this->id;
