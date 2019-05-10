@@ -312,7 +312,6 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 					while ( $i < $num ) 
 					{
 						$objp = $this->db->fetch_object($resql);
-						//var_dump($objp->label);exit;
 						$i++;
 					}
 				}
@@ -333,18 +332,32 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 
 				$period = $outputlangs->transnoentities('');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				$carac_emetteur = pdf_build_address($outputlangs, $owner, $object->thirdparty, '', 0, 'source', $object);
-				$text = $outputlangs->transnoentities(" Le présent contrat est conclu entre les soussignés :\n");
+
+				$text = $outputlangs->transnoentities(" Le présent contrat est conclu entre les soussignés :\n\n");
 				// [nom et prénom, ou dénomination du bailleur/ domicile ou siège social/ qualité du bailleur (personne physique, personne morale (1))/ adresse électronique (facultatif)] (2)
-				$text .= $outputlangs->convToOutputCharset($owner->getFullName($outputlangs)). ' '.$carac_emetteur."\n"; 
+				$text .= $outputlangs->convToOutputCharset($owner->getFullName($outputlangs))."\n";
+				$carac_emetteur .= $owner->address . "\n";
+				$carac_emetteur .= $owner->zip . ' ' . $owner->town."\n";
+				$text .=  $carac_emetteur."\n"; 
 				$text .= 'En tant que '.$objp->label.' désigné (s) ci-après le bailleur' ;	
 				
-$text .= $outputlangs->transnoentities("
+				$text .= $outputlangs->transnoentities("
 - le cas échéant, représenté par le mandataire :
 - [nom ou raison sociale et adresse du mandataire ainsi que l'activité exercée] ;
-- le cas échéant, [numéro et lieu de délivrance de la carte professionnelle/ nom et adresse du garant] (3).
-- [nom et prénom du ou des locataires ou, en cas de colocation, des colocataires, adresse électronique (facultatif)]
-désigné (s) ci-après le locataire
+- le cas échéant, [numéro et lieu de délivrance de la carte professionnelle/ nom et adresse du garant] (3).\n\n");
+				//- [nom et prénom du ou des locataires ou, en cas de colocation, des colocataires, adresse électronique (facultatif)]
+				$renter = new ImmoRenter($this->db);
+				$result = $renter->fetch($object->fk_renter);
+				$carac_client_name= $outputlangs->convToOutputCharset($renter->getFullName($outputlangs));
+				$text .=  $carac_client_name."\n";
+				
+				$property = new ImmoProperty($this->db);
+				$result = $property->fetch($object->fk_property);
+				//$carac_client .= $property->label . "\n";
+				$carac_client .= $property->address . "\n";
+				$carac_client .= $property->zip . ' ' . $property->town."\n";
+				$text .=  $carac_client;
+				$text .= $outputlangs->transnoentities("désigné (s) ci-après le locataire\n
 Il a été convenu ce qui suit :");
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
 				//$pdf->writeHTMLCell($widthbox, 3, $this->marge_gauche, $tab_top + 5, $outputlangs->convToOutputCharset($text), 0, 1);
@@ -949,7 +962,7 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 				$owner->country=$tmparray['label'];
 			}*/
 			$carac_emetteur = pdf_build_address($outputlangs, $owner, $object->thirdparty, '', 0, 'source', $object);
-//var_dump($carac_emetteur);exit;
+
 			// Show sender
 			$posy=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 42;
 			$posy+=$top_shift;
