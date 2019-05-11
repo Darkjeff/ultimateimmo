@@ -43,6 +43,7 @@ include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
+dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo","companies","other"));
@@ -157,6 +158,7 @@ if (empty($reshook))
 
 $form=new Form($db);
 $formfile=new FormFile($db);
+$formultimateimmo=new FormUltimateimmo($db);
 
 llxHeader('','ImmoProperty','');
 
@@ -221,6 +223,10 @@ if ($action == 'create')
 			}
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
+		}
+		elseif ($val['label'] == 'ImmoProperty_Type') 
+		{
+			print $formultimateimmo->select_type_property();	
 		}
 		else
 		{
@@ -295,6 +301,10 @@ if (($id || $ref) && $action == 'edit')
 			}
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
+		}
+		elseif ($val['label'] == 'ImmoProperty_Type') 
+		{
+			print $formultimateimmo->select_type_property();	
 		}
 		else
 		{
