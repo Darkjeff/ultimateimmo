@@ -339,12 +339,12 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				$carac_emetteur .= $owner->address . "\n";
 				$carac_emetteur .= $owner->zip . ' ' . $owner->town."\n";
 				$text .=  $carac_emetteur."\n"; 
-				$text .= 'En tant que '.$objp->label.' désigné (s) ci-après le bailleur' ;	
+				$text .= 'En tant que '.$objp->label.' désigné (s) ci-après le bailleur'."\n\n" ;	
 				
-				$text .= $outputlangs->transnoentities("
+				/*$text .= $outputlangs->transnoentities("
 - le cas échéant, représenté par le mandataire :
 - [nom ou raison sociale et adresse du mandataire ainsi que l'activité exercée] ;
-- le cas échéant, [numéro et lieu de délivrance de la carte professionnelle/ nom et adresse du garant] (3).\n\n");
+- le cas échéant, [numéro et lieu de délivrance de la carte professionnelle/ nom et adresse du garant] (3).\n\n");*/
 				//- [nom et prénom du ou des locataires ou, en cas de colocation, des colocataires, adresse électronique (facultatif)]
 				$renter = new ImmoRenter($this->db);
 				$result = $renter->fetch($object->fk_renter);
@@ -355,14 +355,16 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				$result = $property->fetch($object->fk_property);
 				//$carac_client .= $property->label . "\n";
 				$carac_client .= $property->address . "\n";
-				$carac_client .= $property->zip . ' ' . $property->town."\n";
+				$carac_client .= $property->zip . ' ' . $property->town."\n\n";
 				$text .=  $carac_client;
 				$text .= $outputlangs->transnoentities("désigné (s) ci-après le locataire\n
-Il a été convenu ce qui suit :");
+Il a été convenu ce qui suit :\n\n");
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
-				//$pdf->writeHTMLCell($widthbox, 3, $this->marge_gauche, $tab_top + 5, $outputlangs->convToOutputCharset($text), 0, 1);
+
+				// Pied de page
+				$this->_pagefoot($pdf,$object,$outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 				
-				$this->_pagefoot($pdf,$object,$outputlangs,1);
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -383,11 +385,30 @@ Il a été convenu ce qui suit :");
 				$period = $outputlangs->transnoentities('');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 				
+				$sql = "SELECT ip.rowid, ip.fk_property_type, pt.rowid, pt.ref, pt.label ";
+				$sql .= " FROM " .MAIN_DB_PREFIX."ultimateimmo_immoproperty as ip";
+				$sql .= " JOIN " .MAIN_DB_PREFIX."ultimateimmo_immoproperty_type as pt ";
+				$sql .= " WHERE pt.rowid = ip.fk_property_type";
+
+				dol_syslog(get_class($this) . ':: pdf_bail_vide', LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				
+				if ($resql) 
+				{
+					$num = $this->db->num_rows($resql);
+					while ( $j < $num ) 
+					{
+						$objproperty = $this->db->fetch_object($resql);
+						$j++;
+					}
+				}
+				//var_dump($objproperty);exit;
 				$text = $outputlangs->transnoentities("Le présent contrat a pour objet la location d'un logement ainsi déterminé :
 A. Consistance du logement
-- localisation du logement : [exemples : adresse/ bâtiment/ étage/ porte etc.] ;
-- type d'habitat : [immeuble collectif ou individuel] ;
-- régime juridique de l'immeuble : [mono propriété ou copropriété] ;
+- localisation du logement : ").$property->address.' '.$outputlangs->transnoentities("/ bâtiment : ").$property->building.' '.$outputlangs->transnoentities("/escalier : ").$property->staircase.' '. $outputlangs->transnoentities("/étage : ").$property->numfloor.' '. $outputlangs->transnoentities("/porte : ").$property->numdoor."\n" ;
+				$text .= $property->zip.' '.$property->town.' '.$property->country."\n";
+				$text .= $outputlangs->transnoentities("- type d'habitat : ").$objproperty->label."\n";
+$text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : [mono propriété ou copropriété] ;
 - période de construction : [exemples : avant 1949, de 1949 à 1974, de 1975 à 1989, de 1989 à 2005, depuis 2005] ;
 - surface habitable : [...] m2 ;
 - nombre de pièces principales : [...] ;
@@ -407,7 +428,10 @@ E. Le cas échéant, Equipement d'accès aux technologies de l'information et de
 modalités de réception de la télévision dans l'immeuble, modalités de raccordement internet etc.]");
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
 				
-				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// Pied de page
+				$this->_pagefoot($pdf,$object,$outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+				
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -435,7 +459,10 @@ C. Le cas échéant, Evénement et raison justifiant la durée réduite du contr
 En l'absence de proposition de renouvellement du contrat, celui-ci est, à son terme, reconduit tacitement pour 3 ou 6 ans et dans les mêmes conditions. Le locataire peut mettre fin au bail à tout moment, après avoir donné congé. Le bailleur, quant à lui, peut mettre fin au bail à son échéance et après avoir donné congé, soit pour reprendre le logement en vue de l'occuper lui-même ou une personne de sa famille, soit pour le vendre, soit pour un motif sérieux et légitime.");
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
 				
-				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// Pied de page
+				$this->_pagefoot($pdf,$object,$outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+				
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -480,7 +507,10 @@ C. Le cas échéant, contribution pour le partage des économies de charges : (1
 D. Le cas échéant, En cas de colocation souscription par le bailleur d'une assurance pour le compte des colocataires (12) : [Oui/ Non]");
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
 				
-				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// Pied de page
+				$this->_pagefoot($pdf,$object,$outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+				
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -537,7 +567,10 @@ bailleur : [nature des travaux, modalités d'exécution, délai de réalisation 
 C. Le cas échéant, Diminution de loyer en cours de bail consécutive à des travaux entrepris par le locataire : [durée de cette diminution et, en cas de départ anticipé du locataire, modalités de son dédommagement sur justification des dépenses effectuées].");
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
 				
-				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// Pied de page
+				$this->_pagefoot($pdf,$object,$outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+				
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -608,7 +641,10 @@ C. Le cas échéant, Diminution de loyer en cours de bail consécutive à des tr
 				$text = $outputlangs->transnoentities("Modalités de résiliation de plein droit du contrat : [clause prévoyant la résiliation de plein droit du contrat de location pour un défaut de paiement du loyer ou des charges aux termes convenus, le non versement du dépôt de garantie, la non-souscription d'une assurance des risques locatifs ou le non-respect de l'obligation d'user paisiblement des locaux loués, résultant de troubles de voisinage constatés par une décision de justice passée en force de chose jugée].");
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
 				
-				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// Pied de page
+				$this->_pagefoot($pdf,$object,$outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+				
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -641,7 +677,10 @@ Plafonds applicables :
 [...] €/ m2 de surface habitable.");
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
 				
-				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// Pied de page
+				$this->_pagefoot($pdf,$object,$outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+				
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -696,7 +735,10 @@ Plafonds applicables :
 				$period = $outputlangs->transnoentities('');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 				
-				$this->_pagefoot($pdf,$object,$outputlangs,1);
+				// Pied de page
+				$this->_pagefoot($pdf,$object,$outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+				
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
