@@ -102,6 +102,7 @@ ImmoPayment = Payment
 ImmorentType = Immorent Type
 FurnishedApartment = Furnished Apartment
 EmptyHousing = Empty Housing
+Juridique = Régime juridique de l'immeuble
 Copropriete = Copropriete
 MonoPropriete = MonoPropriete
 TypePayment = Payment type
