@@ -126,7 +126,7 @@ if (empty($reshook))
 		$building = $object->label;
 
 		// todo debug insert into
-		$sql1 = 'INSERT INTO '.MAIN_DB_PREFIX.'immobilier_immoproperty(';
+		$sql1 = 'INSERT INTO '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty(';
 		$sql1 .= 'label,';
 		$sql1 .= 'fk_property';
 		$sql1 .= ') VALUES (';

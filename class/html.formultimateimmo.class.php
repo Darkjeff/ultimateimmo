@@ -24,302 +24,82 @@
 /**
  * Class to manage building of HTML components
  */
-class FormUltimateimmo extends Form {
-	public  $error;
+class FormUltimateimmo extends Form 
+{
+	/**
+     * @var DoliDB Database handler.
+     */
+    public $db;
+
+	/**
+	 * @var string Error code (or message)
+	 */
+	public $error='';
 	
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDB $db handler
 	 */
-	function __construct($db) {
-		global $langs;
+	function __construct($db) 
+	{
 		$this->db = $db;
-		return 1;
-	}
-	
-	/**
-	 * affiche un champs select contenant la liste des contact déjà référencés.
-	 *
-	 * @param int $selectid Id de la session selectionner
-	 * @param string $htmlname Name of HTML control
-	 * @param string $filter SQL part for filter
-	 * @param int $showempty empty field
-	 * @param int $forcecombo use combo box
-	 * @param array $event
-	 * @return string The HTML control
-	 */
-	public function select_immo_contact($selectid = '', $htmlname = 'contact', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
-		global $conf, $langs;
-		
-		$sql = "SELECT";
-		$sql .= " c.rowid, ";
-		$sql .= " s.lastname, s.firstname, s.civility, ";
-		$sql .= " soc.nom as socname";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "immo_contact as c";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON c.fk_socpeople = s.rowid";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = s.fk_soc";
-		$sql .= " WHERE c.archive = 0";
-		if (! empty($filter)) {
-			$sql .= ' AND ' . $filter;
-		}
-		$sql .= " ORDER BY socname";
-		
-		dol_syslog(get_class($this) . "::select_immo_contact", LOG_DEBUG);
-		$result = $this->db->query($sql);
-		if ($result) {
-			if ($conf->use_javascript_ajax && $conf->global->IMMO_CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo) {
-				$out .= ajax_combobox($htmlname, $event);
-			}
-			
-			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
-			if ($showempty)
-				$out .= '<option value="-1"></option>';
-			$num = $this->db->num_rows($result);
-			$i = 0;
-			if ($num) {
-				while ( $i < $num ) {
-					$obj = $this->db->fetch_object($result);
-					$label = $obj->firstname . ' ' . $obj->name;
-					if ($obj->socname)
-						$label .= ' (' . $obj->socname . ')';
-					
-					if ($selectid > 0 && $selectid == $obj->rowid) {
-						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
-					} else {
-						$out .= '<option value="' . $obj->rowid . '">' . $label . '</option>';
-					}
-					$i ++;
-				}
-			}
-			$out .= '</select>';
-			$this->db->free($result);
-			return $out;
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::select_immo_contact " . $this->error, LOG_ERR);
-			return - 1;
-		}
-	}
-	
-	/**
-	 * Return list of all contacts (for a third party or all)
-	 *
-	 * @param int $socid ot third party or 0 for all
-	 * @param string $selected contact pre-selectionne
-	 * @param string $htmlname of HTML field ('none' for a not editable field)
-	 * @param int $showempty empty value, 1=add an empty value
-	 * @param string $exclude of contacts id to exclude
-	 * @param string $limitto that are not id in this array list
-	 * @param string $showfunction function into label
-	 * @param string $moreclass class to class style
-	 * @param string $showsoc company into label
-	 * @param int $forcecombo use combo box
-	 * @param array $event Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid',
-	 *        'params'=>array('add-customer-contact'=>'disabled')))
-	 * @param bool $options_only only (for ajax treatment)
-	 * @param bool $supplier only
-	 * @return int if KO, Nb of contact in list if OK
-	 */
-	public function select_contacts_custom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = '', $showfunction = 0, $moreclass = '', $showsoc = 0, $forcecombo = 0, $event = array(), $options_only = false, $supplier=0) {
-		print $this->selectcontactscustom($socid, $selected, $htmlname, $showempty, $exclude, $limitto, $showfunction, $moreclass, $options_only, $showsoc, $forcecombo, $event);
-		return $this->num;
-	}
-	
-	/**
-	 * Return list of all contacts (for a third party or all)
-	 *
-	 * @param int $socid ot third party or 0 for all
-	 * @param string $selected contact pre-selectionne
-	 * @param string $htmlname of HTML field ('none' for a not editable field)
-	 * @param int $showempty empty value, 1=add an empty value, 2=add line 'Internal' (used by user edit)
-	 * @param string $exclude of contacts id to exclude
-	 * @param string $limitto contact ti display in max
-	 * @param string $showfunction function into label
-	 * @param string $moreclass class to class style
-	 * @param bool $options_only only (for ajax treatment)
-	 * @param string $showsoc company into label
-	 * @param int $forcecombo use combo box
-	 * @param array $event Example: array(array('method'=>'getContacts', 'url'=>dol_buildpath('/core/ajax/contacts.php',1), 'htmlname'=>'contactid',
-	 *        'params'=>array('add-customer-contact'=>'disabled')))
-	 * @param bool $supplier only
-	 * @return int if KO, Nb of contact in list if OK
-	 */
-	public function selectcontactscustom($socid, $selected = '', $htmlname = 'contactid', $showempty = 0, $exclude = '', $limitto = 0, $showfunction = 0, $moreclass = '', $options_only = false, $showsoc = 0, $forcecombo = 0, $event = array(), $supplier=0) {
-		global $conf, $langs, $user;
-		
-		$langs->load('companies');
-		
-		$out = '';
-		
-		// On recherche les societes
-		$sql = "SELECT DISTINCT sp.rowid, sp.lastname, sp.firstname, sp.poste";
-		if ($showsoc > 0) {
-			$sql .= " , s.nom as company";
-		}
-		$sql .= " FROM " . MAIN_DB_PREFIX . "socpeople as sp";
-		
-		if (empty($supplier)) {
-			$sql .= " LEFT OUTER JOIN  " . MAIN_DB_PREFIX . "societe as s ON s.rowid=sp.fk_soc ";
-		}else {
-			$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "societe as s ON s.rowid=sp.fk_soc and s.fournisseur=1";
-		}
-		
-		// Limit contact visibility to contact of thirdparty saleman
-		if (empty($user->rights->societe->client->voir)) {
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sc ON s.rowid = sc.fk_soc AND sc.fk_user = " . $user->id;
-		}
-		
-		$sql .= " WHERE sp.entity IN (" . getEntity('societe', 1) . ")";
-		if ($socid > 0) {
-			$sql .= " AND (sp.fk_soc IN (SELECT rowid FROM  " . MAIN_DB_PREFIX . "societe WHERE parent IN (SELECT parent FROM " . MAIN_DB_PREFIX . "societe WHERE rowid=" . $socid . '))';
-			$sql .= " OR (sp.fk_soc=" . $socid . ")";
-			$sql .= " OR (sp.fk_soc IN (SELECT parent FROM llx_societe WHERE rowid=" . $socid . "))";
-			$sql .= " OR (sp.fk_soc IN (SELECT rowid FROM " . MAIN_DB_PREFIX . "societe WHERE parent=" . $socid . ")))";
-		}
-		
-		if (! empty($conf->global->CONTACT_HIDE_INACTIVE_IN_COMBOBOX))
-			$sql .= " AND sp.statut<>0 ";
-		
-		
-		$sql .= " ORDER BY sp.lastname ASC";
-		
-		dol_syslog(get_class($this) . "::selectcontactscustom");
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			$num = $this->db->num_rows($resql);
-			
-			if ($conf->use_javascript_ajax && $conf->global->CONTACT_USE_SEARCH_TO_SELECT && ! $forcecombo && ! $options_only) {
-				$out .= ajax_combobox($htmlname, $event, $conf->global->CONTACT_USE_SEARCH_TO_SELECT);
-				
-				if ($num > $limitto && ! empty($limitto)) {
-					$num = $limitto;
-				}
-			}
-			
-			if ($htmlname != 'none' || $options_only)
-				$out .= '<select class="flat' . ($moreclass ? ' ' . $moreclass : '') . '" id="' . $htmlname . '" name="' . $htmlname . '">';
-			if ($showempty == 1)
-				$out .= '<option value="0"' . ($selected == '0' ? ' selected="selected"' : '') . '></option>';
-			if ($showempty == 2)
-				$out .= '<option value="0"' . ($selected == '0' ? ' selected="selected"' : '') . '>' . $langs->trans("Internal") . '</option>';
-			
-			$i = 0;
-			if ($num) {
-				include_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
-				$contactstatic = new Contact($this->db);
-				
-				while ( $i < $num ) {
-					$obj = $this->db->fetch_object($resql);
-					
-					$contactstatic->id = $obj->rowid;
-					$contactstatic->lastname = $obj->lastname;
-					$contactstatic->firstname = $obj->firstname;
-					
-					if ($htmlname != 'none') {
-						$disabled = 0;
-						if (is_array($exclude) && count($exclude) && in_array($obj->rowid, $exclude))
-							$disabled = 1;
-						if ($selected && $selected == $obj->rowid) {
-							$out .= '<option value="' . $obj->rowid . '"';
-							if ($disabled)
-								$out .= ' disabled="disabled"';
-							$out .= ' selected="selected">';
-							$out .= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste)
-								$out .= ' (' . $obj->poste . ')';
-							if (($showsoc > 0) && $obj->company)
-								$out .= ' - (' . $obj->company . ')';
-							$out .= '</option>';
-						} else {
-							$out .= '<option value="' . $obj->rowid . '"';
-							if ($disabled)
-								$out .= ' disabled="disabled"';
-							$out .= '>';
-							$out .= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste)
-								$out .= ' (' . $obj->poste . ')';
-							if (($showsoc > 0) && $obj->company)
-								$out .= ' - (' . $obj->company . ')';
-							$out .= '</option>';
-						}
-					} else {
-						if ($selected == $obj->rowid) {
-							$out .= $contactstatic->getFullName($langs);
-							if ($showfunction && $obj->poste)
-								$out .= ' (' . $obj->poste . ')';
-							if (($showsoc > 0) && $obj->company)
-								$out .= ' - (' . $obj->company . ')';
-						}
-					}
-					$i ++;
-				}
-			} else {
-				$out .= '<option value="-1"' . ($showempty == 2 ? '' : ' selected="selected"') . ' disabled="disabled">' . $langs->trans($socid ? "NoContactDefinedForThirdParty" : "NoContactDefined") . '</option>';
-			}
-			if ($htmlname != 'none' || $options_only) {
-				$out .= '</select>';
-			}
-			
-			$this->num = $num;
-			return $out;
-		} else {
-			dol_print_error($this->db);
-			return - 1;
-		}
 	}
 	
 	/**
 	 * Display list of property type
 	 *
-	 * @param int $selectid Id de la session selectionner
-	 * @param string $htmlname Name of HTML control
-	 * @param string $filter SQL part for filter
-	 * @param int $showempty empty field
-	 * @param int $forcecombo use combo box
-	 * @param array $event
-	 * @return string The HTML control
+	 *  @param  string	$selected   	Title preselected
+	 * 	@param	string	$htmlname		Name of HTML select combo field
+	 *  @param  string  $morecss        Add more css on SELECT element
+	 *  @return	string					String with HTML select
 	 */
-	public function select_type_property($selectid, $htmlname = 'property_type', $filter = '', $showempty = 1) {
-		global $conf, $langs;
+	public function select_type_property($selected='',$htmlname='type_property_id',$morecss='maxwidth100') 
+	{
+		global $conf,$langs,$user;
+		$langs->load("dict", "ultimateimmo@ultimateimmo");
 		
-		$sql = "SELECT t.id, t.code, t.label";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "c_immo_type_property as t";
-		if (! empty($filter)) {
-			$sql .= ' WHERE ' . $filter;
-		}
-		$sql .= " ORDER BY t.label";
+		$out='';
+
+		$sql = "SELECT rowid, code, label, active FROM ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as t";
+		$sql.= " WHERE active = 1";
 		
 		dol_syslog(get_class($this) . "::select_type_property", LOG_DEBUG);
-		$result = $this->db->query($sql);
-		if ($result) {
-			
-			$out .= '<select id="' . $htmlname . '" class="flat" name="' . $htmlname . '">';
-			if ($showempty)
-				$out .= '<option value="-1"></option>';
-			$num = $this->db->num_rows($result);
+		$resql = $this->db->query($sql);
+		if ($resql) 
+		{			
+			$out.= '<select class="flat'.($morecss?' '.$morecss:'').'" name="'.$htmlname.'" id="'.$htmlname.'">';
+			$out.= '<option value="">&nbsp;</option>';
+			$num = $this->db->num_rows($resql);
 			$i = 0;
-			if ($num) {
-				while ( $i < $num ) {
-					$obj = $this->db->fetch_object($result);
-					$label = ($obj->code && $langs->transnoentitiesnoconv($obj->code)!=$obj->code?$langs->transnoentitiesnoconv($obj->code):($obj->label!='-'?$obj->label:''));
-
-					if ($selectid > 0 && $selectid == $obj->id) {
-						$out .= '<option value="' . $obj->id . '" selected="selected">' . $label . '</option>';
-					} else {
-						$out .= '<option value="' . $obj->id . '">' . $label . '</option>';
+			if ($num)
+			{
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($resql);
+					if ($selected == $obj->code)
+					{
+						$out.= '<option value="'.$obj->code.'" selected>';
 					}
-					$i ++;
+					else
+					{
+						$out.= '<option value="'.$obj->code.'">';
+					}
+					// Si traduction existe, on l'utilise, sinon on prend le libelle par defaut
+					$out.= ($langs->trans("ImmoProperty_Type".$obj->code)!="ImmoProperty_Type".$obj->code ? $langs->trans("ImmoProperty_Type".$obj->code) : ($obj->label!='-'?$obj->label:''));
+					$out.= '</option>';
+					$i++;
 				}
 			}
-			$out .= '</select>';
-			$this->db->free($result);
-			return $out;
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::select_type_property " . $this->error, LOG_ERR);
-			return - 1;
+			$out.= '</select>';
+			if ($user->admin) $out.= info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"),1);
 		}
+		else
+		{
+			dol_print_error($this->db);
+		}
+		
+		return $out;
 	}
 	
 	/**

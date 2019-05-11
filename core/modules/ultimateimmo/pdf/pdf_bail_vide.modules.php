@@ -402,15 +402,15 @@ Il a été convenu ce qui suit :\n\n");
 						$j++;
 					}
 				}
-				//var_dump($objproperty);exit;
+				//var_dump($property);exit;
 				$text = $outputlangs->transnoentities("Le présent contrat a pour objet la location d'un logement ainsi déterminé :
 A. Consistance du logement
 - localisation du logement : ").$property->address.' '.$outputlangs->transnoentities("/ bâtiment : ").$property->building.' '.$outputlangs->transnoentities("/escalier : ").$property->staircase.' '. $outputlangs->transnoentities("/étage : ").$property->numfloor.' '. $outputlangs->transnoentities("/porte : ").$property->numdoor."\n" ;
 				$text .= $property->zip.' '.$property->town.' '.$property->country."\n";
 				$text .= $outputlangs->transnoentities("- type d'habitat : ").$objproperty->label."\n";
-$text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : [mono propriété ou copropriété] ;
-- période de construction : [exemples : avant 1949, de 1949 à 1974, de 1975 à 1989, de 1989 à 2005, depuis 2005] ;
-- surface habitable : [...] m2 ;
+$text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : ").$property->juridique."\n" ;;
+$text .= $outputlangs->transnoentities("- période de construction : ").$property->datep."\n" ;
+$text .= $outputlangs->transnoentities("- surface habitable : [...] m2 ;
 - nombre de pièces principales : [...] ;
 - le cas échéant, Autres parties du logement : [exemples : grenier, comble aménagé ou non, terrasse, balcon, loggia,
 jardin etc.] ;

@@ -767,6 +767,40 @@ class ImmoProperty extends CommonObject
 		else dol_print_error($dbtouse,'');
 		return 'Error';
 	}
+	
+	/**
+	 *    Return name of property type
+	 *
+	 *    @param      string	$code       Code of property type
+	 *    @return     string     			traduct name of property type
+	 */
+	function getPropertyTypeLabel($code)
+	{
+		global $db,$langs;
+
+		if (! $code) return '';
+
+		$sql = "SELECT label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type";
+		$sql.= " WHERE code='$code'";
+
+		dol_syslog("ImmoProperty.class::getPropertyTypeLabel", LOG_DEBUG);
+		$resql=$db->query($sql);
+		if ($resql)
+		{
+			$num = $db->num_rows($resql);
+
+			if ($num)
+			{
+				$obj = $db->fetch_object($resql);
+				$label=($obj->label!='-' ? $obj->label : '');
+				return $label;
+			}
+			else
+			{
+				return $langs->trans("NotDefined");
+			}
+		}
+	}
 
 	/**
 	 * Initialise object with example values

@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2015  Alexandre Spangaro  <aspangaro@zendsi.com>
+-- Copyright (C) 2018-2019  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -15,11 +15,10 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --
 -- ========================================================================
-create table if not exists llx_c_ultimateimmo_type_property
-(
-  id      integer     PRIMARY KEY,
-  code    varchar(12) NOT NULL,
-  label   varchar(30),
-  active  tinyint DEFAULT 1  NOT NULL,
-  module  varchar(32) NULL
-)ENGINE=innodb;
+CREATE TABLE IF NOT EXISTS  llx_c_ultimateimmo_immoproperty_type  (
+   rowid integer NOT NULL  AUTO_INCREMENT PRIMARY KEY,
+   code	varchar(8) NOT NULL, 
+   entity integer DEFAULT 1 NOT NULL,
+   label varchar(200) NOT NULL DEFAULT '',
+   active tinyint(4) DEFAULT 1 NOT NULL
+)ENGINE=InnoDB;

@@ -19,6 +19,8 @@ INSERT INTO llx_c_ultimateimmo_immoreceipt_status(rowid,code,label,active) VALUE
 
 INSERT INTO llx_c_ultimateimmo_immorent_type(rowid,code,label,active) VALUES (1, 'EMPTY_HOUSING', 'Logement vide', 1),(2, 'FURNISHED_APARTMENT', 'Logement meublé', 1);
 
+INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (1, 'IMMO_COL', 'Immeuble collectif', 1),(2, 'IMMO_INDIV', 'Maison individuelle', 1);
+
 
 
 
