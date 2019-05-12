@@ -202,33 +202,37 @@ class modUltimateimmo extends DolibarrModules
 			'tabname'=>array(
 				MAIN_DB_PREFIX."c_ultimateimmo_diagnostic", 
 				MAIN_DB_PREFIX."c_ultimateimmo_immorent_type",
-				MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type"
+				MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type",
+				MAIN_DB_PREFIX."c_ultimateimmo_juridique"
 			),
 			'tablib'=>array("DiagnosticImmo", 
 							"ImmorentType",
-							"ImmoProperty_Type"
+							"ImmoProperty_Type",
+							"Juridique"
 							),
 			'tabsql'=>array('SELECT d.rowid as rowid, d.code, d.label, d.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_diagnostic as d', 
 			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_immorent_type as t',
-			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_immoproperty_type as t'
+			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_immoproperty_type as t',
+			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as t'
 			),
 			'tabsqlsort'=>array(
-				"label ASC", "label ASC", "label ASC"
+				"label ASC", "label ASC", "label ASC", "label ASC"
 			),
 			'tabfield'=>array(
-				"code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label"
 			),
 			'tabfieldvalue'=>array(
-				"code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label"
 			),
 			'tabfieldinsert'=>array(
-				"code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label"
 			),
 			'tabrowid'=>array(
-				"rowid", "rowid", "rowid"
+				"rowid", "rowid", "rowid", "rowid"
 			),
 			'tabcond'=>array(
 				$conf->ultimateimmo->enabled, 
+				$conf->ultimateimmo->enabled,
 				$conf->ultimateimmo->enabled,
 				$conf->ultimateimmo->enabled
 			)

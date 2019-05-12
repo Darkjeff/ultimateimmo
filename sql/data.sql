@@ -17,9 +17,11 @@
 
 INSERT INTO llx_c_ultimateimmo_immoreceipt_status(rowid,code,label,active) VALUES (0, 'STATUS_DRAFT', 'Brouillon', 1),(1, 'STATUS_VALIDATED', 'Validée', 1);
 
-INSERT INTO llx_c_ultimateimmo_immorent_type(rowid,code,label,active) VALUES (1, 'EMPTY_HOUSING', 'Logement vide', 1),(2, 'FURNISHED_APARTMENT', 'Logement meublé', 1);
+INSERT INTO llx_c_ultimateimmo_immorent_type(rowid,code,label,active) VALUES (0, 'EMPTY_HOUSING', 'Logement vide', 1),(1, 'FURNISHED_APARTMENT', 'Logement meublé', 1);
 
-INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (1, 'IMMO_COL', 'Immeuble collectif', 1),(2, 'IMMO_INDIV', 'Maison individuelle', 1);
+INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (0, 'IMMO_COL', 'Immeuble collectif', 1),(1, 'IMMO_INDIV', 'Maison individuelle', 1);
+
+INSERT INTO llx_c_ultimateimmo_juridique(rowid,code,label,active) VALUES (0, 'MONO_PROP', 'Mono propriété', 1),(1, 'CO_PROP', 'Copropriété', 1);
 
 
 

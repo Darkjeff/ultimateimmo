@@ -23,6 +23,7 @@
  */
 
 dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
+dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
@@ -261,6 +262,9 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 			// On recupere les infos societe
 			$renter = new ImmoRenter($this->db);
 			$result = $renter->fetch($object->fk_renter);
+			
+			$rent = new ImmoRent($this->db);
+			$result = $rent->fetch($object->fk_rent);
 
 			$owner = new ImmoOwner($this->db);
 			$result = $owner->fetch($object->fk_owner);
@@ -403,12 +407,14 @@ Il a été convenu ce qui suit :\n\n");
 					}
 				}
 				//var_dump($property);exit;
+				$formultimateimmo = new FormUltimateimmo($code);
 				$text = $outputlangs->transnoentities("Le présent contrat a pour objet la location d'un logement ainsi déterminé :
 A. Consistance du logement
 - localisation du logement : ").$property->address.' '.$outputlangs->transnoentities("/ bâtiment : ").$property->building.' '.$outputlangs->transnoentities("/escalier : ").$property->staircase.' '. $outputlangs->transnoentities("/étage : ").$property->numfloor.' '. $outputlangs->transnoentities("/porte : ").$property->numdoor."\n" ;
 				$text .= $property->zip.' '.$property->town.' '.$property->country."\n";
 				$text .= $outputlangs->transnoentities("- type d'habitat : ").$objproperty->label."\n";
-$text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : ").$property->juridique."\n" ;;
+				//var_dump($objproperty->label);exit;
+$text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : ").$formultimateimmo->getLabelFormeJuridique($property->juridique)."\n" ;
 $text .= $outputlangs->transnoentities("- période de construction : ").$property->datep."\n" ;
 $text .= $outputlangs->transnoentities("- surface habitable : [...] m2 ;
 - nombre de pièces principales : [...] ;

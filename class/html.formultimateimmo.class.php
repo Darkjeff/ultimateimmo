@@ -101,5 +101,39 @@ class FormUltimateimmo extends Form
 		
 		return $out;
 	}
+	
+	/**
+	 *    Retourne le nom traduit de la forme juridique
+	 *
+	 *    @param      string	$rowid      rowid de la forme juridique
+	 *    @return     string     			Nom traduit du code juridique
+	 */
+	function getLabelFormeJuridique($rowid)
+	{
+		global $db,$langs;
+
+		if (! $rowid) return '';
+
+		$sql = "SELECT label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_juridique";
+		$sql.= " WHERE rowid='$rowid'";
+
+		dol_syslog("html.formultimateimmo.class::getLabelFormeJuridique", LOG_DEBUG);
+		$resql=$db->query($sql);
+		if ($resql)
+		{
+			$num = $db->num_rows($resql);
+
+			if ($num)
+			{
+				$obj = $db->fetch_object($resql);
+				$label=($obj->label!='-' ? $obj->label : '');
+				return $label;
+			}
+			else
+			{
+				return $langs->trans("NotDefined");
+			}
+		}
+	}
 
 }
