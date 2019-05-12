@@ -389,11 +389,12 @@ Il a été convenu ce qui suit :\n\n");
 				$period = $outputlangs->transnoentities('');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 				
-				$sql = "SELECT ip.rowid, ip.fk_property_type, pt.rowid, pt.ref, pt.label, ir.rowid, ir.fk_property, ir.location_type_id, rt.label ";
+				$sql = "SELECT ip.rowid, ip.fk_property_type, ip.juridique, ip.datebuilt, pt.rowid, pt.ref, pt.label, ir.rowid, ir.fk_property, ir.location_type_id, rt.label, ij.rowid ";
 				$sql .= " FROM " .MAIN_DB_PREFIX."ultimateimmo_immoproperty as ip";
 				$sql .= " , " .MAIN_DB_PREFIX."ultimateimmo_immoproperty_type as pt ";
 				$sql .= " , " .MAIN_DB_PREFIX."ultimateimmo_immorent as ir ";
 				$sql .= " , " .MAIN_DB_PREFIX."c_ultimateimmo_immorent_type as rt ";
+				$sql .= " , " .MAIN_DB_PREFIX."c_ultimateimmo_juridique as ij ";
 				$sql .= " WHERE pt.rowid = ip.fk_property_type AND ip.rowid = ir.fk_property";
 
 				dol_syslog(get_class($this) . ':: pdf_bail_vide', LOG_DEBUG);
@@ -408,7 +409,7 @@ Il a été convenu ce qui suit :\n\n");
 						$j++;
 					}
 				}
-				//var_dump($property);exit;
+				
 				$formultimateimmo = new FormUltimateimmo($code);
 				$text = $outputlangs->transnoentities("Le présent contrat a pour objet la location d'un logement ainsi déterminé :
 A. Consistance du logement
@@ -417,12 +418,12 @@ A. Consistance du logement
 				$text .= $outputlangs->transnoentities("- type d'habitat : ").$objproperty->label."\n";
 				
 $text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : ").$formultimateimmo->getLabelFormeJuridique($property->juridique)."\n" ;
-$text .= $outputlangs->transnoentities("- période de construction : ").$property->datep."\n" ;
-//var_dump($property->datep);exit;
-$text .= $outputlangs->transnoentities("- surface habitable : [...] m2 ;
-- nombre de pièces principales : [...] ;
-- le cas échéant, Autres parties du logement : [exemples : grenier, comble aménagé ou non, terrasse, balcon, loggia,
-jardin etc.] ;
+$text .= $outputlangs->transnoentities("- période de construction : ").$formultimateimmo->getLabelBuiltDate($property->datebuilt)."\n" ;
+
+//var_dump($property->area);exit;
+$text .= $outputlangs->transnoentities("- surface habitable : ") .$property->area."\n";
+$text .= $outputlangs->transnoentities("- nombre de pièces principales : ") .$property->numroom."\n";
+$text .= $outputlangs->transnoentities("- le cas échéant, Autres parties du logement : [exemples : grenier, comble aménagé ou non, terrasse, balcon, loggia, jardin etc.] ;
 - le cas échéant, Eléments d'équipements du logement : [exemples : cuisine équipée, détail des installations sanitaires
 etc.] ;
 - modalité de production de chauffage : [individuel ou collectif] (4) ;

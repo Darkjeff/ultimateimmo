@@ -102,6 +102,7 @@ class ImmoProperty extends CommonObject
 		'numflat' => array('type'=>'varchar(8)', 'label'=>'NumFlat', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1,),
 		'numdoor' => array('type'=>'varchar(8)', 'label'=>'NumDoor', 'enabled'=>1, 'visible'=>1, 'position'=>85, 'notnull'=>-1,),
 		'area' => array('type'=>'varchar(8)', 'label'=>'Area', 'enabled'=>1, 'visible'=>1, 'position'=>90, 'notnull'=>-1,),
+		'numroom' => array('type'=>'integer', 'label'=>'NumberOfRoom', 'enabled'=>1, 'visible'=>1, 'position'=>92, 'notnull'=>-1,),
 		'zip' => array('type'=>'varchar(32)', 'label'=>'Zip', 'enabled'=>1, 'visible'=>1, 'position'=>95, 'notnull'=>-1,),
 		'town' => array('type'=>'varchar(64)', 'label'=>'Town', 'enabled'=>1, 'visible'=>1, 'position'=>100, 'notnull'=>-1,),
 		'country_id' => array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>110, 'notnull'=>-1,),
@@ -132,6 +133,7 @@ class ImmoProperty extends CommonObject
 	public $numflat;
 	public $numdoor;
 	public $area;
+	public $numroom;
 	public $zip;
 	public $town;
 	public $country_id;
