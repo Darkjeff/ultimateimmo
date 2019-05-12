@@ -89,7 +89,7 @@ class ImmoProperty extends CommonObject
 		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'PropertyParent', 'enabled'=>1, 'visible'=>-1, 'position'=>25, 'notnull'=>-1,),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
 		'juridique' => array('type'=>'integer', 'label'=>'Juridique', 'enabled'=>1, 'visible'=>1, 'position'=>32, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'MonoPropriete', '1'=>'Copropriete')),
-		'datep' => array('type'=>'integer', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'DateBuilt1', '1'=>'DateBuilt2', '2'=>'DateBuilt13', '3'=>'DateBuilt14', '4'=>'DateBuilt15')),
+		'datebuilt' => array('type'=>'integer', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'DateBuilt1', '1'=>'DateBuilt2', '2'=>'DateBuilt13', '3'=>'DateBuilt14', '4'=>'DateBuilt15')),
 		'target' => array('type'=>'integer', 'label'=>'Target', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'Location', '1'=>'Vente', '-1'=>'Autre'), 'comment'=>"Rent or sale",),
 		'fk_owner' => array('type'=>'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
@@ -119,7 +119,7 @@ class ImmoProperty extends CommonObject
 	public $fk_property;
 	public $label;
 	public $juridique;
-	public $datep;
+	public $datebuilt;
 	public $target;
 	public $fk_owner;
 	public $fk_soc;
@@ -187,7 +187,7 @@ class ImmoProperty extends CommonObject
 		// Translate some data
 		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
 		$this->fields['juridique']['arrayofkeyval']=array(0=>$langs->trans('MonoPropriete'), 1=>$langs->trans('Copropriete'));
-		$this->fields['datep']['arrayofkeyval']=array(0=>$langs->trans('DateBuilt1'), 1=>$langs->trans('DateBuilt2'), 2=>$langs->trans('DateBuilt3'), 3=>$langs->trans('DateBuilt4'), 4=>$langs->trans('DateBuilt5'));
+		$this->fields['datebuilt']['arrayofkeyval']=array(0=>$langs->trans('DateBuilt1'), 1=>$langs->trans('DateBuilt2'), 2=>$langs->trans('DateBuilt3'), 3=>$langs->trans('DateBuilt4'), 4=>$langs->trans('DateBuilt5'));
 	}
 	
 	/**
@@ -207,7 +207,6 @@ class ImmoProperty extends CommonObject
 
 		$fieldvalues = $this->setSaveQuery();
 		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation']=$this->db->idate($now);
-		if (array_key_exists('datep', $fieldvalues) && empty($fieldvalues['datep'])) $fieldvalues['datep']=$this->db->jdate($object->datep);
 		if (array_key_exists('fk_user_creat', $fieldvalues) && ! ($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat']=$user->id;
 		unset($fieldvalues['rowid']);	// The field 'rowid' is reserved field name for autoincrement field so we don't need it into insert.
 
@@ -441,8 +440,6 @@ class ImmoProperty extends CommonObject
 
         			$this->date_creation = $this->db->jdate($obj->date_creation);
         			$this->tms = $this->db->jdate($obj->tms);
-					
-					$this->datep = $this->db->jdate($obj->datep);
 
         			$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
@@ -766,40 +763,6 @@ class ImmoProperty extends CommonObject
 		}
 		else dol_print_error($dbtouse,'');
 		return 'Error';
-	}
-	
-	/**
-	 *    Return name of property type
-	 *
-	 *    @param      string	$code       Code of property type
-	 *    @return     string     			traduct name of property type
-	 */
-	function getPropertyTypeLabel($code)
-	{
-		global $db,$langs;
-
-		if (! $code) return '';
-
-		$sql = "SELECT label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type";
-		$sql.= " WHERE code='$code'";
-
-		dol_syslog("ImmoProperty.class::getPropertyTypeLabel", LOG_DEBUG);
-		$resql=$db->query($sql);
-		if ($resql)
-		{
-			$num = $db->num_rows($resql);
-
-			if ($num)
-			{
-				$obj = $db->fetch_object($resql);
-				$label=($obj->label!='-' ? $obj->label : '');
-				return $label;
-			}
-			else
-			{
-				return $langs->trans("NotDefined");
-			}
-		}
 	}
 
 	/**

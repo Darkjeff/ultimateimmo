@@ -23,6 +23,8 @@ INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES
 
 INSERT INTO llx_c_ultimateimmo_juridique(rowid,code,label,active) VALUES (0, 'MONO_PROP', 'Mono propriété', 1),(1, 'CO_PROP', 'Copropriété', 1);
 
+INSERT INTO llx_c_ultimateimmo_builtdate(rowid,code,label,active) VALUES (0, 'BUILT1', 'avant 1949', 1),(1, 'BUILT2', 'de 1949 à 1974', 1),(2, 'BUILT3', 'de 1975 à 1989', 1),(3, 'BUILT4', 'de 1989 à 2005', 1),(4, 'BUILT5', 'depuis 2005', 1);
+
 
 
 

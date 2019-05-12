@@ -389,10 +389,12 @@ Il a été convenu ce qui suit :\n\n");
 				$period = $outputlangs->transnoentities('');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 				
-				$sql = "SELECT ip.rowid, ip.fk_property_type, pt.rowid, pt.ref, pt.label ";
+				$sql = "SELECT ip.rowid, ip.fk_property_type, pt.rowid, pt.ref, pt.label, ir.rowid, ir.fk_property, ir.location_type_id, rt.label ";
 				$sql .= " FROM " .MAIN_DB_PREFIX."ultimateimmo_immoproperty as ip";
-				$sql .= " JOIN " .MAIN_DB_PREFIX."ultimateimmo_immoproperty_type as pt ";
-				$sql .= " WHERE pt.rowid = ip.fk_property_type";
+				$sql .= " , " .MAIN_DB_PREFIX."ultimateimmo_immoproperty_type as pt ";
+				$sql .= " , " .MAIN_DB_PREFIX."ultimateimmo_immorent as ir ";
+				$sql .= " , " .MAIN_DB_PREFIX."c_ultimateimmo_immorent_type as rt ";
+				$sql .= " WHERE pt.rowid = ip.fk_property_type AND ip.rowid = ir.fk_property";
 
 				dol_syslog(get_class($this) . ':: pdf_bail_vide', LOG_DEBUG);
 				$resql = $this->db->query($sql);
@@ -413,9 +415,10 @@ A. Consistance du logement
 - localisation du logement : ").$property->address.' '.$outputlangs->transnoentities("/ bâtiment : ").$property->building.' '.$outputlangs->transnoentities("/escalier : ").$property->staircase.' '. $outputlangs->transnoentities("/étage : ").$property->numfloor.' '. $outputlangs->transnoentities("/porte : ").$property->numdoor."\n" ;
 				$text .= $property->zip.' '.$property->town.' '.$property->country."\n";
 				$text .= $outputlangs->transnoentities("- type d'habitat : ").$objproperty->label."\n";
-				//var_dump($objproperty->label);exit;
+				
 $text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : ").$formultimateimmo->getLabelFormeJuridique($property->juridique)."\n" ;
 $text .= $outputlangs->transnoentities("- période de construction : ").$property->datep."\n" ;
+//var_dump($property->datep);exit;
 $text .= $outputlangs->transnoentities("- surface habitable : [...] m2 ;
 - nombre de pièces principales : [...] ;
 - le cas échéant, Autres parties du logement : [exemples : grenier, comble aménagé ou non, terrasse, balcon, loggia,

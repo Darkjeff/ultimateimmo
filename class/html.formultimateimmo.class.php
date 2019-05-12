@@ -103,6 +103,40 @@ class FormUltimateimmo extends Form
 	}
 	
 	/**
+	 *    Return name of property type
+	 *
+	 *    @param      string	$code       Code of property type
+	 *    @return     string     			traduct name of property type
+	 */
+	function getPropertyTypeLabel($code)
+	{
+		global $db,$langs;
+
+		if (! $code) return '';
+
+		$sql = "SELECT label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type";
+		$sql.= " WHERE code='$code'";
+
+		dol_syslog("ImmoProperty.class::getPropertyTypeLabel", LOG_DEBUG);
+		$resql=$db->query($sql);
+		if ($resql)
+		{
+			$num = $db->num_rows($resql);
+
+			if ($num)
+			{
+				$obj = $db->fetch_object($resql);
+				$label=($obj->label!='-' ? $obj->label : '');
+				return $label;
+			}
+			else
+			{
+				return $langs->trans("NotDefined");
+			}
+		}
+	}
+	
+	/**
 	 *    Retourne le nom traduit de la forme juridique
 	 *
 	 *    @param      string	$rowid      rowid de la forme juridique
@@ -118,6 +152,40 @@ class FormUltimateimmo extends Form
 		$sql.= " WHERE rowid='$rowid'";
 
 		dol_syslog("html.formultimateimmo.class::getLabelFormeJuridique", LOG_DEBUG);
+		$resql=$db->query($sql);
+		if ($resql)
+		{
+			$num = $db->num_rows($resql);
+
+			if ($num)
+			{
+				$obj = $db->fetch_object($resql);
+				$label=($obj->label!='-' ? $obj->label : '');
+				return $label;
+			}
+			else
+			{
+				return $langs->trans("NotDefined");
+			}
+		}
+	}
+	
+	/**
+	 *    Retourne le nom traduit de la date de construction
+	 *
+	 *    @param      string	$rowid      rowid de la date de construction
+	 *    @return     string     			Nom traduit de la date de construction
+	 */
+	function getLabelBuiltDate($rowid)
+	{
+		global $db,$langs;
+
+		if (! $rowid) return '';
+
+		$sql = "SELECT label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_builtdate";
+		$sql.= " WHERE rowid='$rowid'";
+
+		dol_syslog("html.formultimateimmo.class::getLabelBuiltDate", LOG_DEBUG);
 		$resql=$db->query($sql);
 		if ($resql)
 		{
