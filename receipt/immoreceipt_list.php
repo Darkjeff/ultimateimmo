@@ -387,6 +387,46 @@ if ($user->rights->ultimateimmo->delete) $arrayofmassactions['predelete']=$langs
 if (GETPOST('nomassaction','int') || in_array($massaction, array('presend','predelete'))) $arrayofmassactions=array();
 $massactionbutton=$form->selectMassAction('', $arrayofmassactions);
 
+if 	($massaction == 'valid') 
+{	
+	foreach($toselect as $key => $val) 
+	{ 	
+		$immoreceipt = new ImmoReceipt($db);	
+		$result = $immoreceipt->fetch($val);		
+		if ($result >= 0)
+		{		
+			$resultvalid = $immoreceipt->valid($user);
+		
+			if ($resultvalid >= 0)
+			{
+				if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE))
+				{
+					// Define output language
+					$outputlangs = $langs;
+					$newlang = '';
+					if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id','aZ09')) $newlang = GETPOST('lang_id','aZ09');
+					if ($conf->global->MAIN_MULTILANGS && empty($newlang))	$newlang = $immoreceipt->thirdparty->default_lang;
+					if (! empty($newlang)) 
+					{
+						$outputlangs = new Translate("", $conf);
+						$outputlangs->setDefaultLang($newlang);
+					}
+					$model=$immoreceipt->model_pdf;
+					$ret = $immoreceipt->fetch($val); // Reload to get new records
+					$immoreceipt->generateDocument($model, $outputlangs, $hidedetails, $hidedesc, $hideref);
+				}
+
+			} 
+			else 
+			{
+				$langs->load("errors");
+				if (count($immoreceipt->errors) > 0) setEventMessages($immoreceipt->error, $immoreceipt->errors, 'errors');
+				else setEventMessages($langs->trans($immoreceipt->error), null, 'errors');
+			}
+		}
+	}
+}
+
 print '<form method="POST" id="searchFormList" action="'.$_SERVER["PHP_SELF"].'">';
 if ($optioncss != '') print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';

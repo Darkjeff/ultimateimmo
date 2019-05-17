@@ -421,9 +421,10 @@ class ImmoProperty extends CommonObject
 		$array = implode(', t.', $array);
 
 		$sql = 'SELECT '.$array.',';
-		$sql.= ' c.rowid as country_id, c.code as country_code, c.label as country';
+		$sql.= ' c.rowid as country_id, c.code as country_code, c.label as country, j.rowid as juridique_id';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country_id = c.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as j ON t.juridique = j.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);

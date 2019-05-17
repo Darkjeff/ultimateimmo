@@ -246,21 +246,21 @@ if (empty($reshook))
 		
 		if (empty($dateech)) 
 		{
-			$error++;
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), null, 'errors');
 			$action = 'createall';
+			$error++;
 		} 
 		elseif (empty($dateperiod)) 
 		{
-			$error++;
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_du")), null, 'errors');
 			$action = 'createall';
+			$error++;
 		} 
 		elseif (empty($dateperiodend)) 
 		{
-			$error++;
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_au")), null, 'errors');
 			$action = 'createall';
+			$error++;
 		} 
 		else 
 		{		
@@ -316,9 +316,9 @@ if (empty($reshook))
 				$result = $receipt->create($user);
 				if ($result < 0) 
 				{
-					$error++;
 					setEventMessages(null, $receipt->errors, 'errors');
 					$action='createall';
+					$error++;
 				}
 			}
 		}

@@ -104,7 +104,7 @@ class ImmoReceipt extends CommonObject
 	 */
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
-		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
+		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>-1, 'position'=>10, 'notnull'=>1, 'default'=>'(PROV)', 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
 		'fk_rent' => array('type'=>'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'foreignkey'=>'immobilier_immorent.rowid',),
 		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'foreignkey'=>'immobilier_immoproperty.rowid', 'help'=>"LinkToProperty",),
 		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'foreignkey'=>'immobilier_immorenter.rowid', 'help'=>"LinkToRenter",),
@@ -271,6 +271,7 @@ class ImmoReceipt extends CommonObject
 			// If field is an implicit foreign key field
 			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key]='';
 			if (! empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key]='';
+			if (empty($this->fields[$key]['ref']) && $values[$key] == '') $values[$key]='(PROV'.$this->id.')'; //is that ok ?
 
 			//var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
 			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && ! isset($values[$key]) && is_null($val['default']))
@@ -532,6 +533,11 @@ class ImmoReceipt extends CommonObject
     		    {
         			$this->id = $id;
         			$this->set_vars_by_db($obj);
+					
+					if ($obj->fk_statut == self::STATUS_DRAFT)
+					{
+						$this->brouillon = 1;
+					}
 
         			$this->date_rent = $this->db->jdate($obj->date_rent);
 					$this->date_start = $this->db->jdate($obj->date_start);

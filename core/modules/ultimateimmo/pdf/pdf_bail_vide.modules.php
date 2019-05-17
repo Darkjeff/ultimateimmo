@@ -27,6 +27,7 @@ dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immoproperty_type.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immoowner_type.class.php');
@@ -274,6 +275,9 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 
 			$property = new ImmoProperty($this->db);
 			$result = $property->fetch($object->fk_property);
+			
+			$propertytype = new ImmoProperty_Type($this->db);
+			$result = $propertytype->fetch($object->fk_property_type);
 
 			$paiement = new Immopayment($this->db);
 			$result = $paiement->fetch_by_loyer($object->id);
@@ -389,13 +393,13 @@ Il a été convenu ce qui suit :\n\n");
 				$period = $outputlangs->transnoentities('');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 				
-				$sql = "SELECT ip.rowid, ip.fk_property_type, ip.juridique, ip.datebuilt, pt.rowid, pt.ref, pt.label, ir.rowid, ir.fk_property, ir.location_type_id, rt.label, ij.rowid ";
+				$sql = "SELECT ip.rowid, ip.fk_property_type, ip.juridique as juridique, ip.datebuilt, pt.rowid as property_type_id, pt.ref, pt.label as type_habitat, ir.rowid, ir.fk_property, ir.location_type_id, ir.date_start, rt.rowid, rt.label as location_type, ij.rowid ";
 				$sql .= " FROM " .MAIN_DB_PREFIX."ultimateimmo_immoproperty as ip";
 				$sql .= " , " .MAIN_DB_PREFIX."ultimateimmo_immoproperty_type as pt ";
 				$sql .= " , " .MAIN_DB_PREFIX."ultimateimmo_immorent as ir ";
 				$sql .= " , " .MAIN_DB_PREFIX."c_ultimateimmo_immorent_type as rt ";
 				$sql .= " , " .MAIN_DB_PREFIX."c_ultimateimmo_juridique as ij ";
-				$sql .= " WHERE pt.rowid = ip.fk_property_type AND ip.rowid = ir.fk_property";
+				$sql .= " WHERE ip.fk_property_type = pt.rowid AND ip.rowid = ir.fk_property AND ir.rowid = ".$object->id;
 
 				dol_syslog(get_class($this) . ':: pdf_bail_vide', LOG_DEBUG);
 				$resql = $this->db->query($sql);
@@ -407,35 +411,34 @@ Il a été convenu ce qui suit :\n\n");
 					{
 						$objproperty = $this->db->fetch_object($resql);
 						$j++;
+						//var_dump($objproperty);exit;
 					}
 				}
 				
 				$formultimateimmo = new FormUltimateimmo($code);
+				//var_dump($objproperty->location_type_id);exit;
 				$text = $outputlangs->transnoentities("Le présent contrat a pour objet la location d'un logement ainsi déterminé :
 A. Consistance du logement
 - localisation du logement : ").$property->address.' '.$outputlangs->transnoentities("/ bâtiment : ").$property->building.' '.$outputlangs->transnoentities("/escalier : ").$property->staircase.' '. $outputlangs->transnoentities("/étage : ").$property->numfloor.' '. $outputlangs->transnoentities("/porte : ").$property->numdoor."\n" ;
 				$text .= $property->zip.' '.$property->town.' '.$property->country."\n";
-				$text .= $outputlangs->transnoentities("- type d'habitat : ").$objproperty->label."\n";
 				
-$text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : ").$formultimateimmo->getLabelFormeJuridique($property->juridique)."\n" ;
-$text .= $outputlangs->transnoentities("- période de construction : ").$formultimateimmo->getLabelBuiltDate($property->datebuilt)."\n" ;
-
-//var_dump($property->area);exit;
-$text .= $outputlangs->transnoentities("- surface habitable : ") .$property->area."\n";
-$text .= $outputlangs->transnoentities("- nombre de pièces principales : ") .$property->numroom."\n";
-$text .= $outputlangs->transnoentities("- le cas échéant, Autres parties du logement : [exemples : grenier, comble aménagé ou non, terrasse, balcon, loggia, jardin etc.] ;
-- le cas échéant, Eléments d'équipements du logement : [exemples : cuisine équipée, détail des installations sanitaires
-etc.] ;
+				$text .= $outputlangs->transnoentities("- type d'habitat : ").$formultimateimmo->getPropertyTypeLabel($objproperty->property_type_id)."\n";
+				
+				$text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : ").$formultimateimmo->getLabelFormeJuridique($objproperty->juridique)."\n" ;
+				
+				$text .= $outputlangs->transnoentities("- période de construction : ").$formultimateimmo->getLabelBuiltDate($property->datebuilt)."\n" ;
+//var_dump($object->date_start);exit;
+				$text .= $outputlangs->transnoentities("- surface habitable : ") .$property->area."\n";
+				
+				$text .= $outputlangs->transnoentities("- nombre de pièces principales : ") .$property->numroom."\n";
+				$text .= $outputlangs->transnoentities("- le cas échéant, Autres parties du logement : [exemples : grenier, comble aménagé ou non, terrasse, balcon, loggia, jardin etc.] ;
+- le cas échéant, Eléments d'équipements du logement : [exemples : cuisine équipée, détail des installations sanitaires etc.] ;
 - modalité de production de chauffage : [individuel ou collectif] (4) ;
 - modalité de production d'eau chaude sanitaire : [individuelle ou collective] (5).
 B. Destination des locaux : [usage d'habitation ou usage mixte professionnel et d'habitation]
-C. Le cas échéant, Désignation des locaux et équipements accessoires de l'immeuble à usage privatif du
-locataire : [exemples : cave, parking, garage etc.]
-D. Le cas échéant, Enumération des locaux, parties, équipements et accessoires de l'immeuble à usage
-commun : [Garage à vélo, ascenseur, espaces verts, aires et équipements de jeux, laverie, local poubelle,
-gardiennage, autres prestations et services collectifs etc.]
-E. Le cas échéant, Equipement d'accès aux technologies de l'information et de la communication : [exemples :
-modalités de réception de la télévision dans l'immeuble, modalités de raccordement internet etc.]");
+C. Le cas échéant, Désignation des locaux et équipements accessoires de l'immeuble à usage privatif du locataire : [exemples : cave, parking, garage etc.]
+D. Le cas échéant, Enumération des locaux, parties, équipements et accessoires de l'immeuble à usage commun : [Garage à vélo, ascenseur, espaces verts, aires et équipements de jeux, laverie, local poubelle, gardiennage, autres prestations et services collectifs etc.]
+E. Le cas échéant, Equipement d'accès aux technologies de l'information et de la communication : [exemples : modalités de réception de la télévision dans l'immeuble, modalités de raccordement internet etc.]");
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
 				
 				// Pied de page
@@ -462,9 +465,8 @@ modalités de réception de la télévision dans l'immeuble, modalités de racco
 				$period = $outputlangs->transnoentities('');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 				
-				$text = $outputlangs->transnoentities(" La durée du contrat et sa date de prise d'effet sont ainsi définies :
-A. Date de prise d'effet du contrat : [...]
-B. Durée du contrat : [durée minimale de trois ou six ans selon la qualité du bailleur] ou [durée réduite et minimale d'un an lorsqu'un événement précis (6) le justifie]
+				$text = $outputlangs->transnoentities(" La durée du contrat et sa date de prise d'effet sont ainsi définies : \n\n A. Date de prise d'effet du contrat : Le ") . dol_print_date($object->date_start, "daytext", false, $outputlangs, true)."\n\n";
+$text .= $outputlangs->transnoentities("B. Durée du contrat : [durée minimale de trois ou six ans selon la qualité du bailleur] ou [durée réduite et minimale d'un an lorsqu'un événement précis (6) le justifie]
 C. Le cas échéant, Evénement et raison justifiant la durée réduite du contrat de location : [...]
 En l'absence de proposition de renouvellement du contrat, celui-ci est, à son terme, reconduit tacitement pour 3 ou 6 ans et dans les mêmes conditions. Le locataire peut mettre fin au bail à tout moment, après avoir donné congé. Le bailleur, quant à lui, peut mettre fin au bail à son échéance et après avoir donné congé, soit pour reprendre le logement en vue de l'occuper lui-même ou une personne de sa famille, soit pour le vendre, soit pour un motif sérieux et légitime.");
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');

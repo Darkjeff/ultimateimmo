@@ -108,14 +108,14 @@ class FormUltimateimmo extends Form
 	 *    @param      string	$code       Code of property type
 	 *    @return     string     			traduct name of property type
 	 */
-	function getPropertyTypeLabel($code)
+	function getPropertyTypeLabel($rowid)
 	{
 		global $db,$langs;
 
-		if (! $code) return '';
+		if (! $rowid) return '';
 
 		$sql = "SELECT label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type";
-		$sql.= " WHERE code='$code'";
+		$sql.= " WHERE rowid='$rowid'";
 
 		dol_syslog("ImmoProperty.class::getPropertyTypeLabel", LOG_DEBUG);
 		$resql=$db->query($sql);
