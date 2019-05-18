@@ -592,11 +592,12 @@ elseif ($action == 'createall')
 		 * List agreement
 		 */
 		$sql = "SELECT c.rowid as contract, loc.lastname as rentername, o.lastname as ownername, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner, o.rowid, o.fk_soc, loc.fk_owner";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter loc";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c on loc.rowid = c.rowid";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l on loc.rowid = l.rowid";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as o on loc.rowid = o.rowid";
-		$sql .= " WHERE preavis = 0 AND loc.rowid = c.fk_renter and l.rowid = c.fk_property and o.rowid = loc.fk_owner ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
+		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
+		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
+		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as o";
+		$sql .= " WHERE c.preavis != 0 AND loc.rowid = c.fk_renter AND l.rowid = c.fk_property AND o.rowid = loc.fk_owner ";
+		//echo $sql;exit;
 		$resql = $db->query($sql);
 		if ($resql)
 		{
@@ -641,7 +642,7 @@ elseif ($action == 'createall')
 				print '<td>' . $objp->rentername . '</td>';
 				print '<td>' . $objp->fk_owner . '</td>';
 				print '<td>' . $objp->fk_soc . '</td>';
-//var_dump($objp->fk_soc);exit;
+
 				print '<td class="right">' . price($objp->rentamount) . '</td>';
 				print '<td class="right">' . price($objp->chargesamount) . '</td>';
 				print '<td class="right">' . price($objp->total) . '</td>';
@@ -850,7 +851,7 @@ else
 			$sql .= " WHERE p.fk_receipt = " . $id;
 			$sql .= " AND p.fk_receipt = il.rowid";
 			$sql .= " AND type = pp.id";
-			//$sql .= " AND p.amount <> '" .price(0, 0, $outputlangs)."'";
+			$sql .= " AND p.amount <> '" .price(0, 0, $outputlangs)."'";
 			$sql .= " ORDER BY dp DESC";
 
 			$resql = $db->query($sql);
