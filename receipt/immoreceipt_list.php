@@ -390,7 +390,7 @@ $massactionbutton=$form->selectMassAction('', $arrayofmassactions);
 if 	($massaction == 'valid') 
 {	
 	foreach($toselect as $key => $val) 
-	{ 	
+	{		
 		$immoreceipt = new ImmoReceipt($db);	
 		$result = $immoreceipt->fetch($val);		
 		if ($result >= 0)
@@ -414,7 +414,8 @@ if 	($massaction == 'valid')
 					$model=$immoreceipt->model_pdf;
 					$ret = $immoreceipt->fetch($val); // Reload to get new records
 					$immoreceipt->generateDocument($model, $outputlangs, $hidedetails, $hidedesc, $hideref);
-				}
+					
+				}			
 
 			} 
 			else 

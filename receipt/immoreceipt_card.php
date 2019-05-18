@@ -233,6 +233,44 @@ if (empty($reshook))
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 	
+	/*
+	 * Add rental
+	 */
+	if ($action == 'add' && ! $cancel) {
+		$error = 0;
+		
+		$datev = dol_mktime(12, 0, 0, GETPOST("datevmonth"), GETPOST("datevday"), GETPOST("datevyear"));
+		$datesp = dol_mktime(12, 0, 0, GETPOST("datespmonth"), GETPOST("datespday"), GETPOST("datespyear"));
+		$dateep = dol_mktime(12, 0, 0, GETPOST("dateepmonth"), GETPOST("dateepday"), GETPOST("dateepyear"));
+		
+		$object->nom = GETPOST("nom");
+		$object->datesp = $datesp;
+		$object->dateep = $dateep;
+		$object->datev = $datev;
+		
+		if (empty($datev) || empty($datesp) || empty($dateep)) {
+			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("Date")), 'errors');
+			$error ++;
+		}
+		
+		if (! $error) {
+			$db->begin();
+			
+			$ret = $object->create($user);
+			if ($ret > 0) {
+				$db->commit();
+				header("Location: index.php");
+				exit();
+			} else {
+				$db->rollback();
+				setEventMessages($object->error, $object->errors, 'errors');
+				$action = "create";
+			}
+		}
+		
+		$action = 'create';
+	}
+	
 	/**
 	 * Add all rental
 	 */
@@ -553,12 +591,12 @@ elseif ($action == 'createall')
 		/*
 		 * List agreement
 		 */
-		$sql = "SELECT c.rowid as contract, loc.lastname as rentername, o.lastname as ownername, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.vat, l.fk_owner, o.rowid, o.fk_soc, loc.fk_owner";
+		$sql = "SELECT c.rowid as contract, loc.lastname as rentername, o.lastname as ownername, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner, o.rowid, o.fk_soc, loc.fk_owner";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter loc";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c on loc.rowid = c.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l on loc.rowid = l.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as o on loc.rowid = o.rowid";
-		$sql .= " WHERE loc.rowid = c.fk_renter and l.rowid = c.fk_property and o.rowid = loc.fk_owner ";
+		$sql .= " WHERE preavis = 0 AND loc.rowid = c.fk_renter and l.rowid = c.fk_property and o.rowid = loc.fk_owner ";
 		$resql = $db->query($sql);
 		if ($resql)
 		{
