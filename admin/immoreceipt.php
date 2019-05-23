@@ -43,8 +43,8 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
-dol_include_once('/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_chargefourn.module.php');
-dol_include_once('/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_quittance.module.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/pdf/bail/pdf_bail_vide.module.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/pdf/quittance/pdf_quittance.module.php');
 
 // Translations
 $langs->loadLangs(array("admin", "errors", "ultimateimmo@ultimateimmo"));
