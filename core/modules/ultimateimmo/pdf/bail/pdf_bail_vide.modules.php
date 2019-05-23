@@ -347,12 +347,13 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				$carac_emetteur .= $owner->address . "\n";
 				$carac_emetteur .= $owner->zip . ' ' . $owner->town."\n";
 				$text .=  $carac_emetteur."\n"; 
-				$text .= 'En tant que '.$objp->label.' désigné (s) ci-après le bailleur'."\n\n" ;	
+				$text .= 'En tant que '.$objp->label.' désigné (s) ci-après le bailleur'."\n" ;	
 				
-				/*$text .= $outputlangs->transnoentities("
+				if (!empty($conf->global->ULTIMATEIMMO_MANDATAIRE_DETAILS)){ 
+				$text .= $outputlangs->transnoentities("
 - le cas échéant, représenté par le mandataire :
 - [nom ou raison sociale et adresse du mandataire ainsi que l'activité exercée] ;
-- le cas échéant, [numéro et lieu de délivrance de la carte professionnelle/ nom et adresse du garant] (3).\n\n");*/
+- le cas échéant, [numéro et lieu de délivrance de la carte professionnelle/ nom et adresse du garant] (3).\n\n");}
 				//- [nom et prénom du ou des locataires ou, en cas de colocation, des colocataires, adresse électronique (facultatif)]
 				$renter = new ImmoRenter($this->db);
 				$result = $renter->fetch($object->fk_renter);
