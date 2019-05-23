@@ -109,7 +109,7 @@ if (empty($reshook))
 		
 		$file = 'bail_vide_' . $id . '.pdf';
 		
-		$result = ultimateimmo_pdf_create($db, $id, '', 'bail_vide', $outputlangs, $file);
+		$result = bail_vide_pdf_create($db, $id, '', 'bail_vide', $outputlangs, $file);
 		
 		if ($result > 0) 
 		{
@@ -125,7 +125,7 @@ if (empty($reshook))
 	$permissiontoadd = $user->rights->ultimateimmo->write;
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$backurlforlist = dol_buildpath('/ultimateimmo/rent/immorent_list.php',1);
-
+var_dump($_POST);exit;
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
 	
@@ -325,7 +325,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	dol_fiche_end();
 	
-	if (is_file($conf->ultimateimmo->dir_output . '/rent/bail_vide' . $id . '.pdf'))
+	/*if (is_file($conf->ultimateimmo->dir_output . '/rent/bail_vide' . $id . '.pdf'))
 	{
 		print '&nbsp';
 		print '<table class="border" width="100%">';
@@ -333,10 +333,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		// afficher
 		$legende = $langs->trans("Ouvrir");
 		print '<tr><td width="200" class="center">' . $langs->trans("EmptyHousing") . '</td><td> ';
-		print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=ultimateimmo&file=bail_vide' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+		print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=ultimateimmo&file=rent/bail_vide' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 		print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" class="absmiddle" hspace="2px" ></a>';
 		print '</td></tr></table>';
-	}
+	}*/
 
 	print '</div>';
 

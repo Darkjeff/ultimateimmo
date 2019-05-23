@@ -124,7 +124,7 @@ else if ($action == 'specimen')
 	$dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
 	foreach($dirmodels as $reldir)
 	{
-	    $file=dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf/pdf_".$modele.".modules.php",0);
+	    $file=dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf/quittance/pdf_".$modele.".modules.php",0);
 		if (file_exists($file))
 		{
 			$filefound=1;
@@ -365,7 +365,7 @@ clearstatcache();
 
 foreach ($dirmodels as $reldir)
 {
-	$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf");
+	$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf/quittance");
 
 	if (is_dir($dir))
 	{

@@ -88,7 +88,7 @@ class ImmoRent extends CommonObject
 		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'ultimateimmo_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter",),
 		'fk_bank' => array('type'=>'integer:Account:compta/bank/class/account.class.php', 'label'=>'Account', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'bank_account.id', 'searchall'=>1, 'help'=>"LinkToAccount",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'location_type_id' => array('type'=>'integer', 'label'=>'ImmorentType', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'EmptyHousing', '1'=>'FurnishedApartment')),
+		'location_type_id' => array('type'=>'integer', 'label'=>'ImmorentType', 'enabled'=>1, 'visible'=>1, 'position'=>44, 'notnull'=>-1, 'arrayofkeyval'=>array('1'=>'EmptyHousing', '2'=>'FurnishedApartment')),
 		'vat' => array('type'=>'integer', 'label'=>'VAT', 'visible'=>-1, 'enabled'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>55, 'notnull'=>-1,),
@@ -186,7 +186,7 @@ class ImmoRent extends CommonObject
 		
 		// Translate some data
 		$this->fields['vat']['arrayofkeyval']=array(0=>$langs->trans('No'), 1=>$langs->trans('Yes'));
-		$this->fields['location_type_id']['arrayofkeyval']=array(0=>$langs->trans('EmptyHousing'), 1=>$langs->trans('FurnishedApartment'));
+		$this->fields['location_type_id']['arrayofkeyval']=array(1=>$langs->trans('EmptyHousing'), 2=>$langs->trans('FurnishedApartment'));
 		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
 	}
 
@@ -524,7 +524,7 @@ class ImmoRent extends CommonObject
 			}
 		}
 
-		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
+		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/bail/";
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref,$moreparams);
 	}
