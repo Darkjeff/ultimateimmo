@@ -324,7 +324,7 @@ class ImmoRent extends CommonObject
 		$array = implode(', t.', $array);
 
 		$sql = 'SELECT '.$array.',';
-		$sql.= ' t.rowid, c.rowid as location_type_id, c.code as location_type_code, c.label as location_type,';
+		$sql.= ' t.rowid, t.location_type_id,';
 		$sql.= ' s.rowid as socid, s.nom as name,';
 		$sql.= ' lc.lastname as nomlocataire,';
 		$sql.= ' lc.firstname as firstname_renter,';
@@ -332,7 +332,7 @@ class ImmoRent extends CommonObject
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element . ' as t';
 		$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
 		$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_immorent_type as c ON t.rowid = location_type_id';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_immorent_type as c ON t.location_type_id = c.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'societe as s ON t.fk_soc = s.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
