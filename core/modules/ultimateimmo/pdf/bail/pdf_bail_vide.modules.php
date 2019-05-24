@@ -325,20 +325,78 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				}
 				//$text .= "\n";
 				//$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
+				/*$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
 				$pdf->SetXY($posX, $posY-12);
-				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
+				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');*/
 				
 				// Le contrat type de location ou de colocation contient les éléments suivants :
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size + 4);
 				$pdf->SetXY($posX, $posY);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('I. DESIGNATION DES PARTIES'), 1, 'C');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('LOCAUX'), 1, 'C');
+				
+				$sql = "SELECT ip.rowid, ip.fk_property_type, ip.juridique as juridique, ip.datebuilt, pt.rowid as property_type_id, pt.ref, pt.label as type_habitat, ir.rowid, ir.fk_property, ir.location_type_id, ir.date_start, rt.rowid, rt.label as location_type, ij.rowid ";
+				$sql .= " FROM " .MAIN_DB_PREFIX."ultimateimmo_immoproperty as ip";
+				$sql .= " , " .MAIN_DB_PREFIX."ultimateimmo_immoproperty_type as pt ";
+				$sql .= " , " .MAIN_DB_PREFIX."ultimateimmo_immorent as ir ";
+				$sql .= " , " .MAIN_DB_PREFIX."c_ultimateimmo_immorent_type as rt ";
+				$sql .= " , " .MAIN_DB_PREFIX."c_ultimateimmo_juridique as ij ";
+				$sql .= " WHERE ip.fk_property_type = pt.rowid AND ip.rowid = ir.fk_property AND ir.rowid = ".$object->id;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				dol_syslog(get_class($this) . ':: pdf_bail_vide', LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				
+				if ($resql) 
+				{
+					$num = $this->db->num_rows($resql);
+					while ( $j < $num ) 
+					{
+						$objproperty = $this->db->fetch_object($resql);
+						$j++;
+						//var_dump($objproperty);exit;
+					}
+				}
+				
+				$formultimateimmo = new FormUltimateimmo($code);
+
+				$text = $outputlangs->transnoentities("- localisation du logement : ").$property->address.' '.$outputlangs->transnoentities("/ bâtiment : ").$property->building.' '.$outputlangs->transnoentities("/escalier : ").$property->staircase.' '. $outputlangs->transnoentities("/étage : ").$property->numfloor.' '. $outputlangs->transnoentities("/porte : ").$property->numdoor."\n" ;
+				$text .= $property->zip.' '.$property->town.' '.$property->country."\n";
+				$widthrecbox=$this->page_largeur-$this->marge_gauche-$this->marge_droite;
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size + 1);
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthrecbox, $hautcadre/2, $text, 1, 'L', 1);
+				
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Consistance'), 1, 'L',1);
+				$pdf->SetXY($this->marge_gauche+$widthrecbox/3, $posY);
+				$pdf->MultiCell($widthrecbox*2/3, 3, $outputlangs->convToOutputCharset('Désignation des locaux et équipements privatifs:'), 1, 'L',1);
+				$posY = $pdf->getY();
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthrecbox/3, $hautcadre, '', 1, 'L', 1);
+				$pdf->SetXY($this->marge_gauche+$widthrecbox/3, $posY);
+				$pdf->MultiCell($widthrecbox*2/3, $hautcadre, '', 1, 'L', 1);
+				
+				$text .= $outputlangs->transnoentities("- type d'habitat : ").$formultimateimmo->getPropertyTypeLabel($objproperty->property_type_id)."\n";
+				
+				$text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : ").$formultimateimmo->getLabelFormeJuridique($objproperty->juridique)."\n" ;
+				
+				$text .= $outputlangs->transnoentities("- période de construction : ").$formultimateimmo->getLabelBuiltDate($property->datebuilt)."\n" ;
 
-				$period = $outputlangs->transnoentities('');
+				$text .= $outputlangs->transnoentities("- surface habitable : ") .$property->area."\n";
+				
+				$text .= $outputlangs->transnoentities("- nombre de pièces principales : ") .$property->numroom."\n";
+				$text .= $outputlangs->transnoentities("- le cas échéant, Autres parties du logement : [exemples : grenier, comble aménagé ou non, terrasse, balcon, loggia, jardin etc.] ;
+- le cas échéant, Eléments d'équipements du logement : [exemples : cuisine équipée, détail des installations sanitaires etc.] ;
+- modalité de production de chauffage : [individuel ou collectif] (4) ;
+- modalité de production d'eau chaude sanitaire : [individuelle ou collective] (5).
+B. Destination des locaux : [usage d'habitation ou usage mixte professionnel et d'habitation]
+C. Le cas échéant, Désignation des locaux et équipements accessoires de l'immeuble à usage privatif du locataire : [exemples : cave, parking, garage etc.]
+D. Le cas échéant, Enumération des locaux, parties, équipements et accessoires de l'immeuble à usage commun : [Garage à vélo, ascenseur, espaces verts, aires et équipements de jeux, laverie, local poubelle, gardiennage, autres prestations et services collectifs etc.]
+E. Le cas échéant, Equipement d'accès aux technologies de l'information et de la communication : [exemples : modalités de réception de la télévision dans l'immeuble, modalités de raccordement internet etc.]");
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+
+				/*$period = $outputlangs->transnoentities('');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 
 				$text = $outputlangs->transnoentities(" Le présent contrat est conclu entre les soussignés :\n\n");
@@ -369,79 +427,8 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				$text .=  $carac_client;
 				$text .= $outputlangs->transnoentities("désigné (s) ci-après le locataire\n
 Il a été convenu ce qui suit :\n\n");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
-
-				// Pied de page
-				$this->_pagefoot($pdf,$object,$outputlangs);
-				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
-				
-				// New page
-				$pdf->AddPage();
-				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-				$pagenb++;
-				$pdf->setTopMargin($tab_top_newpage);
-				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
-				
-				// Le contrat type de location ou de colocation contient les éléments suivants :
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetXY($posX, $tab_top_newpage);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('II. OBJET DU CONTRAT'), 1, 'C');
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				
-				$sql = "SELECT ip.rowid, ip.fk_property_type, ip.juridique as juridique, ip.datebuilt, pt.rowid as property_type_id, pt.ref, pt.label as type_habitat, ir.rowid, ir.fk_property, ir.location_type_id, ir.date_start, rt.rowid, rt.label as location_type, ij.rowid ";
-				$sql .= " FROM " .MAIN_DB_PREFIX."ultimateimmo_immoproperty as ip";
-				$sql .= " , " .MAIN_DB_PREFIX."ultimateimmo_immoproperty_type as pt ";
-				$sql .= " , " .MAIN_DB_PREFIX."ultimateimmo_immorent as ir ";
-				$sql .= " , " .MAIN_DB_PREFIX."c_ultimateimmo_immorent_type as rt ";
-				$sql .= " , " .MAIN_DB_PREFIX."c_ultimateimmo_juridique as ij ";
-				$sql .= " WHERE ip.fk_property_type = pt.rowid AND ip.rowid = ir.fk_property AND ir.rowid = ".$object->id;
-
-				dol_syslog(get_class($this) . ':: pdf_bail_vide', LOG_DEBUG);
-				$resql = $this->db->query($sql);
-				
-				if ($resql) 
-				{
-					$num = $this->db->num_rows($resql);
-					while ( $j < $num ) 
-					{
-						$objproperty = $this->db->fetch_object($resql);
-						$j++;
-						//var_dump($objproperty);exit;
-					}
-				}
-				
-				$formultimateimmo = new FormUltimateimmo($code);
-				//var_dump($objproperty->location_type_id);exit;
-				$text = $outputlangs->transnoentities("Le présent contrat a pour objet la location d'un logement ainsi déterminé :
-A. Consistance du logement
-- localisation du logement : ").$property->address.' '.$outputlangs->transnoentities("/ bâtiment : ").$property->building.' '.$outputlangs->transnoentities("/escalier : ").$property->staircase.' '. $outputlangs->transnoentities("/étage : ").$property->numfloor.' '. $outputlangs->transnoentities("/porte : ").$property->numdoor."\n" ;
-				$text .= $property->zip.' '.$property->town.' '.$property->country."\n";
-				
-				$text .= $outputlangs->transnoentities("- type d'habitat : ").$formultimateimmo->getPropertyTypeLabel($objproperty->property_type_id)."\n";
-				
-				$text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : ").$formultimateimmo->getLabelFormeJuridique($objproperty->juridique)."\n" ;
-				
-				$text .= $outputlangs->transnoentities("- période de construction : ").$formultimateimmo->getLabelBuiltDate($property->datebuilt)."\n" ;
-//var_dump($object->date_start);exit;
-				$text .= $outputlangs->transnoentities("- surface habitable : ") .$property->area."\n";
-				
-				$text .= $outputlangs->transnoentities("- nombre de pièces principales : ") .$property->numroom."\n";
-				$text .= $outputlangs->transnoentities("- le cas échéant, Autres parties du logement : [exemples : grenier, comble aménagé ou non, terrasse, balcon, loggia, jardin etc.] ;
-- le cas échéant, Eléments d'équipements du logement : [exemples : cuisine équipée, détail des installations sanitaires etc.] ;
-- modalité de production de chauffage : [individuel ou collectif] (4) ;
-- modalité de production d'eau chaude sanitaire : [individuelle ou collective] (5).
-B. Destination des locaux : [usage d'habitation ou usage mixte professionnel et d'habitation]
-C. Le cas échéant, Désignation des locaux et équipements accessoires de l'immeuble à usage privatif du locataire : [exemples : cave, parking, garage etc.]
-D. Le cas échéant, Enumération des locaux, parties, équipements et accessoires de l'immeuble à usage commun : [Garage à vélo, ascenseur, espaces verts, aires et équipements de jeux, laverie, local poubelle, gardiennage, autres prestations et services collectifs etc.]
-E. Le cas échéant, Equipement d'accès aux technologies de l'information et de la communication : [exemples : modalités de réception de la télévision dans l'immeuble, modalités de raccordement internet etc.]");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');*/
+								
 				
 				// Pied de page
 				$this->_pagefoot($pdf,$object,$outputlangs);
