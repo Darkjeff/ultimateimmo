@@ -487,6 +487,29 @@ else
 }
 print '</td></tr>';
 
+// add also details for contact address.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("ShowColocataireDetails").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATEIMMO_COLOCATAIRE_DETAILS');
+}
+else
+{
+	if($conf->global->ULTIMATEIMMO_COLOCATAIRE_DETAILS == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATEIMMO_COLOCATAIRE_DETAILS">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATEIMMO_COLOCATAIRE_DETAILS == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATEIMMO_COLOCATAIRE_DETAILS">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
 // Page end
 dol_fiche_end();
 

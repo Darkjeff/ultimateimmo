@@ -354,7 +354,8 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 - le cas échéant, représenté par le mandataire :
 - [nom ou raison sociale et adresse du mandataire ainsi que l'activité exercée] ;
 - le cas échéant, [numéro et lieu de délivrance de la carte professionnelle/ nom et adresse du garant] (3).\n\n");}
-				//- [nom et prénom du ou des locataires ou, en cas de colocation, des colocataires, adresse électronique (facultatif)]
+				if (!empty($conf->global->ULTIMATEIMMO_COLOCATAIRE_DETAILS)){ 
+				$text .= $outputlangs->transnoentities("[nom et prénom du ou des locataires ou, en cas de colocation, des colocataires, adresse électronique (facultatif)]\n\n");}
 				$renter = new ImmoRenter($this->db);
 				$result = $renter->fetch($object->fk_renter);
 				$carac_client_name= $outputlangs->convToOutputCharset($renter->getFullName($outputlangs));
