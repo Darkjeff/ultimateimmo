@@ -299,7 +299,7 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				
 				$hautcadre=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 38 : 40;
 				$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
-				$posY = $this->marge_haute + $hautcadre +50;
+				$posY = $this->marge_haute + $hautcadre +100;
 				$posX = $this->marge_gauche;	
 				
 				$iniY = $tab_top + 7;
@@ -952,7 +952,16 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 		$pdf->SetFont('', 'B', $default_font_size + 3);
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetTextColor(0, 0, 60);
-		$title=$outputlangs->transnoentities("Bail");
+		$title=$outputlangs->transnoentities("CONTRAT DE LOCATION");
+		$pdf->MultiCell($w, 3, $title, '', 'R');
+		$posy = $pdf->getY();
+		$pdf->SetFont('', '', $default_font_size + 1);
+		$pdf->SetXY($posx, $posy);
+		$title=$outputlangs->transnoentities("loi n° 89-462 du 6 juillet 1989");
+		$pdf->MultiCell($w, 3, $title, '', 'R');
+		$posy = $pdf->getY();
+		$pdf->SetXY($posx, $posy);
+		$title=$outputlangs->transnoentities("LOCAUX VACANTS NON MEUBLÉS");
 		$pdf->MultiCell($w, 3, $title, '', 'R');
 
 		$pdf->SetFont('', 'B', $default_font_size);
@@ -961,11 +970,7 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetTextColor(0, 0, 60);
 		$textref=$outputlangs->transnoentities("Ref")." : " . $outputlangs->convToOutputCharset($object->ref);
-		if ($object->statut == ImmoReceipt::STATUS_DRAFT)
-		{
-			$pdf->SetTextColor(128, 0, 0);
-			$textref.=' - '.$outputlangs->transnoentities("NotValidated");
-		}
+
 		$pdf->MultiCell($w, 4, $textref, '', 'R');
 
 		$posy+=1;
@@ -979,14 +984,6 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("RefCustomer")." : " . $outputlangs->convToOutputCharset($object->ref_client), '', 'R');
 		}
 
-		if ($object->type != 2)
-		{
-			$posy+=3;
-			$pdf->SetXY($posx, $posy);
-			$pdf->SetTextColor(0, 0, 60);
-			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("DateDue")." : " . dol_print_date($object->date_lim_reglement, "day", false, $outputlangs, true), '', 'R');
-		}
-
 		if ($object->thirdparty->code_client)
 		{
 			$posy+=3;
@@ -995,7 +992,25 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("CustomerCode")." : " . $outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
 		}
 
-		$posy+=1;
+		$posy=$pdf->getY()+2;
+		
+		// HABITATION PRINCIPALE
+		$pdf->rect($this->marge_gauche, $posy-2, 4, 4);
+		$pdf->SetXY ($this->marge_gauche, $posy-2);
+		$pdf->SetTextColor(0, 0, 0);
+		$pdf->SetFont('', '', $default_font_size + 3);
+		$pdf->SetXY($this->marge_gauche+6, $posy-2);
+		$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('HABITATION PRINCIPALE'), 0, 'L');
+		
+		// PROFESSIONNEL ET HABITATION PRINCIPALE
+		$pdf->rect($this->marge_gauche+88, $posy-2, 4, 4);
+		$pdf->SetXY ($this->marge_gauche+88, $posy-2);
+		$pdf->SetTextColor(0, 0, 0);
+		$pdf->SetFont('', '', $default_font_size + 3);
+		$pdf->SetXY($this->marge_gauche, $posy-2);
+		$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('PROFESSIONNEL ET HABITATION PRINCIPAL'), 0, 'R');
+		
+		$posy=$pdf->getY()+2;
 
 		$top_shift = 0;
 		// Show list of linked objects
@@ -1020,7 +1035,7 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 			$carac_emetteur = pdf_build_address($outputlangs, $owner, $object->thirdparty, '', 0, 'source', $object);
 
 			// Show sender
-			$posy=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 42;
+			$posy=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 46;
 			$posy+=$top_shift;
 			$posx=$this->marge_gauche;
 			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT)) $posx=$this->page_largeur-$this->marge_droite-80;
@@ -1028,12 +1043,16 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 			$hautcadre=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 38 : 40;
 			$widthrecbox=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 92 : 82;
 
-
+			$pdf->SetTextColor(0, 0, 0);
+			$pdf->SetFont('', '', $default_font_size);
+			$pdf->SetXY($posx, $posy-10);
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Entre les soussignés  '), 0, 'L');
+			
 			// Show sender frame
 			$pdf->SetTextColor(0, 0, 0);
-			$pdf->SetFont('', '', $default_font_size + 5);
+			$pdf->SetFont('', '', $default_font_size + 4);
 			$pdf->SetXY($posx, $posy-5);
-			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Bailleur'), 1, 'C');
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('BAILLEUR '), 1, 'C');
 			$posy=$pdf->getY();
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFillColor(230, 230, 230);
@@ -1052,6 +1071,10 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 			$pdf->MultiCell($widthrecbox-2, 4, $carac_emetteur, 0, 'L');
 			$posy=$pdf->getY();
 			
+			$pdf->SetXY($posx, $posy+4);
+			$pdf->SetFont('', 'I', $default_font_size - 1);
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('dénommé "LE BAILLEUR" '), 0, 'R');
+			$posy=$pdf->getY();
 
 			//Recipient name
 			$renter = new ImmoRenter($this->db);
@@ -1067,16 +1090,51 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 			// Show recipient
 			$widthrecbox=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 92 : 100;
 			if ($this->page_largeur < 210) $widthrecbox=84;	// To work with US executive format
-			$posy=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 42;
+			$posy=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 46;
 			$posy+=$top_shift;
 			$posx=$this->page_largeur-$this->marge_droite-$widthrecbox;
 			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT)) $posx=$this->marge_gauche;
 
 			// Bloc Locataire
 			$pdf->SetTextColor(0, 0, 0);
-			$pdf->SetFont('', '', $default_font_size + 5);
+			$texte = $outputlangs->convToOutputCharset('(le cas échéant)');
+			$pdf->SetFont('', '', $default_font_size + 4);
 			$pdf->SetXY($posx, $posy-5);
-			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Locataire Destinataire'), 1, 'C');
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('MANDATAIRE').' '.$texte, 1, 'C');
+			
+			$posy=$pdf->getY();
+			$pdf->Rect($posx, $posy, $widthrecbox, $hautcadre);
+
+			// Show recipient name
+			$pdf->SetXY($posx+2, $posy+3);
+			$pdf->SetFont('', 'B', $default_font_size);
+			$pdf->MultiCell($widthrecbox, 2, '', 0, 'L');
+
+			$posy = $pdf->getY();
+
+			// Show recipient information
+			$pdf->SetFont('', '', $default_font_size - 1);
+			$pdf->SetXY($posx+2, $posy);
+			$pdf->MultiCell($widthrecbox, 4, '', 0, 'L');
+			
+			$pdf->SetFont('', '', $default_font_size-3);
+			$pdf->SetXY($posx, $posy+28);
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('le cas échéant. avec le concours de (préciser négociateur ou agent commercial)'), 0, 'C');
+			
+			$posy = $pdf->getY()+12;
+			
+			$pdf->SetTextColor(0, 0, 0);
+			$pdf->SetFont('', '', $default_font_size);
+			$pdf->SetXY($this->marge_gauche, $posy-10);
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Et'), 0, 'L');
+			
+			// Bloc Locataire
+			$pdf->SetTextColor(0, 0, 0);
+			$pdf->SetFont('', '', $default_font_size + 4);
+			$posx=$this->marge_gauche;
+			$widthrecbox = $this->page_largeur-$this->marge_droite-$this->marge_gauche;
+			$pdf->SetXY($posx, $posy-5);
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('LOCATAIRE(S)'), 1, 'C');
 			$posy=$pdf->getY();
 			$pdf->Rect($posx, $posy, $widthrecbox, $hautcadre);
 
@@ -1092,7 +1150,18 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 			$pdf->SetXY($posx+2, $posy);
 			$pdf->MultiCell($widthrecbox, 4, $carac_client, 0, 'L');
 			
+			$posy = $pdf->getY();
 			
+			$pdf->SetXY($posx, $posy+16);
+			$pdf->SetFont('', 'I', $default_font_size - 1);
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('dénommé(s) "LE LOCATAIRE" (au singulier) '), 0, 'R');
+			
+			$posy=$pdf->getY();
+			
+			$pdf->SetXY($posx, $posy+2);
+			$pdf->SetFont('', 'I', $default_font_size - 1);
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Il a été convenu et arrêté ce qui suit: le bailleur loue les locaux et équipement ci-après désignés au locataire qui les accepte aux conditions suivantes '), 0, 'L');
+						
 		}
 
 		$pdf->SetTextColor(0, 0, 0);
