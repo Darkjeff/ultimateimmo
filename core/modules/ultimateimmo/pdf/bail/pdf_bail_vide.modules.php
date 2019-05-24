@@ -323,8 +323,8 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 						$i++;
 					}
 				}
-				$text .= "\n";
-				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";				
+				//$text .= "\n";
+				//$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
 				$pdf->SetXY($posX, $posY-12);
 				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
@@ -983,6 +983,7 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 			$pdf->SetTextColor(0, 0, 60);
 			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("RefCustomer")." : " . $outputlangs->convToOutputCharset($object->ref_client), '', 'R');
 		}
+		$posy=$pdf->getY()+2;
 
 		if ($object->thirdparty->code_client)
 		{
@@ -992,24 +993,6 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("CustomerCode")." : " . $outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
 		}
 
-		$posy=$pdf->getY()+2;
-		
-		// HABITATION PRINCIPALE
-		$pdf->rect($this->marge_gauche, $posy-2, 4, 4);
-		$pdf->SetXY ($this->marge_gauche, $posy-2);
-		$pdf->SetTextColor(0, 0, 0);
-		$pdf->SetFont('', '', $default_font_size + 3);
-		$pdf->SetXY($this->marge_gauche+6, $posy-2);
-		$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('HABITATION PRINCIPALE'), 0, 'L');
-		
-		// PROFESSIONNEL ET HABITATION PRINCIPALE
-		$pdf->rect($this->marge_gauche+88, $posy-2, 4, 4);
-		$pdf->SetXY ($this->marge_gauche+88, $posy-2);
-		$pdf->SetTextColor(0, 0, 0);
-		$pdf->SetFont('', '', $default_font_size + 3);
-		$pdf->SetXY($this->marge_gauche, $posy-2);
-		$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('PROFESSIONNEL ET HABITATION PRINCIPAL'), 0, 'R');
-		
 		$posy=$pdf->getY()+2;
 
 		$top_shift = 0;
@@ -1033,6 +1016,24 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 				$owner->country=$tmparray['label'];
 			}*/
 			$carac_emetteur = pdf_build_address($outputlangs, $owner, $object->thirdparty, '', 0, 'source', $object);
+			
+			// HABITATION PRINCIPALE
+			$pdf->rect($this->marge_gauche, $posy, 4, 4);
+			$pdf->SetXY ($this->marge_gauche, $posy);
+			$pdf->SetTextColor(0, 0, 0);
+			$pdf->SetFont('', '', $default_font_size + 3);
+			$pdf->SetXY($this->marge_gauche+6, $posy);
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('HABITATION PRINCIPALE'), 0, 'L');
+			
+			// PROFESSIONNEL ET HABITATION PRINCIPALE
+			$pdf->rect($this->marge_gauche+88, $posy, 4, 4);
+			$pdf->SetXY ($this->marge_gauche+88, $posy);
+			$pdf->SetTextColor(0, 0, 0);
+			$pdf->SetFont('', '', $default_font_size + 3);
+			$pdf->SetXY($this->marge_gauche, $posy);
+			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('PROFESSIONNEL ET HABITATION PRINCIPAL'), 0, 'R');
+			
+			$posy=$pdf->getY()+2;
 
 			// Show sender
 			$posy=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 46;
