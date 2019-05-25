@@ -32,6 +32,7 @@ dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immoowner_type.class.php');
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
+dol_include_once('/ultimateimmo/class/myultimateimmo.class.php');
 dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
@@ -531,6 +532,11 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Eau chaude collective'), 0, 'L');
 				$posY = $pdf->getY();
 				
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Paraphes :'), 0, 'R');
+				
 				/*$text .= $outputlangs->transnoentities("- type d'habitat : ").$formultimateimmo->getPropertyTypeLabel($objproperty->property_type_id)."\n";
 				
 				$text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : ").$formultimateimmo->getLabelFormeJuridique($objproperty->juridique)."\n" ;
@@ -599,20 +605,28 @@ Il a été convenu ce qui suit :\n\n");
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetTextColor(0, 0, 0);
 				$pdf->SetXY($posX, $tab_top_newpage);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('III. DATE DE PRISE D\'EFFET ET DUREE DU CONTRAT'), 1, 'C');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('FIXATION - RÉVISION DU LOYER'), 1, 'C');
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size-1);
+				$posY = $pdf->getY()+4;
+				$pdf->SetXY($posX, $posY);				
+				$text = $outputlangs->transnoentities("<strong> MONTANT OU LOYER (voir conditions générales chapitre 1) :<br> 
+Il est fixé librement entre les parties en application de l'article 17 a) et de l'article 17 b) de la loi Cependant pour les baux contractés entre le 01.08.2013 et le 31.07.2014 et UNIQUEMENT dans les communes menlionnées par l'annexe du décret n°2013-689 OU 30.07.2013 fixant un montant maximum d'évolution des loyers, conformément à l'article 18 de la loi, le loyer des logements vacants définis à l'article 17 b) ne peut excéder le dernier loyer appliqué au précédent locataire révisé dans les limites prévues à l'article 17 d), sauf cas suivants: </strong><br>
+• Lorsque le bailleur a réalisé, depuis la conclusion du dernier contrat, des travaux d'amélioration portant sur les parties privatives ou communes d'un montant au moins égal à la moitié de la dernière année de loyer, la hausse du loyer annuel ne peut excéder l5% du coût réel des travaux toutes taxes comprises;<br> 
+. Lorsque le dernier loyer appliqué au précédent locataire est manifestement sous-évalué, la hausse du nouveau loyer ne peut excéder la plus élevée des deux limites suivantes<br> 
+l La moitié de la différence entre le montant moyen d'un loyer représentatif des loyers habituellement constatés dans le voisinage pour des logements comparables déterminé selon les modalités prévues à l'article 19 de la loi du 06.07 1989 et le dernier loyer appliqué au précédent locataire;<br>
+2. Une majoration du loyer annuel égale à 15% du coût réel des travaux toutes taxes comprises, dans le cas où le bailleur a réalisé depuis la fin du dernier contrat de location des travaux d'amélioration portant sur les parties privatives ou communes d'un montant au moins égal à la moitié de la dernière année de loyer.<br>
+<strong>Le montant du loyer sera payable au domicile du bailleur ou de la personne qu'il aura mandaté à cet effet.</strong><br> 
+<strong>RÉVISION OU LOYER</strong> art. 17-1-1) de la loi du 06.07.1989: La variation annuelle du loyer ne peut excéder, à la hausse, la variation sur un an de l'indice de référence des loyers publié par l'I.N.S.E.E. dont les éléments de référence sont indiqués en page 5.<br>
+Après sa date de prise d'effet, le bailleur dispose d'un an pour manifester sa volonté d'appliquer la révision du loyer. À défaut le bailleur est réputé avoir renoncé à la révision du loyer pour l'année écoulée : Si le bailleur manifeste sa volonté de réviser le loyer, dans un délai d'un an, cette révision prend effet à compter de sa demande. ");
+				$pdf->writeHTMLCell($widthbox, 3, $posX, $posY, $outputlangs->convToOutputCharset($text), 1, 'L');
 				
-				$text = $outputlangs->transnoentities(" La durée du contrat et sa date de prise d'effet sont ainsi définies : \n\n A. Date de prise d'effet du contrat : Le ") . dol_print_date($object->date_start, "daytext", false, $outputlangs, true)."\n\n";
-$text .= $outputlangs->transnoentities("B. Durée du contrat : [durée minimale de trois ou six ans selon la qualité du bailleur] ou [durée réduite et minimale d'un an lorsqu'un événement précis (6) le justifie]
-C. Le cas échéant, Evénement et raison justifiant la durée réduite du contrat de location : [...]
-En l'absence de proposition de renouvellement du contrat, celui-ci est, à son terme, reconduit tacitement pour 3 ou 6 ans et dans les mêmes conditions. Le locataire peut mettre fin au bail à tout moment, après avoir donné congé. Le bailleur, quant à lui, peut mettre fin au bail à son échéance et après avoir donné congé, soit pour reprendre le logement en vue de l'occuper lui-même ou une personne de sa famille, soit pour le vendre, soit pour un motif sérieux et légitime.");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				$posY = $pdf->getY()+200;
+				
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Paraphes :'), 0, 'R');
 				
 				// Pied de page
 				$this->_pagefoot($pdf,$object,$outputlangs);
@@ -629,38 +643,38 @@ En l'absence de proposition de renouvellement du contrat, celui-ci est, à son t
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetTextColor(0, 0, 0);
 				$pdf->SetXY($posX, $tab_top_newpage);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('IV. CONDITIONS FINANCIERES'), 1, 'C');
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('CONDITIONS GENERALES'), 1, 'C');
 				
-				$text = $outputlangs->transnoentities(" Les parties conviennent des conditions financières suivantes :
-A. Loyer
-1° Fixation du loyer initial :
-a) Montant du loyer mensuel : [...] (7) ;
-b) Le cas échant, Modalités particulières de fixation initiale du loyer applicables dans certaines zones tendues (8) :
-- le loyer du logement objet du présent contrat est soumis au décret fixant annuellement le montant maximum d'évolution des loyers à la relocation : [Oui/ Non].
-- le loyer du logement objet du présent contrat est soumis au loyer de référence majoré fixé par arrêté préfectoral : [Oui/Non].
-- montant du loyer de référence : [...] €/ m2/ Montant du loyer de référence majoré : [...] €/ m2 ;
-- le cas échéant Complément de loyer : [si un complément de loyer est prévu, indiquer le montant du loyer de base, nécessairement égal au loyer de référence majoré, le montant du complément de loyer et les caractéristiques du logement justifiant le complément de loyer].
-c) Le cas échéant, informations relatives au loyer du dernier locataire : [montant du dernier loyer acquitté par le précédent locataire, date de versement et date de la dernière révision du loyer] (9).
-2° Le cas échéant, Modalités de révision :
-a) Date de révision : [...].
-b) Date ou trimestre de référence de l'IRL : [...].
-B. Charges récupérables
-1. Modalité de règlement des charges récupérables : [Provisions sur charges avec régularisation annuelle ou paiement périodique des charges sans provision/ En cas de colocation, les parties peuvent convenir de la récupération des charges par le bailleur sous la forme d'un forfait].
-2. Le cas échéant, Montant des provisions sur charges ou, en cas de colocation, du forfait de charge : [...].
-3. Le cas échéant, En cas de colocation et si les parties en conviennent, modalités de révision du forfait de charges :
-[...] (10).
-C. Le cas échéant, contribution pour le partage des économies de charges : (11)
-1. Montant et durée de la participation du locataire restant à courir au jour de la signature du contrat : [...].
-2. Eléments propres à justifier les travaux réalisés donnant lieu à cette contribution : [...].
-D. Le cas échéant, En cas de colocation souscription par le bailleur d'une assurance pour le compte des colocataires (12) : [Oui/ Non]");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				// print TEXT
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				$posYL = $pdf->getY();
+				$posYR = $pdf->getY();
+				$pdf->SetXY($posX, $posYL);
+				
+				$text = $outputlangs->transnoentities(" Durée - résiliation - renouvellement");
+				$pdf->MultiCell($widthbox/2, 3, $outputlangs->convToOutputCharset($text), 1, 'C');
+				$posYL = $pdf->getY();
+				
+				$pdf->SetFont('', '', $default_font_size-1);
+				$text = $outputlangs->transnoentities(" <strong><U>A/CONTRAT DURÉE MINIMALE DE 3 OU 6 ANS</U></strong><br>
+ DURÉE INITIALE (art 10 et 13 de la loi) Le contrat est conclu pour une durée AU MOINS ÉGALE à 3 ans (bailleur 'personne physique' ou 'société civile familiale') ou à 6 ans (bailleur 'personne morale')<br> 
+ <strong>RÉSILIATION - CONGÉ</strong> (articles 13 et 15 de la loi) : <br>
+ Il pourra être résilié par lettre recommandée avec avis de réception ou par acte d'huissier ou par remise en main propre contre récépissé ou émargement<br> 
+ <U>PAR LE LOCATAIRE</U>, à tout moment, en prévenant le bailleur 3 mois à l'avance, délai ramené à 1 mois en cas de location dans les territoires mentionnés au 1er alinéa du 1 l'article 17, en cas d'obtention d'un premier emploi, de mutation, de perte d'emploi ou de nouvel emploi consécutif â une perte d'emploi, ou en cas de congé émanant d'un locataire qui s'est vu attribuer un logement social (arl. L.35/2 du CCH). ou dont l'état de santé, constaté par un certificat médical, justifie un changement de domicile, ou d'un locataire bénéficiaire du revenu de solidarité active ou de l'allocation adulte handicapé<br> 
+ <U>PAR LE BAILLEUR</U>, en prévenant le locataire 6 mois au moins avant le terme du contrat. Le congé devra être fondé, soit sur sa décision de reprendre ou de vendre le logement, soit sur un motif légitime et sérieux, notamment l'inexécution par le locataire de l'une des obligations principales lui incombant <br>
+ Le congé devra être indiqué le motif allégué et:<br> 
+ en cas de reprise, les nom et adresse du bénéficiaire de la reprise qui ne peut être que l'une des personnes prévues à l'art 15-1 de la loi,<br> 
+ en cas de vente, le prix et les conditions de la vente projetée, ce congé valant offre de vente au profit du locataire. Le congé devra en outre respecter le formalisme de l'article 15-11 de la loi du 06.07.1989<br> <strong>RENOUVELLEMENT</strong> (articles 10, 11, 13 et 17 §c de la loi):<br>
+ 1) 6 mois au moins avant le terme du contrat, le bailleur pourra faire une proposiuon de renouvellement par lettre recommandée avec avis de réception ou par acte d'huissier <br>
+ <U>soit à l'effet de proposer un nouveau contrat d'une durée réduite (au moins égale à un an)</U> pour raisons professionnelles ou familiales justifiées (bailleur 'personne physique' ou 'société civile familiale') :<br> 
+ <U>soit à l'effet de réévaluer le loyer</U> pour le cas où ce dernier serait manifestement sous-évalué, le contrat étant renouvelé pour une durée AU MOINS ÉGALE à 3 ans (bailleur 'personne physique' ou 'société civile familiale') ou à 6 ans (bailleur 'personne morale') dans ce cas, le bailleur pourra proposer au locataire un nouveau loyer fixé par référence aux loyers habituellement constatés dans le voisinage pour des logements comparables, dans les conditions fixées à l'article 19 de la loi <br>
+ 2) À défaut de congé motivé donné dans les conditions de forme et de délai prévues ci-avant, le contrat parvenu à son terme sera renouvelé pour une durée AU MOINS ÉGALE à 3 ans (bailleur 'personne physique' ou 'société civile familiale') ou à 6 ans (bailleur 'personne morale')<br>  ");
+				$pdf->writeHTMLCell($widthbox/2 -2, 3, $posX, $posYL, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities(" <strong>TACITE RECONDUCTION </strong>(articles 10 et 13 de la loi) :<br> À défaut de renouvellement ou de congé motivé donné dans les conditions de forme et de délai prévues ci-avant, le contrat parvenu à son terme sera reconduit tacitement aux CONDITIONS ANTÉRIEURES, pour une durée ÉGALE à 3 ans (bailleur 'personne physique' ou à 6 ans (bailleur 'personne morale')<br>");
+				
+				$pdf->writeHTMLCell($widthbox/2 -2, 3, $posX+$widthbox/2, $posYR, $outputlangs->convToOutputCharset($text), 1, 'L');
 				
 				// Pied de page
 				$this->_pagefoot($pdf,$object,$outputlangs);
