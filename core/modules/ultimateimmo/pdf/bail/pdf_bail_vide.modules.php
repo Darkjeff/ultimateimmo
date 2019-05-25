@@ -250,6 +250,8 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 
 			$pdf->Open();
 			$pagenb = 0;
+			
+			if (method_exists($pdf, 'AliasNbPages')) $pdf->AliasNbPages();
 
 			$pdf->SetTitle($outputlangs->convToOutputCharset($object->label));
 			$pdf->SetSubject($outputlangs->transnoentities("EmptyHousing"));
@@ -358,7 +360,7 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				
 				$formultimateimmo = new FormUltimateimmo($code);
 
-				$text = $outputlangs->transnoentities("- localisation du logement : ").$property->address.' '.$outputlangs->transnoentities("/ bâtiment : ").$property->building.' '.$outputlangs->transnoentities("/escalier : ").$property->staircase.' '. $outputlangs->transnoentities("/étage : ").$property->numfloor.' '. $outputlangs->transnoentities("/porte : ").$property->numdoor."\n" ;
+				$text = $outputlangs->transnoentities("Adresse : ").$property->address.' '.$outputlangs->transnoentities("/ bâtiment : ").$property->building.' '.$outputlangs->transnoentities("/escalier : ").$property->staircase.' '. $outputlangs->transnoentities("/étage : ").$property->numfloor.' '. $outputlangs->transnoentities("/porte : ").$property->numdoor."\n" ;
 				$text .= $property->zip.' '.$property->town.' '.$property->country."\n";
 				$widthrecbox=$this->page_largeur-$this->marge_gauche-$this->marge_droite;
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size + 1);
@@ -369,15 +371,166 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
 				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Consistance'), 1, 'L',1);
-				$pdf->SetXY($this->marge_gauche+$widthrecbox/3, $posY);
+				$posYL = $pdf->getY();
+
+				$pdf->SetXY($posX+$widthrecbox/3, $posY);
 				$pdf->MultiCell($widthrecbox*2/3, 3, $outputlangs->convToOutputCharset('Désignation des locaux et équipements privatifs:'), 1, 'L',1);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
+				$posYR = $pdf->getY();
+				$pdf->SetXY($posX, $posYR);
 				$pdf->MultiCell($widthrecbox/3, $hautcadre, '', 1, 'L', 1);
-				$pdf->SetXY($this->marge_gauche+$widthrecbox/3, $posY);
+				$pdf->SetXY($posX+$widthrecbox/3, $posYR);
 				$pdf->MultiCell($widthrecbox*2/3, $hautcadre, '', 1, 'L', 1);
 				
-				$text .= $outputlangs->transnoentities("- type d'habitat : ").$formultimateimmo->getPropertyTypeLabel($objproperty->property_type_id)."\n";
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+$widthrecbox/3+2, $posYR+4);
+				$text = $outputlangs->transnoentities("- Nombre de pièces principales : ") .$property->numroom."\n";
+				$pdf->MultiCell(80, 3, $text, 0, 'L');
+				$pdf->SetFont('', '', $default_font_size-3);
+				$pdf->SetXY($posX+$widthrecbox/3+2, $posYR+8);
+				$text = $outputlangs->transnoentities("(destinées au séjour ou au sommeil, éventuellement chambres isolées .... au sens de l'article R. 111-1 al.3 du CCH)")."\n";
+				$pdf->MultiCell(60, 3, $text, 0, 'L');
+				$posYR = $pdf->getY();
+				
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+$widthrecbox/3+2, $posYR+4);
+				$text = $outputlangs->transnoentities("- Surface ou volume habitable : ") .$property->area."\n";
+				$pdf->MultiCell(80, 3, $text, 0, 'L');
+				$pdf->SetFont('', '', $default_font_size-3);
+				$pdf->SetXY($posX+$widthrecbox/3+2, $posYR+8);
+				$text = $outputlangs->transnoentities("(au sens de l'article R. 111-2 al.2 et 3 du CCH)")."\n";
+				$pdf->MultiCell(60, 3, $text, 0, 'L');
+				
+				$pdf->rect($posX+2, $posYL+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posYL+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posYL+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Appartement'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Maison individuelle'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('...........'), 0, 'L');
+				$posY = $pdf->getY()+2;
+				
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size + 1);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Dépendances'), 1, 'L',1);
+				$posY = $pdf->getY()+1;
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Garage n°'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Place de stationnement n°'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Cave n°'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('...........'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->SetFont('', 'B', $default_font_size);
+				$pdf->SetXY($posX+6, $posY+2);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Énumération des parties et équipements communs'), 0, 'C');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Gardiennage'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('lnterphone'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Ascenseur'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Vide-ordures'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Antenne TV collective'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Espace(s) vert(s)'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Chauffage Collectif'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+6, $posY+0.5);
+				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Eau chaude collective'), 0, 'L');
+				$posY = $pdf->getY();
+				
+				/*$text .= $outputlangs->transnoentities("- type d'habitat : ").$formultimateimmo->getPropertyTypeLabel($objproperty->property_type_id)."\n";
 				
 				$text .= $outputlangs->transnoentities("- régime juridique de l'immeuble : ").$formultimateimmo->getLabelFormeJuridique($objproperty->juridique)."\n" ;
 				
@@ -394,7 +547,7 @@ B. Destination des locaux : [usage d'habitation ou usage mixte professionnel et 
 C. Le cas échéant, Désignation des locaux et équipements accessoires de l'immeuble à usage privatif du locataire : [exemples : cave, parking, garage etc.]
 D. Le cas échéant, Enumération des locaux, parties, équipements et accessoires de l'immeuble à usage commun : [Garage à vélo, ascenseur, espaces verts, aires et équipements de jeux, laverie, local poubelle, gardiennage, autres prestations et services collectifs etc.]
 E. Le cas échéant, Equipement d'accès aux technologies de l'information et de la communication : [exemples : modalités de réception de la télévision dans l'immeuble, modalités de raccordement internet etc.]");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');*/
 
 				/*$period = $outputlangs->transnoentities('');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
