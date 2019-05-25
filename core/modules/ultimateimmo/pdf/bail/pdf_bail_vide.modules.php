@@ -32,6 +32,7 @@ dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immoowner_type.class.php');
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
+dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
@@ -1322,7 +1323,7 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 	{
 		global $conf;
 		$showdetails=$conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS;
-		return pdf_pagefoot($pdf, $outputlangs, 'INVOICE_FREE_TEXT', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, $showdetails, $hidefreetext);
+		return pdf_ultimate_pagefoot($pdf, $outputlangs, 'INVOICE_FREE_TEXT', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, $showdetails, $hidefreetext);
 	}
 
 	/**
