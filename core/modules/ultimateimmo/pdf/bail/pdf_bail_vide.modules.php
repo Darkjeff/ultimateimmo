@@ -611,14 +611,14 @@ Il a été convenu ce qui suit :\n\n");
 				$posY = $pdf->getY()+4;
 				$pdf->SetXY($posX, $posY);				
 				$text = $outputlangs->transnoentities("<strong> MONTANT OU LOYER (voir conditions générales chapitre 1) :<br> 
-Il est fixé librement entre les parties en application de l'article 17 a) et de l'article 17 b) de la loi Cependant pour les baux contractés entre le 01.08.2013 et le 31.07.2014 et UNIQUEMENT dans les communes menlionnées par l'annexe du décret n°2013-689 OU 30.07.2013 fixant un montant maximum d'évolution des loyers, conformément à l'article 18 de la loi, le loyer des logements vacants définis à l'article 17 b) ne peut excéder le dernier loyer appliqué au précédent locataire révisé dans les limites prévues à l'article 17 d), sauf cas suivants: </strong><br>
-• Lorsque le bailleur a réalisé, depuis la conclusion du dernier contrat, des travaux d'amélioration portant sur les parties privatives ou communes d'un montant au moins égal à la moitié de la dernière année de loyer, la hausse du loyer annuel ne peut excéder l5% du coût réel des travaux toutes taxes comprises;<br> 
-. Lorsque le dernier loyer appliqué au précédent locataire est manifestement sous-évalué, la hausse du nouveau loyer ne peut excéder la plus élevée des deux limites suivantes<br> 
-l La moitié de la différence entre le montant moyen d'un loyer représentatif des loyers habituellement constatés dans le voisinage pour des logements comparables déterminé selon les modalités prévues à l'article 19 de la loi du 06.07 1989 et le dernier loyer appliqué au précédent locataire;<br>
-2. Une majoration du loyer annuel égale à 15% du coût réel des travaux toutes taxes comprises, dans le cas où le bailleur a réalisé depuis la fin du dernier contrat de location des travaux d'amélioration portant sur les parties privatives ou communes d'un montant au moins égal à la moitié de la dernière année de loyer.<br>
-<strong>Le montant du loyer sera payable au domicile du bailleur ou de la personne qu'il aura mandaté à cet effet.</strong><br> 
-<strong>RÉVISION OU LOYER</strong> art. 17-1-1) de la loi du 06.07.1989: La variation annuelle du loyer ne peut excéder, à la hausse, la variation sur un an de l'indice de référence des loyers publié par l'I.N.S.E.E. dont les éléments de référence sont indiqués en page 5.<br>
-Après sa date de prise d'effet, le bailleur dispose d'un an pour manifester sa volonté d'appliquer la révision du loyer. À défaut le bailleur est réputé avoir renoncé à la révision du loyer pour l'année écoulée : Si le bailleur manifeste sa volonté de réviser le loyer, dans un délai d'un an, cette révision prend effet à compter de sa demande. ");
+				Il est fixé librement entre les parties en application de l'article 17 a) et de l'article 17 b) de la loi Cependant pour les baux contractés entre le 01.08.2013 et le 31.07.2014 et UNIQUEMENT dans les communes menlionnées par l'annexe du décret n°2013-689 OU 30.07.2013 fixant un montant maximum d'évolution des loyers, conformément à l'article 18 de la loi, le loyer des logements vacants définis à l'article 17 b) ne peut excéder le dernier loyer appliqué au précédent locataire révisé dans les limites prévues à l'article 17 d), sauf cas suivants: </strong><br>
+				• Lorsque le bailleur a réalisé, depuis la conclusion du dernier contrat, des travaux d'amélioration portant sur les parties privatives ou communes d'un montant au moins égal à la moitié de la dernière année de loyer, la hausse du loyer annuel ne peut excéder l5% du coût réel des travaux toutes taxes comprises;<br> 
+				. Lorsque le dernier loyer appliqué au précédent locataire est manifestement sous-évalué, la hausse du nouveau loyer ne peut excéder la plus élevée des deux limites suivantes<br> 
+				l La moitié de la différence entre le montant moyen d'un loyer représentatif des loyers habituellement constatés dans le voisinage pour des logements comparables déterminé selon les modalités prévues à l'article 19 de la loi du 06.07 1989 et le dernier loyer appliqué au précédent locataire;<br>
+				2. Une majoration du loyer annuel égale à 15% du coût réel des travaux toutes taxes comprises, dans le cas où le bailleur a réalisé depuis la fin du dernier contrat de location des travaux d'amélioration portant sur les parties privatives ou communes d'un montant au moins égal à la moitié de la dernière année de loyer.<br>
+				<strong>Le montant du loyer sera payable au domicile du bailleur ou de la personne qu'il aura mandaté à cet effet.</strong><br> 
+				<strong>RÉVISION OU LOYER</strong> art. 17-1-1) de la loi du 06.07.1989: La variation annuelle du loyer ne peut excéder, à la hausse, la variation sur un an de l'indice de référence des loyers publié par l'I.N.S.E.E. dont les éléments de référence sont indiqués en page 5.<br>
+				Après sa date de prise d'effet, le bailleur dispose d'un an pour manifester sa volonté d'appliquer la révision du loyer. À défaut le bailleur est réputé avoir renoncé à la révision du loyer pour l'année écoulée : Si le bailleur manifeste sa volonté de réviser le loyer, dans un délai d'un an, cette révision prend effet à compter de sa demande. ");
 				$pdf->writeHTMLCell($widthbox, 3, $posX, $posY, $outputlangs->convToOutputCharset($text), 1, 'L');
 				
 				$posY = $pdf->getY()+200;
@@ -650,31 +650,49 @@ Après sa date de prise d'effet, le bailleur dispose d'un an pour manifester sa 
 				$posYL = $pdf->getY();
 				$posYR = $pdf->getY();
 				$pdf->SetXY($posX, $posYL);
+				$pdf->SetFillColor(255, 255, 127);
 				
 				$text = $outputlangs->transnoentities(" Durée - résiliation - renouvellement");
-				$pdf->MultiCell($widthbox/2, 3, $outputlangs->convToOutputCharset($text), 1, 'C');
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->convToOutputCharset($text), 1, 'C', 1);
 				$posYL = $pdf->getY();
 				
 				$pdf->SetFont('', '', $default_font_size-1);
 				$text = $outputlangs->transnoentities(" <strong><U>A/CONTRAT DURÉE MINIMALE DE 3 OU 6 ANS</U></strong><br>
- DURÉE INITIALE (art 10 et 13 de la loi) Le contrat est conclu pour une durée AU MOINS ÉGALE à 3 ans (bailleur 'personne physique' ou 'société civile familiale') ou à 6 ans (bailleur 'personne morale')<br> 
- <strong>RÉSILIATION - CONGÉ</strong> (articles 13 et 15 de la loi) : <br>
- Il pourra être résilié par lettre recommandée avec avis de réception ou par acte d'huissier ou par remise en main propre contre récépissé ou émargement<br> 
- <U>PAR LE LOCATAIRE</U>, à tout moment, en prévenant le bailleur 3 mois à l'avance, délai ramené à 1 mois en cas de location dans les territoires mentionnés au 1er alinéa du 1 l'article 17, en cas d'obtention d'un premier emploi, de mutation, de perte d'emploi ou de nouvel emploi consécutif â une perte d'emploi, ou en cas de congé émanant d'un locataire qui s'est vu attribuer un logement social (arl. L.35/2 du CCH). ou dont l'état de santé, constaté par un certificat médical, justifie un changement de domicile, ou d'un locataire bénéficiaire du revenu de solidarité active ou de l'allocation adulte handicapé<br> 
- <U>PAR LE BAILLEUR</U>, en prévenant le locataire 6 mois au moins avant le terme du contrat. Le congé devra être fondé, soit sur sa décision de reprendre ou de vendre le logement, soit sur un motif légitime et sérieux, notamment l'inexécution par le locataire de l'une des obligations principales lui incombant <br>
- Le congé devra être indiqué le motif allégué et:<br> 
- en cas de reprise, les nom et adresse du bénéficiaire de la reprise qui ne peut être que l'une des personnes prévues à l'art 15-1 de la loi,<br> 
- en cas de vente, le prix et les conditions de la vente projetée, ce congé valant offre de vente au profit du locataire. Le congé devra en outre respecter le formalisme de l'article 15-11 de la loi du 06.07.1989<br> <strong>RENOUVELLEMENT</strong> (articles 10, 11, 13 et 17 §c de la loi):<br>
- 1) 6 mois au moins avant le terme du contrat, le bailleur pourra faire une proposiuon de renouvellement par lettre recommandée avec avis de réception ou par acte d'huissier <br>
- <U>soit à l'effet de proposer un nouveau contrat d'une durée réduite (au moins égale à un an)</U> pour raisons professionnelles ou familiales justifiées (bailleur 'personne physique' ou 'société civile familiale') :<br> 
- <U>soit à l'effet de réévaluer le loyer</U> pour le cas où ce dernier serait manifestement sous-évalué, le contrat étant renouvelé pour une durée AU MOINS ÉGALE à 3 ans (bailleur 'personne physique' ou 'société civile familiale') ou à 6 ans (bailleur 'personne morale') dans ce cas, le bailleur pourra proposer au locataire un nouveau loyer fixé par référence aux loyers habituellement constatés dans le voisinage pour des logements comparables, dans les conditions fixées à l'article 19 de la loi <br>
- 2) À défaut de congé motivé donné dans les conditions de forme et de délai prévues ci-avant, le contrat parvenu à son terme sera renouvelé pour une durée AU MOINS ÉGALE à 3 ans (bailleur 'personne physique' ou 'société civile familiale') ou à 6 ans (bailleur 'personne morale')<br>  ");
-				$pdf->writeHTMLCell($widthbox/2 -2, 3, $posX, $posYL, $outputlangs->convToOutputCharset($text), 1, 'L');
+			    DURÉE INITIALE (art 10 et 13 de la loi) Le contrat est conclu pour une durée AU MOINS ÉGALE à 3 ans (bailleur 'personne physique' ou 'société civile familiale') ou à 6 ans (bailleur 'personne morale')<br> 
+			    <strong>RÉSILIATION - CONGÉ</strong> (articles 13 et 15 de la loi) : <br>
+			    Il pourra être résilié par lettre recommandée avec avis de réception ou par acte d'huissier ou par remise en main propre contre récépissé ou émargement<br> 
+			    <U>PAR LE LOCATAIRE</U>, à tout moment, en prévenant le bailleur 3 mois à l'avance, délai ramené à 1 mois en cas de location dans les territoires mentionnés au 1er alinéa du 1 l'article 17, en cas d'obtention d'un premier emploi, de mutation, de perte d'emploi ou de nouvel emploi consécutif â une perte d'emploi, ou en cas de congé émanant d'un locataire qui s'est vu attribuer un logement social (arl. L.35/2 du CCH). ou dont l'état de santé, constaté par un certificat médical, justifie un changement de domicile, ou d'un locataire bénéficiaire du revenu de solidarité active ou de l'allocation adulte handicapé<br> 
+			    <U>PAR LE BAILLEUR</U>, en prévenant le locataire 6 mois au moins avant le terme du contrat. Le congé devra être fondé, soit sur sa décision de reprendre ou de vendre le logement, soit sur un motif légitime et sérieux, notamment l'inexécution par le locataire de l'une des obligations principales lui incombant <br>
+			    Le congé devra être indiqué le motif allégué et:<br> 
+			    en cas de reprise, les nom et adresse du bénéficiaire de la reprise qui ne peut être que l'une des personnes prévues à l'art 15-1 de la loi,<br> 
+			    en cas de vente, le prix et les conditions de la vente projetée, ce congé valant offre de vente au profit du locataire. Le congé devra en outre respecter le formalisme de l'article 15-11 de la loi du 06.07.1989<br> <strong>RENOUVELLEMENT</strong> (articles 10, 11, 13 et 17 §c de la loi):<br>
+			    1) 6 mois au moins avant le terme du contrat, le bailleur pourra faire une proposiuon de renouvellement par lettre recommandée avec avis de réception ou par acte d'huissier <br>
+			    <U>soit à l'effet de proposer un nouveau contrat d'une durée réduite (au moins égale à un an)</U> pour raisons professionnelles ou familiales justifiées (bailleur 'personne physique' ou 'société civile familiale') :<br> 
+			    <U>soit à l'effet de réévaluer le loyer</U> pour le cas où ce dernier serait manifestement sous-évalué, le contrat étant renouvelé pour une durée AU MOINS ÉGALE à 3 ans (bailleur 'personne physique' ou 'société civile familiale') ou à 6 ans (bailleur 'personne morale') dans ce cas, le bailleur pourra proposer au locataire un nouveau loyer fixé par référence aux loyers habituellement constatés dans le voisinage pour des logements comparables, dans les conditions fixées à l'article 19 de la loi <br>
+			    2) À défaut de congé motivé donné dans les conditions de forme et de délai prévues ci-avant, le contrat parvenu à son terme sera renouvelé pour une durée AU MOINS ÉGALE à 3 ans (bailleur 'personne physique' ou 'société civile familiale') ou à 6 ans (bailleur 'personne morale')<br>  ");
+				$pdf->writeHTMLCell($widthbox/2 -2, 3, $posX, $posYL, $outputlangs->convToOutputCharset($text), 1, 0, 0, true, 'J');
 				
 				$pdf->SetXY($posX+$widthbox/2, $posYR);
-				$text = $outputlangs->transnoentities(" <strong>TACITE RECONDUCTION </strong>(articles 10 et 13 de la loi) :<br> À défaut de renouvellement ou de congé motivé donné dans les conditions de forme et de délai prévues ci-avant, le contrat parvenu à son terme sera reconduit tacitement aux CONDITIONS ANTÉRIEURES, pour une durée ÉGALE à 3 ans (bailleur 'personne physique' ou à 6 ans (bailleur 'personne morale')<br>");
+				$text = $outputlangs->transnoentities(" <strong>TACITE RECONDUCTION </strong>(articles 10 et 13 de la loi) :<br> À défaut de renouvellement ou de congé motivé donné dans les conditions de forme et de délai prévues ci-avant, le contrat parvenu à son terme sera reconduit tacitement aux CONDITIONS ANTÉRIEURES, pour une durée ÉGALE à 3 ans (bailleur 'personne physique' ou à 6 ans (bailleur 'personne morale')<br>
+				<strong><U>B/CONTRAT D'UNE DURÉE INFÉRIEURE À 3 ANS</U></strong><br> 
+				POUR RAISONS PROFESSIONNELLES OU FAMILIALES JUSTIFIÉES (art 11 et 13 de la loi):<br> 
+				<strong>DURÉE INITIALE</strong> : Les parties peuvent conclure un contrat d'une durée inférieure à 3 ans, mais d'au moins une année, quand un événement précis justifie que le bailleur 'personne physique' ou 'société civile familiale' ait à reprendre le local pour des raisons professionnelles ou familiales mentionnées au contrat<br> 
+				<strong>CONGÉ</strong>. Le congé devra être notifié par lettre recommandée avec avis de réception ou par acte d'huissier ou par remise en main propre contre récépissé ou émargement<br> 
+				<U>PAR LE LOCATAIRE</U>, à tout moment, en prévenant le bailleur 3 mois à l'avance, délai ramené à 1 mois en cas de location dans les territoires mentionnés au 1er alinéa du 1 de l'article 17, en cas d'obtention d'un premier emploi, de mutation, de perte d'emploi ou de nouvel emploi consécutif à une perte d'emploi, ou en cas de congé émanant d'un locataire qui s'est vu attribuer un logement social (art. L.35/2 du CCH), ou dont l'état de santé, constaté par un certificat médical, justifie un changement de domicile, ou d'un locataire bénéficiaire du revenu de solidarité active ou de l'allocation adulte handicapé <br>
+				<U>PAR LE BAILLEUR</U>, en confirmant la réalisation de l'événement familial ou professionnel au moins 2 mois avant le terme du contrat. Si la réalisation de l'événement est différée, le bailleur pourra, dans le même délai, proposer le report du terme du contrat, ce report n'étant possible qu'une seule fois. Lorsque l'événement s'est produit et est confirmé, le locataire est déchu de plein droit de tout titre d'occupation au terme prévu dans le contrat. <br>
+				<strong>TRANSFORMATION EN CONTRAT DE 3 ANS</strong> : Lorsque l'événement ne s'est pas produit ou n'est pas confirmé, le contrat de location est réputé être de 3 ans<br>
+				<strong><U>C/RÉSILIATION SUITE À L'ABANDON DU LOGEMENT PAR LE LOCATAIRE</strong></U> <br>
+				Lorsque des éléments laissent supposer que le logement est abandonné par ses occupants, le bailleur peut mettre en demeure le locataire par acte d'huissier de Justifier qu'il occupe le logement. S'il n'a pas été déféré à cette mise en demeure un mois après signification, l'huissier peut constater l'abandon du logement dans un procès-verbal des opérations.<br>
+				La résiliation du bail est constatée par le juge dans les conditions prévues par voie réglementaire	");
 				
-				$pdf->writeHTMLCell($widthbox/2 -2, 3, $posX+$widthbox/2, $posYR, $outputlangs->convToOutputCharset($text), 1, 'L');
+				$pdf->writeHTMLCell($widthbox/2 -2, 3, $posX+$widthbox/2, $posYR, $outputlangs->convToOutputCharset($text), 1, 0, 0, true, 'J');
+				
+				$posY = $pdf->getY()+210;
+				
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Paraphes :'), 0, 'R');
 				
 				// Pied de page
 				$this->_pagefoot($pdf,$object,$outputlangs);
