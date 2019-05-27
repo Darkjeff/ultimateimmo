@@ -652,7 +652,7 @@ Il a été convenu ce qui suit :\n\n");
 				$pdf->SetXY($posX, $posYL);
 				$pdf->SetFillColor(255, 255, 127);
 				
-				$text = $outputlangs->transnoentities(" Durée - résiliation - renouvellement");
+				$text = $outputlangs->transnoentities("I Durée - résiliation - renouvellement");
 				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->convToOutputCharset($text), 1, 'C', 1);
 				$posYL = $pdf->getY();
 				
@@ -705,54 +705,42 @@ Il a été convenu ce qui suit :\n\n");
 				$pdf->setTopMargin($tab_top_newpage);
 				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
 				
+				// print TEXT
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
+				$posYL = $pdf->getY();
+				$posYR = $pdf->getY();
+				$pdf->SetXY($posX, $posYL);
+				$pdf->SetFillColor(255, 255, 127);
 				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				
-				$text = $outputlangs->transnoentities(" 1. Montant total annuel récupérable au titre de l'assurance pour compte des colocataires : [...] (13).
-2. Montant récupérable par douzième : [...].
-E. Modalités de paiement
-- périodicité du paiement : [... (14)] ;
-- paiement [à échoir/ à terme échu] ;
-- date ou période de paiement : [...] ;
-- le cas échéant, Lieu de paiement : [...] ;
-- le cas échéant, Montant total dû à la première échéance de paiement pour une période complète de location :
-[détailler la somme des montants relatifs au loyer, aux charges récupérable, à la contribution pour le partage des économies de charges et, en cas de colocation, à l'assurance récupérable pou le compte des colocataires].
-F. Le cas échéant, exclusivement lors d'un renouvellement de contrat, modalités de réévaluation d'un loyer manifestement sous-évalué
-1. Montant de la hausse ou de la baisse de loyer mensuelle : [...].
-2. Modalité d'application annuelle de la hausse : [par tiers ou par sixième selon la durée du contrat et le montant de la hausse de loyer].
-");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');				
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				$posY = $pdf->getY();
-				
-				// Le contrat type de location ou de colocation contient les éléments suivants :
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetXY($posX, $posY);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('V. TRAVAUX'), 1, 'C');
-				
+				$text = $outputlangs->transnoentities("II - Cautionnement");
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->convToOutputCharset($text), 1, 'C', 1);
+				$posYL = $pdf->getY();
+
+				$pdf->SetFont('', '', $default_font_size-1);
+				$text = $outputlangs->transnoentities(" Le cas échéant, le bailleur peut demander qu'un tiers se porte caution et s'engage à exécuter, en cas de défaillance du locataire, les obligations résultant du contrat de location. Toutefois, aucun cautionnement ne peut être demandé, à peine de nullité, par le bailleur qui a souscrit une assurance garantissant les obligations locatives ou toute autre forme de garantie sauf en cas de logement loué à un étudiant ou un apprenti (art. 22-1 de la loi 89-462 du 06.07.1989 modifié par la loi du 24.03.2014).<br> 
+				Les formalités suivantes sont rendues obligatoires sous peine de nullité du cautionnement :<br> 
+				- le bailleur remet à la caution un exemplaire du contrat de location;<br> 
+				- la personne qui se porte caution doit, sur l'acte de caution et de sa main<br> 
+				· indiquer le montant du loyer, et le cas échéant les conditions de sa révision, tels qu'ils figurent au contrat de location , 
+				· reconnaître la portée et la nature de son engagement. 
+				· limiter la durée de son engagement. recopier l'article 22-1 avant dernier alinéa de la loi du 06 07.1989. 
+				Le bailleur a une obligation au moins annuelle d'information de la caution personne physique en cas de cautionnement illimité (art. 2293 modifié du code civil) ou si le bailleur est un bailleur professionnel (art L.341-1 du code de la consommation).");
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX, $posYL, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYL = $pdf->getY();
+
+				// print TEXT
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
 				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetXY($posX, $posYL);
+				$text = $outputlangs->transnoentities("III - Dépôt de garantie");				
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->transnoentities($text), 1, 'C', 1);
+				$posYL = $pdf->getY();
 				
-				$text = $outputlangs->transnoentities(" A. Le cas échéant, Montant et nature des travaux d'amélioration ou de mise en conformité avec les caractéristiques de
-décence effectués depuis la fin du dernier contrat de location ou depuis le dernier renouvellement : [...] (15)
-B. Le cas échéant, Majoration du loyer en cours de bail consécutive à des travaux d'amélioration entrepris par le
-bailleur : [nature des travaux, modalités d'exécution, délai de réalisation ainsi que montant de la majoration du loyer]
-(16)
-C. Le cas échéant, Diminution de loyer en cours de bail consécutive à des travaux entrepris par le locataire : [durée de cette diminution et, en cas de départ anticipé du locataire, modalités de son dédommagement sur justification des dépenses effectuées].");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				$pdf->SetFont('', '', $default_font_size-1);
+				$text = $outputlangs->transnoentities(" Conformément aux articles 22 de la 1oi, le dépôt de garatnie éventuellement demandé par le bailleur au locataire alin de garantir la bonne exécution de ses obliga11ons ne pourra excéder I mois de loyer net de charges (loi n°2008-I II du 08.02.2008). Au moment de la signature du bail, le dépôt de garantie est versé au bailleur directement par le locataire ou par l'intermédiaire d'un tiers. Non productif d'intérêts, il ne sera révisable n, en cours de contrat initial, ni lors du renouvellement éventuel Il sera rendu au locataire dans un délai de 2 mois à compter de la remise en mains propres des clés ou de leur envoi en lettre recommandée avec accusé de réception au bailleur ou à son mandataire ( / mois s 'Il y a co11for111ité e/1/re les états des /ie,,.r d'emrée et de sortie), déduction faite, le cas échéant, des sommes restant dues au bailleur et des sommes dont celui.ci j)Oul'fi!it erre tenu j)OUr resj)Onsable, au.x heu et place du locataire, sous réserve qu'elles soient dQmentjustifiées St la location se situe dans immeuble collectif: le bailleur procède à un arrêté de comptes provisoire et peu� lorsqu'elle est d(lment justifiée, consCTVer une provision ne pou,ant excéder 20% du montant du dépôt de garantie jusqu'à l'arrêté des comptes de l'immeuble La régularisauon définitive et la restituuon du solde, déducuon faite, le cas échéan� des sommes restant au bailleur et des sommes dont celui-ci pourrait être tenu aux lieux et places du locataire, sont effectués dans le mois qui suit l'approbation définiuve des comptes de l'immeuble Les parties peuvent convenir de solder immédiatement les comptes Les intérêts dus en cas de retard seront de 10% du loyer hors charges par mois de retard En cas de vente ou donaùon du logement pendant la durée du bail, la restitution du dépôt de garanlle incombe au nouveau bailleur et toute convention entre l'acquéreur et le vendeur pendant la vente sur le sort du dépôt de garantie est inopposable au locataire (art.22 de la loi 11°89-462 du 06.07.1989 modifié par la loi 11• 2009-323 du 25.03.2009), Ce dépôt ne pourra sous aucun prétexte être affecté par le locataire au paiement des derniers mois de loyers. ");
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX, $posYL, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYL = $pdf->getY();
 				
 				// Pied de page
 				$this->_pagefoot($pdf,$object,$outputlangs);
