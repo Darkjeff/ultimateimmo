@@ -617,7 +617,7 @@ Il a été convenu ce qui suit :\n\n");
 				l La moitié de la différence entre le montant moyen d'un loyer représentatif des loyers habituellement constatés dans le voisinage pour des logements comparables déterminé selon les modalités prévues à l'article 19 de la loi du 06.07 1989 et le dernier loyer appliqué au précédent locataire;<br>
 				2. Une majoration du loyer annuel égale à 15% du coût réel des travaux toutes taxes comprises, dans le cas où le bailleur a réalisé depuis la fin du dernier contrat de location des travaux d'amélioration portant sur les parties privatives ou communes d'un montant au moins égal à la moitié de la dernière année de loyer.<br>
 				<strong>Le montant du loyer sera payable au domicile du bailleur ou de la personne qu'il aura mandaté à cet effet.</strong><br> 
-				<strong>RÉVISION OU LOYER</strong> art. 17-1-1) de la loi du 06.07.1989: La variation annuelle du loyer ne peut excéder, à la hausse, la variation sur un an de l'indice de référence des loyers publié par l'I.N.S.E.E. dont les éléments de référence sont indiqués en page 5.<br>
+				<strong>RÉVISION OU LOYER</strong> art. 17-1-1) de la loi du 06.07.1989: La variation annuelle du loyer ne peut excéder, à la hausse, la variation sur un an de l'indice de référence des loyers publié par l'I.N.S.E.E. dont les éléments de référence sont indiqués en page 8.<br>
 				Après sa date de prise d'effet, le bailleur dispose d'un an pour manifester sa volonté d'appliquer la révision du loyer. À défaut le bailleur est réputé avoir renoncé à la révision du loyer pour l'année écoulée : Si le bailleur manifeste sa volonté de réviser le loyer, dans un délai d'un an, cette révision prend effet à compter de sa demande. ");
 				$pdf->writeHTMLCell($widthbox, 3, $posX, $posY, $outputlangs->convToOutputCharset($text), 1, 'L');
 				
@@ -771,7 +771,7 @@ Il a été convenu ce qui suit :\n\n");
 				Ces charges, seront réglées en même temps que le loyer principal, par provisions mensuelles ou trimestrielles et feront l'objet d'une régularisation annuelle.<br> 
 				Le montant des charges sera fixé chaque année par le bailleur en fonction des dépenses réellement exposées l'année précédente ou du budget prévisionnel, le montant de chaque provision étant réajusté en conséquence.<br> 
 				Un mois avant l'échéance de la régularisation annuelle, le bailleur adressera au locataire un décompte par nature de charges, ainsi que, dans les immeubles collectifs, le mode de répartition entre tous les locataires, et le cas échéant, une note d'information sur les modalités de calculs des charges de chauffage et d'eau chaude collectifs. Pendant six mois, les pièces justificatives seront tenues è la disposition du locataire. <br>
-				Conformément au nouvel article 23-1 de la loi du 06.07.1989 issu de la 1oi n° 2009-323 du 25.03.2009, le bailleur peut, sous certaines conditions décret n° 2009-/439) et arrêté NOR DEVU/0925487 du 23 novembre 2009) demander au locataire, et après concertation avec ce dernier, une contribution pour la réalisation de certains travaux, d'économie d'énergie. Son montant est payable mensuellement à compter de la fin des travaux et pour une période déterminée (le cas échéant, indiqués en page 5).");
+				Conformément au nouvel article 23-1 de la loi du 06.07.1989 issu de la 1oi n° 2009-323 du 25.03.2009, le bailleur peut, sous certaines conditions décret n° 2009-/439) et arrêté NOR DEVU/0925487 du 23 novembre 2009) demander au locataire, et après concertation avec ce dernier, une contribution pour la réalisation de certains travaux, d'économie d'énergie. Son montant est payable mensuellement à compter de la fin des travaux et pour une période déterminée (le cas échéant, indiqués en page 8).");
 				
 				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX+$widthbox/2, $posYR, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
 				$posYR = $pdf->getY();
@@ -909,7 +909,7 @@ Il a été convenu ce qui suit :\n\n");
 				3. Annexer au contrat une information sur les modalités de réceptions des services de télévision (article 3-2). <br>
 				4. Remettre au locataire un logement décent (caractéristiques correspondantes définies par le décret n° 2002-120 du 30.01.02) ne laissant apparaître de risques manifestes pouvant porter atteinte à la sécurité physique ou à la santé et doté des éléments le rendant conforme à l'usage d'habitation (le manquement à cette obligation peut entraîner des travaux de mise en conformité en opplication des dispositions du chapitre V ci-avant).<br> 
 				Délivrer au locataire le logement en bon état d'usage et de réparations, ainsi que les équipements mentionnés au contrat en bon état de fonctionnement (hormis les travaux faisant l'objet de la clause expresse stipullée en page 6 conformément aux dispositions du chapitre V.<br> 
-				5. Assurer au locataire la Jouissance paisible du logement et, sans préjudice des dispositions de l'article 1721 du code civil, le garantir des vices ou défauts de nature à y faire obstacle (hormis ceux qui, consignés dans l'état des lieux, auraient fait l'objet de la clause expresse stipullée en page 5 conformément aux dispositions du chapitre V).<br> 
+				5. Assurer au locataire la Jouissance paisible du logement et, sans préjudice des dispositions de l'article 1721 du code civil, le garantir des vices ou défauts de nature à y faire obstacle (hormis ceux qui, consignés dans l'état des lieux, auraient fait l'objet de la clause expresse stipullée en page 8 conformément aux dispositions du chapitre V).<br> 
 				6. Entretenir les locaux en état de servir à l'usage prévu et y faire toutes les réparations nécessaires autres que locatives.<br>
 				7. Ne pas s'opposer aux aménagements réalisés par le locataire et ne constituant pas une transformation de la chose louée.<br>
 				8. Transmettre gratuitement une quittance au locataire lorsqu'il en fait la demande, le bailleur ou son mandataire étant libre de choisir les modalités de celle remise. Avec l'accord exprès du locataire, le bailleur peul procéder à la transmission dématérialisée de la quittance.<br>
@@ -965,52 +965,80 @@ Il a été convenu ce qui suit :\n\n");
 				$pdf->setTopMargin($tab_top_newpage);
 				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
 				
+				// print TEXT
+				$posYL = $pdf->getY();
+				$posYR = $pdf->getY();
+				$pdf->SetXY($posX, $posYL);
+
+				$pdf->SetFont('', '', $default_font_size-1);
+				$text = $outputlangs->transnoentities(" 11. Laisser visiter, en vue de la vente ou de la location, les lieux loués deux heures par jour pendant les jours ouvrables ; l'horaire de visite sera défini par accord entre les parties, à défaut d'accord, les visites auront lieu entre 17h et 19h.<br> 
+				12. S'assurer que le bailleur et le cas échéant, son mandataire, sont informés de l'existence de son conjoint ou du partenaire auquel il est lié par un PACS, à défaut, nonobstant les dispositions des articles 515-4 et 1751 du code civil, les notifications ou significations faites par le bailleur sont de plein droit opposables au partenaire lié par PACS au locataire ou au conjoint dont l'existence n'a pas été préalablement portée à la connaissance du bailleur.");
+				
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX, $posYL, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYL = $pdf->getY();
+				
+				// print TEXT
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
 				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetXY($posX, $posYL);
+				$text = $outputlangs->transnoentities("X - Clause Résolutoire et Clauses Pénales");				
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->transnoentities($text), 1, 'C', 1);
+				$posYL = $pdf->getY();
 				
-				$text = $outputlangs->transnoentities("B. Détail et répartition des honoraires
-1. Honoraires à la charge du bailleur :
-- prestations de visite du preneur, de constitution de son dossier et de rédaction de bail : [détail des prestations effectivement réalisées et montant des honoraires toutes taxes comprises dus à la signature du bail] ;
-- le cas échéant, Prestation de réalisation de l'état des lieux d'entrée : [montant des honoraires toutes taxes comprises dus à compter de la réalisation de la prestation] ;
-- autres prestations : [détail des prestations et conditions de rémunération].
-2. Honoraires à la charge du locataire :
-- prestations de visite du preneur, de constitution de son dossier et de rédaction de bail : [détail des prestations effectivement réalisées et montant des honoraires toutes taxes comprises dus à la signature du bail] ;
-- le cas échéant, Prestation de réalisation de l'état des lieux d'entrée : [montant des honoraires toutes taxes comprises dus à compter de la réalisation de la prestation].");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				$pdf->SetFont('', '', $default_font_size-1);
+				$text = $outputlangs->transnoentities("Le présent contrat sera RÉSILIÉ IMMEDIATEMENT ET DE PLEIN DROIT, c'est-à-dire sans qu'il soit besoin de faire ordonner cette résolution en justice:<br> 
+				Deux mois après un commandement demeuré infructueux à défaut de paiement aux termes convenus de toute ou partie du loyer et des charges dûment justifiées ou en cas de non-versement du dépôt de garantie éventuellement prévu au contrat.<br> 
+				Lorsqu'une caution garantit les obligations du présent contrat de location, le commandement de payer est s1gnifié à la caution dans un délai de 15 jours, à compter de la s1gnification du commandement au locataire. À défaut, la caution ne peut être tenue au paiement des pénalités ou intérêts de retard. <br>
+				Les frais et honoraires exposés par le bailleur pour la délivrance des commandements ou la mise en recouvrement des sommes qui lui sont dues, seront mis à la charge du locataire, sous réserve de l'appréciation des tribunaux, conformément à l'article 700 du code de procédure civile.<br> 
+				Il est bien entendu qu'en cas de paiement par chèque, le loyer ne sera considéré comme réglé qu'après encaissement. <br>
+				Un mois après un commandement demeuré infructueux à défaut d'assurance contre les risques locatifs.<br> 
+				En cas de troubles de voisinage constituant le non-respect de la jouissance paisible des lieux loués, constatés par une décision de justice passée en force de chose jugée.<br> 
+				Une fois acquis au bailleur le bénéfice de la clause résolutoire, le locataire devra libérer immédiatement les lieux; s'il s'y refuse, le bailleur devra préalablement à toute expulsion faire constater la résiliation du bail par le juge des référés. En outre, et sans qu'il soit dérogé à la précédente clause résolutoire, le locataire s'engage formellement à respecter les deux clauses pénales qui suivent:<br> 
+				1- En cas de non-paiement du loyer ou de ses accessoires aux termes convenus, et dès le premier acte d'huissier, le locataire supportera une majoration de plein droit sur le montant des sommes dues, calculée selon le taux d'intérêt légal, en dédommagement du préjudice subi par le bailleur, et ce sans qu'une mise en demeure soit nécessaire, en dérogation à l'article 1230 du code civil<br> 
+				2- Si le locataire déchu de tout droit d'occupation ne libère pas les lieux, résiste à une ordonnance d'expulsion ou obtient des délais pour son départ, il devra verser par jour de retard, outre les charges, une indemnité conventionnelle d'occupation égale à deux fois le loyer quotidien, ceci jusqu'à complet déménagement et restitution des clés. Cette indemnité est destinée à dédommager le bailleur du préjudice provoqué par l'occupation abusive des lieux loués faisant obstacle à l'exercice des droits du bailleur.<br>");
 				
-				$posY = $pdf->getY();
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX, $posYL, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
 				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				// print TEXT
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
 				
-				$posY = $pdf->getY();
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("XI - Solidarité - Indivisibilité - Élection de Domicile");				
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->transnoentities($text), 1, 'C', 1);
+				$posYR = $pdf->getY();
 				
-				// Le contrat type de location ou de colocation contient les éléments suivants :
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("Pour l'exécution de toutes les obligations résultant du présent contrat, il y aura solidarité et indivisibilité entre <br>
+				les parties ci-dessus désignées sous le vocable 'le LOCATAIRE'; <br>
+				les héritiers ou représentants du LOCATAIRE venant à décéder (sous réserve de l'art. 802 du code civil) et toutes les personnes pouvant se prévaloir de la transmission du contrat en vertu de l'article 14 de la loi.<br> 
+				Les parties signataires font élection de domicile : le bailleur en sa demeure et le locataire dans les lieux loués pour la durée effective du présent bail.<br>");
+				
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX+$widthbox/2, $posYR, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYR = $pdf->getY();
+				
+				// print TEXT
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("XII - Frais - Honoraires");				
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->transnoentities($text), 1, 'C', 1);
+				$posYR = $pdf->getY();
+				
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("Le montant et modalités de répartition des honoraires sont indiquées en page 8.<br>");
+				
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX+$widthbox/2, $posYR, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYR = $pdf->getY();
+				
 				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
 				$pdf->SetXY($posX, $posY);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('X. AUTRES CONDITIONS PARTICULIERES'), 1, 'C');
-
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				
-				$text = $outputlangs->transnoentities("[A définir par les parties]");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Paraphes :'), 0, 'R');
 				
 				// Pied de page
 				$this->_pagefoot($pdf,$object,$outputlangs);
