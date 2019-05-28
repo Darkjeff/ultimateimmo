@@ -899,30 +899,60 @@ Il a été convenu ce qui suit :\n\n");
 				$pdf->setTopMargin($tab_top_newpage);
 				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
 				
-				// Le contrat type de location ou de colocation contient les éléments suivants :
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetXY($posX, $tab_top_newpage);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('IX. LE CAS ECHEANT, HONORAIRES DE LOCATION'), 1, 'C');
+				// print TEXT
+				$posYL = $pdf->getY();
+				$posYR = $pdf->getY();
+				$pdf->SetXY($posX, $posYL);
+
+				$pdf->SetFont('', '', $default_font_size-1);
+				$text = $outputlangs->transnoentities(" 2. Communiquer au locataire, lorsque l'immeuble est soumis au statut de la copropriété, les extraits de règlement de copropriété concernant la destination de l'immeuble, la jouissance et l'usage des parties privatives et communes et précisant la quote-part afférente au 1ot loué dans chacune des catégories de charges.<br> 
+				3. Annexer au contrat une information sur les modalités de réceptions des services de télévision (article 3-2). <br>
+				4. Remettre au locataire un logement décent (caractéristiques correspondantes définies par le décret n° 2002-120 du 30.01.02) ne laissant apparaître de risques manifestes pouvant porter atteinte à la sécurité physique ou à la santé et doté des éléments le rendant conforme à l'usage d'habitation (le manquement à cette obligation peut entraîner des travaux de mise en conformité en opplication des dispositions du chapitre V ci-avant).<br> 
+				Délivrer au locataire le logement en bon état d'usage et de réparations, ainsi que les équipements mentionnés au contrat en bon état de fonctionnement (hormis les travaux faisant l'objet de la clause expresse stipullée en page 6 conformément aux dispositions du chapitre V.<br> 
+				5. Assurer au locataire la Jouissance paisible du logement et, sans préjudice des dispositions de l'article 1721 du code civil, le garantir des vices ou défauts de nature à y faire obstacle (hormis ceux qui, consignés dans l'état des lieux, auraient fait l'objet de la clause expresse stipullée en page 5 conformément aux dispositions du chapitre V).<br> 
+				6. Entretenir les locaux en état de servir à l'usage prévu et y faire toutes les réparations nécessaires autres que locatives.<br>
+				7. Ne pas s'opposer aux aménagements réalisés par le locataire et ne constituant pas une transformation de la chose louée.<br>
+				8. Transmettre gratuitement une quittance au locataire lorsqu'il en fait la demande, le bailleur ou son mandataire étant libre de choisir les modalités de celle remise. Avec l'accord exprès du locataire, le bailleur peul procéder à la transmission dématérialisée de la quittance.<br>
+				9. Délivrer un reçu dans tous les cas où le LOCATAIRE effectue un paiement partiel.");
 				
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX, $posYL, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYL = $pdf->getY();
+				// print TEXT
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetXY($posX, $posYL);
+				$text = $outputlangs->transnoentities("IX - Obligations du Locataire");				
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->transnoentities($text), 1, 'C', 1);
+				$posYL = $pdf->getY();
+				
+				$pdf->SetFont('', '', $default_font_size-1);
+				$text = $outputlangs->transnoentities("<strong>Le locataire est tenu des obligations principales suivantes</strong>:<br> 
+				Payer le loyer et les charges récupérables aux termes convenus. Le paiement mensuel est de droit s'il en fait la demande.<br>
+				2. User PAISIBLEMENT des locaux et équipements loués suivant la destination prévue au contrat.<br> 
+				3. Répondre des dégradations et pertes survenant pendant la durée du contrat dans les locaux dont il a la jouissance exclusive, à moins qu'il ne prouve qu'elles ont eu lieu par cas de force majeure, par la faute du bailleur ou par le fait d'un tiers qu'il n'a pas introduit dans le logement.<br> Prendre à sa charge l'entretien courant du logement et des équipements mentionnés au contrat, les menues réparations et l'ensemble des réparations locatives définies par le décret n° 87-712 du 26 août 1987, sauf si elles sont occasionnées par vétusté, malfaçon, vice de construction, cas fortuit ou force majeure. <br>
+				4. Souscrire un contrat d'entretien auprès d'une entreprise spécialisée (ou en rembourser le coût au bailleur si ce dernier en assure le paiement) pour faire :<br>");
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX, $posYL, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("5. entretenir au moins une fois par an les équipements individuels de chauffage (chauffage gaz, brûleurs gaz, ... ) et en justifier à première demande du bailleur <br>
+				6. Sans que cette information engage sa responsabilité lorsque les dégâts ne sont pas de son fait personnel, informer immédiatement le bailleur de tout sinistre et dégradation se produisant dans les lieux loués, même s'il n'en résulte aucun dommage apparent.<br> 
+				7. Ne pas transformer sans l'accord écrit du bailleur les locaux loués et leurs équipements ; le bailleur pourra, si le locataire a méconnu cette obligation, exiger la remise en l'état des locaux et des équipements au départ du locataire ou conserver les transformations effectuées sans que le locataire puisse réclamer une indemnité pour les frais engagés ; le bailleur aura toutefois la faculté d'exiger aux frais du locataire la remise immédiate des lieux en l'état si les transformations mettent en péril le bon fonctionnement des équipements ou la sécurité du local. Les aménagements ne constituant pas une transformation des locaux loués, c'est-à-dire les changements peu importants non susceptibles de nuire à l'immeuble et qui n'ont rien d'irréversibles, ne nécessitent pas l'accord du bailleur.<br>
+				8. Permettre l'accès aux lieux loués pour la préparation el l'exécution de travaux d'amélioration des parties communes ou des parties privatives du même immeuble, ainsi que les travaux nécessaires au maintien en état et à l'entretien normal des locaux, de travaux d'amélioration de la performance énergétique. Les deux derniers alinéas de l'article 1724 du code civil étant applicables à ces travaux. Les modalités de ces travaux sont précisées à l'article 7e de la loi.<br> 
+				Le locataire devra laisser visiter les locaux loués chaque fois que cela sera rendu nécessaire pour des réparations ou la sécurité de l'immeuble, ces visites devant s'effectuer, sauf urgence, les jours ouvrables après que le locataire en ait été préalablement averti.<br>
+				9. Respecter le règlement intérieur de l'immeuble, affiché dans les parties communes des immeubles collectifs.<br> 
+				Exécuter strictememt toutes les dispositions du règlement de copropriété dont des extraits lui ont été communiqués par le bailleur en application de l'article 3 de la loi. <br>
+				S'assurer contre les risques locatifs dont il doit répondre en sa qualité de locataire (incendie, dégât des eaux, ... ) et en justifier au bailleur à la remise des clefs, en lui transmettant 1'atestation émise par son assureur ou son représentant. Il devra en justifier ainsi chaque année, à la demande du bailleur.<br> 
+				À défaut, de la remise de l'attestation d'assurance et après un mois à compter de la mise en demeure non suivie d'effet, le bailleur pourra demander la résiliation du contrat en application de la clause résolutoire ou souscrire une assurance pour le compte du locataire, récupérable auprès de celui-ci. Une copie du contrat d'assurances est transmise au locataire lors de la souscription et à chaque renouvellement de contrat.<br>
+				10. Ne pas céder le contrat de location, ni sous-louer le logement sauf avec l'accord écrit du bailleur, y compris sur le prix du loyer. En cas de cessation du contrat principal, le sous-locataire ne pourra se prévaloir d'aucun droit à l'encontre du bailleur, ni d'aucun titre d'occupation.<br>");				
+				
+				$pdf->writeHTMLCell($widthbox/2 -2, 3, $posX+$widthbox/2, $posYR, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYR = $pdf->getY();
+				
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
 				$pdf->SetXY($posX, $posY);
-				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				
-				$text = $outputlangs->transnoentities(" A. Dispositions applicables
-Il est rappelé les dispositions du I de l'article 5 (I) de la loi du 6 juillet 1989, alinéas 1 à 3 : La rémunération des personnes mandatées pour se livrer ou prêter leur concours à l'entremise ou à la négociation d'une mise en location d'un logement, tel que défini aux articles 2 et 25-3, est à la charge exclusive du bailleur, à l'exception des honoraires liés aux prestations mentionnées aux deuxième et troisième alinéas du présent I.
-Les honoraires des personnes mandatées pour effectuer la visite du preneur, constituer son dossier et rédiger un bail sont partagés entre le bailleur et le preneur. Le montant toutes taxes comprises imputé au preneur pour ces prestations ne peut excéder celui imputé au bailleur et demeure inférieur ou égal à un plafond par mètre carré de surface habitable
-de la chose louée fixé par voie réglementaire et révisable chaque année, dans des conditions définies par décret. Ces honoraires sont dus à la signature du bail.
-Les honoraires des personnes mandatées pour réaliser un état des lieux sont partagés entre le bailleur et le preneur.
-Le montant toutes taxes comprises imputé au locataire pour cette prestation ne peut excéder celui imputé au bailleur et demeure inférieur ou égal à un plafond par mètre carré de surface habitable de la chose louée fixé par voie réglementaire et révisable chaque année, dans des conditions définies par décret. Ces honoraires sont dus à compter de la réalisation de la prestation.
-Plafonds applicables :
-- montant du plafond des honoraires imputables aux locataires en matière de prestation de visite du preneur, de constitution de son dossier et de rédaction de bail : [...] €/ m2 de surface habitable ;
-- montant du plafond des honoraires imputables aux locataires en matière d'établissement de l'état des lieux d'entrée :
-[...] €/ m2 de surface habitable.");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Paraphes :'), 0, 'R');
 				
 				// Pied de page
 				$this->_pagefoot($pdf,$object,$outputlangs);
