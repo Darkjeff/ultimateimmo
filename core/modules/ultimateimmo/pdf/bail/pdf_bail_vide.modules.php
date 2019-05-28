@@ -747,10 +747,56 @@ Il a été convenu ce qui suit :\n\n");
 				
 				$pdf->SetXY($posX+$widthbox/2, $posYR);
 				$text = $outputlangs->transnoentities("En cas de vente ou donation du logement pendant la durée du bail, la restitution du dépôt de garantie incombe au nouveau bailleur et toute convention entre l'acquéreur et le vendeur pendant la vente sur le sort du dépôt de garantie est inopposable au locataire (art.22 de la loi n°89-462 du 06.07.1989 modifié par la loi n° 2009-323 du 25.03.2009).<br> 
-				Ce dépôt ne pourra sous aucun prétexte être affecté par le locataire au paiement des derniers mois de loyers.<br>  ");
-				$posYL = $pdf->getY();
+				Ce dépôt ne pourra sous aucun prétexte être affecté par le locataire au paiement des derniers mois de loyers.");				
 				
-				$pdf->writeHTMLCell($widthbox/2 -2, 3, $posX+$widthbox/2, $posYR, $outputlangs->convToOutputCharset($text), 1, 0, 0, true, 'J');
+				$pdf->writeHTMLCell($widthbox/2 -2, 3, $posX+$widthbox/2, $posYR, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYR = $pdf->getY();
+				
+				// print TEXT
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("IV - Charges - Contribution du Locataire au Partage des Économies de Charges");				
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->transnoentities($text), 1, 'C', 1);
+				$posYR = $pdf->getY();
+				
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("En sus du loyer, le locataire remboursera au bailleur sa quote-part des charges réglementaires, conformément à la liste fixée par le décret n°87-713 du 26 août 1987.<br> 
+				Les charges récupérables, sommes accessoires au loyer principal, sont exigibles en contrepartie : <br>
+				- des services rendus liés à l'usage des différents éléments de la chose louée,<br> 
+				- des dépenses d'entretien courant et des menues réparations sur les éléments d'usage commun de la chose louée,<br> 
+				- des impositions qui correspondent à des services dont le locataire profite directement.<br>
+				Ces charges, seront réglées en même temps que le loyer principal, par provisions mensuelles ou trimestrielles et feront l'objet d'une régularisation annuelle.<br> 
+				Le montant des charges sera fixé chaque année par le bailleur en fonction des dépenses réellement exposées l'année précédente ou du budget prévisionnel, le montant de chaque provision étant réajusté en conséquence.<br> 
+				Un mois avant l'échéance de la régularisation annuelle, le bailleur adressera au locataire un décompte par nature de charges, ainsi que, dans les immeubles collectifs, le mode de répartition entre tous les locataires, et le cas échéant, une note d'information sur les modalités de calculs des charges de chauffage et d'eau chaude collectifs. Pendant six mois, les pièces justificatives seront tenues è la disposition du locataire. <br>
+				Conformément au nouvel article 23-1 de la loi du 06.07.1989 issu de la 1oi n° 2009-323 du 25.03.2009, le bailleur peut, sous certaines conditions décret n° 2009-/439) et arrêté NOR DEVU/0925487 du 23 novembre 2009) demander au locataire, et après concertation avec ce dernier, une contribution pour la réalisation de certains travaux, d'économie d'énergie. Son montant est payable mensuellement à compter de la fin des travaux et pour une période déterminée (le cas échéant, indiqués en page 5).");
+				
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX+$widthbox/2, $posYR, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYR = $pdf->getY();
+				
+				// print TEXT
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("V - Confort - Habitabilité - Décence du Logement");				
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->transnoentities($text), 1, 'C', 1);
+				$posYR = $pdf->getY();
+				
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("<strong>Les locaux d'habilation doivent répondre aux normes d'habitabilité définies à l'article 6 de la loi du 06.07.1989 modifié par l'article 99 de la loi 2005-157 du 23.02.2005.</strong><br>
+				Les travaux (prévus à l'article Ier de la loi du 12.07.1967) destinés à adapter totalement ou partiellement aux normes de salubrité, de sécurité, d'équipement el de confort n'ont pour but exclusif que de les mettre en conformité avec tout ou partie des dispositions des articles I à 4 du décret du 30.01 2002 susvisé sans en dépasser les caractéristiques qui y sont définies.<br>");
+				
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX+$widthbox/2, $posYR, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYR = $pdf->getY();
+				
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Paraphes :'), 0, 'R');
 				
 				// Pied de page
 				$this->_pagefoot($pdf,$object,$outputlangs);
@@ -763,69 +809,85 @@ Il a été convenu ce qui suit :\n\n");
 				$pdf->setTopMargin($tab_top_newpage);
 				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
 				
-				// Le contrat type de location ou de colocation contient les éléments suivants :
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetXY($posX, $tab_top_newpage);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('VI. GARANTIES'), 1, 'C');
+				// print TEXT
+				$posYL = $pdf->getY();
+				$posYR = $pdf->getY();
+				$pdf->SetXY($posX, $posYL);
 
+				$pdf->SetFont('', '', $default_font_size-1);
+				$text = $outputlangs->transnoentities("<strong> > LOCAUX VACANTS CONSTRUITS AVANT LE 01.09.48 </strong>:<br> conformément à l'article 25 de la loi n• 86-1290 du 23 12.1986 modifiée, les locaux vacants à comp1er du 23. 12 1986 (hormis ceux, classés en catégorie IV) ne sont pas soumis aux dispositions de la loi n°48-1360 du 01.09.1948. Ils sont désormais régis par les chapitres Ier à III du Titre ler de la loi n° 89-462 du 06.07.1989.<br>
+				Si les locaux loués depuis le 23.12.1986 ne satisfont pas aux normes minimales de confort et d'habitabilité fixées par le décret du 06.03 1987 après avis de la commission nationale de concertation, le locataire peut, dans le délai d'un an à compter de la date de prise d'effet du contrat de location inilial, demander au propriétaire leur mise en conformité avec ces normes sans qu'il soit porté atteinte à la validité du contrat de location en cours. À défaut d'accord entre les parties, le juge saisi détermine, le cas échéant, la nature des travaux à réaliser et le délai de leur exécution, qu'il peut même d'office assortir d'une astreinte; il peut également se prononcer sur une demande de modification du loyer fixé par le bailleur ou proposé par le locataire. À défaut de mise aux normes effectuée dans les conditions précitées, le loyer des locaux soumis au présent article est fixé conformément à l'art. 17 § b de la loi du 06.07.1989.<br>
+				Les dispositions du présent article ne sont pas applicables aux locaux classés en catégories IV.<br>
+				<strong> > ARTICLE 20-1 DE LA LOI OU 06.07.1989 modifié par la loi n°2009323 du 25.03.2009</strong> :<br>
+				si le logement loué ne satisfait pas aux dispositions des alinéas 1er et 2ème alinéas de l'article 6, le locataire peut demander au propriétaire leur mise en conformité sans qu'il soit porté atteinte è la validité du contrat en cours. À défaut d'accord entre les parties, ou à dèfaut de réponse du propriétaire dans un délai de 2 mois, la commission départementale de conciliation peut être saisie et rendre un avis dans les conditions fixées à l'article 20. La saisine de la commission ou la remise de son avis ne constitue pas un préalable à la saisine du juge par l'une ou l'autre partie. Le juge saisi par l'une ou l'autre partie détermine, le cas échéant, la nature des travaux à réaliser et le délai de leur exécution. Il peut réduire le montant du loyer ou suspendre, avec ou sans consignation, son paiement et la durée du bail jusqu'à l'exécution de ces travaux. Le juge transmet au représentant de l'État dans te département l'ordonnance ou le jugement constatant que le logement loué ne satisfait pas aux dispositions des Ier et 2ème alinéas de l'article 6.<br>
+				<strong> > ARTICLE 6 § n DE LA LOI DU 06.07.1989</strong>: <br>
+				si le logement répond aux normes minimales de décence fixées par le décret du 30.01.2002, les parties peuvent convenir par une clause expresse des travaux que le locataire exécutera ou fera exécuter et des modali1és de leur imputation sur le loyer, cette clause prévoit la durée de cette imputation et, en cas de départ anticipé du locataire, les modalités de son dédommagement sur justification des dépenses effectuées.<br>
+				<strong> > ARTICLE 17 § e DE LA LOI DU 06.07.1989</strong> : <br>
+				au-delà des caractéristiques définies par les dispositions du décret du 30.01 2002, les parties peuvent convenir, par une clause expresse, de travaux d'amélioration du logement que le bailleur fera exécuter. Cette clause fixe la majoration du loyer consécutive à la réalisation de ces travaux.
+				");
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX, $posYL, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				
+				// print TEXT
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 				
-				$text = $outputlangs->transnoentities("Le cas échéant, Montant du dépôt de garantie de l'exécution des obligations du locataire/ Garantie autonome :
-[inférieur ou égal à un mois de loyers hors charges].");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("VI - Réglementation Relative à la Sécurité des Personnes et des Biens");				
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->transnoentities($text), 1, 'C', 1);
+				$posYR = $pdf->getY();
 				
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("Un dossier de diagnostic technique, fourni par le bailleur, est annexé au présent contrat de location (ordonnance n°2005-655 du 08.06.2005 art. 22 Ill (JORF 09.06.2005)). <br>
+				Ce dossier comprend :<br> 
+				le diagnostic de performance énergétique (DPE) prévu à l'article L 134-1 du code de la construction et de l'habitation;<br> 
+				le locataire ne peut se prévaloir à l'encontre du bailleur des informa1ions contenues dans ce diagnostic de performance énergétique qui n'a qu'une valeur informative le propriétaire bailleur tient le DPE à la disposition de tout candidat locataire;<br> 
+				le constat de risque d'exposition au plomb prévu à l'article L. 1334-5 et L 1334-7 du code de la santé publique; <br>
+				le cas échéant, l'état des risques naturels, miniers et technologiques dans les zones mentionnées au l de l'article L. 125-5 du code de l'environnement. <br>
+				Pour les immeubles bâtis dont le permis de construire a été délivré avant le 01 07.1997, le bailleur met à la disposition du locataire le dossier amiante partie privalive (article R. 1334-29-4-1 du code de la santé publique).<br>");
 				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				$posY = $pdf->getY();
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX+$widthbox/2, $posYR, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYR = $pdf->getY();
 				
-				// Le contrat type de location ou de colocation contient les éléments suivants :
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				// print TEXT
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("VII - État des Lieux");				
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->transnoentities($text), 1, 'C', 1);
+				$posYR = $pdf->getY();
+				
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("Conformément à l'article 3-2 de la loi, un état des lieux est établi lors de la remise et de la restitution des clés au locataire. Il esl établi par les parties ou par un tiers mandaté par elles, contradictoirement et amiablement, en autant d'exemplaire que de parties et est annexé au bail. En cas d'intervention d'un tiers, les honoraires sont partagés entre le bailleur et le locataire (leur montant doit être inférieur ou égal à un plafond fixé ultérieurement par voie règlementaire).<br> 
+				Si l'état des lieux ne peut être établi dans les conditions prévues ci-dessous, il l'est, sur l' iniuative de la partie la plus diligente, par un huissier de justice à frais partagés par moitié entre le bailleur el le locataire et à un coût fixé par décret en Conseil d'État. A défaut d'état des lieux, la présomption de l'article l 731 du code civil ne peut être invoquée par celle des parties qui aura fait obstacle à l'établissement de l'acte ou qui a refusé la remise de son exemplaire. En cas d'état des lieux incomplet, le locataire peut demander la modification dans un délai de 10 jours à compter de son établissement.<br>
+				Pendant le 1er mois de la période de chauffe, le locataire peut demander que l'état des lieux soit complé1é par l'état des éléments de chauffage.<br>");
+				
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX+$widthbox/2, $posYR, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYR = $pdf->getY();
+				
+				// print TEXT
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("VIII - Obligations du Bailleur");				
+				$pdf->MultiCell($widthbox/2 -2, 3, $outputlangs->transnoentities($text), 1, 'C', 1);
+				$posYR = $pdf->getY();
+				
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX+$widthbox/2, $posYR);
+				$text = $outputlangs->transnoentities("<strong>Le bailleur est tenu des obligations principales suivantes </strong>:<br> 
+				1. Préciser sur le contrat de location ses noms et domicile (ou dénomination sociale et siège social), et, le cas échéant ceux de son mandataire. En cas de vente ou de transmission des locaux, le nouveau bailleur est tenu de notifier par lettre recommandée avec accusé de réception au locataire ses nom et domicile (ou dénomination sociale et siège social), et, le cas échéant ceux de son mandataire .<br>");
+				
+				$pdf->writeHTMLCell($widthbox/2 -2, '', $posX+$widthbox/2, $posYR, $outputlangs->transnoentities($text), 1, 2, 0, true, 'J');
+				$posYR = $pdf->getY();
+				
 				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
 				$pdf->SetXY($posX, $posY);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('VII. LE CAS ECHEANT, CLAUSE DE SOLIDARITE'), 1, 'C');
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				
-				$text = $outputlangs->transnoentities("Modalités particulières des obligations en cas de pluralité de locataires : [clause prévoyant la solidarité des locataires et l'indivisibilité de leurs obligations en cas de pluralité de locataires].");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
-				
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				$posY = $pdf->getY();
-				
-				// Le contrat type de location ou de colocation contient les éléments suivants :
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetXY($posX, $posY);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('VIII. LE CAS ECHEANT, CLAUSE RESOLUTOIRE'), 1, 'C');
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				
-				$text = $outputlangs->transnoentities("Modalités de résiliation de plein droit du contrat : [clause prévoyant la résiliation de plein droit du contrat de location pour un défaut de paiement du loyer ou des charges aux termes convenus, le non versement du dépôt de garantie, la non-souscription d'une assurance des risques locatifs ou le non-respect de l'obligation d'user paisiblement des locaux loués, résultant de troubles de voisinage constatés par une décision de justice passée en force de chose jugée].");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
-				
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Paraphes :'), 0, 'R');								
 				// Pied de page
 				$this->_pagefoot($pdf,$object,$outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
