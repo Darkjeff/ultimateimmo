@@ -1037,7 +1037,7 @@ else
 				$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 				$genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
 				$delallowed = $user->rights->ultimateimmo->create;	// If you can create/edit, you can remove a file on card
-				print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
+				print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, 'quittance', 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
 
 				// Show links to link elements
 				$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));
