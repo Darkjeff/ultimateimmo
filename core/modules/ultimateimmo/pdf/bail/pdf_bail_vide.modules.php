@@ -356,7 +356,6 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 					{
 						$objproperty = $this->db->fetch_object($resql);
 						$j++;
-						//var_dump($objproperty);exit;
 					}
 				}
 				
@@ -1048,47 +1047,86 @@ Il a été convenu ce qui suit :\n\n");
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 				$pagenb++;
+				$pdf->SetTextColor(0, 0, 0);
 				$pdf->setTopMargin($tab_top_newpage);
 				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
 				
-				// Le contrat type de location ou de colocation contient les éléments suivants :
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
+				$style = array('width' => 0.2, 'cap' => 'butt', 'join' => 'miter', 'dash' => '0', 'color' => array(0, 0, 0));
+				// Conditions contrat
 				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetXY($posX, $tab_top_newpage);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('XI. ANNEXES'), 1, 'C');
+				$pdf->SetFont('', '', $default_font_size-1);
+				$text = $outputlangs->transnoentities("Outre les conditions générales, le présent contrat de location est consenti et accepté aux prix, charges et conditions suivants : ");				
+				$pdf->MultiCell($widthbox, 3, $outputlangs->transnoentities($text), 1, 'C', 0);
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
+				$posx=$this->marge_gauche;
+				$posy = $pdf->getY();
+				$hautcadre = 36;
+				$widthrecbox = $this->page_largeur-$this->marge_droite-$this->marge_gauche;
+				$pdf->SetXY($posx, $posy);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('DURÉE INITIALE DU CONTRAT'), 1, 'C', 1);
+				$posy=$pdf->getY();
+				$pdf->Rect($posx, $posy, $widthrecbox, $hautcadre, 'D', array('all' => $style));
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->Rect($posx+2, $posy+1.5, 2, 2, 'D', array('all' => $style));
+				$pdf->SetXY ($posx+2, $posy+1.5);
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-				
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posx+6, $posy+0.5);
+				$text = $outputlangs->transnoentities("<strong>BAILLEUR «PERSONNE PHYSIQUE» OU «SOCIÉTÉ CIVILE FAMILIALE»</strong> :");
+				$pdf->writeHTMLCell($widthrecbox, 3, $posx+6, $posy+0.5, $text, 0, 'L');
+				$posy = $pdf->getY();
 
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->Rect($posx+4, $posy+4, 2, 2, 'D', array('all' => $style));
+				$pdf->SetXY ($posx+8, $posy+3);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('3 Ans au moins, soit....... ans.'), 0, 'L');
+				$posy = $pdf->getY();
 				
-				$text = $outputlangs->transnoentities("Sont annexées et jointes au contrat de location les pièces suivantes :
-A. Le cas échéant, un extrait du règlement concernant la destination de l'immeuble, la jouissance et l'usage des parties privatives et communes, et précisant la quote-part afférente au lot loué dans chacune des catégories de charges
-B. Un dossier de diagnostic technique comprenant
-- un diagnostic de performance énergétique ;
-- un constat de risque d'exposition au plomb pour les immeubles construits avant le 1er janvier 1949 ;
-- une copie d'un état mentionnant l'absence ou la présence de matériaux ou de produits de la construction contenant de l'amiante (18) ;
-- un état de l'installation intérieure d'électricité et de gaz, dont l'objet est d'évaluer les risques pouvant porter atteinte à la sécurité des personnes (19) ;
-- le cas échéant, un état des risques naturels et technologiques pour le zones couvertes par un plan de prévention des risques technologiques ou par un plan de prévention des risques naturels prévisibles, prescrit ou approuvé, ou dans des zones de sismicité (20).
-C. Une notice d'information relative aux droits et obligations des locataires et des bailleurs
-D. Un état des lieux (21)
-E. Le cas échéant, Une autorisation préalable de mise en location (22)
-F. Le cas échéant, Les références aux loyers habituellement constatés dans le voisinage pour des logements comparables (23)");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->Rect($posx+4, $posy+1.5, 2, 2, 'D', array('all' => $style));
+				$pdf->SetXY ($posx+8, $posy+1.5);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset("INFÉRIEURE À 3 ANS (mais d'au moins 12 mois), soit:....... mois, durée motivée par l'événement suivant : "), 0, 'L');
+				$posy = $pdf->getY();
+				$pdf->SetXY ($posx+8, $posy+1.5);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset("RAISONS PROFESSIONNELLES OU FAMILlALES DU BAlLLEUR : "), 0, 'L');
+				$posy = $pdf->getY();
 				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
-				$pdf->SetXY($posX, $posY);
-
+				$pdf->Rect($posx+2, $posy+1.5, 2, 2, 'D', array('all' => $style));
+				$pdf->SetXY ($posx+2, $posy+1.5);
+				$pdf->SetXY($posx+6, $posy+0.5);
+				$text = $outputlangs->transnoentities("<strong>BAILLEUR« PERSONNE MORALE» :");
+				$pdf->writeHTMLCell($widthrecbox, 3, $posx+6, $posy+0.5, $text, 0, 'L');
+				$posy = $pdf->getY();
+				
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->Rect($posx+4, $posy+4, 2, 2, 'D', array('all' => $style));
+				$pdf->SetXY ($posx+8, $posy+3);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('6 Ans au moins, soit....... ans.'), 0, 'L');
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
+				$posx=$this->marge_gauche;
+				$posy = $pdf->getY();
+				$pdf->SetXY($posx, $posy);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset("DATE DE PRISE D'EFFET"), 1, 'C', 1);
+				$posy=$pdf->getY();
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY ($posx+4, $posy);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset("le contrat prendra effet le : "), 0, 'L');
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
+				$posy = $pdf->getY();
+				$pdf->SetXY($posx, $posy+2);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset("RENOUVELLEMENT - CONGÉ (préavis par le bailleur)"), 1, 'C', 1);
+				$posy = $pdf->getY();
+				$pdf->SetFont('', '', $default_font_size-1);
+				$text = $outputlangs->transnoentities("S'il veut renouveler ou résilier le contrat, le bailleur devra avertir le locataire dans les conditions de forme et de délai prévues au chapitre I des Conditions Générales, soit au plus tard le :"); 
+				$pdf->MultiCell($widthbox, 3, $text, 1, 'L');
+				$posy = $pdf->getY();
+				
+				$pdf->SetXY($posx, $posy+2);
 				$period = $outputlangs->transnoentities('');
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
 				
@@ -1114,6 +1152,17 @@ F. Le cas échéant, Les références aux loyers habituellement constatés dans 
 				
 				$text = $outputlangs->transnoentities("Signature du locataire");
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
+				
+				$posY = $pdf->getY();
+				
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY($posX, $posY);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Paraphes :'), 0, 'R');
+				
+				// Pied de page
+				$this->_pagefoot($pdf,$object,$outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 			}
 			$this->db->free($resql);
 
