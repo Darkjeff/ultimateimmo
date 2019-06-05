@@ -1326,24 +1326,129 @@ Il a été convenu ce qui suit :\n\n");
 				« Les honoraires des personnes mandatées pour réaliser un état des lieux sont partagés entre le bailleur et le preneur. le montant toutes taxes comprises imputé au locataire pour celle prestation ne peut excéder celui imputé au bailleur et demeure inférieur ou égal à un plafond par mètre carré de surface habitable de la chose louée fixé par voie réglementaire et révisable chaque année, dans des conditions définies par décret. Ces honoraires sont dus à compter de la réalisation de la prestation».");
 				$pdf->writeHTMLCell($widthrecbox, 3, $posx, $posy+24, $text, 0, 2, 0, true, 'J');
 				
+				$posY = $pdf->getY()+2;
 				
-				
-
-				/*$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
-				
-				$text = $outputlangs->transnoentities("Signature du bailleur [ou de son mandataire, le cas échéant]");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');
-				
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-				$posY = $pdf->getY();
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
 				$pdf->SetXY($posX, $posY);
-
-				$period = $outputlangs->transnoentities('');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Paraphes :'), 0, 'R');
 				
-				$text = $outputlangs->transnoentities("Signature du locataire");
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($text), 1, 'L');*/
+				// Pied de page
+				$this->_pagefoot($pdf,$object,$outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+				
+				// New page
+				$pdf->AddPage();
+				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				$pagenb++;
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->setTopMargin($tab_top_newpage);
+				if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $object, 0, $outputlangs);
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
+				$posx=$this->marge_gauche;
+				$posy = $pdf->getY();
+				$hautcadre = 16;
+				$pdf->SetXY($posx, $posy);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset("TRAVAUX RÉCENTS"), 1, 'C', 1);
+				$posy = $pdf->getY();
+				$pdf->SetFont('', '', $default_font_size);
+				$pdf->Rect($posx, $posy, $widthrecbox, $hautcadre, 'D', array('all' => $style));
+				$pdf->SetFont('', '', $default_font_size-1);
+				$text = $outputlangs->transnoentities("Travaux effectués dans le logement depuis la fin du dernier contrat ou du dernier renouvellement : ");  
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				$text = $outputlangs->transnoentities("Nature :")."\n\n";
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				$text = $outputlangs->transnoentities("Montant :");
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
+				$posy = $pdf->getY();
+				$pdf->SetXY($posx, $posy+2);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset("CLAUSE EXPRESSE DE TRAVAUX"), 1, 'C', 1);
+				$hautcadre = 22;
+				$posy = $pdf->getY();
+				$pdf->Rect($posx, $posy, $widthrecbox, $hautcadre, 'D', array('all' => $style));
+				$pdf->SetFont('', '', $default_font_size);
+				$text = $outputlangs->transnoentities("Travaux entraînant une modification de loyer (C.G. Chapitre V): "); 
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				$posy = $pdf->getY();
+				$text2 = $outputlangs->transnoentities("Travaux effectués par : ");
+				$text3 = $outputlangs->transnoentities("Le locataire"); 
+				$text4 = $outputlangs->transnoentities("Le bailleur");
+				
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->Rect($posx+40, $posy+1, 2, 2, 'D', array('all' => $style));
+				$pdf->MultiCell($widthbox, 3, $text2, 0, 'L');
+				$pdf->SetXY($posx+44, $posy);
+				$pdf->MultiCell($widthbox, 3, $text3, 0, 'L');
+				$pdf->Rect($posx+70, $posy+1, 2, 2, 'D', array('all' => $style));
+				$pdf->SetXY($posx+74, $posy);
+				$pdf->MultiCell($widthbox, 3, $text4, 0, 'L');
+				$text = $outputlangs->transnoentities("Nature :")."\n\n";
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				$text = $outputlangs->transnoentities("Montant :");
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
+				$posy = $pdf->getY();
+				$pdf->SetXY($posx, $posy+2);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset("CLAUSE(S) PARTICULIÈRE(S)"), 1, 'C', 1);
+				$hautcadre = 22;
+				$posy = $pdf->getY();
+				$pdf->Rect($posx, $posy, $widthrecbox, $hautcadre, 'D', array('all' => $style));
+				$pdf->MultiCell($widthbox, 3, '', 0, 'L');
+				$posy = $pdf->getY()+16;
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);			
+				$pdf->SetXY($posx, $posy+2);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset("CLÉS REMISES)"), 1, 'C', 1);
+				
+				$hautcadre = 8;
+				$posy = $pdf->getY();
+				$pdf->Rect($posx, $posy, $widthrecbox, $hautcadre, 'D', array('all' => $style));
+				$pdf->SetFont('', '', $default_font_size);
+				$text = $outputlangs->transnoentities("Nombre de clés remises au locataire :  "); 
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				
+				$pdf->SetFillColor(255, 255, 127);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
+				$posy = $pdf->getY()+4;
+				$pdf->SetXY($posx, $posy+2);
+				$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset("DOCUMENTS ANNEXÉS"), 1, 'C', 1);
+				$hautcadre = 34;
+				$posy = $pdf->getY();
+				$pdf->Rect($posx, $posy, $widthrecbox, $hautcadre, 'D', array('all' => $style));
+				$pdf->MultiCell($widthbox, 3, '', 0, 'L');
+				$pdf->SetFont('', '', $default_font_size);
+				$text = $outputlangs->transnoentities("État des lieux établi lors de la remise des clés au locataire (contradictoire ou par huissier). ");			
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->Rect($posx+5, $posy+1, 2, 2, 'D', array('all' => $style));
+				$pdf->SetXY($posx+10, $posy);
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				$pdf->Rect($posx+5, $posy+7, 2, 2, 'D', array('all' => $style));
+				$pdf->SetXY($posx+10, $posy+6);
+				$text = $outputlangs->transnoentities("Liste des réparations locatives fixées par décret n° 87-712 du 26 août 1987. ");
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				$pdf->Rect($posx+5, $posy+13, 2, 2, 'D', array('all' => $style));
+				$pdf->SetXY($posx+10, $posy+12);
+				$text = $outputlangs->transnoentities("Liste des charges récupérables fixées par décret n° 87-712 du 26 août 1987. ");
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				$pdf->Rect($posx+5, $posy+19, 2, 2, 'D', array('all' => $style));
+				$pdf->SetXY($posx+10, $posy+18);
+				$text = $outputlangs->transnoentities("Éléments constitutifs du dossier de diagnostic technique (art.3.1 de la loi n°89-462). ");
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				$pdf->Rect($posx+5, $posy+25, 2, 2, 'D', array('all' => $style));
+				$pdf->SetXY($posx+10, $posy+24);
+				$text = $outputlangs->transnoentities("Acte de caution solidaire, le cas échéant. ");
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
+				$pdf->SetXY($posx+5, $posy+30);
+				$text = $outputlangs->transnoentities("Nom de la caution : ");
+				$pdf->MultiCell($widthbox, 3, $text, 0, 'L');
 				
 				$posY = $pdf->getY()+2;
 				
