@@ -224,10 +224,10 @@ if ($action == 'create')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
-		elseif ($val['label'] == 'ImmoProperty_Type') 
-		{
-			print $formultimateimmo->select_type_property();	
-		}
+		// elseif ($val['label'] == 'ImmoProperty_Type') 
+		// {
+		// 	print $formultimateimmo->select_type_property();	
+		// }
 		else
 		{
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
@@ -302,10 +302,10 @@ if (($id || $ref) && $action == 'edit')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
-		elseif ($val['label'] == 'ImmoProperty_Type') 
-		{
-			print $formultimateimmo->select_type_property();	
-		}
+		// elseif ($val['label'] == 'ImmoProperty_Type') 
+		// {
+		// 	print $formultimateimmo->select_type_property();	
+		// }
 		else
 		{
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
