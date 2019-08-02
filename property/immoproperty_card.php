@@ -211,6 +211,7 @@ if ($action == 'create')
 		print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
+		//var_dump($_POST);exit;
 		if ($val['label'] == 'Country') 
 		{
 			// We set country_id, country_code and country for the selected country

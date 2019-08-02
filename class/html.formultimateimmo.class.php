@@ -137,12 +137,14 @@ class FormUltimateimmo extends Form
 	}
 	
 	/**
-	 *    Retourne le nom traduit de la forme juridique
+	 *  Return combo list with juridique forme 
 	 *
-	 *    @param      string	$rowid      rowid de la forme juridique
-	 *    @return     string     			Nom traduit du code juridique
+	 *  @param  string	$selected   	Juridique code preselected
+	 * 	@param	string	$htmlname		Name of HTML select combo field
+	 *  @param  string  $morecss        Add more css on SELECT element
+	 *  @return	string					String with HTML select
 	 */
-	function getLabelFormeJuridique($rowid)
+	public function getLabelFormeJuridique($selected = '', $htmlname = 'juridique_id', $morecss = 'maxwidth100')
 	{
 		global $db,$langs;
 
