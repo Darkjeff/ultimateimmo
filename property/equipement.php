@@ -119,7 +119,7 @@ print '<div class="underbanner clearboth"></div>';
 print '<table class="border centpercent">'."\n";
 
 // Addresses area
-print_fiche_titre($langs->trans("Énumération des parties et équipements commun"),'','').'<br>';
+print_fiche_titre($langs->trans("EnumerationOfPartsAndCommonEquipment"),'','').'<br>';
 
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
