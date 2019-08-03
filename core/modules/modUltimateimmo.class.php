@@ -54,6 +54,13 @@ class modUltimateimmo extends DolibarrModules
 		$this->numero = 113050;
 		// Key text used to identify module (for permissions, menus, etc...)
 		$this->rights_class = 'ultimateimmo';
+		// Gives the possibility to the module, to provide his own family info and position of this family.
+		$this->familyinfo = array(
+			'core' => array(
+				'position' => '001',
+				'label' => $langs->trans("Atoo.Net")
+			)
+		);
 
 		// Family can be 'crm','financial','hr','projects','products','ecm','technic','interface','other'
 		// It is used to group modules by family in module setup page
@@ -75,7 +82,7 @@ class modUltimateimmo extends DolibarrModules
 		$this->editor_url = implode (', &nbsp;', $editor_url);
 
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated' or a version string like 'x.y.z'
-		$this->version = '2.0.0';
+		$this->version = '9.0.0';
 		// Key used in llx_const table to save module status enabled/disabled (where ULTIMATEIMMO is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Name of image file used for this module.
@@ -214,31 +221,29 @@ class modUltimateimmo extends DolibarrModules
 							),
 			'tabsql'=>array('SELECT d.rowid as rowid, d.code, d.label, d.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_diagnostic as d', 
 			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_immorent_type as t',
-			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_immoproperty_type as t',
 			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as t',
 			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_builtdate as t'
 			),
 			'tabsqlsort'=>array(
-				"label ASC", "label ASC", "label ASC", "label ASC", "label ASC"
+				"label ASC", "label ASC", "label ASC", "label ASC"
 			),
 			'tabfield'=>array(
-				"code,label", "code,label", "code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label"
 			),
 			'tabfieldvalue'=>array(
-				"code,label", "code,label", "code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label"
 			),
 			'tabfieldinsert'=>array(
-				"code,label", "code,label", "code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label"
 			),
 			'tabrowid'=>array(
-				"rowid", "rowid", "rowid", "rowid", "rowid"
+				"rowid", "rowid", "rowid", "rowid"
 			),
 			'tabcond'=>array(
 				$conf->ultimateimmo->enabled, 
 				$conf->ultimateimmo->enabled,
 				$conf->ultimateimmo->enabled,
 				$conf->ultimateimmo->enabled,
-				$conf->ultimateimmo->enabled
 			)
 		);
 

@@ -226,74 +226,74 @@ class FormUltimateimmo extends Form
 		// Make select dynamic
 		include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
 		$out .= ajax_combobox('select'.$htmlname);
-var_dump($out);exit;
+
 		return $out;
 	}
 	
 	/**
- *    Return Juridique label, code or id from an id, code or label
- *
- *    @param      int		$searchkey      Id or code of Juridique to search
- *    @param      string	$withcode   	'0'=Return label,
- *    										'1'=Return code + label,
- *    										'2'=Return code from id,
- *    										'3'=Return id from code,
- * 	   										'all'=Return array('id'=>,'code'=>,'label'=>)
- *    @param      DoliDB	$dbtouse       	Database handler (using in global way may fail because of conflicts with some autoload features)
- *    @param      Translate	$outputlangs	Langs object for output translation
- *    @param      int		$entconv       	0=Return value without entities and not converted to output charset, 1=Ready for html output
- *    @param      int		$searchlabel    Label of Juridique to search (warning: searching on label is not reliable)
- *    @return     mixed       				Integer with Juridique id or String with Juridique code or translated Juridique name or Array('id','code','label') or 'NotDefined'
- */
-function getJuridique($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
-{
-    global $db,$langs;
+	 *    Return Juridique label, code or id from an id, code or label
+	 *
+	 *    @param      int		$searchkey      Id or code of Juridique to search
+	 *    @param      string	$withcode   	'0'=Return label,
+	 *    										'1'=Return code + label,
+	 *    										'2'=Return code from id,
+	 *    										'3'=Return id from code,
+	 * 	   										'all'=Return array('id'=>,'code'=>,'label'=>)
+	 *    @param      DoliDB	$dbtouse       	Database handler (using in global way may fail because of conflicts with some autoload features)
+	 *    @param      Translate	$outputlangs	Langs object for output translation
+	 *    @param      int		$entconv       	0=Return value without entities and not converted to output charset, 1=Ready for html output
+	 *    @param      int		$searchlabel    Label of Juridique to search (warning: searching on label is not reliable)
+	 *    @return     mixed       				Integer with Juridique id or String with Juridique code or translated Juridique name or Array('id','code','label') or 'NotDefined'
+	 */
+	public function getJuridique($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
+	{
+		global $db,$langs;
 
-    $result='';
+		$result='';
 
-    // Check parameters
-    if (empty($searchkey) && empty($searchlabel))
-    {
-    	if ($withcode === 'all') return array('id'=>'','code'=>'','label'=>'');
-    	else return '';
-    }
-    if (! is_object($dbtouse)) $dbtouse=$db;
-    if (! is_object($outputlangs)) $outputlangs=$langs;
+		// Check parameters
+		if (empty($searchkey) && empty($searchlabel))
+		{
+			if ($withcode === 'all') return array('id'=>'','code'=>'','label'=>'');
+			else return '';
+		}
+		if (! is_object($dbtouse)) $dbtouse=$db;
+		if (! is_object($outputlangs)) $outputlangs=$langs;
 
-    $sql = "SELECT rowid, code, label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_juridique";
-    if (is_numeric($searchkey)) $sql.= " WHERE rowid=".$searchkey;
-    elseif (! empty($searchkey)) $sql.= " WHERE code='".$db->escape($searchkey)."'";
-    else $sql.= " WHERE label='".$db->escape($searchlabel)."'";
+		$sql = "SELECT rowid, code, label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_juridique";
+		if (is_numeric($searchkey)) $sql.= " WHERE rowid=".$searchkey;
+		elseif (! empty($searchkey)) $sql.= " WHERE code='".$db->escape($searchkey)."'";
+		else $sql.= " WHERE label='".$db->escape($searchlabel)."'";
 
-    $resql=$dbtouse->query($sql);
-    if ($resql)
-    {
-        $obj = $dbtouse->fetch_object($resql);
-        if ($obj)
-        {
-            $label=((! empty($obj->label) && $obj->label!='-')?$obj->label:'');
-            if (is_object($outputlangs))
-            {
-                $outputlangs->load("dict");
-                if ($entconv) $label=($obj->code && ($outputlangs->trans("Juridique".$obj->code)!="Juridique".$obj->code))?$outputlangs->trans("Juridique".$obj->code):$label;
-                else $label=($obj->code && ($outputlangs->transnoentitiesnoconv("Juridique".$obj->code)!="Juridique".$obj->code))?$outputlangs->transnoentitiesnoconv("Juridique".$obj->code):$label;
-            }
-            if ($withcode == 1) $result=$label?"$obj->code - $label":"$obj->code";
-            elseif ($withcode == 2) $result=$obj->code;
-            elseif ($withcode == 3) $result=$obj->rowid;
-            elseif ($withcode === 'all') $result=array('id'=>$obj->rowid,'code'=>$obj->code,'label'=>$label);
-            else $result=$label;
-        }
-        else
-        {
-            $result='NotDefined';
-        }
-        $dbtouse->free($resql);
-        return $result;
-    }
-    else dol_print_error($dbtouse, '');
-    return 'Error';
-}
+		$resql=$dbtouse->query($sql);
+		if ($resql)
+		{
+			$obj = $dbtouse->fetch_object($resql);
+			if ($obj)
+			{
+				$label=((! empty($obj->label) && $obj->label!='-')?$obj->label:'');
+				if (is_object($outputlangs))
+				{
+					$outputlangs->load("dict");
+					if ($entconv) $label=($obj->code && ($outputlangs->trans("Juridique".$obj->code)!="Juridique".$obj->code))?$outputlangs->trans("Juridique".$obj->code):$label;
+					else $label=($obj->code && ($outputlangs->transnoentitiesnoconv("Juridique".$obj->code)!="Juridique".$obj->code))?$outputlangs->transnoentitiesnoconv("Juridique".$obj->code):$label;
+				}
+				if ($withcode == 1) $result=$label?"$obj->code - $label":"$obj->code";
+				elseif ($withcode == 2) $result=$obj->code;
+				elseif ($withcode == 3) $result=$obj->rowid;
+				elseif ($withcode === 'all') $result=array('id'=>$obj->rowid,'code'=>$obj->code,'label'=>$label);
+				else $result=$label;
+			}
+			else
+			{
+				$result='NotDefined';
+			}
+			$dbtouse->free($resql);
+			return $result;
+		}
+		else dol_print_error($dbtouse, '');
+		return 'Error';
+	}
 
 	
 	/**
