@@ -88,8 +88,8 @@ class ImmoProperty extends CommonObject
 		'type_property_id' => array('type'=>'integer:ImmoProperty_Type:ultimateimmo/class/immoproperty_type.class.php', 'label'=>'ImmoProperty_Type', 'enabled'=>1, 'visible'=>-1, 'position'=>20, 'notnull'=>1,),
 		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'PropertyParent', 'enabled'=>1, 'visible'=>-1, 'position'=>25, 'notnull'=>-1,),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
-		'juridique' => array('type'=>'integer', 'label'=>'Juridique', 'enabled'=>1, 'visible'=>1, 'position'=>32, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'MonoPropriete', '1'=>'Copropriete'),),
-		'datebuilt' => array('type'=>'integer', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'DateBuilt1', '1'=>'DateBuilt2', '2'=>'DateBuilt13', '3'=>'DateBuilt14', '4'=>'DateBuilt15')),
+		'juridique_id' => array('type'=>'integer', 'label'=>'Juridique', 'enabled'=>1, 'visible'=>1, 'position'=>32, 'notnull'=>-1, 'arrayofkeyval'=>array('1'=>'MonoPropriete', '2'=>'Copropriete'),),
+		'datebuilt' => array('type'=>'integer', 'label'=>'DateBuilt', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'arrayofkeyval'=>array('1'=>'DateBuilt1', '2'=>'DateBuilt2', '3'=>'DateBuilt3', '4'=>'DateBuilt4', '5'=>'DateBuilt5')),
 		'target' => array('type'=>'integer', 'label'=>'Target', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'Location', '1'=>'Vente', '-1'=>'Autre'), 'comment'=>"Rent or sale",),
 		'fk_owner' => array('type'=>'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>46, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
@@ -119,7 +119,7 @@ class ImmoProperty extends CommonObject
 	public $type_property_id;
 	public $fk_property;
 	public $label;
-	public $juridique;
+	public $juridique_id;
 	public $datebuilt;
 	public $target;
 	public $fk_owner;
@@ -188,8 +188,8 @@ class ImmoProperty extends CommonObject
 		
 		// Translate some data
 		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
-		$this->fields['juridique']['arrayofkeyval']=array(0=>$langs->trans('MonoPropriete'), 1=>$langs->trans('Copropriete'));
-		$this->fields['datebuilt']['arrayofkeyval']=array(0=>$langs->trans('DateBuilt1'), 1=>$langs->trans('DateBuilt2'), 2=>$langs->trans('DateBuilt3'), 3=>$langs->trans('DateBuilt4'), 4=>$langs->trans('DateBuilt5'));
+		$this->fields['juridique_id']['arrayofkeyval']=array(1=>$langs->trans('MonoPropriete'), 2=>$langs->trans('Copropriete'));
+		$this->fields['datebuilt']['arrayofkeyval']=array(1=>$langs->trans('DateBuilt1'), 2=>$langs->trans('DateBuilt2'), 3=>$langs->trans('DateBuilt3'), 4=>$langs->trans('DateBuilt4'), 5=>$langs->trans('DateBuilt5'));
 	}
 	
 	/**
@@ -422,11 +422,9 @@ class ImmoProperty extends CommonObject
 
 		$sql = 'SELECT '.$array.',';
 		$sql.= ' c.rowid as country_id, c.code as country_code, c.label as country, j.rowid as juridique_id, j.code as juridique_code, j.label as juridique';
-		//it.rowid as immoproperty_type_id, it.code as immoproperty_type_code, it.label as immoproperty_type,
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country_id = c.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as j ON t.juridique = j.rowid';
-		//$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo__immoproperty_type as it ON t.type_property_id = it.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
@@ -450,10 +448,6 @@ class ImmoProperty extends CommonObject
 					$this->juridique_code = $obj->juridique_code;
 					$this->juridique=$obj->juridique;
 					
-					//$this->immoproperty_type_id	= $obj->immoproperty_type_id;
-					//$this->immoproperty_type_code = $obj->immoproperty_type_code;
-					//$this->immoproperty_type=$obj->immoproperty_type;
-
         			$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
 					if ($langs->trans("Country".$obj->country_code) != "Country".$obj->country_code)
@@ -461,7 +455,6 @@ class ImmoProperty extends CommonObject
 					else
 						$this->country=$obj->country;
 					$this->setVarsFromFetchObj($obj);
-					
 					return $this->id;
     		    }
     		    else

@@ -20,7 +20,7 @@ CREATE TABLE llx_ultimateimmo_immoproperty(
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL, 
 	label varchar(255),
-	juridique integer,	
+	juridique_id integer,	
 	entity integer DEFAULT 1 NOT NULL, 
 	fk_owner integer NOT NULL,
 	fk_soc integer,	

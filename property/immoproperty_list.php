@@ -476,6 +476,18 @@ while ($i < min($num, $limit))
 			{ 
 				print $object->country;
 			}
+			/*if ($object->juridique_id)
+			{
+				dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
+				$formImmo = new FormUltimateimmo($db);
+				$tmparray=$formImmo->getJuridique($object->juridique_id, 'all');
+				$object->juridique_code=$tmparray['code'];
+				$object->juridique=$tmparray['label'];
+			}
+			if ($val['label'] == 'Juridique') 
+			{ 
+				print $object->juridique;
+			}*/
 			else
 			{
 				print $object->showOutputField($val, $key, $obj->$key, '');

@@ -158,7 +158,7 @@ if (empty($reshook))
 
 $form=new Form($db);
 $formfile=new FormFile($db);
-$formultimateimmo=new FormUltimateimmo($db);
+$formImmo = new FormUltimateimmo($db);
 
 llxHeader('','ImmoProperty','');
 
@@ -211,11 +211,12 @@ if ($action == 'create')
 		print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
-		//var_dump($_POST);exit;
+		
 		if ($val['label'] == 'Country') 
 		{
 			// We set country_id, country_code and country for the selected country
 			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
+			
 			if ($object->country_id)
 			{
 				$tmparray=$object->getCountry($object->country_id,'all');
@@ -225,19 +226,18 @@ if ($action == 'create')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
-		/*elseif ($val['label'] == 'ImmoProperty_Type') 
+		/*elseif ($val['label'] == 'Juridique') 
 		{
-			// We set type_property_id, immoproperty_type_code and immoproperty_type for the selected ImmoProperty_Type
-			$object->type_property_id=GETPOST('type_property_id','int')?GETPOST('type_property_id','int'):$object->type_property_id;
-			//var_dump($object);exit;
-			if ($object->type_property_id)
+			// We set juridique_id, juridique_code and juridique for the selected ImmoProperty_Type
+			$object->juridique_id=GETPOST('juridique_id','int')?GETPOST('juridique_id','int'):$object->juridique_id;
+			
+			if ($object->juridique_id)
 			{				
-				$tmparray=$formultimateimmo->getPropertyTypeLabel($object->type_property_id);
-				$object->immoproperty_type_code=$tmparray['code'];
-				$object->immoproperty_type=$tmparray['label'];
-				//var_dump($object->immoproperty_type_code);exit;
+				$tmparray=$formImmo->getJuridique($object->juridique_id, 'all');
+				$object->juridique_code=$tmparray['code'];
+				$object->juridique=$tmparray['label'];
 			}
-			print $formultimateimmo->select_type_property('','type_property_id');	
+			print $formImmo->select_juridique(GETPOST('juridique_id','int')?GETPOST('juridique_id','int'):$object->juridique_id);	
 		}*/
 		else
 		{
@@ -313,9 +313,18 @@ if (($id || $ref) && $action == 'edit')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
-		/*elseif ($val['label'] == 'ImmoProperty_Type') 
+		/*elseif ($val['label'] == 'Juridique') 
 		{
-			print $formultimateimmo->select_type_property();	
+			// We set juridique_id, juridique_code and juridique for the selected ImmoProperty_Type
+			$object->juridique_id=GETPOST('juridique_id','int')?GETPOST('juridique_id','int'):$object->juridique_id;		
+			if ($object->juridique_id)
+			{				
+				$tmparray=$formImmo->getJuridique($object->juridique_id, 'all');
+				$object->juridique_code=$tmparray['code'];
+				$object->juridique=$tmparray['label'];
+			}
+			//Juridique
+			print $formImmo->select_juridique(GETPOST('juridique_id','int')?GETPOST('juridique_id','int'):$object->juridique_id);	
 		}*/
 		else
 		{

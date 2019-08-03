@@ -144,33 +144,157 @@ class FormUltimateimmo extends Form
 	 *  @param  string  $morecss        Add more css on SELECT element
 	 *  @return	string					String with HTML select
 	 */
-	public function getLabelFormeJuridique($selected = '', $htmlname = 'juridique_id', $morecss = 'maxwidth100')
+	public function select_juridique($selected = '', $htmlname = 'juridique_id', $morecss = 'maxwidth100', $usecodeaskey = '', $showempty = 1, $disablefavorites = 0, $addspecialentries = 0)
 	{
-		global $db,$langs;
+		global $db, $langs;
+		
+		$langs->load("dict");
+
+		$out='';
+		$juridiqueArray=array();
+		$favorite=array();
+		$label=array();
+		$atleastonefavorite=0;
 
 		if (! $rowid) return '';
 
-		$sql = "SELECT label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_juridique";
-		$sql.= " WHERE rowid='$rowid'";
+		$sql = "SELECT rowid, code, label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_juridique";
+		$sql.= " WHERE active > 0";
 
-		dol_syslog("html.formultimateimmo.class::getLabelFormeJuridique", LOG_DEBUG);
+		dol_syslog(get_class($this)."::select_juridique", LOG_DEBUG);
 		$resql=$db->query($sql);
 		if ($resql)
 		{
+			$out.= '<select id="select'.$htmlname.'" class="flat maxwidth200onsmartphone selectjuridique'.($morecss?' '.$morecss:'').'" name="'.$htmlname.'" '.$htmloption.'>';
 			$num = $db->num_rows($resql);
-
+			$i = 0;
 			if ($num)
 			{
-				$obj = $db->fetch_object($resql);
-				$label=($obj->label!='-' ? $obj->label : '');
-				return $label;
+				while ($i < $num)
+				{
+					$obj = $this->db->fetch_object($resql);
+					$juridiqueArray[$i]['rowid'] = $obj->rowid;
+					$juridiqueArray[$i]['code'] = $obj->code;
+					$juridiqueArray[$i]['label'] = $obj->label;
+					$juridiqueArray[$i]['favorite'] = $obj->favorite;
+					$favorite[$i]					= $obj->favorite;
+					$label[$i] = dol_string_unaccent($juridiqueArray[$i]['label']);
+					$i++;
+				}
+				
+				if (empty($disablefavorites)) array_multisort($favorite, SORT_DESC, $label, SORT_ASC, $juridiqueArray);
+				else $juridiqueArray = dol_sort_array($juridiqueArray, 'label');
+				
+				if ($showempty)
+				{
+					$out.='<option value="">&nbsp;</option>'."\n";
+				}
+				
+				foreach ($juridiqueArray as $row)
+				{
+					//if (empty($showempty) && empty($row['rowid'])) continue;
+					if (empty($row['rowid'])) continue;
+
+					if (empty($disablefavorites) && $row['favorite'] && $row['code']) $atleastonefavorite++;
+					if (empty($row['favorite']) && $atleastonefavorite)
+					{
+						$atleastonefavorite=0;
+						$out.= '<option value="" disabled class="selectoptiondisabledwhite">--------------</option>';
+					}
+					if ($selected && $selected != '-1' && ($selected == $row['rowid'] || $selected == $row['code'] || $selected == $row['label']) )
+					{
+						$foundselected=true;
+						$out.= '<option value="'.($usecodeaskey?($usecodeaskey=='code2'?$row['code']:$row['rowid']):$row['rowid']).'" selected>';
+					}
+					else
+					{
+						$out.= '<option value="'.($usecodeaskey?$row['code']:$row['rowid']).'">';
+					}
+					if ($row['label']) $out.= dol_trunc($row['label'], $maxlength, 'middle');
+					else $out.= '&nbsp;';
+					if ($row['code']) $out.= ' ('.$row['code'] . ')';
+					$out.= '</option>';
+				}
 			}
-			else
-			{
-				return $langs->trans("NotDefined");
-			}
+			$out.= '</select>';
 		}
+		else
+		{
+			dol_print_error($this->db);
+		}
+		
+		// Make select dynamic
+		include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
+		$out .= ajax_combobox('select'.$htmlname);
+var_dump($out);exit;
+		return $out;
 	}
+	
+	/**
+ *    Return Juridique label, code or id from an id, code or label
+ *
+ *    @param      int		$searchkey      Id or code of Juridique to search
+ *    @param      string	$withcode   	'0'=Return label,
+ *    										'1'=Return code + label,
+ *    										'2'=Return code from id,
+ *    										'3'=Return id from code,
+ * 	   										'all'=Return array('id'=>,'code'=>,'label'=>)
+ *    @param      DoliDB	$dbtouse       	Database handler (using in global way may fail because of conflicts with some autoload features)
+ *    @param      Translate	$outputlangs	Langs object for output translation
+ *    @param      int		$entconv       	0=Return value without entities and not converted to output charset, 1=Ready for html output
+ *    @param      int		$searchlabel    Label of Juridique to search (warning: searching on label is not reliable)
+ *    @return     mixed       				Integer with Juridique id or String with Juridique code or translated Juridique name or Array('id','code','label') or 'NotDefined'
+ */
+function getJuridique($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
+{
+    global $db,$langs;
+
+    $result='';
+
+    // Check parameters
+    if (empty($searchkey) && empty($searchlabel))
+    {
+    	if ($withcode === 'all') return array('id'=>'','code'=>'','label'=>'');
+    	else return '';
+    }
+    if (! is_object($dbtouse)) $dbtouse=$db;
+    if (! is_object($outputlangs)) $outputlangs=$langs;
+
+    $sql = "SELECT rowid, code, label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_juridique";
+    if (is_numeric($searchkey)) $sql.= " WHERE rowid=".$searchkey;
+    elseif (! empty($searchkey)) $sql.= " WHERE code='".$db->escape($searchkey)."'";
+    else $sql.= " WHERE label='".$db->escape($searchlabel)."'";
+
+    $resql=$dbtouse->query($sql);
+    if ($resql)
+    {
+        $obj = $dbtouse->fetch_object($resql);
+        if ($obj)
+        {
+            $label=((! empty($obj->label) && $obj->label!='-')?$obj->label:'');
+            if (is_object($outputlangs))
+            {
+                $outputlangs->load("dict");
+                if ($entconv) $label=($obj->code && ($outputlangs->trans("Juridique".$obj->code)!="Juridique".$obj->code))?$outputlangs->trans("Juridique".$obj->code):$label;
+                else $label=($obj->code && ($outputlangs->transnoentitiesnoconv("Juridique".$obj->code)!="Juridique".$obj->code))?$outputlangs->transnoentitiesnoconv("Juridique".$obj->code):$label;
+            }
+            if ($withcode == 1) $result=$label?"$obj->code - $label":"$obj->code";
+            elseif ($withcode == 2) $result=$obj->code;
+            elseif ($withcode == 3) $result=$obj->rowid;
+            elseif ($withcode === 'all') $result=array('id'=>$obj->rowid,'code'=>$obj->code,'label'=>$label);
+            else $result=$label;
+        }
+        else
+        {
+            $result='NotDefined';
+        }
+        $dbtouse->free($resql);
+        return $result;
+    }
+    else dol_print_error($dbtouse, '');
+    return 'Error';
+}
+
 	
 	/**
 	 *    Retourne le nom traduit de la date de construction
