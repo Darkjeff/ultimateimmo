@@ -56,11 +56,11 @@ class modUltimateimmo extends DolibarrModules
 		$this->rights_class = 'ultimateimmo';
 		// Gives the possibility to the module, to provide his own family info and position of this family.
 		$this->familyinfo = array(
-			'core' => array(
-				'position' => '001',
-				'label' => $langs->trans("Atoo.Net")
-			)
-		);
+            'atoonet' => array(
+                'position' => '001',
+                'label' => $langs->trans("AtooNet")
+            )
+        );
 
 		// Family can be 'crm','financial','hr','projects','products','ecm','technic','interface','other'
 		// It is used to group modules by family in module setup page
