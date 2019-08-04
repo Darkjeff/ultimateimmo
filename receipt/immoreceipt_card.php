@@ -40,7 +40,7 @@ if (! $res) die("Include of main fails");
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
-require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/lib/immoreceipt.lib.php');
 dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
@@ -400,29 +400,27 @@ if (empty($reshook))
 /*
  * View
  *
- * Put here all code to build page
  */
+
+llxHeader('','ImmoReceipt','');
 
 $form=new Form($db);
 $formfile=new FormFile($db);
 
-llxHeader('','ImmoReceipt','');
+// Load object modReceipt
+$module=(! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
 
-// Example : Adding jquery code
-print '<script type="text/javascript" language="javascript">
-jQuery(document).ready(function() {
-	function init_myfunc()
-	{
-		jQuery("#myid").removeAttr(\'disabled\');
-		jQuery("#myid").attr(\'disabled\',\'disabled\');
-	}
-	init_myfunc();
-	jQuery("#mybutton").click(function() {
-		init_myfunc();
-	});
-});
-</script>';
+if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
+{
+	$module = substr($module, 0, dol_strlen($module)-4);
+	
+}
+$result=dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php');
 
+if ($result > 0)
+{
+	$modCodeReceipt = new $module();
+}
 
 // Part to create
 if ($action == 'create')
@@ -486,7 +484,7 @@ if ($action == 'create')
 			} 
 			else 
 			{
-				$tmpcode='<input name="ref" class="maxwidth100" maxlength="128" value="'.dol_escape_htmltag($ref?$ref:$tmpcode).'">';
+				$tmpcode='<input name="ref" class="maxwidth100" maxlength="128" value="'.dol_escape_htmltag(GETPOST('ref')?GETPOST('ref'):$tmpcode).'">';
 			}
 			print $tmpcode;
 		}

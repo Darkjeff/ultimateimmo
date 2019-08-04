@@ -302,13 +302,13 @@ class ImmoReceipt extends CommonObject
 
 				$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX.$this->table_element);
 				
-				// Load object modContract
+				// Load object modReceipt
 				$module=(! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
 				if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
 				{
 					$module = substr($module, 0, dol_strlen($module)-4);			
 				}
-				$result=dol_include_once('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php');
+				$result=dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php');
 				
 				if ($result > 0)
 				{
