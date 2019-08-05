@@ -162,22 +162,6 @@ $formImmo = new FormUltimateimmo($db);
 
 llxHeader('','ImmoProperty','');
 
-// Example : Adding jquery code
-print '<script type="text/javascript" language="javascript">
-jQuery(document).ready(function() {
-	function init_myfunc()
-	{
-		jQuery("#myid").removeAttr(\'disabled\');
-		jQuery("#myid").attr(\'disabled\',\'disabled\');
-	}
-	init_myfunc();
-	jQuery("#mybutton").click(function() {
-		init_myfunc();
-	});
-});
-</script>';
-
-
 // Part to create
 if ($action == 'create')
 {
@@ -559,7 +543,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
 			}
 
-			if ($user->rights->ultimateimmo->write)
+			/*if ($user->rights->ultimateimmo->write)
 			{
 				if ($object->status == 1)
 				{
@@ -569,7 +553,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				{
 					print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('BienPrincipal').'</a>'."\n";
 				}
-			}
+			}*/ //What is the use ?
 
 			if ($user->rights->ultimateimmo->delete)
 			{
