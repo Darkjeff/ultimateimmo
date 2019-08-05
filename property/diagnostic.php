@@ -44,20 +44,45 @@ dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo"));
 
-$mesg = '';
+// Parameters
 $id = GETPOST('rowid') ? GETPOST('rowid', 'int') : GETPOST('id', 'int');
 $action = GETPOST('action', 'alpha');
+$backtopage = GETPOST('backtopage', 'alpha');
 
 // Security check
 if (! $user->rights->ultimateimmo->read) {
 	accessforbidden();
 }
 
-$object = new Immoproperty($db);
-$result = $object->fetch($id);
+/*
+ * Action
+ */
+if (preg_match('/set_(.*)/',$action,$reg))
+{
+    $code=$reg[1];
+    if (dolibarr_set_const($db, $code, 1, 'chaine', 0, '', $conf->entity) > 0)
+    {
+        Header("Location: ".$_SERVER["PHP_SELF"]);
+        exit;
+    }
+    else
+    {
+        dol_print_error($db);
+    }
+}
 
-if ($result < 0) {
-	setEventMessages(null, $object->errors, 'errors');
+if (preg_match('/del_(.*)/',$action,$reg))
+{
+    $code=$reg[1];
+    if (dolibarr_del_const($db, $code, $conf->entity) > 0)
+    {
+        Header("Location: ".$_SERVER["PHP_SELF"]);
+        exit;
+    }
+    else
+    {
+        dol_print_error($db);
+    }
 }
 
 /*
@@ -66,59 +91,160 @@ if ($result < 0) {
 
 $html = new Form($db);
 $htmlimmo = new FormUltimateimmo($db);
+$object = new Immoproperty($db);
+$result = $object->fetch($id);
 
-llxheader('', $langs->trans("Property") . ' | ' . $langs->trans("Diagnostic"), '');
+if ($result < 0) {
+	setEventMessages(null, $object->errors, 'errors');
+}
 
+$page_name = $langs->trans("Property").'|'.$langs->trans("Diagnostic");
+llxheader('', $page_name, '');
+
+// Subheader
+$linkback = '<a href="' .dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+
+// Configuration header
 $head = immopropertyPrepareHead($object);
-
 dol_fiche_head($head, 'diagnostic', $langs->trans("Property"), -1, 'building@ultimateimmo');
 
-if ($result) {
-	if ($mesg)
-		print $mesg . "<br>";
+dol_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
 
-	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+print '<div class="fichecenter">';
+print '<div class="underbanner clearboth"></div>';
+print '<table class="border centpercent">'."\n";
 
-	dol_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
+print '<div align="center" class="info">';
+print '<em><b>'.$langs->trans("TheTechnicalDiagnosticFileDDT").'</em></b>';
+print '</div>';
 
-	print '<div class="fichecenter">';
-	print '<div class="fichehalfleft">';
-	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border centpercent">'."\n";
+// Addresses area
+print_fiche_titre($langs->trans("ObligationsOfTheSeller"),'','').'<br>';
 
-	// Build date
-	print '<tr>';
-	print '<td class="titlefield">' . $langs->trans("BuildDate") . '</td>';
-	print '<td>' . dol_print_date($db->jdate($object->datep), 'day') . '</td>';
-	print '</tr>';
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("Parameters").'</td>'."\n";
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
+print '</tr>';
 
-	// Target
-	print '<tr>';
-	print '<td>'.$langs->trans("Target").'</td>';
-	if ($object->target == 0) $target = $langs->trans("PropertyForRent"); else $target = $langs->trans("PropertyForSale");
-	print '<td>'.$target.'</td>';
-	print '</tr>';
+// The state of the internal electricity installation.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoDiagnosticElectricityInstallation").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
 
-	print '<tr>';
-	print '<td>'.$langs->trans("DiagnosticsNecessary").'</td>';
-	print '<td>';
-	print '- ' . $langs->trans("DPE") . '<br>';
-	if ($object->target == 0) print '- ' . $langs->trans("SurfaceHabitable") . '<br>';
-	if ($object->target == 0) print '- ' . $langs->trans("ERNMT") . '<br>';
-	if ($object->target == 0 && dol_print_date($db->jdate($object->datep), 'day') < '01/01/1949') '- ' . print $langs->trans("Plomb") . '<br>';
-	if ($object->target == 0 && dol_print_date($db->jdate($object->datep), 'day') < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
-	if ($object->target == 0 && dol_print_date($db->jdate($object->datep), 'day') < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
-	if ($object->target == 0 && dol_print_date($db->jdate($object->datep), 'day') < '01/07/1997') '- ' . print $langs->trans("DAPP") . '<br>';
-	print '</tr>';
-	print '</table>';
-	print '</div>';
-	print '<div class="fichehalfright">';
-	print '<div class="ficheaddleft">';
-	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border centpercent">';
-
-	dol_fiche_end();
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION');
 }
+else
+{
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';	
+
+// The state of the "natural" indoor gas installation.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoDiagnosticGasInstallation").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';	
+
+// The risk of exposure to lead (CREP).
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoDiagnosticLeadExposure").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// The condition mentioning the presence or absence of materials or products containing asbestos.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoDiagnosticContainingAsbestos").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_ASBESTOS');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_ASBESTOS == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_ASBESTOS">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_ASBESTOS == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_ASBESTOS">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// condition relating to the presence of termites in the building.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoDiagnosticContainingTermites").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_TERMITES');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_TERMITES == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_TERMITES">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_TERMITES == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_TERMITES">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+dol_fiche_end();
+
 
 // End of page
 llxFooter();

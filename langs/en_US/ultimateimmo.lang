@@ -169,6 +169,13 @@ OwnerName = Owner Name
 RenterName = Renter Name
 SendImmoReceiptRef = Submission of receipt %s
 ConfirmValidateReceipt = Do you confirm validation of receipt %s
+TheTechnicalDiagnosticFileDDT = The technical diagnostic file (DDT)
+ObligationsOfTheSeller = Obligations of the seller
+UltimateImmoDiagnosticElectricityInstallation = The state of the internal electricity installation
+UltimateImmoDiagnosticGasInstallation = The state of the "natural" indoor gas installation
+UltimateImmoDiagnosticLeadExposure = The risk of exposure to lead (CREP)
+UltimateImmoDiagnosticContainingAsbestos = The condition mentioning the presence or absence of materials or products containing asbestos
+UltimateImmoDiagnosticContainingTermites = condition relating to the presence of termites in the building
 
 #
 # Sample page

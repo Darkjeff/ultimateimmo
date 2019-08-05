@@ -102,7 +102,7 @@ if ($result < 0) {
 	setEventMessages(null, $object->errors, 'errors');
 }
 
-$page_name = "UltimateimmoEquipement";
+$page_name = $langs->trans("Property").'|'.$langs->trans("Equipement");
 llxheader('', $langs->trans($page_name), '');
 
 // Subheader

@@ -172,6 +172,13 @@ OwnerName = Nom du propriétaire
 RenterName = Nom du locataire
 SendImmoReceiptRef = Envoi de la quittance %s
 ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
+TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
+ObligationsOfTheSeller = Obligations du vendeur
+UltimateImmoDiagnosticElectricityInstallation = l’état de l’installation intérieure d’électricité
+UltimateImmoDiagnosticGasInstallation = l’état de l’installation intérieure de gaz « naturel »
+UltimateImmoDiagnosticLeadExposure = le constat de risque d’exposition au plomb (CREP)
+UltimateImmoDiagnosticContainingAsbestos = l’état mentionnant la présence ou l’absence de matériaux ou produits contenant de l’amiante 
+UltimateImmoDiagnosticContainingTermites = l’état relatif à la présence de termites dans le bâtiment
 
 
 
