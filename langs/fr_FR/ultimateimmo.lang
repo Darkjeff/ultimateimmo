@@ -95,6 +95,7 @@ MenuNewImmoCostType = Nouveau type de coût
 #
 # Autres
 #
+BienPrincipal = Bien principal
 BirthDay = Date de Naissance
 BirthCountry = Lieu de naissance
 ImmoProperty = Bien immobilier
