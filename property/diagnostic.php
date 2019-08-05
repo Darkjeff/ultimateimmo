@@ -182,17 +182,17 @@ print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="100">';
 if ($conf->use_javascript_ajax)
 {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION');
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LEAD_EXPOSURE');
 }
 else
 {
-	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION == 0)
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LEAD_EXPOSURE == 0)
 	{
-		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_LEAD_EXPOSURE">'.img_picto($langs->trans("Disabled"),'off').'</a>';
 	}
-	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION == 1)
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LEAD_EXPOSURE == 1)
 	{
-		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_LEAD_EXPOSURE">'.img_picto($langs->trans("Enabled"),'on').'</a>';
 	}
 }
 print '</td></tr>';
@@ -242,6 +242,156 @@ else
 	}
 }
 print '</td></tr>';
+
+// the state of natural and technological risks.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoDiagnosticNaturalTechnologicalRisks").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_NATURAL_TECHNOLOGICAL_RISKS');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_NATURAL_TECHNOLOGICAL_RISKS == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_NATURAL_TECHNOLOGICAL_RISKS">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_NATURAL_TECHNOLOGICAL_RISKS == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_NATURAL_TECHNOLOGICAL_RISKS">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// state of non-collective sanitation facilities.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoDiagnosticNonCollectiveSanitationFacilities").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_NON_COLLECTIVE_SANITATION_FACILITIES');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_NON_COLLECTIVE_SANITATION_FACILITIES == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_NON_COLLECTIVE_SANITATION_FACILITIES">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_NON_COLLECTIVE_SANITATION_FACILITIES == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_NON_COLLECTIVE_SANITATION_FACILITIES">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// building energy performance diagnosis (DPE).
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoDiagnosticEnergyPerformanceDiagnosis").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_ENERGY_PERFORMANCE_DIAGNOSIS');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_ENERGY_PERFORMANCE_DIAGNOSIS == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_ENERGY_PERFORMANCE_DIAGNOSIS">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_ENERGY_PERFORMANCE_DIAGNOSIS == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_ENERGY_PERFORMANCE_DIAGNOSIS">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+print '</table>';
+
+// Addresses area
+print_fiche_titre($langs->trans("ObligationsOfTheLessor"),'','').'<br>';
+
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("Parameters").'</td>'."\n";
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
+print '</tr>';
+
+// The risk of exposure to lead (CREP).
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoDiagnosticLeadExposure").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_LEAD_EXPOSURE');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_LEAD_EXPOSURE == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_LEAD_EXPOSURE">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_LEAD_EXPOSURE == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_LEAD_EXPOSURE">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// the state of natural and technological risks.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoDiagnosticNaturalTechnologicalRisks").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_NATURAL_TECHNOLOGICAL_RISKS');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_NATURAL_TECHNOLOGICAL_RISKS == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_NATURAL_TECHNOLOGICAL_RISKS">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_NATURAL_TECHNOLOGICAL_RISKS == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_NATURAL_TECHNOLOGICAL_RISKS">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// building energy performance diagnosis (DPE).
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoDiagnosticEnergyPerformanceDiagnosis").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_ENERGY_PERFORMANCE_DIAGNOSIS');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_ENERGY_PERFORMANCE_DIAGNOSIS == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_ENERGY_PERFORMANCE_DIAGNOSIS">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_ENERGY_PERFORMANCE_DIAGNOSIS == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_ENERGY_PERFORMANCE_DIAGNOSIS">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+print '</table>';
 
 dol_fiche_end();
 

@@ -174,11 +174,15 @@ SendImmoReceiptRef = Envoi de la quittance %s
 ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
 TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
 ObligationsOfTheSeller = Obligations du vendeur
+ObligationsOfTheLessor = Obligations du bailleur
 UltimateImmoDiagnosticElectricityInstallation = l’état de l’installation intérieure d’électricité
 UltimateImmoDiagnosticGasInstallation = l’état de l’installation intérieure de gaz « naturel »
 UltimateImmoDiagnosticLeadExposure = le constat de risque d’exposition au plomb (CREP)
 UltimateImmoDiagnosticContainingAsbestos = l’état mentionnant la présence ou l’absence de matériaux ou produits contenant de l’amiante 
 UltimateImmoDiagnosticContainingTermites = l’état relatif à la présence de termites dans le bâtiment
+UltimateImmoDiagnosticNaturalTechnologicalRisks = l’état des risques naturels et technologiques
+UltimateImmoDiagnosticNonCollectiveSanitationFacilities = l’état des installations d’assainissement non collectif
+UltimateImmoDiagnosticEnergyPerformanceDiagnosis = le diagnostic de performance énergétique du bâtiment (DPE)
 
 
 
