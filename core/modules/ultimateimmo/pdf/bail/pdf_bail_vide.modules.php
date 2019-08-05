@@ -468,7 +468,11 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				$posY = $pdf->getY();
 				
 				$pdf->rect($posX+2, $posY+1.5, 2, 2);
-				$pdf->SetXY ($posX+2, $posY+1.5);
+				$pdf->SetXY ($posX-2, $posY+0.2);
+				if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE == 1) 
+				{
+					$pdf->MultiCell($posX, 3, $outputlangs->convToOutputCharset('X'), 0, 'C');
+				}				
 				$pdf->SetTextColor(0, 0, 0);
 				$pdf->SetFont('', '', $default_font_size-1);
 				$pdf->SetXY($posX+6, $posY+0.5);
