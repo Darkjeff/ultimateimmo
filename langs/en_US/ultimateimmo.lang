@@ -36,14 +36,14 @@ ULTIMATEIMMO_MYPARAM1TOOLTIP = My param 1 tooltip
 ULTIMATEIMMO_MYPARAM2=My param 2
 ULTIMATEIMMO_MYPARAM2TOOLTIP=My param 2 tooltip
 EnumerationOfPartsAndCommonEquipment=Enumeration of parts and common equipment.
-UltimateImmoEquipementGardiennage=Gardiennage.
-UltimateImmoEquipementInterphone=lnterphone.
-UltimateImmoEquipementAscenseur=Ascenseur.
-UltimateImmoEquipementVideOrdures=Vide-ordures.
-UltimateImmoEquipementAntenneTVcollective=Antenne TV collective.
-UltimateImmoEquipementEspacesverts=Espace(s) vert(s).
-UltimateImmoEquipementChauffageCollectif=Chauffage Collectif.
-UltimateImmoEquipementEauChaudeCollective=Eau chaude collective.
+UltimateImmoEquipementGardiennage=guarding
+UltimateImmoEquipementInterphone=lnterphone
+UltimateImmoEquipementAscenseur=Elevator
+UltimateImmoEquipementVideOrdures=Garbage Disposal
+UltimateImmoEquipementAntenneTVcollective=Collective TV antenna
+UltimateImmoEquipementEspacesverts=Green spaces
+UltimateImmoEquipementChauffageCollectif=Communal heating
+UltimateImmoEquipementEauChaudeCollective=Collective hot water
 
 #
 # Menu

@@ -38,14 +38,14 @@ ExtraFieldsPayment =  = Attributs supplémentaires (Paiements)
 ExtraFieldsReceipt = Attributs supplémentaires (Quittances)
 ExtraFieldsRent =  = Attributs supplémentaires (Locations)
 EnumerationOfPartsAndCommonEquipment=Énumération des parties et équipements commun.
-UltimateImmoEquipementGardiennage=Gardiennage.
-UltimateImmoEquipementInterphone=lnterphone.
-UltimateImmoEquipementAscenseur=Ascenseur.
-UltimateImmoEquipementVideOrdures=Vide-ordures.
-UltimateImmoEquipementAntenneTVcollective=Antenne TV collective.
-UltimateImmoEquipementEspacesverts=Espace(s) vert(s).
-UltimateImmoEquipementChauffageCollectif=Chauffage Collectif.
-UltimateImmoEquipementEauChaudeCollective=Eau chaude collective.
+UltimateImmoEquipementGardiennage=Gardiennage
+UltimateImmoEquipementInterphone=lnterphone
+UltimateImmoEquipementAscenseur=Ascenseur
+UltimateImmoEquipementVideOrdures=Vide-ordures
+UltimateImmoEquipementAntenneTVcollective=Antenne TV collective
+UltimateImmoEquipementEspacesverts=Espace(s) vert(s)
+UltimateImmoEquipementChauffageCollectif=Chauffage Collectif
+UltimateImmoEquipementEauChaudeCollective=Eau chaude collective
 
 #
 # Page À propos
