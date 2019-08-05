@@ -468,69 +468,83 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				$posY = $pdf->getY();
 				
 				$pdf->rect($posX+2, $posY+1.5, 2, 2);
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size-1);
 				$pdf->SetXY ($posX-2, $posY+0.2);
 				if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE == 1) 
 				{
 					$pdf->MultiCell($posX, 3, $outputlangs->convToOutputCharset('X'), 0, 'C');
 				}				
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetFont('', '', $default_font_size-1);
 				$pdf->SetXY($posX+6, $posY+0.5);
 				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Gardiennage'), 0, 'L');
 				$posY = $pdf->getY();
 				
 				$pdf->rect($posX+2, $posY+1.5, 2, 2);
-				$pdf->SetXY ($posX+2, $posY+1.5);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY ($posX-2, $posY+0.2);
+				if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE == 1) 
+				{
+					$pdf->MultiCell($posX, 3, $outputlangs->convToOutputCharset('X'), 0, 'C');
+				}	
 				$pdf->SetXY($posX+6, $posY+0.5);
 				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('lnterphone'), 0, 'L');
 				$posY = $pdf->getY();
 				
 				$pdf->rect($posX+2, $posY+1.5, 2, 2);
-				$pdf->SetXY ($posX+2, $posY+1.5);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY ($posX-2, $posY+0.2);
+				if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR == 1) 
+				{
+					$pdf->MultiCell($posX, 3, $outputlangs->convToOutputCharset('X'), 0, 'C');
+				}
 				$pdf->SetXY($posX+6, $posY+0.5);
 				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Ascenseur'), 0, 'L');
 				$posY = $pdf->getY();
 				
 				$pdf->rect($posX+2, $posY+1.5, 2, 2);
-				$pdf->SetXY ($posX+2, $posY+1.5);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY ($posX-2, $posY+0.2);
+				if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES == 1) 
+				{
+					$pdf->MultiCell($posX, 3, $outputlangs->convToOutputCharset('X'), 0, 'C');
+				}
 				$pdf->SetXY($posX+6, $posY+0.5);
 				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Vide-ordures'), 0, 'L');
 				$posY = $pdf->getY();
 				
 				$pdf->rect($posX+2, $posY+1.5, 2, 2);
-				$pdf->SetXY ($posX+2, $posY+1.5);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY ($posX-2, $posY+0.2);
+				if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE == 1) 
+				{
+					$pdf->MultiCell($posX, 3, $outputlangs->convToOutputCharset('X'), 0, 'C');
+				}
 				$pdf->SetXY($posX+6, $posY+0.5);
 				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Antenne TV collective'), 0, 'L');
 				$posY = $pdf->getY();
 				
 				$pdf->rect($posX+2, $posY+1.5, 2, 2);
-				$pdf->SetXY ($posX+2, $posY+1.5);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY ($posX-2, $posY+0.2);
+				if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS == 1) 
+				{
+					$pdf->MultiCell($posX, 3, $outputlangs->convToOutputCharset('X'), 0, 'C');
+				}
 				$pdf->SetXY($posX+6, $posY+0.5);
 				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Espace(s) vert(s)'), 0, 'L');
 				$posY = $pdf->getY();
 				
 				$pdf->rect($posX+2, $posY+1.5, 2, 2);
-				$pdf->SetXY ($posX+2, $posY+1.5);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY ($posX-2, $posY+0.2);
+				if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF == 1) 
+				{
+					$pdf->MultiCell($posX, 3, $outputlangs->convToOutputCharset('X'), 0, 'C');
+				}
 				$pdf->SetXY($posX+6, $posY+0.5);
 				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Chauffage Collectif'), 0, 'L');
 				$posY = $pdf->getY();
 				
 				$pdf->rect($posX+2, $posY+1.5, 2, 2);
-				$pdf->SetXY ($posX+2, $posY+1.5);
-				$pdf->SetTextColor(0, 0, 0);
-				$pdf->SetFont('', '', $default_font_size-1);
+				$pdf->SetXY ($posX-2, $posY+0.2);
+				if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE == 1) 
+				{
+					$pdf->MultiCell($posX, 3, $outputlangs->convToOutputCharset('X'), 0, 'C');
+				}
 				$pdf->SetXY($posX+6, $posY+0.5);
 				$pdf->MultiCell($widthrecbox/3, 3, $outputlangs->convToOutputCharset('Eau chaude collective'), 0, 'L');
 				$posY = $pdf->getY();
