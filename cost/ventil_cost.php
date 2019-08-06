@@ -113,7 +113,7 @@ if ($action == 'ventil') {
 	
 	if (empty($error)) {
 		$db->commit();
-		setEventMessage($langs->trans("SocialContributionAdded"), 'mesgs');
+		setEventMessage($langs->trans("ReceiptPaymentsAdded"), 'mesgs');
 		Header("Location: " . dol_buildpath('/ultimateimmo/cost/immocost_card.php',1)."?id=" . $id);
 	} else {
 		$db->rollback();

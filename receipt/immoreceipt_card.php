@@ -363,7 +363,7 @@ if (empty($reshook))
 		
 		if (empty($error)) 
 		{
-			setEventMessages($langs->trans("SocialContributionAdded"), null, 'mesgs');
+			setEventMessages($langs->trans("ReceiptPaymentsAdded"), null, 'mesgs');
 			Header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1));
 			exit();
 		}

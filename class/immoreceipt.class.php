@@ -313,7 +313,7 @@ class ImmoReceipt extends CommonObject
 				if ($result > 0)
 				{
 					$modCodeUltimateimmo = new $module();
-
+					
 					if (! empty($modCodeUltimateimmo->code_auto)) {
 						// Force the ref to a draft value if numbering module is an automatic numbering
 						$sql = 'UPDATE '.MAIN_DB_PREFIX."ultimateimmo_immoreceipt SET ref='(PROV".$this->id.")' WHERE rowid=".$this->id;
