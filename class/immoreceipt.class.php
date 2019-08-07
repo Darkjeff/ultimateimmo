@@ -811,6 +811,7 @@ class ImmoReceipt extends CommonObject
 
 		dol_syslog(get_class($this)."::valid", LOG_DEBUG);
 		$resql=$this->db->query($sql);
+		
 		if (! $resql)
 		{
 			dol_print_error($this->db);
