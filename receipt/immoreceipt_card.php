@@ -243,7 +243,7 @@ if (empty($reshook))
 		$datesp = dol_mktime(12, 0, 0, GETPOST("datespmonth"), GETPOST("datespday"), GETPOST("datespyear"));
 		$dateep = dol_mktime(12, 0, 0, GETPOST("dateepmonth"), GETPOST("dateepday"), GETPOST("dateepyear"));
 		
-		$object->nom = GETPOST("nom");
+		$object->label = GETPOST("label");
 		$object->datesp = $datesp;
 		$object->dateep = $dateep;
 		$object->datev = $datev;
@@ -402,7 +402,7 @@ if (empty($reshook))
  *
  */
 
-llxHeader('','ImmoReceipt','');
+llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
 
 $form=new Form($db);
 $formfile=new FormFile($db);
@@ -673,7 +673,7 @@ else
 	// Part to edit record
 	if (($id || $ref) && $action == 'edit')
 	{
-		print load_fiche_titre($langs->trans("newrental", $langs->transnoentitiesnoconv("ImmoReceipt")));
+		print load_fiche_titre($langs->trans("MenuNewImmoReceipt", $langs->transnoentitiesnoconv("ImmoReceipt")));
 
 		$receipt = new ImmoReceipt($db);
 		$result = $receipt->fetch($id);
