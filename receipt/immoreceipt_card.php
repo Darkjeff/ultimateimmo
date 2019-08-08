@@ -236,7 +236,8 @@ if (empty($reshook))
 	/*
 	 * Add rental
 	 */
-	if ($action == 'add' && ! $cancel) {
+	if ($action == 'add' && ! $cancel) 
+	{
 		$error = 0;
 		
 		$datev = dol_mktime(12, 0, 0, GETPOST("datevmonth"), GETPOST("datevday"), GETPOST("datevyear"));
@@ -248,20 +249,25 @@ if (empty($reshook))
 		$object->dateep = $dateep;
 		$object->datev = $datev;
 		
-		if (empty($datev) || empty($datesp) || empty($dateep)) {
+		if (empty($datev) || empty($datesp) || empty($dateep)) 
+		{
 			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("Date")), 'errors');
 			$error ++;
 		}
 		
-		if (! $error) {
+		if (! $error) 
+		{
 			$db->begin();
 			
 			$ret = $object->create($user);
-			if ($ret > 0) {
+			if ($ret > 0) 
+			{
 				$db->commit();
 				header("Location: index.php");
 				exit();
-			} else {
+			} 
+			else 
+			{
 				$db->rollback();
 				setEventMessages($object->error, $object->errors, 'errors');
 				$action = "create";
@@ -307,7 +313,7 @@ if (empty($reshook))
 			foreach ( $mesLignesCochees as $maLigneCochee ) 
 			{				
 				$receipt = new ImmoReceipt($db);
-				//var_dump($receipt);exit;
+				
 				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
 				
 				$monId = $maLigneCourante[0];
@@ -327,12 +333,12 @@ if (empty($reshook))
 				$receipt->date_end = $dateperiodend;
 				
 				// main info contrat
-				$receipt->ref = GETPOST('ref', 'alpha');
+				$receipt->ref = '(PROV)';
 				$receipt->fk_rent = $monId;
 				$receipt->fk_property = $monLocal;
 				$receipt->fk_renter = $monLocataire;
 				$receipt->fk_owner = $user->id;
-				
+
 				if ($maTVA == Oui) 
 				{
 					$receipt->total_amount = $monMontant * 1.2;
@@ -350,7 +356,6 @@ if (empty($reshook))
 				$receipt->fk_soc = $socProprio;
 				$receipt->status=0;
 				//$receipt->paye=0;
-				//var_dump($receipt);exit;
 				$result = $receipt->create($user);
 				if ($result < 0) 
 				{
@@ -417,8 +422,9 @@ if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php
 }
 $result=dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php');
 
-if ($result > 0)
+if ($result >= 0)
 {
+	dol_include_once('/ultimateimmo/core/modules/ultimateimmo/mod_ultimateimmo_simple.php');
 	$modCodeReceipt = new $module();
 }
 
@@ -769,7 +775,8 @@ else
 			{
 				// We verifie whether the object is provisionally numbering
 				$ref = substr($object->ref, 1, 4);		
-				if ($ref == 'PROV') {
+				if ($ref == 'PROV') 
+				{
 					$numref = $object->getNextNumRef($soc);					
 					if (empty($numref)) 
 					{
