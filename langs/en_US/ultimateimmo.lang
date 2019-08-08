@@ -181,6 +181,10 @@ UltimateImmoDiagnosticNaturalTechnologicalRisks = the state of natural and techn
 UltimateImmoDiagnosticNonCollectiveSanitationFacilities = state of non-collective sanitation facilities
 UltimateImmoDiagnosticEnergyPerformanceDiagnosis = building energy performance diagnosis (DPE)
 ReceiptPaymentsAdded = Receipt payments added
+Echeance = Deadline
+Periode_du = Period from
+Periode_au = Period to
+Nomlocal = Name of property
 
 #
 # Sample page
