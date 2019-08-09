@@ -105,10 +105,10 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
 
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immocost_type as it ON ic.fk_cost_type = it.rowid";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoproperty as ii ON ic.fk_property = ii.fk_property";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ii ON ic.fk_property = ii.fk_property";
 
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
@@ -180,8 +180,8 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre'
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immocost_type as it";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid";

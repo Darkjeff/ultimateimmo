@@ -285,7 +285,7 @@ class ImmoOwner_Type extends CommonObject
 		$rentertypes = array();
 
 		$sql = "SELECT rowid, label";
-		$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immoowner_type";
+		$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immoowner_type";
 		$sql.= " WHERE entity IN (".getEntity('immoowner_type').")";
 
 		$resql=$this->db->query($sql);
@@ -328,7 +328,7 @@ class ImmoOwner_Type extends CommonObject
 		$ret=array();
 
 		$sql = "SELECT a.rowid";
-		$sql.= " FROM ".MAIN_DB_PREFIX."immobilier_immoowner as a";
+		$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immoowner as a";
 		$sql.= " WHERE a.entity IN (".getEntity('immoowner').")";
 		$sql.= " AND a.fk_immorenter_type = ".$this->id;
 		if (! empty($excludefilter)) $sql.=' AND ('.$excludefilter.')';

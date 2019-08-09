@@ -23,7 +23,7 @@ ALTER TABLE llx_ultimateimmo_immocost ADD CONSTRAINT llx_ultimateimmo_immocost_f
 ALTER TABLE llx_ultimateimmo_immocost ADD INDEX idx_ultimateimmo_immocost_status (status);
 -- END MODULEBUILDER INDEXES
 
---ALTER TABLE llx_ultimateimmo_immocost ADD UNIQUE INDEX uk_immobilier_immocost_fieldxy(fieldx, fieldy);
+--ALTER TABLE llx_ultimateimmo_immocost ADD UNIQUE INDEX uk_ultimateimmo_immocost_fieldxy(fieldx, fieldy);
 
---ALTER TABLE llx_ultimateimmo_immocost ADD CONSTRAINT llx_immobilier_immocost_fk_field FOREIGN KEY (fk_field) REFERENCES llx_immobilier_myotherobject(rowid);
+--ALTER TABLE llx_ultimateimmo_immocost ADD CONSTRAINT llx_ultimateimmo_immocost_fk_field FOREIGN KEY (fk_field) REFERENCES llx_ultimateimmo_myotherobject(rowid);
 

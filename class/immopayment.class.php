@@ -404,9 +404,9 @@ class ImmoPayment extends CommonObject
 		$sql.= ' ll.label as nomlocal,';
 		$sql.= ' lo.label as nomloyer ';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'immobilier_immorenter as lc ON t.fk_renter = lc.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'immobilier_immoproperty as ll ON t.fk_property = ll.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'immobilier_immoreceipt as lo ON t.fk_receipt = lo.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as lo ON t.fk_receipt = lo.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as cp ON t.fk_mode_reglement = cp.id AND cp.entity IN ('.getEntity('c_paiement').')';;
 
 		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
@@ -497,9 +497,9 @@ class ImmoPayment extends CommonObject
 
 
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element. ' as t';
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immorenter as lc ON t.fk_renter = lc.rowid";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll ON t.fk_property = ll.rowid ";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo ON t.fk_receipt = lo.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid ";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo ON t.fk_receipt = lo.rowid";
 
 		// Manage filter
 		$sqlwhere = array();

@@ -14,12 +14,12 @@ dol_include_once("/immobilier/class/immorenter.class.php");
 
 
 /**
- * mailing_mailinglist_immobilier
+ * mailing_mailinglist_ultimateimmo
  */
-class mailing_mailinglist_immobilier_immorenter extends MailingTargets
+class mailing_mailinglist_ultimateimmo_immorenter extends MailingTargets
 {
 	// CHANGE THIS: Put here a name not already used
-	public $name='mailinglist_immobilier_immorenter';
+	public $name='mailinglist_ultimateimmo_immorenter';
 	// CHANGE THIS: Put here a description of your selector module
 	public $desc='Contacts of renters';
 	// CHANGE THIS: Set to 1 if selector is available for admin users only
@@ -105,7 +105,7 @@ class mailing_mailinglist_immobilier_immorenter extends MailingTargets
 
 
 		$sql = " select rowid as id, email, firstname, lastname";
-		$sql.= " from ".MAIN_DB_PREFIX."immobilier_immorenter";
+		$sql.= " from ".MAIN_DB_PREFIX."ultimateimmo_immorenter";
 		$sql.= " where email IS NOT NULL AND email != ''";
 		if (! empty($_POST['filter']) && $_POST['filter'] != 'none') $sql.= " AND status = '".$this->db->escape($_POST['filter'])."'";
 		$sql.= " ORDER BY email";
@@ -117,7 +117,7 @@ class mailing_mailinglist_immobilier_immorenter extends MailingTargets
 			$num = $this->db->num_rows($result);
 			$i = 0;
 
-			dol_syslog("mailinglist_immobilier_immorenter.modules.php: mailing ".$num." targets found");
+			dol_syslog("mailinglist_ultimateimmo_immorenter.modules.php: mailing ".$num." targets found");
 
 			$old = '';
 			while ($i < $num)
@@ -197,7 +197,7 @@ class mailing_mailinglist_immobilier_immorenter extends MailingTargets
 	 */
 	function getNbOfRecipients($filter=1,$option='')
 	{
-		$a=parent::getNbOfRecipients("select count(distinct(email)) as nb from ".MAIN_DB_PREFIX."immobilier_immorenter as p where email IS NOT NULL AND email != ''");
+		$a=parent::getNbOfRecipients("select count(distinct(email)) as nb from ".MAIN_DB_PREFIX."ultimateimmo_immorenter as p where email IS NOT NULL AND email != ''");
 
 		if ($a < 0) return -1;
 		return $a;

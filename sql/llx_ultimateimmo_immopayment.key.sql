@@ -31,5 +31,5 @@ ALTER TABLE llx_ultimateimmo_immopayment ADD INDEX idx_ultimateimmo_immopayment_
 
 --ALTER TABLE llx_ultimateimmo_immopayment ADD UNIQUE INDEX uk_ultimateimmo_immopayment_fieldxy(fieldx, fieldy);
 
---ALTER TABLE llx_ultimateimmo_immopayment ADD CONSTRAINT llx_ultimateimmo_immopayment_fk_field FOREIGN KEY (fk_field) REFERENCES llx_immobilier_myotherobject(rowid);
+--ALTER TABLE llx_ultimateimmo_immopayment ADD CONSTRAINT llx_ultimateimmo_immopayment_fk_field FOREIGN KEY (fk_field) REFERENCES llx_ultimateimmo_myotherobject(rowid);
 

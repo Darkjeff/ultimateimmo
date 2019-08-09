@@ -9,16 +9,16 @@
  */
 
 include_once DOL_DOCUMENT_ROOT.'/core/modules/mailings/modules_mailings.php';
-dol_include_once("/immobilier/class/myobject.class.php");
+dol_include_once("/ultimateimmo/class/myobject.class.php");
 
 
 /**
- * mailing_mailinglist_immobilier
+ * mailing_mailinglist_ultimateimmo
  */
-class mailing_mailinglist_immobilier_myobject extends MailingTargets
+class mailing_mailinglist_ultimateimmo_myobject extends MailingTargets
 {
 	// CHANGE THIS: Put here a name not already used
-	var $name='mailinglist_immobilier_myobject';
+	var $name='mailinglist_ultimateimmo_myobject';
 	// CHANGE THIS: Put here a description of your selector module
 	var $desc='My object emailing target selector';
 	// CHANGE THIS: Set to 1 if selector is available for admin users only
@@ -26,7 +26,7 @@ class mailing_mailinglist_immobilier_myobject extends MailingTargets
 
 	var $enabled=0;
 	var $require_module=array();
-	var $picto='immobilier@immobilier';
+	var $picto='ultimateimmo@ultimateimmo';
 	var $db;
 
 
@@ -115,7 +115,7 @@ class mailing_mailinglist_immobilier_myobject extends MailingTargets
 			$num = $this->db->num_rows($result);
 			$i = 0;
 
-			dol_syslog("mailinglist_immobilier_myobject.modules.php: mailing ".$num." targets found");
+			dol_syslog("mailinglist_ultimateimmo_myobject.modules.php: mailing ".$num." targets found");
 
 			$old = '';
 			while ($i < $num)

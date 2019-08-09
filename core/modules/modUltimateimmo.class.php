@@ -140,8 +140,8 @@ class modUltimateimmo extends DolibarrModules
 
 		// Constants
 		// List of particular constants to add when module is enabled (key, 'chaine', value, desc, visible, 'current' or 'allentities', deleteonunactive)
-		// Example: $this->const=array(0=>array('IMMOBILIER_MYNEWCONST1','chaine','myvalue','This is a constant to add',1),
-		//							   1=>array('IMMOBILIER_MYNEWCONST2','chaine','myvalue','This is another constant to add',0, 'current', 1)
+		// Example: $this->const=array(0=>array('ULTIMATEIMMO_MYNEWCONST1','chaine','myvalue','This is a constant to add',1),
+		//							   1=>array('ULTIMATEIMMO_MYNEWCONST2','chaine','myvalue','This is another constant to add',0, 'current', 1)
 		// );
 		$this->const = array();
 		$r=0;
@@ -763,7 +763,7 @@ class modUltimateimmo extends DolibarrModules
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'List ImmoRenter',
 								'mainmenu'=>'ultimateimmo',
-								'leftmenu'=>'immobilier_immorenter_list',
+								'leftmenu'=>'ultimateimmo_immorenter_list',
 								'url'=>'/ultimateimmo/immorenter_list.php',
 								'langs'=>'ultimateimmo@ultimateimmo',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1000+$r,
@@ -775,7 +775,7 @@ class modUltimateimmo extends DolibarrModules
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'New ImmoRenter',
 								'mainmenu'=>'ultimateimmo',
-								'leftmenu'=>'immobilier_immorenter_new',
+								'leftmenu'=>'ultimateimmo_immorenter_new',
 								'url'=>'/ultimateimmo/immorenter_page.php?action=create',
 								'langs'=>'ultimateimmo@ultimateimmo',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1000+$r,

@@ -244,7 +244,7 @@ class ImmobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 		$this->url('/admin/triggers.php');
 		$this->authenticate();
 		return $this->assertContains(
-			'interface_99_modImmobilier_ImmobilierTriggers.class.php',
+			'interface_99_modUltimateimmo_UltimateimmoTriggers.class.php',
 			$this->byTag('body')->text(),
 			"Trigger declared"
 		);
@@ -261,7 +261,7 @@ class ImmobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 		$this->authenticate();
 		return $this->assertContains(
 			'tick.png',
-			$this->byXPath('//td[text()="interface_99_modImmobilier_MyTrigger.class.php"]/following::img')->attribute('src'),
+			$this->byXPath('//td[text()="interface_99_modUltimateimmo_MyTrigger.class.php"]/following::img')->attribute('src'),
 			"Trigger enabled"
 		);
 	}

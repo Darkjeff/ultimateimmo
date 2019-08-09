@@ -102,7 +102,7 @@ if (empty($reshook))
 	$permissiontoadd = $user->rights->ultimateimmo->write;
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$backurlforlist = dol_buildpath('/ultimateimmo/renter/immorenter_list.php',1);
-	$triggermodname = 'IMMOBILIER_MODIFY';
+	$triggermodname = 'ULTIMATEIMMO_MODIFY';
 
 	/*if ($action == 'setsocid')
 	{
@@ -111,7 +111,7 @@ if (empty($reshook))
 		{
 			if ($socid != $object->fk_soc)	// If link differs from currently in database
 			{
-				$sql ="SELECT rowid FROM ".MAIN_DB_PREFIX."immobilier_immorenter";
+				$sql ="SELECT rowid FROM ".MAIN_DB_PREFIX."ultimateimmo_immorenter";
 				$sql.=" WHERE fk_soc = '".$socid."'";
 				$sql.=" AND entity = ".$conf->entity;
 				$resql = $db->query($sql);
@@ -146,8 +146,8 @@ if (empty($reshook))
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 
 	// Actions to send emails
-	$trigger_name='IMMOBILIER_SENTBYMAIL';
-	$autocopy='MAIN_MAIL_AUTOCOPY_IMMOBILIER_TO';
+	$trigger_name='ULTIMATEIMMO_SENTBYMAIL';
+	$autocopy='MAIN_MAIL_AUTOCOPY_ULTIMATEIMMO_TO';
 	$trackid='immorenter'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 }

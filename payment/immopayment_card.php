@@ -526,10 +526,10 @@ if ($action == 'createall') {
 	 * List receipt
 	 */
 	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.ref as nom, l.address  , l.label as local, loc.status as statut, rec.total_amount as total, rec.paiepartiel, rec.balance ,  rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract , c.status";
-	$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt rec";
-	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorenter as loc";
-	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as l";
-	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorent as c";
+	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt rec";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
 	$sql .= " WHERE rec.paye = 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND  c.rowid = rec.fk_rent and c.status =1 ";
 	if ($user->id != 1) {
 		$sql .= " AND rec.owner_id=" . $user->id;
