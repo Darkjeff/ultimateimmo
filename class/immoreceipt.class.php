@@ -66,18 +66,6 @@ class ImmoReceipt extends CommonObject
 	 * Validated status
 	 */
 	const STATUS_VALIDATED = 1;
-	
-	/**
-	 * Unpaid status
-	 */
-	const STATUS_UNPAID = 2;
-	
-	/**
-	 * Paid status
-	 */
-	const STATUS_PAID = 3;
-
-
 
 	/**
 	 *  'type' if the field format.
@@ -134,7 +122,7 @@ class ImmoReceipt extends CommonObject
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1,),
 		'model_pdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'enabled'=>1, 'visible'=>-2, 'position'=>1010, 'notnull'=>-1, 'index'=>1, 'searchall'=>1,),
 		'last_main_doc' => array('type'=>'varchar(255)', 'label'=>'LastMainDoc', 'enabled'=>1, 'visible'=>-2, 'position'=>1020, 'notnull'=>-1,),
-		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>-1, 'default'=>'0','index'=>1, 'arrayofkeyval'=>array('0'=>'ImmoUnpaid', '1'=>'ImmoPaid')),
+		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>-1, 'default'=>'0','index'=>1, 'arrayofkeyval'=>array('0'=>'draft', '1'=>'validate')),
 	);
 	public $rowid;
 	public $ref;
