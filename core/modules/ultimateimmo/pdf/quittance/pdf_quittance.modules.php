@@ -301,13 +301,12 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Quittance de loyer'), 1, 'C');
 				}
 
-
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
-
-				$period = 'Loyer ' . dol_print_date($this->db->jdate($object->echeance), 'day');
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($period), 1, 'C');
+				
+				$period = $object->label;
+				$pdf->MultiCell($widthbox, 3, $period, 1, 'C', 0);
 
 				/*
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'ID', 13);
@@ -337,14 +336,12 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				}
 				$text .= 'le ' . dol_print_date($dtpaiement, 'day') . ' pour loyer et accessoires des locaux sis à : ' . $property->address . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
 
-
 				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 1, 'L');
 
 				$posY = $pdf->getY();
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetXY($posX, $posY);
 				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Détail'), 1, 'C');
-
 
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
@@ -366,12 +363,13 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$sql .= " FROM " .MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
 				$sql .= ", " .MAIN_DB_PREFIX."ultimateimmo_immoreceipt as il ";
 				$sql .= " WHERE p.fk_receipt = ".$object->id;
+				$sql .= " AND p.fk_receipt = il.rowid";
 				$sql .= " ORDER BY dp DESC";
 
-				//print $sql;
 				dol_syslog(get_class($this) . ':: Paiement', LOG_DEBUG);
 				$resql = $this->db->query($sql);
-				if ($resql) {
+				if ($resql) 
+				{
 					$num = $this->db->num_rows($resql);
 					$i = 0;
 					$total = 0;
@@ -381,7 +379,8 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					$text .= '<td align="right">' . $langs->trans("Amount") . '</td>';
 					$text .= "</tr>";
 
-					while ( $i < $num ) {
+					while ( $i < $num ) 
+					{
 						$objp = $this->db->fetch_object($resql);
 
 						$text .= '<tr>';

@@ -144,7 +144,7 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 	$sql1 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 	$sql1 .= " WHERE lo.rowid = p.fk_receipt";
 	$sql1 .= " GROUP BY p.fk_receipt )";
-	
+	//var_dump($sql1);exit;exit;
 	// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 	$resql1 = $db->query($sql1);
 	if (! $resql1) {
