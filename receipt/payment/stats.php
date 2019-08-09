@@ -111,17 +111,18 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid ";
-if ($user->id != 1) {
+/*if ($user->id != 1) {
 	$sql .= " AND ll.fk_owner=".$user->id;
-}
+}*/
 
 $sql .= " GROUP BY ll.label";
 
-$resql = $db->query ( $sql );
-if ($resql) {
+$resql = $db->query($sql);
+if ($resql) 
+{
 	$i = 0;
-	$num = $db->num_rows ( $resql );
-	
+	$num = $db->num_rows($resql);
+	//var_dump($resql);exit;
 	while ( $i < $num ) {
 		
 		$row = $db->fetch_row ( $resql );
@@ -188,9 +189,9 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid ";
-if ($user->id != 1) {
+/*if ($user->id != 1) {
 	$sql .= " AND ll.fk_owner=".$user->id;
-}
+}*/
 
 $resql = $db->query ( $sql );
 if ($resql) {
