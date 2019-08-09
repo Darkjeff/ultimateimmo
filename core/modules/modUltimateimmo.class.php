@@ -70,7 +70,7 @@ class modUltimateimmo extends DolibarrModules
 		// Gives the possibility to the module, to provide his own family info and position of this family (Overwrite $this->family and $this->module_position. Avoid this)
 		//$this->familyinfo = array('myownfamily' => array('position' => '01', 'label' => $langs->trans("MyOwnFamily")));
 
-		// Module label (no space allowed), used if translation string 'ModuleImmobilierName' not found (MyModue is name of module).
+		// Module label (no space allowed), used if translation string 'ModuleUltimateimmoName' not found (MyModue is name of module).
 		$this->name = preg_replace('/^mod/i','',get_class($this));
 		// Module description, used if translation string 'ModuleUltimateimmoDesc' not found (MyModue is name of module).
 		$this->description = "Solution pour les professionnels de l'immobilier";
@@ -135,7 +135,7 @@ class modUltimateimmo extends DolibarrModules
 		$this->need_dolibarr_version = array(9,0);	// Minimum version of Dolibarr required by module
 		$this->warnings_activation = array();				     // Warning to show when we activate module. array('always'='text') or array('FR'='textfr','ES'='textes'...)
 		$this->warnings_activation_ext = array();				 // Warning to show when we activate an external module. array('always'='text') or array('FR'='textfr','ES'='textes'...)
-		//$this->automatic_activation = array('FR'=>'ImmobilierWasAutomaticallyActivatedBecauseOfYourCountryChoice');
+		//$this->automatic_activation = array('FR'=>'UltimateimmoWasAutomaticallyActivatedBecauseOfYourCountryChoice');
 		//$this->always_enabled = true;								// If true, can't be disabled
 
 		// Constants

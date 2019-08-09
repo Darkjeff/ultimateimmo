@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 
 /**
- * \file    test/functional/ImmobilierFunctionalTest.php
+ * \file    test/functional/UltimateimmoFunctionalTest.php
  * \ingroup immobilier
  * \brief   Example Selenium test.
  *
@@ -29,7 +29,7 @@ namespace test\functional;
 use PHPUnit_Extensions_Selenium2TestCase_WebDriverException;
 
 /**
- * Class ImmobilierFunctionalTest
+ * Class UltimateimmoFunctionalTest
  *
  * Requires chromedriver for Google Chrome
  * Requires geckodriver for Mozilla Firefox
@@ -39,9 +39,9 @@ use PHPUnit_Extensions_Selenium2TestCase_WebDriverException;
  * @todo Windows support (IE, Google Chrome, Mozilla Firefox, Safari)
  * @todo OSX support (Safari, Google Chrome, Mozilla Firefox)
  *
- * @package Testimmobilier
+ * @package Testultimateimmo
  */
-class ImmobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
+class UltimateimmoFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 {
 	// TODO: move to a global configuration file?
 	/** @var string Base URL of the webserver under test */
@@ -170,12 +170,12 @@ class ImmobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 		$module_status_image = $this->byXPath($module_status_image_path);
 		if (strstr($module_status_image->attribute('src'), 'switch_off.png')) {
 			// Enable the module
-			$this->byHref('modImmobilier')->click();
+			$this->byHref('modUltimateimmo')->click();
 		} else {
 			// Disable the module
-			$this->byHref('modImmobilier')->click();
+			$this->byHref('modUltimateimmo')->click();
 			// Reenable the module
-			$this->byHref('modImmobilier')->click();
+			$this->byHref('modUltimateimmo')->click();
 		}
 		// Page reloaded, we need a new Xpath
 		$module_status_image = $this->byXPath($module_status_image_path);
@@ -189,9 +189,9 @@ class ImmobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 	 */
 	public function testConfigurationPage()
 	{
-		$this->url('/custom/immobilier/admin/setup.php');
+		$this->url('/custom/ultimateimmo/admin/setup.php');
 		$this->authenticate();
-		return $this->assertContains('immobilier/admin/setup.php', $this->url(), 'Configuration page');
+		return $this->assertContains('ultimateimmo/admin/setup.php', $this->url(), 'Configuration page');
 	}
 
 	/**
@@ -201,9 +201,9 @@ class ImmobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 	 */
 	public function testAboutPage()
 	{
-		$this->url('/custom/immobilier/admin/about.php');
+		$this->url('/custom/ultimateimmo/admin/about.php');
 		$this->authenticate();
-		return $this->assertContains('immobilier/admin/about.php', $this->url(), 'About page');
+		return $this->assertContains('ultimateimmo/admin/about.php', $this->url(), 'About page');
 	}
 
 	/**
@@ -213,7 +213,7 @@ class ImmobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 	 */
 	public function testAboutPageRendersMarkdownReadme()
 	{
-		$this->url('/custom/immobilier/admin/about.php');
+		$this->url('/custom/ultimateimmo/admin/about.php');
 		$this->authenticate();
 		return $this->assertEquals(
 			'Dolibarr Module Template (aka My Module)',
@@ -231,7 +231,7 @@ class ImmobilierFunctionalTest extends \PHPUnit_Extensions_Selenium2TestCase
 	{
 		$this->url('/admin/boxes.php');
 		$this->authenticate();
-		return $this->assertContains('immobilierwidget1', $this->source(), "Box enabled");
+		return $this->assertContains('ultimateimmowidget1', $this->source(), "Box enabled");
 	}
 
 	/**

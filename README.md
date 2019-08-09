@@ -63,11 +63,11 @@ Note: If this screen tell you there is no custom directory, check your setup is 
         
 ### From a GIT repository
 
-- Clone the repository in ```$dolibarr_main_document_root_alt/immobilier```
+- Clone the repository in ```$dolibarr_main_document_root_alt/ultimateimmo```
 
 ```sh
 cd ....../custom
-git clone git@github.com:gitlogin/immobilier.git immobilier
+git clone git@github.com:gitlogin/ultimateimmo.git ultimateimmo
 ```
 
 ### <a name="final_steps"></a>Final steps

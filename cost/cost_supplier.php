@@ -43,7 +43,7 @@ if (! $res) die("Include of main fails");
 // Class
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
-$res = dol_include_once ( "/ultimateimmo/core/modules/ultimateimmo/modules_immobilier.php" );	
+$res = dol_include_once ( "/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php" );	
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo","other","bills"));

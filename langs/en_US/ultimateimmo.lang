@@ -25,7 +25,7 @@ ModuleUltimateimmoDesc = Ultimateimmo description
 #
 # Admin page
 #
-ImmobilierSetup = Ultimateimmo setup
+UltimateimmoSetup = Ultimateimmo setup
 Settings = Settings
 UltimateimmoSetupPage = Ultimateimmo setup page
 UltimateimmoNumberingModeles = Numbering model for receipt.

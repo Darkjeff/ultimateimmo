@@ -26,7 +26,7 @@ namespace test\unit;
 
 /**
  * Class ImmoReceiptTest
- * @package Testimmobilier
+ * @package Testultimateimmo
  */
 class ImmoReceiptTest extends \PHPUnit_Framework_TestCase
 {

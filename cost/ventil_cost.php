@@ -48,7 +48,7 @@ dol_include_once('/ultimateimmo/class/immorent.class.php');
 require_once ('../core/lib/ultimateimmo.lib.php');
 dol_include_once('/ultimateimmo/class/html.ultimateimmo.php');
 
-$res = dol_include_once("/ultimateimmo/core/modules/ultimateimmo/modules_immobilier.php");
+$res = dol_include_once("/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php");
 if (! $res)
 	die("Include of ultimateimmo");
 
@@ -60,7 +60,7 @@ $id = GETPOST('id', 'int');
 $action = GETPOST('action');
 
 $html = new Form($db);
-$htmlimmo = new FormImmobilier($db);
+$htmlimmo = new FormUltimateimmo($db);
 // Actions
 
 /*

@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2005-2012 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND 			<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2019 Philippe GRAND 		<philippe.grand@atoo-net.com>
  *
  * This file is an example to follow to add your own email selector inside
  * the Dolibarr email tool.
@@ -10,7 +10,7 @@
  */
 
 include_once DOL_DOCUMENT_ROOT.'/core/modules/mailings/modules_mailings.php';
-dol_include_once("/immobilier/class/immorenter.class.php");
+dol_include_once("/ultimateimmo/class/immorenter.class.php");
 
 
 /**
@@ -28,7 +28,7 @@ class mailing_mailinglist_ultimateimmo_immorenter extends MailingTargets
 
 	public $enabled=0;
 	public $require_module=array("societe");
-	public $picto='immobilier@immobilier';
+	public $picto='ultimateimmo@ultimateimmo';
 	public $db;
 
 
@@ -44,7 +44,7 @@ class mailing_mailinglist_ultimateimmo_immorenter extends MailingTargets
 		$this->db=$db;
 		if (is_array($conf->modules))
 		{
-			$this->enabled=in_array('immobilier',$conf->modules)?1:0;
+			$this->enabled=in_array('ultimateimmo',$conf->modules)?1:0;
 		}
 	}
 
@@ -57,7 +57,7 @@ class mailing_mailinglist_ultimateimmo_immorenter extends MailingTargets
     function formFilter()
     {
         global $langs;
-        $langs->load("immobilier@immobilier");
+        $langs->load("ultimateimmo@ultimateimmo");
 
         $form=new Form($this->db);
 
@@ -86,7 +86,7 @@ class mailing_mailinglist_ultimateimmo_immorenter extends MailingTargets
 	 */
 	function url($id)
 	{
-		return '<a href="'.dol_buildpath('/immobilier/immorenter_card.php',1).'?id='.$id.'">'.img_object('',"generic").'</a>';
+		return '<a href="'.dol_buildpath('/ultimateimmo/immorenter_card.php',1).'?id='.$id.'">'.img_object('',"generic").'</a>';
 	}
 
 

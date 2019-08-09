@@ -23,7 +23,7 @@ dol_include_once('/ultimateimmo/class/immorenter.class.php');
 
 
 /**
- * \file    ultimateimmo/class/api_immobilier.class.php
+ * \file    ultimateimmo/class/api_ultimateimmo.class.php
  * \ingroup ultimateimmo
  * \brief   File for API management of immorenter.
  */

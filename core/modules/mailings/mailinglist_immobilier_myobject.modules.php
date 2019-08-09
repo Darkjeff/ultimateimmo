@@ -42,7 +42,7 @@ class mailing_mailinglist_ultimateimmo_myobject extends MailingTargets
 		$this->db=$db;
 		if (is_array($conf->modules))
 		{
-			$this->enabled=in_array('immobilier',$conf->modules)?1:0;
+			$this->enabled=in_array('ultimateimmo',$conf->modules)?1:0;
 		}
 	}
 
@@ -84,7 +84,7 @@ class mailing_mailinglist_ultimateimmo_myobject extends MailingTargets
 	 */
 	function url($id)
 	{
-		return '<a href="'.dol_buildpath('/immobilier/myobject_card.php',1).'?id='.$id.'">'.img_object('',"generic").'</a>';
+		return '<a href="'.dol_buildpath('/ultimateimmo/myobject_card.php',1).'?id='.$id.'">'.img_object('',"generic").'</a>';
 	}
 
 
