@@ -95,11 +95,10 @@ $result = restrictedArea($user, 'ultimateimmo', $object->id, '', '', 'fk_soc', $
 /**
  * Actions
  *
- * Put here all code to do according to value of "action" parameter
  */
 
 $parameters=array();
-$reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+$reshook=$hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if (empty($reshook))
@@ -168,7 +167,7 @@ if (empty($reshook))
 	}
 
 	/**
-	 * Action generate quitance
+	 * Action generate quittance
 	 */
 	if ($action == 'quittance') 
 	{
@@ -249,9 +248,10 @@ if (empty($reshook))
 		$object->dateep = $dateep;
 		$object->datev = $datev;
 		
-		if (empty($datev) || empty($datesp) || empty($dateep)) 
+		if ($datev == '' || $datesp == '' || $dateep == '') 
 		{
-			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("Date")), 'errors');
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("Date")), null, 'errors');
+			$action = "create";
 			$error ++;
 		}
 		
@@ -263,7 +263,7 @@ if (empty($reshook))
 			if ($ret > 0) 
 			{
 				$db->commit();
-				header("Location: index.php");
+				header("Location: ".dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1));
 				exit();
 			} 
 			else 
@@ -272,8 +272,7 @@ if (empty($reshook))
 				setEventMessages($object->error, $object->errors, 'errors');
 				$action = "create";
 			}
-		}
-		
+		}		
 		$action = 'create';
 	}
 	
@@ -310,7 +309,7 @@ if (empty($reshook))
 		{		
 			$mesLignesCochees = GETPOST('mesCasesCochees');
 			
-			foreach ( $mesLignesCochees as $maLigneCochee ) 
+			foreach ($mesLignesCochees as $maLigneCochee) 
 			{				
 				$receipt = new ImmoReceipt($db);
 				
@@ -369,7 +368,7 @@ if (empty($reshook))
 		if (empty($error)) 
 		{
 			setEventMessages($langs->trans("ReceiptPaymentsAdded"), null, 'mesgs');
-			Header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1));
+			Header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1));
 			exit();
 		}
 	}
