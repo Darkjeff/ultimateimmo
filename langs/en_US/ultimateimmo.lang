@@ -185,7 +185,8 @@ Echeance = Deadline
 Periode_du = Period from
 Periode_au = Period to
 Nomlocal = Name of property
-Paye = Quittance réglée
+Paye = Receipt paid
+ValidateReceipt = Validate receipt
 
 #
 # Sample page
