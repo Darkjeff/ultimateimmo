@@ -773,6 +773,8 @@ else
 			// Confirmation of validation
 			if ($action == 'validate')
 			{
+				$error = 0;
+				
 				// We verifie whether the object is provisionally numbering
 				$ref = substr($object->ref, 1, 4);		
 				if ($ref == 'PROV') 
@@ -798,15 +800,16 @@ else
 					$text .= '<br>';
 					$text .= $notify->confirmMessage('ULTIMATEIMMO_VALIDATE', $object->socid, $object);
 				}
-
-				// Call Hook formConfirm
-				$parameters = array('lineid' => $lineid);
-				$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-				if (empty($reshook)) $formconfirm.=$hookmanager->resPrint;
-				elseif ($reshook > 0) $formconfirm=$hookmanager->resPrint;
-
-				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
+				
+				if (! $error)
+					$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
 			}
+			
+			// Call Hook formConfirm
+			$parameters = array('lineid' => $lineid);
+			$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+			if (empty($reshook)) $formconfirm.=$hookmanager->resPrint;
+			elseif ($reshook > 0) $formconfirm=$hookmanager->resPrint;
 
 			// Print form confirm
 			print $formconfirm;
@@ -1042,7 +1045,7 @@ else
 				$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 				$genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
 				$delallowed = $user->rights->ultimateimmo->create;	// If you can create/edit, you can remove a file on card
-				print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, 'quittance', 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
+				print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
 
 				// Show links to link elements
 				$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));
