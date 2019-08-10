@@ -368,9 +368,10 @@ class ImmoReceipt extends CommonObject
 	 * @param  	int 	$fromid     Id of object to clone
 	 * @return 	mixed 				New object created, <0 if KO
 	 */
-	public function createFromClone(User $user, $fromid)
+	public function createFromClone(User $user, $fromid = 0)
 	{
 		global $langs, $hookmanager, $extrafields;
+		
 	    $error = 0;
 
 	    dol_syslog(__METHOD__, LOG_DEBUG);
@@ -381,10 +382,23 @@ class ImmoReceipt extends CommonObject
 
 	    // Load source object
 	    $object->fetchCommon($fromid);
+		
+		// Change socid if needed
+		if (! empty($this->socid) && $this->socid != $object->socid)
+		{
+			$objsoc = new Societe($this->db);
+
+			if ($objsoc->fetch($this->socid)>0)
+			{
+			    $object->socid = $objsoc->id;
+			}
+		}
+		
 	    // Reset some properties
 	    unset($object->id);
 	    unset($object->fk_user_creat);
 	    unset($object->import_key);
+		$object->statut= self::STATUS_DRAFT;
 
 	    // Clear fields
 	    $object->ref = "copy_of_".$object->ref;
@@ -408,22 +422,38 @@ class ImmoReceipt extends CommonObject
 	    // Create clone
 		$object->context['createfromclone'] = 'createfromclone';
 	    $result = $object->createCommon($user);
-	    if ($result < 0) {
-	        $error++;
-	        $this->error = $object->error;
-	        $this->errors = $object->errors;
-	    }
+	    if ($result < 0)
+		{
+		    $this->error = $object->error;
+		    $this->errors = array_merge($this->errors, $object->errors);
+		    $error++;
+		}
+		
+		if (! $error)
+		{
+			// Hook of thirdparty module
+			if (is_object($hookmanager))
+			{
+				$parameters=array('objFrom'=>$this,'clonedObj'=>$object);
+				$action='';
+				$reshook=$hookmanager->executeHooks('createFrom', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
+				if ($reshook < 0) $error++;
+			}
+		}
 
 	    unset($object->context['createfromclone']);
 
 	    // End
-	    if (!$error) {
-	        $this->db->commit();
-	        return $object;
-	    } else {
-	        $this->db->rollback();
-	        return -1;
-	    }
+		if (! $error)
+		{
+			$this->db->commit();
+			return $object->id;
+		}
+		else
+		{
+			$this->db->rollback();
+			return -1;
+		}
 	}
 	
 	/**

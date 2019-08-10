@@ -232,6 +232,24 @@ if (empty($reshook))
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 	
+	// Action clone object
+	if ($action == 'confirm_clone' && $confirm == 'yes')
+	{
+	    $objectutil = dol_clone($object, 1);   // To avoid to denaturate loaded object when setting some properties for clone. We use native clone to keep this->db valid.
+
+	    $objectutil->date = dol_mktime(12, 0, 0, GETPOST('newdatemonth', 'int'), GETPOST('newdateday', 'int'), GETPOST('newdateyear', 'int'));
+	    $objectutil->socid = $socid;
+	    $result = $objectutil->createFromClone($user, $id);
+	    if ($result > 0) {
+       		header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
+       		exit();
+       	} else {
+       	    $langs->load("errors");
+       		setEventMessages($object->error, $object->errors, 'errors');
+       		$action = '';
+        }
+	}
+	
 	/*
 	 * Add rental
 	 */
@@ -763,10 +781,15 @@ else
 			}
 
 			// Clone confirmation
-			if ($action == 'clone') {
+			if ($action == 'clone') 
+			{
 				// Create an array for form
-				$formquestion = array();
-				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
+				$formquestion = array(
+					array('type' => 'other','name' => 'socid','label' => $langs->trans("SelectThirdParty"),'value' => $form->select_company($object->socid, 'socid', '(s.client=1 OR s.client=2 OR s.client=3)', 1)),
+					array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
+				);
+				// Ask confirmation to clone
+				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
 			}
 
 			// Confirmation of validation
@@ -775,8 +798,8 @@ else
 				$error = 0;
 				
 				// We verifie whether the object is provisionally numbering
-				$ref = substr($object->ref, 1, 4);		
-				if ($ref == 'PROV') 
+				$ref = substr($object->ref, 1, 4);
+				if ($ref == 'PROV' || $ref == 'copy') 
 				{
 					$numref = $object->getNextNumRef($soc);					
 					if (empty($numref)) 
