@@ -524,7 +524,7 @@ class ImmoRent extends CommonObject
 			}
 		}
 
-		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/bail/";
+		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref,$moreparams);
 	}

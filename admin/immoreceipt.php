@@ -43,8 +43,8 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
-dol_include_once('/ultimateimmo/core/modules/ultimateimmo/pdf/bail/pdf_bail_vide.module.php');
-dol_include_once('/ultimateimmo/core/modules/ultimateimmo/pdf/quittance/pdf_quittance.module.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_bail_vide.module.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_quittance.module.php');
 
 // Translations
 $langs->loadLangs(array("admin", "errors", "ultimateimmo@ultimateimmo"));
@@ -124,7 +124,7 @@ else if ($action == 'specimen')
 	$dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
 	foreach($dirmodels as $reldir)
 	{
-	    $file=dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf/quittance/pdf_".$modele.".modules.php",0);
+	    $file=dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf/pdf_".$modele.".modules.php",0);
 		if (file_exists($file))
 		{
 			$filefound=1;
@@ -365,7 +365,7 @@ clearstatcache();
 
 foreach ($dirmodels as $reldir)
 {
-	$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf/quittance");
+	$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/pdf");
 
 	if (is_dir($dir))
 	{
@@ -519,6 +519,70 @@ print '</table>';
 print '<div class="center"><input type="submit" class="button" value="'.$langs->trans("Modify").'"></div>';
 
 print '</form>';
+
+/*
+ * Bail_libre options
+ *
+ */
+ 
+print load_fiche_titre($langs->trans("OtherOptions"));
+
+// Addresses
+print_fiche_titre($langs->trans("- le cas échéant, représenté par le mandataire"),'','').'<br>';
+
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("Parameters").'</td>'."\n";
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
+print '</tr>';
+
+// add also details for contact address.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("ShowMandataireDetails").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATEIMMO_MANDATAIRE_DETAILS');
+}
+else
+{
+	if($conf->global->ULTIMATEIMMO_MANDATAIRE_DETAILS == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATEIMMO_MANDATAIRE_DETAILS">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATEIMMO_MANDATAIRE_DETAILS == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATEIMMO_MANDATAIRE_DETAILS">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// add also details for contact address.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("ShowColocataireDetails").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATEIMMO_COLOCATAIRE_DETAILS');
+}
+else
+{
+	if($conf->global->ULTIMATEIMMO_COLOCATAIRE_DETAILS == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATEIMMO_COLOCATAIRE_DETAILS">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATEIMMO_COLOCATAIRE_DETAILS == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATEIMMO_COLOCATAIRE_DETAILS">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+print '</table>';
 
 // Page end
 dol_fiche_end();

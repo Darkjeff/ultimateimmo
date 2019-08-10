@@ -29,7 +29,7 @@ UltimateimmoSetup = Configuration du module Ultimateimmo
 Settings = Réglages
 UltimateimmoSetupPage = Page de configuration du module Ultimateimmo
 UltimateimmoNumberingModeles = Modèles de numérotation des quittances
-TemplatePDFUltimateimmo = Modèles de document des quittances
+TemplatePDFUltimateimmo = Modèles de document des quittances et baux
 WatermarkOnDraftImmoCards = Filigrane sur les brouillons de quittances (aucun si vide)
 ExtraFieldsProperty = Attributs supplémentaires (Propriétés)
 ExtraFieldsRenter = Attributs supplémentaires (Locataires)
@@ -190,6 +190,9 @@ Periode_au = Période au
 Nomlocal = Nom du bien
 Paye = Quittance réglée
 ValidateReceipt = Validation de la quittance
+ShowMandataireDetails = Afficher les détails du mandataire
+ShowColocataireDetails = Afficher les détails des colocataires
+Quittances&Baux = Quittances et Baux
 
 
 

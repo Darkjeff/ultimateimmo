@@ -254,7 +254,7 @@ function quittance_pdf_create($db, $id, $message, $typeModele, $outputlangs, $fi
 	$langs->load ( 'ultimateimmo@ultimateimmo' );
 	
 	// Charge le modele
-	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/quittance/pdf_' . $typeModele . '.modules.php' );
+	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
 	
 	if (file_exists ( $nomModele )) {
 		require_once ($nomModele);
@@ -293,7 +293,7 @@ function bail_vide_pdf_create($db, $year, $typeModele, $outputlangs, $filedir, $
 	$langs->load ( 'ultimateimmo@ultimateimmo' );
 
 	// Charge le modele
-	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/bail/pdf_' . $typeModele . '.modules.php' );
+	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
 
 	if (file_exists ( $nomModele )) {
 		require_once ($nomModele);

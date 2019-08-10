@@ -187,6 +187,9 @@ Periode_au = Period to
 Nomlocal = Name of property
 Paye = Receipt paid
 ValidateReceipt = Validate receipt
+ShowMandataireDetails = Afficher les détails du mandataire
+ShowColocataireDetails = Afficher les détails des colocataires
+Quittances&Baux = Quittances et Baux
 
 #
 # Sample page
