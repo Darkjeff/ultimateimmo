@@ -64,8 +64,8 @@ if ($year == 0) {
  */
 llxHeader ( '', 'Compta - Ventilation' );
 
-$textprevyear = '<a href="' .dol_buildpath('/ultimateimmo/result/result.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
-$textnextyear = '<a href="' .dol_buildpath('/ultimateimmo/result/result.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
+$textprevyear = '<a href="'.dol_buildpath('/ultimateimmo/result/result.php', 1).'?year='.($year_current - 1).'">'.img_previous().'</a>';
+$textnextyear = '<a href="'.dol_buildpath('/ultimateimmo/result/result.php', 1).'?year='.($year_current + 1).'">'.img_next().'</a>';
 
 print_fiche_titre ( $langs->trans("Encaissement")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
 
@@ -114,7 +114,7 @@ $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, 
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.type_property_id";
 
 $resql = $db->query ( $sql );
 if ($resql) {
@@ -188,7 +188,7 @@ $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.type_property_id";
 
 $resql = $db->query ( $sql );
 if ($resql) {
@@ -246,7 +246,7 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid";
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.type_property_id";
 
 $resqlencaissement = $db->query ( $sql );
 
@@ -270,7 +270,7 @@ $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.type_property_id";
 
 $resqlpaiement = $db->query ( $sql );
 if ($resqlpaiement && $resqlencaissement) {
@@ -341,7 +341,7 @@ print '</tr>';
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("chargesamount Déductibles").'</td>';
+print '<tr class="liste_titre"><td width=150>'.$langs->trans("Charges Déductibles").'</td>';
 print '<td align="center">'.$langs->trans("January").'</td>';
 print '<td align="center">'.$langs->trans("February").'</td>';
 print '<td align="center">'.$langs->trans("March").'</td>';
@@ -379,7 +379,7 @@ $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.label = 'Charge déductible' ";
 $sql .= "  AND ic.fk_property = ll.rowid ";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.type_property_id";
 
 
 $resql = $db->query ( $sql );
@@ -439,7 +439,7 @@ $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, 
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid ";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.type_property_id";
 
 $resqlencaissement = $db->query ( $sql );
 
@@ -462,7 +462,7 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.type_property_id";
 
 $resqlpaiement = $db->query ( $sql );
 
@@ -490,7 +490,7 @@ $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.label = 'Charge déductible' ";
 $sql .= "  AND ic.fk_property = ll.rowid ";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.type_property_id";
 
 
 
@@ -572,7 +572,7 @@ print '</tr>';
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("chargesamount non Déductibles").'</td>';
+print '<tr class="liste_titre"><td width=150>'.$langs->trans("Charges non Déductibles").'</td>';
 print '<td align="center">'.$langs->trans("January").'</td>';
 print '<td align="center">'.$langs->trans("February").'</td>';
 print '<td align="center">'.$langs->trans("March").'</td>';
@@ -610,7 +610,7 @@ $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.label = 'Charge non déductible' ";
 $sql .= "  AND ic.fk_property = ll.rowid ";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.type_property_id";
 
 
 $resql = $db->query ( $sql );
