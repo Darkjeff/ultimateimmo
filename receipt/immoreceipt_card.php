@@ -240,10 +240,11 @@ if (empty($reshook))
 	if ($action == 'confirm_clone' && $confirm == 'yes' && $usercancreate)
 	{
 	    $objectutil = dol_clone($object, 1);   // To avoid to denaturate loaded object when setting some properties for clone. We use native clone to keep this->db valid.
-
+		var_dump($objectutil);exit;
 	    $objectutil->date = dol_mktime(12, 0, 0, GETPOST('newdatemonth', 'int'), GETPOST('newdateday', 'int'), GETPOST('newdateyear', 'int'));
 	    $objectutil->socid = $socid;
-	    $result = $objectutil->createFromClone($user, $id);
+		
+	    $result = $objectutil->createFromClone($user, $socid);
 	    if ($result > 0) 
 		{
        		header("Location: ".$_SERVER['PHP_SELF'].'?id='.$result);
@@ -792,7 +793,7 @@ else
 			{
 				// Create an array for form
 				$formquestion = array(
-					array('type' => 'other','name' => 'socid','label' => $langs->trans("SelectThirdParty"),'value' => $form->select_company($object->socid, 'socid', '(s.client=1 OR s.client=2 OR s.client=3)', 1)),
+					array('type' => 'other','name' => 'socid','label' => $langs->trans("SelectThirdParty"),'value' => $form->select_company($object->fk_soc, 'socid', '(s.client=1 OR s.client=2 OR s.client=3)', 1)),
 					array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
 				);
 				// Ask confirmation to clone
@@ -1028,7 +1029,7 @@ else
 					// Clone
 					if ($user->rights->ultimateimmo->write)
 					{
-						print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&amp;socid=' . $object->socid . '&amp;action=clone&amp;object=order">' . $langs->trans("ToClone") . '</a></div>';
+						print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=ImmoReceipt">' . $langs->trans("ToClone") . '</a></div>';
 					}
 
 					/*
