@@ -93,7 +93,7 @@ $result = restrictedArea($user, 'ultimateimmo', $object->id, '', '', 'fk_soc', $
 
 $usercanread = $user->rights->ultimateimmo->read;
 $usercancreate = $user->rights->ultimateimmo->write;
-$usercandelete = $user->rights->ultimateimmo->delete;
+$usercandelete = $user->rights->ultimateimmo->delete || ($usercancreate && $object->status == 0);
 
 
 /**
@@ -121,7 +121,7 @@ if (empty($reshook))
 	/**
 	 *	Delete rental
 	 */
-	if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes') {
+	if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes' && $usercandelete) {
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
 		$result = $receipt->delete($user);
@@ -218,8 +218,6 @@ if (empty($reshook))
 	
 	$error=0;
 
-	$permissiontoadd = $user->rights->ultimateimmo->write;
-	$permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && $object->status == 0);
     $backurlforlist = dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1);
 	if (empty($backtopage)) {
 	    if (empty($id)) $backtopage = $backurlforlist;
@@ -243,7 +241,7 @@ if (empty($reshook))
 	    $objectutil->date = dol_mktime(12, 0, 0, GETPOST('newdatemonth', 'int'), GETPOST('newdateday', 'int'), GETPOST('newdateyear', 'int'));
 	    $objectutil->socid = $socid;
 		
-	    $result = $objectutil->createFromClone($user, $socid);
+	    $result = $objectutil->createFromClone($user, $id);
 	    if ($result > 0) 
 		{
        		header("Location: ".$_SERVER['PHP_SELF'].'?id='.$result);
@@ -350,13 +348,13 @@ if (empty($reshook))
 				$monProprio = $maLigneCourante[7];
 				$socProprio = $maLigneCourante[8];
 				
-				// main info loyer
+				// main info rent
 				$receipt->label = GETPOST('label', 'alpha');
 				$receipt->date_echeance = $dateech;
 				$receipt->date_start = $dateperiod;
 				$receipt->date_end = $dateperiodend;
 				
-				// main info contrat
+				// main info contract
 				$receipt->ref = '(PROV)';
 				$receipt->fk_rent = $monId;
 				$receipt->fk_property = $monLocal;
@@ -399,7 +397,7 @@ if (empty($reshook))
 	}
 	
 	// Build doc
-	if ($action == 'builddoc' && $user->rights->ultimateimmo->write)
+	if ($action == 'builddoc' && $usercancreate)
 	{
 		// Save last template used to generate document
 		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model','alpha'));
@@ -597,7 +595,7 @@ elseif ($action == 'createall')
 		print '<tr clas="oddeven" valign="top">';
 		
 		/*
-		 * Nom du loyer
+		 * Rent name
 		 */
 		print '<td><input name="label" size="30" value="' . GETPOST('label') . '"</td>';
 		
@@ -711,7 +709,7 @@ else
 		if ($action == 'delete')
 		{
 			// Param url = id de la periode à supprimer - id session
-			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+			$ret = $form->form_confirm($_SERVER['PHP_SELF'].'?id='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
 			if ($ret == 'html')
 			print '<br>';
 		}
@@ -784,7 +782,7 @@ else
 			// Confirmation to delete
 			if ($action == 'delete')
 			{
-				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
+				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
 			}
 
 			// Clone confirmation
@@ -831,7 +829,7 @@ else
 				}
 				
 				if (! $error)
-					$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
+					$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
 			}
 			
 			// Call Hook formConfirm
@@ -846,7 +844,7 @@ else
 
 			// Object card
 			// ------------------------------------------------------------
-			$linkback = '<a href="' .dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+			$linkback = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?restore_lastsearch_values=1'.(! empty($socid)?'&socid='.$socid : '').'">'. $langs->trans("BackToList").'</a>';
 
 			dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
@@ -1031,21 +1029,7 @@ else
 						print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=ImmoReceipt">' . $langs->trans("ToClone") . '</a></div>';
 					}
 
-					/*
-					if ($user->rights->ultimateimmo->write)
-					{
-						if ($object->status == 1)
-						{
-							print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=disable">'.$langs->trans("Disable").'</a>'."\n";
-						}
-						else
-						{
-							print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=enable">'.$langs->trans("Enable").'</a>'."\n";
-						}
-					}
-					*/
-
-					if ($user->rights->ultimateimmo->delete)
+					if ($usercandelete)
 					{
 						print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
 					}
