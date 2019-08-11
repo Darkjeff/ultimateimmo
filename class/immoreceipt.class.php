@@ -405,7 +405,7 @@ class ImmoReceipt extends CommonObject
 		$object->statut= self::STATUS_DRAFT;
 
 	    // Clear fields
-	    $object->ref = "copy_of_".$object->ref;
+	    $object->ref = "(PROV)".$object->ref;
 	    $object->title = $langs->trans("CopyOf")." ".$object->title;
 	    // ...
 	    // Clear extrafields that are unique

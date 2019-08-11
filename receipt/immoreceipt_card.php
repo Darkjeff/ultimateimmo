@@ -806,7 +806,7 @@ else
 				
 				// We verifie whether the object is provisionally numbering
 				$ref = substr($object->ref, 1, 4);
-				if ($ref == 'PROV' || $ref == 'opy_') 
+				if ($ref == 'PROV') 
 				{
 					$numref = $object->getNextNumRef($soc);	
 					if (empty($numref)) 
