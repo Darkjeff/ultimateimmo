@@ -240,7 +240,6 @@ if (empty($reshook))
 	if ($action == 'confirm_clone' && $confirm == 'yes' && $usercancreate)
 	{
 	    $objectutil = dol_clone($object, 1);   // To avoid to denaturate loaded object when setting some properties for clone. We use native clone to keep this->db valid.
-		var_dump($objectutil);exit;
 	    $objectutil->date = dol_mktime(12, 0, 0, GETPOST('newdatemonth', 'int'), GETPOST('newdateday', 'int'), GETPOST('newdateyear', 'int'));
 	    $objectutil->socid = $socid;
 		
