@@ -91,6 +91,10 @@ if ($user->societe_id > 0) $socid = $user->societe_id;
 $isdraft = (($object->statut == ImmoReceipt::STATUS_DRAFT) ? 1 : 0);
 $result = restrictedArea($user, 'ultimateimmo', $object->id, '', '', 'fk_soc', $fieldid, $isdraft);
 
+$usercanread = $user->rights->ultimateimmo->read;
+$usercancreate = $user->rights->ultimateimmo->write;
+$usercandelete = $user->rights->ultimateimmo->delete;
+
 
 /**
  * Actions
@@ -134,7 +138,7 @@ if (empty($reshook))
 	}
 	
 	// Validation
-	if ($action == 'confirm_validate' && $confirm == 'yes' && $user->rights->ultimateimmo->write)
+	if ($action == 'confirm_validate' && $confirm == 'yes' && $usercancreate)
 	{
 		$result = $object->valid($user);
 		
@@ -233,19 +237,22 @@ if (empty($reshook))
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 	
 	// Action clone object
-	if ($action == 'confirm_clone' && $confirm == 'yes')
+	if ($action == 'confirm_clone' && $confirm == 'yes' && $usercancreate)
 	{
 	    $objectutil = dol_clone($object, 1);   // To avoid to denaturate loaded object when setting some properties for clone. We use native clone to keep this->db valid.
 
 	    $objectutil->date = dol_mktime(12, 0, 0, GETPOST('newdatemonth', 'int'), GETPOST('newdateday', 'int'), GETPOST('newdateyear', 'int'));
 	    $objectutil->socid = $socid;
 	    $result = $objectutil->createFromClone($user, $id);
-	    if ($result > 0) {
-       		header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
+	    if ($result > 0) 
+		{
+       		header("Location: ".$_SERVER['PHP_SELF'].'?id='.$result);
        		exit();
-       	} else {
+       	}
+		else 
+		{
        	    $langs->load("errors");
-       		setEventMessages($object->error, $object->errors, 'errors');
+       		if (count($object->errors) > 0) setEventMessages($object->error, $object->errors, 'errors');
        		$action = '';
         }
 	}
@@ -799,9 +806,9 @@ else
 				
 				// We verifie whether the object is provisionally numbering
 				$ref = substr($object->ref, 1, 4);
-				if ($ref == 'PROV' || $ref == 'copy') 
+				if ($ref == 'PROV' || $ref == 'opy_') 
 				{
-					$numref = $object->getNextNumRef($soc);					
+					$numref = $object->getNextNumRef($soc);	
 					if (empty($numref)) 
 					{
 						$error ++;

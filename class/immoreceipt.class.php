@@ -383,15 +383,19 @@ class ImmoReceipt extends CommonObject
 	    // Load source object
 	    $object->fetchCommon($fromid);
 		
-		// Change socid if needed
-		if (! empty($this->socid) && $this->socid != $object->socid)
-		{
-			$objsoc = new Societe($this->db);
+		$objsoc=new Societe($this->db);
 
-			if ($objsoc->fetch($this->socid)>0)
+		// Change socid if needed
+		if (! empty($socid) && $socid != $object->socid)
+		{
+			if ($objsoc->fetch($socid) > 0)
 			{
 			    $object->socid = $objsoc->id;
 			}
+		}
+		else
+		{
+		    $objsoc->fetch($object->socid);
 		}
 		
 	    // Reset some properties
@@ -434,7 +438,7 @@ class ImmoReceipt extends CommonObject
 			// Hook of thirdparty module
 			if (is_object($hookmanager))
 			{
-				$parameters=array('objFrom'=>$this,'clonedObj'=>$object);
+				$parameters=array('objFrom'=>$this, 'clonedObj'=>$object);
 				$action='';
 				$reshook=$hookmanager->executeHooks('createFrom', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 				if ($reshook < 0) $error++;
