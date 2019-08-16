@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) ---Put here your own copyright and developer email---
+/* Copyright (C) 2018-2019 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ function immocost_detailPrepareHead($object)
 	$h = 0;
 	$head = array();
 
-	$head[$h][0] = dol_buildpath("/ultimateimmo/immocost_detail_card.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/cost_detail/immocost_detail_card.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
@@ -46,7 +46,7 @@ function immocost_detailPrepareHead($object)
 		$nbNote = 0;
 		if (!empty($object->note_private)) $nbNote++;
 		if (!empty($object->note_public)) $nbNote++;
-		$head[$h][0] = dol_buildpath('/ultimateimmo/immocost_detail_note.php', 1).'?id='.$object->id;
+		$head[$h][0] = dol_buildpath('/ultimateimmo/cost_detail/immocost_detail_note.php', 1).'?id='.$object->id;
 		$head[$h][1] = $langs->trans('Notes');
 		if ($nbNote > 0) $head[$h][1].= ' <span class="badge">'.$nbNote.'</span>';
 		$head[$h][2] = 'note';
@@ -55,16 +55,16 @@ function immocost_detailPrepareHead($object)
 
 	require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 	require_once DOL_DOCUMENT_ROOT.'/core/class/link.class.php';
-	$upload_dir = $conf->ultimateimmo->dir_output . "/immocost_detail/" . dol_sanitizeFileName($object->ref);
+	$upload_dir = $conf->ultimateimmo->dir_output . "/cost_detail/" . dol_sanitizeFileName($object->ref);
 	$nbFiles = count(dol_dir_list($upload_dir,'files',0,'','(\.meta|_preview.*\.png)$'));
 	$nbLinks=Link::count($db, $object->element, $object->id);
-	$head[$h][0] = dol_buildpath("/ultimateimmo/immocost_detail_document.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/cost_detail/immocost_detail_document.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans('Documents');
 	if (($nbFiles+$nbLinks) > 0) $head[$h][1].= ' <span class="badge">'.($nbFiles+$nbLinks).'</span>';
 	$head[$h][2] = 'document';
 	$h++;
 
-	$head[$h][0] = dol_buildpath("/ultimateimmo/immocost_detail_agenda.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/cost_detail/immocost_detail_agenda.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Events");
 	$head[$h][2] = 'agenda';
 	$h++;

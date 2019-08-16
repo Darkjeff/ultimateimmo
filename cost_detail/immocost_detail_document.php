@@ -42,7 +42,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 dol_include_once('/ultimateimmo/class/immocost_detail.class.php');
-dol_include_once('/ultimateimmo/lib/ultimateimmo_immocost_detail.lib.php');
+dol_include_once('/ultimateimmo/lib/immocost_detail.lib.php');
 
 // Load translation files required by the page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo","companies","other","mails"));
