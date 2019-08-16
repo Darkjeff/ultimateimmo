@@ -152,7 +152,7 @@ if (! empty($local->id)) {
 	}
 }
 
-$head = charge_prepare_head($charge);
+$head = immocostPrepareHead($charge);
 
 dol_fiche_head($head, 'repartition', $langs->trans("Charge"), 0, 'propertie');
 
