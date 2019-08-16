@@ -507,14 +507,13 @@ class ImmoProperty extends CommonObject
 		
 		dol_syslog(get_class($this) . "::fetchAllByBuilding sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
-		if ($resql) {
-			
+		if ($resql) 
+		{			
 			$this->line = array ();
 			$num = $this->db->num_rows($resql);
 			
 			while ($obj = $this->db->fetch_object($resql)) {
-				
-				
+							
 				$line = new ImmopropertyLine();
 				
 				$line->id = $obj->rowid;
