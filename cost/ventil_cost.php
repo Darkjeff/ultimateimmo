@@ -43,6 +43,7 @@ if (! $res) die("Include of main fails");
 dol_include_once("/ultimateimmo/class/immocost.class.php");
 dol_include_once("/ultimateimmo/class/immoproperty.class.php");
 dol_include_once("/ultimateimmo/class/immoreceipt.class.php");
+dol_include_once("/ultimateimmo/class/immocost_type.class.php");
 dol_include_once("/ultimateimmo/class/immocost_detail.class.php");
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 require_once ('../core/lib/ultimateimmo.lib.php');
@@ -78,12 +79,12 @@ if ($action == 'ventil') {
 	foreach ( $mesLignesCochees as $maLigneCochee=>$localid ) {
 		
 		
-		$ChargeDet = new Immo_costdet($db);
+		$ChargeDet = new ImmoCost_Detail($db);
 		
 		// main info loyer
 		$ChargeDet->amount = GETPOST('amount_'.$localid);
-		$ChargeDet->cost_type = GETPOST('typecharge');
-		$ChargeDet->fk_cost = $id;
+		$ChargeDet->fk_cost_type = GETPOST('typecharge');
+		$ChargeDet->fk_immocost = $id;
 		$ChargeDet->fk_property = $localid;
 		
 		$result = $ChargeDet->create($user);
@@ -96,7 +97,7 @@ if ($action == 'ventil') {
 	}
 	
 	if (empty($error)) {
-		$charge = new Charge($db);
+		$charge = new ImmoCost($db);
 		$result = $charge->fetch($id);
 		if ($result < 0) {
 			setEventMessage($charge->error, 'errors');
@@ -143,7 +144,6 @@ if ($result < 0) {
 	setEventMessage($charge->error, 'errors');
 }
 
-
 if (! empty($local->id)) {
 	$result = $local->fetchAllByBuilding();
 	
@@ -171,7 +171,7 @@ if ($id > 0) {
 	
 	print '<br><div class="fichecenter"><div class="underbanner clearboth"></div><table class="border tableforfield" width="100%"><tbody>';
 	print '<tr class="liste_titre">';
-	print '<td>' . $langs->trans('fk_cost') . '</td>';
+	print '<td>' . $langs->trans('fk_immocost') . '</td>';
 	print '<td>' . $langs->trans('fk_property') . '</td>';
 	print '<td>' . $langs->trans('nomlocal') . '</td>';
 	print '<td align="right">' . $langs->trans('amount') . '</td>';
