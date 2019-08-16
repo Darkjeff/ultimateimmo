@@ -1,5 +1,4 @@
--- Immobilier
--- Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
+-- Copyright (C) ---Put here your own copyright and developer email---
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -12,13 +11,16 @@
 -- GNU General Public License for more details.
 --
 -- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-- along with this program.  If not, see http://www.gnu.org/licenses/.
 
-CREATE TABLE IF NOT EXISTS llx_immo_cost_det (
-  rowid int(11) NOT NULL AUTO_INCREMENT,
-  fk_property int(11) NOT NULL,
-  fk_cost int(11) NOT NULL,
-  amount int(11) NOT NULL,
-  type text,
-  PRIMARY KEY (`Rowid`)
-) ENGINE=InnoDB;
+
+CREATE TABLE llx_ultimateimmo_immocost_detail(
+	-- BEGIN MODULEBUILDER FIELDS
+	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
+	label varchar(255), 
+	amount double(24,8) DEFAULT NULL, 
+	fk_property integer, 
+	fk_immocost integer, 
+	fk_cost_type integer
+	-- END MODULEBUILDER FIELDS
+) ENGINE=innodb;
