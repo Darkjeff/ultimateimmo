@@ -43,7 +43,7 @@ if (! $res) die("Include of main fails");
 dol_include_once("/ultimateimmo/class/immocost.class.php");
 dol_include_once("/ultimateimmo/class/immoproperty.class.php");
 dol_include_once("/ultimateimmo/class/immoreceipt.class.php");
-dol_include_once("/ultimateimmo/class/immo_costdet.class.php");
+dol_include_once("/ultimateimmo/class/immocost_detail.class.php");
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 require_once ('../core/lib/ultimateimmo.lib.php');
 dol_include_once('/ultimateimmo/class/html.ultimateimmo.php');
