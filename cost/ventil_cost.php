@@ -46,8 +46,9 @@ dol_include_once("/ultimateimmo/class/immoreceipt.class.php");
 dol_include_once("/ultimateimmo/class/immocost_type.class.php");
 dol_include_once("/ultimateimmo/class/immocost_detail.class.php");
 dol_include_once('/ultimateimmo/class/immorent.class.php');
-require_once ('../core/lib/ultimateimmo.lib.php');
+dol_include_once('/ultimateimmo/lib/immocost.lib.php');
 dol_include_once('/ultimateimmo/class/html.ultimateimmo.php');
+dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
 $res = dol_include_once("/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php");
 if (! $res)

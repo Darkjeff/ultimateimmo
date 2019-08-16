@@ -45,6 +45,10 @@ class ImmoCost extends CommonObject
 	 */
 	public $fk_element = 'fk_immocost';
 	/**
+	 * @var ImmopropertyLine[] Lines
+	 */
+	public $lines = array();
+	/**
 	 * @var int  Does immocost support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
 	public $ismultientitymanaged = 0;

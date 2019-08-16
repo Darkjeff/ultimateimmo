@@ -44,6 +44,10 @@ class ImmoProperty extends CommonObject
 	 * @var string Name of table without prefix where object is stored
 	 */
 	public $fk_element='fk_property';
+	/**
+	 * @var ImmopropertyLine[] Lines
+	 */
+	public $lines = array();
 	
 	//public $fieldsforcombobox='ref';
 	/**
@@ -489,6 +493,48 @@ class ImmoProperty extends CommonObject
 		$result = $this->fetchCommon($id, $ref);
 		if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
 		return $result;
+	}
+	
+	 function fetchAllByBuilding($activ = 1) 
+	 {
+		global $user;
+		
+		$sql = "SELECT * ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
+		$sql .= " WHERE l.status = " . $activ . "  ";
+		$sql .= " AND l.fk_property = " . $this->id;
+		$sql .= " ORDER BY label";
+		
+		dol_syslog(get_class($this) . "::fetchAllByBuilding sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			
+			$this->line = array ();
+			$num = $this->db->num_rows($resql);
+			
+			while ($obj = $this->db->fetch_object($resql)) {
+				
+				
+				$line = new ImmopropertyLine();
+				
+				$line->id = $obj->rowid;
+				$line->fk_property = $obj->fk_property;
+				$line->label = $obj->label;
+				$line->address = $obj->address;
+				$line->status = $obj->status;
+				$line->area = $obj->area;
+				$line->fk_owner = $obj->fk_owner;
+				
+				$this->lines[] = $line;
+
+			}
+			$this->db->free($resql);
+			return $num;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetchAllByBuilding " . $this->error, LOG_ERR);
+			return - 1;
+		}
 	}
 
 	/**
