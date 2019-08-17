@@ -628,14 +628,15 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 
 		if (! empty($address))
 		{
-			// Detect if we use https
-			$sforhttps=(((empty($_SERVER["HTTPS"]) || $_SERVER["HTTPS"] != 'on') && (empty($_SERVER["SERVER_PORT"])||$_SERVER["SERVER_PORT"]!=443))?'':'s');
-
-			$jsgmapapi='http://maps.google.com/maps/api/js';
-			if ($sforhttps) $jsgmapapi=preg_replace('/^http:/','https:',$jsgmapapi);
+			 // URL to include javascript map
+			$urlforjsmap='https://maps.googleapis.com/maps/api/js';
+			if (empty($conf->global->GOOGLE_API_SERVERKEY)) $urlforjsmap.="?sensor=true";
+			else $urlforjsmap.="?key=".$conf->global->GOOGLE_API_SERVERKEY;
+			
 		?>
-		<script type="text/javascript" src="<?php echo $jsgmapapi; ?>?sensor=true"></script>
-
+		<!--gmaps.php: Include Google javascript map -->
+		<script type="text/javascript" src="<?php echo $urlforjsmap; ?>"></script>
+		
 		<script type="text/javascript">
 		  var geocoder;
 		  var map;
@@ -647,7 +648,13 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 			var myOptions = {
 			  zoom: <?php echo ($conf->global->GOOGLE_GMAPS_ZOOM_LEVEL >= 1 && $conf->global->GOOGLE_GMAPS_ZOOM_LEVEL <= 10)?$conf->global->GOOGLE_GMAPS_ZOOM_LEVEL:8; ?>,
 			  center: latlng,
-			  mapTypeId: google.maps.MapTypeId.HYBRID  // ROADMAP, SATELLITE, HYBRID, TERRAIN
+			  mapTypeId: google.maps.MapTypeId.ROADMAP,  // ROADMAP, SATELLITE, HYBRID, TERRAIN
+			  fullscreenControl: true
+			  /*zoomControl: true,
+			  mapTypeControl: true,
+			  scaleControl: true,
+			  streetViewControl: true,
+			  rotateControl: false */
 			}
 			map = new google.maps.Map(document.getElementById("map"), myOptions);
 			geocoder = new google.maps.Geocoder();
@@ -663,7 +670,7 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 					position: results[0].geometry.location
 				});
 
-				var infowindow = new google.maps.InfoWindow({ content: '<div style="width:250px; height:80px;"><?php echo dol_escape_js($object->name); ?><br><?php echo dol_escape_js(dol_string_nospecial($address,'<br>',array("\r\n","\n","\r"))).(empty($url)?'':'<br><a href="'.$url.'">'.$url.'</a>'); ?></div>' });
+				var infowindow = new google.maps.InfoWindow({ content: '<div style="width:250px; height:80px;" class="divdolibarrgoogleaddress"><?php echo dol_escape_js($object->name); ?><br><?php echo dol_escape_js(dol_string_nospecial($address,'<br>',array("\r\n","\n","\r"))).(empty($url)?'':'<br><a href="'.$url.'">'.$url.'</a>'); ?></div>' });
 
 				google.maps.event.addListener(marker, 'click', function() {
 				  infowindow.open(map,marker);
@@ -688,7 +695,7 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 		<div align="center">
 		<div id="map" class="divmap" style="width: 90%; height: 500px;" ></div>
 		</div>
-		<?php
+		<?php	
 		}
 	}
 }
