@@ -624,7 +624,7 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 {
 	if ($action != 'create' && $action != 'edit')
 	{
-		$address = $object->address.' '.$object->zip.' '.$object->town.' '.getCountry($object->fk_pays, 0);
+		$address = $object->address.','.$object->zip.' '.$object->town.','.getCountry($object->country_id, 0);
 
 		if (! empty($address))
 		{
