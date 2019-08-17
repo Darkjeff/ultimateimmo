@@ -109,19 +109,6 @@ if ($actionsave)
     }
 }
 
-if ($action == 'setimmobiliergoogle')
-{
-	$setimmobiliergoogle = GETPOST('value', 'int');
-    $res = dolibarr_set_const($db, "IMMOBILIER_USE_GOOGLE", $setimmobiliergoogle, 'yesno', 0, '', $conf->entity);
-    if (! $res > 0)
-        $error ++;
-
-        if (! $error) {
-            setEventMessages($langs->trans("SetupSaved"), null, 'mesgs');
-        } else {
-            setEventMessages($langs->trans("Error"), null, 'mesgs');
-        }
-}
 
 /*
  * View
@@ -195,7 +182,7 @@ print "<td>".$langs->trans("Value")."</td>";
 print "<td>".$langs->trans("Note")."</td>";
 print "</tr>";
 // Google login
-print "<tr ".$bc[$var].">";
+print "<tr class="oddeven">";
 print '<td>'.$langs->trans("GOOGLE_API_SERVERKEY")."</td>";
 print "<td>";
 print '<input class="flat" type="text" size="64" name="GOOGLE_API_SERVERKEY" value="'.$conf->global->GOOGLE_API_SERVERKEY.'">';
