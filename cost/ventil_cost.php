@@ -73,7 +73,8 @@ $htmlimmo = new FormUltimateimmo($db);
  * Add ventil charge
  */
 
-if ($action == 'ventil') {
+if ($action == 'ventil') 
+{
 	$mesLignesCochees = GETPOST('mesCasesCochees');
 	
 	$cpt = 0;
@@ -81,9 +82,8 @@ if ($action == 'ventil') {
 	
 	$db->begin();
 	
-	foreach ( $mesLignesCochees as $maLigneCochee=>$localid ) {
-		
-		
+	foreach ($mesLignesCochees as $maLigneCochee=>$localid) 
+	{		
 		$ChargeDet = new ImmoCost_Detail($db);
 		
 		// main info loyer
@@ -94,34 +94,41 @@ if ($action == 'ventil') {
 		
 		$result = $ChargeDet->create($user);
 		
-		if ($result < 0) {
-			setEventMessage($ChargeDet->error,'errors');
+		if ($result < 0) 
+		{
+			setEventMessages($ChargeDet->error, $ChargeDet->errors, 'errors');
 			$error++;
 		}
 		$cpt ++;
 	}
 	
-	if (empty($error)) {
+	if (empty($error)) 
+	{
 		$charge = new ImmoCost($db);
 		$result = $charge->fetch($id);
-		if ($result < 0) {
-			setEventMessage($charge->error, 'errors');
+		if ($result < 0) 
+		{
+			setEventMessages($charge->error, $charge->errors, 'errors');
 			$error++;
 		}
 		$charge->dispatch=1;
 		$result = $charge->update($user);
-		if ($result < 0) {
-			setEventMessage($charge->error, 'errors');
+		if ($result < 0) 
+		{
+			setEventMessages($charge->error, $charge->errors, 'errors');
 			$error++;
 		}
 		
 	}
 	
-	if (empty($error)) {
+	if (empty($error)) 
+	{
 		$db->commit();
-		setEventMessage($langs->trans("ReceiptPaymentsAdded"), 'mesgs');
+		setEventMessages($langs->transnoentities("ReceiptPaymentsAdded"), null, 'mesgs');
 		Header("Location: " . dol_buildpath('/ultimateimmo/cost/immocost_card.php',1)."?id=" . $id);
-	} else {
+	} 
+	else 
+	{
 		$db->rollback();
 	}
 }
@@ -140,22 +147,26 @@ llxheader('', $langs->trans("newventilcharge"), $help_url);
 $charge = new ImmoCost ($db);
 $result = $charge->fetch($id);
 
-if ($result < 0) {
-	setEventMessage($charge->error, 'errors');
+if ($result < 0) 
+{
+	setEventMessages($charge->error, $charge->errors, 'errors');
 }
 
 $local = new ImmoProperty($db);
 $result = $local->fetch($charge->fk_property);
 
-if ($result < 0) {
-	setEventMessage($charge->error, 'errors');
+if ($result < 0) 
+{
+	setEventMessages($charge->error, $charge->errors, 'errors');
 }
 
-if (! empty($local->id)) {
+if (! empty($local->id)) 
+{
 	$result = $local->fetchAllByBuilding();
 	
-	if ($result < 0) {
-		setEventMessage($local->error, 'errors');
+	if ($result < 0) 
+	{
+		setEventMessages($local->error, $local->errors, 'errors');
 	}
 }
 
@@ -206,10 +217,12 @@ if ($id > 0)
 				$result = $loyer->fetchByLocalId($local_line->id, array (
 						'insidedateloyer' => $charge->datec 
 				));
-				if ($result < 0) {
-					setEventMessage($loyer->error, 'errors');
+				if ($result < 0) 
+				{
+					setEventMessages($loyer->error, $lloyerocal->errors, 'errors');
 				}
-				if (count($loyer->lines) > 0) {
+				if (count($loyer->lines) > 0) 
+				{
 					$loc_array[$local_line->id] = $local_line->id;
 				}
 			}
