@@ -164,7 +164,7 @@ if ($id > 0)
 {
 	$head = immocostPrepareHead($charge);
 
-	dol_fiche_head($head, 'repartition', $langs->trans("Charge"), -1, 'ultimateimmo@ultimateimmo');
+	dol_fiche_head($head, 'repartition', $langs->trans("ImmoCost"), -1, 'ultimateimmo@ultimateimmo');
 	
 	// Object Charge
 	// ------------------------------------------------------------
