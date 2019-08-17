@@ -41,6 +41,11 @@ class ImmoReceipt extends CommonObject
 	 * @var string Name of table without prefix where object is stored
 	 */
 	public $table_element = 'ultimateimmo_immoreceipt';
+	
+	/**
+	 * @var ImmoreceiptLine[] Lines
+	 */
+	public $lines = array();
 
 	/**
 	 * @var int  Does immoreceipt support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
@@ -694,6 +699,79 @@ class ImmoReceipt extends CommonObject
 			return -1;
 		}
 	}
+	
+	/**
+	 * 
+	 * @param unknown $id
+	 * @param array $filter
+	 */
+	public function fetchByLocalId($id, $filter=array()) 
+	{	
+		$sql = "SELECT il.rowid as reference, il.fk_rent , il.fk_property, il.label as nomrenter, il.fk_renter, il.total_amount,";
+		$sql .= " il.rentamount, il.chargesamount, il.date_echeance, il.note_public, il.fk_statut, il.paye ,";
+		$sql .= " il.date_start , il.date_end, il.fk_owner, il.partial_payment ";
+		$sql .= " , lc.firstname as nomlocataire , ll.label as nomlocal ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element." as il ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON il.fk_renter = lc.rowid";
+		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON il.fk_property = ll.rowid ";
+		$sql .= " WHERE il.fk_property = " . $id;
+	
+		if (count($filter>0)) 
+		{
+			foreach($filter as $key=>$value) 
+			{
+				if ($key=='insidedaterenter') 
+				{
+					$sql .= " AND il.date_start<='".$this->db->idate($value)."' AND il.date_end>='".$this->db->idate($value)."'";
+				}
+			}
+		}
+	
+		dol_syslog(get_class($this) . "::fetchByLocalId sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+				
+			$this->line = array ();
+			$num = $this->db->num_rows($resql);
+			$this->lines=array();
+				
+			while ($obj = $this->db->fetch_object($resql)) 
+			{
+				$line = new immoreceiptLine();
+	
+				$line->id = $obj->reference;
+				$line->ref = $obj->reference;
+				$line->fk_rent = $obj->fk_rent;
+				$line->fk_property = $obj->fk_property;
+				$line->nomlocal = $obj->nomlocal;
+				$line->label = $obj->nomrenter;
+				$line->fk_renter = $obj->fk_renter;
+				$line->nomlocataire = $obj->nomlocataire;
+				$line->total_amount = $obj->total_amount;
+				$line->rentamount = $obj->rentamount;
+				$line->chargesamount = $obj->chargesamount;
+				$line->date_echeance = $this->db->jdate ( $obj->date_echeance );
+				$line->note_public = $obj->note_public;
+				$line->status = $obj->status;
+				$line->date_start = $this->db->jdate ( $obj->date_start );
+				$line->date_end = $this->db->jdate ( $obj->date_end );
+				$line->encours = $obj->encours;
+				$line->regul = $obj->regul;
+				$line->fk_owner = $obj->fk_owner;
+				$line->paye = $obj->paye;
+				$line->partial_payment = $obj->partial_payment;
+	
+				$this->lines[] = $line;
+	
+			}
+			$this->db->free($resql);
+			return $num;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetchByLocalId " . $this->error, LOG_ERR);
+			return - 1;
+		}
+	}
 
 	/**
 	 * Update object into database
@@ -1188,16 +1266,38 @@ class ImmoReceipt extends CommonObject
 }
 
 /**
- * Class ImmoReceiptLine. You can also remove this and generate a CRUD class for lines objects.
+ * Class ImmoreceiptLine
  */
-/*
-class ImmoReceiptLine
+class ImmoreceiptLine
 {
-	// @var int ID
+	/**
+	 * @var int ID
+	 */
 	public $id;
-	// @var mixed Sample line property 1
-	public $prop1;
-	// @var mixed Sample line property 2
-	public $prop2;
+	/**
+	 * @var mixed Sample line property 1
+	 */
+	
+	public $fk_rent;
+	public $fk_property;
+	public $label;
+	public $fk_renter;
+	public $total_amount;
+	public $rentamount;
+	public $balance;
+	public $partial_payment;
+	public $chargesamount;
+	public $vat_amount;
+	public $date_echeance = '';
+	public $note_public;
+	public $status;
+	public $date_rent = '';
+	public $date_start = '';
+	public $date_end = '';
+	public $fk_owner;
+	public $paye;
+	public $renter_id;
+	public $nomlocataire;
+	public $nomlocal;
+	public $property_id;
 }
-*/
