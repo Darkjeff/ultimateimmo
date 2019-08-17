@@ -715,7 +715,7 @@ class ImmoReceipt extends CommonObject
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON il.fk_renter = lc.rowid";
 		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON il.fk_property = ll.rowid ";
 		$sql .= " WHERE il.fk_property = " . $id;
-	var_dump($sql);exit;
+	
 		if (count($filter>0)) 
 		{
 			foreach($filter as $key=>$value) 
