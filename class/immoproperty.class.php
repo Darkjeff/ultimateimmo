@@ -850,16 +850,35 @@ class ImmoProperty extends CommonObject
 }
 
 /**
- * Class ImmoPropertyLine. You can also remove this and generate a CRUD class for lines objects.
+ * Class ImmopropertyLine
  */
-/*
-class ImmoPropertyLine
+class ImmopropertyLine
 {
-	// @var int ID
+	/**
+	 * @var int ID
+	 */
 	public $id;
-	// @var mixed Sample line property 1
-	public $prop1;
-	// @var mixed Sample line property 2
-	public $prop2;
+
+	public $entity;
+	public $type_property_id;
+	public $fk_property;
+	public $fk_owner;
+	public $label;
+	public $address;
+	public $building;
+	public $staircase;
+	public $numfloor;
+	public $numdoor;
+	public $area;
+	public $numroom;
+	public $zip;
+	public $town;
+	public $country_id;
+	public $status;
+	public $note_private;
+	public $note_public;
+	public $datep = '';
+	public $tms = '';
+	public $fk_user_creat;
+	public $fk_user_modif;
 }
-*/

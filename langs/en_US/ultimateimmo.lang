@@ -31,10 +31,12 @@ UltimateimmoSetupPage = Ultimateimmo setup page
 UltimateimmoNumberingModeles = Numbering model for receipt.
 TemplatePDFUltimateimmo = Template for receipt
 WatermarkOnDraftImmoCards = Watermark On Draft receipt (none if empty)
-ULTIMATEIMMO_MYPARAM1 = My param 1
-ULTIMATEIMMO_MYPARAM1TOOLTIP = My param 1 tooltip
-ULTIMATEIMMO_MYPARAM2=My param 2
-ULTIMATEIMMO_MYPARAM2TOOLTIP=My param 2 tooltip
+ULTIMATEIMMO_USE_GOOGLE = Use google with UltimateImmo module
+GoogleZoomLevel = Niveau de zoom par défaut (1 à 10)
+GOOGLE_API_SERVERKEY=Clé API (de type "Server key")
+ParametersForGoogleAPIv3Usage=Pour Google API %s V3
+KeepEmptyYoUsePublicQuotaOfAPI=Laisser vide pour utiliser le quota publique de cette API (sinon la clé peut être créée depuis la page https://code.google.com/apis/console/, "API Access" pour créer une "Server key" et "Services" pour activer l'API "%s")
+AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google, vous devez créer une clé depuis la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "Indentification" . Cliquer sur "Créer une clé" et choisir "Clé serveur" puis "Créer". Vous obtiendrez votre clé serveur.
 EnumerationOfPartsAndCommonEquipment=Enumeration of parts and common equipment.
 UltimateImmoEquipementGardiennage=guarding
 UltimateImmoEquipementInterphone=lnterphone

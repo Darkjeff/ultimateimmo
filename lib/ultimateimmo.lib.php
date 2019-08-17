@@ -40,6 +40,11 @@ function ultimateimmoAdminPrepareHead()
 	$head[$h][2] = 'quittance';
 	$h++;
 	
+	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/gmaps.php", 1);
+	$head[$h][1] = $langs->trans("Google Maps");
+	$head[$h][2] = 'gmaps';
+	$h++;
+	
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/property_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsProperty");
     $head[$h][2] = 'attributes_property';
