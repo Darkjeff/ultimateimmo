@@ -153,7 +153,8 @@ if ($conf->multicompany->enabled) {
 } else {
 	$entity_qr='';
 }
-print '<a target="_blank" href="'.DOL_URL_ROOT.'/public/members/new.php'.$entity_qr.'">'.DOL_MAIN_URL_ROOT.'/public/members/new.php'.$entity_qr.'</a>';
+
+print '<p>'.$langs->trans("UltimateimmoPublicAccess").' : <a href="' .dol_buildpath('/ultimateimmo/public/index.php', 1).$entity_qr.'" target="_blank" >'.dol_buildpath('/ultimateimmo/public/index.php', 2).$entity_qr.'</a></p>';
 
 
 llxFooter();

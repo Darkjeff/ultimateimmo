@@ -40,6 +40,7 @@ GOOGLE_API_SERVERKEY=Clé API (de type "Server key")
 ParametersForGoogleAPIv3Usage=Pour Google API %s V3
 KeepEmptyYoUsePublicQuotaOfAPI=Laisser vide pour utiliser le quota publique de cette API (sinon la clé peut être créée depuis la page https://code.google.com/apis/console/, "API Access" pour créer une "Server key" et "Services" pour activer l'API "%s")
 AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google, vous devez créer une clé depuis la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "Indentification" . Cliquer sur "Créer une clé" et choisir "Clé serveur" puis "Créer". Vous obtiendrez votre clé serveur.
+UltimateimmoPublicAccess = A public interface requiring no identification is available at the following url
 EnumerationOfPartsAndCommonEquipment=Enumeration of parts and common equipment.
 UltimateImmoEquipementGardiennage=guarding
 UltimateImmoEquipementInterphone=lnterphone
