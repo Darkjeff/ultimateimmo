@@ -58,7 +58,27 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
-require_once DOL_DOCUMENT_ROOT . '/core/lib/security.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/security.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+
+// Load translation files required by the page
+$langs->loadLangs(array('companies', 'other', 'ultimateimmo@ultimateimmo', 'errors'));
+
+// Get parameters
+$track_id = GETPOST('track_id', 'alpha');
+$action = GETPOST('action', 'alpha');
+
+/*
+ * View
+ */
+
+$form = new Form($db);
+
+if (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
+{
+	print $langs->trans('UltimateimmoPublicInterfaceForbidden');
+	exit;
+}
 
 
 print '<p style="text-align: center">' .  $langs->trans("Toto"). '</p>';

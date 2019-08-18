@@ -42,9 +42,11 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once ('../lib/ultimateimmo.lib.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo", "admin", "members"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "admin"));
 
-$action=GETPOST('action', 'alpha');
+// Parameters
+$value = GETPOST('value', 'alpha');
+$action = GETPOST('action', 'alpha');
 
 if (! $user->admin) accessforbidden();
 
@@ -53,31 +55,32 @@ if (! $user->admin) accessforbidden();
  * Actions
  */
 
-if (preg_match('/set_(.*)/',$action,$reg))
+if ($action == 'setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE')
 {
-    $code=$reg[1];
-    if (dolibarr_set_const($db, $code, 1, 'chaine', 0, '', $conf->entity) > 0)
-    {
-        Header("Location: ".$_SERVER["PHP_SELF"]);
-        exit;
-    }
-    else
-    {
-        dol_print_error($db);
-    }
+    if (GETPOST('value')) dolibarr_set_const($db, 'ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE', 1, 'chaine', 0, '', $conf->entity);
+    else dolibarr_set_const($db, 'ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE', 0, 'chaine', 0, '', $conf->entity);
 }
 
-if (preg_match('/del_(.*)/',$action,$reg))
-{
-    $code=$reg[1];
-    if (dolibarr_del_const($db, $code, $conf->entity) > 0)
-    {
-        Header("Location: ".$_SERVER["PHP_SELF"]);
-        exit;
+if ($action == 'setvarother') {
+    $param_enable_public_interface = GETPOST('ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE', 'alpha');
+    $res = dolibarr_set_const($db, 'ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE', $param_enable_public_interface, 'chaine', 0, '', $conf->entity);
+    if (!$res > 0) {
+        $error++;
     }
-    else
+	
+	$param_must_exists = GETPOST('ULTIMATEIMMO_EMAIL_MUST_EXISTS', 'alpha');
+    $res = dolibarr_set_const($db, 'ULTIMATEIMMO_EMAIL_MUST_EXISTS', $param_must_exists, 'chaine', 0, '', $conf->entity);
+    if (!$res > 0) {
+        $error++;
+    }
+	
+	if ($conf->global->MAIN_FEATURES_LEVEL >= 2)
     {
-        dol_print_error($db);
+    	$param_show_company_logo = GETPOST('ULTIMATEIMMO_SHOW_COMPANY_LOGO', 'alpha');
+    	$res = dolibarr_set_const($db, 'ULTIMATEIMMO_SHOW_COMPANY_LOGO', $param_show_company_logo, 'chaine', 0, '', $conf->entity);
+    	if (!$res > 0) {
+        	$error++;
+    	}
     }
 }
 
@@ -100,61 +103,90 @@ print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
 $head = ultimateimmoAdminPrepareHead();
 dol_fiche_head($head, 'public', $langs->trans("ModuleUltimateimmoName"), -1, 'building@ultimateimmo');
 
-print '<form action="' . $_SERVER["PHP_SELF"] . '" method="post">';
-print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
-print '<input type="hidden" name="action" value="update">';
-
+print '<span class="opacitymedium">'.$langs->trans("UltimateimmoEnablePublicInterface") . '</span> : <a href="' . dol_buildpath('/ultimateimmo/public/index.php', 1) . '" target="_blank" >' . dol_buildpath('/ultimateimmo/public/index.php', 2) . '</a>';
+print '<br><br>';
 print $langs->trans("PublicSiteDesc").'<br><br>';
-
-print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre">';
-print '<td>'.$langs->trans("Parameters").'</td>'."\n";
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
-print '</tr>';
-
-print '<tr class="oddeven">';
-print '<td>'.$langs->trans("EnablePublicSite").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-
-print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax)
-{
-	print ajax_constantonoff('ULTIMATEIMMO_ENABLE_PUBLIC');
-}
-else
-{
-	if($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC == 0)
-	{
-		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATEIMMO_ENABLE_PUBLIC">'.img_picto($langs->trans("Disabled"),'off').'</a>';
-	}
-	else if($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC == 1)
-	{
-		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATEIMMO_ENABLE_PUBLIC">'.img_picto($langs->trans("Enabled"),'on').'</a>';
-	}
-}
-print '</td></tr>';
-
-print '</table>';
 
 dol_fiche_end();
 
-print '<center>';
-print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
-print '</center>';
-
-print '</form>';
-
-print '<br>';
-
-print img_picto('','object_globe.png').' '.$langs->trans('Website').':<br>';
-if ($conf->multicompany->enabled) {
-	$entity_qr='?entity='.$conf->entity;
-} else {
-	$entity_qr='';
+$enabledisablehtml = $langs->trans("UltimateimmoPublicAccess").' ';
+if (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
+{
+    // Button off, click to enable
+    $enabledisablehtml.='<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?action=setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE&value=1'.$param.'">';
+    $enabledisablehtml.=img_picto($langs->trans("Disabled"), 'switch_off');
+    $enabledisablehtml.='</a>';
 }
+else
+{
+    // Button on, click to disable
+    $enabledisablehtml.='<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?action=setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE&value=0'.$param.'">';
+    $enabledisablehtml.=img_picto($langs->trans("Activated"), 'switch_on');
+    $enabledisablehtml.='</a>';
+}
+print $enabledisablehtml;
+print '<input type="hidden" id="ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE" name="ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE" value="'.(empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE)?0:1).'">';
 
-print '<p>'.$langs->trans("UltimateimmoPublicAccess").' : <a href="' .dol_buildpath('/ultimateimmo/public/index.php', 1).$entity_qr.'" target="_blank" >'.dol_buildpath('/ultimateimmo/public/index.php', 2).$entity_qr.'</a></p>';
+print '<br><br>';
+
+if (! empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
+{
+
+    if (!$conf->use_javascript_ajax) {
+        print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" enctype="multipart/form-data" >';
+        print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+        print '<input type="hidden" name="action" value="setvarother">';
+    }
+
+    print '<table class="noborder" width="100%">';
+    print '<tr class="liste_titre"><td>' . $langs->trans("Parameters") . '</td>';
+    print '<td class="left">';
+    print '</td>';
+    print '<td class="center">';
+    print '</td>';
+    print '</tr>';
+	
+	 // Check if email exists
+    print '<tr class="oddeven"><td>' . $langs->trans("UltimateimmoEmailMustExist") . '</td>';
+    print '<td class="left">';
+    if ($conf->use_javascript_ajax) {
+        print ajax_constantonoff('ULTIMATEIMMO_EMAIL_MUST_EXISTS');
+    } else {
+        $arrval = array('0' => $langs->trans("No"), '1' => $langs->trans("Yes"));
+        print $form->selectarray("ULTIMATEIMMO_EMAIL_MUST_EXISTS", $arrval, $conf->global->ULTIMATEIMMO_EMAIL_MUST_EXISTS);
+    }
+    print '</td>';
+    print '<td align="center">';
+    print $form->textwithpicto('', $langs->trans("UltimateimmoEmailMustExistHelp"), 1, 'help');
+    print '</td>';
+    print '</tr>';
+	
+	// Show logo for company
+    print '<tr class="oddeven"><td>' . $langs->trans("UltimateimmoShowCompanyLogo") . '</td>';
+    print '<td class="left">';
+    if ($conf->use_javascript_ajax) {
+    	print ajax_constantonoff('ULTIMATEIMMO_SHOW_COMPANY_LOGO');
+    } else {
+    	$arrval = array('0' => $langs->trans("No"), '1' => $langs->trans("Yes"));
+    	print $form->selectarray("ULTIMATEIMMO_SHOW_COMPANY_LOGO", $arrval, $conf->global->ULTIMATEIMMO_SHOW_COMPANY_LOGO);
+    }
+    print '</td>';
+    print '<td align="center">';
+    print $form->textwithpicto('', $langs->trans("UltimateimmoShowCompanyLogoHelp"), 1, 'help');
+    print '</td>';
+    print '</tr>';
+
+	 if (!$conf->use_javascript_ajax) {
+        print '<tr class="impair"><td colspan="3" align="center"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
+        print '</tr>';
+    }
+
+    print '</table><br>';
+
+    if (!$conf->use_javascript_ajax) {
+        print '</form>';
+    }
+}
 
 
 llxFooter();
