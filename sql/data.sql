@@ -19,13 +19,12 @@ INSERT INTO llx_c_ultimateimmo_immoreceipt_status(rowid,code,label,active) VALUE
 
 INSERT INTO llx_c_ultimateimmo_immorent_type(rowid,code,label,active) VALUES (0, 'EMPTY_HOUSING', 'Logement vide', 1),(1, 'FURNISHED_APARTMENT', 'Logement meublé', 1);
 
-INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (0, 'IMMO_COL', 'Immeuble collectif', 1),(1, 'IMMO_INDIV', 'Maison individuelle', 1);
+INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (0, 'APA', 'Apartment', 1),(1, 'HOU', 'Individual house', 1),(2, 'LOC', 'Business premises', 1),(3, 'SHO', 'Shop', 1),(4, 'GAR', 'Garage', 1),(5, 'BUL', 'Building', 1);
 
 INSERT INTO llx_c_ultimateimmo_juridique(rowid,code,label,active) VALUES (0, 'MONO_PROP', 'Mono propriété', 1),(1, 'CO_PROP', 'Copropriété', 1);
 
 INSERT INTO llx_c_ultimateimmo_builtdate(rowid,code,label,active) VALUES (0, 'BUILT1', 'avant 1949', 1),(1, 'BUILT2', 'de 1949 à 1974', 1),(2, 'BUILT3', 'de 1975 à 1989', 1),(3, 'BUILT4', 'de 1989 à 2005', 1),(4, 'BUILT5', 'depuis 2005', 1);
 
-INSERT INTO llx_ultimateimmo_immoproperty_type(rowid,ref,label,date_creation,fk_user_creat,status) VALUES (0, 'APA', 'Apartment', '2019-08-19 17:39:57', 1, 1),(1, 'HOU', 'Individual house', '2019-08-19 17:39:57', 1, 1),(2, 'LOC', 'Business premises', '2019-08-19 17:39:57', 1, 1),(3, 'SHO', 'Shop', '2019-08-19 17:39:57', 1, 1),(4, 'GAR', 'Garage', '2019-08-19 17:39:57', 1, 1),(5, 'BUL', 'Building', '2019-08-19 17:39:57', 1, 1);
 
 
 

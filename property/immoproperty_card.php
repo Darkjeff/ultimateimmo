@@ -210,19 +210,19 @@ if ($action == 'create')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
-		/*elseif ($val['label'] == 'Juridique') 
+		elseif ($val['label'] == 'ImmoProperty_Type') 
 		{
-			// We set juridique_id, juridique_code and juridique for the selected ImmoProperty_Type
-			$object->juridique_id=GETPOST('juridique_id','int')?GETPOST('juridique_id','int'):$object->juridique_id;
+			// We set fk_type_property, type_code and type for the selected ImmoProperty_Type
+			$object->fk_type_property=GETPOST('fk_type_property','int')?GETPOST('fk_type_property','int'):$object->fk_type_property;
 			
-			if ($object->juridique_id)
+			if ($object->fk_type_property)
 			{				
-				$tmparray=$formImmo->getJuridique($object->juridique_id, 'all');
-				$object->juridique_code=$tmparray['code'];
-				$object->juridique=$tmparray['label'];
+				$tmparray=$formImmo->getPropertyTypeLabel($object->fk_type_property, 'all');
+				$object->type_code=$tmparray['code'];
+				$object->type=$tmparray['label'];
 			}
-			print $formImmo->select_juridique(GETPOST('juridique_id','int')?GETPOST('juridique_id','int'):$object->juridique_id);	
-		}*/
+			print $formImmo->select_type_property(GETPOST('fk_type_property','int')?GETPOST('fk_type_property','int'):$object->fk_type_property);	
+		}
 		else
 		{
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
@@ -624,7 +624,7 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 {
 	if ($action != 'create' && $action != 'edit')
 	{
-		$address = $object->address.','.$object->zip.' '.$object->town.','.getCountry($object->country_id, 0);
+		$address = $object->address.','.$object->zip.' '.$object->town.','.$object->getCountry($object->country_id, 0);
 
 		if (! empty($address))
 		{

@@ -61,8 +61,11 @@ class FormUltimateimmo extends Form
 		
 		$out='';
 
-		$sql = "SELECT rowid, code, label, active FROM ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as t";
-		$sql.= " WHERE active = 1";
+		$sql = "SELECT t.rowid, t.code, t.label, t.active FROM ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as t";
+		if (! empty($filter)) {
+			$sql .= ' WHERE ' . $filter;
+		}
+		$sql .= " ORDER BY t.label";
 		
 		dol_syslog(get_class($this) . "::select_type_property", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -101,6 +104,7 @@ class FormUltimateimmo extends Form
 		
 		return $out;
 	}
+	
 	
 	/**
 	 *    Return name of property type

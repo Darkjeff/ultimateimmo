@@ -221,29 +221,31 @@ class modUltimateimmo extends DolibarrModules
 							),
 			'tabsql'=>array('SELECT d.rowid as rowid, d.code, d.label, d.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_diagnostic as d', 
 			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_immorent_type as t',
+			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_immoproperty_type as t',
 			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as t',
 			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_builtdate as t'
 			),
 			'tabsqlsort'=>array(
-				"label ASC", "label ASC", "label ASC", "label ASC"
+				"label ASC", "label ASC", "label ASC", "label ASC", "label ASC"
 			),
 			'tabfield'=>array(
-				"code,label", "code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label", "code,label"
 			),
 			'tabfieldvalue'=>array(
-				"code,label", "code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label", "code,label"
 			),
 			'tabfieldinsert'=>array(
-				"code,label", "code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label", "code,label"
 			),
 			'tabrowid'=>array(
-				"rowid", "rowid", "rowid", "rowid"
+				"rowid", "rowid", "rowid", "rowid", "rowid"
 			),
 			'tabcond'=>array(
 				$conf->ultimateimmo->enabled, 
 				$conf->ultimateimmo->enabled,
 				$conf->ultimateimmo->enabled,
 				$conf->ultimateimmo->enabled,
+				$conf->ultimateimmo->enabled
 			)
 		);
 
@@ -488,7 +490,7 @@ class modUltimateimmo extends DolibarrModules
 
 		/* BEGIN MODULEBUILDER TOPMENU */
 
-		$this->menu[$r++]=array(
+		/*$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=properties',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'MenuImmoPropertyType',
@@ -500,8 +502,8 @@ class modUltimateimmo extends DolibarrModules
 								'enabled'=>'$conf->ultimateimmo->enabled',  // Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
-								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-		$this->menu[$r++]=array(
+								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both*/
+		/*$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immoproperty_type',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'MenuNewImmoPropertyType',
@@ -513,8 +515,8 @@ class modUltimateimmo extends DolibarrModules
 								'enabled'=>'$conf->ultimateimmo->enabled',  // Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
-								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
-		$this->menu[$r++]=array(
+								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both*/
+		/*$this->menu[$r++]=array(
 								'fk_menu'=>'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immoproperty_type',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'left',							// This is a Left menu entry
 								'titre'=>'MenuListImmoPropertyType',
@@ -526,7 +528,7 @@ class modUltimateimmo extends DolibarrModules
 								'enabled'=>'$conf->ultimateimmo->enabled',  // Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 								'perms'=>'1',							// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
-								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both
+								'user'=>2);								// 0=Menu for internal users, 1=external users, 2=both*/
 
 		$this->menu[$r++]=array('fk_menu'=>'',							// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 								'type'=>'top',							// This is a Top menu entry

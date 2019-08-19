@@ -15,16 +15,13 @@
 -- along with this program.  If not, see http://www.gnu.org/licenses/.
 
 
-CREATE TABLE llx_ultimateimmo_immoproperty_type(
+CREATE TABLE llx_c_ultimateimmo_immoproperty_type(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL, 
+	code varchar(12) NOT NULL, 
 	entity integer DEFAULT 1 NOT NULL,
-	label varchar(255), 
-	date_creation datetime NOT NULL, 
-	tms timestamp NOT NULL, 
-	fk_user_creat integer NOT NULL, 
-	fk_user_modif integer,  
-	status integer NOT NULL
+	label varchar(255),   
+	active  tinyint DEFAULT 1  NOT NULL,
+	module  varchar(32) NULL
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;
