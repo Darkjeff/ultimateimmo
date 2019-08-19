@@ -79,20 +79,20 @@ print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr><tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("Paiement Charge locataire").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Paiement Charge locataire").'</td>';
+print '<td align="right">'.$langs->trans("January").'</td>';
+print '<td align="right">'.$langs->trans("February").'</td>';
+print '<td align="right">'.$langs->trans("March").'</td>';
+print '<td align="right">'.$langs->trans("April").'</td>';
+print '<td align="right">'.$langs->trans("May").'</td>';
+print '<td align="right">'.$langs->trans("June").'</td>';
+print '<td align="right">'.$langs->trans("July").'</td>';
+print '<td align="right">'.$langs->trans("August").'</td>';
+print '<td align="right">'.$langs->trans("September").'</td>';
+print '<td align="right">'.$langs->trans("October").'</td>';
+print '<td align="right">'.$langs->trans("November").'</td>';
+print '<td align="right">'.$langs->trans("December").'</td>';
+print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 $sql = "SELECT ll.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=1,lo.chargesamount,0)),2) AS 'Janvier',";
@@ -154,20 +154,20 @@ print '</tr>';
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("Charges Réel Locataire").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Charges Réel Locataire").'</td>';
+print '<td align="right">'.$langs->trans("January").'</td>';
+print '<td align="right">'.$langs->trans("February").'</td>';
+print '<td align="right">'.$langs->trans("March").'</td>';
+print '<td align="right">'.$langs->trans("April").'</td>';
+print '<td align="right">'.$langs->trans("May").'</td>';
+print '<td align="right">'.$langs->trans("June").'</td>';
+print '<td align="right">'.$langs->trans("July").'</td>';
+print '<td align="right">'.$langs->trans("August").'</td>';
+print '<td align="right">'.$langs->trans("September").'</td>';
+print '<td align="right">'.$langs->trans("October").'</td>';
+print '<td align="right">'.$langs->trans("November").'</td>';
+print '<td align="right">'.$langs->trans("December").'</td>';
+print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 
 $sql = "SELECT ll.label AS nom_immeuble,";
@@ -191,8 +191,8 @@ $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.label = 'Charge récupérable/locative' ";
-$sql .= "  AND ic.fk_property = ll.rowid";
-$sql .= " GROUP BY ic.fk_property";
+$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ll.label ";
+$sql .= " GROUP BY ll.fk_property";
 
 
 $resql = $db->query ( $sql );
@@ -204,7 +204,7 @@ if ($resql) {
 		
 		$row = $db->fetch_row ( $resql );
 		
-		print '<tr><td>' . $row [0] . '</td>';
+		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td align="right">' . $row [1] . '</td>';
 		print '<td align="right">' . $row [2] . '</td>';
 		print '<td align="right">' . $row [3] . '</td>';
@@ -307,26 +307,26 @@ if ($resqlpaiement && $resqlencaissement) {
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("Differentiel Charge").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Differentiel Charge").'</td>';
+print '<td align="right">'.$langs->trans("January").'</td>';
+print '<td align="right">'.$langs->trans("February").'</td>';
+print '<td align="right">'.$langs->trans("March").'</td>';
+print '<td align="right">'.$langs->trans("April").'</td>';
+print '<td align="right">'.$langs->trans("May").'</td>';
+print '<td align="right">'.$langs->trans("June").'</td>';
+print '<td align="right">'.$langs->trans("July").'</td>';
+print '<td align="right">'.$langs->trans("August").'</td>';
+print '<td align="right">'.$langs->trans("September").'</td>';
+print '<td align="right">'.$langs->trans("October").'</td>';
+print '<td align="right">'.$langs->trans("November").'</td>';
+print '<td align="right">'.$langs->trans("December").'</td>';
+print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 
 foreach( $value_array as $key=>$val) {
 
 
-	print '<tr><td>' . $key. '</td>';
+	print '<tr class="oddeven"><td>' . $key. '</td>';
 	print '<td align="right">' . $val[1] . '</td>';
 	print '<td align="right">' . $val[2] . '</td>';
 	print '<td align="right">' . $val[3] . '</td>';
