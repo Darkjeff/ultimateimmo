@@ -42,6 +42,10 @@ class ImmoPayment extends CommonObject
 	 */
 	public $table_element = 'ultimateimmo_immopayment';
 	/**
+	 * @var ImmopaymentLine[] Lines
+	 */
+	public $lines = array();
+	/**
 	 * @var int  Does immopayment support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
 	public $ismultientitymanaged = 0;
@@ -485,7 +489,7 @@ class ImmoPayment extends CommonObject
 		$sql = 'SELECT';
 		$sql .= ' t.rowid,';
 
-		$sql .= " t.fk_contract,";
+		$sql .= " t.fk_rent,";
 		$sql .= " t.fk_property,";
 		$sql .= " t.fk_renter,";
 		$sql .= " t.amount,";
@@ -504,44 +508,48 @@ class ImmoPayment extends CommonObject
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {
-			foreach ($filter as $key => $value) {
+			foreach ($filter as $key => $value) 
+			{
 				$sqlwhere [] = $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 			}
 		}
-		if (count($sqlwhere) > 0) {
+		if (count($sqlwhere) > 0) 
+		{
 			$sql .= ' WHERE ' . implode(' '.$filtermode.' ', $sqlwhere);
 		}
 
-		if (!empty($sortfield)) {
+		if (!empty($sortfield)) 
+		{
 			$sql .= $this->db->order($sortfield,$sortorder);
 		}
-		if (!empty($limit)) {
-		 $sql .=  ' ' . $this->db->plimit($limit + 1, $offset);
+		if (!empty($limit)) 
+		{
+			$sql .=  ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 		$this->lines = array();
 
 		$resql = $this->db->query($sql);
-		if ($resql) {
+		if ($resql) 
+		{
 			$num = $this->db->num_rows($resql);
 
-			while ($obj = $this->db->fetch_object($resql)) {
+			while ($obj = $this->db->fetch_object($resql)) 
+			{
 				$line = new ImmoPaymentLine();
 
-				$line->id = $obj->rowid;
+				$line->rowid = $obj->rowid;
 
-				$line->fk_contract = $obj->fk_contract;
+				$line->fk_rent = $obj->fk_rent;
 				$line->fk_property = $obj->fk_property;
 				$line->fk_renter = $obj->fk_renter;
 				$line->amount = $obj->amount;
-				$line->comment = $obj->comment;
+				$line->note_public = $obj->note_public;
 				$line->date_payment = $this->db->jdate($obj->date_payment);
 				$line->fk_owner = $obj->fk_owner;
 				$line->fk_receipt = $obj->fk_receipt;
 				$line->nomlocataire = $obj->nomlocataire;
 				$line->nomlocal = $obj->nomlocal;
 				$line->nomloyer = $obj->nomloyer;
-
-
 
 				$this->lines[] = $line;
 			}
@@ -859,25 +867,48 @@ class ImmoPayment extends CommonObject
 	}
 }
 
-/**
- * Class ImmoPaymentLine. You can also remove this and generate a CRUD class for lines objects.
- */
+	/**
+	 * Load object lines in memory from the database
+	 *
+	 * @return int         <0 if KO, 0 if not found, >0 if OK
+	 */
 
-class ImmoPaymentLine
-{
-	/**
-	 * @var int ID
-	 */
-	public $id;
-	/**
-	 * @var int fk_contract
-	 */
-	public $fk_contract;
-	public $fk_property;
-	public $fk_renter;
-	public $amount;
-	public $note_public;
-	public $date_payment = '';
-	public $fk_owner;
-	public $fk_receipt;
-}
+	class ImmoPaymentLine
+	{
+		/**
+		 * @var int rowID
+		 */
+		public $rowid;
+		/**
+		 * @var int fk_rent
+		 */
+		public $fk_rent;
+		/**
+		 * @var int fk_property
+		 */
+		public $fk_property;
+		/**
+		 * @var int fk_renter
+		 */
+		public $fk_renter;
+		/**
+		 * @var int amount
+		 */
+		public $amount;
+		/**
+		 * @var int note_public
+		 */
+		public $note_public;
+		/**
+		 * @var int date_payment
+		 */
+		public $date_payment = '';
+		/**
+		 * @var int fk_owner
+		 */
+		public $fk_owner;
+		/**
+		 * @var int fk_receipt
+		 */
+		public $fk_receipt;
+	}
