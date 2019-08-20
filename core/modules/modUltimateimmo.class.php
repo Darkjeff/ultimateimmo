@@ -221,7 +221,7 @@ class modUltimateimmo extends DolibarrModules
 							),
 			'tabsql'=>array('SELECT d.rowid as rowid, d.code, d.label, d.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_diagnostic as d', 
 			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_immorent_type as t',
-			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_immoproperty_type as t',
+			'SELECT tp.rowid as rowid, tp.code, tp.label, tp.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_immoproperty_type as tp',
 			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as t',
 			'SELECT t.rowid as rowid, t.code, t.label, t.active FROM '.MAIN_DB_PREFIX.'c_ultimateimmo_builtdate as t'
 			),

@@ -107,37 +107,18 @@ class FormUltimateimmo extends Form
 	
 	
 	/**
-	 *    Return name of property type
+	 *    Return ImmoProperty_Type label of a property
 	 *
-	 *    @param      string	$code       Code of property type
-	 *    @return     string     			traduct name of property type
+	 *    @return   string              	Translated name of ImmoProperty_Type (translated with transnoentitiesnoconv)
 	 */
-	function getPropertyTypeLabel($rowid)
+	public function getPropertyTypeLabel()
 	{
-		global $db,$langs;
+		global $langs;
+		$langs->load("dict");
 
-		if (! $rowid) return '';
-
-		$sql = "SELECT label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type";
-		$sql.= " WHERE rowid='$rowid'";
-
-		dol_syslog("ImmoProperty.class::getPropertyTypeLabel", LOG_DEBUG);
-		$resql=$db->query($sql);
-		if ($resql)
-		{
-			$num = $db->num_rows($resql);
-
-			if ($num)
-			{
-				$obj = $db->fetch_object($resql);
-				$label=($obj->label!='-' ? $obj->label : '');
-				return $label;
-			}
-			else
-			{
-				return $langs->trans("NotDefined");
-			}
-		}
+		$code=(empty($this->type_property_id)?'':$this->type_property_id);
+		if (empty($code)) return '';
+		return $langs->getLabelFromKey($this->db, "ImmoProperty_Type".$code, "c_ultimateimmo_immoproperty_type", "code", "label", $code);
 	}
 	
 	/**

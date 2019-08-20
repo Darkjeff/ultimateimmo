@@ -89,7 +89,7 @@ class ImmoProperty extends CommonObject
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
 		'entity' => array('type'=>'integer', 'label'=>'Entity', 'enabled'=>1, 'visible'=>-1, 'position'=>15, 'notnull'=>1, 'index'=>1,),
-		'type_property_id' => array('type'=>'integer', 'label'=>'ImmoProperty_Type', 'enabled'=>1, 'visible'=>-1, 'position'=>20, 'notnull'=>1,),
+		'type_property_id' => array('type'=>'integer', 'label'=>'ImmoProperty_Type', 'enabled'=>1, 'visible'=>-1, 'position'=>20, 'notnull'=>1, 'arrayofkeyval'=>array('1'=>'APA', '2'=>'HOU', '3'=>'LOC', '4'=>'SHO', '5'=>'GAR', '6'=>'BUL')),
 		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'PropertyParent', 'enabled'=>1, 'visible'=>-1, 'position'=>25, 'notnull'=>-1,),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text", 'showoncombobox'=>'1',),
 		'juridique_id' => array('type'=>'integer', 'label'=>'Juridique', 'enabled'=>1, 'visible'=>1, 'position'=>32, 'notnull'=>-1, 'arrayofkeyval'=>array('1'=>'MonoPropriete', '2'=>'Copropriete'),),
@@ -194,6 +194,7 @@ class ImmoProperty extends CommonObject
 		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
 		$this->fields['juridique_id']['arrayofkeyval']=array(1=>$langs->trans('MonoPropriete'), 2=>$langs->trans('Copropriete'));
 		$this->fields['datebuilt']['arrayofkeyval']=array(1=>$langs->trans('DateBuilt1'), 2=>$langs->trans('DateBuilt2'), 3=>$langs->trans('DateBuilt3'), 4=>$langs->trans('DateBuilt4'), 5=>$langs->trans('DateBuilt5'));
+		$this->fields['type_property_id']['arrayofkeyval']=array(1=>$langs->trans('APA'), 2=>$langs->trans('HOU'), 3=>$langs->trans('LOC'), 4=>$langs->trans('SHO'), 5=>$langs->trans('GAR'), 6=>$langs->trans('BUL'));
 	}
 	
 	/**
@@ -425,9 +426,9 @@ class ImmoProperty extends CommonObject
 		$array = implode(', t.', $array);
 
 		$sql = 'SELECT '.$array.',';
-		$sql.= ' c.rowid as country_id, c.code as country_code, c.label as country, j.rowid as juridique_id, j.code as juridique_code, j.label as juridique, tp.rowid as type_id, tp.code as type_code, tp.label as type';
+		$sql.= ' c.rowid as country_id, c.code as country_code, c.label as country, j.rowid as juridique_id, j.code as juridique_code, j.label as juridique, tp.rowid as type_property_id, tp.code as type_code, tp.label as type';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_immoproperty_type as tp ON tp.rowid = t.type_property_id';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_immoproperty_type as tp ON t.type_property_id = tp.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country_id = c.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
 
@@ -453,8 +454,8 @@ class ImmoProperty extends CommonObject
 					$this->juridique_code = $obj->juridique_code;
 					$this->juridique=$obj->juridique;
 					
-					$this->type_id	= $obj->type_id;
-					$this->type_code = $obj->type_code;
+					$this->type_property_id	= $obj->type_property_id;
+					$this->type_code = $obj->type_code;				
 					$this->type=$obj->type;
 					
         			$this->country_id	= $obj->country_id;
@@ -818,6 +819,71 @@ class ImmoProperty extends CommonObject
 			return $result;
 		}
 		else dol_print_error($dbtouse,'');
+		return 'Error';
+	}
+	
+	/**
+	 *    Return ImmoProperty_Type label, code or id from an id, code or label
+	 *
+	 *    @param      int		$searchkey      Id or code of ImmoProperty_Type to search
+	 *    @param      string	$withcode   	'0'=Return label,
+	 *    										'1'=Return code + label,
+	 *    										'2'=Return code from id,
+	 *    										'3'=Return id from code,
+	 * 	   										'all'=Return array('id'=>,'code'=>,'label'=>)
+	 *    @param      DoliDB	$dbtouse       	Database handler (using in global way may fail because of conflicts with some autoload features)
+	 *    @param      Translate	$outputlangs	Langs object for output translation
+	 *    @param      int		$entconv       	0=Return value without entities and not converted to output charset, 1=Ready for html output
+	 *    @param      int		$searchlabel    Label of ImmoProperty_Type to search (warning: searching on label is not reliable)
+	 *    @return     mixed       				Integer with ImmoProperty_Type id or String with ImmoProperty_Type code or translated ImmoProperty_Type name or Array('id','code','label') or 'NotDefined'
+	 */
+	function getPropertyTypeLabel($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
+	{
+		global $db,$langs;
+
+		$result='';
+
+		// Check parameters
+		if (empty($searchkey) && empty($searchlabel))
+		{
+			if ($withcode === 'all') return array('id'=>'','code'=>'','label'=>'');
+			else return '';
+		}
+		if (! is_object($dbtouse)) $dbtouse=$db;
+		if (! is_object($outputlangs)) $outputlangs=$langs;
+
+		$sql = "SELECT rowid, code, label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type";
+		if (is_numeric($searchkey)) $sql.= " WHERE rowid=".$searchkey;
+		elseif (! empty($searchkey)) $sql.= " WHERE code='".$db->escape($searchkey)."'";
+		else $sql.= " WHERE label='".$db->escape($searchlabel)."'";
+
+		$resql=$dbtouse->query($sql);
+		if ($resql)
+		{
+			$obj = $dbtouse->fetch_object($resql);
+			if ($obj)
+			{
+				$label=((! empty($obj->label) && $obj->label!='-')?$obj->label:'');
+				if (is_object($outputlangs))
+				{
+					$outputlangs->load("dict");
+					if ($entconv) $label=($obj->code && ($outputlangs->trans("ImmoProperty_Type".$obj->code)!="ImmoProperty_Type".$obj->code))?$outputlangs->trans("ImmoProperty_Type".$obj->code):$label;
+					else $label=($obj->code && ($outputlangs->transnoentitiesnoconv("ImmoProperty_Type".$obj->code)!="ImmoProperty_Type".$obj->code))?$outputlangs->transnoentitiesnoconv("ImmoProperty_Type".$obj->code):$label;
+				}
+				if ($withcode == 1) $result=$label?"$obj->code - $label":"$obj->code";
+				elseif ($withcode == 2) $result=$obj->code;
+				elseif ($withcode == 3) $result=$obj->rowid;
+				elseif ($withcode === 'all') $result=array('id'=>$obj->rowid,'code'=>$obj->code,'label'=>$label);
+				else $result=$label;
+			}
+			else
+			{
+				$result='NotDefined';
+			}
+			$dbtouse->free($resql);
+			return $result;
+		}
+		else dol_print_error($dbtouse, '');
 		return 'Error';
 	}
 

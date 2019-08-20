@@ -82,3 +82,4 @@ function immoproperty_typePrepareHead($object)
 
 	return $head;
 }
+

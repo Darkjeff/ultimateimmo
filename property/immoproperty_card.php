@@ -43,6 +43,7 @@ include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
+dol_include_once('/ultimateimmo/lib/immoproperty_type.lib.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
 // Load traductions files requiredby by page
@@ -210,19 +211,18 @@ if ($action == 'create')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
-		elseif ($val['label'] == 'ImmoProperty_Type') 
+		/*elseif ($val['label'] == 'ImmoProperty_Type') 
 		{
-			// We set fk_type_property, type_code and type for the selected ImmoProperty_Type
-			$object->fk_type_property=GETPOST('fk_type_property','int')?GETPOST('fk_type_property','int'):$object->fk_type_property;
-			
-			if ($object->fk_type_property)
-			{				
-				$tmparray=$formImmo->getPropertyTypeLabel($object->fk_type_property, 'all');
+			// We set type_property_id, type_code and type for the selected ImmoProperty_Type
+			$object->type_property_id=GETPOST('type_property_id','int')?GETPOST('type_property_id','int'):$object->type_property_id;
+			if ($object->type_property_id)
+			{			
+				$tmparray=$object->getPropertyTypeLabel($object->type_property_id, 'all');
 				$object->type_code=$tmparray['code'];
 				$object->type=$tmparray['label'];
 			}
-			print $formImmo->select_type_property(GETPOST('fk_type_property','int')?GETPOST('fk_type_property','int'):$object->fk_type_property);	
-		}
+			print $formImmo->select_type_property(GETPOST('type_property_id')!=''?GETPOST('type_property_id'):$object->type_property_id);	
+		}*/
 		else
 		{
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
@@ -297,6 +297,18 @@ if (($id || $ref) && $action == 'edit')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
+		/*elseif ($val['label'] == 'ImmoProperty_Type') 
+		{
+			// We set type_property_id, type_code and type for the selected ImmoProperty_Type
+			$object->type_property_id=GETPOST('type_property_id','int')?GETPOST('type_property_id','int'):$object->type_property_id;
+			if ($object->type_property_id)
+			{				
+				$tmparray=$object->getPropertyTypeLabel($object->type_property_id,'all');
+				$object->type_code=$tmparray['code'];
+				$object->type=$tmparray['label'];				
+			}
+			print $formImmo->select_type_property(GETPOST('type_property_id')!=''?GETPOST('type_property_id'):$object->type_property_id);	
+		}*/
 		/*elseif ($val['label'] == 'Juridique') 
 		{
 			// We set juridique_id, juridique_code and juridique for the selected ImmoProperty_Type
@@ -486,6 +498,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			$tmparray=getCountry($object->country_id,'all');
 			$object->country_code=$tmparray['code'];
 			$object->country=$tmparray['label'];
+		}
+		elseif ($object->type_property_id)
+		{				
+			$tmparray=$object->getPropertyTypeLabel($object->type_property_id,'all');
+			$object->type_code=$tmparray['code'];
+			$object->type=$tmparray['label'];				
 		}
 
 		print '<tr><td';
