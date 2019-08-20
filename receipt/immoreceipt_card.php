@@ -262,16 +262,16 @@ if (empty($reshook))
 	{
 		$error = 0;
 		
-		$datev = dol_mktime(12, 0, 0, GETPOST("datevmonth"), GETPOST("datevday"), GETPOST("datevyear"));
-		$datesp = dol_mktime(12, 0, 0, GETPOST("datespmonth"), GETPOST("datespday"), GETPOST("datespyear"));
-		$dateep = dol_mktime(12, 0, 0, GETPOST("dateepmonth"), GETPOST("dateepday"), GETPOST("dateepyear"));
+		$date_echeance = dol_mktime(12, 0, 0, GETPOST("date_echeancemonth"), GETPOST("date_echeanceday"), GETPOST("date_echeanceyear"));
+		$date_start = dol_mktime(12, 0, 0, GETPOST("date_startmonth"), GETPOST("date_startday"), GETPOST("date_startyear"));
+		$date_end = dol_mktime(12, 0, 0, GETPOST("date_endmonth"), GETPOST("date_endday"), GETPOST("date_endyear"));
 		
 		$object->label = GETPOST("label");
-		$object->datesp = $datesp;
-		$object->dateep = $dateep;
-		$object->datev = $datev;
+		$object->date_start = $date_start;
+		$object->date_end = $date_end;
+		$object->date_echeance = $date_echeance;
 		
-		if ($datev == '' || $datesp == '' || $dateep == '') 
+		if ($date_echeance == '' || $date_start == '' || $date_end == '') 
 		{
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("Date")), null, 'errors');
 			$action = "create";
@@ -306,26 +306,26 @@ if (empty($reshook))
 	if ($action == 'addall') 
 	{		
 		$error=0;
-		$dateech = dol_mktime(12,0,0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
+		$date_echeance = dol_mktime(12,0,0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
 		$dateperiod = dol_mktime(12,0,0, GETPOST("periodmonth"), GETPOST("periodday"), GETPOST("periodyear"));
 		$dateperiodend = dol_mktime(12,0,0, GETPOST("periodendmonth"), GETPOST("periodendday"), GETPOST("periodendyear"));
 		
-		if (empty($dateech)) 
+		if (empty($date_echeance)) 
 		{
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), null, 'errors');
-			$action = 'createall';
+			$action = 'create';
 			$error++;
 		} 
 		elseif (empty($dateperiod)) 
 		{
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_du")), null, 'errors');
-			$action = 'createall';
+			$action = 'create';
 			$error++;
 		} 
 		elseif (empty($dateperiodend)) 
 		{
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_au")), null, 'errors');
-			$action = 'createall';
+			$action = 'create';
 			$error++;
 		} 
 		else 
@@ -350,7 +350,7 @@ if (empty($reshook))
 				
 				// main info rent
 				$receipt->label = GETPOST('label', 'alpha');
-				$receipt->date_echeance = $dateech;
+				$receipt->date_echeance = $date_echeance;
 				$receipt->date_start = $dateperiod;
 				$receipt->date_end = $dateperiodend;
 				
@@ -377,7 +377,7 @@ if (empty($reshook))
 				$receipt->fk_owner = $monProprio;
 				$receipt->fk_soc = $socProprio;
 				$receipt->status=0;
-				//$receipt->paye=0;
+				$receipt->paye=0;
 				$result = $receipt->create($user);
 				if ($result < 0) 
 				{
@@ -464,16 +464,16 @@ if ($action == 'create')
 		$pastmonthyear --;
 	}
 
-	$datesp = dol_mktime(0, 0, 0, $datespmonth, $datespday, $datespyear);
-	$dateep = dol_mktime(23, 59, 59, $dateepmonth, $dateepday, $dateepyear);
+	$date_start = dol_mktime(0, 0, 0, $date_startmonth, $date_startday, $date_startyear);
+	$date_end = dol_mktime(23, 59, 59, $date_endmonth, $date_endday, $date_endyear);
 
-	if (empty($datesp) || empty($dateep)) // We define date_start and date_end
+	if (empty($date_start) || empty($date_end)) // We define date_start and date_end
 	{
-		$datesp = dol_get_first_day($pastmonthyear, $pastmonth, false);
-		$dateep = dol_get_last_day($pastmonthyear, $pastmonth, false);
+		$date_start = dol_get_first_day($pastmonthyear, $pastmonth, false);
+		$date_end = dol_get_last_day($pastmonthyear, $pastmonth, false);
 	}
 
-	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
+	print '<form name="fiche_loyer" method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="add">';
 	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
@@ -508,7 +508,7 @@ if ($action == 'create')
 			// Reference
 			if (! empty($modCodeReceipt->code_auto)) 
 			{
-				$tmpcode=$langs->trans("Draft");
+				$tmpcode=$langs->trans("(PROV)");
 			} 
 			else 
 			{
@@ -534,7 +534,7 @@ if ($action == 'create')
 		elseif ($val['label'] == 'Echeance')
 		{
 			// Echeance
-			print $form->select_date($object->date_echeance, "date_echeance",0,0,0,"",1,1,1);
+			print $form->select_date(($object->date_echeance ? $object->date_echeance : -1), "date_echeance", 0, 0, 0, "", 1, 1, 1);
 		}
 		else
 		{
@@ -592,7 +592,7 @@ elseif ($action == 'createall')
 		print '</td>';
 		print "</tr>\n";
 		
-		print '<tr clas="oddeven" valign="top">';
+		print '<tr class="oddeven" valign="top">';
 		
 		/*
 		 * Rent name
@@ -601,7 +601,7 @@ elseif ($action == 'createall')
 		
 		// Due date
 		print '<td class="center">';
-		print $form->select_date(! empty($dateech) ? $dateech : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
+		print $form->select_date(! empty($date_echeance) ? $date_echeance : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
 		print '</td>';
 		print '<td class="center">';
 		print $form->select_date(! empty($dateperiod) ? $dateperiod : '-1', 'period', 0, 0, 0, 'fiche_loyer', 1);
@@ -660,7 +660,7 @@ elseif ($action == 'createall')
 					$company=new Societe($db);
 					$result=$company->fetch($objp->fk_soc);
 				}
-
+				
 				print '<td>' . $objp->contract . '</td>';
 				print '<td>' . $objp->localref . '</td>';
 				print '<td>' . $objp->local . '</td>';
