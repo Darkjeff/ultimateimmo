@@ -438,18 +438,29 @@ if (empty($reshook))
 		$receipt->label 		= GETPOST('label');
 		if ($receipt->vat_tx != 0) 
 		{
-			$receipt->total_amount 	= (GETPOST("rentamount") + GETPOST("chargesamount"))*1.2;
+			$rentamount = GETPOST("rentamount");
+			$rentamount = str_replace(' ', '', ($rentamount));
+			$chargesamount = GETPOST("chargesamount");
+			$chargesamount = str_replace(' ', '', ($chargesamount));
+			$receipt->total_amount 	= ($rentamount + $chargesamount)*1.2;
 		}
 		else 
 		{
-			$receipt->total_amount 	= GETPOST("rentamount") + GETPOST("chargesamount");
-			//var_dump(GETPOST("rentamount") + GETPOST("chargesamount"));exit;
+			$rentamount = GETPOST("rentamount");
+			$rentamount = str_replace(' ', '', ($rentamount));
+			$chargesamount = GETPOST("chargesamount");
+			$chargesamount = str_replace(' ', '', ($chargesamount));
+			$receipt->total_amount 	= $rentamount + $chargesamount;
 		}
 		$receipt->rentamount 	= GETPOST("rentamount");
 		$receipt->chargesamount = GETPOST("chargesamount");
 		if ($receipt->vat_tx != 0) 
 		{
-			$receipt->vat_amount = (GETPOST("rentamount")+GETPOST("chargesamount"))*0.2;
+			$rentamount = GETPOST("rentamount");
+			$rentamount = str_replace(' ', '', ($rentamount));
+			$chargesamount = GETPOST("chargesamount");
+			$chargesamount = str_replace(' ', '', ($chargesamount));
+			$receipt->vat_amount = ($rentamount + $chargesamount)*0.2;
 		}
 		else 
 		{
