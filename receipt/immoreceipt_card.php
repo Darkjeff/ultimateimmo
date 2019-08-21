@@ -266,11 +266,37 @@ if (empty($reshook))
 		$date_start = dol_mktime(12, 0, 0, GETPOST("date_startmonth"), GETPOST("date_startday"), GETPOST("date_startyear"));
 		$date_end = dol_mktime(12, 0, 0, GETPOST("date_endmonth"), GETPOST("date_endday"), GETPOST("date_endyear"));
 		
+		$object->ref = '(PROV)';
 		$object->label = GETPOST("label");
 		$object->date_start = $date_start;
 		$object->date_end = $date_end;
 		$object->date_echeance = $date_echeance;
-		
+		$object->fk_rent = GETPOST("fk_rent");
+		$object->fk_property = GETPOST("fk_property");
+		$object->fk_renter = GETPOST("fk_renter");
+		$object->fk_owner = GETPOST("fk_owner");
+		$object->fk_soc = GETPOST("fk_soc");
+		$object->fk_owner = GETPOST("fk_owner");
+		$object->note_public = GETPOST("note_public");
+		$object->note_private = GETPOST("note_private");
+		$object->date_creation = GETPOST("date_creation");
+		$object->date_valid = GETPOST("date_valid");
+		$object->rentamount = GETPOST("rentamount");
+		$object->chargesamount = GETPOST("chargesamount");
+		$object->total_amount = GETPOST("total_amount");
+		$object->balance = GETPOST("balance");
+		$object->partial_payment = GETPOST("partial_payment");
+		$object->paye = GETPOST("paye");
+		$object->vat_amount = GETPOST("vat_amount");
+		$object->vat_tx = GETPOST("vat_tx");
+		$object->fk_statut = GETPOST("fk_statut");
+		$object->fk_user_creat = GETPOST("fk_user_creat");
+		$object->fk_user_modif = GETPOST("fk_user_modif");
+		$object->fk_user_valid = GETPOST("fk_user_valid");
+		$object->model_pdf = GETPOST("model_pdf");
+		$object->last_main_doc = GETPOST("last_main_doc");
+		$object->status = GETPOST("status");
+	
 		if ($date_echeance == '' || $date_start == '' || $date_end == '') 
 		{
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("Date")), null, 'errors');
@@ -464,13 +490,13 @@ if ($action == 'create')
 		$pastmonthyear --;
 	}
 
-	$date_start = dol_mktime(0, 0, 0, $date_startmonth, $date_startday, $date_startyear);
-	$date_end = dol_mktime(23, 59, 59, $date_endmonth, $date_endday, $date_endyear);
+	$datesp = dol_mktime(0, 0, 0, $datespmonth, $datespday, $datespyear);
+	$dateep = dol_mktime(23, 59, 59, $dateepmonth, $dateepday, $dateepyear);
 
-	if (empty($date_start) || empty($date_end)) // We define date_start and date_end
+	if (empty($datesp) || empty($dateep)) // We define date_start and date_end
 	{
-		$date_start = dol_get_first_day($pastmonthyear, $pastmonth, false);
-		$date_end = dol_get_last_day($pastmonthyear, $pastmonth, false);
+		$datesp = dol_get_first_day($pastmonthyear, $pastmonth, false);
+		$dateep = dol_get_last_day($pastmonthyear, $pastmonth, false);
 	}
 
 	print '<form name="fiche_loyer" method="POST" action="'.$_SERVER["PHP_SELF"].'">';
@@ -502,13 +528,13 @@ if ($action == 'create')
 		print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
-		
+
 		if ($val['label'] == 'Ref')
-		{
+		{			
 			// Reference
 			if (! empty($modCodeReceipt->code_auto)) 
 			{
-				$tmpcode=$langs->trans("(PROV)");
+				$tmpcode="(PROV)";
 			} 
 			else 
 			{
