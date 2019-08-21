@@ -27,7 +27,6 @@ dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
-dol_include_once('/ultimateimmo/class/immoproperty_type.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immoowner_type.class.php');
@@ -279,9 +278,6 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 
 			$property = new ImmoProperty($this->db);
 			$result = $property->fetch($object->fk_property);
-			
-			$propertytype = new ImmoProperty_Type($this->db);
-			$result = $propertytype->fetch($object->fk_property_type);
 
 			$paiement = new Immopayment($this->db);
 			$result = $paiement->fetch_by_loyer($object->id);

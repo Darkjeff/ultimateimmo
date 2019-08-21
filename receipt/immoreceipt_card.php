@@ -443,16 +443,17 @@ if (empty($reshook))
 		else 
 		{
 			$receipt->total_amount 	= GETPOST("rentamount") + GETPOST("chargesamount");
+			//var_dump(GETPOST("rentamount") + GETPOST("chargesamount"));exit;
 		}
 		$receipt->rentamount 	= GETPOST("rentamount");
 		$receipt->chargesamount = GETPOST("chargesamount");
 		if ($receipt->vat_tx != 0) 
 		{
-			$receipt->vat_amount 	= (GETPOST("rentamount")+GETPOST("chargesamount"))*0.2;
+			$receipt->vat_amount = (GETPOST("rentamount")+GETPOST("chargesamount"))*0.2;
 		}
 		else 
 		{
-			$receipt->vat_amount 	= 0;
+			$receipt->vat_amount = 0;
 		}
 		
 		$receipt->date_echeance = $date_echeance;
@@ -460,7 +461,7 @@ if (empty($reshook))
 		$receipt->status 		= GETPOST("status");
 		$receipt->date_start 	= $date_start;
 		$receipt->date_end 		= $date_end;
-		//var_dump($receipt->date_end);exit;
+		
 		$result = $receipt->update($user);
 		header("Location: ".dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id=' .$receipt->id);
 		if ($id > 0) {
