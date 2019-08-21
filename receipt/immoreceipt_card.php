@@ -422,6 +422,54 @@ if (empty($reshook))
 		}
 	}
 	
+	/*
+	 * Edit Receipt
+	 */
+
+	if ($action == 'update')
+	{
+		$date_echeance = dol_mktime(12, 0, 0, GETPOST("date_echeancemonth"), GETPOST("date_echeanceday"), GETPOST("date_echeanceyear"));
+		$date_start = dol_mktime(12, 0, 0, GETPOST("date_startmonth"), GETPOST("date_startday"), GETPOST("date_startyear"));
+		$date_end = dol_mktime(12, 0, 0, GETPOST("date_endmonth"), GETPOST("date_endday"), GETPOST("date_endyear"));
+		
+		$receipt = new Immoreceipt($db);
+		$result = $receipt->fetch($id);
+		
+		$receipt->label 		= GETPOST('label');
+		if ($receipt->vat_tx != 0) 
+		{
+			$receipt->total_amount 	= (GETPOST("rentamount") + GETPOST("chargesamount"))*1.2;
+		}
+		else 
+		{
+			$receipt->total_amount 	= GETPOST("rentamount") + GETPOST("chargesamount");
+		}
+		$receipt->rentamount 	= GETPOST("rentamount");
+		$receipt->chargesamount = GETPOST("chargesamount");
+		if ($receipt->vat_tx != 0) 
+		{
+			$receipt->vat_amount 	= (GETPOST("rentamount")+GETPOST("chargesamount"))*0.2;
+		}
+		else 
+		{
+			$receipt->vat_amount 	= 0;
+		}
+		
+		$receipt->date_echeance = $date_echeance;
+		$receipt->note_public 	= GETPOST("note_public");
+		$receipt->status 		= GETPOST("status");
+		$receipt->date_start 	= $date_start;
+		$receipt->date_end 		= $date_end;
+		//var_dump($receipt->date_end);exit;
+		$result = $receipt->update($user);
+		header("Location: ".dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id=' .$receipt->id);
+		if ($id > 0) {
+			// $mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
+		} else {
+			$mesg = '<div class="error">' . $receipt->error . '</div>';
+		}
+	}
+	
 	// Build doc
 	if ($action == 'builddoc' && $usercancreate)
 	{
