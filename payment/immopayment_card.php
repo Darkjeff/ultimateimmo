@@ -489,7 +489,7 @@ if ($action == 'createall') {
 	print '</td><td class="left">';
 	print $langs->trans("PaymentMode");
 	print '</td><td class="left">';
-	print $langs->trans("AccountToCredit");
+	print $langs->trans("BankAccount");
 	print '</td><td class="left">';
 	print $langs->trans("Numero");
 	print '</td>';
