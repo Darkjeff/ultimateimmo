@@ -378,7 +378,7 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.label = 'Charge déductible' ";
+$sql .= "  AND it.famille = 'Charge déductible' ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 
 $sql .= " GROUP BY ll.fk_property";
@@ -490,7 +490,7 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.label = 'Charge déductible' ";
+$sql .= "  AND it.famille = 'Charge déductible' ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 
 $sql .= " GROUP BY ll.fk_property";
@@ -606,7 +606,7 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.label = 'Charge non déductible' ";
+$sql .= "  AND it.famille = 'Charge non déductible' ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 
 $sql .= " GROUP BY ll.fk_property";
@@ -719,7 +719,7 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.label = 'Charge déductible' ";
+$sql .= "  AND it.famille = 'Charge déductible' ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 
 
@@ -747,7 +747,7 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.label = 'Charge non déductible' ";
+$sql .= "  AND it.famille = 'Charge non déductible' ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 
 
