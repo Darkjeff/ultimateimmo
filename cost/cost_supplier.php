@@ -110,7 +110,7 @@ print '<td align="center">' . $langs->trans("November") . '</td>';
 print '<td align="center">' . $langs->trans("December") . '</td>';
 print '<td align="center">' . $langs->trans("Total") . '</td></tr>';
 
-$sql = "SELECT so.nom AS fournisseur, ll.label AS nom_immeuble,";
+$sql = "SELECT so.nom AS fournisseur, ii.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=1,ic.amount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=2,ic.amount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=3,ic.amount,0)),2) AS 'Mars',";
@@ -126,10 +126,11 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " , " . MAIN_DB_PREFIX . "societe as so";
 $sql .= " WHERE ic.datec >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.datec <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= "  AND ic.fk_property = ll.rowid ";
+$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 $sql .= "  AND ic.fk_soc = so.rowid ";
 $sql .= " GROUP BY ll.fk_property,ic.fk_soc";
 
@@ -183,7 +184,7 @@ print '<td align="center">' . $langs->trans("November") . '</td>';
 print '<td align="center">' . $langs->trans("December") . '</td>';
 print '<td align="center">' . $langs->trans("Total") . '</td></tr>';
 
-$sql = "SELECT ll.label AS nom_immeuble,";
+$sql = "SELECT ii.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=1,ic.amount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=2,ic.amount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=3,ic.amount,0)),2) AS 'Mars',";
@@ -199,9 +200,10 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.datec)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.datec >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.datec <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= "  AND ic.fk_property = ll.rowid ";
+$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 $sql .= " GROUP BY ll.fk_property ";
 
 $resql = $db->query($sql);
