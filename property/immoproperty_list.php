@@ -59,6 +59,8 @@ $optioncss  = GETPOST('optioncss','aZ');												// Option for the css output
 
 $id			= GETPOST('id','int');
 
+$sall=trim((GETPOST('search_all', 'alphanohtml')!='')?GETPOST('search_all', 'alphanohtml'):GETPOST('sall', 'alphanohtml'));
+
 // Load variable for pagination
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $sortfield = GETPOST('sortfield','alpha');
@@ -93,6 +95,7 @@ if ($user->societe_id > 0)
 
 // Initialize array of search criterias
 $search_all=trim(GETPOST("search_all",'alpha'));
+
 $search=array();
 foreach($object->fields as $key => $val)
 {
@@ -100,10 +103,12 @@ foreach($object->fields as $key => $val)
 }
 
 // List of fields to search into when doing a "search in all"
-$fieldstosearchall = array();
+$fieldstosearchall = array(
+);
+
 foreach($object->fields as $key => $val)
 {
-	if ($val['searchall']) $fieldstosearchall['t.'.$key]=$val['label'];
+	if ($val['searchall']) $fieldstosearchall['t.'.$key]=array();
 }
 
 // Definition of fields for list
@@ -123,8 +128,6 @@ if (is_array($extrafields->attribute_label) && count($extrafields->attribute_lab
 }
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
-
-
 
 /*
  * Actions
@@ -193,6 +196,7 @@ foreach($object->fields as $key => $val)
 {
 	$sql.='t.'.$key.', ';
 }
+$sql.='tp.label as type_property, co.label as country, b.label as building_name, soc.nom as owner';
 // Add fields from extrafields
 foreach ($extrafields->attribute_label as $key => $val) $sql.=($extrafields->attribute_type[$key] != 'separate' ? ", ef.".$key.' as options_'.$key : '');
 // Add fields from hooks
@@ -201,22 +205,25 @@ $reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object
 $sql.=$hookmanager->resPrint;
 $sql=preg_replace('/, $/','', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
-//$sql.= " INNER JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as tp ON tp.rowid = t.fk_type_property";
-//$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_immoproperty as b ON b.rowid = t.fk_property";
+$sql.= " INNER JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as tp ON tp.rowid = t.type_property_id";
+$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_building as b ON b.fk_property = t.fk_property";
+$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
+$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as co ON co.rowid = t.country_id";
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."immoproperty_extrafields as ef on (t.rowid = ef.fk_object)";
-/*if ($action == 'makebuilding') {
+if ($action == 'makebuilding') {
 $sql .= " WHERE tp.label = 'Immeuble'";
 } else {
 $sql .= " WHERE tp.label <> 'Immeuble'";
-}*/
-if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity in (".getEntity('immoproperty').")";
-else $sql.=" WHERE 1 = 1";
+}
+if ($object->ismultientitymanaged == 1) $sql .= " AND t.entity in (".getEntity('immoproperty').")";
+//else $sql.=" WHERE 1 = 1";
 foreach($search as $key => $val)
 {
 	$mode_search=(($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
-	if ($search[$key] != '') $sql.=natural_search($key, $search[$key], (($key == 'status')?2:$mode_search));
+	if ($search[$key] != '') $sql.=natural_search('t.'.$key, $search[$key], (($key == 'status')?2:$mode_search));
 }
 if ($search_all) $sql.= natural_search(array_keys($fieldstosearchall), $search_all);
+
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
 // Add where from hooks
@@ -287,21 +294,6 @@ if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && 
 // --------------------------------------------------------------------
 
 llxHeader('', $title, $help_url);
-
-// Example : Adding jquery code
-print '<script type="text/javascript" language="javascript">
-jQuery(document).ready(function() {
-	function init_myfunc()
-	{
-		jQuery("#myid").removeAttr(\'disabled\');
-		jQuery("#myid").attr(\'disabled\',\'disabled\');
-	}
-	init_myfunc();
-	jQuery("#mybutton").click(function() {
-		init_myfunc();
-	});
-});
-</script>';
 
 $arrayofselected=is_array($toselect)?$toselect:array();
 

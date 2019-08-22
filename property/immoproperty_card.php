@@ -128,7 +128,7 @@ if (empty($reshook))
 		$building = $object->label;
 
 		// todo debug insert into
-		$sql1 = 'INSERT INTO '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty(';
+		$sql1 = 'INSERT INTO '.MAIN_DB_PREFIX.'ultimateimmo_building(';
 		$sql1 .= 'label,';
 		$sql1 .= 'fk_property';
 		$sql1 .= ') VALUES (';
@@ -561,7 +561,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
 			}
 
-			/*if ($user->rights->ultimateimmo->write)
+			if ($user->rights->ultimateimmo->write)
 			{
 				if ($object->status == 1)
 				{
@@ -571,7 +571,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				{
 					print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('BienPrincipal').'</a>'."\n";
 				}
-			}*/ //What is the use ?
+			} //What is the use ?
 
 			if ($user->rights->ultimateimmo->delete)
 			{
