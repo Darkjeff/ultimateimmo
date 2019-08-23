@@ -43,6 +43,11 @@ class ImmoReceipt extends CommonObject
 	public $table_element = 'ultimateimmo_immoreceipt';
 	
 	/**
+	 * @var string Name of table without prefix where object is stored
+	 */
+	public $fk_element='fk_receipt';
+	
+	/**
 	 * @var ImmoreceiptLine[] Lines
 	 */
 	public $lines = array();
