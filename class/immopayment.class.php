@@ -42,6 +42,10 @@ class ImmoPayment extends CommonObject
 	 */
 	public $table_element = 'ultimateimmo_immopayment';
 	/**
+	 * @var string Name of table without prefix where object is stored
+	 */
+	public $fk_element='fk_payment';
+	/**
 	 * @var ImmopaymentLine[] Lines
 	 */
 	public $lines = array();
