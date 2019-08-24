@@ -41,6 +41,16 @@ class ImmoReceipt extends CommonObject
 	 * @var string Name of table without prefix where object is stored
 	 */
 	public $table_element = 'ultimateimmo_immoreceipt';
+	
+	/**
+	 * @var string Name of table without prefix where object is stored
+	 */
+	public $fk_element='fk_receipt';
+	
+	/**
+	 * @var ImmoreceiptLine[] Lines
+	 */
+	public $lines = array();
 
 	/**
 	 * @var int  Does immoreceipt support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
@@ -68,16 +78,11 @@ class ImmoReceipt extends CommonObject
 	const STATUS_VALIDATED = 1;
 	
 	/**
-	 * Unpaid status
+	 * Credit note status
 	 */
-	const STATUS_UNPAID = 2;
+	const TYPE_CREDIT_NOTE = 2;
 	
-	/**
-	 * Paid status
-	 */
-	const STATUS_PAID = 3;
-
-
+	
 
 	/**
 	 *  'type' if the field format.
@@ -105,9 +110,9 @@ class ImmoReceipt extends CommonObject
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>-1, 'position'=>10, 'notnull'=>1, 'default'=>'(PROV)', 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
-		'fk_rent' => array('type'=>'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'foreignkey'=>'immobilier_immorent.rowid',),
-		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'foreignkey'=>'immobilier_immoproperty.rowid', 'help'=>"LinkToProperty",),
-		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'foreignkey'=>'immobilier_immorenter.rowid', 'help'=>"LinkToRenter",),
+		'fk_rent' => array('type'=>'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'foreignkey'=>'ultimateimmo_immorent.rowid',),
+		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'foreignkey'=>'ultimateimmo_immoproperty.rowid', 'help'=>"LinkToProperty",),
+		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'foreignkey'=>'ultimateimmo_immorenter.rowid', 'help'=>"LinkToRenter",),
 		'fk_owner' => array('type'=>'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'enabled'=>1, 'visible'=>1, 'position'=>46, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>50, 'notnull'=>-1,),
@@ -134,7 +139,7 @@ class ImmoReceipt extends CommonObject
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>1, 'visible'=>-2, 'position'=>1000, 'notnull'=>-1,),
 		'model_pdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'enabled'=>1, 'visible'=>-2, 'position'=>1010, 'notnull'=>-1, 'index'=>1, 'searchall'=>1,),
 		'last_main_doc' => array('type'=>'varchar(255)', 'label'=>'LastMainDoc', 'enabled'=>1, 'visible'=>-2, 'position'=>1020, 'notnull'=>-1,),
-		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>-1, 'default'=>'0','index'=>1, 'arrayofkeyval'=>array('0'=>'ImmoUnpaid', '1'=>'ImmoPaid')),
+		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>-1, 'default'=>'0','index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
 	);
 	public $rowid;
 	public $ref;
@@ -302,26 +307,28 @@ class ImmoReceipt extends CommonObject
 
 				$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX.$this->table_element);
 				
-				// Load object modContract
+				// Load object modReceipt
 				$module=(! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
+				
 				if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
 				{
 					$module = substr($module, 0, dol_strlen($module)-4);			
 				}
-				$result=dol_include_once('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php');
+				$result=dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php',1);
 				
-				if ($result > 0)
+				if ($result >= 0)
 				{
+					dol_include_once('/ultimateimmo/core/modules/ultimateimmo/mod_ultimateimmo_simple.php');
 					$modCodeUltimateimmo = new $module();
-
+					
 					if (! empty($modCodeUltimateimmo->code_auto)) {
 						// Force the ref to a draft value if numbering module is an automatic numbering
-						$sql = 'UPDATE '.MAIN_DB_PREFIX."ultimateimmo_immoreceipt SET ref='(PROV".$this->id.")' WHERE rowid=".$this->id;
+						$sql = 'UPDATE '.MAIN_DB_PREFIX."ultimateimmo_immoreceipt SET ref ='(PROV".$this->id.")' WHERE ref = '(PROV)' AND rowid=".$this->id;
 						if ($this->db->query($sql))
 						{
 							if ($this->id)
 							{
-								$this->ref="(PROV".$this->id.")";//ça passe bien par ici...
+								$this->ref="(PROV".$this->id.")";
 							}
 						}
 					}
@@ -331,11 +338,6 @@ class ImmoReceipt extends CommonObject
 				$error++;
 				$this->errors[] = $this->db->lasterror();
 			}
-		}
-
-		if (! $error)
-		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . $this->table_element);
 		}
 
 		// Create extrafields
@@ -383,9 +385,10 @@ class ImmoReceipt extends CommonObject
 	 * @param  	int 	$fromid     Id of object to clone
 	 * @return 	mixed 				New object created, <0 if KO
 	 */
-	public function createFromClone(User $user, $fromid)
+	public function createFromClone(User $user, $fromid = 0)
 	{
 		global $langs, $hookmanager, $extrafields;
+		
 	    $error = 0;
 
 	    dol_syslog(__METHOD__, LOG_DEBUG);
@@ -396,13 +399,30 @@ class ImmoReceipt extends CommonObject
 
 	    // Load source object
 	    $object->fetchCommon($fromid);
+		
+		$objsoc=new Societe($this->db);
+
+		// Change socid if needed
+		if (! empty($socid) && $socid != $object->socid)
+		{
+			if ($objsoc->fetch($socid) > 0)
+			{
+			    $object->socid = $objsoc->id;
+			}
+		}
+		else
+		{
+		    $objsoc->fetch($object->socid);
+		}
+		
 	    // Reset some properties
 	    unset($object->id);
 	    unset($object->fk_user_creat);
 	    unset($object->import_key);
+		$object->statut= self::STATUS_DRAFT;
 
 	    // Clear fields
-	    $object->ref = "copy_of_".$object->ref;
+	    $object->ref = "(PROV)".$object->ref;
 	    $object->title = $langs->trans("CopyOf")." ".$object->title;
 	    // ...
 	    // Clear extrafields that are unique
@@ -423,22 +443,38 @@ class ImmoReceipt extends CommonObject
 	    // Create clone
 		$object->context['createfromclone'] = 'createfromclone';
 	    $result = $object->createCommon($user);
-	    if ($result < 0) {
-	        $error++;
-	        $this->error = $object->error;
-	        $this->errors = $object->errors;
-	    }
+	    if ($result < 0)
+		{
+		    $this->error = $object->error;
+		    $this->errors = array_merge($this->errors, $object->errors);
+		    $error++;
+		}
+		
+		if (! $error)
+		{
+			// Hook of thirdparty module
+			if (is_object($hookmanager))
+			{
+				$parameters=array('objFrom'=>$this, 'clonedObj'=>$object);
+				$action='';
+				$reshook=$hookmanager->executeHooks('createFrom', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
+				if ($reshook < 0) $error++;
+			}
+		}
 
 	    unset($object->context['createfromclone']);
 
 	    // End
-	    if (!$error) {
-	        $this->db->commit();
-	        return $object;
-	    } else {
-	        $this->db->rollback();
-	        return -1;
-	    }
+		if (! $error)
+		{
+			$this->db->commit();
+			return $object->id;
+		}
+		else
+		{
+			$this->db->rollback();
+			return -1;
+		}
 	}
 	
 	/**
@@ -675,6 +711,79 @@ class ImmoReceipt extends CommonObject
 			return -1;
 		}
 	}
+	
+	/**
+	 * 
+	 * @param unknown $id
+	 * @param array $filter
+	 */
+	public function fetchByLocalId($id, $filter=array()) 
+	{	
+		$sql = "SELECT il.rowid as reference, il.fk_rent , il.fk_property, il.label as nomrenter, il.fk_renter, il.total_amount,";
+		$sql .= " il.rentamount, il.chargesamount, il.date_echeance, il.note_public, il.fk_statut, il.paye ,";
+		$sql .= " il.date_start , il.date_end, il.fk_owner, il.partial_payment ";
+		$sql .= " , lc.firstname as nomlocataire , ll.label as nomlocal ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element." as il ";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON il.fk_renter = lc.rowid";
+		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON il.fk_property = ll.rowid ";
+		$sql .= " WHERE il.fk_property = " . $id;
+	
+		if (count($filter>0)) 
+		{
+			foreach($filter as $key=>$value) 
+			{
+				if ($key=='insidedaterenter') 
+				{
+					$sql .= " AND il.date_start<='".$this->db->idate($value)."' AND il.date_end>='".$this->db->idate($value)."'";
+				}
+			}
+		}
+	
+		dol_syslog(get_class($this) . "::fetchByLocalId sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+				
+			$this->line = array ();
+			$num = $this->db->num_rows($resql);
+			$this->lines=array();
+				
+			while ($obj = $this->db->fetch_object($resql)) 
+			{
+				$line = new immoreceiptLine();
+	
+				$line->id = $obj->reference;
+				$line->ref = $obj->reference;
+				$line->fk_rent = $obj->fk_rent;
+				$line->fk_property = $obj->fk_property;
+				$line->nomlocal = $obj->nomlocal;
+				$line->label = $obj->nomrenter;
+				$line->fk_renter = $obj->fk_renter;
+				$line->nomlocataire = $obj->nomlocataire;
+				$line->total_amount = $obj->total_amount;
+				$line->rentamount = $obj->rentamount;
+				$line->chargesamount = $obj->chargesamount;
+				$line->date_echeance = $this->db->jdate ( $obj->date_echeance );
+				$line->note_public = $obj->note_public;
+				$line->status = $obj->status;
+				$line->date_start = $this->db->jdate ( $obj->date_start );
+				$line->date_end = $this->db->jdate ( $obj->date_end );
+				$line->encours = $obj->encours;
+				$line->regul = $obj->regul;
+				$line->fk_owner = $obj->fk_owner;
+				$line->paye = $obj->paye;
+				$line->partial_payment = $obj->partial_payment;
+	
+				$this->lines[] = $line;
+	
+			}
+			$this->db->free($resql);
+			return $num;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetchByLocalId " . $this->error, LOG_ERR);
+			return - 1;
+		}
+	}
 
 	/**
 	 * Update object into database
@@ -814,6 +923,7 @@ class ImmoReceipt extends CommonObject
 
 		dol_syslog(get_class($this)."::valid", LOG_DEBUG);
 		$resql=$this->db->query($sql);
+		
 		if (! $resql)
 		{
 			dol_print_error($this->db);
@@ -983,7 +1093,7 @@ class ImmoReceipt extends CommonObject
 			}
 		}
 
-		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/quittance/";
+		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref,$moreparams);
 	}
@@ -1165,19 +1275,70 @@ class ImmoReceipt extends CommonObject
 			else
 				return - 1;
 	}
+	
+	/**
+	 * 	Return amount of payments already done
+	 *
+	 *	@return		int						Amount of payment already done, <0 if KO
+	 */
+	function getSommePaiement()
+	{
+		$table='ultimateimmo_payment_receipt';
+		$field='fk_receipt';
+
+		$sql = 'SELECT sum(amount) as amount';
+		$sql.= ' FROM '.MAIN_DB_PREFIX.$table;
+		$sql.= ' WHERE '.$field.' = '.$this->id;
+
+		dol_syslog(get_class($this)."::getSommePaiement", LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$obj = $this->db->fetch_object($resql);
+			$this->db->free($resql);
+			return $obj->amount;
+		}
+		else
+		{
+			$this->error=$this->db->lasterror();
+			return -1;
+		}
+	}
 }
 
 /**
- * Class ImmoReceiptLine. You can also remove this and generate a CRUD class for lines objects.
+ * Class ImmoreceiptLine
  */
-/*
-class ImmoReceiptLine
+class ImmoreceiptLine
 {
-	// @var int ID
+	/**
+	 * @var int ID
+	 */
 	public $id;
-	// @var mixed Sample line property 1
-	public $prop1;
-	// @var mixed Sample line property 2
-	public $prop2;
+	/**
+	 * @var mixed Sample line property 1
+	 */
+	
+	public $fk_rent;
+	public $fk_property;
+	public $label;
+	public $fk_renter;
+	public $total_amount;
+	public $rentamount;
+	public $balance;
+	public $partial_payment;
+	public $chargesamount;
+	public $vat_amount;
+	public $date_echeance = '';
+	public $note_public;
+	public $status;
+	public $date_rent = '';
+	public $date_start = '';
+	public $date_end = '';
+	public $fk_owner;
+	public $paye;
+	public $renter_id;
+	public $nomlocataire;
+	public $nomlocal;
+	public $property_id;
 }
-*/

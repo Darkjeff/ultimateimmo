@@ -531,7 +531,7 @@ if (in_array('builddoc',$arrayofmassactions) && ($nbtotalofrecords === '' || $nb
 		$genallowed=$user->rights->ultimateimmo->read;
 		$delallowed=$user->rights->ultimateimmo->create;
 
-		print $formfile->showdocuments('massfilesarea_immobilier','',$filedir,$urlsource,0,$delallowed,'',1,1,0,48,1,$param,$title,'');
+		print $formfile->showdocuments('massfilesarea_ultimateimmo','',$filedir,$urlsource,0,$delallowed,'',1,1,0,48,1,$param,$title,'');
 	}
 	else
 	{

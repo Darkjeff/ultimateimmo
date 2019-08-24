@@ -18,7 +18,7 @@
 /**
  * \file    ultimateimmo/css/ultimateimmo.css.php
  * \ingroup ultimateimmo
- * \brief   CSS file for module Immobilier.
+ * \brief   CSS file for module Ultimateimmo.
  */
 
 //if (! defined('NOREQUIREUSER')) define('NOREQUIREUSER','1');	// Not disabled because need to load personalized language

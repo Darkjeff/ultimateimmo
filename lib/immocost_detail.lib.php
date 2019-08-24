@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2018-2019 Philippe GRAND 	<philippe.grand@atoo-net.com>
+/* Copyright (C) 2018-2019 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,18 @@
  */
 
 /**
- * \file    lib/immoproperty.lib.php
+ * \file    lib/ultimateimmo_immocost_detail.lib.php
  * \ingroup ultimateimmo
- * \brief   Library files with common functions for ImmoProperty
+ * \brief   Library files with common functions for ImmoCost_Detail
  */
 
 /**
- * Prepare array of tabs for ImmoProperty
+ * Prepare array of tabs for ImmoCost_Detail
  *
- * @param	ImmoProperty	$object		ImmoProperty
+ * @param	ImmoCost_Detail	$object		ImmoCost_Detail
  * @return 	array					Array of tabs
  */
-function immoproperty_typePrepareHead($object)
+function immocost_detailPrepareHead($object)
 {
 	global $db, $langs, $conf;
 
@@ -36,39 +36,38 @@ function immoproperty_typePrepareHead($object)
 	$h = 0;
 	$head = array();
 
-	$head[$h][0] = dol_buildpath("/ultimateimmo/property/immoproperty_type_card.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/cost_detail/immocost_detail_card.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
 
-	/*if (isset($object->fields['note_public']) || isset($object->fields['note_private']))
+	if (isset($object->fields['note_public']) || isset($object->fields['note_private']))
 	{
 		$nbNote = 0;
 		if (!empty($object->note_private)) $nbNote++;
 		if (!empty($object->note_public)) $nbNote++;
-		$head[$h][0] = dol_buildpath('/ultimateimmo/property/immoproperty_note.php', 1).'?id='.$object->id;
+		$head[$h][0] = dol_buildpath('/ultimateimmo/cost_detail/immocost_detail_note.php', 1).'?id='.$object->id;
 		$head[$h][1] = $langs->trans('Notes');
 		if ($nbNote > 0) $head[$h][1].= ' <span class="badge">'.$nbNote.'</span>';
 		$head[$h][2] = 'note';
 		$h++;
-	}*/
+	}
 
-	/*require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+	require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 	require_once DOL_DOCUMENT_ROOT.'/core/class/link.class.php';
-	$upload_dir = $conf->ultimateimmo->dir_output . "/property/" . dol_sanitizeFileName($object->ref);
+	$upload_dir = $conf->ultimateimmo->dir_output . "/cost_detail/" . dol_sanitizeFileName($object->ref);
 	$nbFiles = count(dol_dir_list($upload_dir,'files',0,'','(\.meta|_preview.*\.png)$'));
 	$nbLinks=Link::count($db, $object->element, $object->id);
-	$head[$h][0] = dol_buildpath("/ultimateimmo/property/immoproperty_document.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/cost_detail/immocost_detail_document.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans('Documents');
 	if (($nbFiles+$nbLinks) > 0) $head[$h][1].= ' <span class="badge">'.($nbFiles+$nbLinks).'</span>';
 	$head[$h][2] = 'document';
-	$h++;*/
+	$h++;
 
-	$head[$h][0] = dol_buildpath("/ultimateimmo/property/immoproperty_type_agenda.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/cost_detail/immocost_detail_agenda.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Events");
 	$head[$h][2] = 'agenda';
 	$h++;
-	
 
 	// Show more tabs from modules
 	// Entries must be declared in modules descriptor with line
@@ -78,8 +77,7 @@ function immoproperty_typePrepareHead($object)
 	//$this->tabs = array(
 	//	'entity:-tabname:Title:@ultimateimmo:/ultimateimmo/mypage.php?id=__ID__'
 	//); // to remove a tab
-	complete_head_from_modules($conf, $langs, $object, $head, $h, 'immoproperty_type@ultimateimmo');
+	complete_head_from_modules($conf, $langs, $object, $head, $h, 'immocost_detail@ultimateimmo');
 
 	return $head;
 }
-

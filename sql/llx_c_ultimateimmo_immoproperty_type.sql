@@ -12,13 +12,16 @@
 -- GNU General Public License for more details.
 --
 -- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
---
--- ========================================================================
-CREATE TABLE IF NOT EXISTS  llx_c_ultimateimmo_immoproperty_type  (
-   rowid integer NOT NULL  AUTO_INCREMENT PRIMARY KEY,
-   code	varchar(8) NOT NULL, 
-   entity integer DEFAULT 1 NOT NULL,
-   label varchar(200) NOT NULL DEFAULT '',
-   active tinyint(4) DEFAULT 1 NOT NULL
-)ENGINE=InnoDB;
+-- along with this program.  If not, see http://www.gnu.org/licenses/.
+
+
+CREATE TABLE llx_c_ultimateimmo_immoproperty_type(
+	-- BEGIN MODULEBUILDER FIELDS
+	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
+	code varchar(12) NOT NULL, 
+	entity integer DEFAULT 1 NOT NULL,
+	label varchar(255),   
+	active  tinyint DEFAULT 1  NOT NULL,
+	module  varchar(32) NULL
+	-- END MODULEBUILDER FIELDS
+) ENGINE=innodb;

@@ -40,10 +40,12 @@ if (! $res) die("Include of main fails");
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
+dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
+if (! empty($conf->banque->enabled)) require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo","other", "contracts"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo","other", "contracts", "bills"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -166,26 +168,18 @@ if ($action == 'addall') {
  * Put here all code to build page
  */
 
-$form=new Form($db);
-$formfile=new FormFile($db);
+$form = new Form($db);
+$formfile = new FormFile($db);
+$thirdpartystatic = new Societe($db);
 
-llxHeader('','ImmoPayment','');
+$result=$object->fetch($id, $ref);
+if ($result <= 0)
+{
+	dol_print_error($db, 'Payement '.$id.' not found in database');
+	exit;
+}
 
-// Example : Adding jquery code
-print '<script type="text/javascript" language="javascript">
-jQuery(document).ready(function() {
-	function init_myfunc()
-	{
-		jQuery("#myid").removeAttr(\'disabled\');
-		jQuery("#myid").attr(\'disabled\',\'disabled\');
-	}
-	init_myfunc();
-	jQuery("#mybutton").click(function() {
-		init_myfunc();
-	});
-});
-</script>';
-
+llxHeader('',$langs->trans("ImmoPayment"),'');
 
 // Part to create
 if ($action == 'create')
@@ -258,6 +252,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     $res = $object->fetch_optionals($object->id, $extralabels);
 
 	$head = immopaymentPrepareHead($object);
+	
 	dol_fiche_head($head, 'card', $langs->trans("ImmoPayment"), -1, 'immopayment@ultimateimmo');
 
 	$formconfirm = '';
@@ -418,7 +413,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    $action = 'presend';
 	}
 
-	if ($action != 'presend')
+	/*if ($action != 'presend')
 	{
 	    print '<div class="fichecenter"><div class="fichehalfleft">';
 	    print '<a name="builddoc"></a>'; // ancre
@@ -450,7 +445,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    $somethingshown = $formactions->showactions($object, 'immopayment', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
 
 	    print '</div></div></div>';
-	}
+	}*/
 
 	//Select mail models is same action as presend
 	 if (GETPOST('modelselected')) $action = 'presend';
@@ -489,7 +484,7 @@ if ($action == 'createall') {
 	print '</td><td class="left">';
 	print $langs->trans("PaymentMode");
 	print '</td><td class="left">';
-	print $langs->trans("AccountToCredit");
+	print $langs->trans("BankAccount");
 	print '</td><td class="left">';
 	print $langs->trans("Numero");
 	print '</td>';
@@ -521,20 +516,122 @@ if ($action == 'createall') {
 	
 	
 	print "</tr>\n";
+}
 	
 	/*
 	 * List receipt
 	 */
-	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.ref as nom, l.address  , l.label as local, loc.status as statut, rec.total_amount as total, rec.paiepartiel, rec.balance ,  rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract , c.status";
-	$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immoreceipt rec";
-	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorenter as loc";
-	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immoproperty as l";
-	$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immorent as c";
+	/*$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.ref as nom, l.address  , l.label as local, loc.status as statut, rec.total_amount as total, rec.paiepartiel, rec.balance ,  rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract , c.status";
+	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt rec";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
 	$sql .= " WHERE rec.paye = 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND  c.rowid = rec.fk_rent and c.status =1 ";
 	if ($user->id != 1) {
 		$sql .= " AND rec.owner_id=" . $user->id;
+	}*/
+	
+	$sql = 'SELECT f.rowid as facid, f.ref, f.label, f.total_amount, f.paye, f.fk_statut, pf.amount, s.nom as name, s.rowid as socid';
+	$sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_payment_receipt as pf,'.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f,'.MAIN_DB_PREFIX.'societe as s';
+	$sql.= ' WHERE pf.fk_receipt = f.rowid';
+	$sql.= ' AND f.fk_soc = s.rowid';
+	$sql.= ' AND f.entity IN ('.getEntity('invoice').')';
+	$sql.= ' AND pf.fk_paiement = '.$object->id;
+	$resql=$db->query($sql);
+	var_dump($sql);exit;
+	if ($resql)
+	{
+		$num = $db->num_rows($resql);
+
+		$i = 0;
+		$total = 0;
+
+		$moreforfilter='';
+
+		print '<br>';
+
+		print '<div class="div-table-responsive">';
+		print '<table class="noborder" width="100%">';
+
+		print '<tr class="liste_titre">';
+		print '<td>'.$langs->trans('Bill').'</td>';
+		print '<td>'.$langs->trans('Company').'</td>';
+		if($conf->global->MULTICOMPANY_INVOICE_SHARING_ENABLED )print '<td>'.$langs->trans('Entity').'</td>';
+		print '<td class="right">'.$langs->trans('ExpectedToPay').'</td>';
+		print '<td class="right">'.$langs->trans('PayedByThisPayment').'</td>';
+		print '<td class="right">'.$langs->trans('RemainderToPay').'</td>';
+		print '<td class="right">'.$langs->trans('Status').'</td>';
+		print "</tr>\n";
+
+		if ($num > 0)
+		{
+			while ($i < $num)
+			{
+				$objp = $db->fetch_object($resql);
+
+				$thirdpartystatic->fetch($objp->socid);
+
+				$receipt=new ImmoReceipt($db);
+				$receipt->fetch($objp->facid);
+				
+				$paiement = $receipt->getSommePaiement();
+				$creditnotes=$receipt->getSumCreditNotesUsed();
+				$deposits=$receipt->getSumDepositsUsed();
+				$alreadypayed=price2num($paiement + $creditnotes + $deposits, 'MT');
+				$remaintopay=price2num($receipt->total_ttc - $paiement - $creditnotes - $deposits, 'MT');
+
+				print '<tr class="oddeven">';
+
+				// receipt
+				print '<td>';
+				print $receipt->getNomUrl(1);
+				print "</td>\n";
+
+				// Third party
+				print '<td>';
+				print $thirdpartystatic->getNomUrl(1);
+				print '</td>';
+
+				// Expected to pay
+				if($conf->global->MULTICOMPANY_INVOICE_SHARING_ENABLED ){
+					print '<td>';
+					$mc->getInfo($objp->entity);
+					print $mc->label;
+					print '</td>';
+				}
+				// Expected to pay
+				print '<td class="right">'.price($objp->total_ttc).'</td>';
+
+				// Amount payed
+				print '<td class="right">'.price($objp->amount).'</td>';
+
+				// Remain to pay
+				print '<td class="right">'.price($remaintopay).'</td>';
+
+				// Status
+				print '<td class="right">'.$invoice->getLibStatut(5, $alreadypayed).'</td>';
+
+				print "</tr>\n";
+				if ($objp->paye == 1)	// If at least one invoice is paid, disable delete
+				{
+					$disable_delete = 1;
+					$title_button = dol_escape_htmltag($langs->transnoentitiesnoconv("CantRemovePaymentWithOneInvoicePaid"));
+				}
+				$total = $total + $objp->amount;
+				$i++;
+			}
+		}
+		print "</table>\n";
+		print '</div>';
+
+		$db->free($resql);
 	}
-	$resql = $db->query($sql);
+	else
+	{
+		dol_print_error($db);
+	}
+	
+	/*$resql = $db->query($sql);
 	if ($resql) {
 		$num = $db->num_rows($resql);
 		
@@ -587,13 +684,13 @@ if ($action == 'createall') {
 
 	else {
 		dol_print_error($db);
-	}
+	}*/
 	print '<div class="tabsAction">' . "\n";
 	print '<div class="inline-block divButAction"><input type="submit"  name="button_addallpaiement" id="button_addallpaiement" class="butAction" value="' . $langs->trans("Payed") . '" /></div>';
 	print '</div>';
 	print '</form>';
 	
-}
+//}
 
 
 // End of page

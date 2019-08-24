@@ -74,23 +74,23 @@ print '<tr><td valign="top" width="30%" class="notopnoleft">';
 $y = $year_current;
 
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre oddeven"><td width=250>'.$langs->trans("Type").'</td>';
-print '<td class="center">'.$langs->trans("Building").'</td>';
-print '<td class="center">'.$langs->trans("January").'</td>';
-print '<td class="center">'.$langs->trans("February").'</td>';
-print '<td class="center">'.$langs->trans("March").'</td>';
-print '<td class="center">'.$langs->trans("April").'</td>';
-print '<td class="center">'.$langs->trans("May").'</td>';
-print '<td class="center">'.$langs->trans("June").'</td>';
-print '<td class="center">'.$langs->trans("July").'</td>';
-print '<td class="center">'.$langs->trans("August").'</td>';
-print '<td class="center">'.$langs->trans("September").'</td>';
-print '<td class="center">'.$langs->trans("October").'</td>';
-print '<td class="center">'.$langs->trans("November").'</td>';
-print '<td class="center">'.$langs->trans("December").'</td>';
-print '<td class="center">'.$langs->trans("Total").'</td></tr>';
+print '<tr class="liste_titre oddeven"><td width=10%>'.$langs->trans("Type").'</td>';
+print '<td class="left" width=10%>'.$langs->trans("Building").'</td>';
+print '<td class="right">'.$langs->trans("January").'</td>';
+print '<td class="right">'.$langs->trans("February").'</td>';
+print '<td class="right">'.$langs->trans("March").'</td>';
+print '<td class="right">'.$langs->trans("April").'</td>';
+print '<td class="right">'.$langs->trans("May").'</td>';
+print '<td class="right">'.$langs->trans("June").'</td>';
+print '<td class="right">'.$langs->trans("July").'</td>';
+print '<td class="right">'.$langs->trans("August").'</td>';
+print '<td class="right">'.$langs->trans("September").'</td>';
+print '<td class="right">'.$langs->trans("October").'</td>';
+print '<td class="right">'.$langs->trans("November").'</td>';
+print '<td class="right">'.$langs->trans("December").'</td>';
+print '<td class="right">'.$langs->trans("Total").'</td></tr>';
 
-$sql = "SELECT it.label AS type_charge, ii.label AS nom_immeuble,";
+$sql = "SELECT it.label AS type_charge, ib.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=1,ic.amount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=2,ic.amount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=3,ic.amount,0)),2) AS 'Mars',";
@@ -104,28 +104,28 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre'
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
-
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immocost_type as it ON ic.fk_cost_type = it.rowid";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoproperty as ii ON ic.fk_property = ii.fk_property";
-
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ii";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= "  AND ic.fk_cost_type = it.rowid";
+$sql .= "  AND ic.fk_property = ii.rowid AND ii.fk_property = ib.fk_property";
 
-$sql .= " GROUP BY ic.fk_property, it.label";
+$sql .= " GROUP BY ii.fk_property, it.label";
 
 $resql = $db->query ( $sql );
-if ($resql) {
+if ($resql) 
+{
 	$i = 0;
 	$num = $db->num_rows ( $resql );
 	
-	while ( $i < $num ) {
-		
+	while ( $i < $num ) 
+	{		
 		$row = $db->fetch_row ( $resql );
 		
 		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
-		print '<td class="right">' . $row [1] . '</td>';
+		print '<td class="left">' . $row [1] . '</td>';
 		print '<td class="right">' . $row [2] . '</td>';
 		print '<td class="right">' . $row [3] . '</td>';
 		print '<td class="right">' . $row [4] . '</td>';
@@ -151,20 +151,21 @@ print "</table>\n";
 print "<br>";
 
 print '<table class="noborder  oddeven" width="100%">';
-print '<tr class="liste_titre"><td width=350>'.$langs->trans("Total").'</td>';
-print '<td class="center">'.$langs->trans("January").'</td>';
-print '<td class="center">'.$langs->trans("February").'</td>';
-print '<td class="center">'.$langs->trans("March").'</td>';
-print '<td class="center">'.$langs->trans("April").'</td>';
-print '<td class="center">'.$langs->trans("May").'</td>';
-print '<td class="center">'.$langs->trans("June").'</td>';
-print '<td class="center">'.$langs->trans("July").'</td>';
-print '<td class="center">'.$langs->trans("August").'</td>';
-print '<td class="center">'.$langs->trans("September").'</td>';
-print '<td class="center">'.$langs->trans("October").'</td>';
-print '<td class="center">'.$langs->trans("November").'</td>';
-print '<td class="center">'.$langs->trans("December").'</td>';
-print '<td class="center">'.$langs->trans("Total").'</td></tr>';
+print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Total").'</td>';
+print '<td class="left" width=10%></td>';
+print '<td class="right">'.$langs->trans("January").'</td>';
+print '<td class="right">'.$langs->trans("February").'</td>';
+print '<td class="right">'.$langs->trans("March").'</td>';
+print '<td class="right">'.$langs->trans("April").'</td>';
+print '<td class="right">'.$langs->trans("May").'</td>';
+print '<td class="right">'.$langs->trans("June").'</td>';
+print '<td class="right">'.$langs->trans("July").'</td>';
+print '<td class="right">'.$langs->trans("August").'</td>';
+print '<td class="right">'.$langs->trans("September").'</td>';
+print '<td class="right">'.$langs->trans("October").'</td>';
+print '<td class="right">'.$langs->trans("November").'</td>';
+print '<td class="right">'.$langs->trans("December").'</td>';
+print '<td class="right">'.$langs->trans("Total").'</td></tr>';
 
 $sql = "SELECT 'Total charge' AS 'Total',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=1,ic.amount,0)),2) AS 'Janvier',";
@@ -180,23 +181,25 @@ $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre'
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
 $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
-$sql .= " FROM " . MAIN_DB_PREFIX . "immobilier_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "immobilier_immocost_type as it";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid";
 
 
 $resql = $db->query ( $sql );
-if ($resql) {
+if ($resql) 
+{
 	$i = 0;
 	$num = $db->num_rows ( $resql );
 	
-	while ( $i < $num ) {
-		
+	while ( $i < $num ) 
+	{		
 		$row = $db->fetch_row ( $resql );
 		
-		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
+		print '<tr class="oddeven"><td width=10%>'.$row[0].'</td>';
+		print '<td class="left" width=10%>';
 		print '<td class="right">' . $row [1] . '</td>';
 		print '<td class="right">' . $row [2] . '</td>';
 		print '<td class="right">' . $row [3] . '</td>';
@@ -214,7 +217,9 @@ if ($resql) {
 		$i ++;
 	}
 	$db->free ( $resql );
-} else {
+} 
+else 
+{
 	print $db->lasterror (); // affiche la derniere erreur sql
 }
 

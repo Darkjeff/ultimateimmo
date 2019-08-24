@@ -614,7 +614,7 @@ class ImmoRenter extends CommonObject
 		// Remove link to third party onto any other renters
 		if ($socid > 0)
 		{
-			$sql = "UPDATE ".MAIN_DB_PREFIX."immobilier_immorenter SET fk_soc = null";
+			$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immorenter SET fk_soc = null";
 			$sql.= " WHERE fk_soc = '".$socid."'";
 			$sql.= " AND entity = ".$conf->entity;
 			dol_syslog(get_class($this)."::setThirdPartyId", LOG_DEBUG);
@@ -622,7 +622,7 @@ class ImmoRenter extends CommonObject
 		}
 
 		// Add link to third party for current renter
-		$sql = "UPDATE ".MAIN_DB_PREFIX."immobilier_immorenter SET fk_soc = ".($socid>0 ? $socid : 'null');
+		$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immorenter SET fk_soc = ".($socid>0 ? $socid : 'null');
 		$sql.= " WHERE rowid = ".$this->id;
 
 		dol_syslog(get_class($this)."::setThirdPartyId", LOG_DEBUG);

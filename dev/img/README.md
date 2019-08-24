@@ -15,7 +15,7 @@ These resides in the [/img](../../img) directory.
 Required.
 Name must begin by ```object_```.
 
-- Sample:  ![object_immobilier.png](../../img/object_immobilier.png) [object_immobilier.png](../../img/object_immobilier.png)
+- Sample:  ![object_ultimateimmo.png](../../img/object_ultimateimmo.png) [object_ultimateimmo.png](../../img/object_immobilier.png)
 - Size: 14×14 pixels
 - Type: PNG
 
@@ -23,7 +23,7 @@ Name must begin by ```object_```.
 
 Optional.
 
-- Sample: ![immobilier.png](../../img/immobilier.png) [immobilier.png](../../img/immobilier.png)
+- Sample: ![ultimateimmo.png](../../img/ultimateimmo.png) [ultimateimmo.png](../../img/ultimateimmo.png)
 - Size: 32×32 pixels
 - Type: PNG
 

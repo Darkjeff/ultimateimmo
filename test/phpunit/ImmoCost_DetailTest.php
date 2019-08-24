@@ -17,21 +17,22 @@
  */
 
 /**
- * \file    test/unit/ImmoReceiptTest.php
- * \ingroup immobilier
- * \brief   PHPUnit test for ImmoReceipt class.
+ * \file    test/unit/ImmoCost_DetailTest.php
+ * \ingroup ultimateimmo
+ * \brief   PHPUnit test for ImmoCost_Detail class.
  */
 
 namespace test\unit;
 
 /**
- * Class ImmoReceiptTest
+ * Class ImmoCost_DetailTest
  * @package Testultimateimmo
  */
-class ImmoReceiptTest extends \PHPUnit_Framework_TestCase
+class ImmoCost_DetailTest extends \PHPUnit_Framework_TestCase
 {
 	/**
 	 * Global test setup
+     * @return void
 	 */
 	public static function setUpBeforeClass()
 	{
@@ -40,6 +41,7 @@ class ImmoReceiptTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * Unit test setup
+     * @return void
 	 */
 	protected function setUp()
 	{
@@ -48,6 +50,7 @@ class ImmoReceiptTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * Verify pre conditions
+     * @return void
 	 */
 	protected function assertPreConditions()
 	{
@@ -56,6 +59,7 @@ class ImmoReceiptTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * A sample test
+     * @return bool
 	 */
 	public function testSomething()
 	{
@@ -66,6 +70,7 @@ class ImmoReceiptTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * Verify post conditions
+     * @return void
 	 */
 	protected function assertPostConditions()
 	{
@@ -74,6 +79,7 @@ class ImmoReceiptTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * Unit test teardown
+     * @return void
 	 */
 	protected function tearDown()
 	{
@@ -82,6 +88,7 @@ class ImmoReceiptTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * Global test teardown
+     * @return void
 	 */
 	public static function tearDownAfterClass()
 	{
@@ -92,6 +99,7 @@ class ImmoReceiptTest extends \PHPUnit_Framework_TestCase
 	 * Unsuccessful test
 	 *
 	 * @param  Exception $e    Exception
+     * @return void
 	 * @throws Exception
 	 */
 	protected function onNotSuccessfulTest(Exception $e)

@@ -42,6 +42,14 @@ class ImmoPayment extends CommonObject
 	 */
 	public $table_element = 'ultimateimmo_immopayment';
 	/**
+	 * @var string Name of table without prefix where object is stored
+	 */
+	public $fk_element='fk_payment';
+	/**
+	 * @var ImmopaymentLine[] Lines
+	 */
+	public $lines = array();
+	/**
 	 * @var int  Does immopayment support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	 */
 	public $ismultientitymanaged = 0;
@@ -87,13 +95,14 @@ class ImmoPayment extends CommonObject
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>36, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
 		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToRenter",),
+		'fk_paiement' => array('type'=>'integer', 'label'=>'Payment', 'visible'=>0, 'enabled'=>1, 'position'=>48, 'default'=>1, 'notnull'=>1, 'index'=>1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>50, 'notnull'=>-1,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1,),
-		'amount' => array('type'=>'price', 'label'=>'Amount', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
+		'date_payment' => array('type'=>'date', 'label'=>'DatePayment', 'enabled'=>1, 'visible'=>-1, 'position'=>70, 'notnull'=>1,),
+		'amount' => array('type'=>'price', 'label'=>'Amount', 'enabled'=>1, 'visible'=>1, 'position'=>72, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'fk_mode_reglement' => array('type'=>'integer', 'label'=>'TypePayment', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Carte bancaire', '1'=>'Chèque', '2'=>'Espèces', '3'=>'CAF'), 'help'=>"LinkToTypePayment",),
-		'fk_bank' => array('type'=>'integer:Account:compta/bank/class/account.class.php', 'label'=>'Bank', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToBank",),
+		'fk_bank' => array('type'=>'integer:Account:compta/bank/class/account.class.php', 'label'=>'BankAccount', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToBank",),
 		'num_payment' => array('type'=>'varchar(50)', 'label'=>'NumPayment', 'enabled'=>1, 'visible'=>-1, 'position'=>85, 'notnull'=>-1,),
-		'date_payment' => array('type'=>'date', 'label'=>'DatePayment', 'enabled'=>1, 'visible'=>-1, 'position'=>90, 'notnull'=>1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>500, 'notnull'=>1,),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1, 'foreignkey'=>'llx_user.rowid',),
@@ -112,9 +121,11 @@ class ImmoPayment extends CommonObject
 	public $fk_renter;
 	public $note_public;
 	public $note_private;
-	public $amount;
+	public $amount;			    // Total amount of payment
+	public $amounts=array();    // Array of amounts
 	public $fk_mode_reglement;
 	public $fk_bank;
+	public $fk_paiement;
 	public $num_payment;
 	public $date_payment;
 	public $date_creation;
@@ -404,9 +415,9 @@ class ImmoPayment extends CommonObject
 		$sql.= ' ll.label as nomlocal,';
 		$sql.= ' lo.label as nomloyer ';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'immobilier_immorenter as lc ON t.fk_renter = lc.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'immobilier_immoproperty as ll ON t.fk_property = ll.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'immobilier_immoreceipt as lo ON t.fk_receipt = lo.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as lo ON t.fk_receipt = lo.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as cp ON t.fk_mode_reglement = cp.id AND cp.entity IN ('.getEntity('c_paiement').')';;
 
 		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
@@ -485,7 +496,7 @@ class ImmoPayment extends CommonObject
 		$sql = 'SELECT';
 		$sql .= ' t.rowid,';
 
-		$sql .= " t.fk_contract,";
+		$sql .= " t.fk_rent,";
 		$sql .= " t.fk_property,";
 		$sql .= " t.fk_renter,";
 		$sql .= " t.amount,";
@@ -497,51 +508,55 @@ class ImmoPayment extends CommonObject
 
 
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element. ' as t';
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immorenter as lc ON t.fk_renter = lc.rowid";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoproperty as ll ON t.fk_property = ll.rowid ";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "immobilier_immoreceipt as lo ON t.fk_receipt = lo.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid ";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo ON t.fk_receipt = lo.rowid";
 
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {
-			foreach ($filter as $key => $value) {
+			foreach ($filter as $key => $value) 
+			{
 				$sqlwhere [] = $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 			}
 		}
-		if (count($sqlwhere) > 0) {
+		if (count($sqlwhere) > 0) 
+		{
 			$sql .= ' WHERE ' . implode(' '.$filtermode.' ', $sqlwhere);
 		}
 
-		if (!empty($sortfield)) {
+		if (!empty($sortfield)) 
+		{
 			$sql .= $this->db->order($sortfield,$sortorder);
 		}
-		if (!empty($limit)) {
-		 $sql .=  ' ' . $this->db->plimit($limit + 1, $offset);
+		if (!empty($limit)) 
+		{
+			$sql .=  ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 		$this->lines = array();
 
 		$resql = $this->db->query($sql);
-		if ($resql) {
+		if ($resql) 
+		{
 			$num = $this->db->num_rows($resql);
 
-			while ($obj = $this->db->fetch_object($resql)) {
+			while ($obj = $this->db->fetch_object($resql)) 
+			{
 				$line = new ImmoPaymentLine();
 
-				$line->id = $obj->rowid;
+				$line->rowid = $obj->rowid;
 
-				$line->fk_contract = $obj->fk_contract;
+				$line->fk_rent = $obj->fk_rent;
 				$line->fk_property = $obj->fk_property;
 				$line->fk_renter = $obj->fk_renter;
 				$line->amount = $obj->amount;
-				$line->comment = $obj->comment;
+				$line->note_public = $obj->note_public;
 				$line->date_payment = $this->db->jdate($obj->date_payment);
 				$line->fk_owner = $obj->fk_owner;
 				$line->fk_receipt = $obj->fk_receipt;
 				$line->nomlocataire = $obj->nomlocataire;
 				$line->nomlocal = $obj->nomlocal;
 				$line->nomloyer = $obj->nomloyer;
-
-
 
 				$this->lines[] = $line;
 			}
@@ -859,25 +874,48 @@ class ImmoPayment extends CommonObject
 	}
 }
 
-/**
- * Class ImmoPaymentLine. You can also remove this and generate a CRUD class for lines objects.
- */
+	/**
+	 * Load object lines in memory from the database
+	 *
+	 * @return int         <0 if KO, 0 if not found, >0 if OK
+	 */
 
-class ImmoPaymentLine
-{
-	/**
-	 * @var int ID
-	 */
-	public $id;
-	/**
-	 * @var int fk_contract
-	 */
-	public $fk_contract;
-	public $fk_property;
-	public $fk_renter;
-	public $amount;
-	public $note_public;
-	public $date_payment = '';
-	public $fk_owner;
-	public $fk_receipt;
-}
+	class ImmoPaymentLine
+	{
+		/**
+		 * @var int rowID
+		 */
+		public $rowid;
+		/**
+		 * @var int fk_rent
+		 */
+		public $fk_rent;
+		/**
+		 * @var int fk_property
+		 */
+		public $fk_property;
+		/**
+		 * @var int fk_renter
+		 */
+		public $fk_renter;
+		/**
+		 * @var int amount
+		 */
+		public $amount;
+		/**
+		 * @var int note_public
+		 */
+		public $note_public;
+		/**
+		 * @var int date_payment
+		 */
+		public $date_payment = '';
+		/**
+		 * @var int fk_owner
+		 */
+		public $fk_owner;
+		/**
+		 * @var int fk_receipt
+		 */
+		public $fk_receipt;
+	}

@@ -40,6 +40,12 @@ function immocostPrepareHead($object)
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
+	
+	$head[$h][0] = dol_buildpath('/ultimateimmo/cost/ventil_cost.php', 1) . '?id=' . $object->id;
+	$head[$h][1] = $langs->trans("Répartition");
+	$head[$h][2] = 'repartition';
+	$hselected = $h;
+	$h ++;
 
 	if (isset($object->fields['note_public']) || isset($object->fields['note_private']))
 	{

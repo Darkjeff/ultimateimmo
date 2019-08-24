@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <phpdoc>
-    <title>Immobilier</title>
+    <title>ultimateimmo</title>
     <parser>
         <target>build/phpdoc</target>
         <encoding>utf8</encoding>

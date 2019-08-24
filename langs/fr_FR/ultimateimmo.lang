@@ -29,14 +29,40 @@ UltimateimmoSetup = Configuration du module Ultimateimmo
 Settings = Réglages
 UltimateimmoSetupPage = Page de configuration du module Ultimateimmo
 UltimateimmoNumberingModeles = Modèles de numérotation des quittances
-TemplatePDFUltimateimmo = Modèles de document des quittances
+TemplatePDFUltimateimmo = Modèles de document des quittances et baux
 WatermarkOnDraftImmoCards = Filigrane sur les brouillons de quittances (aucun si vide)
+PublicSite = Site public
+EnablePublicSite = Activer le site accessible au public
+PublicSiteDesc = Dolibarr peut offrir une URL de page publique permettant d'afficher un site pour répertorier les annonces immobilières pour les visiteurs externes.
+ULTIMATEIMMO_USE_GOOGLE = Utiliser google avec le module Ultimateimmo
+GoogleZoomLevel = Niveau de zoom par défaut (1 à 10)
+GOOGLE_API_SERVERKEY=Clé API (de type "Server key")
+ParametersForGoogleAPIv3Usage=Pour Google API %s V3
+KeepEmptyYoUsePublicQuotaOfAPI=Laisser vide pour utiliser le quota publique de cette API (sinon la clé peut être créée depuis la page https://code.google.com/apis/console/, "API Access" pour créer une "Server key" et "Services" pour activer l'API "%s")
+AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google, vous devez créer une clé depuis la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "Indentification" . Cliquer sur "Créer une clé" et choisir "Clé serveur" puis "Créer". Vous obtiendrez votre clé serveur.
+EnableAPI=Vous devez aussi activer les API pour votre compte Google. Pour cela, aller sur la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "API". Cliquer sur activer API pour "%s".
+UltimateimmoEnablePublicInterface = Une interface publique ne nécessitant pas d'identification est disponible à l'url suivante :
+UltimateimmoPublicAccess = Activer l'interface publique
+UltimateimmoEmailMustExist = Une adresse e-mail existante est requise pour créer un ticket
+UltimateimmoEmailMustExistHelp = Pour accéder à l'interface publique et créer un nouveau ticket, votre compte doit déjà être existant.
+UltimateimmoShowCompanyLogo = Afficher le logo de la société dans l'interface publique
+UltimateimmoShowCompanyLogoHelp = Activez cette option pour masquer le logo de la société dans les pages de l'interface publique
+UltimateimmoPublicInterfaceForbidden = L'interface publique pour les tickets n'a pas été activée
 ExtraFieldsProperty = Attributs supplémentaires (Propriétés)
 ExtraFieldsRenter = Attributs supplémentaires (Locataires)
 ExtraFieldsOwner = Attributs supplémentaires (Propriétaires)
 ExtraFieldsPayment =  = Attributs supplémentaires (Paiements)
 ExtraFieldsReceipt = Attributs supplémentaires (Quittances)
 ExtraFieldsRent =  = Attributs supplémentaires (Locations)
+EnumerationOfPartsAndCommonEquipment=Énumération des parties et équipements commun.
+UltimateImmoEquipementGardiennage=Gardiennage
+UltimateImmoEquipementInterphone=lnterphone
+UltimateImmoEquipementAscenseur=Ascenseur
+UltimateImmoEquipementVideOrdures=Vide-ordures
+UltimateImmoEquipementAntenneTVcollective=Antenne TV collective
+UltimateImmoEquipementEspacesverts=Espace(s) vert(s)
+UltimateImmoEquipementChauffageCollectif=Chauffage Collectif
+UltimateImmoEquipementEauChaudeCollective=Eau chaude collective
 
 #
 # Page À propos
@@ -73,7 +99,7 @@ MenuListImmoPayment = Liste
 MenuListImmoReceipt = Quittances
 MenuNewImmoReceipt = Nouvelle quittance
 MenuAllReceiptperContract = Générer les quittances
-MenuValidateReceipt = Valider les quittances
+MenuValidateReceipt = Valider les paiements
 MenuStatisticPayment = Statistiques
 MenuListImmoCost = Charges locatives
 MenuNewImmoCost = Nouvelle charge 
@@ -86,6 +112,7 @@ MenuNewImmoCostType = Nouveau type de coût
 #
 # Autres
 #
+BienPrincipal = Bien principal
 BirthDay = Date de Naissance
 BirthCountry = Lieu de naissance
 ImmoProperty = Bien immobilier
@@ -100,7 +127,7 @@ ImmoCostType = Types de coûts
 ImmoReceipts = Quittances
 ImmoReceipt = Quittance
 ImmoPayments = Paiements
-ImmoPayment = Paiement
+ImmoPayment = Règlement
 ImmorentType = Type de location
 FurnishedApartment = Logement meublé
 Juridique = Régime juridique de l'immeuble
@@ -110,12 +137,18 @@ DateBuilt2 = de 1949 à 1974
 DateBuilt3 = de 1975 à 1989
 DateBuilt4 = de 1989 à 2005
 DateBuilt5 = depuis 2005
+APA = Appartement
+HOU = Maison individuelle
+LOC = Locaux commerciaux
+SHO = Boutique
+GAR = Garage
+BUL = Immeuble
 EmptyHousing = Logement vide 
 Copropriete = Copropriété
 MonoPropriete = Mono Propriété
 DateStartRent = Date de prise d'effet du contrat
-TypePayment = Type de paiement
-NumPayment = Numéro de paiement
+TypePayment = Type de Règlement
+NumPayment = Numéro de Règlement
 NewImmoPropertyType = Nouveau type de bien
 ImmoProperty_Type = Type de bien immobilier
 PropertyTypeStatusDraft=Draft
@@ -162,6 +195,28 @@ OwnerName = Nom du propriétaire
 RenterName = Nom du locataire
 SendImmoReceiptRef = Envoi de la quittance %s
 ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
+TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
+ObligationsOfTheSeller = Obligations du vendeur
+ObligationsOfTheLessor = Obligations du bailleur
+UltimateImmoDiagnosticElectricityInstallation = l’état de l’installation intérieure d’électricité
+UltimateImmoDiagnosticGasInstallation = l’état de l’installation intérieure de gaz « naturel »
+UltimateImmoDiagnosticLeadExposure = le constat de risque d’exposition au plomb (CREP)
+UltimateImmoDiagnosticContainingAsbestos = l’état mentionnant la présence ou l’absence de matériaux ou produits contenant de l’amiante 
+UltimateImmoDiagnosticContainingTermites = l’état relatif à la présence de termites dans le bâtiment
+UltimateImmoDiagnosticNaturalTechnologicalRisks = l’état des risques naturels et technologiques
+UltimateImmoDiagnosticNonCollectiveSanitationFacilities = l’état des installations d’assainissement non collectif
+UltimateImmoDiagnosticEnergyPerformanceDiagnosis = le diagnostic de performance énergétique du bâtiment (DPE)
+ReceiptPaymentsAdded = Règlement de quittances ajouté
+Echeance = Échéance
+Periode_du = Période du
+Periode_au = Période au
+Nomlocal = Nom du bien
+Paye = Quittance réglée
+ValidateReceipt = Validation de la quittance
+ShowMandataireDetails = Afficher les détails du mandataire
+ShowColocataireDetails = Afficher les détails des colocataires
+Quittances&Baux = Quittances et Baux
+
 
 
 

@@ -43,6 +43,7 @@ include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
+dol_include_once('/ultimateimmo/lib/immoproperty_type.lib.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
 // Load traductions files requiredby by page
@@ -127,7 +128,7 @@ if (empty($reshook))
 		$building = $object->label;
 
 		// todo debug insert into
-		$sql1 = 'INSERT INTO '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty(';
+		$sql1 = 'INSERT INTO '.MAIN_DB_PREFIX.'ultimateimmo_building(';
 		$sql1 .= 'label,';
 		$sql1 .= 'fk_property';
 		$sql1 .= ') VALUES (';
@@ -158,25 +159,9 @@ if (empty($reshook))
 
 $form=new Form($db);
 $formfile=new FormFile($db);
-$formultimateimmo=new FormUltimateimmo($db);
+$formImmo = new FormUltimateimmo($db);
 
 llxHeader('','ImmoProperty','');
-
-// Example : Adding jquery code
-print '<script type="text/javascript" language="javascript">
-jQuery(document).ready(function() {
-	function init_myfunc()
-	{
-		jQuery("#myid").removeAttr(\'disabled\');
-		jQuery("#myid").attr(\'disabled\',\'disabled\');
-	}
-	init_myfunc();
-	jQuery("#mybutton").click(function() {
-		init_myfunc();
-	});
-});
-</script>';
-
 
 // Part to create
 if ($action == 'create')
@@ -211,10 +196,12 @@ if ($action == 'create')
 		print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
+		
 		if ($val['label'] == 'Country') 
 		{
 			// We set country_id, country_code and country for the selected country
 			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
+			
 			if ($object->country_id)
 			{
 				$tmparray=$object->getCountry($object->country_id,'all');
@@ -224,10 +211,6 @@ if ($action == 'create')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
-		// elseif ($val['label'] == 'ImmoProperty_Type') 
-		// {
-		// 	print $formultimateimmo->select_type_property();	
-		// }
 		else
 		{
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
@@ -302,10 +285,6 @@ if (($id || $ref) && $action == 'edit')
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
 		}
-		// elseif ($val['label'] == 'ImmoProperty_Type') 
-		// {
-		// 	print $formultimateimmo->select_type_property();	
-		// }
 		else
 		{
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
@@ -483,6 +462,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			$object->country_code=$tmparray['code'];
 			$object->country=$tmparray['label'];
 		}
+		elseif ($object->type_property_id)
+		{				
+			$tmparray=$object->getPropertyTypeLabel($object->type_property_id,'all');
+			$object->type_code=$tmparray['code'];
+			$object->type=$tmparray['label'];				
+		}
 
 		print '<tr><td';
 		print ' class="titlefield';
@@ -549,7 +534,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				{
 					print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('BienPrincipal').'</a>'."\n";
 				}
-			}
+			} //What is the use ?
 
 			if ($user->rights->ultimateimmo->delete)
 			{
@@ -614,6 +599,86 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
 
+}
+
+if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE_API_SERVERKEY))
+{
+	if ($action != 'create' && $action != 'edit')
+	{
+		$address = $object->address.','.$object->zip.' '.$object->town.','.$object->getCountry($object->country_id, 0);
+
+		if (! empty($address))
+		{
+			 // URL to include javascript map
+			$urlforjsmap='https://maps.googleapis.com/maps/api/js';
+			if (empty($conf->global->GOOGLE_API_SERVERKEY)) $urlforjsmap.="?sensor=true";
+			else $urlforjsmap.="?key=".$conf->global->GOOGLE_API_SERVERKEY;
+			
+		?>
+		<!--gmaps.php: Include Google javascript map -->
+		<script type="text/javascript" src="<?php echo $urlforjsmap; ?>"></script>
+		
+		<script type="text/javascript">
+		  var geocoder;
+		  var map;
+		  var marker;
+
+		  // GMaps v3 API
+		  function initialize() {
+			var latlng = new google.maps.LatLng(0, 0);
+			var myOptions = {
+			  zoom: <?php echo ($conf->global->GOOGLE_GMAPS_ZOOM_LEVEL >= 1 && $conf->global->GOOGLE_GMAPS_ZOOM_LEVEL <= 10)?$conf->global->GOOGLE_GMAPS_ZOOM_LEVEL:8; ?>,
+			  center: latlng,
+			  mapTypeId: google.maps.MapTypeId.ROADMAP,  // ROADMAP, SATELLITE, HYBRID, TERRAIN
+			  fullscreenControl: true
+			  /*zoomControl: true,
+			  mapTypeControl: true,
+			  scaleControl: true,
+			  streetViewControl: true,
+			  rotateControl: false */
+			}
+			map = new google.maps.Map(document.getElementById("map"), myOptions);
+			geocoder = new google.maps.Geocoder();
+			}
+
+		  function codeAddress() {
+			var address = '<?php print dol_escape_js(dol_string_nospecial($address,', ',array("\r\n","\n","\r"))); ?>';
+			geocoder.geocode( { 'address': address}, function(results, status) {
+			  if (status == google.maps.GeocoderStatus.OK) {
+				map.setCenter(results[0].geometry.location);
+				marker = new google.maps.Marker({
+					map: map,
+					position: results[0].geometry.location
+				});
+
+				var infowindow = new google.maps.InfoWindow({ content: '<div style="width:250px; height:80px;" class="divdolibarrgoogleaddress"><?php echo dol_escape_js($object->name); ?><br><?php echo dol_escape_js(dol_string_nospecial($address,'<br>',array("\r\n","\n","\r"))).(empty($url)?'':'<br><a href="'.$url.'">'.$url.'</a>'); ?></div>' });
+
+				google.maps.event.addListener(marker, 'click', function() {
+				  infowindow.open(map,marker);
+				});
+
+
+			  } else {
+				  if (status == google.maps.GeocoderStatus.ZERO_RESULTS) alert('<?php echo dol_escape_js($langs->transnoentitiesnoconv("GoogleMapsAddressNotFound")); ?>');
+				  else alert('Error '+status);
+			  }
+			});
+		  }
+
+		  $(document).ready(function(){
+				initialize();
+				codeAddress();
+			}
+		  );
+		</script>
+
+		<br>
+		<div align="center">
+		<div id="map" class="divmap" style="width: 90%; height: 500px;" ></div>
+		</div>
+		<?php	
+		}
+	}
 }
 
 

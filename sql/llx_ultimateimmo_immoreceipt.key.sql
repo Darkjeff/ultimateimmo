@@ -34,5 +34,5 @@ ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_
 
 --ALTER TABLE llx_ultimateimmo_immoreceipt ADD UNIQUE INDEX uk_ultimateimmo_immoreceipt_fieldxy(fieldx, fieldy);
 
---ALTER TABLE llx_ultimateimmo_immoreceipt ADD CONSTRAINT llx_ultimateimmo_immoreceipt_fk_field FOREIGN KEY (fk_field) REFERENCES llx_immobilier_myotherobject(rowid);
+--ALTER TABLE llx_ultimateimmo_immoreceipt ADD CONSTRAINT llx_ultimateimmo_immoreceipt_fk_field FOREIGN KEY (fk_field) REFERENCES llx_ultimateimmo_myotherobject(rowid);
 

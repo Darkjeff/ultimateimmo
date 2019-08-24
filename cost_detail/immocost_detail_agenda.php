@@ -17,34 +17,34 @@
  */
 
 /**
- *  \file       immoproperty_agenda.php
+ *  \file       immocost_detail_agenda.php
  *  \ingroup    ultimateimmo
- *  \brief      Page of ImmoProperty events
+ *  \brief      Page of ImmoCost_Detail events
  */
 
 // Load Dolibarr environment
 $res=0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
-// Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
+if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
+// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
 $tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
 while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include substr($tmp, 0, ($i+1))."/main.inc.php";
+if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include dirname(substr($tmp, 0, ($i+1)))."/main.inc.php";
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
+if (! $res && file_exists("../main.inc.php")) $res=@include "../main.inc.php";
+if (! $res && file_exists("../../main.inc.php")) $res=@include "../../main.inc.php";
+if (! $res && file_exists("../../../main.inc.php")) $res=@include "../../../main.inc.php";
 if (! $res) die("Include of main fails");
 
 require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
-dol_include_once('/ultimateimmo/class/immoproperty_type.class.php');
-dol_include_once('/ultimateimmo/lib/immoproperty_type.lib.php');
+dol_include_once('/ultimateimmo/class/immocost_detail.class.php');
+dol_include_once('/ultimateimmo/lib/immocost_detail.lib.php');
 
 
-// Load traductions files requiredby by page
+// Load translation files required by the page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo","other"));
 
 // Get parameters
@@ -82,12 +82,12 @@ if (! $sortfield) $sortfield='a.datep,a.id';
 if (! $sortorder) $sortorder='DESC';
 
 // Initialize technical objects
-$object=new ImmoProperty_Type($db);
+$object=new ImmoCost_Detail($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
-$hookmanager->initHooks(array('immoproperty_typeagenda'));     // Note that conf->hooks_modules contains array
+$hookmanager->initHooks(array('immocost_detailagenda','globalcard'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
-$extralabels = $extrafields->fetch_name_optionals_label('immoproperty_type');
+$extralabels = $extrafields->fetch_name_optionals_label('immocost_detail');
 
 // Load object
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
@@ -138,14 +138,14 @@ if ($object->id > 0)
 	llxHeader('', $title, $help_url);
 
 	if (! empty($conf->notification->enabled)) $langs->load("mails");
-	$head = immoproperty_typePrepareHead($object);
+	$head = immocost_detailPrepareHead($object);
 
 
-	dol_fiche_head($head, 'agenda', $langs->trans("ImmoProperty_Type"), -1, 'ultimateimmo@ultimateimmo');
+	dol_fiche_head($head, 'agenda', $langs->trans("ImmoCost_Detail"), -1, 'immocost_detail@ultimateimmo');
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/immoproperty_type_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/cost_detail/immocost_detail_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref='<div class="refidno">';
 	/*
@@ -244,7 +244,8 @@ if ($object->id > 0)
         if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param.='&contextpage='.$contextpage;
         if ($limit > 0 && $limit != $conf->liste_limit) $param.='&limit='.$limit;
 
-		//print load_fiche_titre($langs->trans("ActionsOnImmoProperty"),'','');
+
+		print load_fiche_titre($langs->trans("ActionsOnImmoCost_Detail"),'','');
 
         // List of all actions
 		$filters=array();
@@ -255,7 +256,6 @@ if ($object->id > 0)
     }
 }
 
-
+// End of page
 llxFooter();
-
 $db->close();

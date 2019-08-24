@@ -25,16 +25,37 @@ ModuleUltimateimmoDesc = Ultimateimmo description
 #
 # Admin page
 #
-ImmobilierSetup = Ultimateimmo setup
+UltimateimmoSetup = Ultimateimmo setup
 Settings = Settings
 UltimateimmoSetupPage = Ultimateimmo setup page
 UltimateimmoNumberingModeles = Numbering model for receipt.
 TemplatePDFUltimateimmo = Template for receipt
 WatermarkOnDraftImmoCards = Watermark On Draft receipt (none if empty)
-ULTIMATEIMMO_MYPARAM1 = My param 1
-ULTIMATEIMMO_MYPARAM1TOOLTIP = My param 1 tooltip
-ULTIMATEIMMO_MYPARAM2=My param 2
-ULTIMATEIMMO_MYPARAM2TOOLTIP=My param 2 tooltip
+PublicSite=Public site
+EnablePublicSite = Enable the publicly accessible site
+PublicSiteDesc = Dolibarr can offer a public page URL to display a site to list real estate listings for external visitors.
+ULTIMATEIMMO_USE_GOOGLE = Use google with UltimateImmo module
+GoogleZoomLevel = Niveau de zoom par défaut (1 à 10)
+GOOGLE_API_SERVERKEY=Clé API (de type "Server key")
+ParametersForGoogleAPIv3Usage=Pour Google API %s V3
+KeepEmptyYoUsePublicQuotaOfAPI=Laisser vide pour utiliser le quota publique de cette API (sinon la clé peut être créée depuis la page https://code.google.com/apis/console/, "API Access" pour créer une "Server key" et "Services" pour activer l'API "%s")
+AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google, vous devez créer une clé depuis la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "Indentification" . Cliquer sur "Créer une clé" et choisir "Clé serveur" puis "Créer". Vous obtiendrez votre clé serveur.
+UltimateimmoEnablePublicInterface = A public interface requiring no identification is available at the following url
+UltimateimmoPublicAccess = Enable public interface
+UltimateimmoEmailMustExist = Require an existing email address to create a ticket
+UltimateimmoEmailMustExistHelp = In the public interface, the email address should already be filled in the database to create a new ticket.
+UltimateimmoShowCompanyLogo = Display the logo of the company in the public interface
+UltimateimmoShowCompanyLogoHelp = Enable this option to hide the logo of the main company in the pages of the public interface
+UltimateimmoPublicInterfaceForbidden = L'interface publique pour les tickets n'a pas été activée
+EnumerationOfPartsAndCommonEquipment=Enumeration of parts and common equipment.
+UltimateImmoEquipementGardiennage=guarding
+UltimateImmoEquipementInterphone=lnterphone
+UltimateImmoEquipementAscenseur=Elevator
+UltimateImmoEquipementVideOrdures=Garbage Disposal
+UltimateImmoEquipementAntenneTVcollective=Collective TV antenna
+UltimateImmoEquipementEspacesverts=Green spaces
+UltimateImmoEquipementChauffageCollectif=Communal heating
+UltimateImmoEquipementEauChaudeCollective=Collective hot water
 
 #
 # Menu
@@ -64,7 +85,7 @@ MenuListImmoPayment = Payments
 MenuListImmoReceipt = Receipts
 MenuNewImmoReceipt = New receipt
 MenuAllReceiptperContract = Generate the receipts
-MenuValidateReceipt = Validate the receipts
+MenuValidateReceipt = Validate the payments
 MenuStatisticPayment = Statistics
 MenuListImmoCost = Rental charges
 MenuNewImmoCost = New rental charge
@@ -84,6 +105,7 @@ UltimateimmoAboutPage = Ultimateimmo about page
 #
 # Miscellaneous
 #
+BienPrincipal = principal property
 BirthDay = Birthday
 BirthCountry = Birth country
 ImmoProperty = Property
@@ -109,6 +131,12 @@ DateBuilt2 = de 1949 à 1974
 DateBuilt3 = de 1975 à 1989
 DateBuilt4 = de 1989 à 2005
 DateBuilt5 = depuis 2005
+APA = Apartement
+HOU = Individual house
+LOC = Business premises
+SHO = Shop
+GAR = Garage
+BUL = Building
 Copropriete = Copropriete
 MonoPropriete = MonoPropriete
 DateStartRent = Date Start Rent
@@ -159,6 +187,27 @@ OwnerName = Owner Name
 RenterName = Renter Name
 SendImmoReceiptRef = Submission of receipt %s
 ConfirmValidateReceipt = Do you confirm validation of receipt %s
+TheTechnicalDiagnosticFileDDT = The technical diagnostic file (DDT)
+ObligationsOfTheSeller = Obligations of the seller
+ObligationsOfTheLessor = Obligations of the lessor
+UltimateImmoDiagnosticElectricityInstallation = The state of the internal electricity installation
+UltimateImmoDiagnosticGasInstallation = The state of the "natural" indoor gas installation
+UltimateImmoDiagnosticLeadExposure = The risk of exposure to lead (CREP)
+UltimateImmoDiagnosticContainingAsbestos = The condition mentioning the presence or absence of materials or products containing asbestos
+UltimateImmoDiagnosticContainingTermites = condition relating to the presence of termites in the building
+UltimateImmoDiagnosticNaturalTechnologicalRisks = the state of natural and technological risks
+UltimateImmoDiagnosticNonCollectiveSanitationFacilities = state of non-collective sanitation facilities
+UltimateImmoDiagnosticEnergyPerformanceDiagnosis = building energy performance diagnosis (DPE)
+ReceiptPaymentsAdded = Receipt payments added
+Echeance = Deadline
+Periode_du = Period from
+Periode_au = Period to
+Nomlocal = Name of property
+Paye = Receipt paid
+ValidateReceipt = Validate receipt
+ShowMandataireDetails = Afficher les détails du mandataire
+ShowColocataireDetails = Afficher les détails des colocataires
+Quittances&Baux = Quittances et Baux
 
 #
 # Sample page

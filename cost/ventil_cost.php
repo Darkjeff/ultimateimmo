@@ -43,31 +43,37 @@ if (! $res) die("Include of main fails");
 dol_include_once("/ultimateimmo/class/immocost.class.php");
 dol_include_once("/ultimateimmo/class/immoproperty.class.php");
 dol_include_once("/ultimateimmo/class/immoreceipt.class.php");
-dol_include_once("/ultimateimmo/class/immo_costdet.class.php");
+dol_include_once("/ultimateimmo/class/immocost_type.class.php");
+dol_include_once("/ultimateimmo/class/immocost_detail.class.php");
 dol_include_once('/ultimateimmo/class/immorent.class.php');
-require_once ('../core/lib/ultimateimmo.lib.php');
-dol_include_once('/ultimateimmo/class/html.ultimateimmo.php');
+dol_include_once('/ultimateimmo/lib/immocost.lib.php');
+dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
-$res = dol_include_once("/ultimateimmo/core/modules/ultimateimmo/modules_immobilier.php");
+$res = dol_include_once("/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php");
 if (! $res)
 	die("Include of ultimateimmo");
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo","bills","compta"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "bills", "compta"));
 
+// Get parameters
 $mesg = '';
 $id = GETPOST('id', 'int');
 $action = GETPOST('action');
 
-$html = new Form($db);
-$htmlimmo = new FormImmobilier($db);
-// Actions
+
+$htmlimmo = new FormUltimateimmo($db);
+
+/*
+ * Actions
+ */
 
 /*
  * Add ventil charge
  */
 
-if ($action == 'ventil') {
+if ($action == 'ventil') 
+{
 	$mesLignesCochees = GETPOST('mesCasesCochees');
 	
 	$cpt = 0;
@@ -75,47 +81,53 @@ if ($action == 'ventil') {
 	
 	$db->begin();
 	
-	foreach ( $mesLignesCochees as $maLigneCochee=>$localid ) {
-		
-		
-		$ChargeDet = new Immo_costdet($db);
+	foreach ($mesLignesCochees as $maLigneCochee=>$localid) 
+	{		
+		$ChargeDet = new ImmoCost_Detail($db);
 		
 		// main info loyer
 		$ChargeDet->amount = GETPOST('amount_'.$localid);
-		$ChargeDet->cost_type = GETPOST('typecharge');
-		$ChargeDet->fk_cost = $id;
+		$ChargeDet->fk_cost_type = GETPOST('typecharge');
+		$ChargeDet->fk_immocost = $id;
 		$ChargeDet->fk_property = $localid;
 		
 		$result = $ChargeDet->create($user);
 		
-		if ($result < 0) {
-			setEventMessage($ChargeDet->error,'errors');
+		if ($result < 0) 
+		{
+			setEventMessages($ChargeDet->error, $ChargeDet->errors, 'errors');
 			$error++;
 		}
 		$cpt ++;
 	}
 	
-	if (empty($error)) {
-		$charge = new Charge($db);
+	if (empty($error)) 
+	{
+		$charge = new ImmoCost($db);
 		$result = $charge->fetch($id);
-		if ($result < 0) {
-			setEventMessage($charge->error, 'errors');
+		if ($result < 0) 
+		{
+			setEventMessages($charge->error, $charge->errors, 'errors');
 			$error++;
 		}
 		$charge->dispatch=1;
 		$result = $charge->update($user);
-		if ($result < 0) {
-			setEventMessage($charge->error, 'errors');
+		if ($result < 0) 
+		{
+			setEventMessages($charge->error, $charge->errors, 'errors');
 			$error++;
 		}
 		
 	}
 	
-	if (empty($error)) {
+	if (empty($error)) 
+	{
 		$db->commit();
-		setEventMessage($langs->trans("SocialContributionAdded"), 'mesgs');
+		setEventMessages($langs->transnoentities("ReceiptPaymentsAdded"), null, 'mesgs');
 		Header("Location: " . dol_buildpath('/ultimateimmo/cost/immocost_card.php',1)."?id=" . $id);
-	} else {
+	} 
+	else 
+	{
 		$db->rollback();
 	}
 }
@@ -127,116 +139,133 @@ if ($action == 'ventil') {
 
 $form = new Form($db);
 $loyer = new Immoreceipt($db);
-llxheader('', $langs->trans("newventilcharge"), '');
+
+$help_url='';
+llxheader('', $langs->trans("newventilcharge"), $help_url);
 
 $charge = new ImmoCost ($db);
 $result = $charge->fetch($id);
 
-if ($result < 0) {
-	setEventMessage($charge->error, 'errors');
+if ($result < 0) 
+{
+	setEventMessages($charge->error, $charge->errors, 'errors');
 }
 
 $local = new ImmoProperty($db);
 $result = $local->fetch($charge->fk_property);
 
-if ($result < 0) {
-	setEventMessage($charge->error, 'errors');
+if ($result < 0) 
+{
+	setEventMessages($charge->error, $charge->errors, 'errors');
 }
 
-
-if (! empty($local->id)) {
+if (! empty($local->id)) 
+{
 	$result = $local->fetchAllByBuilding();
 	
-	if ($result < 0) {
-		setEventMessage($local->error, 'errors');
-	}
-}
-
-$head = charge_prepare_head($charge);
-
-dol_fiche_head($head, 'repartition', $langs->trans("Charge"), 0, 'propertie');
-
-if ($id > 0) {
-	
-/*
- * List properties
- */
-	
-	$i = 0;
-	$total = 0;
-	print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '" method="POST">';
-	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
-	print '<input type="hidden" name="action" value="ventil">';
-	
-	
-	print '<br><div class="fichecenter"><div class="underbanner clearboth"></div><table class="border tableforfield" width="100%"><tbody>';
-	print '<tr class="liste_titre">';
-	print '<td>' . $langs->trans('fk_cost') . '</td>';
-	print '<td>' . $langs->trans('fk_property') . '</td>';
-	print '<td>' . $langs->trans('nomlocal') . '</td>';
-	print '<td align="right">' . $langs->trans('amount') . '</td>';
-	print '<td align="right">' . $langs->trans('select') . '</td>';
-	print "</tr>\n";
-	
-	$i = 0;
-	if (count($local->lines) > 0) 
+	if ($result < 0) 
 	{
-		$amount = 0;
-		$loc_array = array ();
-		// Calcul amount par appartement
-		foreach ( $local->lines as $local_line ) {
-			// Trouve les loyer existant sur cee lieu pour cette période
-			$result = $loyer->fetchByLocalId($local_line->id, array (
-					'insidedateloyer' => $charge->datec 
-			));
-			if ($result < 0) {
-				setEventMessage($loyer->error, 'errors');
-			}
-			if (count($loyer->lines) > 0) {
-				$loc_array[$local_line->id] = $local_line->id;
-			}
-		}
-		
-		if (count($loc_array) > 0) {
-			$amount = $charge->amount / count($loc_array);
-		}
-		// Affichage
-		foreach ( $local->lines as $local_line ) {
-			
-			print '<tr class="oddeven">';
-			print '<td>' . $charge->id . '</td>';
-			print '<td>' . $local_line->id . '</td>';
-			print '<td>' . $local_line->name;
-			if (array_key_exists($local_line->id, $loc_array)) {
-				print ' ' . img_picto($langs->trans('Louer'), 'statut4');
-			} else {
-				print ' ' . img_picto($langs->trans('Vide'), 'statut0');
-			}
-			print '</td>';
-			
-			if (array_key_exists($local_line->id, $loc_array)) {
-				print '<td  align="right"><input name="amount_'.$local_line->id.'" value="' . $amount . '" size="30"></td>';
-			} else {
-				print '<td  align="right"><input name="amount_'.$local_line->id.'" value="" size="30"></td>';
-			}
-			
-			// Colonne choix appartement
-			print '<td align="center">';
-			
-			print '<input type="checkbox" name="mesCasesCochees[]" value="' . $local_line->id .'"'. ((array_key_exists($local_line->id, $loc_array)) ? "checked" : "") . '/>';
-			print '</td>';
-			print '</tr>';
-			
-			$i ++;
-		}
+		setEventMessages($local->error, $local->errors, 'errors');
 	}
-	print '<tr><td colspan="5" align="center">'.$langs->trans('Type').'<input class="flat" type="text" value="" name="typecharge"></td></tr>';
-	print '<tr><td colspan="5" align="center"><input class="button" type="submit" value="' . $langs->trans("AddRepartition") . '" name="addrepartition"></td></tr>';
-	
-	print "</tbody></table></div>";
-	
-	print '</form>';
 }
+
+
+if ($id > 0) 
+{
+	$head = immocostPrepareHead($charge);
+
+	dol_fiche_head($head, 'repartition', $langs->trans("ImmoCost"), -1, 'ultimateimmo@ultimateimmo');
+	
+	// Object Charge
+	// ------------------------------------------------------------
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/cost/immocost_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	
+	$morehtmlref='<div class="refidno">';
+	$morehtmlref.='</div>';
+	
+	dol_banner_tab($charge, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
+	
+	/*
+	 * List properties
+	 */
+		
+		$i = 0;
+		$total = 0;
+		print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '" method="POST">';
+		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+		print '<input type="hidden" name="action" value="ventil">';
+		
+		
+		print '<br><div class="fichecenter"><div class="underbanner clearboth"></div><table class="border tableforfield" width="100%"><tbody>';
+		print '<tr class="liste_titre">';
+		print '<td>' . $langs->trans('fk_immocost') . '</td>';
+		print '<td>' . $langs->trans('fk_property') . '</td>';
+		print '<td>' . $langs->trans('nomlocal') . '</td>';
+		print '<td align="right">' . $langs->trans('amount') . '</td>';
+		print '<td align="right">' . $langs->trans('select') . '</td>';
+		print "</tr>\n";
+		
+		$i = 0;
+		if (count($local->lines) > 0) 
+		{
+			$amount = 0;
+			$loc_array = array ();
+			// Calcul amount par appartement
+			foreach ( $local->lines as $local_line ) {
+				// Trouve les loyer existant sur cee lieu pour cette période
+				$result = $loyer->fetchByLocalId($local_line->id, array (
+						'insidedateloyer' => $charge->datec 
+				));
+				if ($result < 0) 
+				{
+					setEventMessages($loyer->error, $lloyerocal->errors, 'errors');
+				}
+				if (count($loyer->lines) > 0) 
+				{
+					$loc_array[$local_line->id] = $local_line->id;
+				}
+			}
+			
+			if (count($loc_array) > 0) {
+				$amount = $charge->amount / count($loc_array);
+			}
+			// Affichage
+			foreach ( $local->lines as $local_line ) {
+				
+				print '<tr class="oddeven">';
+				print '<td>' . $charge->id . '</td>';
+				print '<td>' . $local_line->id . '</td>';
+				print '<td>' . $local_line->name;
+				if (array_key_exists($local_line->id, $loc_array)) {
+					print ' ' . img_picto($langs->trans('Louer'), 'statut4');
+				} else {
+					print ' ' . img_picto($langs->trans('Vide'), 'statut0');
+				}
+				print '</td>';
+				
+				if (array_key_exists($local_line->id, $loc_array)) {
+					print '<td  align="right"><input name="amount_'.$local_line->id.'" value="' . $amount . '" size="30"></td>';
+				} else {
+					print '<td  align="right"><input name="amount_'.$local_line->id.'" value="" size="30"></td>';
+				}
+				
+				// Colonne choix appartement
+				print '<td align="center">';
+				
+				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $local_line->id .'"'. ((array_key_exists($local_line->id, $loc_array)) ? "checked" : "") . '/>';
+				print '</td>';
+				print '</tr>';
+				
+				$i ++;
+			}
+		}
+		print '<tr><td colspan="5" align="center">'.$langs->trans('Type').'<input class="flat" type="text" value="" name="typecharge"></td></tr>';
+		print '<tr><td colspan="5" align="center"><input class="button" type="submit" value="' . $langs->trans("AddRepartition") . '" name="addrepartition"></td></tr>';
+		
+		print "</tbody></table></div>";
+		
+		print '</form>';
+	}
 
 llxFooter();
 

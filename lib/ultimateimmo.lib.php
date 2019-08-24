@@ -36,13 +36,18 @@ function ultimateimmoAdminPrepareHead()
 	$head = array();
 
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/immoreceipt.php", 1);
-	$head[$h][1] = $langs->trans("Quittances");
+	$head[$h][1] = $langs->trans("Quittances&Baux");
 	$head[$h][2] = 'quittance';
 	$h++;
 	
-	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/immorent.php", 1);
-	$head[$h][1] = $langs->trans("BailLibre");
-	$head[$h][2] = 'bail_libre';
+	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/gmaps.php", 1);
+	$head[$h][1] = $langs->trans("Google Maps");
+	$head[$h][2] = 'gmaps';
+	$h++;
+	
+	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/public.php", 1);
+	$head[$h][1] = $langs->trans("PublicSite");
+	$head[$h][2] = 'public';
 	$h++;
 	
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/property_extrafields.php", 1);

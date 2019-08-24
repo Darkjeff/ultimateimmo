@@ -151,7 +151,7 @@ abstract class ModeleNumRefUltimateimmo
  *  @param  int			$hideref        Hide ref
  *  @return int         				0 if KO, 1 if OK
  
-function immobilier_create($db, $object, $modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
+function ultimateimmo_create($db, $object, $modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
 {
     // phpcs:enable
 	global $conf, $langs, $user;
@@ -254,7 +254,7 @@ function quittance_pdf_create($db, $id, $message, $typeModele, $outputlangs, $fi
 	$langs->load ( 'ultimateimmo@ultimateimmo' );
 	
 	// Charge le modele
-	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/quittance/pdf_' . $typeModele . '.modules.php' );
+	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
 	
 	if (file_exists ( $nomModele )) {
 		require_once ($nomModele);
@@ -293,7 +293,7 @@ function bail_vide_pdf_create($db, $year, $typeModele, $outputlangs, $filedir, $
 	$langs->load ( 'ultimateimmo@ultimateimmo' );
 
 	// Charge le modele
-	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/bail/pdf_' . $typeModele . '.modules.php' );
+	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
 
 	if (file_exists ( $nomModele )) {
 		require_once ($nomModele);

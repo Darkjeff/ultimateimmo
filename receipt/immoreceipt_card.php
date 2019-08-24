@@ -40,7 +40,7 @@ if (! $res) die("Include of main fails");
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
-require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/lib/immoreceipt.lib.php');
 dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
@@ -91,15 +91,18 @@ if ($user->societe_id > 0) $socid = $user->societe_id;
 $isdraft = (($object->statut == ImmoReceipt::STATUS_DRAFT) ? 1 : 0);
 $result = restrictedArea($user, 'ultimateimmo', $object->id, '', '', 'fk_soc', $fieldid, $isdraft);
 
+$usercanread = $user->rights->ultimateimmo->read;
+$usercancreate = $user->rights->ultimateimmo->write;
+$usercandelete = $user->rights->ultimateimmo->delete || ($usercancreate && $object->status == 0);
+
 
 /**
  * Actions
  *
- * Put here all code to do according to value of "action" parameter
  */
 
 $parameters=array();
-$reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+$reshook=$hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if (empty($reshook))
@@ -118,7 +121,7 @@ if (empty($reshook))
 	/**
 	 *	Delete rental
 	 */
-	if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes') {
+	if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes' && $usercandelete) {
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
 		$result = $receipt->delete($user);
@@ -135,7 +138,7 @@ if (empty($reshook))
 	}
 	
 	// Validation
-	if ($action == 'confirm_validate' && $confirm == 'yes' && $user->rights->ultimateimmo->write)
+	if ($action == 'confirm_validate' && $confirm == 'yes' && $usercancreate)
 	{
 		$result = $object->valid($user);
 		
@@ -168,7 +171,7 @@ if (empty($reshook))
 	}
 
 	/**
-	 * Action generate quitance
+	 * Action generate quittance
 	 */
 	if ($action == 'quittance') 
 	{
@@ -215,8 +218,6 @@ if (empty($reshook))
 	
 	$error=0;
 
-	$permissiontoadd = $user->rights->ultimateimmo->write;
-	$permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && $object->status == 0);
     $backurlforlist = dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1);
 	if (empty($backtopage)) {
 	    if (empty($id)) $backtopage = $backurlforlist;
@@ -233,41 +234,94 @@ if (empty($reshook))
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 	
+	// Action clone object
+	if ($action == 'confirm_clone' && $confirm == 'yes' && $usercancreate)
+	{
+	    $objectutil = dol_clone($object, 1);   // To avoid to denaturate loaded object when setting some properties for clone. We use native clone to keep this->db valid.
+	    $objectutil->date = dol_mktime(12, 0, 0, GETPOST('newdatemonth', 'int'), GETPOST('newdateday', 'int'), GETPOST('newdateyear', 'int'));
+	    $objectutil->socid = $socid;
+		
+	    $result = $objectutil->createFromClone($user, $id);
+	    if ($result > 0) 
+		{
+       		header("Location: ".$_SERVER['PHP_SELF'].'?id='.$result);
+       		exit();
+       	}
+		else 
+		{
+       	    $langs->load("errors");
+       		if (count($object->errors) > 0) setEventMessages($object->error, $object->errors, 'errors');
+       		$action = '';
+        }
+	}
+	
 	/*
 	 * Add rental
 	 */
-	if ($action == 'add' && ! $cancel) {
+	if ($action == 'add' && ! $cancel) 
+	{
 		$error = 0;
 		
-		$datev = dol_mktime(12, 0, 0, GETPOST("datevmonth"), GETPOST("datevday"), GETPOST("datevyear"));
-		$datesp = dol_mktime(12, 0, 0, GETPOST("datespmonth"), GETPOST("datespday"), GETPOST("datespyear"));
-		$dateep = dol_mktime(12, 0, 0, GETPOST("dateepmonth"), GETPOST("dateepday"), GETPOST("dateepyear"));
+		$date_echeance = dol_mktime(12, 0, 0, GETPOST("date_echeancemonth"), GETPOST("date_echeanceday"), GETPOST("date_echeanceyear"));
+		$date_start = dol_mktime(12, 0, 0, GETPOST("date_startmonth"), GETPOST("date_startday"), GETPOST("date_startyear"));
+		$date_end = dol_mktime(12, 0, 0, GETPOST("date_endmonth"), GETPOST("date_endday"), GETPOST("date_endyear"));
 		
-		$object->nom = GETPOST("nom");
-		$object->datesp = $datesp;
-		$object->dateep = $dateep;
-		$object->datev = $datev;
-		
-		if (empty($datev) || empty($datesp) || empty($dateep)) {
-			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("Date")), 'errors');
+		$object->ref = '(PROV)';
+		$object->label = GETPOST("label");
+		$object->date_start = $date_start;
+		$object->date_end = $date_end;
+		$object->date_echeance = $date_echeance;
+		$object->fk_rent = GETPOST("fk_rent");
+		$object->fk_property = GETPOST("fk_property");
+		$object->fk_renter = GETPOST("fk_renter");
+		$object->fk_owner = GETPOST("fk_owner");
+		$object->fk_soc = GETPOST("fk_soc");
+		$object->fk_owner = GETPOST("fk_owner");
+		$object->note_public = GETPOST("note_public");
+		$object->note_private = GETPOST("note_private");
+		$object->date_creation = GETPOST("date_creation");
+		$object->date_valid = GETPOST("date_valid");
+		$object->rentamount = GETPOST("rentamount");
+		$object->chargesamount = GETPOST("chargesamount");
+		$object->total_amount = GETPOST("total_amount");
+		$object->balance = GETPOST("balance");
+		$object->partial_payment = GETPOST("partial_payment");
+		$object->paye = GETPOST("paye");
+		$object->vat_amount = GETPOST("vat_amount");
+		$object->vat_tx = GETPOST("vat_tx");
+		$object->fk_statut = GETPOST("fk_statut");
+		$object->fk_user_creat = GETPOST("fk_user_creat");
+		$object->fk_user_modif = GETPOST("fk_user_modif");
+		$object->fk_user_valid = GETPOST("fk_user_valid");
+		$object->model_pdf = GETPOST("model_pdf");
+		$object->last_main_doc = GETPOST("last_main_doc");
+		$object->status = GETPOST("status");
+	
+		if ($date_echeance == '' || $date_start == '' || $date_end == '') 
+		{
+			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("Date")), null, 'errors');
+			$action = "create";
 			$error ++;
 		}
 		
-		if (! $error) {
+		if (! $error) 
+		{
 			$db->begin();
 			
 			$ret = $object->create($user);
-			if ($ret > 0) {
+			if ($ret > 0) 
+			{
 				$db->commit();
-				header("Location: index.php");
+				header("Location: ".dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1));
 				exit();
-			} else {
+			} 
+			else 
+			{
 				$db->rollback();
 				setEventMessages($object->error, $object->errors, 'errors');
 				$action = "create";
 			}
-		}
-		
+		}		
 		$action = 'create';
 	}
 	
@@ -278,36 +332,36 @@ if (empty($reshook))
 	if ($action == 'addall') 
 	{		
 		$error=0;
-		$dateech = dol_mktime(12,0,0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
+		$date_echeance = dol_mktime(12,0,0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
 		$dateperiod = dol_mktime(12,0,0, GETPOST("periodmonth"), GETPOST("periodday"), GETPOST("periodyear"));
 		$dateperiodend = dol_mktime(12,0,0, GETPOST("periodendmonth"), GETPOST("periodendday"), GETPOST("periodendyear"));
 		
-		if (empty($dateech)) 
+		if (empty($date_echeance)) 
 		{
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), null, 'errors');
-			$action = 'createall';
+			$action = 'create';
 			$error++;
 		} 
 		elseif (empty($dateperiod)) 
 		{
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_du")), null, 'errors');
-			$action = 'createall';
+			$action = 'create';
 			$error++;
 		} 
 		elseif (empty($dateperiodend)) 
 		{
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_au")), null, 'errors');
-			$action = 'createall';
+			$action = 'create';
 			$error++;
 		} 
 		else 
 		{		
 			$mesLignesCochees = GETPOST('mesCasesCochees');
 			
-			foreach ( $mesLignesCochees as $maLigneCochee ) 
+			foreach ($mesLignesCochees as $maLigneCochee) 
 			{				
 				$receipt = new ImmoReceipt($db);
-				//var_dump($receipt);exit;
+				
 				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
 				
 				$monId = $maLigneCourante[0];
@@ -320,19 +374,19 @@ if (empty($reshook))
 				$monProprio = $maLigneCourante[7];
 				$socProprio = $maLigneCourante[8];
 				
-				// main info loyer
+				// main info rent
 				$receipt->label = GETPOST('label', 'alpha');
-				$receipt->date_echeance = $dateech;
+				$receipt->date_echeance = $date_echeance;
 				$receipt->date_start = $dateperiod;
 				$receipt->date_end = $dateperiodend;
 				
-				// main info contrat
-				$receipt->ref = GETPOST('ref', 'alpha');
+				// main info contract
+				$receipt->ref = '(PROV)';
 				$receipt->fk_rent = $monId;
 				$receipt->fk_property = $monLocal;
 				$receipt->fk_renter = $monLocataire;
 				$receipt->fk_owner = $user->id;
-				
+
 				if ($maTVA == Oui) 
 				{
 					$receipt->total_amount = $monMontant * 1.2;
@@ -349,8 +403,7 @@ if (empty($reshook))
 				$receipt->fk_owner = $monProprio;
 				$receipt->fk_soc = $socProprio;
 				$receipt->status=0;
-				//$receipt->paye=0;
-				//var_dump($receipt);exit;
+				$receipt->paye=0;
 				$result = $receipt->create($user);
 				if ($result < 0) 
 				{
@@ -363,14 +416,68 @@ if (empty($reshook))
 		
 		if (empty($error)) 
 		{
-			setEventMessages($langs->trans("SocialContributionAdded"), null, 'mesgs');
-			Header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1));
+			setEventMessages($langs->trans("ReceiptPaymentsAdded"), null, 'mesgs');
+			Header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1));
 			exit();
 		}
 	}
 	
+	/*
+	 * Edit Receipt
+	 */
+
+	if ($action == 'update')
+	{
+		$date_echeance = dol_mktime(12, 0, 0, GETPOST("date_echeancemonth"), GETPOST("date_echeanceday"), GETPOST("date_echeanceyear"));
+		$date_start = dol_mktime(12, 0, 0, GETPOST("date_startmonth"), GETPOST("date_startday"), GETPOST("date_startyear"));
+		$date_end = dol_mktime(12, 0, 0, GETPOST("date_endmonth"), GETPOST("date_endday"), GETPOST("date_endyear"));
+		
+		$receipt = new Immoreceipt($db);
+		$result = $receipt->fetch($id);
+		
+		$receipt->label 		= GETPOST('label');
+		if ($receipt->vat_tx != 0) 
+		{
+			$rentamount = price2num(GETPOST("rentamount"));
+			$chargesamount = price2num(GETPOST("chargesamount"));
+			$receipt->total_amount 	= ($rentamount + $chargesamount)*1.2;
+		}
+		else 
+		{
+			$rentamount = price2num(GETPOST("rentamount"));
+			$chargesamount = price2num(GETPOST("chargesamount"));
+			$receipt->total_amount 	= $rentamount + $chargesamount;
+		}
+		$receipt->rentamount 	= GETPOST("rentamount");
+		$receipt->chargesamount = GETPOST("chargesamount");
+		if ($receipt->vat_tx != 0) 
+		{
+			$rentamount = price2num(GETPOST("rentamount"));
+			$chargesamount = price2num(GETPOST("chargesamount"));
+			$receipt->vat_amount = ($rentamount + $chargesamount)*0.2;
+		}
+		else 
+		{
+			$receipt->vat_amount = 0;
+		}
+		
+		$receipt->date_echeance = $date_echeance;
+		$receipt->note_public 	= GETPOST("note_public");
+		$receipt->status 		= GETPOST("status");
+		$receipt->date_start 	= $date_start;
+		$receipt->date_end 		= $date_end;
+		
+		$result = $receipt->update($user);
+		header("Location: ".dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id=' .$receipt->id);
+		if ($id > 0) {
+			// $mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
+		} else {
+			$mesg = '<div class="error">' . $receipt->error . '</div>';
+		}
+	}
+	
 	// Build doc
-	if ($action == 'builddoc' && $user->rights->ultimateimmo->write)
+	if ($action == 'builddoc' && $usercancreate)
 	{
 		// Save last template used to generate document
 		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model','alpha'));
@@ -400,29 +507,28 @@ if (empty($reshook))
 /*
  * View
  *
- * Put here all code to build page
  */
+
+llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
 
 $form=new Form($db);
 $formfile=new FormFile($db);
 
-llxHeader('','ImmoReceipt','');
+// Load object modReceipt
+$module=(! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
 
-// Example : Adding jquery code
-print '<script type="text/javascript" language="javascript">
-jQuery(document).ready(function() {
-	function init_myfunc()
-	{
-		jQuery("#myid").removeAttr(\'disabled\');
-		jQuery("#myid").attr(\'disabled\',\'disabled\');
-	}
-	init_myfunc();
-	jQuery("#mybutton").click(function() {
-		init_myfunc();
-	});
-});
-</script>';
+if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
+{
+	$module = substr($module, 0, dol_strlen($module)-4);
+	
+}
+$result=dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php');
 
+if ($result >= 0)
+{
+	dol_include_once('/ultimateimmo/core/modules/ultimateimmo/mod_ultimateimmo_simple.php');
+	$modCodeReceipt = new $module();
+}
 
 // Part to create
 if ($action == 'create')
@@ -447,7 +553,7 @@ if ($action == 'create')
 		$dateep = dol_get_last_day($pastmonthyear, $pastmonth, false);
 	}
 
-	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
+	print '<form name="fiche_loyer" method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="add">';
 	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
@@ -476,17 +582,17 @@ if ($action == 'create')
 		print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
-		
+
 		if ($val['label'] == 'Ref')
-		{
+		{			
 			// Reference
 			if (! empty($modCodeReceipt->code_auto)) 
 			{
-				$tmpcode=$langs->trans("Draft");
+				$tmpcode="(PROV)";
 			} 
 			else 
 			{
-				$tmpcode='<input name="ref" class="maxwidth100" maxlength="128" value="'.dol_escape_htmltag($ref?$ref:$tmpcode).'">';
+				$tmpcode='<input name="ref" class="maxwidth100" maxlength="128" value="'.dol_escape_htmltag(GETPOST('ref')?GETPOST('ref'):$tmpcode).'">';
 			}
 			print $tmpcode;
 		}
@@ -508,7 +614,7 @@ if ($action == 'create')
 		elseif ($val['label'] == 'Echeance')
 		{
 			// Echeance
-			print $form->select_date($object->date_echeance, "date_echeance",0,0,0,"",1,1,1);
+			print $form->select_date(($object->date_echeance ? $object->date_echeance : -1), "date_echeance", 0, 0, 0, "", 1, 1, 1);
 		}
 		else
 		{
@@ -566,16 +672,16 @@ elseif ($action == 'createall')
 		print '</td>';
 		print "</tr>\n";
 		
-		print '<tr clas="oddeven" valign="top">';
+		print '<tr class="oddeven" valign="top">';
 		
 		/*
-		 * Nom du loyer
+		 * Rent name
 		 */
 		print '<td><input name="label" size="30" value="' . GETPOST('label') . '"</td>';
 		
 		// Due date
 		print '<td class="center">';
-		print $form->select_date(! empty($dateech) ? $dateech : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
+		print $form->select_date(! empty($date_echeance) ? $date_echeance : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
 		print '</td>';
 		print '<td class="center">';
 		print $form->select_date(! empty($dateperiod) ? $dateperiod : '-1', 'period', 0, 0, 0, 'fiche_loyer', 1);
@@ -584,14 +690,14 @@ elseif ($action == 'createall')
 		print $form->select_date(! empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', 0, 0, 0, 'fiche_loyer', 1);
 		print '</td>';
 		
-		print '<td class="center"><input type="submit" class="button" value="' . $langs->trans("Add") . '"></td></tr>';
+		print '<td class="center"><input type="submit" class="button" value="' . $langs->trans("MenuAllReceiptperContract") . '"></td></tr>';
 		
 		print '</table>';
 		
 		/*
 		 * List agreement
 		 */
-		$sql = "SELECT c.rowid as contract, loc.lastname as rentername, o.lastname as ownername, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner, o.rowid, o.fk_soc, loc.fk_owner";
+		$sql = "SELECT c.rowid as contractid, c.ref as contract, loc.lastname as rentername, o.lastname as ownername, l.ref as localref, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner, o.rowid, o.fk_soc, loc.fk_owner";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
@@ -634,14 +740,14 @@ elseif ($action == 'createall')
 					$company=new Societe($db);
 					$result=$company->fetch($objp->fk_soc);
 				}
-
+				
 				print '<td>' . $objp->contract . '</td>';
-				print '<td>' . $objp->reflocal . '</td>';
+				print '<td>' . $objp->localref . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->reflocataire . '</td>';
 				print '<td>' . $objp->rentername . '</td>';
 				print '<td>' . $objp->fk_owner . '</td>';
-				print '<td>' . $objp->fk_soc . '</td>';
+				print '<td>' . $objp->ownername . '</td>';
 
 				print '<td class="right">' . price($objp->rentamount) . '</td>';
 				print '<td class="right">' . price($objp->chargesamount) . '</td>';
@@ -651,7 +757,7 @@ elseif ($action == 'createall')
 				// Colonne choix contrat
 				print '<td class="center">';
 
-				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contract . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner .  '_' . $objp->fk_soc . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
+				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->reflocal . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner .  '_' . $objp->fk_soc . '"' . ($objp->reflocal ? ' checked="checked"' : "") . '/>';
 				print '</td>';
 				print '</tr>';
 
@@ -675,15 +781,15 @@ else
 	// Part to edit record
 	if (($id || $ref) && $action == 'edit')
 	{
-		print load_fiche_titre($langs->trans("newrental", $langs->transnoentitiesnoconv("ImmoReceipt")));
+		print load_fiche_titre($langs->trans("MenuNewImmoReceipt", $langs->transnoentitiesnoconv("ImmoReceipt")));
 
 		$receipt = new ImmoReceipt($db);
 		$result = $receipt->fetch($id);
-
+		
 		if ($action == 'delete')
 		{
 			// Param url = id de la periode à supprimer - id session
-			$ret = $form->form_confirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+			$ret = $form->form_confirm($_SERVER['PHP_SELF'].'?id='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
 			if ($ret == 'html')
 			print '<br>';
 		}
@@ -756,23 +862,31 @@ else
 			// Confirmation to delete
 			if ($action == 'delete')
 			{
-				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
+				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
 			}
 
 			// Clone confirmation
-			if ($action == 'clone') {
+			if ($action == 'clone') 
+			{
 				// Create an array for form
-				$formquestion = array();
-				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
+				$formquestion = array(
+					array('type' => 'other','name' => 'socid','label' => $langs->trans("SelectThirdParty"),'value' => $form->select_company($object->fk_soc, 'socid', '(s.client=1 OR s.client=2 OR s.client=3)', 1)),
+					array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
+				);
+				// Ask confirmation to clone
+				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
 			}
 
 			// Confirmation of validation
 			if ($action == 'validate')
 			{
+				$error = 0;
+				
 				// We verifie whether the object is provisionally numbering
-				$ref = substr($object->ref, 1, 4);		
-				if ($ref == 'PROV') {
-					$numref = $object->getNextNumRef($soc);					
+				$ref = substr($object->ref, 1, 4);
+				if ($ref == 'PROV') 
+				{
+					$numref = $object->getNextNumRef($soc);	
 					if (empty($numref)) 
 					{
 						$error ++;
@@ -793,15 +907,16 @@ else
 					$text .= '<br>';
 					$text .= $notify->confirmMessage('ULTIMATEIMMO_VALIDATE', $object->socid, $object);
 				}
-
-				// Call Hook formConfirm
-				$parameters = array('lineid' => $lineid);
-				$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-				if (empty($reshook)) $formconfirm.=$hookmanager->resPrint;
-				elseif ($reshook > 0) $formconfirm=$hookmanager->resPrint;
-
-				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
+				
+				if (! $error)
+					$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
 			}
+			
+			// Call Hook formConfirm
+			$parameters = array('lineid' => $lineid);
+			$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+			if (empty($reshook)) $formconfirm.=$hookmanager->resPrint;
+			elseif ($reshook > 0) $formconfirm=$hookmanager->resPrint;
 
 			// Print form confirm
 			print $formconfirm;
@@ -809,7 +924,7 @@ else
 
 			// Object card
 			// ------------------------------------------------------------
-			$linkback = '<a href="' .dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+			$linkback = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?restore_lastsearch_values=1'.(! empty($socid)?'&socid='.$socid : '').'">'. $langs->trans("BackToList").'</a>';
 
 			dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
@@ -875,7 +990,7 @@ else
 					$objp = $db->fetch_object($resql);
 
 					print '<tr class="oddeven"><td>';
-					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?action=edit&amp;id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
+					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
 					print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
 					print '<td>'.$objp->type.'</td>';
 					print '<td class="right">' . $cursymbolbefore.price($objp->amount, 0, $outputlangs).' '.$cursymbolafter."</td>\n";
@@ -970,6 +1085,12 @@ else
 					}
 					
 					// Create payment
+					if ($object->paye == 0) 
+					{
+						print '<div class="inline-block divButAction"><a class="butAction" href="'. dol_buildpath('/ultimateimmo/receipt/payment/paiement.php',1).'?id=' . $object->id . '&amp;action=create&amp;accountid='.$object->fk_account.'">' . $langs->trans('DoPayment') . '</a></div>';
+					}
+
+					// Create payment
 					if ($receipt->status == 0 && $user->rights->ultimateimmo->rent->write)
 					{
 						if ($remaintopay == 0)
@@ -991,24 +1112,10 @@ else
 					// Clone
 					if ($user->rights->ultimateimmo->write)
 					{
-						print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&amp;socid=' . $object->socid . '&amp;action=clone&amp;object=order">' . $langs->trans("ToClone") . '</a></div>';
+						print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=ImmoReceipt">' . $langs->trans("ToClone") . '</a></div>';
 					}
 
-					/*
-					if ($user->rights->ultimateimmo->write)
-					{
-						if ($object->status == 1)
-						{
-							print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=disable">'.$langs->trans("Disable").'</a>'."\n";
-						}
-						else
-						{
-							print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=enable">'.$langs->trans("Enable").'</a>'."\n";
-						}
-					}
-					*/
-
-					if ($user->rights->ultimateimmo->delete)
+					if ($usercandelete)
 					{
 						print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
 					}
@@ -1037,7 +1144,7 @@ else
 				$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 				$genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
 				$delallowed = $user->rights->ultimateimmo->create;	// If you can create/edit, you can remove a file on card
-				print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, 'quittance', 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
+				print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
 
 				// Show links to link elements
 				$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));

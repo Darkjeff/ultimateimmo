@@ -102,7 +102,7 @@ if (empty($reshook))
 	$permissiontoadd = $user->rights->ultimateimmo->write;
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$backurlforlist = dol_buildpath('/ultimateimmo/cost_type/immocost_type_list.php',1);
-	$triggermodname = 'IMMOBILIER_MODIFY';
+	$triggermodname = 'ULTIMATEIMMO_MODIFY';
 
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';

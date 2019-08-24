@@ -1,5 +1,4 @@
--- ========================================================================
--- Copyright (C) 2018-2019  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2019 Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -15,16 +14,10 @@
 -- along with this program.  If not, see http://www.gnu.org/licenses/.
 
 
-CREATE TABLE llx_ultimateimmo_immoproperty_type(
+CREATE TABLE llx_ultimateimmo_building(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL, 
-	entity integer DEFAULT 1 NOT NULL,
-	label varchar(255), 
-	date_creation datetime NOT NULL, 
-	tms timestamp NOT NULL, 
-	fk_user_creat integer NOT NULL, 
-	fk_user_modif integer,  
-	status integer NOT NULL
+	label varchar(255),  
+	fk_property integer, 
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

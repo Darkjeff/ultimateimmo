@@ -37,27 +37,57 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
+global $db, $langs, $user, $conf;
+
+// Libraries
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
-$langs->load("ultimateimmo@ultimateimmo");
+// Translations
+$langs->loadLangs(array("admin", "ultimateimmo@ultimateimmo"));
 
-$mesg = '';
-$id = GETPOST('rowid') ? GETPOST('rowid', 'int') : GETPOST('id', 'int');
+// Parameters
 $action = GETPOST('action', 'alpha');
+$backtopage = GETPOST('backtopage', 'alpha');
+$id = GETPOST('rowid') ? GETPOST('rowid', 'int') : GETPOST('id', 'int');
 
 // Security check
 if (! $user->rights->ultimateimmo->read) {
 	accessforbidden();
 }
 
-$object = new ImmoProperty($db);
-$result = $object->fetch($id);
-
-if ($result < 0) {
-	setEventMessages(null, $object->errors, 'errors');
+/*
+ * Action
+ */
+if (preg_match('/set_(.*)/',$action,$reg))
+{
+    $code=$reg[1];
+    if (dolibarr_set_const($db, $code, 1, 'chaine', 0, '', $conf->entity) > 0)
+    {
+        Header("Location: ".$_SERVER["PHP_SELF"]);
+        exit;
+    }
+    else
+    {
+        dol_print_error($db);
+    }
 }
+
+if (preg_match('/del_(.*)/',$action,$reg))
+{
+    $code=$reg[1];
+    if (dolibarr_del_const($db, $code, $conf->entity) > 0)
+    {
+        Header("Location: ".$_SERVER["PHP_SELF"]);
+        exit;
+    }
+    else
+    {
+        dol_print_error($db);
+    }
+}
+
 
 /*
  * View
@@ -65,71 +95,228 @@ if ($result < 0) {
 
 $html = new Form($db);
 $htmlimmo = new FormUltimateimmo($db);
+$object = new ImmoProperty($db);
+$result = $object->fetch($id);
 
-llxheader('', $langs->trans("Property") . ' | ' . $langs->trans("Equipements"), '');
-
-$head = immopropertyPrepareHead($object);
-
-dol_fiche_head($head, 'equipement', $langs->trans("Property"), 0, 'building@ultimateimmo');
-
-if ($result) {
-	if ($mesg)
-		print $mesg . "<br>";
-
-	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
-
-	dol_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
-
-	print '<div class="fichecenter">';
-	print '<div class="fichehalfleft">';
-
-	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border tableforfield" width="100%">';
-
-	// ADSL
-	print '<tr>';
-	print '<td class="titlefield">' . $langs->trans("ADSL") . '</td>';
-	print '<td>';
-	if (! empty($conf->use_javascript_ajax))
-	{
-		print ajax_constantonoff('DISPLAY_MARGIN_RATES');
-	}
-	else
-	{
-		if (empty($conf->global->DISPLAY_MARGIN_RATES))
-		{
-			print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_DISPLAY_MARGIN_RATES">'.img_picto($langs->trans("Disabled"),'off').'</a>';
-		}
-		else
-		{
-			print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_DISPLAY_MARGIN_RATES">'.img_picto($langs->trans("Enabled"),'on').'</a>';
-		}
-	}
-	print '</td>';
-	print '</tr>';
-
-	print '</table>';
-	print '</div>';
-	print '<div class="fichehalfright"><div class="ficheaddleft">';
-
-	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border tableforfield" width="100%">';
-
-	// ADSL
-	print '<tr>';
-	print '<td class="titlefield">' . $langs->trans("Cable") . '</td>';
-	print '<td>' . dol_print_date($db->jdate($object->datep), 'day') . '</td>';
-	print '</tr>';
-
-	print "</table>\n";
-	print '</div>';
-
-	print '</div></div>';
-	print '<div style="clear:both"></div>';
-
-	dol_fiche_end();
+if ($result < 0) {
+	setEventMessages(null, $object->errors, 'errors');
 }
 
-$db->close();
+$page_name = $langs->trans("Property").'|'.$langs->trans("Equipement");
+llxheader('', $langs->trans($page_name), '');
 
-llxFooter('');
+// Subheader
+$linkback = '<a href="' .dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+
+// Configuration header
+$head = immopropertyPrepareHead($object);
+dol_fiche_head($head, 'equipement', $langs->trans("Property"), 0, 'building@ultimateimmo');
+
+dol_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'name');
+
+print '<div class="fichecenter">';
+print '<div class="underbanner clearboth"></div>';
+print '<table class="border centpercent">'."\n";
+
+// Addresses area
+print_fiche_titre($langs->trans("EnumerationOfPartsAndCommonEquipment"),'','').'<br>';
+
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("Parameters").'</td>'."\n";
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
+print '</tr>';
+
+// UltimateImmoEquipementGardiennage.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoEquipementGardiennage").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';	
+
+// UltimateImmoEquipementInterphone.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoEquipementInterphone").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// UltimateImmoEquipementAscenseur.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoEquipementAscenseur").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// UltimateImmoEquipementVideOrdures.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoEquipementVideOrdures").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// UltimateImmoEquipementAntenneTVcollective.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoEquipementAntenneTVcollective").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// UltimateImmoEquipementEspacesverts.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoEquipementEspacesverts").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// UltimateImmoEquipementChauffageCollectif.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoEquipementChauffageCollectif").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+// UltimateImmoEquipementEauChaudeCollective.
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("UltimateImmoEquipementEauChaudeCollective").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="center" width="100">';
+if ($conf->use_javascript_ajax)
+{
+	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE');
+}
+else
+{
+	if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE == 0)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=set_ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE">'.img_picto($langs->trans("Disabled"),'off').'</a>';
+	}
+	else if($conf->global->ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE == 1)
+	{
+		print '<a href="'.$_SERVER['PHP_SELF'].'?action=del_ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE">'.img_picto($langs->trans("Enabled"),'on').'</a>';
+	}
+}
+print '</td></tr>';
+
+
+print '</table>';
+
+// Footer
+llxFooter();
+// Close database handler
+$db->close();
+?>

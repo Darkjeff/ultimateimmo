@@ -64,8 +64,8 @@ if ($year == 0) {
  */
 llxHeader ( '', 'Compta - Ventilation' );
 
-$textprevyear = '<a href="' .dol_buildpath('/ultimateimmo/result/result.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
-$textnextyear = '<a href="' .dol_buildpath('/ultimateimmo/result/result.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
+$textprevyear = '<a href="'.dol_buildpath('/ultimateimmo/result/result.php', 1).'?year='.($year_current - 1).'">'.img_previous().'</a>';
+$textnextyear = '<a href="'.dol_buildpath('/ultimateimmo/result/result.php', 1).'?year='.($year_current + 1).'">'.img_next().'</a>';
 
 print_fiche_titre ( $langs->trans("Encaissement")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
 
@@ -74,27 +74,25 @@ print '<tr><td valign="top" width="30%" class="notopnoleft">';
 
 $y = $year_current;
 
+print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td></tr>';
+print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print "</table>\n";
-print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
-print '</tr><tr><td colspan=2>';
-print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("Encaissement").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width="10%">'.$langs->trans("Encaissement").'</td>';
+print '<td align="right">'.$langs->trans("January").'</td>';
+print '<td align="right">'.$langs->trans("February").'</td>';
+print '<td align="right">'.$langs->trans("March").'</td>';
+print '<td align="right">'.$langs->trans("April").'</td>';
+print '<td align="right">'.$langs->trans("May").'</td>';
+print '<td align="right">'.$langs->trans("June").'</td>';
+print '<td align="right">'.$langs->trans("July").'</td>';
+print '<td align="right">'.$langs->trans("August").'</td>';
+print '<td align="right">'.$langs->trans("September").'</td>';
+print '<td align="right">'.$langs->trans("October").'</td>';
+print '<td align="right">'.$langs->trans("November").'</td>';
+print '<td align="right">'.$langs->trans("December").'</td>';
+print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ll.label AS nom_immeuble,";
+$sql = "SELECT ii.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=1,lp.amount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=2,lp.amount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=3,lp.amount,0)),2) AS 'Mars',";
@@ -110,11 +108,12 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre'
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid";
+$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.fk_property";
 
 $resql = $db->query ( $sql );
 if ($resql) {
@@ -149,26 +148,25 @@ if ($resql) {
 
 print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
-print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
-print '</tr><tr><td colspan=2>';
+print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td></tr>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("Paiement Charge locataire").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width="10%">'.$langs->trans("Paiement Charge locataire").'</td>';
+print '<td align="right">'.$langs->trans("January").'</td>';
+print '<td align="right">'.$langs->trans("February").'</td>';
+print '<td align="right">'.$langs->trans("March").'</td>';
+print '<td align="right">'.$langs->trans("April").'</td>';
+print '<td align="right">'.$langs->trans("May").'</td>';
+print '<td align="right">'.$langs->trans("June").'</td>';
+print '<td align="right">'.$langs->trans("July").'</td>';
+print '<td align="right">'.$langs->trans("August").'</td>';
+print '<td align="right">'.$langs->trans("September").'</td>';
+print '<td align="right">'.$langs->trans("October").'</td>';
+print '<td align="right">'.$langs->trans("November").'</td>';
+print '<td align="right">'.$langs->trans("December").'</td>';
+print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ll.label AS nom_immeuble,";
+$sql = "SELECT ii.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=1,lo.chargesamount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=2,lo.chargesamount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=3,lo.chargesamount,0)),2) AS 'Mars',";
@@ -184,11 +182,12 @@ $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=12,lo.chargesamount,0)),2) AS 'D
 $sql .= "  ROUND(SUM(lo.chargesamount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid ";
+$sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property  ";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.fk_property";
 
 $resql = $db->query ( $sql );
 if ($resql) {
@@ -227,7 +226,7 @@ print '</tr>';
 
 $value_array=array();
 
-$sql = "SELECT ll.label AS nom_immeuble,";
+$sql = "SELECT ii.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=1,lp.amount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=2,lp.amount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=3,lp.amount,0)),2) AS 'Mars',";
@@ -243,14 +242,15 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre'
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid";
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
+$sql .= " GROUP BY ll.fk_property";
 
 $resqlencaissement = $db->query ( $sql );
 
-$sql = "SELECT ll.label AS nom_immeuble,";
+$sql = "SELECT ii.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=1,lo.chargesamount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=2,lo.chargesamount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=3,lo.chargesamount,0)),2) AS 'Mars',";
@@ -266,11 +266,12 @@ $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=12,lo.chargesamount,0)),2) AS 'D
 $sql .= "  ROUND(SUM(lo.chargesamount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid ";
+$sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.fk_property";
 
 $resqlpaiement = $db->query ( $sql );
 if ($resqlpaiement && $resqlencaissement) {
@@ -297,20 +298,20 @@ if ($resqlpaiement && $resqlencaissement) {
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("Loyer brut encaissé").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width="10%">'.$langs->trans("Loyer brut encaissé").'</td>';
+print '<td align="right">'.$langs->trans("January").'</td>';
+print '<td align="right">'.$langs->trans("February").'</td>';
+print '<td align="right">'.$langs->trans("March").'</td>';
+print '<td align="right">'.$langs->trans("April").'</td>';
+print '<td align="right">'.$langs->trans("May").'</td>';
+print '<td align="right">'.$langs->trans("June").'</td>';
+print '<td align="right">'.$langs->trans("July").'</td>';
+print '<td align="right">'.$langs->trans("August").'</td>';
+print '<td align="right">'.$langs->trans("September").'</td>';
+print '<td align="right">'.$langs->trans("October").'</td>';
+print '<td align="right">'.$langs->trans("November").'</td>';
+print '<td align="right">'.$langs->trans("December").'</td>';
+print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 
 foreach( $value_array as $key=>$val) {
@@ -341,22 +342,22 @@ print '</tr>';
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("chargesamount Déductibles").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width="10%">'.$langs->trans("Charges Déductibles").'</td>';
+print '<td align="right">'.$langs->trans("January").'</td>';
+print '<td align="right">'.$langs->trans("February").'</td>';
+print '<td align="right">'.$langs->trans("March").'</td>';
+print '<td align="right">'.$langs->trans("April").'</td>';
+print '<td align="right">'.$langs->trans("May").'</td>';
+print '<td align="right">'.$langs->trans("June").'</td>';
+print '<td align="right">'.$langs->trans("July").'</td>';
+print '<td align="right">'.$langs->trans("August").'</td>';
+print '<td align="right">'.$langs->trans("September").'</td>';
+print '<td align="right">'.$langs->trans("October").'</td>';
+print '<td align="right">'.$langs->trans("November").'</td>';
+print '<td align="right">'.$langs->trans("December").'</td>';
+print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ll.label AS nom_immeuble,";
+$sql = "SELECT ii.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=1,ic.amount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=2,ic.amount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=3,ic.amount,0)),2) AS 'Mars',";
@@ -373,13 +374,14 @@ $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.label = 'Charge déductible' ";
-$sql .= "  AND ic.fk_property = ll.rowid ";
+$sql .= "  AND it.famille = 'Charge déductible' ";
+$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.fk_property";
 
 
 $resql = $db->query ( $sql );
@@ -415,11 +417,9 @@ if ($resql) {
 
 print "</table>\n";
 
-
-
 $value_array=array();
 
-$sql = "SELECT ll.label AS nom_immeuble,";
+$sql = "SELECT ii.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=1,lp.amount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=2,lp.amount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=3,lp.amount,0)),2) AS 'Mars',";
@@ -435,15 +435,16 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre'
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid ";
+$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.fk_property";
 
 $resqlencaissement = $db->query ( $sql );
 
-$sql = "SELECT ll.label AS nom_immeuble,";
+$sql = "SELECT ii.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=1,lo.chargesamount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=2,lo.chargesamount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=3,lo.chargesamount,0)),2) AS 'Mars',";
@@ -459,15 +460,16 @@ $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=12,lo.chargesamount,0)),2) AS 'D
 $sql .= "  ROUND(SUM(lo.chargesamount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid ";
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
+$sql .= " GROUP BY ll.fk_property";
 
 $resqlpaiement = $db->query ( $sql );
 
 
-$sql = "SELECT ll.label AS nom_immeuble,";
+$sql = "SELECT ii.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=1,ic.amount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=2,ic.amount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=3,ic.amount,0)),2) AS 'Mars',";
@@ -484,13 +486,14 @@ $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.label = 'Charge déductible' ";
-$sql .= "  AND ic.fk_property = ll.rowid ";
+$sql .= "  AND it.famille = 'Charge déductible' ";
+$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.fk_property";
 
 
 
@@ -521,23 +524,22 @@ if ($resqlpaiement && $resqlencaissement && $resqlcharged ) {
 	print $db->lasterror (); // affiche la derniere erreur sql
 }
 
-print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("Revenu Fiscal").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width="10%">'.$langs->trans("Revenu Fiscal").'</td>';
+print '<td align="right">'.$langs->trans("January").'</td>';
+print '<td align="right">'.$langs->trans("February").'</td>';
+print '<td align="right">'.$langs->trans("March").'</td>';
+print '<td align="right">'.$langs->trans("April").'</td>';
+print '<td align="right">'.$langs->trans("May").'</td>';
+print '<td align="right">'.$langs->trans("June").'</td>';
+print '<td align="right">'.$langs->trans("July").'</td>';
+print '<td align="right">'.$langs->trans("August").'</td>';
+print '<td align="right">'.$langs->trans("September").'</td>';
+print '<td align="right">'.$langs->trans("October").'</td>';
+print '<td align="right">'.$langs->trans("November").'</td>';
+print '<td align="right">'.$langs->trans("December").'</td>';
+print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 
 foreach( $value_array as $key=>$val) {
@@ -566,28 +568,24 @@ print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr>';
 
 
-
-
-
-print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("chargesamount non Déductibles").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width="10%">'.$langs->trans("Charges non Déductibles").'</td>';
+print '<td align="right">'.$langs->trans("January").'</td>';
+print '<td align="right">'.$langs->trans("February").'</td>';
+print '<td align="right">'.$langs->trans("March").'</td>';
+print '<td align="right">'.$langs->trans("April").'</td>';
+print '<td align="right">'.$langs->trans("May").'</td>';
+print '<td align="right">'.$langs->trans("June").'</td>';
+print '<td align="right">'.$langs->trans("July").'</td>';
+print '<td align="right">'.$langs->trans("August").'</td>';
+print '<td align="right">'.$langs->trans("September").'</td>';
+print '<td align="right">'.$langs->trans("October").'</td>';
+print '<td align="right">'.$langs->trans("November").'</td>';
+print '<td align="right">'.$langs->trans("December").'</td>';
+print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ll.label AS nom_immeuble,";
+$sql = "SELECT ii.label AS nom_immeuble,";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=1,ic.amount,0)),2) AS 'Janvier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=2,ic.amount,0)),2) AS 'Fevrier',";
 $sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=3,ic.amount,0)),2) AS 'Mars',";
@@ -604,13 +602,14 @@ $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.label = 'Charge non déductible' ";
-$sql .= "  AND ic.fk_property = ll.rowid ";
+$sql .= "  AND it.famille = 'Charge non déductible' ";
+$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 
-$sql .= " GROUP BY ll.fk_property_type";
+$sql .= " GROUP BY ll.fk_property";
 
 
 $resql = $db->query ( $sql );
@@ -647,9 +646,6 @@ if ($resql) {
 print "</table>\n";
 
 
-
-
-
 $value_array=array();
 
 $sql = "SELECT 'Total' AS 'Total',";
@@ -668,9 +664,10 @@ $sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre'
 $sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid";
+$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 
 
 
@@ -692,10 +689,10 @@ $sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=12,lo.chargesamount,0)),2) AS 'D
 $sql .= "  ROUND(SUM(lo.chargesamount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid ";
-
+$sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 
 
 $resqlpaiement = $db->query ( $sql );
@@ -718,19 +715,15 @@ $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.label = 'Charge déductible' ";
-$sql .= "  AND ic.fk_property = ll.rowid ";
-
-
-
+$sql .= "  AND it.famille = 'Charge déductible' ";
+$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 
 
 $resqlcharged = $db->query ( $sql );
-
-
 
 
 $sql = "SELECT 'Total' AS 'Total',";
@@ -750,17 +743,15 @@ $sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.label = 'Charge non déductible' ";
-$sql .= "  AND ic.fk_property = ll.rowid ";
-
+$sql .= "  AND it.famille = 'Charge non déductible' ";
+$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
 
 
 $resqlchargend = $db->query ( $sql );
-
-
 
 
 if ($resqlpaiement && $resqlencaissement && $resqlcharged && $resqlchargend  ) {
@@ -788,23 +779,22 @@ if ($resqlpaiement && $resqlencaissement && $resqlcharged && $resqlchargend  ) {
 	print $db->lasterror (); // affiche la derniere erreur sql
 }
 
-print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=150>'.$langs->trans("Revenu Net").'</td>';
-print '<td align="center">'.$langs->trans("January").'</td>';
-print '<td align="center">'.$langs->trans("February").'</td>';
-print '<td align="center">'.$langs->trans("March").'</td>';
-print '<td align="center">'.$langs->trans("April").'</td>';
-print '<td align="center">'.$langs->trans("May").'</td>';
-print '<td align="center">'.$langs->trans("June").'</td>';
-print '<td align="center">'.$langs->trans("July").'</td>';
-print '<td align="center">'.$langs->trans("August").'</td>';
-print '<td align="center">'.$langs->trans("September").'</td>';
-print '<td align="center">'.$langs->trans("October").'</td>';
-print '<td align="center">'.$langs->trans("November").'</td>';
-print '<td align="center">'.$langs->trans("December").'</td>';
-print '<td align="center"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<tr class="liste_titre"><td width="10%">'.$langs->trans("Revenu Net").'</td>';
+print '<td align="right">'.$langs->trans("January").'</td>';
+print '<td align="right">'.$langs->trans("February").'</td>';
+print '<td align="right">'.$langs->trans("March").'</td>';
+print '<td align="right">'.$langs->trans("April").'</td>';
+print '<td align="right">'.$langs->trans("May").'</td>';
+print '<td align="right">'.$langs->trans("June").'</td>';
+print '<td align="right">'.$langs->trans("July").'</td>';
+print '<td align="right">'.$langs->trans("August").'</td>';
+print '<td align="right">'.$langs->trans("September").'</td>';
+print '<td align="right">'.$langs->trans("October").'</td>';
+print '<td align="right">'.$langs->trans("November").'</td>';
+print '<td align="right">'.$langs->trans("December").'</td>';
+print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 
 foreach( $value_array as $key=>$val) {
