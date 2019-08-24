@@ -105,7 +105,7 @@ if (empty($reshook))
 	{
 	    $error = 0;
 
-	    $datepaye = dol_mktime(12, 0, 0, GETPOST('remonth', 'int'), GETPOST('reday', 'int'), GETPOST('reyear', 'int'));
+	    $date_payment = dol_mktime(12, 0, 0, GETPOST('remonth', 'int'), GETPOST('reday', 'int'), GETPOST('reyear', 'int'));
 	    $paiement_id = 0;
 	    $totalpayment = 0;
 		$multicurrency_totalpayment = 0;
@@ -133,11 +133,11 @@ if (empty($reshook))
 		                $formquestion['text'] = img_warning($langs->trans("PaymentHigherThanReminderToPay")).' '.$langs->trans("HelpPaymentHigherThanReminderToPay");
 		            }
 		            // Check date
-		            if ($datepaye && ($datepaye < $tmpreceipt->date))
+		            if ($date_payment && ($date_payment < $tmpreceipt->date))
 		            {
 		            	$langs->load("errors");
 		                //$error++;
-		                setEventMessages($langs->transnoentities("WarningPaymentDateLowerThanInvoiceDate", dol_print_date($datepaye, 'day'), dol_print_date($tmpreceipt->date, 'day'), $tmpreceipt->ref), null, 'warnings');
+		                setEventMessages($langs->transnoentities("WarningPaymentDateLowerThanInvoiceDate", dol_print_date($date_payment, 'day'), dol_print_date($tmpreceipt->date, 'day'), $tmpreceipt->ref), null, 'warnings');
 		            }
 	            }
 
@@ -161,11 +161,11 @@ if (empty($reshook))
 		                $formquestion['text'] = img_warning($langs->trans("PaymentHigherThanReminderToPay")).' '.$langs->trans("HelpPaymentHigherThanReminderToPay");
 		            }
 		            // Check date
-		            if ($datepaye && ($datepaye < $tmpreceipt->date))
+		            if ($date_payment && ($date_payment < $tmpreceipt->date))
 		            {
 		            	$langs->load("errors");
 		                //$error++;
-		                setEventMessages($langs->transnoentities("WarningPaymentDateLowerThanInvoiceDate", dol_print_date($datepaye, 'day'), dol_print_date($tmpreceipt->date, 'day'), $tmpreceipt->ref), null, 'warnings');
+		                setEventMessages($langs->transnoentities("WarningPaymentDateLowerThanInvoiceDate", dol_print_date($date_payment, 'day'), dol_print_date($tmpreceipt->date, 'day'), $tmpreceipt->ref), null, 'warnings');
 		            }
 	            }
 
@@ -196,7 +196,7 @@ if (empty($reshook))
 	        $error++;
 	    }
 
-	    if (empty($datepaye))
+	    if (empty($date_payment))
 	    {
 	        setEventMessages($langs->transnoentities('ErrorFieldRequired', $langs->transnoentities('Date')), null, 'errors');
 	        $error++;
@@ -229,7 +229,7 @@ if (empty($reshook))
 	{
 	    $error=0;
 
-	    $datepaye = dol_mktime(12, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
+	    $date_payment = dol_mktime(12, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
 
 	    $db->begin();
 
@@ -270,8 +270,8 @@ if (empty($reshook))
 	    }
 
 	    // Creation of payment line
-	    $paiement = new Paiement($db);
-	    $paiement->datepaye     = $datepaye;
+	    $paiement = new ImmoPayment($db);
+	    $paiement->date_payment = $date_payment;
 	    $paiement->amounts      = $amounts;   // Array with all payments dispatching with invoice id
 	    $paiement->multicurrency_amounts = $multicurrency_amounts;   // Array with all payments dispatching
 	    $paiement->paiementid   = dol_getIdFromCode($db, GETPOST('paiementcode'), 'c_paiement', 'code', 'id', 1);
@@ -346,7 +346,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 	$receipt = new ImmoReceipt($db);
 	$result = $receipt->fetch($recid);
 	$receipt->fetch_thirdparty($receipt->fk_soc);
-	var_dump($receipt->thirdparty);exit;
+	//var_dump($receipt->thirdparty);exit;
 	if ($result >= 0)
 	{
 		$title='';
@@ -487,7 +487,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 		print '<table class="border" width="100%">';
 
         // Third party
-        print '<tr><td class="titlefieldcreate"><span class="fieldrequired">'.$langs->trans('Company').'</span></td><td>'.$receipt->thirdparty->getNomUrl(4)."</td></tr>\n";
+       // print '<tr><td class="titlefieldcreate"><span class="fieldrequired">'.$langs->trans('Company').'</span></td><td>'.$receipt->thirdparty->getNomUrl(4)."</td></tr>\n";
 
         // Date payment
         print '<tr><td><span class="fieldrequired">'.$langs->trans('Date').'</span></td><td>';

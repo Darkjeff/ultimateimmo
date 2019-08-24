@@ -121,9 +121,11 @@ class ImmoPayment extends CommonObject
 	public $fk_renter;
 	public $note_public;
 	public $note_private;
-	public $amount;
+	public $amount;			    // Total amount of payment
+	public $amounts=array();    // Array of amounts
 	public $fk_mode_reglement;
 	public $fk_bank;
+	public $fk_paiement;
 	public $num_payment;
 	public $date_payment;
 	public $date_creation;
