@@ -18,9 +18,9 @@
 CREATE TABLE llx_ultimateimmo_immopayment(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL,
-	entity integer DEFAULT 1 NOT NULL,	
-	amount double(24,8) DEFAULT NULL, 
+	ref varchar(128) NOT NULL,			-- payment reference number
+	entity integer DEFAULT 1 NOT NULL,	-- Multi company id
+	amount double(24,8) DEFAULT NULL, 	-- amount paid in Dolibarr currency
 	fk_rent integer, 
 	fk_property integer, 
 	fk_renter integer, 
@@ -28,15 +28,16 @@ CREATE TABLE llx_ultimateimmo_immopayment(
 	fk_mode_reglement integer, 
 	fk_owner integer, 
 	fk_soc integer,
-	fk_receipt integer, 
+	fk_receipt integer,
+	fk_paiement integer NOT NULL,		-- type of payment in llx_c_paiement
 	num_payment varchar(50), 
 	note_public text, 
 	note_private text, 
-	date_payment datetime NOT NULL, 
-	date_creation datetime NOT NULL, 
+	date_payment datetime NOT NULL, 	-- payment date
+	date_creation datetime NOT NULL, 	-- date de creation
 	tms timestamp NOT NULL, 
-	fk_user_creat integer NOT NULL, 
-	fk_user_modif integer, 
+	fk_user_creat integer NOT NULL, 	-- utilisateur qui a cree l'info
+	fk_user_modif integer, 				-- utilisateur qui a modifie l'info
 	import_key varchar(14), 
 	status integer NOT NULL
 	-- END MODULEBUILDER FIELDS

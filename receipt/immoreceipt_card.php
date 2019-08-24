@@ -1085,6 +1085,12 @@ else
 					}
 					
 					// Create payment
+					if ($object->paye == 0) 
+					{
+						print '<div class="inline-block divButAction"><a class="butAction" href="'. dol_buildpath('/ultimateimmo/receipt/payment/paiement.php',1).'?id=' . $object->id . '&amp;action=create&amp;accountid='.$object->fk_account.'">' . $langs->trans('DoPayment') . '</a></div>';
+					}
+
+					// Create payment
 					if ($receipt->status == 0 && $user->rights->ultimateimmo->rent->write)
 					{
 						if ($remaintopay == 0)

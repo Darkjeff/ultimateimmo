@@ -76,6 +76,13 @@ class ImmoReceipt extends CommonObject
 	 * Validated status
 	 */
 	const STATUS_VALIDATED = 1;
+	
+	/**
+	 * Credit note status
+	 */
+	const TYPE_CREDIT_NOTE = 2;
+	
+	
 
 	/**
 	 *  'type' if the field format.
