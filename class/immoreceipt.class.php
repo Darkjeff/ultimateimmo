@@ -1275,6 +1275,35 @@ class ImmoReceipt extends CommonObject
 			else
 				return - 1;
 	}
+	
+	/**
+	 * 	Return amount of payments already done
+	 *
+	 *	@return		int						Amount of payment already done, <0 if KO
+	 */
+	function getSommePaiement()
+	{
+		$table='ultimateimmo_payment_receipt';
+		$field='fk_receipt';
+
+		$sql = 'SELECT sum(amount) as amount';
+		$sql.= ' FROM '.MAIN_DB_PREFIX.$table;
+		$sql.= ' WHERE '.$field.' = '.$this->id;
+
+		dol_syslog(get_class($this)."::getSommePaiement", LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		if ($resql)
+		{
+			$obj = $this->db->fetch_object($resql);
+			$this->db->free($resql);
+			return $obj->amount;
+		}
+		else
+		{
+			$this->error=$this->db->lasterror();
+			return -1;
+		}
+	}
 }
 
 /**

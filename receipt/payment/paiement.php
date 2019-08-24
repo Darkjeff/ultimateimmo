@@ -52,7 +52,7 @@ require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 
 // Load translation files required by the page
-$langs->loadLangs(array('companies', 'bills', 'banks', 'multicurrency'));
+$langs->loadLangs(array('companies', 'bills', 'banks'));
 
 $action		= GETPOST('action', 'alpha');
 $confirm	= GETPOST('confirm', 'alpha');
@@ -69,9 +69,6 @@ $page		= GETPOST('page', 'int');
 $amounts=array();
 $amountsresttopay=array();
 $addwarning=0;
-
-$multicurrency_amounts=array();
-$multicurrency_amountsresttopay=array();
 
 // Security check
 if ($user->societe_id > 0)
@@ -108,7 +105,6 @@ if (empty($reshook))
 	    $date_payment = dol_mktime(12, 0, 0, GETPOST('remonth', 'int'), GETPOST('reday', 'int'), GETPOST('reyear', 'int'));
 	    $paiement_id = 0;
 	    $totalpayment = 0;
-		$multicurrency_totalpayment = 0;
 	    $atleastonepaymentnotnull = 0;
 
 	    // Generate payment array and check if there is payment higher than invoice and payment date before invoice date
@@ -123,7 +119,7 @@ if (empty($reshook))
 	            if (! empty($amounts[$cursorrecid])) $atleastonepaymentnotnull++;
 	            $result=$tmpreceipt->fetch($cursorrecid);
 	            if ($result <= 0) dol_print_error($db);
-	            $amountsresttopay[$cursorrecid]=price2num($tmpreceipt->total_ttc - $tmpreceipt->getSommePaiement());
+	            $amountsresttopay[$cursorrecid]=price2num($tmpreceipt->total_amount  - $tmpreceipt->getSommePaiement());
 	            if ($amounts[$cursorrecid])
 	            {
 		            // Check amount
@@ -143,34 +139,6 @@ if (empty($reshook))
 
 	            $formquestion[$i++]=array('type' => 'hidden','name' => $key,  'value' => $_POST[$key]);
 	        }
-			elseif (substr($key, 0, 21) == 'multicurrency_amount_')
-			{
-				$cursorrecid = substr($key, 21);
-	            $multicurrency_amounts[$cursorrecid] = price2num(trim(GETPOST($key)));
-	            $multicurrency_totalpayment += $multicurrency_amounts[$cursorrecid];
-	            if (! empty($multicurrency_amounts[$cursorrecid])) $atleastonepaymentnotnull++;
-	            $result=$tmpreceipt->fetch($cursorrecid);
-	            if ($result <= 0) dol_print_error($db);
-	            $multicurrency_amountsresttopay[$cursorrecid]=price2num($tmpreceipt->multicurrency_total_ttc - $tmpreceipt->getSommePaiement(1));
-	            if ($multicurrency_amounts[$cursorrecid])
-	            {
-		            // Check amount
-		            if ($multicurrency_amounts[$cursorrecid] && (abs($multicurrency_amounts[$cursorrecid]) > abs($multicurrency_amountsresttopay[$cursorrecid])))
-		            {
-		                $addwarning=1;
-		                $formquestion['text'] = img_warning($langs->trans("PaymentHigherThanReminderToPay")).' '.$langs->trans("HelpPaymentHigherThanReminderToPay");
-		            }
-		            // Check date
-		            if ($date_payment && ($date_payment < $tmpreceipt->date))
-		            {
-		            	$langs->load("errors");
-		                //$error++;
-		                setEventMessages($langs->transnoentities("WarningPaymentDateLowerThanInvoiceDate", dol_print_date($date_payment, 'day'), dol_print_date($tmpreceipt->date, 'day'), $tmpreceipt->ref), null, 'warnings');
-		            }
-	            }
-
-	            $formquestion[$i++]=array('type' => 'hidden','name' => $key,  'value' => GETPOST($key, 'int'));
-			}
 	    }
 
 	    // Check parameters
@@ -190,7 +158,7 @@ if (empty($reshook))
 	        }
 	    }
 
-	    if (empty($totalpayment) && empty($multicurrency_totalpayment) && empty($atleastonepaymentnotnull))
+	    if (empty($totalpayment) && empty($atleastonepaymentnotnull))
 	    {
 	        setEventMessages($langs->transnoentities('ErrorFieldRequired', $langs->trans('PaymentAmount')), null, 'errors');
 	        $error++;
@@ -203,7 +171,7 @@ if (empty($reshook))
 	    }
 
 		// Check if payments in both currency
-		if ($totalpayment > 0 && $multicurrency_totalpayment > 0)
+		if ($totalpayment > 0)
 		{
 			setEventMessages($langs->transnoentities('ErrorPaymentInBothCurrency'), null, 'errors');
 	        $error++;
@@ -248,17 +216,6 @@ if (empty($reshook))
 	        }
 	    }
 
-	    foreach ($multicurrency_amounts as $key => $value)	// How payment is dispatched
-	    {
-	        $tmpreceipt = new ImmoReceipt($db);
-	        $tmpreceipt->fetch($key);
-	        if ($tmpreceipt->type == ImmoReceipt::TYPE_CREDIT_NOTE)
-	        {
-	            $newvalue = price2num($value, 'MT');
-	            $multicurrency_amounts[$key] = - abs($newvalue);
-	        }
-	    }
-
 	    if (! empty($conf->banque->enabled))
 	    {
 	    	// Si module bank actif, un compte est obligatoire lors de la saisie d'un paiement
@@ -273,7 +230,6 @@ if (empty($reshook))
 	    $paiement = new ImmoPayment($db);
 	    $paiement->date_payment = $date_payment;
 	    $paiement->amounts      = $amounts;   // Array with all payments dispatching with invoice id
-	    $paiement->multicurrency_amounts = $multicurrency_amounts;   // Array with all payments dispatching
 	    $paiement->paiementid   = dol_getIdFromCode($db, GETPOST('paiementcode'), 'c_paiement', 'code', 'id', 1);
 	    $paiement->num_paiement = GETPOST('num_paiement', 'alpha');
 	    $paiement->note         = GETPOST('comment', 'alpha');
@@ -345,8 +301,8 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 {
 	$receipt = new ImmoReceipt($db);
 	$result = $receipt->fetch($recid);
-	$receipt->fetch_thirdparty($receipt->fk_soc);
-	//var_dump($receipt->thirdparty);exit;
+	$ret = $receipt->fetch_thirdparty($receipt->fk_soc);
+	//var_dump($ret);exit;
 	if ($result >= 0)
 	{
 		$title='';
@@ -547,19 +503,20 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 
 
         /*
-         * List of unpaid invoices
+         * List of unpaid receipts
          */
 
-        $sql = 'SELECT f.rowid as recid, f.ref, f.total_ttc, f.multicurrency_code, f.multicurrency_total_ttc, f.type,';
-        $sql.= ' f.datef as df, f.fk_soc as socid, f.date_lim_reglement as dlr';
+        $sql = 'SELECT f.rowid as recid, f.ref, f.total_amount,';
+        $sql.= ' f.date_creation as dc, f.fk_soc as socid';
         $sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f';
-		$sql.= ' WHERE f.entity IN ('.getEntity('invoice', $conf->entity).')';
-        $sql.= ' AND (f.fk_soc = '.$receipt->socid;
-		// Can pay invoices of all child of parent company
-		if(!empty($conf->global->FACTURE_PAYMENTS_ON_DIFFERENT_THIRDPARTIES_BILLS) && !empty($receipt->thirdparty->parent)) {
+		$sql.= ' WHERE f.entity IN ('.getEntity('immoreceipt').')';
+        $sql.= ' AND f.fk_soc = '.$receipt->fk_soc;
+		
+		// Can pay receipts of all child of parent company
+		/*if(!empty($conf->global->FACTURE_PAYMENTS_ON_DIFFERENT_THIRDPARTIES_BILLS) && !empty($receipt->thirdparty->parent)) {
 			$sql.= ' OR f.fk_soc IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe WHERE parent = '.$receipt->thirdparty->parent.')';
 		}
-		// Can pay invoices of all child of myself
+		// Can pay receipts of all child of myself
 		if(!empty($conf->global->FACTURE_PAYMENTS_ON_SUBSIDIARY_COMPANIES)){
 			$sql.= ' OR f.fk_soc IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe WHERE parent = '.$receipt->thirdparty->id.')';
 		}
@@ -572,9 +529,9 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
         else
         {
             $sql .= ' AND type = 2';		// If paying back a credit note, we show all credit notes
-        }
+        }*/
         // Sort invoices by date and serial number: the older one comes first
-        $sql.=' ORDER BY f.datef ASC, f.ref ASC';
+        $sql.=' ORDER BY f.date_creation ASC, f.ref ASC';
 
         $resql = $db->query($sql);
         if ($resql)
@@ -582,14 +539,12 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
             $num = $db->num_rows($resql);
             if ($num > 0)
             {
-				$arraytitle=$langs->trans('Invoice');
+				$arraytitle=$langs->trans('ImmoReceipt');
 				if ($receipt->type == 2) $arraytitle=$langs->trans("CreditNotes");
 				$alreadypayedlabel=$langs->trans('Received');
-				$multicurrencyalreadypayedlabel=$langs->trans('MulticurrencyReceived');
-				if ($receipt->type == 2) { $alreadypayedlabel=$langs->trans("PaidBack"); $multicurrencyalreadypayedlabel=$langs->trans("MulticurrencyPaidBack"); }
+				if ($receipt->type == 2) { $alreadypayedlabel=$langs->trans("PaidBack"); }
 				$remaindertopay=$langs->trans('RemainderToTake');
-				$multicurrencyremaindertopay=$langs->trans('MulticurrencyRemainderToTake');
-				if ($receipt->type == 2) { $remaindertopay=$langs->trans("RemainderToPayBack"); $multicurrencyremaindertopay=$langs->trans("MulticurrencyRemainderToPayBack"); }
+				if ($receipt->type == 2) { $remaindertopay=$langs->trans("RemainderToPayBack"); }
 
                 $i = 0;
                 //print '<tr><td colspan="3">';
@@ -600,13 +555,6 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                 print '<td>'.$arraytitle.'</td>';
                 print '<td align="center">'.$langs->trans('Date').'</td>';
                 print '<td align="center">'.$langs->trans('DateMaxPayment').'</td>';
-                if (!empty($conf->multicurrency->enabled)) {
-                	print '<td>'.$langs->trans('Currency').'</td>';
-                	print '<td class="right">'.$langs->trans('MulticurrencyAmountTTC').'</td>';
-                	print '<td class="right">'.$multicurrencyalreadypayedlabel.'</td>';
-                	print '<td class="right">'.$multicurrencyremaindertopay.'</td>';
-                	print '<td class="right">'.$langs->trans('MulticurrencyPaymentAmount').'</td>';
-                }
                 print '<td class="right">'.$langs->trans('AmountTTC').'</td>';
                 print '<td class="right">'.$alreadypayedlabel.'</td>';
                 print '<td class="right">'.$remaindertopay.'</td>';
@@ -629,33 +577,21 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 					$soc = new Societe($db);
 					$soc->fetch($objp->socid);
 
-                    $invoice=new ImmoReceipt($db);
-                    $invoice->fetch($objp->recid);
-                    $paiement = $invoice->getSommePaiement();
-                    $creditnotes=$invoice->getSumCreditNotesUsed();
-                    $deposits=$invoice->getSumDepositsUsed();
-                    $alreadypayed=price2num($paiement + $creditnotes + $deposits, 'MT');
-                    $remaintopay=price2num($invoice->total_ttc - $paiement - $creditnotes - $deposits, 'MT');
-
-					// Multicurrency Price
-					if (!empty($conf->multicurrency->enabled)) {
-						$multicurrency_payment = $invoice->getSommePaiement(1);
-						$multicurrency_creditnotes=$invoice->getSumCreditNotesUsed(1);
-						$multicurrency_deposits=$invoice->getSumDepositsUsed(1);
-						$multicurrency_alreadypayed=price2num($multicurrency_payment + $multicurrency_creditnotes + $multicurrency_deposits, 'MT');
-	                    $multicurrency_remaintopay=price2num($invoice->multicurrency_total_ttc - $multicurrency_payment - $multicurrency_creditnotes - $multicurrency_deposits, 'MT');
-					}
-
+                    $receipt=new ImmoReceipt($db);
+                    $receipt->fetch($objp->recid);
+                    $paiement = $receipt->getSommePaiement();
+                    $alreadypayed=price2num($paiement, 'MT');
+                    $remaintopay=price2num($receipt->total_amount - $paiement, 'MT');
 
 					print '<tr class="oddeven">';
 
 					print '<td>';
-                    print $invoice->getNomUrl(1, '');
+                    print $receipt->getNomUrl(1, '');
                     if ($objp->socid != $receipt->thirdparty->id) print ' - '.$soc->getNomUrl(1).' ';
                     print "</td>\n";
 
                     // Date
-                   	print '<td align="center">'.dol_print_date($db->jdate($objp->df), 'day')."</td>\n";
+                   	print '<td align="center">'.dol_print_date($db->jdate($objp->dc), 'day')."</td>\n";
 
                     // Due date
                     if ($objp->dlr > 0 )
@@ -663,7 +599,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                         print '<td align="center">';
                         print dol_print_date($db->jdate($objp->dlr), 'day');
 
-                        if ($invoice->hasDelay())
+                        if ($receipt->hasDelay())
                         {
                             print img_warning($langs->trans('Late'));
                         }
@@ -675,67 +611,17 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                         print '<td align="center"></td>';
                     }
 
-                    // Currency
-                    if (!empty($conf->multicurrency->enabled)) print '<td align="center">'.$objp->multicurrency_code."</td>\n";
-
-					// Multicurrency Price
-					if (!empty($conf->multicurrency->enabled))
-					{
-					    print '<td class="right">';
-					    if ($objp->multicurrency_code && $objp->multicurrency_code != $conf->currency) print price($sign * $objp->multicurrency_total_ttc);
-					    print '</td>';
-
-                    	// Multicurrency Price
-						print '<td class="right">';
-						if ($objp->multicurrency_code && $objp->multicurrency_code != $conf->currency)
-						{
-						    print price($sign * $multicurrency_payment);
-    		                if ($multicurrency_creditnotes) print '+'.price($multicurrency_creditnotes);
-    		                if ($multicurrency_deposits) print '+'.price($multicurrency_deposits);
-						}
-		                print '</td>';
-
-    					// Multicurrency remain to pay
-    				    print '<td class="right">';
-    				    if ($objp->multicurrency_code && $objp->multicurrency_code != $conf->currency) print price($sign * $multicurrency_remaintopay);
-    				    print '</td>';
-
-    				    print '<td class="right nowraponall">';
-
-    				    // Add remind multicurrency amount
-    				    $namef = 'multicurrency_amount_'.$objp->recid;
-    				    $nameRemain = 'multicurrency_remain_'.$objp->recid;
-
-    				    if ($objp->multicurrency_code && $objp->multicurrency_code != $conf->currency)
-    				    {
-    				    	if ($action != 'add_paiement')
-    				    	{
-    				    		if (!empty($conf->use_javascript_ajax))
-    				    			print img_picto("Auto fill", 'rightarrow', "class='AutoFillAmout' data-rowname='".$namef."' data-value='".($sign * $multicurrency_remaintopay)."'");
-   				    			print '<input type="text" class="maxwidth75 multicurrency_amount" name="'.$namef.'" value="'.$_POST[$namef].'">';
-   				    			print '<input type="hidden" class="multicurrency_remain" name="'.$nameRemain.'" value="'.$multicurrency_remaintopay.'">';
-    				    	}
-    				    	else
-    				    	{
-    				    		print '<input type="text" class="maxwidth75" name="'.$namef.'_disabled" value="'.$_POST[$namef].'" disabled>';
-    				    		print '<input type="hidden" name="'.$namef.'" value="'.$_POST[$namef].'">';
-    				    	}
-    				    }
-    				    print "</td>";
-					}
-
 					// Price
-                    print '<td class="right" '.(($invoice->id==$recid)?' style="font-weight: bold" ':'').'>'.price($sign * $objp->total_ttc).'</td>';
+                    print '<td class="right" '.(($receipt->id==$recid)?' style="font-weight: bold" ':'').'>'.price($sign * $objp->total_amount ).'</td>';
 
                     // Received or paid back
                     print '<td class="right">'.price($sign * $paiement);
-                    if ($creditnotes) print '+'.price($creditnotes);
                     if ($deposits) print '+'.price($deposits);
                     print '</td>';
 
                     // Remain to take or to pay back
                     print '<td class="right">'.price($sign * $remaintopay).'</td>';
-                    //$test= price(price2num($objp->total_ttc - $paiement - $creditnotes - $deposits));
+                    //$test= price(price2num($objp->total_amount  - $paiement - $deposits));
 
                     // Amount
                     print '<td class="right nowraponall">';
@@ -760,9 +646,8 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 
                     // Warning
                     print '<td align="center" width="16">';
-                    //print "xx".$amounts[$invoice->id]."-".$amountsresttopay[$invoice->id]."<br>";
-                    if ($amounts[$invoice->id] && (abs($amounts[$invoice->id]) > abs($amountsresttopay[$invoice->id]))
-                    	|| $multicurrency_amounts[$invoice->id] && (abs($multicurrency_amounts[$invoice->id]) > abs($multicurrency_amountsresttopay[$invoice->id])))
+                    //print "xx".$amounts[$receipt->id]."-".$amountsresttopay[$receipt->id]."<br>";
+                    if ($amounts[$receipt->id] && (abs($amounts[$receipt->id]) > abs($amountsresttopay[$receipt->id])))
                     {
                         print ' '.img_warning($langs->trans("PaymentHigherThanReminderToPay"));
                     }
@@ -774,9 +659,8 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                     print "</tr>\n";
 
                     $total+=$objp->total;
-                    $total_ttc+=$objp->total_ttc;
+                    $total_amount +=$objp->total_amount ;
                     $totalrecu+=$paiement;
-                    $totalrecucreditnote+=$creditnotes;
                     $totalrecudeposits+=$deposits;
                     $i++;
                 }
@@ -786,19 +670,11 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                     // Print total
                     print '<tr class="liste_total">';
                     print '<td colspan="3" class="left">'.$langs->trans('TotalTTC').'</td>';
-                    if (!empty($conf->multicurrency->enabled)) {
-                    	print '<td></td>';
-                    	print '<td></td>';
-                    	print '<td></td>';
-                    	print '<td></td>';
-                    	print '<td class="right" id="multicurrency_result" style="font-weight: bold;"></td>';
-                    }
-					print '<td class="right"><b>'.price($sign * $total_ttc).'</b></td>';
+					print '<td class="right"><b>'.price($sign * $total_amount ).'</b></td>';
                     print '<td class="right"><b>'.price($sign * $totalrecu);
-                    if ($totalrecucreditnote) print '+'.price($totalrecucreditnote);
                     if ($totalrecudeposits) print '+'.price($totalrecudeposits);
                     print '</b></td>';
-                    print '<td class="right"><b>'.price($sign * price2num($total_ttc - $totalrecu - $totalrecucreditnote - $totalrecudeposits, 'MT')).'</b></td>';
+                    print '<td class="right"><b>'.price($sign * price2num($total_amount  - $totalrecu - $totalrecucreditnote - $totalrecudeposits, 'MT')).'</b></td>';
                     print '<td class="right" id="result" style="font-weight: bold;"></td>';		// Autofilled
                     print '<td align="center">&nbsp;</td>';
                     print "</tr>\n";
@@ -867,14 +743,14 @@ if (! GETPOST('action', 'aZ09'))
     $offset = $limit * $page ;
 
     if (! $sortorder) $sortorder='DESC';
-    if (! $sortfield) $sortfield='p.datep';
+    if (! $sortfield) $sortfield='p.date_creation';
 
-    $sql = 'SELECT p.datep as dp, p.amount, f.amount as fa_amount, f.ref';
-    $sql.=', f.rowid as recid, c.libelle as paiement_type, p.num_paiement';
+    $sql = 'SELECT p.date_creation as dc, p.amount, f.total_amount as rec_amount, f.ref';
+    $sql.=', f.rowid as recid, c.libelle as paiement_type, p.num_payment';
     $sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as p LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as c ON p.fk_paiement = c.id';
     $sql.= ', '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f';
     $sql.= ' WHERE p.fk_receipt = f.rowid';
-    $sql.= ' AND f.entity IN (' . getEntity('invoice').')';
+    $sql.= ' AND f.entity IN (' . getEntity('immoreceipt').')';
     if ($socid)
     {
         $sql.= ' AND f.fk_soc = '.$socid;
@@ -893,9 +769,9 @@ if (! GETPOST('action', 'aZ09'))
         print '<table class="noborder" width="100%">';
         print '<tr class="liste_titre">';
         print_liste_field_titre('Invoice', $_SERVER["PHP_SELF"], 'ref', '', '', '', $sortfield, $sortorder);
-        print_liste_field_titre('Date', $_SERVER["PHP_SELF"], 'dp', '', '', '', $sortfield, $sortorder);
+        print_liste_field_titre('Date', $_SERVER["PHP_SELF"], 'dc', '', '', '', $sortfield, $sortorder);
         print_liste_field_titre('Type', $_SERVER["PHP_SELF"], 'libelle', '', '', '', $sortfield, $sortorder);
-        print_liste_field_titre('Amount', $_SERVER["PHP_SELF"], 'fa_amount', '', '', '', $sortfield, $sortorder, 'right ');
+        print_liste_field_titre('Amount', $_SERVER["PHP_SELF"], 'rec_amount', '', '', '', $sortfield, $sortorder, 'right ');
 		print_liste_field_titre('', $_SERVER["PHP_SELF"], "", '', '', '', $sortfield, $sortorder, 'maxwidthsearch ');
         print "</tr>\n";
 
@@ -905,7 +781,7 @@ if (! GETPOST('action', 'aZ09'))
 
             print '<tr class="oddeven">';
             print '<td><a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1).'?recid='.$objp->recid.'">'.$objp->ref."</a></td>\n";
-            print '<td>'.dol_print_date($db->jdate($objp->dp))."</td>\n";
+            print '<td>'.dol_print_date($db->jdate($objp->dc))."</td>\n";
             print '<td>'.$objp->paiement_type.' '.$objp->num_paiement."</td>\n";
             print '<td class="right">'.price($objp->amount).'</td><td>&nbsp;</td>';
 
