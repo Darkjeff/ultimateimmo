@@ -57,6 +57,8 @@ $optioncss  = GETPOST('optioncss','aZ');												// Option for the css output
 
 $id			= GETPOST('id','int');
 
+$search_societe = GETPOST('search_societe', 'alpha');
+
 // Load variable for pagination
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $sortfield = GETPOST('sortfield','alpha');

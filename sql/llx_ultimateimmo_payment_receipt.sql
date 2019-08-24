@@ -23,8 +23,4 @@ CREATE TABLE llx_ultimateimmo_payment_receipt
   fk_paiement     integer,								-- type of payment in llx_c_paiement
   fk_receipt      integer,
   amount          double(24,8)     DEFAULT 0,			-- amount paid in Dolibarr currency
-  
-  multicurrency_code		varchar(255),
-  multicurrency_tx		double(24,8) DEFAULT 1,
-  multicurrency_amount	double(24,8) DEFAULT 0
 )ENGINE=innodb;

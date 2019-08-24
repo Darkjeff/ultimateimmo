@@ -60,6 +60,7 @@ $confirm    = GETPOST('confirm', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $contextpage= GETPOST('contextpage','aZ')?GETPOST('contextpage','aZ'):'immoreceiptcard';   // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
+$search_societe = GETPOST('search_societe', 'alpha');
 
 // Initialize technical objects
 $object=new ImmoReceipt($db);
@@ -925,8 +926,17 @@ else
 			// Object card
 			// ------------------------------------------------------------
 			$linkback = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?restore_lastsearch_values=1'.(! empty($socid)?'&socid='.$socid : '').'">'. $langs->trans("BackToList").'</a>';
-
-			dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
+			
+			$morehtmlref='<div class="refidno">';
+			// Ref renter
+			$morehtmlref.=$form->editfieldkey("RefCustomer", 'ref_client', $object->fk_renter, $object, $usercancreate, 'string', '', 0, 1);
+			$morehtmlref.=$form->editfieldval("RefCustomer", 'ref_client', $object->fk_renter, $object, $usercancreate, 'string', '', null, null, '', 1);
+			// Thirdparty
+			$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'renter');
+			if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?socid='.$object->thirdparty->id.'&search_societe='.urlencode($object->thirdparty->name).'">'.$langs->trans("OtherReceipts").'</a>)';
+			$morehtmlref.='</div>';
+			
+			dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '', 0, '', '');
 
 			print '<div class="fichecenter">';
 			print '<div class="fichehalfleft">';
