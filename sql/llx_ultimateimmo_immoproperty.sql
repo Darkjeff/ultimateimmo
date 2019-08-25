@@ -35,7 +35,7 @@ CREATE TABLE llx_ultimateimmo_immoproperty(
 	address varchar(255), 
 	building varchar(32), 
 	staircase varchar(8), 
-	type_property_id integer NOT NULL,
+	property_type_id integer NOT NULL,
 	fk_property integer,	
 	numfloor varchar(8), 
 	numflat varchar(8), 

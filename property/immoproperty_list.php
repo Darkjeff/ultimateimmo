@@ -205,10 +205,11 @@ $reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object
 $sql.=$hookmanager->resPrint;
 $sql=preg_replace('/, $/','', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
-$sql.= " INNER JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as tp ON tp.rowid = t.type_property_id";
+$sql.= " INNER JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as tp ON tp.rowid = t.property_type_id";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_building as b ON b.fk_property = t.fk_property";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as co ON co.rowid = t.country_id";
+$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."immoproperty_extrafields as ef on (t.rowid = ef.fk_object)";
 if ($action == 'makebuilding') {
 $sql .= " WHERE tp.label = 'Immeuble'";
