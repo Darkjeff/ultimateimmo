@@ -17,7 +17,7 @@
 --
 
 CREATE TABLE IF NOT EXISTS `llx_ultimateimmo_immoreceipt` (
-`rowid` int(11) NOT NULL,
+   rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
   `ref` varchar(128) NOT NULL,
   `entity` int(11) NOT NULL DEFAULT '1',
   `label` varchar(255) DEFAULT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `llx_ultimateimmo_immoreceipt` (
   `model_pdf` varchar(128) DEFAULT NULL,
   `last_main_doc` varchar(255) DEFAULT NULL,
   `status` int(11) NULL DEFAULT '0'
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Index pour les tables exportées

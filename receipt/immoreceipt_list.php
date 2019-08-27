@@ -99,6 +99,8 @@ $search=array();
 foreach($object->fields as $key => $val)
 {
 	if (GETPOST('search_'.$key,'alpha')) $search[$key]=GETPOST('search_'.$key,'alpha');
+	//var_dump($search['t.'.$key]);
+	//var_dump($key);
 }
 
 // List of fields to search into when doing a "search in all"
@@ -314,7 +316,7 @@ $sql=preg_replace('/, $/','', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";
 $sql.= " INNER JOIN ".MAIN_DB_PREFIX."ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid";
-$sql.= " INNER JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
+$sql.= " INNER JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_soc";
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
 if ($object->ismultientitymanaged == 1) $sql.= " WHERE t.entity IN (".getEntity($object->element).")";
 else $sql.=" WHERE 1 = 1";
@@ -323,11 +325,10 @@ foreach($search as $key => $val)
 {
 	//if ($key == 'status' && $search[$key] == -1) continue;
 	$mode_search=(($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
-	if ($search[$key] != '') $sql.=natural_search($key, $search[$key], (($key == 'status')?2:$mode_search));
-	//var_dump($sql);exit;
+	if ($search[$key] != '') $sql.=natural_search('t.'.$key, $search[$key], (($key == 'status')?2:$mode_search));
 }
 if ($search_all) $sql.= natural_search(array_keys($fieldstosearchall), $search_all);
-//var_dump($sql);exit;
+
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
 // Add where from hooks
@@ -507,7 +508,7 @@ foreach($object->fields as $key => $val)
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_title.tpl.php';
 // Hook fields
-$parameters=array('arrayfields'=>$arrayfields);
+$parameters=array('arrayfields'=>$arrayfields,'param'=>$param,'sortfield'=>$sortfield,'sortorder'=>$sortorder);
 $reshook=$hookmanager->executeHooks('printFieldListTitle', $parameters, $object);    // Note that $action and $object may have been modified by hook
 print $hookmanager->resPrint;
 print getTitleFieldOfList($selectedfields, 0, $_SERVER["PHP_SELF"],'','','','align="center"',$sortfield,$sortorder,'maxwidthsearch ')."\n";

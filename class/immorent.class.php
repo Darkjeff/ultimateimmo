@@ -87,7 +87,7 @@ class ImmoRent extends CommonObject
 		'fk_owner' => array('type'=>'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label'=>'Owner', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToOwner",),		
 		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'ultimateimmo_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter",),
 		'fk_bank' => array('type'=>'integer:Account:compta/bank/class/account.class.php', 'label'=>'Account', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'bank_account.id', 'searchall'=>1, 'help'=>"LinkToAccount",),
-		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
+		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty", 'foreignkey'=>'societe.rowid',),
 		'location_type_id' => array('type'=>'integer', 'label'=>'ImmorentType', 'enabled'=>1, 'visible'=>1, 'position'=>44, 'notnull'=>-1, 'arrayofkeyval'=>array('1'=>'EmptyHousing', '2'=>'FurnishedApartment')),
 		'vat' => array('type'=>'integer', 'label'=>'VAT', 'visible'=>-1, 'enabled'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1,),
