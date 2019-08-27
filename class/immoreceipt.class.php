@@ -555,9 +555,9 @@ class ImmoReceipt extends CommonObject
 		$sql.= ' t.rowid, t.fk_rent,';
 		$sql.= ' t.rentamount,';
 		$sql.= ' t.chargesamount,';
-		$sql.= ' t.totalamount';
+		$sql.= ' t.total_amount,';
 		$sql.= ' lc.rowid as renter_id,';
-		$sql.= ' lc.mail as emaillocataire,';		
+		$sql.= ' lc.email as emaillocataire';		
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
 		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
 		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
@@ -623,7 +623,7 @@ class ImmoReceipt extends CommonObject
 	public function fetch($id, $ref = null)
 	{
 		$result = $this->fetchCommon($id, $ref);
-		if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
+		//if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
 		return $result;
 	}
 
