@@ -110,8 +110,9 @@ class ImmoReceipt extends CommonObject
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>-1, 'position'=>10, 'notnull'=>1, 'default'=>'(PROV)', 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object", 'showoncombobox'=>'1',),
-		'fk_rent' => array('type'=>'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'foreignkey'=>'ultimateimmo_immorent.rowid',),
-		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'foreignkey'=>'ultimateimmo_immoproperty.rowid', 'help'=>"LinkToProperty",),
+		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>0, 'enabled'=>1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
+		'fk_rent' => array('type'=>'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'foreignkey'=>'ultimateimmo_immorent.rowid',),
+		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'ultimateimmo_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
 		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'foreignkey'=>'ultimateimmo_immorenter.rowid', 'help'=>"LinkToRenter",),
 		'fk_owner' => array('type'=>'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label'=>'Owner', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwner",),
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'enabled'=>1, 'visible'=>1, 'position'=>46, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
@@ -143,6 +144,7 @@ class ImmoReceipt extends CommonObject
 	);
 	public $rowid;
 	public $ref;
+	public $entity;
 	public $fk_rent;
 	public $fk_property;
 	public $fk_renter;
@@ -550,11 +552,16 @@ class ImmoReceipt extends CommonObject
 		$array = implode(', t.', $array);
 
 		$sql = 'SELECT '.$array.',';
-		$sql.= ' rt.rentamount,';
-		$sql.= ' rt.chargesamount,';
-		$sql.= ' rt.totalamount';		
-		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element . ' as t';
-		$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorent as rt ON t.fk_rent = rt.rowid';
+		$sql.= ' t.rowid, t.fk_rent,';
+		$sql.= ' t.rentamount,';
+		$sql.= ' t.chargesamount,';
+		$sql.= ' t.totalamount';
+		$sql.= ' lc.rowid as renter_id,';
+		$sql.= ' lc.mail as emaillocataire,';		
+		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
+		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
+		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
+		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorent as ic ON t.fk_rent = ic.rowid';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);

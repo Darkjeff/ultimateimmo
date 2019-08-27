@@ -57,14 +57,14 @@ $optioncss  = GETPOST('optioncss','aZ');												// Option for the css output
 
 $id			= GETPOST('id','int');
 
-$search_fk_soc = GETPOST('search_fk_soc', 'alpha');
+//$search_fk_soc = GETPOST('search_fk_soc', 'alpha');
 
 // Load variable for pagination
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $sortfield = GETPOST('sortfield','alpha');
 $sortorder = GETPOST('sortorder','alpha');
 $page = GETPOST('page','int');
-if (empty($page) || $page == -1 || GETPOST('button_search','alpha') || GETPOST('button_removefilter','alpha') || (empty($toselect) && $massaction === '0')) { $page = 0; }    // If $page is not defined, or '' or -1 or if we click on clear filters or if we select empty mass action
+if (empty($page) || $page == -1) { $page = 0; }     // If $page is not defined, or '' or -1
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -75,11 +75,10 @@ $pagenext = $page + 1;
 $object = new ImmoReceipt($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
-
 $hookmanager->initHooks(array('immoreceiptlist'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immoreceipt');	// Load $extrafields->attributes['immoreceipt']
-$search_array_options = $extrafields->getOptionalsFromPost($object->table_element,'','search_');
+$search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
 
 // Default sort order (if not yet defined by previous GETPOST)
 if (! $sortfield) $sortfield="t.".key($object->fields);   // Set here default search field. By default 1st field in definition.
@@ -267,7 +266,7 @@ if (empty($reshook))
 	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') || GETPOST('button_removefilter','alpha')
 		|| GETPOST('button_search_x','alpha') || GETPOST('button_search.x','alpha') || GETPOST('button_search','alpha'))
 	{
-		$search_fk_soc = '';
+		//$search_fk_soc = '';
 		$massaction = '';     // Protection to avoid mass action if we force a new search during a mass action confirmation
 	}
 
@@ -306,7 +305,7 @@ foreach($object->fields as $key => $val)
 $sql.='lc.lastname as nomlocataire, lc.firstname as prenomlocataire, ll.label as nomlocal, ll.rowid as property_id, soc.rowid as soc_id, soc.nom as owner_name';
 // Add fields from extrafields
 if (! empty($extrafields->attributes[$object->table_element]['label']))
-	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql.=($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.' as options_'.$key.', ' : '');
+foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql.=($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.' as options_'.$key.', ' : '');
 // Add fields from hooks
 $parameters=array();
 $reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
@@ -319,16 +318,16 @@ $sql.= " INNER JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
 if ($object->ismultientitymanaged == 1) $sql.= " WHERE t.entity IN (".getEntity($object->element).")";
 else $sql.=" WHERE 1 = 1";
-if ($search_fk_soc)	$sql .= natural_search("t.fk_soc", $search_fk_soc);
 
-/*foreach($search as $key => $val)
+foreach($search as $key => $val)
 {
-	if ($key == 'status' && $search[$key] == -1) continue;
+	//if ($key == 'status' && $search[$key] == -1) continue;
 	$mode_search=(($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
 	if ($search[$key] != '') $sql.=natural_search($key, $search[$key], (($key == 'status')?2:$mode_search));
-	//var_dump($key);exit;
-}*/
+	//var_dump($sql);exit;
+}
 if ($search_all) $sql.= natural_search(array_keys($fieldstosearchall), $search_all);
+//var_dump($sql);exit;
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
 // Add where from hooks
@@ -358,32 +357,20 @@ $sql.=$db->order($sortfield,$sortorder);
 $nbtotalofrecords = '';
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
 {
-	$resql = $db->query($sql);
-	$nbtotalofrecords = $db->num_rows($resql);
-	if (($page * $limit) > $nbtotalofrecords)	// if total of record found is smaller than page * limit, goto and load page 0
-	{
-		$page = 0;
-		$offset = 0;
-	}
+	$result = $db->query($sql);
+	$nbtotalofrecords = $db->num_rows($result);
 }
-// if total of record found is smaller than limit, no need to do paging and to restart another select with limits set.
-if (is_numeric($nbtotalofrecords) && $limit > $nbtotalofrecords)
-{
-	$num = $nbtotalofrecords;
-}
-else
-{
-	$sql.= $db->plimit($limit+1, $offset);
 
-	$resql=$db->query($sql);
-	if (! $resql)
-	{
-		dol_print_error($db);
-		exit;
-	}
+$sql.= $db->plimit($limit+1, $offset);
 
-	$num = $db->num_rows($resql);
+$resql=$db->query($sql);
+if (! $resql)
+{
+	dol_print_error($db);
+	exit;
 }
+
+$num = $db->num_rows($resql);
 
 // Direct jump if only one record found
 if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $search_all)
@@ -405,8 +392,7 @@ $arrayofselected=is_array($toselect)?$toselect:array();
 $param='';
 if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param.='&contextpage='.urlencode($contextpage);
 if ($limit > 0 && $limit != $conf->liste_limit) $param.='&limit='.urlencode($limit);
-if ($search_fk_soc)		$params= '&search_fk_soc='.urlencode($search_fk_soc);
-
+//if ($search_fk_soc)		$params= '&search_fk_soc='.urlencode($search_fk_soc);
 foreach($search as $key => $val)
 {
 	$param.= '&search_'.$key.'='.urlencode($search[$key]);
@@ -436,18 +422,9 @@ print '<input type="hidden" name="page" value="'.$page.'">';
 print '<input type="hidden" name="contextpage" value="'.$contextpage.'">';
 
 $newcardbutton='';
-if ($permtocreate)
-{
-	$newcardbutton='<a class="butActionNew" href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?action=create&backtopage='.urlencode($_SERVER['PHP_SELF']).'"><span class="valignmiddle">'.$langs->trans('New').'</span>';
-	$newcardbutton.= '<span class="fa fa-plus-circle valignmiddle"></span>';
-	$newcardbutton.= '</a>';
-}
-else
-{
-    $newcardbutton='<a class="butActionNewRefused" href="#">'.$langs->trans('New');
-    $newcardbutton.= '<span class="fa fa-plus-circle valignmiddle"></span>';
-    $newcardbutton.= '</a>';
-}
+$newcardbutton='<a class="butActionNew" href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?action=create&backtopage='.urlencode($_SERVER['PHP_SELF']).'"><span class="valignmiddle">'.$langs->trans('New').'</span>';
+$newcardbutton.= '<span class="fa fa-plus-circle valignmiddle"></span>';
+$newcardbutton.= '</a>';
 
 print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, $newcardbutton, '', $limit);
 
@@ -494,11 +471,11 @@ print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"")
 print '<tr class="liste_titre">';
 foreach($object->fields as $key => $val)
 {
-	$cssforfield='';
-	if (in_array($val['type'], array('date','datetime','timestamp'))) $cssforfield.=($cssforfield?' ':'').'center';
-	if (in_array($val['type'], array('timestamp'))) $cssforfield.=($cssforfield?' ':'').'nowrap';
-	if ($key == 'status') $cssforfield.=($cssforfield?' ':'').'center';
-	if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($cssforfield?' '.$cssforfield:'').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'"></td>';
+	$align='';
+	if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
+	if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
+	if ($key == 'status') $align.=($align?' ':'').'center';
+	if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($align?' '.$align:'').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'"></td>';
 }
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
@@ -520,19 +497,17 @@ print '</tr>'."\n";
 print '<tr class="liste_titre">';
 foreach($object->fields as $key => $val)
 {
-	$cssforfield='';
-	if (in_array($val['type'], array('date','datetime','timestamp'))) $cssforfield.=($cssforfield?' ':'').'center';
-	if (in_array($val['type'], array('timestamp'))) $cssforfield.=($cssforfield?' ':'').'nowrap';
-	if ($key == 'status') $cssforfield.=($cssforfield?' ':'').'center';
-	if (! empty($arrayfields['t.'.$key]['checked']))
-	{
-		print getTitleFieldOfList($arrayfields['t.'.$key]['label'], 0, $_SERVER['PHP_SELF'], 't.'.$key, '', $param, ($cssforfield?'class="'.$cssforfield.'"':''), $sortfield, $sortorder, ($cssforfield?$cssforfield.' ':''))."\n";
-	}
+	$align='';
+	if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
+	if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
+	if ($key == 'status') $align.=($align?' ':'').'center';
+	if (! empty($arrayfields['t.'.$key]['checked'])) print getTitleFieldOfList($arrayfields['t.'.$key]['label'], 0, $_SERVER['PHP_SELF'], 't.'.$key, '', $param, ($align?'class="'.$align.'"':''), $sortfield, $sortorder, $align.' ')."\n";
 }
+
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_title.tpl.php';
 // Hook fields
-$parameters=array('arrayfields'=>$arrayfields,'param'=>$param,'sortfield'=>$sortfield,'sortorder'=>$sortorder);
+$parameters=array('arrayfields'=>$arrayfields);
 $reshook=$hookmanager->executeHooks('printFieldListTitle', $parameters, $object);    // Note that $action and $object may have been modified by hook
 print $hookmanager->resPrint;
 print getTitleFieldOfList($selectedfields, 0, $_SERVER["PHP_SELF"],'','','','align="center"',$sortfield,$sortorder,'maxwidthsearch ')."\n";
@@ -570,21 +545,14 @@ while ($i < min($num, $limit))
 	print '<tr class="oddeven">';
 	foreach($object->fields as $key => $val)
 	{
-	    $cssforfield='';
-	    if (in_array($val['type'], array('date','datetime','timestamp'))) $cssforfield.=($cssforfield?' ':'').'center';
-	    elseif ($key == 'status') $cssforfield.=($cssforfield?' ':'').'center';
-		
-	    if (in_array($val['type'], array('timestamp'))) $cssforfield.=($cssforfield?' ':'').'nowrap';
-	    elseif ($key == 'ref') $cssforfield.=($cssforfield?' ':'').'nowrap';
-
-	    if (! empty($arrayfields['t.'.$key]['checked']))
+		$align='';
+		if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
+		if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
+		if ($key == 'status') $align.=($align?' ':'').'center';
+		if (! empty($arrayfields['t.'.$key]['checked']))
 		{
 			print '<td';
-			if ($cssforfield || $val['css']) print ' class="';
-			print $cssforfield;
-			if ($cssforfield && $val['css']) print ' ';
-			print $val['css'];
-			if ($cssforfield || $val['css']) print '"';
+			if ($align) print ' class="'.$align.'"';
 			print '>';
 			print $object->showOutputField($val, $key, $obj->$key, '');
 			print '</td>';
