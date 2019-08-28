@@ -42,6 +42,7 @@ include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 require_once DOL_DOCUMENT_ROOT.'/accountancy/class/accountingjournal.class.php';
 dol_include_once('/ultimateimmo/class/immorent.class.php');
+dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/lib/immorent.lib.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/lib/immorenter.lib.php');
@@ -120,12 +121,9 @@ if (empty($reshook))
 }
 
 
-
-
 /*
  * View
  *
- * Put here all code to build page
  */
 
 $form=new Form($db);
@@ -136,114 +134,10 @@ $help_url='';
 //$help_url='EN:Module_Third_Parties|FR:Module_Tiers|ES:Empresas';
 llxHeader('', $title, $help_url);
 
-// Example : Adding jquery code
-print '<script type="text/javascript" language="javascript">
-jQuery(document).ready(function() {
-	function init_myfunc()
-	{
-		jQuery("#myid").removeAttr(\'disabled\');
-		jQuery("#myid").attr(\'disabled\',\'disabled\');
-	}
-	init_myfunc();
-	jQuery("#mybutton").click(function() {
-		init_myfunc();
-	});
-});
-</script>';
-
-
-// Part to create
-if ($action == 'create')
-{
-	print load_fiche_titre($langs->transnoentitiesnoconv("MenuNewImmoRent"));
-
-	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="add">';
-	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-
-	dol_fiche_head(array(), '');
-
-	print '<table class="border centpercent">'."\n";
-
-	// Common attributes
-	$object->fields = dol_sort_array($object->fields, 'position');
-	foreach($object->fields as $key => $val)
-	{
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1) continue;
-
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
-
-		print '<tr id="field_'.$key.'">';
-		print '<td';
-		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '"';
-		print '>';
-		print $langs->trans($val['label']);
-		print '</td>';
-		print '<td>';
-		if ($val['label'] == 'ThirdParty') 
-		{
-			$text=$form->select_company(GETPOST('socid','int'), 'socid', $filteronlist, 'SelectThirdParty', 1, 0, array(), 0, 'minwidth300');
-			if (empty($conf->dol_use_jmobile))
-			{
-				$texthelp=$langs->trans("IfNeedToUseOhterObjectKeepEmpty");
-				print $form->textwithtooltip($text.' '.img_help(),$texthelp,1);
-			}
-			if ($conf->societe->enabled)
-			{				
-				print ' <a href="'.DOL_URL_ROOT.'/societe/card.php?action=create&backtopage='.urlencode($_SERVER["PHP_SELF"].'?action=create').'">'.$langs->trans("AddThirdParty").'</a>';
-			}
-		}		
-		elseif ($val['label'] == 'BirthCountry') 
-		{			
-			// We set country_id, country_code and country for the selected country
-			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
-			if ($object->country_id)
-			{
-				$tmparray=$object->getCountry($object->country_id,'all');
-				$object->country_code=$tmparray['code'];
-				$object->country=$tmparray['label'];
-			}
-			// Country
-			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
-		}
-		else
-		{
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
-			
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
-			else $value = GETPOST($key, 'alpha');
-			print $object->showInputField($val, $key, $value, '', '', '', 0);
-		}
-		print '</td>';
-		print '</tr>';
-		
-	}
-
-	// Other attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
-
-	print '</table>'."\n";
-
-	dol_fiche_end();
-
-	print '<div class="center">';
-	print '<input type="submit" class="button" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'">';
-	print '&nbsp; ';
-	print '<input type="'.($backtopage?"submit":"button").'" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"'.($backtopage?'':' onclick="javascript:history.go(-1)"').'>';	// Cancel for create does not post form if we don't know the backtopage
-	print '</div>';
-
-	print '</form>';
-}
-
 // Part to edit record
 if (($id || $ref) && $action == 'edit')
 {
-	print load_fiche_titre($langs->trans("ImmoRent"));
+	print load_fiche_titre($langs->trans("MenuImmoRent"));
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -357,49 +251,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/rent/immorent_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref='<div class="refidno">';
-	/*
-	// Ref bis
-	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', 0, 1);
-	$morehtmlref.=$form->editfieldval("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', null, null, '', 1);
-	// Thirdparty
-	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $soc->getNomUrl(1);
-	// Project
-	if (! empty($conf->projet->enabled))
-	{
-	    $langs->load("projects");
-	    $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
-	    if ($user->rights->ultimateimmo->creer)
-	    {
-	        if ($action != 'classify')
-	        {
-	            $morehtmlref.='<a href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
-	            if ($action == 'classify') {
-	                //$morehtmlref.=$form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'projectid', 0, 0, 1, 1);
-	                $morehtmlref.='<form method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'">';
-	                $morehtmlref.='<input type="hidden" name="action" value="classin">';
-	                $morehtmlref.='<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	                $morehtmlref.=$formproject->select_projects($object->socid, $object->fk_project, 'projectid', $maxlength, 0, 1, 0, 1, 0, 0, '', 1);
-	                $morehtmlref.='<input type="submit" class="button valignmiddle" value="'.$langs->trans("Modify").'">';
-	                $morehtmlref.='</form>';
-	            } else {
-	                $morehtmlref.=$form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'none', 0, 0, 0, 1);
-	            }
-	        }
-	    } else {
-	        if (! empty($object->fk_project)) {
-	            $proj = new Project($db);
-	            $proj->fetch($object->fk_project);
-	            $morehtmlref.='<a href="'.DOL_URL_ROOT.'/projet/card.php?id=' . $object->fk_project . '" title="' . $langs->trans('ShowProject') . '">';
-	            $morehtmlref.=$proj->ref;
-	            $morehtmlref.='</a>';
-	        } else {
-	            $morehtmlref.='';
-	        }
-	    }
-	}
-	*/
 	$morehtmlref.='</div>';
-
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
@@ -411,6 +263,20 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Common attributes
 	$keyforbreak='note_private';
+	
+	$staticImmoproperty=new ImmoProperty($db);
+	$staticImmoproperty->fetch($object->fk_property);
+	print '<tr><td';
+	print ' class="titlefield';
+	print '<tr><td width="25%">'.$langs->trans('Address').'</td><td>';
+	print $staticImmoproperty->address;
+	print '<tr><td width="25%">'.$langs->trans('Zip').'</td><td>';
+	print $staticImmoproperty->zip;
+	print '<tr><td width="25%">'.$langs->trans('Town').'</td><td>';
+	print $staticImmoproperty->town;
+	print '</td>';
+	print '</tr>';
+	
 	foreach($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
@@ -420,7 +286,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
 		$value=$object->$key;
-
+		
 		print '<tr><td';
 		print ' class="titlefield';
 		if ($val['notnull'] > 0) print ' fieldrequired';

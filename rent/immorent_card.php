@@ -41,6 +41,7 @@ require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
+dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/lib/immorent.lib.php');
 
 // Load traductions files requiredby by page
@@ -76,7 +77,7 @@ if (empty($action) && empty($id) && empty($ref)) $action='view';
 
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
-//if ($user->societe_id > 0) $socid = $user->societe_id;
+if ($user->societe_id > 0) $socid = $user->societe_id;
 //$result = restrictedArea($user, 'ultimateimmo', $id);
 
 
@@ -283,7 +284,20 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/rent/immorent_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/rent/immorent_list.php',1) . '?restore_lastsearch_values=0' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	
+	$morehtmlref='<div class="refidno">';
+	// Ref renter
+	$staticImmorenter=new ImmoRenter($db);
+	$staticImmorenter->fetch($object->fk_renter);
+	//var_dump($staticImmorenter);exit;
+	$morehtmlref.=$form->editfieldkey("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $usercancreate, 'string', '', 0, 1);
+	$morehtmlref.=$form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $usercancreate, 'string', '', null, null, '', 1);
+	// Thirdparty
+	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'rent');
+	
+	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $staticImmorenter->fk_soc > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/rent/immorent_list.php',1).'?socid='.$staticImmorenter->fk_soc.'&search_fk_soc='.urlencode($staticImmorenter->fk_soc).'">'.$langs->trans("OtherRents").'</a>)';
+	$morehtmlref.='</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 

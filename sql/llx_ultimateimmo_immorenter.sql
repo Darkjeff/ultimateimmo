@@ -20,6 +20,7 @@ CREATE TABLE llx_ultimateimmo_immorenter(
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	ref varchar(128) NOT NULL, 
 	entity integer DEFAULT 1 NOT NULL,
+	fk_property integer,
 	fk_owner integer,
 	fk_soc integer,
 	societe varchar(128),	
