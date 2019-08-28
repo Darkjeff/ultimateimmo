@@ -39,6 +39,7 @@ if (! $res) die("Include of main fails");
 
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
+require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
@@ -173,7 +174,7 @@ $formfile = new FormFile($db);
 $thirdpartystatic = new Societe($db);
 
 $result=$object->fetch($id, $ref);
-if ($result <= 0)
+if ($result < 0)
 {
 	dol_print_error($db, 'Payement '.$id.' not found in database');
 	exit;
@@ -535,10 +536,11 @@ if ($action == 'createall') {
 	$sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_payment_receipt as pf,'.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f,'.MAIN_DB_PREFIX.'societe as s';
 	$sql.= ' WHERE pf.fk_receipt = f.rowid';
 	$sql.= ' AND f.fk_soc = s.rowid';
-	$sql.= ' AND f.entity IN ('.getEntity('invoice').')';
+	$sql.= ' AND f.entity IN ('.getEntity($object->element).')';
 	$sql.= ' AND pf.fk_paiement = '.$object->id;
+	//var_dump($object);exit;
 	$resql=$db->query($sql);
-	var_dump($sql);exit;
+	
 	if ($resql)
 	{
 		$num = $db->num_rows($resql);

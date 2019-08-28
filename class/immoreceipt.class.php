@@ -552,10 +552,6 @@ class ImmoReceipt extends CommonObject
 		$array = implode(', t.', $array);
 
 		$sql = 'SELECT '.$array.',';
-		$sql.= ' t.rowid, t.fk_rent,';
-		$sql.= ' t.rentamount,';
-		$sql.= ' t.chargesamount,';
-		$sql.= ' t.total_amount,';
 		$sql.= ' lc.rowid as renter_id,';
 		$sql.= ' lc.email as emaillocataire';		
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
