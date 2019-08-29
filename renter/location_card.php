@@ -429,7 +429,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."bank_account as ba ON b.fk_account = ba.rowid";
         $sql.= " WHERE rr.rowid = c.fk_renter AND rr.rowid=".$id;
 		$sql.= $db->order($sortfield, $sortorder);
-
+		
         $result = $db->query($sql);
         if ($result)
         {
@@ -459,9 +459,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
             {
                 $objp = $db->fetch_object($result);
 
-                $locationstatic->ref;
+                
                 $locationstatic->id=$objp->crowid;
-
+				$locationstatic->ref=$objp->crowid;
+//var_dump($objp);exit;
                 print '<tr class="oddeven">';
                 print '<td>'.$locationstatic->getNomUrl(1).'</td>';
                 print '<td align="center">'.dol_print_date($db->jdate($objp->datec),'dayhour')."</td>\n";
