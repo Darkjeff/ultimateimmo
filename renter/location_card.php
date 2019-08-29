@@ -458,11 +458,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
             while ($i < $num)
             {
                 $objp = $db->fetch_object($result);
-
-                
+               
                 $locationstatic->id=$objp->crowid;
 				$locationstatic->ref=$objp->crowid;
-//var_dump($objp);exit;
+
                 print '<tr class="oddeven">';
                 print '<td>'.$locationstatic->getNomUrl(1).'</td>';
                 print '<td align="center">'.dol_print_date($db->jdate($objp->datec),'dayhour')."</td>\n";
