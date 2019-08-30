@@ -441,13 +441,13 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 		print '<form id="payment_form" name="add_paiement" action="'.$_SERVER["PHP_SELF"].'" method="POST">';
 		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 		print '<input type="hidden" name="action" value="add_paiement">';
-		print '<input type="hidden" name="recid" value="'.$receipt->recid.'">';
+		print '<input type="hidden" name="recid" value="'.$recid.'">';
 		print '<input type="hidden" name="socid" value="'.$renter->fk_soc.'">';
-		print '<input type="hidden" name="thirdpartylabel" id="thirdpartylabel" value="'.dol_escape_htmltag($renter->thirdparty->lastname).'">';
+		print '<input type="hidden" name="thirdpartylabel" id="thirdpartylabel" value="'.dol_escape_htmltag($renter->thirdparty->name).'">';
 
 		dol_fiche_head();
-		$renter->fetch_thirdparty();
-
+		$result=$renter->fetch_thirdparty();
+		
 		print '<table class="border" width="100%">';
 	
         // Third party
@@ -584,10 +584,11 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 
 					$soc = new Societe($db);
 					$soc->fetch($objp->socid);
-
+					
                     $receipt=new ImmoReceipt($db);
                     $receipt->fetch($objp->recid);
                     $paiement = $receipt->getSommePaiement();
+					//var_dump($paiement);exit;
                     $alreadypayed=price2num($paiement, 'MT');
                     $remaintopay=price2num($receipt->total_amount - $paiement, 'MT');
 
@@ -733,7 +734,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                 $text.='<br>'.$langs->trans("AllCompletelyPayedInvoiceWillBeClosed");
                 print '<input type="hidden" name="closepaidinvoices" value="'.GETPOST('closepaidinvoices').'">';
             }
-            print $form->formconfirm($_SERVER['PHP_SELF'].'?recid='.$receipt->id.'&socid='.$receipt->socid.'&type='.$receipt->type, $langs->trans('ReceivedCustomersPayments'), $text, 'confirm_paiement', $formquestion, $preselectedchoice);
+            print $form->formconfirm($_SERVER['PHP_SELF'].'?recid='.$recid.'&socid='.$renter->fk_soc.'&type='.$receipt->type, $langs->trans('ReceivedCustomersPayments'), $text, 'confirm_paiement', $formquestion, $preselectedchoice);
         }
 
         print "</form>\n";
