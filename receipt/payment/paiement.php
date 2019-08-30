@@ -47,6 +47,7 @@ if (! $res) die("Include of main fails");
 
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
+dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
 require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
@@ -56,8 +57,8 @@ $langs->loadLangs(array('companies', 'bills', 'banks'));
 
 $action		= GETPOST('action', 'alpha');
 $confirm	= GETPOST('confirm', 'alpha');
-
 $recid		= GETPOST('recid', 'int');
+
 $accountid	= GETPOST('accountid', 'int');
 $paymentnum	= GETPOST('num_paiement', 'alpha');
 $socid      = GETPOST('socid', 'int');
@@ -70,13 +71,17 @@ $amounts=array();
 $amountsresttopay=array();
 $addwarning=0;
 
-// Security check
-if ($user->societe_id > 0)
-{
-    $socid = $user->societe_id;
-}
-
 $object=new ImmoReceipt($db);
+$object->fetch($recid);
+
+$renter=new ImmoRenter($db);
+$renter->fetch($object->fk_renter);
+
+// Security check
+if ($renter->fk_soc > 0)
+{
+    $socid = $renter->fk_soc;
+}
 
 // Load object
 if ($recid > 0)
@@ -113,6 +118,7 @@ if (empty($reshook))
 	    {
 			if (substr($key, 0, 7) == 'amount_' && GETPOST($key) != '')
 	        {
+				//var_dump(substr($key, 0, 7));exit;
 	            $cursorrecid = substr($key, 7);
 	            $amounts[$cursorrecid] = price2num(trim(GETPOST($key)));
 	            $totalpayment = $totalpayment + $amounts[$cursorrecid];
@@ -171,11 +177,11 @@ if (empty($reshook))
 	    }
 
 		// Check if payments in both currency
-		if ($totalpayment > 0)
+		/*if ($totalpayment > 0)
 		{
 			setEventMessages($langs->transnoentities('ErrorPaymentInBothCurrency'), null, 'errors');
 	        $error++;
-		}
+		}*/
 	}
 
 	/*
@@ -264,6 +270,7 @@ if (empty($reshook))
 
 	        // If payment dispatching on more than one invoice, we stay on summary page, otherwise jump on invoice card
 	        $receiptid=0;
+			
 	        foreach ($paiement->amounts as $key => $amount)
 	        {
 	            $recid = $key;
@@ -295,16 +302,17 @@ $form=new Form($db);
 
 llxHeader('', $langs->trans("Payment"));
 
-
-
 if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paiement')
 {
 	$receipt = new ImmoReceipt($db);
 	$result = $receipt->fetch($recid);
-	$ret = $receipt->fetch_thirdparty($receipt->fk_soc);
-	//var_dump($ret);exit;
+	
+	$paiement = new ImmoPayment($db);
+	$result = $paiement->fetch($receipt->fk_paiement);
+
 	if ($result >= 0)
 	{
+		$ret = $paiement->fetch_thirdparty();
 		$title='';
 		if ($receipt->type != ImmoReceipt::TYPE_CREDIT_NOTE) $title.=$langs->trans("EnterPaymentReceivedFromCustomer");
 		if ($receipt->type == ImmoReceipt::TYPE_CREDIT_NOTE) $title.=$langs->trans("EnterPaymentDueToCustomer");
@@ -329,7 +337,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 		}
 
 		// Add realtime total information
-		if (! empty($conf->use_javascript_ajax))
+		/*if (! empty($conf->use_javascript_ajax))
 		{
 			print "\n".'<script type="text/javascript" language="javascript">';
 			print '$(document).ready(function () {
@@ -428,21 +436,22 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			print '	});'."\n";
 
 			print '	</script>'."\n";
-		}
+		}*/
 
 		print '<form id="payment_form" name="add_paiement" action="'.$_SERVER["PHP_SELF"].'" method="POST">';
 		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 		print '<input type="hidden" name="action" value="add_paiement">';
-		print '<input type="hidden" name="recid" value="'.$receipt->id.'">';
-		print '<input type="hidden" name="socid" value="'.$receipt->socid.'">';
-		print '<input type="hidden" name="thirdpartylabel" id="thirdpartylabel" value="'.dol_escape_htmltag($receipt->thirdparty->name).'">';
+		print '<input type="hidden" name="recid" value="'.$receipt->recid.'">';
+		print '<input type="hidden" name="socid" value="'.$renter->fk_soc.'">';
+		print '<input type="hidden" name="thirdpartylabel" id="thirdpartylabel" value="'.dol_escape_htmltag($renter->thirdparty->lastname).'">';
 
 		dol_fiche_head();
+		$renter->fetch_thirdparty();
 
 		print '<table class="border" width="100%">';
-
+	
         // Third party
-       // print '<tr><td class="titlefieldcreate"><span class="fieldrequired">'.$langs->trans('Company').'</span></td><td>'.$receipt->thirdparty->getNomUrl(4)."</td></tr>\n";
+        print '<tr><td class="titlefieldcreate"><span class="fieldrequired">'.$langs->trans('Renter').'</span></td><td>'.$renter->thirdparty->getNomUrl(4)."</td></tr>\n";
 
         // Date payment
         print '<tr><td><span class="fieldrequired">'.$langs->trans('Date').'</span></td><td>';
@@ -509,7 +518,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
         $sql.= ' f.date_creation as dc, f.fk_soc as socid';
         $sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f';
 		$sql.= ' WHERE f.entity IN ('.getEntity('immoreceipt').')';
-        $sql.= ' AND f.fk_soc = '.$receipt->fk_soc;
+        $sql.= ' AND f.fk_soc = '.$socid;
 		
 		// Can pay receipts of all child of parent company
 		/*if(!empty($conf->global->FACTURE_PAYMENTS_ON_DIFFERENT_THIRDPARTIES_BILLS) && !empty($receipt->thirdparty->parent)) {

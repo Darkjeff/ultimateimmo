@@ -53,7 +53,7 @@ dol_include_once('/ultimateimmo/class/immoowner.class.php');
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "compta", "bills", "contracts"));
 
 // Get parameters
-$id			= GETPOST('id', 'int');
+$id = (GETPOST('id', 'int') ? GETPOST('id', 'int') : GETPOST('recid', 'int'));
 $rowid 		= GETPOST('rowid', 'int');
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'aZ09');
@@ -117,7 +117,7 @@ if (empty($reshook))
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
 		$result = $receipt->set_paid($user);
-		Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
+		Header("Location: " . $_SERVER['PHP_SELF'] . '?recid=' . $id);
 	}
 
 	/**
@@ -186,7 +186,7 @@ if (empty($reshook))
 		
 		if ($result > 0) 
 		{
-			Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
+			Header("Location: " . $_SERVER['PHP_SELF'] . '?recid=' . $id);
 			exit();
 		} 
 		else 
@@ -209,7 +209,7 @@ if (empty($reshook))
 		
 		if ($result > 0) 
 		{
-			Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
+			Header("Location: " . $_SERVER['PHP_SELF'] . '?recid=' . $id);
 			exit();
 		} 
 		else 
@@ -223,7 +223,7 @@ if (empty($reshook))
     $backurlforlist = dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1);
 	if (empty($backtopage)) {
 	    if (empty($id)) $backtopage = $backurlforlist;
-	    else $backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php',1).'?id='.($id > 0 ? $id : '__ID__');
+	    else $backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php',1).'?recid='.($id > 0 ? $id : '__ID__');
     	}
 	$triggermodname = 'ULTIMATEIMMO_IMMORECEIPT_MODIFY';	// Name of trigger action code to execute when we modify record
 
@@ -246,7 +246,7 @@ if (empty($reshook))
 	    $result = $objectutil->createFromClone($user, $id);
 	    if ($result > 0) 
 		{
-       		header("Location: ".$_SERVER['PHP_SELF'].'?id='.$result);
+       		header("Location: ".$_SERVER['PHP_SELF'].'?recid='.$result);
        		exit();
        	}
 		else 
@@ -475,7 +475,7 @@ if (empty($reshook))
 		$receipt->date_end 		= $date_end;
 		
 		$result = $receipt->update($user);
-		header("Location: ".dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id=' .$receipt->id);
+		header("Location: ".dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?recid=' .$receipt->id);
 		if ($id > 0) {
 			// $mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
 		} else {
@@ -793,7 +793,7 @@ if ($action == 'create')
 		if ($action == 'delete')
 		{
 			// Param url = id de la periode à supprimer - id session
-			$ret = $form->form_confirm($_SERVER['PHP_SELF'].'?id='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+			$ret = $form->form_confirm($_SERVER['PHP_SELF'].'?recid='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
 			if ($ret == 'html')
 			print '<br>';
 		}
@@ -841,7 +841,7 @@ if ($action == 'create')
 		// Confirmation to delete
 		if ($action == 'delete')
 		{
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?recid='.$object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
 		}
 
 		// Clone confirmation
@@ -853,7 +853,7 @@ if ($action == 'create')
 				array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
 			);
 			// Ask confirmation to clone
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
 		}
 
 		// Confirmation of validation
@@ -888,7 +888,7 @@ if ($action == 'create')
 			}
 			
 			if (! $error)
-				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
+				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?recid='.$object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
 		}
 		
 		// Call Hook formConfirm
@@ -980,14 +980,14 @@ if ($action == 'create')
 				$objp = $db->fetch_object($resql);
 
 				print '<tr class="oddeven"><td>';
-				print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
+				print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?recid='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
 				print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
 				print '<td>'.$objp->type.'</td>';
 				print '<td class="right">' . $cursymbolbefore.price($objp->amount, 0, $outputlangs).' '.$cursymbolafter."</td>\n";
 
 				print '<td class="right">';
 				if ($user->admin) {
-					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?id='.$objp->rowid. "&amp;action=delete&amp;receipt=".$id.'">';
+					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?recid='.$objp->rowid. "&amp;action=delete&amp;receipt=".$id.'">';
 					print img_delete();
 					print '</a>';
 				}
@@ -1055,19 +1055,19 @@ if ($action == 'create')
 				{
 					if ($user->rights->ultimateimmo->write)
 					{
-						print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
+						print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
 					}
 					else
 						print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('Validate') . '</a></div>';
 				}
 			
 				// Send
-				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
+				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
 
 				// Modify
 				if ($user->rights->ultimateimmo->write)
 				{
-					print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
+					print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?recid='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
 				}
 				else
 				{
@@ -1077,7 +1077,7 @@ if ($action == 'create')
 				// Create payment
 				if ($object->paye == 0) 
 				{
-					print '<div class="inline-block divButAction"><a class="butAction" href="'. dol_buildpath('/ultimateimmo/receipt/payment/paiement.php',1).'?id=' . $object->id . '&amp;action=create&amp;accountid='.$object->fk_account.'">' . $langs->trans('DoPayment') . '</a></div>';
+					print '<div class="inline-block divButAction"><a class="butAction" href="'. dol_buildpath('/ultimateimmo/receipt/payment/paiement.php',1).'?recid=' . $object->id . '&amp;action=create&amp;accountid='.$object->fk_account.'">' . $langs->trans('DoPayment') . '</a></div>';
 				}
 
 				// Create payment
@@ -1089,25 +1089,25 @@ if ($action == 'create')
 					}
 					else
 					{
-						print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=create">' . $langs->trans('DoPayment') . '</a></div>';
+						print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER["PHP_SELF"].'?recid='.$object->id.'&amp;action=create">' . $langs->trans('DoPayment') . '</a></div>';
 					}
 				}
 				
 				// Classify 'paid'
 				if ($receipt->status == 0 && round($remaintopay) <= 0) 
 				{
-					print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=paid&id='.$id.'">'.$langs->trans('ClassifyPaid').'</a></div>';
+					print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=paid&recid='.$id.'">'.$langs->trans('ClassifyPaid').'</a></div>';
 				}
 
 				// Clone
 				if ($user->rights->ultimateimmo->write)
 				{
-					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=ImmoReceipt">' . $langs->trans("ToClone") . '</a></div>';
+					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?recid=' . $object->id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=ImmoReceipt">' . $langs->trans("ToClone") . '</a></div>';
 				}
 
 				if ($usercandelete)
 				{
-					print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
+					print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?recid='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
 				}
 				else
 				{
@@ -1131,7 +1131,7 @@ if ($action == 'create')
 			// Documents generes
 			$relativepath = '/receipt/' . dol_sanitizeFileName($object->ref).'/';
 			$filedir = $conf->ultimateimmo->dir_output . $relativepath;
-			$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
+			$urlsource = $_SERVER["PHP_SELF"] . "?recid=" . $object->id;
 			$genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
 			$delallowed = $user->rights->ultimateimmo->create;	// If you can create/edit, you can remove a file on card
 			print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
@@ -1145,7 +1145,7 @@ if ($action == 'create')
 
 			$MAXEVENT = 10;
 
-			$morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1).'?id='.$object->id.'">';
+			$morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1).'?recid='.$object->id.'">';
 			$morehtmlright.= $langs->trans("SeeAll");
 			$morehtmlright.= '</a>';
 
