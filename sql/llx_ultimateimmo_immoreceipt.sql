@@ -19,6 +19,7 @@
 CREATE TABLE IF NOT EXISTS `llx_ultimateimmo_immoreceipt` (
    rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
   `ref` varchar(128) NOT NULL,
+  `type` smallint(6) NOT NULL DEFAULT '0',
   `entity` int(11) NOT NULL DEFAULT '1',
   `label` varchar(255) DEFAULT NULL,
   `fk_rent` int(11) DEFAULT NULL,

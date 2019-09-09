@@ -515,9 +515,12 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
          */
 
         $sql = 'SELECT f.rowid as recid, f.ref, f.total_amount,';
+		$sql.= ' p.rowid, p.fk_receipt, p.date_payment as dp, p.amount,';
         $sql.= ' f.date_creation as dc, f.fk_soc as socid';
         $sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f';
-		$sql.= ' WHERE f.entity IN ('.getEntity('immoreceipt').')';
+		$sql.= ', '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as p';
+		$sql.= ' WHERE p.fk_receipt = f.rowid';
+		$sql.= ' AND f.entity IN ('.getEntity('immoreceipt').')';
         $sql.= ' AND f.fk_soc = '.$socid;
 		
 		// Can pay receipts of all child of parent company
@@ -528,16 +531,9 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 		if(!empty($conf->global->FACTURE_PAYMENTS_ON_SUBSIDIARY_COMPANIES)){
 			$sql.= ' OR f.fk_soc IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe WHERE parent = '.$receipt->thirdparty->id.')';
 		}
-        $sql.= ') AND f.paye = 0';
+        $sql.= ' AND f.paye = 0';
         $sql.= ' AND f.fk_statut = 1'; // Statut=0 => not validated, Statut=2 => canceled
-        if ($receipt->type != ImmoReceipt::TYPE_CREDIT_NOTE)
-        {
-            $sql .= ' AND type IN (0,1,3,5)';	// Standard invoice, replacement, deposit, situation
-        }
-        else
-        {
-            $sql .= ' AND type = 2';		// If paying back a credit note, we show all credit notes
-        }*/
+       */
         // Sort invoices by date and serial number: the older one comes first
         $sql.=' ORDER BY f.date_creation ASC, f.ref ASC';
 
@@ -624,7 +620,8 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                     print '<td class="right" '.(($receipt->id==$recid)?' style="font-weight: bold" ':'').'>'.price($sign * $objp->total_amount ).'</td>';
 
                     // Received or paid back
-                    print '<td class="right">'.price($sign * $paiement);
+                    //print '<td class="right">'.price($sign * $paiement);
+					print '<td class="right">'.price($sign * $objp->amount);
                     if ($deposits) print '+'.price($deposits);
                     print '</td>';
 
@@ -773,7 +770,7 @@ if (! GETPOST('action', 'aZ09'))
     {
         $num = $db->num_rows($resql);
         $i = 0;
-
+		
         print_barre_liste($langs->trans('Payments'), $page, $_SERVER["PHP_SELF"], '', $sortfield, $sortorder, '', $num);
         print '<table class="noborder" width="100%">';
         print '<tr class="liste_titre">';

@@ -955,7 +955,7 @@ if ($action == 'create')
 		$sql .= ", " . MAIN_DB_PREFIX . "c_paiement as pp";
 		$sql .= " WHERE p.fk_receipt = " . $id;
 		$sql .= " AND p.fk_receipt = il.rowid";
-		$sql .= " AND type = pp.id";
+		$sql .= " AND pp.type = pp.id";
 		$sql .= " AND p.amount <> '" .price(0, 0, $outputlangs)."'";
 		$sql .= " ORDER BY dp DESC";
 
@@ -1000,13 +1000,13 @@ if ($action == 'create')
 
 			if ($object->status == 0)
 			{
-				print '<tr><td colspan="3" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs).' '.$cursymbolafter . '</b>'."</td></tr>\n";
-				print '<tr><td colspan="3" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs).' '.$cursymbolafter . "</td></tr>\n";
+				print '<tr><td colspan="3" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs).' '.$cursymbolafter . '</b>'."</td><td>&nbsp;</td></tr>\n";
+				print '<tr><td colspan="3" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs).' '.$cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
 
 				$remaintopay = $object->total_amount - $totalpaye;
 
 				print '<tr><td colspan="3" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
-				print '<td class="right"'.($remaintopay?' class="amountremaintopay"':'').'>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs).' '.$cursymbolafter."</td></tr>\n";
+				print '<td class="right"'.($remaintopay?' class="amountremaintopay"':'').'>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs).' '.$cursymbolafter."</td><td>&nbsp;</td></tr>\n";
 			}
 			print '</table>';
 			$db->free($resql);
