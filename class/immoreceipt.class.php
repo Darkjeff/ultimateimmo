@@ -1288,7 +1288,7 @@ class ImmoReceipt extends CommonObject
 	 */
 	function getSommePaiement()
 	{
-		$table='ultimateimmo_payment_receipt';
+		$table='ultimateimmo_immopayment';
 		$field='fk_receipt';
 
 		$sql = 'SELECT sum(amount) as amount';

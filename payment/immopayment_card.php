@@ -533,12 +533,13 @@ if ($action == 'createall') {
 	}*/
 	
 	$sql = 'SELECT f.rowid as facid, f.ref, f.label, f.total_amount, f.paye, f.fk_statut, pf.amount, s.nom as name, s.rowid as socid';
-	$sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_payment_receipt as pf,'.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f,'.MAIN_DB_PREFIX.'societe as s';
+	$sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as pf,'.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f,'.MAIN_DB_PREFIX.'societe as s';
 	$sql.= ' WHERE pf.fk_receipt = f.rowid';
 	$sql.= ' AND f.fk_soc = s.rowid';
 	$sql.= ' AND f.entity IN ('.getEntity($object->element).')';
-	$sql.= ' AND pf.fk_paiement = '.$object->id;
-	//var_dump($object);exit;
+	$sql.= ' AND pf.fk_paiement = '.$object->rowid;
+
+	//var_dump($sql);exit;
 	$resql=$db->query($sql);
 	
 	if ($resql)
@@ -556,7 +557,7 @@ if ($action == 'createall') {
 		print '<table class="noborder" width="100%">';
 
 		print '<tr class="liste_titre">';
-		print '<td>'.$langs->trans('Bill').'</td>';
+		print '<td>'.$langs->trans('ImmoReceipt').'</td>';
 		print '<td>'.$langs->trans('Company').'</td>';
 		if($conf->global->MULTICOMPANY_INVOICE_SHARING_ENABLED )print '<td>'.$langs->trans('Entity').'</td>';
 		print '<td class="right">'.$langs->trans('ExpectedToPay').'</td>';

@@ -426,9 +426,12 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 						});
 			';
 
-			print '	});'."\n";
+			print '	});'."\n";*/
 
-			//Add js for AutoFill
+		//Add js for AutoFill
+		if (! empty($conf->use_javascript_ajax))
+		{
+			print "\n".'<script type="text/javascript" language="javascript">';
 			print ' $(document).ready(function () {';
 			print ' 	$(".AutoFillAmout").on(\'click touchstart\', function(){
 							$("input[name="+$(this).data(\'rowname\')+"]").val($(this).data("value")).trigger("change");
@@ -436,7 +439,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			print '	});'."\n";
 
 			print '	</script>'."\n";
-		}*/
+		}
 
 		print '<form id="payment_form" name="add_paiement" action="'.$_SERVER["PHP_SELF"].'" method="POST">';
 		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -520,7 +523,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
         $sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f';
 		$sql.= ', '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as p';
 		$sql.= ' WHERE p.fk_receipt = f.rowid';
-		$sql.= ' AND f.entity IN ('.getEntity('immoreceipt').')';
+		$sql.= ' AND f.entity IN ('.getEntity($object->element).')';
         $sql.= ' AND f.fk_soc = '.$socid;
 		
 		// Can pay receipts of all child of parent company
@@ -554,8 +557,9 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                 //print '<tr><td colspan="3">';
                 print '<br>';
                 print '<table class="noborder" width="100%">';
-
+				
                 print '<tr class="liste_titre">';
+				print '<td align="left">'.$langs->trans('Ref.paiement').'</td>';
                 print '<td>'.$arraytitle.'</td>';
                 print '<td align="center">'.$langs->trans('Date').'</td>';
                 print '<td align="center">'.$langs->trans('DateMaxPayment').'</td>';
@@ -584,11 +588,18 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                     $receipt=new ImmoReceipt($db);
                     $receipt->fetch($objp->recid);
                     $paiement = $receipt->getSommePaiement();
-					//var_dump($paiement);exit;
+					
+					$payment = new ImmoPayment($db);
+					$result = $payment->fetch($objp->rowid);
+					
                     $alreadypayed=price2num($paiement, 'MT');
                     $remaintopay=price2num($receipt->total_amount - $paiement, 'MT');
 
 					print '<tr class="oddeven">';
+					print '<td>';
+					$payment->ref = $payment->id.'_'.$receipt->ref;
+					print $payment->getNomUrl(1, '');
+					print "</td>\n";
 
 					print '<td>';
                     print $receipt->getNomUrl(1, '');
@@ -627,7 +638,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 
                     // Remain to take or to pay back
                     print '<td class="right">'.price($sign * $remaintopay).'</td>';
-                    //$test= price(price2num($objp->total_amount  - $paiement - $deposits));
+                   // $test= price(price2num($objp->total_amount  - $paiement - $deposits));
 
                     // Amount
                     print '<td class="right nowraponall">';
@@ -635,7 +646,8 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                     // Add remind amount
                     $namef = 'amount_'.$objp->recid;
                     $nameRemain = 'remain_'.$objp->recid;
-
+					//var_dump($_POST["rowid"]);exit;
+					
                     if ($action != 'add_paiement')
                     {
                         if (!empty($conf->use_javascript_ajax))
@@ -644,7 +656,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                         print '<input type="hidden" class="remain" name="'.$nameRemain.'" value="'.$remaintopay.'">';
                     }
                     else
-                    {
+                    {						
                         print '<input type="text" class="maxwidth75" name="'.$namef.'_disabled" value="'.dol_escape_htmltag(GETPOST($namef)).'" disabled>';
                         print '<input type="hidden" name="'.$namef.'" value="'.dol_escape_htmltag(GETPOST($namef)).'">';
                     }
@@ -675,7 +687,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                 {
                     // Print total
                     print '<tr class="liste_total">';
-                    print '<td colspan="3" class="left">'.$langs->trans('TotalTTC').'</td>';
+                    print '<td colspan="4" class="left">'.$langs->trans('TotalTTC').'</td>';
 					print '<td class="right"><b>'.price($sign * $total_amount ).'</b></td>';
                     print '<td class="right"><b>'.price($sign * $totalrecu);
                     if ($totalrecudeposits) print '+'.price($totalrecudeposits);
@@ -719,10 +731,10 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
         if ($action == 'add_paiement')
         {
             $preselectedchoice=$addwarning?'no':'yes';
-
+			
             print '<br>';
             if (!empty($totalpayment)) $text=$langs->trans('ConfirmCustomerPayment', $totalpayment, $langs->trans("Currency".$conf->currency));
-			if (!empty($multicurrency_totalpayment))
+			/*if (!empty($multicurrency_totalpayment))
 			{
 				$text.='<br>'.$langs->trans('ConfirmCustomerPayment', $multicurrency_totalpayment, $langs->trans("paymentInInvoiceCurrency"));
 			}
@@ -730,7 +742,8 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
             {
                 $text.='<br>'.$langs->trans("AllCompletelyPayedInvoiceWillBeClosed");
                 print '<input type="hidden" name="closepaidinvoices" value="'.GETPOST('closepaidinvoices').'">';
-            }
+            }*/
+			
             print $form->formconfirm($_SERVER['PHP_SELF'].'?recid='.$recid.'&socid='.$renter->fk_soc.'&type='.$receipt->type, $langs->trans('ReceivedCustomersPayments'), $text, 'confirm_paiement', $formquestion, $preselectedchoice);
         }
 
@@ -756,7 +769,7 @@ if (! GETPOST('action', 'aZ09'))
     $sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as p LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as c ON p.fk_paiement = c.id';
     $sql.= ', '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f';
     $sql.= ' WHERE p.fk_receipt = f.rowid';
-    $sql.= ' AND f.entity IN (' . getEntity('immoreceipt').')';
+    $sql.= ' AND f.entity IN (' . getEntity($object->element).')';
     if ($socid)
     {
         $sql.= ' AND f.fk_soc = '.$socid;
@@ -774,7 +787,7 @@ if (! GETPOST('action', 'aZ09'))
         print_barre_liste($langs->trans('Payments'), $page, $_SERVER["PHP_SELF"], '', $sortfield, $sortorder, '', $num);
         print '<table class="noborder" width="100%">';
         print '<tr class="liste_titre">';
-        print_liste_field_titre('Invoice', $_SERVER["PHP_SELF"], 'ref', '', '', '', $sortfield, $sortorder);
+        print_liste_field_titre('Receipt', $_SERVER["PHP_SELF"], 'ref', '', '', '', $sortfield, $sortorder);
         print_liste_field_titre('Date', $_SERVER["PHP_SELF"], 'dc', '', '', '', $sortfield, $sortorder);
         print_liste_field_titre('Type', $_SERVER["PHP_SELF"], 'libelle', '', '', '', $sortfield, $sortorder);
         print_liste_field_titre('Amount', $_SERVER["PHP_SELF"], 'rec_amount', '', '', '', $sortfield, $sortorder, 'right ');
