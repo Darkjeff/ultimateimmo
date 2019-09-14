@@ -49,6 +49,7 @@ dol_include_once('/ultimateimmo/class/immopayment.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
+require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 
@@ -117,11 +118,13 @@ if (empty($reshook))
 	    foreach ($_POST as $key => $value)
 	    {
 			if (substr($key, 0, 7) == 'amount_' && GETPOST($key) != '')
-	        {
-				//var_dump(substr($key, 0, 7));exit;
+	        {	
+						
 	            $cursorrecid = substr($key, 7);
+				
 	            $amounts[$cursorrecid] = price2num(trim(GETPOST($key)));
 	            $totalpayment = $totalpayment + $amounts[$cursorrecid];
+				//var_dump($totalpayment);
 	            if (! empty($amounts[$cursorrecid])) $atleastonepaymentnotnull++;
 	            $result=$tmpreceipt->fetch($cursorrecid);
 	            if ($result <= 0) dol_print_error($db);
@@ -148,9 +151,9 @@ if (empty($reshook))
 	    }
 
 	    // Check parameters
-	    if (! GETPOST('paiementcode'))
+	    if (! GETPOST('fk_mode_reglement'))
 	    {
-	        setEventMessages($langs->transnoentities('ErrorFieldRequired', $langs->transnoentities('PaymentMode')), null, 'errors');
+	        setEventMessages($langs->transnoentities('ErrorFieldRequired', $langs->transnoentities('TypePayment')), null, 'errors');
 	        $error++;
 	    }
 
@@ -234,17 +237,19 @@ if (empty($reshook))
 
 	    // Creation of payment line
 	    $paiement = new ImmoPayment($db);
+		//var_dump($paiement);exit;
 	    $paiement->date_payment = $date_payment;
 	    $paiement->amounts      = $amounts;   // Array with all payments dispatching with invoice id
-	    $paiement->paiementid   = dol_getIdFromCode($db, GETPOST('paiementcode'), 'c_paiement', 'code', 'id', 1);
-	    $paiement->num_paiement = GETPOST('num_paiement', 'alpha');
-	    $paiement->note         = GETPOST('comment', 'alpha');
+	    $paiement->fk_paiement   = dol_getIdFromCode($db, GETPOST('fk_mode_reglement'), 'c_paiement', 'code', 'id', 1);
+	    $paiement->num_payment  = GETPOST('num_payment', 'alpha');
+	    $paiement->note_public  = GETPOST('note_public', 'alpha');
 
 	    if (! $error)
 	    {
 	        // Create payment and update this->multicurrency_amounts if this->amounts filled or
 	        // this->amounts if this->multicurrency_amounts filled.
-	        $paiement_id = $paiement->create($user, (GETPOST('closepaidinvoices')=='on'?1:0), $thirdparty);    // This include closing invoices and regenerating documents
+	        $paiement_id = $paiement->create($user, (GETPOST('closepaidreceipts')=='on'?1:0), $thirdparty);    // This include closing invoices and regenerating documents
+			//var_dump($paiement_id);exit;
 	    	if ($paiement_id < 0)
 	        {
 	            setEventMessages($paiement->error, $paiement->errors, 'errors');
@@ -309,6 +314,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 	
 	$paiement = new ImmoPayment($db);
 	$result = $paiement->fetch($receipt->fk_paiement);
+	
 
 	if ($result >= 0)
 	{
@@ -333,7 +339,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 		if (! empty($conf->paypalplus->enabled) && $conf->global->PAYPAL_ENABLE_TRANSACTION_MANAGEMENT && ! empty($receipt->ref_int))
 		{
 			if (! empty($conf->global->PAYPAL_BANK_ACCOUNT)) $accountid=$conf->global->PAYPAL_BANK_ACCOUNT;
-			$paymentnum=$receipt->ref_int;
+			$paymentnum=$paiement->ref;
 		}
 
 		// Add realtime total information
@@ -426,7 +432,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 						});
 			';
 
-			print '	});'."\n";*/
+			print '	});'."\n";
 
 		//Add js for AutoFill
 		if (! empty($conf->use_javascript_ajax))
@@ -439,7 +445,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			print '	});'."\n";
 
 			print '	</script>'."\n";
-		}
+		}*/
 
 		print '<form id="payment_form" name="add_paiement" action="'.$_SERVER["PHP_SELF"].'" method="POST">';
 		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -452,25 +458,121 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 		$result=$renter->fetch_thirdparty();
 		
 		print '<table class="border" width="100%">';
+		
+		// Common attributes
+		$paiement->fields = dol_sort_array($paiement->fields, 'position');
+
+		foreach($paiement->fields as $key => $val)
+		{
+			$tab = $paiement->fields;
+			$array = array_diff_key($tab, ['fk_rent' => $key, 'fk_receipt' => $key, 'fk_renter' => $key, 'fk_owner' => $key, 'fk_property' => $key, 'status' => $key]);
+			//var_dump($array);
+			// Discard if extrafield is a hidden field on form
+			if (abs($val['visible']) != 1) continue;
+			
+			if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+
+			print '<tr id="field_'.$key.'">';
+			print '<td';
+			print ' class="titlefieldcreate';
+			if ($val['notnull'] > 0) print ' fieldrequired';
+			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+			print '"';
+			print '>';
+			print $langs->trans($val['label']);
+			print '</td>';
+			print '<td>';
+
+			if ($val['label'] == 'Ref')
+			{			
+				// Reference
+				$tmpref= "(PROV)".$recid;
+				print $tmpref;
+			}
+			elseif ($val['label'] == 'Renter')
+			{
+				//fk_renter
+				print $renter->thirdparty->getNomUrl(4);
+			}
+			elseif ($val['label'] == 'DatePayment')
+			{
+				// DateCreation
+				$datepayment = dol_mktime(12, 0, 0, $_POST['remonth'], $_POST['reday'], $_POST['reyear']);
+				$datepayment= ($datepayment == '' ? (empty($conf->global->MAIN_AUTOFILL_DATE)?-1:'') : $datepayment);
+				print $form->selectDate($datepayment, '', '', '', 0, "add_paiement", 1, 1, 0, '', '', $receipt->date);
+			}
+			elseif ($val['label'] == 'TypePayment')
+			{
+				// Payment mode
+				$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$paiement->fk_mode_reglement), 'fk_mode_reglement', '', 2);
+			}
+			elseif ($val['label'] == 'BankAccount')
+			{
+				//BankAccount
+				if (! empty($conf->banque->enabled))
+				{
+					if ($receipt->type != 2) print '<span class="fieldrequired">'.$langs->trans('AccountToCredit').'</span>';
+					if ($receipt->type == 2) print '<span class="fieldrequired">'.$langs->trans('AccountToDebit').'</span>';
+					
+					$form->select_comptes($accountid, 'accountid', 0, '', 2);
+					
+				}
+			}
+			elseif ($val['label'] == 'NotePrivate')
+			{
+				//NotePrivate
+				//$val['label'] = '';
+			}
+			elseif ($val['label'] == 'ThirdParty')
+			{
+				// ThirdParty
+			}
+			elseif ($val['label'] == 'Contract')
+			{
+				// Contract
+			}
+			elseif ($val['label'] == 'ImmoReceipt')
+			{
+				// ImmoReceipt
+			}
+			elseif ($val['label'] == 'Owner')
+			{
+				// Owner
+			}
+			elseif ($val['label'] == 'Property')
+			{
+				// Property
+			}
+			elseif ($val['label'] == 'Status')
+			{
+				// Status
+			}
+			else
+			{
+				if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
+				elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
+				else $value = GETPOST($key, 'alpha');
+				print $paiement->showInputField($val, $key, $value, '', '', '', 0);
+			}
+			print '</td>';
+			print '</tr>';
+		}
+		// Reference
+		//$tmpref= GETPOST('ref','alpha')?GETPOST('ref','alpha'):"(PROV)".$recid;
+        //print '<tr><td class="titlefieldcreate"><span class="fieldrequired">'.$langs->trans('Reference').'</span></td><td>'.$tmpref."</td></tr>\n";
 	
         // Third party
-        print '<tr><td class="titlefieldcreate"><span class="fieldrequired">'.$langs->trans('Renter').'</span></td><td>'.$renter->thirdparty->getNomUrl(4)."</td></tr>\n";
+       // print '<tr><td class="titlefieldcreate"><span class="fieldrequired">'.$langs->trans('Renter').'</span></td><td>'.$renter->thirdparty->getNomUrl(4)."</td></tr>\n";
 
         // Date payment
-        print '<tr><td><span class="fieldrequired">'.$langs->trans('Date').'</span></td><td>';
+       /* print '<tr><td><span class="fieldrequired">'.$langs->trans('Date').'</span></td><td>';
         $datepayment = dol_mktime(12, 0, 0, $_POST['remonth'], $_POST['reday'], $_POST['reyear']);
         $datepayment= ($datepayment == '' ? (empty($conf->global->MAIN_AUTOFILL_DATE)?-1:'') : $datepayment);
         print $form->selectDate($datepayment, '', '', '', 0, "add_paiement", 1, 1, 0, '', '', $receipt->date);
-        print '</td></tr>';
-
-        // Payment mode
-        print '<tr><td><span class="fieldrequired">'.$langs->trans('PaymentMode').'</span></td><td>';
-        $form->select_types_paiements((GETPOST('paiementcode')?GETPOST('paiementcode'):$receipt->mode_reglement_code), 'paiementcode', '', 2);
-        print "</td>\n";
-        print '</tr>';
+        print '</td></tr>';*/      
 
         // Bank account
-        print '<tr>';
+       /* print '<tr>';
         if (! empty($conf->banque->enabled))
         {
             if ($receipt->type != 2) print '<td><span class="fieldrequired">'.$langs->trans('AccountToCredit').'</span></td>';
@@ -483,16 +585,16 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
         {
             print '<td>&nbsp;</td>';
         }
-        print "</tr>\n";
+        print "</tr>\n";*/
 
         // Cheque number
-        print '<tr><td>'.$langs->trans('Numero');
+        /*print '<tr><td>'.$langs->trans('Numero');
         print ' <em>('.$langs->trans("ChequeOrTransferNumber").')</em>';
         print '</td>';
         print '<td><input name="num_paiement" type="text" value="'.$paymentnum.'"></td></tr>';
 
         // Check transmitter
-        print '<tr><td class="'.(GETPOST('paiementcode')=='CHQ'?'fieldrequired ':'').'fieldrequireddyn">'.$langs->trans('CheckTransmitter');
+        print '<tr><td class="'.(GETPOST('fk_mode_reglement')=='CHQ'?'fieldrequired ':'').'fieldrequireddyn">'.$langs->trans('CheckTransmitter');
         print ' <em>('.$langs->trans("ChequeMaker").')</em>';
         print '</td>';
         print '<td><input id="fieldchqemetteur" name="chqemetteur" size="30" type="text" value="'.GETPOST('chqemetteur', 'alphanohtml').'"></td></tr>';
@@ -501,12 +603,13 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
         print '<tr><td>'.$langs->trans('Bank');
         print ' <em>('.$langs->trans("ChequeBank").')</em>';
         print '</td>';
-        print '<td><input name="chqbank" size="30" type="text" value="'.GETPOST('chqbank', 'alphanohtml').'"></td></tr>';
+        print '<td><input name="chqbank" size="30" type="text" value="'.GETPOST('chqbank', 'alphanohtml').'"></td></tr>';*/
+	
 
 		// Comments
-		print '<tr><td>'.$langs->trans('Comments').'</td>';
+		/*print '<tr><td>'.$langs->trans('Comments').'</td>';
 		print '<td class="tdtop">';
-		print '<textarea name="comment" wrap="soft" class="quatrevingtpercent" rows="'.ROWS_3.'">'.GETPOST('comment', 'none').'</textarea></td></tr>';
+		print '<textarea name="comment" wrap="soft" class="quatrevingtpercent" rows="'.ROWS_3.'">'.GETPOST('comment', 'none').'</textarea></td></tr>';*/
 
         print '</table>';
 
@@ -717,7 +820,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
         	if ($receipt->type == 2) $buttontitle=$langs->trans('ToMakePaymentBack');
 
         	print '<br><div class="center">';
-        	print '<input type="checkbox" checked name="closepaidinvoices"> '.$checkboxlabel;
+        	print '<input type="checkbox" checked name="closepaidreceipts"> '.$checkboxlabel;
             /*if (! empty($conf->prelevement->enabled))
             {
                 $langs->load("withdrawals");
@@ -738,10 +841,10 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			{
 				$text.='<br>'.$langs->trans('ConfirmCustomerPayment', $multicurrency_totalpayment, $langs->trans("paymentInInvoiceCurrency"));
 			}
-            if (GETPOST('closepaidinvoices'))
+            if (GETPOST('closepaidreceipts'))
             {
                 $text.='<br>'.$langs->trans("AllCompletelyPayedInvoiceWillBeClosed");
-                print '<input type="hidden" name="closepaidinvoices" value="'.GETPOST('closepaidinvoices').'">';
+                print '<input type="hidden" name="closepaidreceipts" value="'.GETPOST('closepaidreceipts').'">';
             }*/
 			
             print $form->formconfirm($_SERVER['PHP_SELF'].'?recid='.$recid.'&socid='.$renter->fk_soc.'&type='.$receipt->type, $langs->trans('ReceivedCustomersPayments'), $text, 'confirm_paiement', $formquestion, $preselectedchoice);

@@ -55,6 +55,7 @@ $action		= GETPOST('action', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 $socid 		= GETPOST('socid', 'int');
+$accountid	= GETPOST('accountid', 'int');
 
 // Initialize technical objects
 $object=new ImmoPayment($db);
@@ -197,7 +198,54 @@ if ($action == 'create')
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_add.tpl.php';
+	$object->fields = dol_sort_array($object->fields, 'position');
+
+	foreach($object->fields as $key => $val)
+	{
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
+
+		print '<tr id="field_'.$key.'">';
+		print '<td';
+		print ' class="titlefieldcreate';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '"';
+		print '>';
+		if (! empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '</td>';
+		
+		print '<td>';
+		if ($val['label'] == 'TypePayment')
+		{
+			// Payment mode
+			$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$object->fk_mode_reglement), 'fk_mode_reglement', '', 2);
+		}
+		elseif ($val['label'] == 'BankAccount')
+		{
+			//BankAccount
+			if (! empty($conf->banque->enabled))
+			{
+				if ($receipt->type != 2) print '<span class="fieldrequired">'.$langs->trans('AccountToCredit').'</span>';
+				if ($receipt->type == 2) print '<span class="fieldrequired">'.$langs->trans('AccountToDebit').'</span>';
+				
+				$form->select_comptes($accountid, 'accountid', 0, '', 2);
+				
+			}
+		}
+		else
+		{
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
+			else $value = GETPOST($key, 'alpha');
+			print $object->showInputField($val, $key, $value, '', '', '', 0);
+		}
+		print '</td>';
+		print '</tr>';
+	}
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
@@ -537,8 +585,14 @@ if ($action == 'createall') {
 	$sql.= ' WHERE pf.fk_receipt = f.rowid';
 	$sql.= ' AND f.fk_soc = s.rowid';
 	$sql.= ' AND f.entity IN ('.getEntity($object->element).')';
-	$sql.= ' AND pf.fk_paiement = '.$object->rowid;
-
+	//$sql.= ' AND pf.fk_paiement = '.$object->rowid;
+	/*
+	$sql = 'SELECT SUM(pf.amount) as total_paiements';
+	$sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as pf, '.MAIN_DB_PREFIX.'paiement as p';
+	$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as c ON p.fk_paiement = c.id';
+	$sql.= ' WHERE pf.fk_receipt = '.$object->id;
+	$sql.= ' AND pf.fk_paiement = p.rowid';
+	$sql.= ' AND p.entity IN ('.getEntity('invoice').')';*/
 	//var_dump($sql);exit;
 	$resql=$db->query($sql);
 	
@@ -578,10 +632,10 @@ if ($action == 'createall') {
 				$receipt->fetch($objp->facid);
 				
 				$paiement = $receipt->getSommePaiement();
-				$creditnotes=$receipt->getSumCreditNotesUsed();
-				$deposits=$receipt->getSumDepositsUsed();
-				$alreadypayed=price2num($paiement + $creditnotes + $deposits, 'MT');
-				$remaintopay=price2num($receipt->total_ttc - $paiement - $creditnotes - $deposits, 'MT');
+				//$creditnotes=$receipt->getSumCreditNotesUsed();
+				//$deposits=$receipt->getSumDepositsUsed();
+				$alreadypayed=price2num($paiement /*+ $creditnotes + $deposits*/, 'MT');
+				$remaintopay=price2num($receipt->total_amount - $paiement /*- $creditnotes - $deposits*/, 'MT');
 
 				print '<tr class="oddeven">';
 
@@ -596,14 +650,7 @@ if ($action == 'createall') {
 				print '</td>';
 
 				// Expected to pay
-				if($conf->global->MULTICOMPANY_INVOICE_SHARING_ENABLED ){
-					print '<td>';
-					$mc->getInfo($objp->entity);
-					print $mc->label;
-					print '</td>';
-				}
-				// Expected to pay
-				print '<td class="right">'.price($objp->total_ttc).'</td>';
+				print '<td class="right">'.price($objp->total_amount).'</td>';
 
 				// Amount payed
 				print '<td class="right">'.price($objp->amount).'</td>';
@@ -612,7 +659,7 @@ if ($action == 'createall') {
 				print '<td class="right">'.price($remaintopay).'</td>';
 
 				// Status
-				print '<td class="right">'.$invoice->getLibStatut(5, $alreadypayed).'</td>';
+				print '<td class="right">'.$receipt->getLibStatut(5, $alreadypayed).'</td>';
 
 				print "</tr>\n";
 				if ($objp->paye == 1)	// If at least one invoice is paid, disable delete

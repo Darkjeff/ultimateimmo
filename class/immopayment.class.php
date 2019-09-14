@@ -97,12 +97,13 @@ class ImmoPayment extends CommonObject
 		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToRenter",),
 		'fk_paiement' => array('type'=>'integer', 'label'=>'Payment', 'visible'=>0, 'enabled'=>1, 'position'=>48, 'default'=>1, 'notnull'=>1, 'index'=>1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>50, 'notnull'=>-1,),
-		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>1, 'visible'=>-1, 'position'=>60, 'notnull'=>-1,),
 		'date_payment' => array('type'=>'date', 'label'=>'DatePayment', 'enabled'=>1, 'visible'=>-1, 'position'=>70, 'notnull'=>1,),
 		'amount' => array('type'=>'price', 'label'=>'Amount', 'enabled'=>1, 'visible'=>1, 'position'=>72, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'fk_mode_reglement' => array('type'=>'integer', 'label'=>'TypePayment', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Carte bancaire', '1'=>'Chèque', '2'=>'Espèces', '3'=>'CAF'), 'help'=>"LinkToTypePayment",),
 		'fk_bank' => array('type'=>'integer:Account:compta/bank/class/account.class.php', 'label'=>'BankAccount', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToBank",),
 		'num_payment' => array('type'=>'varchar(50)', 'label'=>'NumPayment', 'enabled'=>1, 'visible'=>-1, 'position'=>85, 'notnull'=>-1,),
+		'check_transmitter' => array('type'=>'varchar(50)', 'label'=>'CheckTransmitter', 'enabled'=>1, 'visible'=>-1, 'position'=>86, 'notnull'=>-1,),
+		'chequebank' => array('type'=>'varchar(50)', 'label'=>'ChequeBank', 'enabled'=>1, 'visible'=>-1, 'position'=>87, 'notnull'=>-1,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>500, 'notnull'=>1,),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1, 'foreignkey'=>'llx_user.rowid',),
@@ -120,13 +121,14 @@ class ImmoPayment extends CommonObject
 	public $fk_property;
 	public $fk_renter;
 	public $note_public;
-	public $note_private;
 	public $amount;			    // Total amount of payment
 	public $amounts=array();    // Array of amounts
 	public $fk_mode_reglement;
 	public $fk_bank;
 	public $fk_paiement;
 	public $num_payment;
+	public $check_transmitter;
+	public $chequebank;
 	public $date_payment;
 	public $date_creation;
 	public $tms;
@@ -188,10 +190,12 @@ class ImmoPayment extends CommonObject
 	 * Create object into database
 	 *
 	 * @param  User $user      User that creates
+	 * @param  int		  	   $closepaidreceipts   	1=Also close payed receipts to paid, 0=Do nothing more
+	 * @param  Societe   	   $thirdparty           Thirdparty
 	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, Id of created object if OK
 	 */
-	public function createCommon(User $user, $notrigger = false)
+	public function createCommon(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
 	{
 		global $langs, $object;
 
@@ -219,6 +223,7 @@ class ImmoPayment extends CommonObject
 			// If field is an implicit foreign key field
 			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key]='';
 			if (! empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key]='';
+			if (empty($this->fields[$key]['ref']) && $values[$key] == '') $values[$key]='(PROV'.$this->id.')'; 
 
 			//var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
 			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && ! isset($values[$key]) && is_null($val['default']))
@@ -287,9 +292,9 @@ class ImmoPayment extends CommonObject
 	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, Id of created object if OK
 	 */
-	public function create(User $user, $notrigger = false)
+	public function create(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
 	{
-		return $this->createCommon($user, $notrigger);
+		return $this->createCommon($user, $closepaidreceipts, $thirdparty, $notrigger);
 	}
 
 	/**
