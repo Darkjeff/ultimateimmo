@@ -47,7 +47,10 @@ if (! $res) die("Include of main fails");
 
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
+dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
+dol_include_once('/ultimateimmo/class/immorent.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
 require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
@@ -77,6 +80,15 @@ $object->fetch($recid);
 
 $renter=new ImmoRenter($db);
 $renter->fetch($object->fk_renter);
+
+$owner=new ImmoOwner($db);
+$owner->fetch($object->fk_owner);
+
+$rent=new ImmoRent($db);
+$rent->fetch($object->fk_rent);
+
+$property=new ImmoProperty($db);
+$property->fetch($object->fk_property);
 
 // Security check
 if ($renter->fk_soc > 0)
@@ -492,7 +504,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			elseif ($val['label'] == 'Renter')
 			{
 				//fk_renter
-				print $renter->thirdparty->getNomUrl(4);
+				print $renter->ref;
 			}
 			elseif ($val['label'] == 'DatePayment')
 			{
@@ -526,22 +538,28 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			elseif ($val['label'] == 'ThirdParty')
 			{
 				// ThirdParty
+				print $renter->thirdparty->getNomUrl(4);
 			}
 			elseif ($val['label'] == 'Contract')
 			{
 				// Contract
+				print $rent->ref;
 			}
 			elseif ($val['label'] == 'ImmoReceipt')
 			{
 				// ImmoReceipt
+				print $object->ref;
 			}
 			elseif ($val['label'] == 'Owner')
 			{
 				// Owner
+				print $owner->getNomUrl(4);
+				//var_dump($owner);exit;
 			}
 			elseif ($val['label'] == 'Property')
 			{
 				// Property
+				print $property->getNomUrl(4);
 			}
 			elseif ($val['label'] == 'Status')
 			{
