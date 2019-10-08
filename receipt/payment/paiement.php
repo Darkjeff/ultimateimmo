@@ -325,7 +325,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 	$result = $receipt->fetch($recid);
 	
 	$paiement = new ImmoPayment($db);
-	$result = $paiement->fetch($receipt->fk_paiement);
+	$result = $paiement->fetch($object->fk_paiement);
 	
 
 	if ($result >= 0)
@@ -494,6 +494,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			print $langs->trans($val['label']);
 			print '</td>';
 			print '<td>';
+			//var_dump($receipt);exit;
 
 			if ($val['label'] == 'Ref')
 			{			
@@ -548,7 +549,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			elseif ($val['label'] == 'ImmoReceipt')
 			{
 				// ImmoReceipt
-				print $object->ref;
+				print $receipt->ref;
 			}
 			elseif ($val['label'] == 'Owner')
 			{
