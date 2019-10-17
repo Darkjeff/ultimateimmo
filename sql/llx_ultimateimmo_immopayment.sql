@@ -30,9 +30,9 @@ CREATE TABLE llx_ultimateimmo_immopayment(
 	fk_soc integer,
 	fk_receipt integer,
 	fk_paiement integer NOT NULL,		-- type of payment in llx_c_paiement
-	num_payment varchar(50), 
-	check_transmitter varchar(50), 
-	chequebank varchar(50), 
+	num_payment varchar(50) DEFAULT NULL, 
+	check_transmitter varchar(50) DEFAULT NULL, 
+	chequebank varchar(50) DEFAULT NULL, 
 	note_public text,  
 	date_payment datetime NOT NULL, 	-- payment date
 	date_creation datetime NOT NULL, 	-- date de creation

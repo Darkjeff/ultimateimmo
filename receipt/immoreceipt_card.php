@@ -287,7 +287,8 @@ if (empty($reshook))
 		$object->chargesamount = GETPOST("chargesamount");
 		$object->total_amount = GETPOST("total_amount");
 		$object->balance = GETPOST("balance");
-		$object->partial_payment = GETPOST("partial_payment");
+		//$object->partial_payment = GETPOST("partial_payment");
+		$object->fk_payment = GETPOST("fk_payment");
 		$object->paye = GETPOST("paye");
 		$object->vat_amount = GETPOST("vat_amount");
 		$object->vat_tx = GETPOST("vat_tx");

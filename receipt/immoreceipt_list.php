@@ -142,7 +142,8 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 	$db->begin();
 	
 	$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo ";
-	$sql1 .= " SET lo.partial_payment=";
+	//$sql1 .= " SET lo.partial_payment=";
+	$sql1 .= " SET lo.fk_payment=";
 	$sql1 .= "(SELECT SUM(p.amount)";
 	$sql1 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 	$sql1 .= " WHERE lo.rowid = p.fk_receipt";
@@ -157,7 +158,8 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 		
 		$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
 		$sql1 .= " SET paye=1";
-		$sql1 .= " WHERE total_amount=partial_payment";
+		//$sql1 .= " WHERE total_amount=partial_payment";
+		$sql1 .= " WHERE total_amount=fk_payment";
 		
 		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 		$resql1 = $db->query($sql1);
@@ -168,7 +170,8 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 		
 		if (! $error) {
 			$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
-			$sql1 .= " SET balance=total_amount-partial_payment";
+			//$sql1 .= " SET balance=total_amount-partial_payment";
+			$sql1 .= " SET balance=total_amount-fk_payment";
 			
 			// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 			$resql1 = $db->query($sql1);

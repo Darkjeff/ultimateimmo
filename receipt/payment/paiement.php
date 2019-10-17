@@ -52,13 +52,15 @@ dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
-require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
+//require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 
 // Load translation files required by the page
 $langs->loadLangs(array('companies', 'bills', 'banks'));
 
+$id			= GETPOST('id', 'int');
+$ref		= GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $confirm	= GETPOST('confirm', 'alpha');
 $recid		= GETPOST('recid', 'int');
@@ -75,33 +77,39 @@ $amounts=array();
 $amountsresttopay=array();
 $addwarning=0;
 
-$object=new ImmoReceipt($db);
-$object->fetch($recid);
+$object = new ImmoPayment($db);
+//$staticPaiement = new Paiement($db);
+
+$receipt=new ImmoReceipt($db);
+$receipt->fetch($recid);
 
 $renter=new ImmoRenter($db);
-$renter->fetch($object->fk_renter);
+$renter->fetch($receipt->fk_renter);
 
 $owner=new ImmoOwner($db);
-$owner->fetch($object->fk_owner);
+$owner->fetch($receipt->fk_owner);
 
 $rent=new ImmoRent($db);
-$rent->fetch($object->fk_rent);
+$rent->fetch($receipt->fk_rent);
 
 $property=new ImmoProperty($db);
-$property->fetch($object->fk_property);
+$property->fetch($receipt->fk_property);
 
 // Security check
 if ($renter->fk_soc > 0)
 {
     $socid = $renter->fk_soc;
 }
+$usercanread = $user->rights->ultimateimmo->read;
+$usercancreate = $user->rights->ultimateimmo->write;
+$usercandelete = $user->rights->ultimateimmo->delete || ($usercancreate && $object->status == 0);
 
 // Load object
 if ($recid > 0)
 {
-	$ret=$object->fetch($recid);
+	$ret=$receipt->fetch($recid);
 }
-
+//var_dump($_POST);
 // Initialize technical object to manage hooks of paiements. Note that conf->hooks_modules contains array array
 $hookmanager->initHooks(array('paiementcard','globalcard'));
 
@@ -252,9 +260,13 @@ if (empty($reshook))
 		//var_dump($paiement);exit;
 	    $paiement->date_payment = $date_payment;
 	    $paiement->amounts      = $amounts;   // Array with all payments dispatching with invoice id
-	    $paiement->fk_paiement   = dol_getIdFromCode($db, GETPOST('fk_mode_reglement'), 'c_paiement', 'code', 'id', 1);
+	    //$paiement->fk_paiement   = dol_getIdFromCode($db, GETPOST('fk_mode_reglement'), 'c_paiement', 'code', 'id', 1);
 	    $paiement->num_payment  = GETPOST('num_payment', 'alpha');
 	    $paiement->note_public  = GETPOST('note_public', 'alpha');
+		$paiement->ref  = GETPOST('ref', 'alpha');
+		$paiement->fk_mode_reglement  = GETPOST('fk_mode_reglement', 'alpha');
+		$paiement->check_transmitter  = GETPOST('check_transmitter', 'alpha');
+		$paiement->chequebank  = GETPOST('chequebank', 'alpha');
 
 	    if (! $error)
 	    {
@@ -271,8 +283,8 @@ if (empty($reshook))
 
 	    if (! $error)
 	    {
-	    	$label='(CustomerInvoicePayment)';
-	    	if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label='(CustomerInvoicePaymentBack)';  // Refund of a credit note
+	    	$label='(CustomerReceiptPayment)';
+	    	if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label='(CustomerReceiptPaymentBack)';  // Refund of a credit note
 	        $result=$paiement->addPaymentToBank($user, 'payment', $label, GETPOST('accountid'), GETPOST('chqemetteur'), GETPOST('chqbank'));
 	        if ($result < 0)
 	        {
@@ -316,8 +328,8 @@ if (empty($reshook))
 
 $form=new Form($db);
 
-
 llxHeader('', $langs->trans("Payment"));
+
 
 if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paiement')
 {
@@ -325,12 +337,11 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 	$result = $receipt->fetch($recid);
 	
 	$paiement = new ImmoPayment($db);
-	$result = $paiement->fetch($object->fk_paiement);
-	
+	$paiement->fetch($receipt->fk_payment);
 
 	if ($result >= 0)
-	{
-		$ret = $paiement->fetch_thirdparty();
+	{		
+		//$ret = $paiement->fetch_thirdparty();
 		$title='';
 		if ($receipt->type != ImmoReceipt::TYPE_CREDIT_NOTE) $title.=$langs->trans("EnterPaymentReceivedFromCustomer");
 		if ($receipt->type == ImmoReceipt::TYPE_CREDIT_NOTE) $title.=$langs->trans("EnterPaymentDueToCustomer");
@@ -355,7 +366,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 		}
 
 		// Add realtime total information
-		/*if (! empty($conf->use_javascript_ajax))
+		if (! empty($conf->use_javascript_ajax))
 		{
 			print "\n".'<script type="text/javascript" language="javascript">';
 			print '$(document).ready(function () {
@@ -445,6 +456,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			';
 
 			print '	});'."\n";
+		}
 
 		//Add js for AutoFill
 		if (! empty($conf->use_javascript_ajax))
@@ -457,7 +469,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			print '	});'."\n";
 
 			print '	</script>'."\n";
-		}*/
+		}
 
 		print '<form id="payment_form" name="add_paiement" action="'.$_SERVER["PHP_SELF"].'" method="POST">';
 		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -471,13 +483,16 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 		
 		print '<table class="border" width="100%">';
 		
+		$object = new ImmoPayment($db);
+		$object->fetch($receipt->fk_payment);
+		
 		// Common attributes
-		$paiement->fields = dol_sort_array($paiement->fields, 'position');
-
-		foreach($paiement->fields as $key => $val)
-		{
-			$tab = $paiement->fields;
-			$array = array_diff_key($tab, ['fk_rent' => $key, 'fk_receipt' => $key, 'fk_renter' => $key, 'fk_owner' => $key, 'fk_property' => $key, 'status' => $key]);
+		$object->fields = dol_sort_array($object->fields, 'position');
+		$tab = $object->fields;
+		unset($tab['amount'], $tab['status']);
+		foreach($tab as $key => $val)
+		{		
+			$array = array_diff_key($tab, ['fk_rent' => $key, 'fk_receipt' => $key, 'fk_renter' => $key, 'fk_owner' => $key, 'fk_property' => $key]);
 			//var_dump($array);
 			// Discard if extrafield is a hidden field on form
 			if (abs($val['visible']) != 1) continue;
@@ -489,23 +504,23 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			print ' class="titlefieldcreate';
 			if ($val['notnull'] > 0) print ' fieldrequired';
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+
 			print '"';
 			print '>';
 			print $langs->trans($val['label']);
 			print '</td>';
 			print '<td>';
-			//var_dump($receipt);exit;
 
 			if ($val['label'] == 'Ref')
 			{			
 				// Reference
-				$tmpref= "(PROV)".$recid;
+				$tmpref = GETPOST('ref','alpha')?GETPOST('ref','alpha'):"(PROV)".$recid;
 				print $tmpref;
 			}
 			elseif ($val['label'] == 'Renter')
 			{
 				//fk_renter
-				print $renter->ref;
+				print $renter->getNomUrl(4);
 			}
 			elseif ($val['label'] == 'DatePayment')
 			{
@@ -531,11 +546,6 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 					
 				}
 			}
-			elseif ($val['label'] == 'NotePrivate')
-			{
-				//NotePrivate
-				//$val['label'] = '';
-			}
 			elseif ($val['label'] == 'ThirdParty')
 			{
 				// ThirdParty
@@ -544,34 +554,29 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 			elseif ($val['label'] == 'Contract')
 			{
 				// Contract
-				print $rent->ref;
+				print $rent->getNomUrl(4);
 			}
 			elseif ($val['label'] == 'ImmoReceipt')
 			{
 				// ImmoReceipt
-				print $receipt->ref;
+				print $receipt->getNomUrl(4);
 			}
 			elseif ($val['label'] == 'Owner')
 			{
 				// Owner
 				print $owner->getNomUrl(4);
-				//var_dump($owner);exit;
 			}
 			elseif ($val['label'] == 'Property')
 			{
 				// Property
 				print $property->getNomUrl(4);
 			}
-			elseif ($val['label'] == 'Status')
-			{
-				// Status
-			}
 			else
 			{
 				if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
 				elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
 				else $value = GETPOST($key, 'alpha');
-				print $paiement->showInputField($val, $key, $value, '', '', '', 0);
+				print $object->showInputField($val, $key, $value, '', '', '', 0);
 			}
 			print '</td>';
 			print '</tr>';
@@ -639,7 +644,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
          * List of unpaid receipts
          */
 
-        $sql = 'SELECT f.rowid as recid, f.ref, f.total_amount,';
+        $sql = 'SELECT DISTINCT f.rowid as recid, f.ref, f.total_amount,';
 		$sql.= ' p.rowid, p.fk_receipt, p.date_payment as dp, p.amount,';
         $sql.= ' f.date_creation as dc, f.fk_soc as socid';
         $sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f';
@@ -659,6 +664,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
         $sql.= ' AND f.paye = 0';
         $sql.= ' AND f.fk_statut = 1'; // Statut=0 => not validated, Statut=2 => canceled
        */
+	    $sql.=' GROUP BY f.rowid';
         // Sort invoices by date and serial number: the older one comes first
         $sql.=' ORDER BY f.date_creation ASC, f.ref ASC';
 
@@ -681,7 +687,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                 print '<table class="noborder" width="100%">';
 				
                 print '<tr class="liste_titre">';
-				print '<td align="left">'.$langs->trans('Ref.paiement').'</td>';
+				//print '<td align="left">'.$langs->trans('Ref.paiement').'</td>';
                 print '<td>'.$arraytitle.'</td>';
                 print '<td align="center">'.$langs->trans('Date').'</td>';
                 print '<td align="center">'.$langs->trans('DateMaxPayment').'</td>';
@@ -710,18 +716,12 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                     $receipt=new ImmoReceipt($db);
                     $receipt->fetch($objp->recid);
                     $paiement = $receipt->getSommePaiement();
-					
-					$payment = new ImmoPayment($db);
-					$result = $payment->fetch($objp->rowid);
-					
-                    $alreadypayed=price2num($paiement, 'MT');
-                    $remaintopay=price2num($receipt->total_amount - $paiement, 'MT');
 
 					print '<tr class="oddeven">';
-					print '<td>';
+					/*print '<td>';
 					$payment->ref = $payment->id.'_'.$receipt->ref;
 					print $payment->getNomUrl(1, '');
-					print "</td>\n";
+					print "</td>\n";*/
 
 					print '<td>';
                     print $receipt->getNomUrl(1, '');
@@ -753,8 +753,13 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
                     print '<td class="right" '.(($receipt->id==$recid)?' style="font-weight: bold" ':'').'>'.price($sign * $objp->total_amount ).'</td>';
 
                     // Received or paid back
+					$payment = new ImmoPayment($db);
+					$result = $payment->fetch($objp->rowid);
+					//var_dump($payment);exit;
+                    $alreadypayed=price2num($paiement, 'MT');
+                    $remaintopay=price2num($receipt->total_amount - $paiement, 'MT');
                     //print '<td class="right">'.price($sign * $paiement);
-					print '<td class="right">'.price($sign * $objp->amount);
+					print '<td class="right">'.price($sign * $alreadypayed);
                     if ($deposits) print '+'.price($deposits);
                     print '</td>';
 
@@ -876,7 +881,7 @@ if ($action == 'create' || $action == 'confirm_paiement' || $action == 'add_paie
 
 /**
  *  Show list of payments
- */
+ 
 if (! GETPOST('action', 'aZ09'))
 {
     if (empty($page) || $page == -1) $page = 0;
@@ -934,7 +939,7 @@ if (! GETPOST('action', 'aZ09'))
         }
         print '</table>';
     }
-}
+}*/
 
 llxFooter();
 
