@@ -120,6 +120,44 @@ if (empty($reshook))
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 }
 
+// Actions
+if ($action == 'add')
+{
+	if ($cancel)
+	{
+		$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$object->id;
+		header("Location: ".$loc);
+		exit;
+	}
+
+	$datepaie = @dol_mktime(0,0,0, GETPOST("paiemonth"), GETPOST("paieday"), GETPOST("paieyear"));
+	if (! $datepaie) {
+		$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Datepaie")) . '</div>';
+		$action = 'create';
+	} else {
+		$paie = new Immopayment($db);
+		
+		$paie->fk_rent			= GETPOST("fk_rent");
+		$paie->fk_property		= GETPOST("fk_property");
+		$paie->fk_renter		= GETPOST("fk_renter");
+		$paie->amount			= GETPOST("amount");
+		$paie->note_public		= GETPOST("note_public");
+		$paie->date_payment		= $datepaie;
+		$paie->fk_receipt		= GETPOST("fk_receipt");
+    	$paie->fk_bank			= GETPOST("accountid");
+		$paie->fk_mode_reglement= GETPOST("fk_mode_reglement");
+    	$paie->num_payment		= GETPOST("num_payment");
+		$paie->fk_owner			= $user->id;
+		
+		$id = $paie->create($user);
+		header("Location: " .dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$paie->fk_receipt);
+		if ($id > 0) {
+		} else {
+			$mesg = '<div class="error">' . $paie->error . '</div>';
+		}
+	}
+}
+
 if ($action == 'addall') {
 	$datepaie = @dol_mktime(0, 0, 0, GETPOST("paiemonth"), GETPOST("paieday"), GETPOST("paieyear"));
 	if (! $datepaie) {
@@ -163,11 +201,39 @@ if ($action == 'addall') {
 	}
 }
 
+if ($action == 'update')
+	{
+		$date_payment = dol_mktime(12, 0, 0, GETPOST("paiemonth"), GETPOST("paieday"), GETPOST("paieyear"));
+		
+		$payment = new ImmoPayment($db);
+		$result = $payment->fetch($id);
+		
+		$payment->ref 		= GETPOST('ref');
+		
+		$payment->fk_rent 		= GETPOST("fk_rent");
+		$payment->fk_property 	= GETPOST("fk_property");
+		$payment->fk_renter 	= GETPOST("fk_renter");
+		$payment->fk_soc 		= GETPOST("fk_soc");
+		$payment->fk_owner 		= GETPOST("fk_owner");		
+		$payment->date_echeance = $date_echeance;
+		$payment->note_public 	= GETPOST("note_public");
+		$payment->status 		= GETPOST("status");
+		$payment->date_payment 	= $date_payment;
+		$payment->fk_mode_reglement = $fk_mode_reglement;
+		
+		$result = $payment->update($user);
+		header("Location: ".dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1).'?id='.$payment->id);
+		if ($id > 0) {
+			// $mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
+		} else {
+			$mesg = '<div class="error">' . $payment->error . '</div>';
+		}
+	}
+
 
 /*
  * View
  *
- * Put here all code to build page
  */
 
 $form = new Form($db);
@@ -222,6 +288,13 @@ if ($action == 'create')
 		if ($val['label'] == 'TypePayment')
 		{
 			// Payment mode
+			$object->fk_mode_reglement=GETPOST('fk_mode_reglement','int')?GETPOST('fk_mode_reglement','int'):$object->fk_mode_reglement;
+			if ($object->fk_mode_reglement)
+			{
+				$tmparray=$object->setPaymentMethods($object->fk_mode_reglement,'int');
+				$object->mode_code=$tmparray['code'];
+				$object->mode_payment=$tmparray['libelle'];
+			}
 			$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$object->fk_mode_reglement), 'fk_mode_reglement', '', 2);
 		}
 		elseif ($val['label'] == 'BankAccount')
@@ -279,7 +352,44 @@ if (($id || $ref) && $action == 'edit')
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_edit.tpl.php';
+	foreach($object->fields as $key => $val)
+	{
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 4) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
+
+		print '<tr><td';
+		print ' class="titlefieldcreate';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '">';
+		if (! empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '</td>';
+		print '<td>';
+		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
+		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key, 'none'):$object->$key;
+		else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
+		
+		if ($val['label'] == 'TypePayment')
+		{
+			// Payment mode
+			$object->fk_mode_reglement=GETPOST('fk_mode_reglement','int')?GETPOST('fk_mode_reglement','int'):$object->fk_mode_reglement;
+			if ($object->fk_mode_reglement)
+			{
+				$tmparray=$object->setPaymentMethods($object->fk_mode_reglement,'int');
+				$object->mode_code=$tmparray['code'];
+				$object->mode_payment=$tmparray['libelle'];
+			}
+			$form->select_types_paiements('', 'fk_mode_reglement', '', 2);
+		}
+		var_dump($val.' '.$key.' '.$value);
+		if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		else print $object->showInputField($val, $key, $value, '', '', '', 0);
+		print '</td>';
+		print '</tr>';
+	}
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
@@ -394,7 +504,46 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Common attributes
 	$keyforbreak='note_private';
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
+	
+	$object->fields = dol_sort_array($object->fields, 'position');
+
+	foreach($object->fields as $key => $val)
+	{
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 4) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
+		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
+
+		$value=$object->$key;
+
+		print '<tr><td';
+		print ' class="titlefield fieldname_'.$key;
+		//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '">';
+		if (! empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '</td>';
+		print '<td>';
+		if ($val['label'] == 'TypePayment')
+		{
+			if ($object->fk_mode_reglement)
+			{
+				$tmparray=$object->setPaymentMethods($object->fk_mode_reglement,'int');
+				$object->mode_code=$tmparray['code'];
+				$object->mode_payment=$tmparray['libelle'];
+			}
+			// Payment mode
+			$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none');
+		}
+		print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		//print dol_escape_htmltag($object->$key, 1, 1);
+		print '</td>';
+		print '</tr>';
+
+		if (! empty($keyforbreak) && $key == $keyforbreak) break;						// key used for break on second column
+	}
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';

@@ -435,7 +435,7 @@ if (empty($reshook))
 		$date_start = dol_mktime(12, 0, 0, GETPOST("date_startmonth"), GETPOST("date_startday"), GETPOST("date_startyear"));
 		$date_end = dol_mktime(12, 0, 0, GETPOST("date_endmonth"), GETPOST("date_endday"), GETPOST("date_endyear"));
 		
-		$receipt = new Immoreceipt($db);
+		$receipt = new ImmoReceipt($db);
 		$result = $receipt->fetch($id);
 		
 		$receipt->label 		= GETPOST('label');
@@ -956,7 +956,7 @@ if ($action == 'create')
 		$sql .= ", " . MAIN_DB_PREFIX . "c_paiement as pp";
 		$sql .= " WHERE p.fk_receipt = " . $id;
 		$sql .= " AND p.fk_receipt = il.rowid";
-		$sql .= " AND pp.type = pp.id";
+		$sql .= " AND p.fk_mode_reglement = pp.id";
 		$sql .= " AND p.amount <> '" .price(0, 0, $outputlangs)."'";
 		$sql .= " ORDER BY dp DESC";
 
@@ -1076,13 +1076,13 @@ if ($action == 'create')
 				}
 				
 				// Create payment
-				if ($object->paye == 0) 
+				/*if ($object->paye == 0) 
 				{
 					print '<div class="inline-block divButAction"><a class="butAction" href="'. dol_buildpath('/ultimateimmo/receipt/payment/paiement.php',1).'?recid=' . $object->id . '&amp;action=create&amp;accountid='.$object->fk_account.'">' . $langs->trans('DoPayment') . '</a></div>';
-				}
+				}*/
 
 				// Create payment
-				if ($receipt->status == 0 && $user->rights->ultimateimmo->rent->write)
+				if ($receipt->status == 0 && $usercancreate)
 				{
 					if ($remaintopay == 0)
 					{
@@ -1090,7 +1090,7 @@ if ($action == 'create')
 					}
 					else
 					{
-						print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER["PHP_SELF"].'?recid='.$object->id.'&amp;action=create">' . $langs->trans('DoPayment') . '</a></div>';
+						print '<div class="inline-block divButAction"><a class="butAction" href="'. dol_buildpath('/ultimateimmo/receipt/payment/paiement.php',1).'?recid=' . $object->id . '&amp;action=create">' . $langs->trans('DoPayment') . '</a></div>';
 					}
 				}
 				

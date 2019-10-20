@@ -95,11 +95,11 @@ class ImmoPayment extends CommonObject
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>36, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
 		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToRenter",),
-		//'fk_paiement' => array('type'=>'integer', 'label'=>'Payment', 'visible'=>0, 'enabled'=>1, 'position'=>48, 'default'=>1, 'notnull'=>1, 'index'=>1,),
+		'fk_paiement' => array('type'=>'integer', 'label'=>'Payment', 'visible'=>0, 'enabled'=>1, 'position'=>48, 'default'=>1, 'notnull'=>1, 'index'=>1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>50, 'notnull'=>-1,),
 		'date_payment' => array('type'=>'date', 'label'=>'DatePayment', 'enabled'=>1, 'visible'=>-1, 'position'=>70, 'notnull'=>1,),
 		'amount' => array('type'=>'price', 'label'=>'Amount', 'enabled'=>1, 'visible'=>1, 'position'=>72, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
-		'fk_mode_reglement' => array('type'=>'integer', 'label'=>'TypePayment', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Carte bancaire', '1'=>'Chèque', '2'=>'Espèces', '3'=>'CAF'), 'help'=>"LinkToTypePayment",),
+		'fk_mode_reglement' => array('type'=>'integer', 'label'=>'TypePayment', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'index'=>1,/* 'arrayofkeyval'=>array('0'=>'Carte bancaire', '1'=>'Chèque', '2'=>'Espèces', '3'=>'CAF'), */'help'=>"LinkToTypePayment",),
 		'fk_bank' => array('type'=>'integer:Account:compta/bank/class/account.class.php', 'label'=>'BankAccount', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToBank",),
 		'num_payment' => array('type'=>'varchar(50)', 'label'=>'NumPayment', 'enabled'=>1, 'visible'=>-1, 'position'=>85, 'notnull'=>-1,),
 		'check_transmitter' => array('type'=>'varchar(50)', 'label'=>'CheckTransmitter', 'enabled'=>1, 'visible'=>-1, 'position'=>86, 'notnull'=>-1,),
@@ -125,7 +125,7 @@ class ImmoPayment extends CommonObject
 	public $amounts=array();    // Array of amounts
 	public $fk_mode_reglement;
 	public $fk_bank;
-	//public $fk_paiement;
+	public $fk_paiement;
 	public $num_payment;
 	public $check_transmitter;
 	public $chequebank;
@@ -207,6 +207,7 @@ class ImmoPayment extends CommonObject
 		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation']=$this->db->idate($now);
 		if (array_key_exists('date_payment', $fieldvalues) && empty($fieldvalues['date_payment'])) $fieldvalues['date_payment']=$this->db->jdate($object->date_payment);
 		if (array_key_exists('fk_user_creat', $fieldvalues) && ! ($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat']=$user->id;
+		if (array_key_exists('fk_mode_reglement', $fieldvalues) && ! ($fieldvalues['fk_mode_reglement'] > 0)) $fieldvalues['fk_mode_reglement']=$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$object->fk_mode_reglement), 'fk_mode_reglement', '', 2);
 		unset($fieldvalues['rowid']);	// The field 'rowid' is reserved field name for autoincrement field so we don't need it into insert.
 
 		$keys=array();
@@ -416,6 +417,7 @@ class ImmoPayment extends CommonObject
 		$array = implode(', t.', $array);
 
 		$sql = 'SELECT '.$array.',';
+		$sql.= ' cp.id as mode_id, cp.code as mode_code, cp.libelle as mode_payment,';
 		$sql.= ' lc.lastname as nomlocataire,';
 		$sql.= ' ll.label as nomlocal,';
 		$sql.= ' lo.label as nomloyer ';
@@ -423,7 +425,7 @@ class ImmoPayment extends CommonObject
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as lo ON t.fk_receipt = lo.rowid';
-		//$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as cp ON t.fk_mode_reglement = cp.id AND cp.entity IN ('.getEntity('c_paiement').')';;
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as cp ON t.fk_mode_reglement = cp.id AND cp.entity IN ('.getEntity('c_paiement').')';;
 
 		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
@@ -442,7 +444,10 @@ class ImmoPayment extends CommonObject
 
         			$this->date_creation = $this->db->jdate($obj->date_creation);
         			$this->tms = $this->db->jdate($obj->tms);
-
+					$this->fk_mode_reglement = $obj->fk_mode_reglement;
+					$this->mode_code = $obj->mode_code;
+					$this->mode_payment=$obj->mode_payment;
+				
 					$this->date_payment = $this->db->jdate($obj->date_payment);
 					$this->setVarsFromFetchObj($obj);
 
@@ -555,6 +560,7 @@ class ImmoPayment extends CommonObject
 				$line->fk_property = $obj->fk_property;
 				$line->fk_renter = $obj->fk_renter;
 				$line->amount = $obj->amount;
+				$line->fk_mode_reglement = $obj->fk_mode_reglement;
 				$line->note_public = $obj->note_public;
 				$line->date_payment = $this->db->jdate($obj->date_payment);
 				$line->fk_owner = $obj->fk_owner;
@@ -972,6 +978,48 @@ class ImmoPayment extends CommonObject
             return -1;
         }
     }
+	
+	/**
+	 *  Change the payments methods
+	 *
+	 *  @param		int		$id		Id of new payment method
+	 *  @return		int				>0 if OK, <0 if KO
+	 */
+	public function setPaymentMethods($id)
+	{
+		dol_syslog(get_class($this).'::setPaymentMethods('.$id.')');
+		if ($this->statut >= 0 || $this->element == 'societe')
+		{
+			// TODO uniformize field name
+			$fieldname = 'fk_mode_reglement';
+			if ($this->element == 'societe') $fieldname = 'mode_reglement';
+			if (get_class($this) == 'Fournisseur') $fieldname = 'mode_reglement_supplier';
+
+			$sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element;
+			$sql .= ' SET '.$fieldname.' = '.(($id > 0 || $id == '0') ? $id : 'NULL');
+			$sql .= ' WHERE rowid='.$this->id;
+
+			if ($this->db->query($sql))
+			{
+				$this->mode_reglement_id = $id;
+				// for supplier
+				if (get_class($this) == 'Fournisseur') $this->mode_reglement_supplier_id = $id;
+				return 1;
+			}
+			else
+			{
+				dol_syslog(get_class($this).'::setPaymentMethods Erreur '.$sql.' - '.$this->db->error());
+				$this->error=$this->db->error();
+				return -1;
+			}
+		}
+		else
+		{
+			dol_syslog(get_class($this).'::setPaymentMethods, status of the object is incompatible');
+			$this->error='Status of the object is incompatible '.$this->statut;
+			return -2;
+		}
+	}
 
 
 	/**
@@ -1088,6 +1136,10 @@ class ImmoPayment extends CommonObject
 		 * @var int amount
 		 */
 		public $amount;
+		/**
+		 * @var int fk_mode_reglement
+		 */
+		public $fk_mode_reglement;
 		/**
 		 * @var int note_public
 		 */
