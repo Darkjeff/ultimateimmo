@@ -881,6 +881,7 @@ class ImmoPayment extends CommonObject
             else
             {
                 $this->error=$acc->error;
+				setEventMessages($this->error, null, 'errors');
                 $error++;
             }
         }

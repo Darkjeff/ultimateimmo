@@ -126,6 +126,7 @@ class ImmoReceipt extends CommonObject
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>59, 'notnull'=>-1,),
 		'date_valid' => array('type'=>'datetime', 'label'=>'DateValidation', 'enabled'=>1, 'visible'=>-2, 'position'=>60, 'notnull'=>-1,),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>62, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text",),
+		'fk_mode_reglement' => array('type'=>'integer', 'label'=>'TypePayment', 'enabled'=>1, 'visible'=>1, 'position'=>64, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Carte bancaire', '1'=>'Chèque', '2'=>'Espèces', '3'=>'CAF'), 'help'=>"LinkToTypePayment",),
 		'rentamount' => array('type'=>'price', 'label'=>'RentAmount', 'enabled'=>1, 'visible'=>1, 'position'=>65, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'chargesamount' => array('type'=>'price', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'total_amount' => array('type'=>'price', 'label'=>'TotalAmount', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
@@ -164,6 +165,7 @@ class ImmoReceipt extends CommonObject
 	public $rentamount;
 	public $chargesamount;
 	public $total_amount;
+	public $fk_mode_reglement;
 	public $balance;
 	public $fk_payment;
 	//public $partial_payment;
@@ -557,11 +559,13 @@ class ImmoReceipt extends CommonObject
 
 		$sql = 'SELECT '.$array.',';
 		$sql.= ' lc.rowid as renter_id,';
-		$sql.= ' lc.email as emaillocataire';		
+		$sql.= ' lc.email as emaillocataire,';
+		$sql.= ' cp.libelle as payment_label, cp.code as payment_code';		
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
 		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
 		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
 		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorent as ic ON t.fk_rent = ic.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as cp ON t.fk_mode_reglement = cp.id';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
@@ -581,7 +585,10 @@ class ImmoReceipt extends CommonObject
 					{
 						$this->brouillon = 1;
 					}
-
+					
+					$this->fk_mode_reglement  = $obj->fk_mode_reglement;
+                    $this->mode_reglement_code = $obj->payment_code;
+                    $this->mode_reglement = $obj->payment_label;
         			$this->date_rent = $this->db->jdate($obj->date_rent);
 					$this->date_start = $this->db->jdate($obj->date_start);
 					$this->date_end = $this->db->jdate($obj->date_end);

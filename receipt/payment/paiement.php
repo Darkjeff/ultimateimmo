@@ -370,7 +370,7 @@ if (GETPOST('action', 'aZ09') == 'create')
 
 		dol_fiche_end();
 		
-		/*
+	/*
  	 * Autres charges impayees
 	 */
 	$num = 1;
@@ -390,7 +390,7 @@ if (GETPOST('action', 'aZ09') == 'create')
 	while ($i < $num)
 	{
 		$objp = $receipt;
-//var_dump($objp);exit;
+
 		print '<tr class="oddeven">';
 
 		print '<td class="right">'.price($objp->total_amount)."</td>";
@@ -398,12 +398,13 @@ if (GETPOST('action', 'aZ09') == 'create')
 		print '<td class="right">'.price($sumpaid)."</td>";
 
 		print '<td class="right">'.price($objp->total_amount - $sumpaid)."</td>";
-
+//var_dump($objp);exit;
 		print '<td class="center">';
 		if ($sumpaid < $objp->total_amount)
 		{
 			$namef = "amount_".$objp->id;
 			print '<input type="text" size="8" name="'.$namef.'">';
+			//var_dump($namef);exit;
 		}
 		else
 		{
@@ -414,7 +415,7 @@ if (GETPOST('action', 'aZ09') == 'create')
 		print "</tr>\n";
 		$total+=$objp->total;
 		$total_ttc+=$objp->total_ttc;
-		$totalrecu+=$objp->am;
+		$totalrecu+=$objp->amount;
 		$i++;
 	}
 	if ($i > 1)

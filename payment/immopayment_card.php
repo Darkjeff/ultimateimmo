@@ -384,7 +384,7 @@ if (($id || $ref) && $action == 'edit')
 			}
 			$form->select_types_paiements('', 'fk_mode_reglement', '', 2);
 		}
-		var_dump($val.' '.$key.' '.$value);
+		//var_dump($val.' '.$key.' '.$value);
 		if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		print '</td>';
