@@ -867,7 +867,7 @@ class ImmoPayment extends CommonObject
 
                 // Add link 'payment', 'payment_supplier', 'immopayment' in bank_url between payment and bank transaction
                 $url='';
-                if ($mode == 'immopayment') $url=dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id=';
+                if ($mode == 'immopayment') $url=dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$this->id;
                 if ($url)
                 {
                     $result=$acc->add_url_line($bank_line_id, $this->id, $url, '(paiement)', $mode);

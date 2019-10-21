@@ -187,7 +187,7 @@ if ($action == 'add_payment')
     		$payment->ref          = $recid;
 			$payment->rowid        = $recid;
     		$payment->date_payment = $date_payment;
-    		$payment->amount       = $amount;   // Tableau de montant			
+    		$payment->amount       = $amounts[$other_recid];   // Tableau de montant			
     		$payment->fk_mode_reglement  = $_POST["fk_mode_reglement"];
 			$payment->fk_bank  = $_POST["fk_bank"];
     		$payment->num_payment  = $_POST["num_payment"];
@@ -398,13 +398,12 @@ if (GETPOST('action', 'aZ09') == 'create')
 		print '<td class="right">'.price($sumpaid)."</td>";
 
 		print '<td class="right">'.price($objp->total_amount - $sumpaid)."</td>";
-//var_dump($objp);exit;
+
 		print '<td class="center">';
 		if ($sumpaid < $objp->total_amount)
 		{
 			$namef = "amount_".$objp->id;
 			print '<input type="text" size="8" name="'.$namef.'">';
-			//var_dump($namef);exit;
 		}
 		else
 		{
@@ -413,9 +412,9 @@ if (GETPOST('action', 'aZ09') == 'create')
 		print "</td>";
 
 		print "</tr>\n";
-		$total+=$objp->total;
-		$total_ttc+=$objp->total_ttc;
-		$totalrecu+=$objp->amount;
+		$total+=$objp->total_amount;
+		$total_ttc+=$objp->total_amount;
+		$totalrecu+=$objp->amount;                                                          
 		$i++;
 	}
 	if ($i > 1)
