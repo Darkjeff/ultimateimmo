@@ -113,7 +113,7 @@ if ($recid > 0)
 // Initialize technical object to manage hooks of paiements. Note that conf->hooks_modules contains array array
 $hookmanager->initHooks(array('paiementcard','globalcard'));
 
-
+//var_dump($_POST);exit;
 /*
  * Actions
  */
@@ -122,206 +122,7 @@ $parameters=array('socid'=>$socid);
 $reshook=$hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
-/*if (empty($reshook))
-{
-	if ($action == 'add_paiement' || ($action == 'confirm_paiement' && $confirm == 'yes'))
-	{
-	    $error = 0;
-
-	    $date_payment = dol_mktime(12, 0, 0, GETPOST('remonth', 'int'), GETPOST('reday', 'int'), GETPOST('reyear', 'int'));
-	    $paiement_id = 0;
-	    $totalpayment = 0;
-	    $atleastonepaymentnotnull = 0;
-
-	    // Generate payment array and check if there is payment higher than invoice and payment date before invoice date
-	    $tmpreceipt=new ImmoReceipt($db);
-	    foreach ($_POST as $key => $value)
-	    {
-			if (substr($key, 0, 7) == 'amount_' && GETPOST($key) != '')
-	        {	
-						
-	            $cursorrecid = substr($key, 7);
-				
-	            $amounts[$cursorrecid] = price2num(trim(GETPOST($key)));
-	            $totalpayment = $totalpayment + $amounts[$cursorrecid];
-				//var_dump($totalpayment);
-	            if (! empty($amounts[$cursorrecid])) $atleastonepaymentnotnull++;
-	            $result=$tmpreceipt->fetch($cursorrecid);
-	            if ($result <= 0) dol_print_error($db);
-	            $amountsresttopay[$cursorrecid]=price2num($tmpreceipt->total_amount  - $tmpreceipt->getSommePaiement());
-	            if ($amounts[$cursorrecid])
-	            {
-		            // Check amount
-		            if ($amounts[$cursorrecid] && (abs($amounts[$cursorrecid]) > abs($amountsresttopay[$cursorrecid])))
-		            {
-		                $addwarning=1;
-		                $formquestion['text'] = img_warning($langs->trans("PaymentHigherThanReminderToPay")).' '.$langs->trans("HelpPaymentHigherThanReminderToPay");
-		            }
-		            // Check date
-		            if ($date_payment && ($date_payment < $tmpreceipt->date))
-		            {
-		            	$langs->load("errors");
-		                //$error++;
-		                setEventMessages($langs->transnoentities("WarningPaymentDateLowerThanInvoiceDate", dol_print_date($date_payment, 'day'), dol_print_date($tmpreceipt->date, 'day'), $tmpreceipt->ref), null, 'warnings');
-		            }
-	            }
-
-	            $formquestion[$i++]=array('type' => 'hidden','name' => $key,  'value' => $_POST[$key]);
-	        }
-	    }
-
-	    // Check parameters
-	    if (! GETPOST('fk_mode_reglement'))
-	    {
-	        setEventMessages($langs->transnoentities('ErrorFieldRequired', $langs->transnoentities('TypePayment')), null, 'errors');
-	        $error++;
-	    }
-
-	    if (! empty($conf->banque->enabled))
-	    {
-	        // If bank module is on, account is required to enter a payment
-	        if (GETPOST('accountid') <= 0)
-	        {
-	            setEventMessages($langs->transnoentities('ErrorFieldRequired', $langs->transnoentities('AccountToCredit')), null, 'errors');
-	            $error++;
-	        }
-	    }
-
-	    if (empty($totalpayment) && empty($atleastonepaymentnotnull))
-	    {
-	        setEventMessages($langs->transnoentities('ErrorFieldRequired', $langs->trans('PaymentAmount')), null, 'errors');
-	        $error++;
-	    }
-
-	    if (empty($date_payment))
-	    {
-	        setEventMessages($langs->transnoentities('ErrorFieldRequired', $langs->transnoentities('Date')), null, 'errors');
-	        $error++;
-	    }
-
-		// Check if payments in both currency
-		/*if ($totalpayment > 0)
-		{
-			setEventMessages($langs->transnoentities('ErrorPaymentInBothCurrency'), null, 'errors');
-	        $error++;
-		}
-	}*/
-
-	/*
-	 * Action add_paiement
-	 
-	if ($action == 'add_paiement')
-	{
-	    if ($error)
-	    {
-	        $action = 'create';
-	    }
-	    // Le reste propre a cette action s'affiche en bas de page.
-	}*/
-
-	/*
-	 * Action confirm_paiement
-	 
-	if ($action == 'confirm_paiement' && $confirm == 'yes')
-	{
-	    $error=0;
-
-	    $date_payment = dol_mktime(12, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
-
-	    $db->begin();
-
-	    $thirdparty = new Societe($db);
-	    if ($socid > 0) $thirdparty->fetch($socid);
-
-	    // Clean parameters amount if payment is for a credit note
-	    foreach ($amounts as $key => $value)	// How payment is dispatched
-	    {
-	        $tmpreceipt = new ImmoReceipt($db);
-	        $tmpreceipt->fetch($key);
-	        if ($tmpreceipt->type == ImmoReceipt::TYPE_CREDIT_NOTE)
-	        {
-	            $newvalue = price2num($value, 'MT');
-	            $amounts[$key] = - abs($newvalue);
-	        }
-	    }
-
-	    if (! empty($conf->banque->enabled))
-	    {
-	    	// Si module bank actif, un compte est obligatoire lors de la saisie d'un paiement
-	    	if (GETPOST('accountid', 'int') <= 0)
-	    	{
-	    		setEventMessages($langs->trans('ErrorFieldRequired', $langs->transnoentities('AccountToCredit')), null, 'errors');
-	    		$error++;
-	    	}
-	    }
-
-	    // Creation of payment line
-	    $paiement = new ImmoPayment($db);
-		//var_dump($paiement);exit;
-	    $paiement->date_payment = $date_payment;
-	    $paiement->amounts      = $amounts;   // Array with all payments dispatching with invoice id
-	    //$paiement->fk_paiement   = dol_getIdFromCode($db, GETPOST('fk_mode_reglement'), 'c_paiement', 'code', 'id', 1);
-	    $paiement->num_payment  = GETPOST('num_payment', 'alpha');
-	    $paiement->note_public  = GETPOST('note_public', 'alpha');
-		$paiement->ref  = GETPOST('ref', 'alpha');
-		$paiement->fk_mode_reglement  = GETPOST('fk_mode_reglement', 'alpha');
-		$paiement->check_transmitter  = GETPOST('check_transmitter', 'alpha');
-		$paiement->chequebank  = GETPOST('chequebank', 'alpha');
-
-	    if (! $error)
-	    {
-	        // Create payment and update this->multicurrency_amounts if this->amounts filled or
-	        // this->amounts if this->multicurrency_amounts filled.
-	        $paiement_id = $paiement->create($user, (GETPOST('closepaidreceipts')=='on'?1:0), $thirdparty);    // This include closing invoices and regenerating documents
-			//var_dump($paiement_id);exit;
-	    	if ($paiement_id < 0)
-	        {
-	            setEventMessages($paiement->error, $paiement->errors, 'errors');
-	            $error++;
-	        }
-	    }
-
-	    if (! $error)
-	    {
-	    	$label='(CustomerReceiptPayment)';
-	    	if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label='(CustomerReceiptPaymentBack)';  // Refund of a credit note
-	        $result=$paiement->addPaymentToBank($user, 'payment', $label, GETPOST('accountid'), GETPOST('chqemetteur'), GETPOST('chqbank'));
-			//var_dump($result);exit;
-	        if ($result < 0)
-	        {
-	            setEventMessages($paiement->error, $paiement->errors, 'errors');
-	            $error++;
-	        }
-	    }
-
-	    if (! $error)
-	    {
-	        $db->commit();
-
-	        // If payment dispatching on more than one invoice, we stay on summary page, otherwise jump on invoice card
-	        $receiptid=0;
-			
-	        foreach ($paiement->amounts as $key => $amount)
-	        {
-	            $recid = $key;
-	            if (is_numeric($amount) && $amount <> 0)
-	            {
-	                if ($receiptid != 0) $receiptid=-1; // There is more than one invoice payed by this payment
-	                else $receiptid=$recid;
-	            }
-	        }
-	        if ($receiptid > 0) $loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?recid=' .$recid;		
-	        header('Location: '.$loc);
-	        exit;
-	    }
-	    else
-	    {
-	        $db->rollback();
-	    }
-	}
-}*/
-
-#########################
+$form=new Form($db);
 if ($action == 'add_payment')
 {
 	$error=0;
@@ -333,26 +134,30 @@ if ($action == 'add_payment')
 		exit;
 	}
 
-	$date_payment = dol_mktime(12, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
+	
 
-	if (! $_POST["paymenttype"] > 0)
+	if (! $_POST["fk_mode_reglement"] > 0)
 	{
 		$mesg = $langs->trans("ErrorFieldRequired", $langs->transnoentities("PaymentMode"));
+		setEventMessages($mesg, null, 'errors');
 		$error++;
 	}
-	if ($date_payment == '')
+	if (GETPOST('reyear') == '')
 	{
 		$mesg = $langs->trans("ErrorFieldRequired", $langs->transnoentities("Date"));
+		setEventMessages($mesg, null, 'errors');
 		$error++;
 	}
-    if (! empty($conf->banque->enabled) && ! $_POST["accountid"] > 0)
+    if (! empty($conf->banque->enabled) && $accountid <= 0)
     {
         $mesg = $langs->trans("ErrorFieldRequired", $langs->transnoentities("AccountToCredit"));
+		setEventMessages($mesg, null, 'errors');
         $error++;
     }
 
 	if (! $error)
 	{
+		$date_payment = dol_mktime(12, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
 		$paymentid = 0;
 
 		// Read possible payments
@@ -369,6 +174,7 @@ if ($action == 'add_payment')
         {
             $error++;
             $errmsg='ErrorNoPaymentDefined';
+			setEventMessages($errmsg, null, 'errors');
         }
 
         if (! $error)
@@ -377,10 +183,13 @@ if ($action == 'add_payment')
 
     		// Create a line of payments
     		$payment = new ImmoPayment($db);
-    		$payment->rowid        = $recid;
+
+    		$payment->ref          = $recid;
+			$payment->rowid        = $recid;
     		$payment->date_payment = $date_payment;
-    		$payment->amount      = $amount;   // Tableau de montant
+    		$payment->amount       = $amount;   // Tableau de montant			
     		$payment->fk_mode_reglement  = $_POST["fk_mode_reglement"];
+			$payment->fk_bank  = $_POST["fk_bank"];
     		$payment->num_payment  = $_POST["num_payment"];
     		$payment->note_public  = $_POST["note_public"];
 
@@ -390,6 +199,7 @@ if ($action == 'add_payment')
                 if ($paymentid < 0)
                 {
                     $errmsg=$payment->error;
+					setEventMessages($errmsg, null, 'errors');
                     $error++;
                 }
     		}
@@ -398,10 +208,11 @@ if ($action == 'add_payment')
             {
 				$label='(CustomerReceiptPayment)';
 				if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label='(CustomerReceiptPaymentBack)';
-                $result=$payment->addPaymentToBank($user, 'payment', $label, $_POST['accountid'], '', '');
-                if (! $result > 0)
+                $result=$payment->addPaymentToBank($user, 'immopayment', $label, $_POST['accountid'], '', '');
+                if ($result <= 0)
                 {
                     $errmsg=$payment->error;
+					setEventMessages($errmsg, null, 'errors');
                     $error++;
                 }
             }
@@ -416,6 +227,9 @@ if ($action == 'add_payment')
             else
             {
                 $db->rollback();
+				$errmsg=$payment->error;
+				setEventMessages($errmsg, null, 'errors');
+
             }
         }
 	}
@@ -433,7 +247,7 @@ $form=new Form($db);
 llxHeader('', $langs->trans("Payment"));
 
 
-if (GETPOST('action', 'aZ09') == 'create' /*|| $action == 'confirm_paiement' || $action == 'add_payment'*/)
+if (GETPOST('action', 'aZ09') == 'create')
 {
 	$receipt = new ImmoReceipt($db);
 	$result = $receipt->fetch($recid);
@@ -448,130 +262,6 @@ if (GETPOST('action', 'aZ09') == 'create' /*|| $action == 'confirm_paiement' || 
 		if ($receipt->type != ImmoReceipt::TYPE_CREDIT_NOTE) $title.=$langs->trans("EnterPaymentReceivedFromCustomer");
 		if ($receipt->type == ImmoReceipt::TYPE_CREDIT_NOTE) $title.=$langs->trans("EnterPaymentDueToCustomer");
 		print load_fiche_titre($title);
-
-		// Initialize data for confirmation (this is used because data can be change during confirmation)
-		if ($action == 'add_payment')
-		{
-			$i=0;
-
-			$formquestion[$i++]=array('type' => 'hidden','name' => 'recid', 'value' => $receipt->id);
-			$formquestion[$i++]=array('type' => 'hidden','name' => 'socid', 'value' => $receipt->socid);
-			$formquestion[$i++]=array('type' => 'hidden','name' => 'type',  'value' => $receipt->type);
-		}
-
-		// Invoice with Paypal transaction
-		// TODO add hook possibility (regis)
-		/*if (! empty($conf->paypalplus->enabled) && $conf->global->PAYPAL_ENABLE_TRANSACTION_MANAGEMENT && ! empty($receipt->ref_int))
-		{
-			if (! empty($conf->global->PAYPAL_BANK_ACCOUNT)) $accountid=$conf->global->PAYPAL_BANK_ACCOUNT;
-			$paymentnum=$paiement->ref;
-		}
-
-		// Add realtime total information
-		if (! empty($conf->use_javascript_ajax))
-		{
-			print "\n".'<script type="text/javascript" language="javascript">';
-			print '$(document).ready(function () {
-            			setPaiementCode();
-
-            			$("#selectpaiementcode").change(function() {
-            				setPaiementCode();
-            			});
-
-            			function setPaiementCode()
-            			{
-            				var code = $("#selectpaiementcode option:selected").val();
-
-                            if (code == \'CHQ\' || code == \'VIR\')
-            				{
-            					if (code == \'CHQ\')
-			                    {
-			                        $(\'.fieldrequireddyn\').addClass(\'fieldrequired\');
-			                    }
-            					if ($(\'#fieldchqemetteur\').val() == \'\')
-            					{
-            						var emetteur = ('.$receipt->type.' == '.ImmoReceipt::TYPE_CREDIT_NOTE.') ? \''.dol_escape_js(dol_escape_htmltag($conf->global->MAIN_INFO_SOCIETE_NOM)).'\' : jQuery(\'#thirdpartylabel\').val();
-            						$(\'#fieldchqemetteur\').val(emetteur);
-            					}
-            				}
-            				else
-            				{
-            					$(\'.fieldrequireddyn\').removeClass(\'fieldrequired\');
-            					$(\'#fieldchqemetteur\').val(\'\');
-            				}
-            			}
-
-						function _elemToJson(selector)
-						{
-							var subJson = {};
-							$.map(selector.serializeArray(), function(n,i)
-							{
-								subJson[n["name"]] = n["value"];
-							});
-
-							return subJson;
-						}
-						function callForResult(imgId)
-						{
-							var json = {};
-							var form = $("#payment_form");
-
-							json["invoice_type"] = $("#invoice_type").val();
-            				json["amountPayment"] = $("#amountpayment").attr("value");
-							json["amounts"] = _elemToJson(form.find("input.amount"));
-							json["remains"] = _elemToJson(form.find("input.remain"));
-
-							if (imgId != null) {
-								json["imgClicked"] = imgId;
-							}
-
-							$.post("'.DOL_URL_ROOT.'/compta/ajaxpayment.php", json, function(data)
-							{
-								json = $.parseJSON(data);
-
-								form.data(json);
-
-								for (var key in json)
-								{
-									if (key == "result")	{
-										if (json["makeRed"]) {
-											$("#"+key).addClass("error");
-										} else {
-											$("#"+key).removeClass("error");
-										}
-										json[key]=json["label"]+" "+json[key];
-										$("#"+key).text(json[key]);
-									} else {console.log(key);
-										form.find("input[name*=\""+key+"\"]").each(function() {
-											$(this).attr("value", json[key]);
-										});
-									}
-								}
-							});
-						}
-						$("#payment_form").find("input.amount").change(function() {
-							callForResult();
-						});
-						$("#payment_form").find("input.amount").keyup(function() {
-							callForResult();
-						});
-			';
-
-			print '	});'."\n";
-		}*/
-
-		//Add js for AutoFill
-		/*if (! empty($conf->use_javascript_ajax))
-		{
-			print "\n".'<script type="text/javascript" language="javascript">';
-			print ' $(document).ready(function () {';
-			print ' 	$(".AutoFillAmout").on(\'click touchstart\', function(){
-							$("input[name="+$(this).data(\'rowname\')+"]").val($(this).data("value")).trigger("change");
-						});';
-			print '	});'."\n";
-
-			print '	</script>'."\n";
-		}*/
 
 		print '<form id="payment_form" name="add_payment" action="'.$_SERVER["PHP_SELF"].'" method="POST">';
 		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -588,102 +278,6 @@ if (GETPOST('action', 'aZ09') == 'create' /*|| $action == 'confirm_paiement' || 
 		$object = new ImmoPayment($db);
 		$object->fetch($receipt->fk_payment);
 		
-		// Common attributes
-		/*$object->fields = dol_sort_array($object->fields, 'position');
-		$tab = $object->fields;
-		unset($tab['amount'], $tab['status']);
-		foreach($tab as $key => $val)
-		{		
-			$array = array_diff_key($tab, ['fk_rent' => $key, 'fk_receipt' => $key, 'fk_renter' => $key, 'fk_owner' => $key, 'fk_property' => $key]);
-			//var_dump($array);
-			// Discard if extrafield is a hidden field on form
-			if (abs($val['visible']) != 1) continue;
-			
-			if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
-
-			print '<tr id="field_'.$key.'">';
-			print '<td';
-			print ' class="titlefieldcreate';
-			if ($val['notnull'] > 0) print ' fieldrequired';
-			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-
-			print '"';
-			print '>';
-			print $langs->trans($val['label']);
-			print '</td>';
-			print '<td>';
-
-			if ($val['label'] == 'Ref')
-			{			
-				// Reference
-				$tmpref = GETPOST('ref','alpha')?GETPOST('ref','alpha'):"(PROV)".$recid;
-				print $tmpref;
-			}
-			elseif ($val['label'] == 'Renter')
-			{
-				//fk_renter
-				print $renter->getNomUrl(4);
-			}
-			elseif ($val['label'] == 'DatePayment')
-			{
-				// DateCreation
-				$datepayment = dol_mktime(12, 0, 0, $_POST['remonth'], $_POST['reday'], $_POST['reyear']);
-				$datepayment= ($datepayment == '' ? (empty($conf->global->MAIN_AUTOFILL_DATE)?-1:'') : $datepayment);
-				print $form->selectDate($datepayment, '', '', '', 0, "add_payment", 1, 1, 0, '', '', $receipt->date);
-			}
-			elseif ($val['label'] == 'TypePayment')
-			{
-				// Payment mode
-				$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$paiement->fk_mode_reglement), 'fk_mode_reglement', '', 2);
-			}
-			elseif ($val['label'] == 'BankAccount')
-			{
-				//BankAccount
-				if (! empty($conf->banque->enabled))
-				{
-					if ($receipt->type != 2) print '<span class="fieldrequired">'.$langs->trans('AccountToCredit').'</span>';
-					if ($receipt->type == 2) print '<span class="fieldrequired">'.$langs->trans('AccountToDebit').'</span>';
-					
-					//$form->select_comptes($accountid, 'accountid', 0, '', 2);
-					$form->select_comptes(isset($_POST["accountid"])?$_POST["accountid"]:$receipt->accountid, "accountid", 0, '', 1);  // Show open bank account list
-					
-				}
-			}
-			elseif ($val['label'] == 'ThirdParty')
-			{
-				// ThirdParty
-				print $renter->thirdparty->getNomUrl(4);
-			}
-			elseif ($val['label'] == 'Contract')
-			{
-				// Contract
-				print $rent->getNomUrl(4);
-			}
-			elseif ($val['label'] == 'ImmoReceipt')
-			{
-				// ImmoReceipt
-				print $receipt->getNomUrl(4);
-			}
-			elseif ($val['label'] == 'Owner')
-			{
-				// Owner
-				print $owner->getNomUrl(4);
-			}
-			elseif ($val['label'] == 'Property')
-			{
-				// Property
-				print $property->getNomUrl(4);
-			}
-			else
-			{
-				if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
-				elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
-				else $value = GETPOST($key, 'alpha');
-				print $object->showInputField($val, $key, $value, '', '', '', 0);
-			}
-			print '</td>';
-			print '</tr>';
-		}*/
 		// Reference
 		$tmpref= GETPOST('ref','alpha')?GETPOST('ref','alpha'):$recid;
         print '<tr><td class="titlefieldcreate"><span class="fieldrequired">'.$langs->trans('Reference').'</span></td><td>'.$tmpref."</td></tr>\n";
