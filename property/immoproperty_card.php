@@ -408,7 +408,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	$keyforbreak='note_private';
+	$keyforbreak='fk_soc';
 	foreach($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
