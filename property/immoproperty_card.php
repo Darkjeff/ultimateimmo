@@ -43,7 +43,6 @@ include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
-dol_include_once('/ultimateimmo/lib/immoproperty_type.lib.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
 // Load traductions files requiredby by page
