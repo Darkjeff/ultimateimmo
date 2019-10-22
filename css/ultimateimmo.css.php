@@ -89,7 +89,11 @@ div.mainmenu.properties {
 	background-image: url(<?php echo dol_buildpath('/ultimateimmo/img/immoproperty.png',1) ?>);
 }
 
-div.mainmenu.renters {
+div.mainmenu.immoowners {
+	background-image: url(<?php echo dol_buildpath('/ultimateimmo/img/immoowner.png',1) ?>);
+}
+
+div.mainmenu.immorenters {
 	background-image: url(<?php echo dol_buildpath('/ultimateimmo/img/immorenter.png',1) ?>);
 }
 

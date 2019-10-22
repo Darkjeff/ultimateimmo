@@ -79,6 +79,7 @@ MenuListImmoOwnerType = List
 MenuImmoRenter = Renters
 MenuNewImmoRenter = New Renter
 MenuListImmoRenter = List
+MenuImmoRenterStats = Stats
 MenuImmoPayment = Payment
 MenuNewImmoPayment = New Payment
 MenuListImmoPayment = Payments
@@ -212,6 +213,7 @@ ShowColocataireDetails = Afficher les détails des colocataires
 Quittances&Baux = Quittances et Baux
 OtherReceipts = Other Receipts
 OtherRents = Other Rents
+NumberReceiptByMonth  = Number receipts by month
 
 #
 # Sample page
