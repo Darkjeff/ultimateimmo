@@ -427,7 +427,22 @@ while ($i < min($num, $limit))
 			print '<td';
 			if ($align) print ' class="'.$align.'"';
 			print '>';
-			print $object->showOutputField($val, $key, $obj->$key, '');
+			
+			if ($val['label'] == 'BirthCountry') 
+			{
+				if ($object->country_id)
+				{
+					include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+					$tmparray=getCountry($object->country_id,'all');
+					$object->country_code=$tmparray['code'];
+					$object->country=$tmparray['label'];
+				}				
+				print $object->country;
+			}
+			else
+			{
+				print $object->showOutputField($val, $key, $obj->$key, '');
+			}
 			print '</td>';
 			if (! $i) $totalarray['nbfield']++;
 			if (! empty($val['isameasure']))
