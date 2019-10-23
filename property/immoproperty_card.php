@@ -42,6 +42,7 @@ if (! $res) die("Include of main fails");
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
@@ -425,8 +426,22 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
 		print '>'.$langs->trans($val['label']).'</td>';
-		print '<td>';		
-		print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		print '<td>';
+		
+		if ($val['label'] == 'Owner') 
+		{
+			$staticowner=new ImmoOwner($db);
+			$staticowner->fetch($object->fk_owner);			
+			if ($staticowner->ref)
+			{
+				$staticowner->ref=$staticowner->getFullName($langs);
+			}
+			print $staticowner->ref;
+		}
+		else
+		{
+			print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		}
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
