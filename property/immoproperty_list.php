@@ -43,6 +43,7 @@ require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo","companies","other"));
@@ -468,6 +469,16 @@ while ($i < min($num, $limit))
 					$object->country=$tmparray['label'];
 				}				
 				print $object->country;
+			}
+			elseif ($val['label'] == 'Owner') 
+			{
+				$staticowner=new ImmoOwner($db);
+				$staticowner->fetch($object->fk_owner);			
+				if ($staticowner->ref)
+				{
+					$staticowner->ref=$staticowner->getFullName($langs);
+				}
+				print $staticowner->ref;
 			}
 			/*
 			if ($val['label'] == 'Juridique') 
