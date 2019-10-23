@@ -147,6 +147,7 @@ BUL = Immeuble
 EmptyHousing = Logement vide 
 Copropriete = Copropriété
 MonoPropriete = Mono Propriété
+ImmoOwner = Propriétaire
 DateStartRent = Date de prise d'effet du contrat
 TypePayment = Type de Règlement
 NumPayment = <em>Numéro(Chèque/Virement N°)</em>

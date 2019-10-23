@@ -266,21 +266,6 @@ if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && 
 
 llxHeader('', $title, $help_url);
 
-// Example : Adding jquery code
-print '<script type="text/javascript" language="javascript">
-jQuery(document).ready(function() {
-	function init_myfunc()
-	{
-		jQuery("#myid").removeAttr(\'disabled\');
-		jQuery("#myid").attr(\'disabled\',\'disabled\');
-	}
-	init_myfunc();
-	jQuery("#mybutton").click(function() {
-		init_myfunc();
-	});
-});
-</script>';
-
 $arrayofselected=is_array($toselect)?$toselect:array();
 
 $param='';
@@ -442,7 +427,22 @@ while ($i < min($num, $limit))
 			print '<td';
 			if ($align) print ' class="'.$align.'"';
 			print '>';
-			print $object->showOutputField($val, $key, $obj->$key, '');
+			
+			if ($val['label'] == 'Country') 
+			{
+				if ($object->country_id)
+				{
+					include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+					$tmparray=getCountry($object->country_id,'all');
+					$object->country_code=$tmparray['code'];
+					$object->country=$tmparray['label'];
+				}				
+				print $object->country;
+			}
+			else
+			{
+				print $object->showOutputField($val, $key, $obj->$key, '');
+			}
 			print '</td>';
 			if (! $i) $totalarray['nbfield']++;
 			if (! empty($val['isameasure']))
