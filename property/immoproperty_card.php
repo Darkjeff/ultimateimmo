@@ -469,25 +469,19 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
 		$value=$object->$key;
-		if ($object->country_id)
-		{
-			include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-			$tmparray=getCountry($object->country_id,'all');
-			$object->country_code=$tmparray['code'];
-			$object->country=$tmparray['label'];
-		}
-		elseif ($object->type_property_id)
-		{				
-			$tmparray=$object->getPropertyTypeLabel($object->type_property_id,'all');
-			$object->type_code=$tmparray['code'];
-			$object->type=$tmparray['label'];				
-		}
-
+		
 		print '<tr><td';
 		print ' class="titlefield';
 		if ($val['notnull'] > 0) print ' fieldrequired';
 		if ($val['label'] == 'Country') 
-		{ 
+		{
+			if ($object->country_id)
+			{
+				include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+				$tmparray=getCountry($object->country_id,'all');
+				$object->country_code=$tmparray['code'];
+				$object->country=$tmparray['label'];
+			}
 			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
 		}
