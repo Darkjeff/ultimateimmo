@@ -41,6 +41,8 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
+dol_include_once('/ultimateimmo/class/immorenter.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
 
 // Load translation files required by the page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo","other"));
@@ -558,7 +560,31 @@ while ($i < min($num, $limit))
 			print '<td';
 			if ($align) print ' class="'.$align.'"';
 			print '>';
-			print $object->showOutputField($val, $key, $obj->$key, '');
+			
+			if ($val['label'] == 'Owner') 
+			{
+				$staticowner=new ImmoOwner($db);
+				$staticowner->fetch($object->fk_owner);			
+				if ($staticowner->ref)
+				{
+					$staticowner->ref=$staticowner->getFullName($langs);
+				}
+				print $staticowner->ref;
+			}
+			elseif ($val['label'] == 'Renter') 
+			{
+				$staticrenter=new ImmoRenter($db);
+				$staticrenter->fetch($object->fk_renter);			
+				if ($staticrenter->ref)
+				{
+					$staticrenter->ref=$staticrenter->getFullName($langs);
+				}
+				print $staticrenter->ref;
+			}
+			else
+			{
+				print $object->showOutputField($val, $key, $obj->$key, '');
+			}
 			print '</td>';
 			if (! $i) $totalarray['nbfield']++;
 			if (! empty($val['isameasure']))

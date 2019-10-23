@@ -926,7 +926,91 @@ if ($action == 'create')
 
 		// Common attributes
 		$keyforbreak='note_private';
-		include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
+		
+		foreach($object->fields as $key => $val)
+		{
+			// Discard if extrafield is a hidden field on form
+			if (abs($val['visible']) != 1) continue;
+
+			if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+			if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
+
+			$value=$object->$key;
+
+			print '<tr><td';
+			print ' class="titlefield';
+			if ($val['notnull'] > 0) print ' fieldrequired';
+			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+			print '"';
+			print '>'.$langs->trans($val['label']).'</td>';
+			print '<td>';
+			
+			if ($val['label'] == 'Owner') 
+			{
+				$staticowner=new ImmoOwner($db);
+				$staticowner->fetch($object->fk_owner);			
+				if ($staticowner->ref)
+				{
+					$staticowner->ref=$staticowner->getFullName($langs);
+				}
+				print $staticowner->ref;
+			}
+			elseif ($val['label'] == 'Renter') 
+			{
+				$staticrenter=new ImmoRenter($db);
+				$staticrenter->fetch($object->fk_renter);			
+				if ($staticrenter->ref)
+				{
+					$staticrenter->ref=$staticrenter->getFullName($langs);
+				}
+				print $staticrenter->ref;
+			}
+			else
+			{
+				print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			}
+			//print dol_escape_htmltag($object->$key, 1, 1);
+			print '</td>';
+			print '</tr>';
+
+			if (! empty($keyforbreak) && $key == $keyforbreak) break;						// key used for break on second column
+		}
+		print '</table>';
+		print '</div>';
+		print '<div class="fichehalfright">';
+		print '<div class="ficheaddleft">';
+		print '<div class="underbanner clearboth"></div>';
+		print '<table class="border centpercent">';
+
+		$alreadyoutput = 1;
+		foreach($object->fields as $key => $val)
+		{
+			if ($alreadyoutput)
+			{
+				if (! empty($keyforbreak) && $key == $keyforbreak) $alreadyoutput = 0;		// key used for break on second column
+				continue;
+			}
+
+			if (abs($val['visible']) != 1) continue;	// Discard such field from form
+			if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+			if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
+
+			$value=$object->$key;
+			
+			print '<tr><td';
+			print ' class="titlefield';
+			if ($val['notnull'] > 0) print ' fieldrequired';
+			
+			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+			print '"';
+			print '>'.$langs->trans($val['label']).'</td>';
+			print '<td>';
+			print $object->showOutputField($val, $key, $value, '', '', '', 0);
+
+			//print dol_escape_htmltag($object->$key, 1, 1);
+			print '</td>';
+			print '</tr>';
+		}
 		
 		// Other attributes
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
