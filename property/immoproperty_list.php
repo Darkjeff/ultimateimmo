@@ -458,27 +458,28 @@ while ($i < min($num, $limit))
 			print '<td';
 			if ($align) print ' class="'.$align.'"';
 			print '>';
-			if ($object->country_id)
-			{
-				include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-				$tmparray=getCountry($object->country_id,'all');
-				$object->country_code=$tmparray['code'];
-				$object->country=$tmparray['label'];
-			}
 			if ($val['label'] == 'Country') 
-			{ 
+			{
+				if ($object->country_id)
+				{
+					include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+					$tmparray=getCountry($object->country_id,'all');
+					$object->country_code=$tmparray['code'];
+					$object->country=$tmparray['label'];
+				}				
 				print $object->country;
 			}
-			/*if ($object->juridique_id)
-			{
-				dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
-				$formImmo = new FormUltimateimmo($db);
-				$tmparray=$formImmo->getJuridique($object->juridique_id, 'all');
-				$object->juridique_code=$tmparray['code'];
-				$object->juridique=$tmparray['label'];
-			}
+			/*
 			if ($val['label'] == 'Juridique') 
 			{ 
+				if ($object->juridique_id)
+				{
+					dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
+					$formImmo = new FormUltimateimmo($db);
+					$tmparray=$formImmo->getJuridique($object->juridique_id, 'all');
+					$object->juridique_code=$tmparray['code'];
+					$object->juridique=$tmparray['label'];
+				}
 				print $object->juridique;
 			}*/
 			else
