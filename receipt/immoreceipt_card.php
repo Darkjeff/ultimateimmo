@@ -1069,7 +1069,7 @@ if ($action == 'create')
 				$objp = $db->fetch_object($resql);
 
 				print '<tr class="oddeven"><td>';
-				print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?recid='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
+				print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?action=update&amp;recid='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
 				print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
 				print '<td>'.$objp->type.'</td>';
 				print '<td class="right">' . $cursymbolbefore.price($objp->amount, 0, $outputlangs).' '.$cursymbolafter."</td>\n";
@@ -1087,16 +1087,16 @@ if ($action == 'create')
 				$i ++;
 			}
 
-			/*if ($object->status == 1)
-			{*/
+			if ($object->paye == 0)
+			{
 				print '<tr><td colspan="3" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs).' '.$cursymbolafter . '</b>'."</td><td>&nbsp;</td></tr>\n";
 				print '<tr><td colspan="3" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs).' '.$cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
-
+//var_dump($object);exit;
 				$remaintopay = $object->total_amount - $totalpaye;
 
 				print '<tr><td colspan="3" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
 				print '<td class="right"'.($remaintopay?' class="amountremaintopay"':'').'>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs).' '.$cursymbolafter."</td><td>&nbsp;</td></tr>\n";
-			//}
+			}
 			print '</table>';
 			$db->free($resql);
 		}

@@ -388,7 +388,7 @@ if (GETPOST('action', 'aZ09') == 'create')
 		if ($sumpaid < $objp->total_amount)
 		{
 			$namef = "amount_".$objp->id;
-			print '<input type="text" size="8" name="'.$namef.'">';
+			print '<input type="text" size="8" name="'.$namef.'" required="required">';
 		}
 		else
 		{
