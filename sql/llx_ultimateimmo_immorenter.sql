@@ -35,7 +35,7 @@ CREATE TABLE llx_ultimateimmo_immorenter(
 	phone varchar(30), 
 	phone_mobile varchar(30),  	
 	date_creation datetime NOT NULL, 
-	tms timestamp NOT NULL, 
+	tms timestamp NOT NULL default CURRENT_TIMESTAMP, 
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
 	import_key varchar(14), 
