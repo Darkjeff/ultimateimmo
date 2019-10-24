@@ -320,27 +320,12 @@ if (GETPOST('action', 'aZ09') == 'create')
 		print "</td>\n";
 		print '</tr>';
 		
+		// Bank account
 		print '<tr>';
 		print '<td class="fieldrequired">'.$langs->trans('AccountToCredit').'</td>';
 		print '<td colspan="2">';
 		$form->select_comptes(isset($_POST["accountid"])?$_POST["accountid"]:$object->accountid, "accountid", 0, '', 1);  // Show open bank account list
 		print '</td></tr>';
-
-        // Bank account
-       /* print '<tr>';
-        if (! empty($conf->banque->enabled))
-        {
-            if ($receipt->type != 2) print '<td><span class="fieldrequired">'.$langs->trans('AccountToCredit').'</span></td>';
-            if ($receipt->type == 2) print '<td><span class="fieldrequired">'.$langs->trans('AccountToDebit').'</span></td>';
-            print '<td>';
-            $form->select_comptes($accountid, 'accountid', 0, '', 2);
-            print '</td>';
-        }
-        else
-        {
-            print '<td>&nbsp;</td>';
-        }
-        print "</tr>\n";*/
 
         // Cheque number
         print '<tr><td>'.$langs->trans('Numero');
@@ -407,7 +392,9 @@ if (GETPOST('action', 'aZ09') == 'create')
 		}
 		else
 		{
-			print '-';
+			$errmsg=$langs->trans("AlreadyPaid");
+			setEventMessages($errmsg, null, 'errors');
+			print $errmsg;
 		}
 		print "</td>";
 

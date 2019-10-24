@@ -117,6 +117,7 @@ if (empty($reshook))
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
 		$result = $receipt->set_paid($user);
+		var_dump($result);exit;
 		Header("Location: " . $_SERVER['PHP_SELF'] . '?recid=' . $id);
 	}
 
