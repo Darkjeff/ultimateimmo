@@ -46,7 +46,7 @@ CREATE TABLE llx_ultimateimmo_immoproperty(
 	town varchar(64), 
 	country_id integer, 
 	datep date,
-	datebuilt date, 	
+	datebuilt varchar(32), 	
 	target integer
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;
