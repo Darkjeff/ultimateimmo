@@ -27,7 +27,7 @@ CREATE TABLE llx_ultimateimmo_immoproperty(
 	note_public text, 
 	note_private text, 
 	date_creation datetime NOT NULL, 
-	tms timestamp NOT NULL, 
+	tms timestamp NOT NULL default CURRENT_TIMESTAMP, 
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
 	import_key varchar(14), 
@@ -46,7 +46,7 @@ CREATE TABLE llx_ultimateimmo_immoproperty(
 	town varchar(64), 
 	country_id integer, 
 	datep date,
-	datebuilt date, 	
+	datebuilt varchar(32), 	
 	target integer
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

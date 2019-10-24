@@ -42,7 +42,7 @@ CREATE TABLE llx_ultimateimmo_immorent(
 	date_next_rent date NOT NULL, 
 	date_last_regul date NOT NULL, 
 	date_creation datetime NOT NULL, 
-	tms timestamp NOT NULL, 
+	tms timestamp NOT NULL default CURRENT_TIMESTAMP, 
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
 	import_key varchar(14),
