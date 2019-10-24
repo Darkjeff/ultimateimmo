@@ -56,7 +56,10 @@ class mod_ultimateimmo_simple extends ModeleNumRefUltimateimmo
 	 * @var string model name
 	 */
 	public $name='Simple';
-
+    
+	/**
+	 * @var int Automatic numbering
+	 */
 	public $code_auto=1;
 
 
