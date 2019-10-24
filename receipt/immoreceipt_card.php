@@ -342,19 +342,22 @@ if (empty($reshook))
 		if (empty($date_echeance)) 
 		{
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), null, 'errors');
-			$action = 'create';
+			Header("Location: ".$_SERVER["PHP_SELF"]."?action=createall");
+			exit;
 			$error++;
 		} 
 		elseif (empty($dateperiod)) 
 		{
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_du")), null, 'errors');
-			$action = 'create';
+			Header("Location: ".$_SERVER["PHP_SELF"]."?action=createall");
+			exit;
 			$error++;
 		} 
 		elseif (empty($dateperiodend)) 
 		{
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("Periode_au")), null, 'errors');
-			$action = 'create';
+			Header("Location: ".$_SERVER["PHP_SELF"]."?action=createall");
+			exit;
 			$error++;
 		} 
 		else 
@@ -408,6 +411,7 @@ if (empty($reshook))
 				$receipt->status=0;
 				$receipt->paye=0;
 				$result = $receipt->create($user);
+				
 				if ($result < 0) 
 				{
 					setEventMessages(null, $receipt->errors, 'errors');
