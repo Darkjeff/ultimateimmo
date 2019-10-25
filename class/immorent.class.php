@@ -98,7 +98,7 @@ class ImmoRent extends CommonObject
 		'deposit' => array('type'=>'price', 'label'=>'Deposit', 'visible'=>1, 'enabled'=>1, 'position'=>75, 'notnull'=>-1,),
 		'encours' => array('type'=>'price', 'label'=>'Encours', 'visible'=>1, 'enabled'=>1, 'position'=>80, 'notnull'=>-1,),
 		'periode' => array('type'=>'varchar(128)', 'label'=>'Periode', 'visible'=>-1, 'enabled'=>1, 'position'=>85, 'notnull'=>-1,),
-		'preavis' => array('type'=>'varchar(128)', 'label'=>'Preavis', 'visible'=>-1, 'enabled'=>1, 'position'=>85, 'notnull'=>-1,),
+		'preavis' => array('type'=>'integer', 'label'=>'Preavis', 'visible'=>-1, 'enabled'=>1, 'position'=>85, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
 		'date_start' => array('type'=>'date', 'label'=>'DateStartRent', 'visible'=>-1, 'enabled'=>1, 'position'=>90, 'notnull'=>-1,),
 		'date_end' => array('type'=>'date', 'label'=>'date_end', 'visible'=>-1, 'enabled'=>1, 'position'=>95, 'notnull'=>-1,),
 		'date_next_rent' => array('type'=>'date', 'label'=>'DateNextRent', 'visible'=>-1, 'enabled'=>1, 'position'=>100, 'notnull'=>-1,),

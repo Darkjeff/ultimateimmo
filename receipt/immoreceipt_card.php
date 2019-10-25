@@ -714,7 +714,7 @@ if ($action == 'create')
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as o";
-		$sql .= " WHERE c.preavis != 0 AND loc.rowid = c.fk_renter AND l.rowid = c.fk_property AND o.rowid = loc.fk_owner ";
+		$sql .= " WHERE preavis = 0 AND loc.rowid = c.fk_renter AND l.rowid = c.fk_property AND o.rowid = loc.fk_owner ";
 		//echo $sql;exit;
 		$resql = $db->query($sql);
 		if ($resql)
