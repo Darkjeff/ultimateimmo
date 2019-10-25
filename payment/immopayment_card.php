@@ -285,7 +285,7 @@ if ($action == 'create')
 		print '</td>';
 		
 		print '<td>';
-		if ($val['label'] == 'TypePayment')
+		/*if ($val['label'] == 'TypePayment')
 		{
 			// Payment mode
 			$object->fk_mode_reglement=GETPOST('fk_mode_reglement','int')?GETPOST('fk_mode_reglement','int'):$object->fk_mode_reglement;
@@ -297,7 +297,7 @@ if ($action == 'create')
 			}
 			$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$object->fk_mode_reglement), 'fk_mode_reglement', '', 2);
 		}
-		elseif ($val['label'] == 'BankAccount')
+		else*/if ($val['label'] == 'BankAccount')
 		{
 			//BankAccount
 			if (! empty($conf->banque->enabled))
@@ -372,7 +372,7 @@ if (($id || $ref) && $action == 'edit')
 		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key, 'none'):$object->$key;
 		else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
 		
-		if ($val['label'] == 'TypePayment')
+		/*if ($val['label'] == 'TypePayment')
 		{
 			// Payment mode
 			$object->fk_mode_reglement=GETPOST('fk_mode_reglement','int')?GETPOST('fk_mode_reglement','int'):$object->fk_mode_reglement;
@@ -383,7 +383,7 @@ if (($id || $ref) && $action == 'edit')
 				$object->mode_payment=$tmparray['libelle'];
 			}
 			$form->select_types_paiements('', 'fk_mode_reglement', '', 2);
-		}
+		}*/
 		//var_dump($val.' '.$key.' '.$value);
 		if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		else print $object->showInputField($val, $key, $value, '', '', '', 0);
@@ -526,7 +526,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		else print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
-		if ($val['label'] == 'TypePayment')
+		/*if ($val['label'] == 'TypePayment')
 		{
 			if ($object->fk_mode_reglement)
 			{
@@ -536,7 +536,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 			// Payment mode
 			$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none');
-		}
+		}*/
 		print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
