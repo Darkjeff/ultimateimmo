@@ -472,7 +472,10 @@ if (empty($reshook))
 		$receipt->fk_property 	= GETPOST("fk_property");
 		$receipt->fk_renter 	= GETPOST("fk_renter");
 		$receipt->fk_soc 		= GETPOST("fk_soc");
-		$receipt->fk_owner 		= GETPOST("fk_owner");		
+		$receipt->fk_owner 		= GETPOST("fk_owner");
+		$receipt->fk_mode_reglement = GETPOST("fk_mode_reglement");
+		$receipt->mode_code 	= GETPOST("mode_code");
+		$receipt->mode_payment	= GETPOST("mode_payment");		
 		$receipt->date_echeance = $date_echeance;
 		$receipt->note_public 	= GETPOST("note_public");
 		$receipt->status 		= GETPOST("status");
@@ -1196,7 +1199,7 @@ if ($action == 'create')
 
 				if ($usercandelete)
 				{
-					print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?recid='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
+					print '<div class="inline-block divButAction"><a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a></div>'."\n";
 				}
 				else
 				{

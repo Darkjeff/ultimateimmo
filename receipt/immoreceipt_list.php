@@ -378,6 +378,8 @@ if (! $resql)
 
 $num = $db->num_rows($resql);
 
+$arrayofselected=is_array($toselect)?$toselect:array();
+
 // Direct jump if only one record found
 if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $search_all)
 {
@@ -392,8 +394,6 @@ if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && 
 // --------------------------------------------------------------------
 
 llxHeader('', $title, $help_url);
-
-$arrayofselected=is_array($toselect)?$toselect:array();
 
 $param='';
 if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param.='&contextpage='.urlencode($contextpage);
@@ -581,6 +581,10 @@ while ($i < min($num, $limit))
 				}
 				print $staticrenter->ref;
 			}
+			elseif ($val['label'] == 'TypePayment') 
+			{
+				print $object->fk_mode_reglement;
+			}
 			else
 			{
 				print $object->showOutputField($val, $key, $obj->$key, '');
@@ -605,7 +609,7 @@ while ($i < min($num, $limit))
 	if ($massactionbutton || $massaction)   // If we are in select mode (massactionbutton defined) or if we have already selected and sent an action ($massaction) defined
 	{
 		$selected=0;
-		//if (in_array($obj->rowid, $arrayofselected)) $selected=1;
+		if (in_array($obj->rowid, $arrayofselected)) $selected=1;
 		print '<input id="cb'.$obj->rowid.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$obj->rowid.'"'.($selected?' checked="checked"':'').'>';
 	}
 	print '</td>';
