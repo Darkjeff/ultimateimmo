@@ -581,10 +581,6 @@ while ($i < min($num, $limit))
 				}
 				print $staticrenter->ref;
 			}
-			elseif ($val['label'] == 'TypePayment') 
-			{
-				print $object->fk_mode_reglement;
-			}
 			else
 			{
 				print $object->showOutputField($val, $key, $obj->$key, '');
