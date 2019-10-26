@@ -117,7 +117,7 @@ if (empty($reshook))
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
 		$result = $receipt->set_paid($user);
-		Header("Location: " . $_SERVER['PHP_SELF'] . '?recid=' . $id);
+		Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 	}
 
 	/**
@@ -1094,7 +1094,7 @@ if ($action == 'create')
 			{
 				print '<tr><td colspan="3" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs).' '.$cursymbolafter . '</b>'."</td><td>&nbsp;</td></tr>\n";
 				print '<tr><td colspan="3" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs).' '.$cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
-//var_dump($object);exit;
+
 				$remaintopay = $object->total_amount - $totalpaye;
 
 				print '<tr><td colspan="3" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
@@ -1143,37 +1143,33 @@ if ($action == 'create')
 			if (empty($reshook))
 			{
 				// Validate
-				if ($object->statut == ImmoReceipt::STATUS_DRAFT )
+				if ($object->status == ImmoReceipt::STATUS_DRAFT )
 				{
-					if ($user->rights->ultimateimmo->write)
+					if ($usercancreate)
 					{
-						print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
+						print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
 					}
 					else
+					{
 						print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('Validate') . '</a></div>';
+					}
 				}
 			
 				// Send
-				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
+				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
 
 				// Modify
-				if ($user->rights->ultimateimmo->write)
+				if ($usercancreate)
 				{
-					print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?recid='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
+					print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
 				}
 				else
 				{
 					print '<a class="butActionRefused classfortooltip" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
 				}
-				
-				// Create payment
-				/*if ($object->paye == 0) 
-				{
-					print '<div class="inline-block divButAction"><a class="butAction" href="'. dol_buildpath('/ultimateimmo/receipt/payment/paiement.php',1).'?recid=' . $object->id . '&amp;action=create&amp;accountid='.$object->fk_account.'">' . $langs->trans('DoPayment') . '</a></div>';
-				}*/
 
 				// Create payment
-				if ($receipt->status == 0 && $usercancreate)
+				if ($receipt->paye == 0 && $usercancreate)
 				{
 					if ($remaintopay == 0)
 					{
@@ -1181,25 +1177,25 @@ if ($action == 'create')
 					}
 					else
 					{
-						print '<div class="inline-block divButAction"><a class="butAction" href="'. dol_buildpath('/ultimateimmo/receipt/payment/paiement.php',1).'?recid=' . $object->id . '&amp;action=create">' . $langs->trans('DoPayment') . '</a></div>';
+						print '<div class="inline-block divButAction"><a class="butAction" href="'. dol_buildpath('/ultimateimmo/receipt/payment/paiement.php',1).'?id=' . $id . '&amp;action=create">' . $langs->trans('DoPayment') . '</a></div>';
 					}
 				}
 				
 				// Classify 'paid'
-				if ($receipt->status == 0 && round($remaintopay) <= 0) 
+				if ($receipt->paye == 0 && round($remaintopay) <= 0) 
 				{
-					print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=paid&recid='.$id.'">'.$langs->trans('ClassifyPaid').'</a></div>';
+					print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=paid&id='.$id.'">'.$langs->trans('ClassifyPaid').'</a></div>';
 				}
 
 				// Clone
-				if ($user->rights->ultimateimmo->write)
+				if ($usercancreate)
 				{
-					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?recid=' . $object->id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=ImmoReceipt">' . $langs->trans("ToClone") . '</a></div>';
+					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=ImmoReceipt">' . $langs->trans("ToClone") . '</a></div>';
 				}
 
 				if ($usercandelete)
 				{
-					print '<div class="inline-block divButAction"><a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a></div>'."\n";
+					print '<div class="inline-block divButAction"><a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$id.'&amp;action=delete">'.$langs->trans('Delete').'</a></div>'."\n";
 				}
 				else
 				{
