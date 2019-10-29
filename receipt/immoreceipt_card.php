@@ -43,6 +43,9 @@ include_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/paiement/class/paiement.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
+if (! empty($conf->accounting->enabled)) {
+	require_once DOL_DOCUMENT_ROOT . '/accountancy/class/accountingjournal.class.php';
+}
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/lib/immoreceipt.lib.php');
 dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
@@ -1197,11 +1200,32 @@ if ($action == 'create')
 				$paymentstatic->ref = $objp->ref;
 				$paymentstatic->num_paiement = $objp->num_paiement;
 				$paymentstatic->payment_code = $objp->payment_code;
-//var_dump($paymentstatic);exit;
+
 				print '<tr class="oddeven"><td>';
 				print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?action=update&amp;id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
 				print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
-				print '<td>'.$objp->mode_reglement_label.'</td>';
+				print '<td>'.$objp->fk_mode_reglement.'</td>';
+				
+				if (! empty($conf->banque->enabled))
+				{
+					$bankaccountstatic->id = $objp->baid;
+					$bankaccountstatic->ref = $objp->baref;
+					$bankaccountstatic->label = $objp->baref;
+					$bankaccountstatic->number = $objp->banumber;
+
+					if (! empty($conf->accounting->enabled)) {
+						$bankaccountstatic->account_number = $objp->account_number;
+
+						$accountingjournal = new AccountingJournal($db);
+						$accountingjournal->fetch($objp->fk_accountancy_journal);
+						$bankaccountstatic->accountancy_journal = $accountingjournal->getNomUrl(0, 1, 1, '', 1);
+					}
+
+					print '<td class="right">';
+					if ($bankaccountstatic->id)
+						print $bankaccountstatic->getNomUrl(1, 'transactions');
+					print '</td>';
+				}
 				print '<td class="right">' . $cursymbolbefore.price($objp->amount, 0, $outputlangs).' '.$cursymbolafter."</td>\n";
 
 				print '<td class="right">';

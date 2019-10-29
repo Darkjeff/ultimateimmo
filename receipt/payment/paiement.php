@@ -395,10 +395,23 @@ if (GETPOST('action', 'aZ09') == 'create')
 			print $errmsg;
 		}
 		print "</td>";
-
+//var_dump($objp);exit;
 		print "</tr>\n";
-                                                         
+        $total+=$objp->total;
+		$total_amount+=$objp->total_amount;
+		$totalrecu+=$objp->am;                                                 
 		$i++;
+	}
+	if ($i > 1)
+	{
+		// Print total
+		print '<tr class="oddeven">';
+		print '<td colspan="2" class="left">'.$langs->trans("Total").':</td>';
+		print "<td class=\"right\"><b>".price($total_amount)."</b></td>";
+		print "<td class=\"right\"><b>".price($totalrecu)."</b></td>";
+		print "<td class=\"right\"><b>".price($total_amount - $totalrecu)."</b></td>";
+		print '<td class="center">&nbsp;</td>';
+		print "</tr>\n";
 	}
 
 	print "</table>";
