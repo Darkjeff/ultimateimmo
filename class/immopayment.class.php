@@ -95,7 +95,7 @@ class ImmoPayment extends CommonObject
 		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>36, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
 		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'Property', 'enabled'=>1, 'visible'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToProperty",),
 		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'enabled'=>1, 'visible'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToRenter",),
-		'fk_paiement' => array('type'=>'integer', 'label'=>'Payment', 'visible'=>0, 'enabled'=>1, 'position'=>48, 'default'=>1, 'notnull'=>1, 'index'=>1,),
+		'fk_payment' => array('type'=>'integer', 'label'=>'Payment', 'visible'=>0, 'enabled'=>1, 'position'=>48, 'default'=>1, 'notnull'=>1, 'index'=>1,),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>1, 'visible'=>-1, 'position'=>50, 'notnull'=>-1,),
 		'date_payment' => array('type'=>'date', 'label'=>'DatePayment', 'enabled'=>1, 'visible'=>-1, 'position'=>70, 'notnull'=>1,),
 		'amount' => array('type'=>'price', 'label'=>'Amount', 'enabled'=>1, 'visible'=>1, 'position'=>72, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
@@ -125,7 +125,7 @@ class ImmoPayment extends CommonObject
 	public $amounts=array();    // Array of amounts
 	public $fk_mode_reglement;
 	public $fk_bank;
-	public $fk_paiement;
+	public $fk_payment;
 	public $num_payment;
 	public $check_transmitter;
 	public $chequebank;

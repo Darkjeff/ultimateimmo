@@ -1295,15 +1295,15 @@ class ImmoReceipt extends CommonObject
 	
 	/**
 	 * 	Return amount of payments already done
-	 *
+	 *  @param 		int 	$multicurrency 	Return multicurrency_amount instead of amount
 	 *	@return		int						Amount of payment already done, <0 if KO
 	 */
-	function getSommePaiement()
+	function getSommePaiement($multicurrency = 0)
 	{
-		$table='ultimateimmo_immopayment';
+		$table='paiement_receipt';
 		$field='fk_receipt';
 
-		$sql = 'SELECT sum(amount) as amount';
+		$sql = 'SELECT sum(amount) as amount, sum(multicurrency_amount) as multicurrency_amount';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$table;
 		$sql.= ' WHERE '.$field.' = '.$this->id;
 
@@ -1313,7 +1313,8 @@ class ImmoReceipt extends CommonObject
 		{
 			$obj = $this->db->fetch_object($resql);
 			$this->db->free($resql);
-			return $obj->amount;
+			if ($multicurrency) return $obj->multicurrency_amount;
+			else return $obj->amount;
 		}
 		else
 		{

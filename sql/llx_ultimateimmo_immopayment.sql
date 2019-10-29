@@ -29,7 +29,7 @@ CREATE TABLE llx_ultimateimmo_immopayment(
 	fk_owner integer, 
 	fk_soc integer,
 	fk_receipt integer,
-	fk_paiement integer NOT NULL,		-- type of payment in llx_c_paiement
+	fk_payment integer NOT NULL,		-- type of payment in llx_c_paiement
 	num_payment varchar(50) DEFAULT NULL, 
 	check_transmitter varchar(50) DEFAULT NULL, 
 	chequebank varchar(50) DEFAULT NULL, 

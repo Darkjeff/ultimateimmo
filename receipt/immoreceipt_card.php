@@ -41,6 +41,8 @@ include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
 include_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
 require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
+require_once DOL_DOCUMENT_ROOT . '/compta/paiement/class/paiement.class.php';
+require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/lib/immoreceipt.lib.php');
 dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
@@ -138,6 +140,23 @@ if (empty($reshook))
 			setEventMessages($receipt->error, $receipt->errors, 'errors');
 		}
 	}
+	// Delete payment
+	elseif ($action == 'confirm_delete_paiement' && $confirm == 'yes' && $usercandelete)
+	{
+		$receipt->fetch($id);
+		if ($receipt->status == ImmoReceipt::STATUS_VALIDATED && $receipt->paye == 0)
+		{
+			$paiement = new ImmoPayment($db);
+			$result=$paiement->fetch(GETPOST('paiement_id'));
+			if ($result > 0) {
+				$result=$paiement->delete(); // If fetch ok and found
+				header("Location: ".$_SERVER['PHP_SELF']."?id=".$id);
+			}
+			if ($result < 0) {
+				setEventMessages($paiement->error, $paiement->errors, 'errors');
+			}
+		}
+	}
 	
 	// Validation
 	if ($action == 'confirm_validate' && $confirm == 'yes' && $usercancreate)
@@ -186,7 +205,7 @@ if (empty($reshook))
 		
 		if ($result > 0) 
 		{
-			Header("Location: " . $_SERVER['PHP_SELF'] . '?recid=' . $id);
+			Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 			exit();
 		} 
 		else 
@@ -209,7 +228,7 @@ if (empty($reshook))
 		
 		if ($result > 0) 
 		{
-			Header("Location: " . $_SERVER['PHP_SELF'] . '?recid=' . $id);
+			Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 			exit();
 		} 
 		else 
@@ -223,7 +242,7 @@ if (empty($reshook))
     $backurlforlist = dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1);
 	if (empty($backtopage)) {
 	    if (empty($id)) $backtopage = $backurlforlist;
-	    else $backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php',1).'?recid='.($id > 0 ? $id : '__ID__');
+	    else $backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php',1).'?id='.($id > 0 ? $id : '__ID__');
     	}
 	$triggermodname = 'ULTIMATEIMMO_IMMORECEIPT_MODIFY';	// Name of trigger action code to execute when we modify record
 
@@ -483,7 +502,7 @@ if (empty($reshook))
 		$receipt->date_end 		= $date_end;
 		
 		$result = $receipt->update($user);
-		header("Location: ".dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?recid=' .$receipt->id);
+		header("Location: ".dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id=' .$receipt->id);
 		if ($id > 0) {
 			// $mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
 		} else {
@@ -528,6 +547,8 @@ llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
 
 $form=new Form($db);
 $formfile=new FormFile($db);
+$paymentstatic=new Paiement($db);
+$bankaccountstatic = new Account($db);
 
 // Load object modReceipt
 $module=(! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
@@ -1039,17 +1060,114 @@ if ($action == 'create')
 		{
 			$cursymbolafter = $langs->getCurrencySymbol($conf->currency);
 		}
+	#############################################################################
+	// List of payments already done
+
+	/*print '<div class="div-table-responsive-no-min">';
+	print '<table class="noborder paymenttable" width="100%">';
+
+	print '<tr class="liste_titre">';
+	print '<td class="liste_titre">' . ($object->type == ImmoReceipt::TYPE_CREDIT_NOTE ? $langs->trans("PaymentsBack") : $langs->trans('Payments')) . '</td>';
+	print '<td class="liste_titre">' . $langs->trans('Date') . '</td>';
+	print '<td class="liste_titre">' . $langs->trans('Type') . '</td>';
+	if (! empty($conf->banque->enabled)) {
+		print '<td class="liste_titre right">' . $langs->trans('BankAccount') . '</td>';
+	}
+	print '<td class="liste_titre right">' . $langs->trans('Amount') . '</td>';
+	print '<td class="liste_titre" width="18">&nbsp;</td>';
+	print '</tr>';
+		// Payments already done (from payment on this invoice)
+	$sql = 'SELECT p.datep as dp, p.ref, p.num_paiement, p.rowid, p.fk_bank,';
+	$sql .= ' c.code as payment_code, c.libelle as payment_label,';
+	$sql .= ' pf.amount,';
+	$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
+	$sql .= ' FROM ' . MAIN_DB_PREFIX . 'paiement_receipt as pf, ' . MAIN_DB_PREFIX . 'paiement as p';
+	$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_paiement as c ON p.fk_payment = c.id' ;
+	$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'bank as b ON p.fk_bank = b.rowid';
+	$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'bank_account as ba ON b.fk_account = ba.rowid';
+	$sql .= ' WHERE pf.fk_receipt = ' . $object->id . ' AND pf.fk_payment = p.rowid';
+	$sql .= ' AND p.entity IN (' . getEntity($object->element).')';
+	$sql .= ' ORDER BY p.datep, p.tms';
+
+	$result = $db->query($sql);
+	if ($result) {
+		$num = $db->num_rows($result);
+		$i = 0;
+
+		// if ($object->type != 2)
+		// {
+		if ($num > 0) {
+			while ($i < $num) {
+				$objp = $db->fetch_object($result);
+
+				$paymentstatic->id = $objp->rowid;
+				$paymentstatic->datepaye = $db->jdate($objp->dp);
+				$paymentstatic->ref = $objp->ref;
+				$paymentstatic->num_paiement = $objp->num_paiement;
+				$paymentstatic->payment_code = $objp->payment_code;
+
+				print '<tr class="oddeven"><td>';
+				print $paymentstatic->getNomUrl(1);
+				print '</td>';
+				print '<td>' . dol_print_date($db->jdate($objp->dp), 'dayhour') . '</td>';
+				$label = ($langs->trans("PaymentType" . $objp->payment_code) != ("PaymentType" . $objp->payment_code)) ? $langs->trans("PaymentType" . $objp->payment_code) : $objp->payment_label;
+				print '<td>' . $label . ' ' . $objp->num_paiement . '</td>';
+				if (! empty($conf->banque->enabled))
+				{
+					$bankaccountstatic->id = $objp->baid;
+					$bankaccountstatic->ref = $objp->baref;
+					$bankaccountstatic->label = $objp->baref;
+					$bankaccountstatic->number = $objp->banumber;
+
+					if (! empty($conf->accounting->enabled)) {
+						$bankaccountstatic->account_number = $objp->account_number;
+
+						$accountingjournal = new AccountingJournal($db);
+						$accountingjournal->fetch($objp->fk_accountancy_journal);
+						$bankaccountstatic->accountancy_journal = $accountingjournal->getNomUrl(0, 1, 1, '', 1);
+					}
+
+					print '<td class="right">';
+					if ($bankaccountstatic->id)
+						print $bankaccountstatic->getNomUrl(1, 'transactions');
+					print '</td>';
+				}
+				print '<td class="right">' . price($sign * $objp->amount) . '</td>';
+				print '<td align="center">';
+				if ($object->status == Receipt::STATUS_VALIDATED && $object->paye == 0 && $user->societe_id == 0)
+				{
+					print '<a href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=deletepaiement&paiement_id='.$objp->rowid.'">';
+					print img_delete();
+					print '</a>';
+				}
+				print '</td>';
+				print '</tr>';
+				$i ++;
+			}
+		}
+		else {
+            print '<tr class="oddeven"><td colspan="' . $nbcols . '" class="opacitymedium">' . $langs->trans("None") . '</td><td></td><td></td></tr>';
+        }
+		// }
+		$db->free($result);
+	} else {
+		dol_print_error($db);
+	}*/
 		
+		#####################################################################################
 		// List of payments
-		$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, pp.libelle as type, il.total_amount ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
-		$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il ";
-		$sql .= ", " . MAIN_DB_PREFIX . "c_paiement as pp";
-		$sql .= " WHERE p.fk_receipt = " . $id;
-		$sql .= " AND p.fk_receipt = il.rowid";
-		$sql .= " AND p.fk_mode_reglement = pp.id";
-		$sql .= " AND p.amount <> '" .price(0, 0, $outputlangs)."'";
-		$sql .= " ORDER BY dp DESC";
+		$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, ";
+		$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
+		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
+		$sql .= ", " . MAIN_DB_PREFIX . "c_paiement as c ";
+		$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p" ;
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_bank = b.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
+		$sql .= " WHERE r.rowid = '".$id."'";
+		$sql .= " AND p.fk_receipt = r.rowid";
+		$sql .= " AND r.entity IN (" . getEntity($object->element).")";
+		$sql .= " AND p.fk_mode_reglement = c.id";
+		$sql .= ' ORDER BY dp';
 
 		$resql = $db->query($sql);
 		if ($resql)
@@ -1063,6 +1181,9 @@ if ($action == 'create')
 			print '<td>'.$langs->trans("RefPayment").'</td>';
 			print '<td>'.$langs->trans("Date").'</td>';
 			print '<td>'.$langs->trans("Type").'</td>';
+			if (! empty($conf->banque->enabled)) {
+			print '<td class="liste_titre right">' . $langs->trans('BankAccount') . '</td>';
+			}
 			print '<td class="right">'.$langs->trans("Amount").'</td>';
 			if ($user->admin) print '<td>&nbsp;</td>';
 			print '</tr>';
@@ -1070,16 +1191,22 @@ if ($action == 'create')
 			while ( $i < $num )
 			{
 				$objp = $db->fetch_object($resql);
-
+				
+				$paymentstatic->id = $objp->rowid;
+				$paymentstatic->datepaye = $db->jdate($objp->dp);
+				$paymentstatic->ref = $objp->ref;
+				$paymentstatic->num_paiement = $objp->num_paiement;
+				$paymentstatic->payment_code = $objp->payment_code;
+//var_dump($paymentstatic);exit;
 				print '<tr class="oddeven"><td>';
-				print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?action=update&amp;recid='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
+				print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?action=update&amp;id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
 				print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
-				print '<td>'.$objp->type.'</td>';
+				print '<td>'.$objp->mode_reglement_label.'</td>';
 				print '<td class="right">' . $cursymbolbefore.price($objp->amount, 0, $outputlangs).' '.$cursymbolafter."</td>\n";
 
 				print '<td class="right">';
 				if ($user->admin) {
-					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?recid='.$objp->rowid. "&amp;action=delete&amp;receipt=".$id.'">';
+					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?id='.$objp->rowid. "&amp;action=delete&amp;receipt=".$id.'">';
 					print img_delete();
 					print '</a>';
 				}
