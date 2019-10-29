@@ -193,7 +193,7 @@ if ($action == 'add_payment')
 			$payment->fk_bank  = $_POST["fk_bank"];
     		$payment->num_payment  = $_POST["num_payment"];
     		$payment->note_public  = $_POST["note_public"];
-//var_dump($payment);exit;
+
     		if (! $error)
     		{
     		    $paymentid = $payment->create($user);

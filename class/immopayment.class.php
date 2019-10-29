@@ -194,7 +194,7 @@ class ImmoPayment extends CommonObject
 	 * @param  Societe   	   $thirdparty           Thirdparty
 	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, Id of created object if OK
-	 */
+	 
 	public function createCommon(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
 	{
 		global $langs, $object, $form;
@@ -247,7 +247,7 @@ class ImmoPayment extends CommonObject
 			$sql = 'INSERT INTO '.MAIN_DB_PREFIX.$this->table_element;
 			$sql.= ' ('.implode( ", ", $keys ).')';
 			$sql.= ' VALUES ('.implode( ", ", $values ).')';
-
+//var_dump($sql);exit;
 			$res = $this->db->query($sql);
 			if ($res===false) {
 				$error++;
@@ -284,7 +284,7 @@ class ImmoPayment extends CommonObject
 			$this->db->commit();
 			return $this->id;
 		}
-	}
+	}*/
 
 	/**
 	 * Create object into database
@@ -292,10 +292,104 @@ class ImmoPayment extends CommonObject
 	 * @param  User $user      User that creates
 	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, Id of created object if OK
-	 */
+	 
 	public function create(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
 	{
 		return $this->createCommon($user, $closepaidreceipts, $thirdparty, $notrigger);
+	}*/
+	
+	/**
+	 *  Create payment of receipt into database.
+     *  Use this->amounts to have list of lines for the payment
+     *
+	 *  @param      User		$user			User making payment
+	 *  @param      bool 		$notrigger 		false=launch triggers after, true=disable triggers
+	 *  @return     int     					<0 if KO, id of payment if OK
+	 */
+	public function create($user, $notrigger = false)
+	{
+		global $conf, $langs;
+
+		$error=0;
+
+        $now=dol_now();
+
+        // Validate parameters
+		if (! $this->date_payment)
+		{
+			$this->error='ErrorBadValueForParameterCreatePaymentReceipt';
+			return -1;
+		}
+
+		// Clean parameters
+		if (isset($this->fk_receipt)) 		$this->fk_receipt=trim($this->fk_receipt);
+		if (isset($this->amount))			$this->amount=trim($this->amount);
+		if (isset($this->fk_mode_reglement)) $this->fk_mode_reglement=trim($this->fk_mode_reglement);
+		if (isset($this->num_payment))      $this->num_payment=trim($this->num_payment);
+		if (isset($this->note_public))		$this->note_public=trim($this->note_public);
+		if (isset($this->fk_bank))			$this->fk_bank=trim($this->fk_bank);
+		if (isset($this->fk_user_creat))	$this->fk_user_creat=trim($this->fk_user_creat);
+		if (isset($this->fk_user_modif))	$this->fk_user_modif=trim($this->fk_user_modif);
+
+        $totalamount = 0;
+        foreach ($this->amounts as $key => $value)  // How payment is dispatch
+        {
+            $newvalue = price2num($value, 'MT');
+            $this->amounts[$key] = $newvalue;
+            $totalamount += $newvalue;
+        }
+        $totalamount = price2num($totalamount);
+
+        // Check parameters
+        if ($totalamount == 0) return -1; // On accepte les montants negatifs pour les rejets de prelevement mais pas null
+
+
+		$this->db->begin();
+
+		if ($totalamount != 0)
+		{
+			$sql = "INSERT INTO ".MAIN_DB_PREFIX."ultimateimmo_immopayment (fk_receipt, date_creation, date_payment, amount,";
+			$sql.= " fk_mode_reglement, num_payment, note_public, fk_user_creat, fk_bank)";
+			$sql.= " VALUES ($this->rowid, '".$this->db->idate($now)."',";
+			$sql.= " '".$this->db->idate($this->date_payment)."',";
+			$sql.= " ".$totalamount.",";
+			$sql.= " ".$this->fk_mode_reglement.", '".$this->db->escape($this->num_payment)."', '".$this->db->escape($this->note_public)."', ".$user->id.",";
+			$sql.= " 0)";
+
+			dol_syslog(get_class($this)."::create", LOG_DEBUG);
+			$resql=$this->db->query($sql);
+			if ($resql)
+			{
+				$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."ultimateimmo_immopayment");
+				$this->ref = $this->id;
+			}
+			else
+			{
+				$error++;
+			}
+		}
+
+		if (! $error && ! $notrigger)
+		{
+			// Call triggers
+			$result=$this->call_trigger(strtoupper(get_class($this)).'_CREATE',$user);
+			if ($result < 0) { $error++; }
+			// End call triggers
+		}
+
+		if ($totalamount != 0 && ! $error)
+		{
+		    $this->amount=$totalamount;
+            $this->total=$totalamount;    // deprecated
+		    $this->db->commit();
+			return $this->id;
+		}
+		else
+		{
+			$this->error=$this->db->error();
+			$this->db->rollback();
+			return -1;
+		}
 	}
 
 	/**
