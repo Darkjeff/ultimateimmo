@@ -71,13 +71,17 @@ if ($id > 0)
 	if (! $result) dol_print_error($db, 'Failed to get payment id '.$id);
 }
 
+$usercanread = $user->rights->ultimateimmo->read;
+$usercancreate = $user->rights->ultimateimmo->write;
+$usercandelete = $user->rights->ultimateimmo->delete || ($usercancreate && $object->status == 0);
+
 
 /*
  * Actions
  */
 
 // Delete payment
-if ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->don->supprimer)
+if ($action == 'confirm_delete' && $confirm == 'yes' && $usercandelete)
 {
 	$db->begin();
 
@@ -96,7 +100,7 @@ if ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->don->supp
 }
 
 // Create payment
-if ($action == 'confirm_valide' && $confirm == 'yes' && $user->rights->don->creer)
+if ($action == 'confirm_valide' && $confirm == 'yes' && $usercancreate)
 {
 	$db->begin();
 
@@ -219,17 +223,17 @@ print '</table>';
 
 
 /*
- * List of donations paid
+ * List of receipt paid
  */
 
 $disable_delete = 0;
-$sql = 'SELECT d.rowid as did, d.paid, d.amount as d_amount, pd.amount';
-$sql.= ' FROM '.MAIN_DB_PREFIX.'payment_donation as pd,'.MAIN_DB_PREFIX.'don as d';
-$sql.= ' WHERE pd.fk_donation = d.rowid';
+$sql = 'SELECT d.rowid as recid, d.paye, d.total_amount as d_amount, pd.amount, d.ref';
+$sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as pd,'.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as d';
+$sql.= ' WHERE pd.fk_receipt = d.rowid';
 $sql.= ' AND d.entity = '.$conf->entity;
 $sql.= ' AND pd.rowid = '.$id;
 
-dol_syslog("don/payment/card.php", LOG_DEBUG);
+dol_syslog("dol_buildpath('/ultimateimmo/receipt/payment/card.php',1)", LOG_DEBUG);
 $resql=$db->query($sql);
 if ($resql)
 {
@@ -239,7 +243,7 @@ if ($resql)
 	$total = 0;
 	print '<br><table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	print '<td>'.$langs->trans('Donation').'</td>';
+	print '<td>'.$langs->trans('ImmoReceipt').'</td>';
     print '<td class="right">'.$langs->trans('ExpectedToPay').'</td>';
 	print '<td class="center">'.$langs->trans('Status').'</td>';
 	print '<td class="right">'.$langs->trans('PayedByThisPayment').'</td>';
@@ -254,17 +258,18 @@ if ($resql)
 			print '<tr class="oddeven">';
 			// Ref
 			print '<td>';
-			$don->fetch($objp->did);
-			print $don->getNomUrl(1);
+			$object->fetch($objp->recid);
+			//var_dump($objp);exit;
+			print $object->getNomUrl(1).$objp->ref;
 			print "</td>\n";
 			// Expected to pay
 			print '<td class="right">'.price($objp->d_amount).'</td>';
 			// Status
-			print '<td class="center">'.$don->getLibStatut(4, $objp->amount).'</td>';
+			print '<td class="center">'.$object->getLibStatut(4, $objp->amount).'</td>';
 			// Amount payed
 			print '<td class="right">'.price($objp->amount).'</td>';
 			print "</tr>\n";
-			if ($objp->paid == 1) {
+			if ($objp->paye == 1) {
                 // If at least one invoice is paid, disable delete
 				$disable_delete = 1;
 			}
@@ -307,7 +312,7 @@ if (! empty($conf->global->BILL_ADD_PAYMENT_VALIDATION))
 
 if ($_GET['action'] == '')
 {
-	if ($user->rights->don->supprimer)
+	if ($usercandelete)
 	{
 		if (! $disable_delete)
 		{
