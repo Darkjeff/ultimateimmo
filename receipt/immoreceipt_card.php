@@ -53,6 +53,7 @@ dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
+dol_include_once('/ultimateimmo/class/immopayment.class.php');
 
 // Load translation files required by the page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "compta", "bills", "contracts"));
@@ -550,7 +551,7 @@ llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
 
 $form=new Form($db);
 $formfile=new FormFile($db);
-$paymentstatic=new Paiement($db);
+$paymentstatic=new ImmoPayment($db);
 $bankaccountstatic = new Account($db);
 
 // Load object modReceipt
@@ -1159,7 +1160,7 @@ if ($action == 'create')
 		
 		#####################################################################################
 		// List of payments
-		$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, ";
+		$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, ";
 		$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
 		$sql .= ", " . MAIN_DB_PREFIX . "c_paiement as c ";
@@ -1196,15 +1197,16 @@ if ($action == 'create')
 				$objp = $db->fetch_object($resql);
 				
 				$paymentstatic->id = $objp->rowid;
+				$paymentstatic->fk_rent = $objp->fk_rent;
 				$paymentstatic->datepaye = $db->jdate($objp->dp);
 				$paymentstatic->ref = $objp->ref;
 				$paymentstatic->num_paiement = $objp->num_paiement;
-				$paymentstatic->payment_code = $objp->payment_code;
+				$paymentstatic->fk_mode_reglement = $objp->fk_mode_reglement;
 
 				print '<tr class="oddeven"><td>';
-				print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?action=update&amp;id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
+				print '<a href="'.dol_buildpath('/ultimateimmo/receipt/payment/card.php',1).'?id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
 				print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
-				print '<td>'.$objp->fk_mode_reglement.'</td>';
+				print '<td>'.$objp->mode_reglement_label.'</td>';
 				
 				if (! empty($conf->banque->enabled))
 				{
@@ -1243,12 +1245,12 @@ if ($action == 'create')
 
 			if ($object->paye == 0)
 			{
-				print '<tr><td colspan="3" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs).' '.$cursymbolafter . '</b>'."</td><td>&nbsp;</td></tr>\n";
-				print '<tr><td colspan="3" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs).' '.$cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
+				print '<tr><td colspan="4" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs).' '.$cursymbolafter . '</b>'."</td><td>&nbsp;</td></tr>\n";
+				print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs).' '.$cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
 
 				$remaintopay = $object->total_amount - $totalpaye;
 
-				print '<tr><td colspan="3" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
+				print '<tr><td colspan="4" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
 				print '<td class="right"'.($remaintopay?' class="amountremaintopay"':'').'>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs).' '.$cursymbolafter."</td><td>&nbsp;</td></tr>\n";
 			}
 			print '</table>';

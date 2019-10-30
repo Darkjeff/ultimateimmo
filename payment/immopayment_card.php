@@ -43,7 +43,11 @@ require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
+dol_include_once('/ultimateimmo/class/immorent.class.php');
 if (! empty($conf->banque->enabled)) require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
+if (! empty($conf->accounting->enabled)) {
+	require_once DOL_DOCUMENT_ROOT . '/accountancy/class/accountingjournal.class.php';
+}
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo","other", "contracts", "bills"));
@@ -56,6 +60,7 @@ $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 $socid 		= GETPOST('socid', 'int');
 $accountid	= GETPOST('accountid', 'int');
+$fk_mode_reglement	= GETPOST("fk_mode_reglement");
 
 // Initialize technical objects
 $object=new ImmoPayment($db);
@@ -208,6 +213,9 @@ if ($action == 'update')
 		$payment = new ImmoPayment($db);
 		$result = $payment->fetch($id);
 		
+		$rent=new ImmoRent($db);
+		$rent->fetch($payment->fk_rent);
+		
 		$payment->ref 		= GETPOST('ref');
 		
 		$payment->fk_rent 		= GETPOST("fk_rent");
@@ -239,6 +247,7 @@ if ($action == 'update')
 $form = new Form($db);
 $formfile = new FormFile($db);
 $thirdpartystatic = new Societe($db);
+$bankaccountstatic = new Account($db);
 
 $result=$object->fetch($id, $ref);
 if ($result < 0)
@@ -285,19 +294,14 @@ if ($action == 'create')
 		print '</td>';
 		
 		print '<td>';
-		/*if ($val['label'] == 'TypePayment')
+		if ($val['label'] == 'TypePayment')
 		{
 			// Payment mode
-			$object->fk_mode_reglement=GETPOST('fk_mode_reglement','int')?GETPOST('fk_mode_reglement','int'):$object->fk_mode_reglement;
-			if ($object->fk_mode_reglement)
-			{
-				$tmparray=$object->setPaymentMethods($object->fk_mode_reglement,'int');
-				$object->mode_code=$tmparray['code'];
-				$object->mode_payment=$tmparray['libelle'];
-			}
-			$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$object->fk_mode_reglement), 'fk_mode_reglement', '', 2);
+			if ($object->fk_mode_reglement) $selected = $object->fk_mode_reglement;
+			else $selected = '';
+			$form->select_types_paiements($selected, 'fk_mode_reglement', 'CRDT', 0, 1);
 		}
-		else*/if ($val['label'] == 'BankAccount')
+		elseif ($val['label'] == 'BankAccount')
 		{
 			//BankAccount
 			if (! empty($conf->banque->enabled))
@@ -371,19 +375,35 @@ if (($id || $ref) && $action == 'edit')
 		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
 		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key, 'none'):$object->$key;
 		else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
+		/*if ($val['label'] == 'BankAccount')
+		{
+			if (! empty($conf->banque->enabled))
+			{
+				$bankaccountstatic->id = $objp->baid;
+				$bankaccountstatic->ref = $objp->baref;
+				$bankaccountstatic->label = $objp->baref;
+				$bankaccountstatic->number = $objp->banumber;
+
+				if (! empty($conf->accounting->enabled)) {
+					$bankaccountstatic->account_number = $objp->account_number;
+
+					$accountingjournal = new AccountingJournal($db);
+					$accountingjournal->fetch($objp->fk_accountancy_journal);
+					$bankaccountstatic->accountancy_journal = $accountingjournal->getNomUrl(0, 1, 1, '', 1);
+				}
+
+				if ($bankaccountstatic->id)
+					print $bankaccountstatic->getNomUrl(1, 'transactions');
+			}
+		}*/
 		
-		/*if ($val['label'] == 'TypePayment')
+		if ($val['label'] == 'TypePayment')
 		{
 			// Payment mode
-			$object->fk_mode_reglement=GETPOST('fk_mode_reglement','int')?GETPOST('fk_mode_reglement','int'):$object->fk_mode_reglement;
-			if ($object->fk_mode_reglement)
-			{
-				$tmparray=$object->setPaymentMethods($object->fk_mode_reglement,'int');
-				$object->mode_code=$tmparray['code'];
-				$object->mode_payment=$tmparray['libelle'];
-			}
-			$form->select_types_paiements('', 'fk_mode_reglement', '', 2);
-		}*/
+			if ($object->fk_mode_reglement) $selected = $object->fk_mode_reglement;
+			else $selected = '';
+			$form->select_types_paiements($selected, 'fk_mode_reglement', 'CRDT', 0, 1);
+		}
 		//var_dump($val.' '.$key.' '.$value);
 		if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		else print $object->showInputField($val, $key, $value, '', '', '', 0);

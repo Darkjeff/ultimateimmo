@@ -1,14 +1,7 @@
 <?php
 /* Copyright (C) 2001-2006  Rodolphe Quiedeville    <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2017  Laurent Destailleur     <eldy@users.sourceforge.net>
- * Copyright (C) 2005       Marc Barilley / Ocebo   <marc@ocebo.com>
- * Copyright (C) 2005-2012  Regis Houssin           <regis.houssin@inodbox.com>
- * Copyright (C) 2007       Franky Van Liedekerke   <franky.van.liedekerke@telenet.be>
- * Copyright (C) 2012       Cédric Salvador         <csalvador@gpcsolutions.fr>
- * Copyright (C) 2014       Raphaël Doursenaud      <rdoursenaud@gpcsolutions.fr>
- * Copyright (C) 2014       Teddy Andreotti         <125155@supinfo.com>
- * Copyright (C) 2015       Juanjo Menent           <jmenent@2byte.es>
- * Copyright (C) 2018-2019  Frédéric France         <frederic.france@netlogic.fr>
+ * Copyright (C) 2018-2019  Philippe GRAND          <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -330,12 +323,11 @@ if (GETPOST('action', 'aZ09') == 'create')
 
         // Check transmitter
         print '<tr><td class="'.(GETPOST('fk_mode_reglement')=='CHQ'?'fieldrequired ':'').'fieldrequireddyn">'.$langs->trans('CheckTransmitter');
-        print ' <em>('.$langs->trans("ChequeMaker").')</em>';
         print '</td>';
         print '<td><input id="fieldchqemetteur" name="chqemetteur" size="30" type="text" value="'.GETPOST('chqemetteur', 'alphanohtml').'"></td></tr>';
 
         // Bank name
-        print '<tr><td>'.$langs->trans('Bank');
+        print '<tr><td>';
         print ' <em>('.$langs->trans("ChequeBank").')</em>';
         print '</td>';
         print '<td><input name="chqbank" size="30" type="text" value="'.GETPOST('chqbank', 'alphanohtml').'"></td></tr>';
@@ -396,22 +388,8 @@ if (GETPOST('action', 'aZ09') == 'create')
 		}
 		print "</td>";
 //var_dump($objp);exit;
-		print "</tr>\n";
-        $total+=$objp->total;
-		$total_amount+=$objp->total_amount;
-		$totalrecu+=$objp->am;                                                 
+		print "</tr>\n";                                                
 		$i++;
-	}
-	if ($i > 1)
-	{
-		// Print total
-		print '<tr class="oddeven">';
-		print '<td colspan="2" class="left">'.$langs->trans("Total").':</td>';
-		print "<td class=\"right\"><b>".price($total_amount)."</b></td>";
-		print "<td class=\"right\"><b>".price($totalrecu)."</b></td>";
-		print "<td class=\"right\"><b>".price($total_amount - $totalrecu)."</b></td>";
-		print '<td class="center">&nbsp;</td>';
-		print "</tr>\n";
 	}
 
 	print "</table>";
