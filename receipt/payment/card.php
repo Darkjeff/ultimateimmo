@@ -19,7 +19,7 @@
 /**
  *	    \file       htdocs/custom/ultimateimmo/receipt/payment/card.php
  *		\ingroup    ultimateimmo
- *		\brief      Tab payment of a rent
+ *		\brief      Tab payment of a receipt
  */
 
 // Load Dolibarr environment
@@ -110,11 +110,11 @@ if ($action == 'confirm_valide' && $confirm == 'yes' && $usercancreate)
 	{
 		$db->commit();
 
-		$factures=array();	// TODO Get all id of invoices linked to this payment
-		foreach($factures as $id)
+		$receipts=array();	// TODO Get all id of receipts linked to this payment
+		foreach($receipts as $id)
 		{
-			$fac = new Facture($db);
-			$fac->fetch($id);
+			$rec = new ImmoReceipt($db);
+			$rec->fetch($id);
 
 			$outputlangs = $langs;
 			if (! empty($_REQUEST['lang_id']))
@@ -123,7 +123,7 @@ if ($action == 'confirm_valide' && $confirm == 'yes' && $usercancreate)
 				$outputlangs->setDefaultLang($_REQUEST['lang_id']);
 			}
 			if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE)) {
-				$fac->generateDocument($fac->modelpdf, $outputlangs);
+				$rec->generateDocument($rec->modelpdf, $outputlangs);
 			}
 		}
 
@@ -153,7 +153,7 @@ $head[$h][1] = $langs->trans("Card");
 $hselected = $h;
 $h++;
 
-dol_fiche_head($head, $hselected, $langs->trans("ReceiptPayment"), -1, 'payment');
+dol_fiche_head($head, $hselected, $langs->trans("CustomerReceiptPayment"), -1, 'payment');
 
 /*
  * Confirm deleting of the payment
@@ -168,8 +168,8 @@ if ($action == 'delete')
  */
 if ($action == 'valide')
 {
-	$facid = GETPOST('facid', 'int');
-	print $form->formconfirm('card.php?id='.$object->id.'&amp;facid='.$facid, $langs->trans("ValidatePayment"), $langs->trans("ConfirmValidatePayment"), 'confirm_valide', '', 0, 2);
+	$recid = GETPOST('recid', 'int');
+	print $form->formconfirm('card.php?id='.$object->id.'&amp;receipt='.$recid, $langs->trans("ValidatePayment"), $langs->trans("ConfirmValidatePayment"), 'confirm_valide', '', 0, 2);
 }
 
 
@@ -180,18 +180,11 @@ print '<div class="underbanner clearboth"></div>';
 
 print '<table class="border" width="100%">';
 
-// Ref
-/*print '<tr><td class=">'.$langs->trans('Ref').'</td>';
-print '<td colspan="3">';
-print $form->showrefnav($object,'id','',1,'rowid','id');
-print '</td></tr>';
-*/
-
 // Date
 print '<tr><td class="titlefield">'.$langs->trans('Date').'</td><td>'.dol_print_date($object->date_payment, 'day').'</td></tr>';
 
 // Mode
-print '<tr><td>'.$langs->trans('Mode').'</td><td>'.$langs->trans("PaymentType".$object->fk_mode_reglement).'</td></tr>';
+print '<tr><td>'.$langs->trans('Mode').'</td><td>'.$object->mode_payment.'</td></tr>';
 
 // Number
 print '<tr><td>'.$langs->trans('Number').'</td><td>'.$object->num_payment.'</td></tr>';
@@ -200,8 +193,8 @@ print '<tr><td>'.$langs->trans('Number').'</td><td>'.$object->num_payment.'</td>
 print '<tr><td>'.$langs->trans('Amount').'</td><td>'.price($object->amount, 0, $outputlangs, 1, -1, -1, $conf->currency).'</td></tr>';
 
 // Note
-print '<tr><td>'.$langs->trans('Note').'</td><td>'.nl2br($object->note).'</td></tr>';
-
+print '<tr><td>'.$langs->trans('Note').'</td><td>'.nl2br($object->note_public).'</td></tr>';
+//var_dump($object);exit;
 // Bank account
 if (! empty($conf->banque->enabled))
 {
@@ -245,7 +238,7 @@ if ($resql)
 	print '<tr class="liste_titre">';
 	print '<td>'.$langs->trans('ImmoReceipt').'</td>';
     print '<td class="right">'.$langs->trans('ExpectedToPay').'</td>';
-	print '<td class="center">'.$langs->trans('Status').'</td>';
+	//print '<td class="center">'.$langs->trans('Status').'</td>';
 	print '<td class="right">'.$langs->trans('PayedByThisPayment').'</td>';
 	print "</tr>\n";
 
@@ -258,14 +251,14 @@ if ($resql)
 			print '<tr class="oddeven">';
 			// Ref
 			print '<td>';
-			$object->fetch($objp->recid);
+			$receipt->fetch($objp->recid);
 			//var_dump($objp);exit;
-			print $object->getNomUrl(1).$objp->ref;
+			print $receipt->getNomUrl(1);
 			print "</td>\n";
 			// Expected to pay
 			print '<td class="right">'.price($objp->d_amount).'</td>';
 			// Status
-			print '<td class="center">'.$object->getLibStatut(4, $objp->amount).'</td>';
+			//print '<td class="center">'.$receipt->getLibStatut(4, $objp->amount).'</td>';
 			// Amount payed
 			print '<td class="right">'.price($objp->amount).'</td>';
 			print "</tr>\n";

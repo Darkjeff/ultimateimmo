@@ -176,16 +176,16 @@ if ($action == 'add_payment')
 
 			$payment->ref          = $receipt->ref;
 			$payment->rowid        = $id;
-			$payment->fk_rent	   = $receipt->fk_rent;
+			$payment->fk_rent	   = GETPOST('fk_rent','int');
 			$payment->fk_property  = $receipt->fk_property;
 			$payment->fk_renter	   = $receipt->fk_renter;
 			$payment->fk_payment   = $receipt->fk_payment;
     		$payment->date_payment = $date_payment;
     		$payment->amounts      = $amounts;   // Tableau de montant			
-    		$payment->fk_mode_reglement  = $receipt->fk_mode_reglement;
-			$payment->fk_bank  = $_POST["fk_bank"];
-    		$payment->num_payment  = $_POST["num_payment"];
-    		$payment->note_public  = $_POST["note_public"];
+    		$payment->fk_mode_reglement  = GETPOST('fk_mode_reglement','int');
+			$payment->fk_bank  = GETPOST('fk_bank','int');
+    		$payment->num_payment  = GETPOST('num_payment','int');
+    		$payment->note_public  = GETPOST('note_public','string');
 
     		if (! $error)
     		{
@@ -304,7 +304,7 @@ if (GETPOST('action', 'aZ09') == 'create')
         print '</td></tr>';
 
 		print '<tr><td class="fieldrequired">'.$langs->trans("PaymentMode").'</td><td colspan="2">';
-		$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$object->fk_mode_reglement), 'fk_mode_reglement', '', 2);
+		$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$object->fk_mode_reglement), 'fk_mode_reglement');
 		print "</td>\n";
 		print '</tr>';
 		

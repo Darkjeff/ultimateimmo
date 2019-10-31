@@ -214,6 +214,7 @@ Quittances&Baux = Quittances et Baux
 OtherReceipts = Other Receipts
 OtherRents = Other Rents
 NumberReceiptByMonth  = Number receipts by month
+CustomerReceiptPayment = Customer receipt payment
 
 #
 # Sample page

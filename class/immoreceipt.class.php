@@ -126,7 +126,7 @@ class ImmoReceipt extends CommonObject
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>59, 'notnull'=>-1,),
 		'date_valid' => array('type'=>'datetime', 'label'=>'DateValidation', 'enabled'=>1, 'visible'=>-2, 'position'=>60, 'notnull'=>-1,),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>62, 'notnull'=>-1, 'searchall'=>1, 'help'=>"Help text",),
-		'fk_mode_reglement' => array('type'=>'integer', 'label'=>'TypePayment', 'enabled'=>1, 'visible'=>1, 'position'=>64, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Carte bancaire', '1'=>'Chèque', '2'=>'Espèces', '3'=>'CAF'), 'help'=>"LinkToTypePayment",),
+		'fk_mode_reglement' => array('type'=>'integer', 'label'=>'TypePayment', 'enabled'=>1, 'visible'=>1, 'position'=>64, 'notnull'=>-1, 'index'=>1,/* 'arrayofkeyval'=>array('0'=>'Carte bancaire', '1'=>'Chèque', '2'=>'Espèces', '3'=>'CAF'), */'help'=>"LinkToTypePayment",),
 		'rentamount' => array('type'=>'price', 'label'=>'RentAmount', 'enabled'=>1, 'visible'=>1, 'position'=>65, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'chargesamount' => array('type'=>'price', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'total_amount' => array('type'=>'price', 'label'=>'TotalAmount', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
