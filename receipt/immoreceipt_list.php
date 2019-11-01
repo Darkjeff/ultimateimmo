@@ -144,8 +144,8 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 	$db->begin();
 	
 	$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo ";
-	//$sql1 .= " SET lo.partial_payment=";
-	$sql1 .= " SET lo.fk_payment=";
+	$sql1 .= " SET lo.partial_payment=";
+	//$sql1 .= " SET lo.fk_payment=";
 	$sql1 .= "(SELECT SUM(p.amount)";
 	$sql1 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 	$sql1 .= " WHERE lo.rowid = p.fk_receipt";
@@ -160,8 +160,8 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 		
 		$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
 		$sql1 .= " SET paye=1";
-		//$sql1 .= " WHERE total_amount=partial_payment";
-		$sql1 .= " WHERE total_amount=fk_payment";
+		$sql1 .= " WHERE total_amount=partial_payment";
+		//$sql1 .= " WHERE total_amount=fk_payment";
 		
 		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 		$resql1 = $db->query($sql1);
@@ -172,8 +172,8 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 		
 		if (! $error) {
 			$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
-			//$sql1 .= " SET balance=total_amount-partial_payment";
-			$sql1 .= " SET balance=total_amount-fk_payment";
+			$sql1 .= " SET balance=total_amount-partial_payment";
+			//$sql1 .= " SET balance=total_amount-fk_payment";
 			
 			// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 			$resql1 = $db->query($sql1);
@@ -319,7 +319,7 @@ $reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object
 $sql.=$hookmanager->resPrint;
 $sql=preg_replace('/, $/','', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";
+$sql.= " INNER JOIN ".MAIN_DB_PREFIX."ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";
 $sql.= " INNER JOIN ".MAIN_DB_PREFIX."ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid";
 $sql.= " INNER JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_soc";
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";

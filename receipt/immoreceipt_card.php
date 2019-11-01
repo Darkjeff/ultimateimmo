@@ -636,18 +636,6 @@ if ($action == 'create')
 			}
 			print $tmpcode;
 		}
-		elseif ($val['label'] == 'TypePayment')
-		{
-			// Payment mode
-			$object->fk_mode_reglement=GETPOST('fk_mode_reglement','int')?GETPOST('fk_mode_reglement','int'):$object->fk_mode_reglement;
-			if ($object->fk_mode_reglement)
-			{
-				$tmparray=$object->setPaymentMethods($object->fk_mode_reglement,'int');
-				$object->mode_code=$tmparray['code'];
-				$object->mode_payment=$tmparray['libelle'];
-			}
-			$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$object->fk_mode_reglement), 'fk_mode_reglement', '', 2);
-		}
 		elseif ($val['label'] == 'DateCreation')
 		{
 			// DateCreation
@@ -854,47 +842,7 @@ if ($action == 'create')
 		print '<table class="border centpercent">'."\n";
 
 		// Common attributes
-		$object->fields = dol_sort_array($object->fields, 'position');
-
-	foreach($object->fields as $key => $val)
-	{
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 4) continue;
-
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
-
-		print '<tr><td';
-		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '">';
-		if (! empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
-		print '</td>';
-		print '<td>';
-		
-		if ($val['label'] == 'TypePayment')
-		{
-			// Payment mode
-			$object->fk_mode_reglement=GETPOST('fk_mode_reglement','int')?GETPOST('fk_mode_reglement','int'):$object->fk_mode_reglement;
-			if ($object->fk_mode_reglement)
-			{
-				$tmparray=$object->setPaymentMethods($object->fk_mode_reglement,'int');
-				$object->mode_code=$tmparray['code'];
-				$object->mode_payment=$tmparray['libelle'];
-			}
-			$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$object->fk_mode_reglement), 'fk_mode_reglement', '', 2);
-		}
-		
-		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
-		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key, 'none'):$object->$key;
-		else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
-		//var_dump($val.' '.$key.' '.$value);
-		if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-		else print $object->showInputField($val, $key, $value, '', '', '', 0);
-		print '</td>';
-		print '</tr>';
-	}
+		include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_edit.tpl.php';
 
 		// Other attributes
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
@@ -1089,6 +1037,7 @@ if ($action == 'create')
 			print '"';
 			print '>'.$langs->trans($val['label']).'</td>';
 			print '<td>';
+			
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 
 			//print dol_escape_htmltag($object->$key, 1, 1);
@@ -1116,101 +1065,7 @@ if ($action == 'create')
 		{
 			$cursymbolafter = $langs->getCurrencySymbol($conf->currency);
 		}
-	#############################################################################
-	// List of payments already done
-
-	/*print '<div class="div-table-responsive-no-min">';
-	print '<table class="noborder paymenttable" width="100%">';
-
-	print '<tr class="liste_titre">';
-	print '<td class="liste_titre">' . ($object->type == ImmoReceipt::TYPE_CREDIT_NOTE ? $langs->trans("PaymentsBack") : $langs->trans('Payments')) . '</td>';
-	print '<td class="liste_titre">' . $langs->trans('Date') . '</td>';
-	print '<td class="liste_titre">' . $langs->trans('Type') . '</td>';
-	if (! empty($conf->banque->enabled)) {
-		print '<td class="liste_titre right">' . $langs->trans('BankAccount') . '</td>';
-	}
-	print '<td class="liste_titre right">' . $langs->trans('Amount') . '</td>';
-	print '<td class="liste_titre" width="18">&nbsp;</td>';
-	print '</tr>';
-		// Payments already done (from payment on this invoice)
-	$sql = 'SELECT p.datep as dp, p.ref, p.num_paiement, p.rowid, p.fk_bank,';
-	$sql .= ' c.code as payment_code, c.libelle as payment_label,';
-	$sql .= ' pf.amount,';
-	$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
-	$sql .= ' FROM ' . MAIN_DB_PREFIX . 'paiement_receipt as pf, ' . MAIN_DB_PREFIX . 'paiement as p';
-	$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_paiement as c ON p.fk_payment = c.id' ;
-	$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'bank as b ON p.fk_bank = b.rowid';
-	$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'bank_account as ba ON b.fk_account = ba.rowid';
-	$sql .= ' WHERE pf.fk_receipt = ' . $object->id . ' AND pf.fk_payment = p.rowid';
-	$sql .= ' AND p.entity IN (' . getEntity($object->element).')';
-	$sql .= ' ORDER BY p.datep, p.tms';
-
-	$result = $db->query($sql);
-	if ($result) {
-		$num = $db->num_rows($result);
-		$i = 0;
-
-		// if ($object->type != 2)
-		// {
-		if ($num > 0) {
-			while ($i < $num) {
-				$objp = $db->fetch_object($result);
-
-				$paymentstatic->id = $objp->rowid;
-				$paymentstatic->datepaye = $db->jdate($objp->dp);
-				$paymentstatic->ref = $objp->ref;
-				$paymentstatic->num_paiement = $objp->num_paiement;
-				$paymentstatic->payment_code = $objp->payment_code;
-
-				print '<tr class="oddeven"><td>';
-				print $paymentstatic->getNomUrl(1);
-				print '</td>';
-				print '<td>' . dol_print_date($db->jdate($objp->dp), 'dayhour') . '</td>';
-				$label = ($langs->trans("PaymentType" . $objp->payment_code) != ("PaymentType" . $objp->payment_code)) ? $langs->trans("PaymentType" . $objp->payment_code) : $objp->payment_label;
-				print '<td>' . $label . ' ' . $objp->num_paiement . '</td>';
-				if (! empty($conf->banque->enabled))
-				{
-					$bankaccountstatic->id = $objp->baid;
-					$bankaccountstatic->ref = $objp->baref;
-					$bankaccountstatic->label = $objp->baref;
-					$bankaccountstatic->number = $objp->banumber;
-
-					if (! empty($conf->accounting->enabled)) {
-						$bankaccountstatic->account_number = $objp->account_number;
-
-						$accountingjournal = new AccountingJournal($db);
-						$accountingjournal->fetch($objp->fk_accountancy_journal);
-						$bankaccountstatic->accountancy_journal = $accountingjournal->getNomUrl(0, 1, 1, '', 1);
-					}
-
-					print '<td class="right">';
-					if ($bankaccountstatic->id)
-						print $bankaccountstatic->getNomUrl(1, 'transactions');
-					print '</td>';
-				}
-				print '<td class="right">' . price($sign * $objp->amount) . '</td>';
-				print '<td align="center">';
-				if ($object->status == Receipt::STATUS_VALIDATED && $object->paye == 0 && $user->societe_id == 0)
-				{
-					print '<a href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=deletepaiement&paiement_id='.$objp->rowid.'">';
-					print img_delete();
-					print '</a>';
-				}
-				print '</td>';
-				print '</tr>';
-				$i ++;
-			}
-		}
-		else {
-            print '<tr class="oddeven"><td colspan="' . $nbcols . '" class="opacitymedium">' . $langs->trans("None") . '</td><td></td><td></td></tr>';
-        }
-		// }
-		$db->free($result);
-	} else {
-		dol_print_error($db);
-	}*/
-		
-		#####################################################################################
+	
 		// List of payments
 		$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, ";
 		$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';

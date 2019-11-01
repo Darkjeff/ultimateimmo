@@ -135,8 +135,8 @@ if ($action == 'add')
 		exit;
 	}
 
-	$datepaie = @dol_mktime(0,0,0, GETPOST("paiemonth"), GETPOST("paieday"), GETPOST("paieyear"));
-	if (! $datepaie) {
+	$date_payment = @dol_mktime(0, 0, 0, GETPOST("remonth"), GETPOST("reday"), GETPOST("reyear"));
+	if (! $date_payment) {
 		$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Datepaie")) . '</div>';
 		$action = 'create';
 	} else {
@@ -147,7 +147,7 @@ if ($action == 'add')
 		$paie->fk_renter		= GETPOST("fk_renter");
 		$paie->amount			= GETPOST("amount");
 		$paie->note_public		= GETPOST("note_public");
-		$paie->date_payment		= $datepaie;
+		$paie->date_payment		= $date_payment;
 		$paie->fk_receipt		= GETPOST("fk_receipt");
     	$paie->fk_bank			= GETPOST("accountid");
 		$paie->fk_mode_reglement= GETPOST("fk_mode_reglement");
@@ -163,46 +163,55 @@ if ($action == 'add')
 	}
 }
 
-if ($action == 'addall') {
-	$datepaie = @dol_mktime(0, 0, 0, GETPOST("paiemonth"), GETPOST("paieday"), GETPOST("paieyear"));
-	if (! $datepaie) {
-		$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Datepaie")) . '</div>';
+if ($action == 'addall') 
+{
+	$date_payment = dol_mktime(12, 0, 0, GETPOST("date_paymentmonth"), GETPOST("date_paymentday"), GETPOST("date_paymentyear"));
+	
+	if (! $date_payment) 
+	{
+		$mesg = $langs->trans("ErrorFieldRequired", $langs->transnoentities("toto"));
+		setEventMessages($mesg, null, 'errors');
 		$action = 'createall';
-	} else {
-	$datapost = $_POST;
-		foreach ( $datapost as $key => $value ) {
-			if (strpos($key, 'receipt_') !== false) {
-			
+	} 
+	else 
+	{
+		$datapost = $_POST;
+		foreach ( $datapost as $key => $value ) 
+		{
+			if (strpos($key, 'receipt_') !== false) 
+			{			
 				$tmp_array = explode('_', $key);
 				
 				if (count($tmp_array) > 0) {
 					$reference = $tmp_array[1];
 					$amount= GETPOST('incomeprice_'.$reference);
 				
-					if (! empty($reference) && !empty($amount)) {
-						$paie = new Immopayment($db);
+					if (! empty($reference) && !empty($amount)) 
+					{
+						$payment = new Immopayment($db);
 
-						$paie->fk_rent			= GETPOST('fk_rent_'.$reference);
-						$paie->fk_property		= GETPOST('fk_property_'.$reference);
-						$paie->fk_renter		= GETPOST('fk_renter_'.$reference);
-						$paie->amount			= price2num($amount);
-						$paie->note_public		= GETPOST('note_public');
-						$paie->date_payment		= $datepaie;
-						$paie->fk_receipt		= GETPOST('receipt_'.$reference);
-						$paie->fk_bank			= GETPOST("accountid");
-						$paie->fk_mode_reglement	= GETPOST("fk_mode_reglement");
-						$paie->num_payment		= GETPOST("num_payment");
-						$paie->fk_owner			= $user->id;
+						$payment->fk_rent			= GETPOST('fk_rent'.$reference);
+						$payment->fk_property		= GETPOST('fk_property_'.$reference);
+						$payment->fk_renter			= GETPOST('fk_renter_'.$reference);
+						$payment->amount			= price2num($amount);
+						$payment->note_public		= GETPOST('note_public');
+						$payment->date_payment		= $date_payment;
+						$payment->fk_receipt		= GETPOST('receipt_'.$reference);
+						$payment->fk_bank			= GETPOST("accountid");
+						$payment->fk_mode_reglement	= GETPOST("fk_mode_reglement");
+						$payment->num_payment		= GETPOST("num_payment");
+						$payment->fk_owner			= $user->id;
 						
-						$result = $paie->create ($user);
+						$result = $payment->create ($user);
 
-						if ($result<0) {
-							setEventMessages($paie->error, null, 'errors');
+						if ($result<0) 
+						{
+							setEventMessages($payment->error, null, 'errors');
 						}
 					}
 				}
 			}
-		}		
+		}				
 	}
 }
 
@@ -685,7 +694,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 /*                                                                             */
 /* *************************************************************************** */
 
-if ($action == 'createall') {
+if ($action == 'createall') 
+{
 
 	print '<form name="fiche_payment" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
@@ -710,10 +720,9 @@ if ($action == 'createall') {
 	
 	print '<tr class="oddeven" valign="top">';
 	
-	// Due date
-	
+	// Due date	
 	print '<td class="center">';
-	print $form->select_date(! empty($datepaie) ? $datepaie : '-1', 'paie', 0, 0, 0, 'card', 1);
+	print $form->selectDate(! empty($date_payment) ? $date_payment : '-1', 'payment', 0, 0, 0, 'fiche_payment', 1);
 	print '</td>';
 	
 	// note_public
@@ -721,137 +730,31 @@ if ($action == 'createall') {
 	
 	// Payment mode
 	print '<td class="center">';
-	print $form->select_types_paiements(isset($_POST["fk_mode_reglement"])?$_POST["fk_mode_reglement"]:$paie->fk_mode_reglement, "fk_mode_reglement");
+	print $form->select_types_paiements(GETPOST('fk_mode_reglement','int')?GETPOST('fk_mode_reglement','int'):$payment->fk_mode_reglement, "fk_mode_reglement");
 	print '</td>';
 	
 	// AccountToCredit
 	print '<td class="center">';
-	print $form->select_comptes(isset($_POST["accountid"])?$_POST["accountid"]:$paie->accountid, "accountid", 0, '',1);  // Show open bank account list
+	print $form->select_comptes(isset($_POST["accountid"])?$_POST["accountid"]:$payment->accountid, "accountid", 0, '',1);  // Show open bank account list
 	print '</td>';
 
 	// num_payment
-	print '<td><input name="num_payment" size="30" value="' . GETPOST('num_payment') . '"</td>';
-	
+	print '<td><input name="num_payment" size="30" value="' . GETPOST('num_payment') . '"</td>';	
 	
 	print "</tr>\n";
-}
 	
 	/*
 	 * List receipt
 	 */
-	/*$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.ref as nom, l.address  , l.label as local, loc.status as statut, rec.total_amount as total, rec.paiepartiel, rec.balance ,  rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract , c.status";
+	$sql = "SELECT rec.rowid as reference, rec.ref as receiptname, loc.lastname as nom, l.address  , l.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance ,  rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract , c.preavis";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt rec";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
-	$sql .= " WHERE rec.paye = 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND  c.rowid = rec.fk_rent and c.status =1 ";
-	if ($user->id != 1) {
-		$sql .= " AND rec.owner_id=" . $user->id;
-	}*/
-	
-	$sql = 'SELECT f.rowid as facid, f.ref, f.label, f.total_amount, f.paye, f.fk_statut, pf.amount, s.nom as name, s.rowid as socid';
-	$sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as pf,'.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f,'.MAIN_DB_PREFIX.'societe as s';
-	$sql.= ' WHERE pf.fk_receipt = f.rowid';
-	$sql.= ' AND f.fk_soc = s.rowid';
-	$sql.= ' AND f.entity IN ('.getEntity($object->element).')';
-	//$sql.= ' AND pf.fk_paiement = '.$object->rowid;
-	/*
-	$sql = 'SELECT SUM(pf.amount) as total_paiements';
-	$sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as pf, '.MAIN_DB_PREFIX.'paiement as p';
-	$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as c ON p.fk_paiement = c.id';
-	$sql.= ' WHERE pf.fk_receipt = '.$object->id;
-	$sql.= ' AND pf.fk_paiement = p.rowid';
-	$sql.= ' AND p.entity IN ('.getEntity('invoice').')';*/
-	//var_dump($sql);exit;
-	$resql=$db->query($sql);
-	
-	if ($resql)
+	$sql .= " WHERE rec.paye = 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND  c.rowid = rec.fk_rent AND c.preavis =0 ";
+	$resql = $db->query($sql);
+	if ($resql) 
 	{
-		$num = $db->num_rows($resql);
-
-		$i = 0;
-		$total = 0;
-
-		$moreforfilter='';
-
-		print '<br>';
-
-		print '<div class="div-table-responsive">';
-		print '<table class="noborder" width="100%">';
-
-		print '<tr class="liste_titre">';
-		print '<td>'.$langs->trans('ImmoReceipt').'</td>';
-		print '<td>'.$langs->trans('Company').'</td>';
-		if($conf->global->MULTICOMPANY_INVOICE_SHARING_ENABLED )print '<td>'.$langs->trans('Entity').'</td>';
-		print '<td class="right">'.$langs->trans('ExpectedToPay').'</td>';
-		print '<td class="right">'.$langs->trans('PayedByThisPayment').'</td>';
-		print '<td class="right">'.$langs->trans('RemainderToPay').'</td>';
-		print '<td class="right">'.$langs->trans('Status').'</td>';
-		print "</tr>\n";
-
-		if ($num > 0)
-		{
-			while ($i < $num)
-			{
-				$objp = $db->fetch_object($resql);
-
-				$thirdpartystatic->fetch($objp->socid);
-
-				$receipt=new ImmoReceipt($db);
-				$receipt->fetch($objp->facid);
-				
-				$paiement = $receipt->getSommePaiement();
-				//$creditnotes=$receipt->getSumCreditNotesUsed();
-				//$deposits=$receipt->getSumDepositsUsed();
-				$alreadypayed=price2num($paiement /*+ $creditnotes + $deposits*/, 'MT');
-				$remaintopay=price2num($receipt->total_amount - $paiement /*- $creditnotes - $deposits*/, 'MT');
-
-				print '<tr class="oddeven">';
-
-				// receipt
-				print '<td>';
-				print $receipt->getNomUrl(1);
-				print "</td>\n";
-
-				// Third party
-				print '<td>';
-				print $thirdpartystatic->getNomUrl(1);
-				print '</td>';
-
-				// Expected to pay
-				print '<td class="right">'.price($objp->total_amount).'</td>';
-
-				// Amount payed
-				print '<td class="right">'.price($objp->amount).'</td>';
-
-				// Remain to pay
-				print '<td class="right">'.price($remaintopay).'</td>';
-
-				// Status
-				print '<td class="right">'.$receipt->getLibStatut(5, $alreadypayed).'</td>';
-
-				print "</tr>\n";
-				if ($objp->paye == 1)	// If at least one invoice is paid, disable delete
-				{
-					$disable_delete = 1;
-					$title_button = dol_escape_htmltag($langs->transnoentitiesnoconv("CantRemovePaymentWithOneInvoicePaid"));
-				}
-				$total = $total + $objp->amount;
-				$i++;
-			}
-		}
-		print "</table>\n";
-		print '</div>';
-
-		$db->free($resql);
-	}
-	else
-	{
-		dol_print_error($db);
-	}
-	
-	/*$resql = $db->query($sql);
-	if ($resql) {
 		$num = $db->num_rows($resql);
 		
 		$i = 0;
@@ -859,38 +762,40 @@ if ($action == 'createall') {
 		
 		print '<br><table class="noborder" width="100%">';
 		print '<tr class="liste_titre">';
-		print '<td>' . $langs->trans('NameReceipt') . '</td>';
-		print '<td>' . $langs->trans('nomlocal') . '</td>';
+		print '<td>' . $langs->trans('ReceiptName') . '</td>';
+		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
-		print '<td class="right">' . $langs->trans('montant_tot') . '</td>';
-		print '<td class="right">' . $langs->trans('payed') . '</td>';
-		print '<td class="right">' . $langs->trans('due') . '</td>';
-		print '<td class="right">' . $langs->trans('income') . '</td>';
+		print '<td align="right">' . $langs->trans('montant_tot') . '</td>';
+		print '<td align="right">' . $langs->trans('payed') . '</td>';
+		print '<td align="right">' . $langs->trans('due') . '</td>';
+		print '<td align="right">' . $langs->trans('income') . '</td>';
 		print "</tr>\n";
 		
 		if ($num > 0) {
 			
-			while ( $i < $num ) {
+			while ( $i < $num ) 
+			{
 				$objp = $db->fetch_object($resql);
+				print '<tr class="oddeven">';
 				
-				print '<tr class="oddeven">';			
 				print '<td>' . $objp->receiptname . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->nom . '</td>';
 				
-				print '<td class="right">' . price($objp->total) . '</td>';
-				print '<td class="right">' . price($objp->paiepartiel) . '</td>';
-				print '<td class="right">' . price($objp->balance) . '</td>';
+				print '<td align="right">' . price($objp->total) . '</td>';
+				print '<td align="right">' . price($objp->paiepartiel) . '</td>';
+				print '<td align="right">' . price($objp->balance) . '</td>';
 				
-					print '<input type="hidden" name="fk_contract_' . $objp->reference . '" size="10" value="' . $objp->refcontract . '">';
+					print '<input type="hidden" name="fk_rent' . $objp->reference . '" size="10" value="' . $objp->refcontract . '">';
 					print '<input type="hidden" name="fk_property_' . $objp->reference . '" size="10" value="' . $objp->reflocal . '">';
 					print '<input type="hidden" name="fk_renter_' . $objp->reference . '" size="10" value="' . $objp->reflocataire . '">';
 					print '<input type="hidden" name="receipt_' . $objp->reference . '" size="10" value="' . $objp->reference . '">';
 				
 				// Colonne imput income
-				print '<td class="right">';
-				print '<input type="text" name="incomeprice_' . $objp->reference . '" id="incomeprice_' . $objp->reference . '" size="6" value="" class="flat">';
-				print '</td>';				
+				print '<td align="right">';
+			print '<input type="text" name="incomeprice_' . $objp->reference . '" id="incomeprice_' . $objp->reference . '" size="6" value="" class="flat">';
+			print '</td>';				
+	
 				print '</tr>';
 				
 				$i ++;
@@ -903,13 +808,13 @@ if ($action == 'createall') {
 
 	else {
 		dol_print_error($db);
-	}*/
+	}
 	print '<div class="tabsAction">' . "\n";
 	print '<div class="inline-block divButAction"><input type="submit"  name="button_addallpaiement" id="button_addallpaiement" class="butAction" value="' . $langs->trans("Payed") . '" /></div>';
 	print '</div>';
 	print '</form>';
 	
-//}
+}
 
 
 // End of page

@@ -859,7 +859,7 @@ class modUltimateimmo extends DolibarrModules
 								'titre'=>'MenuNewImmoPayment',
 								'mainmenu'=>'immoreceipts',
 								'leftmenu'=>'ultimateimmo_immopayment_new',
-								'url'=>'/ultimateimmo/payment/immopayment_card.php?action=create',
+								'url'=>'/ultimateimmo/payment/immopayment_card.php?action=createall',
 								'langs'=>'ultimateimmo@ultimateimmo',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1500+$r,
 								'enabled'=>'$conf->ultimateimmo->enabled',  // Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
