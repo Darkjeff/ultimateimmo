@@ -1037,7 +1037,32 @@ if ($action == 'create')
 			print '"';
 			print '>'.$langs->trans($val['label']).'</td>';
 			print '<td>';
-			
+			if ($val['label'] == 'PartialPayment') 
+			{
+				$sql = "SELECT sum(p.amount) as total";
+				$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
+				$sql.= " WHERE p.fk_receipt = ".$object->id;
+				$resql = $db->query($sql);
+				
+				if ($resql)
+				{
+					$obj=$db->fetch_object($resql);
+					$object->partial_payment = price($obj->total, 0, $outputlangs, 1, -1, -1, $conf->currency);
+					$db->free();					
+				}					
+				if ($object->partial_payment)
+				{
+					print $object->partial_payment;
+				}			
+			}
+			elseif ($val['label'] == 'Balance') 
+			{
+				$balance = price($object->total_amount) - price($object->partial_payment);
+				if ($object->balance)
+				{
+					print $balance;
+				}			
+			}
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 
 			//print dol_escape_htmltag($object->$key, 1, 1);
@@ -1067,7 +1092,7 @@ if ($action == 'create')
 		}
 	
 		// List of payments
-		$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, ";
+		$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, r.partial_payment, ";
 		$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
 		$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p" ;
@@ -1147,6 +1172,7 @@ if ($action == 'create')
 				print '</td>';
 				print '</tr>';
 				$totalpaye += $objp->amount;
+				$object->partial_payment = $totalpaye;
 
 				$i ++;
 			}

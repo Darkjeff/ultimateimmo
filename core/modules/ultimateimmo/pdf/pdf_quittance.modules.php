@@ -325,6 +325,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				
 				if (! empty($object->partial_payment)) {
 					$montantpay = $object->partial_payment;
+					var_dump($montantpay);exit;
 				}
 				$text = 'Reçu de ' . $renter->civilite . '' .$renter->firstname. ' '.$renter->lastname. ' la somme de ' . price($montantpay) . '€' . "\n";
 				;
