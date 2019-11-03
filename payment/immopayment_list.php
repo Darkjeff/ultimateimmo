@@ -42,6 +42,10 @@ require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
+dol_include_once('/ultimateimmo/class/immorenter.class.php');
+dol_include_once('/ultimateimmo/class/immorent.class.php');
+if (! empty($conf->banque->enabled)) require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo","other", "Contracts"));
@@ -192,6 +196,7 @@ foreach($object->fields as $key => $val)
 {
 	$sql.='t.'.$key.', ';
 }
+
 // Add fields from extrafields
 foreach ($extrafields->attribute_label as $key => $val) $sql.=($extrafields->attribute_type[$key] != 'separate' ? ", ef.".$key.' as options_'.$key : '');
 // Add fields from hooks
@@ -442,7 +447,62 @@ while ($i < min($num, $limit))
 			print '<td';
 			if ($align) print ' class="'.$align.'"';
 			print '>';
-			print $object->showOutputField($val, $key, $obj->$key, '');
+			
+			if ($val['label'] == 'Ref') 
+			{				
+				print $object->rowid;
+			}
+			elseif ($val['label'] == 'Owner') 
+			{
+				$staticowner=new ImmoOwner($db);
+				$staticowner->fetch($object->fk_owner);			
+				if ($staticowner->ref)
+				{
+					$staticowner->ref=$staticowner->getFullName($langs);
+				}
+				print $staticowner->ref;
+			}
+			elseif ($val['label'] == 'Contract') 
+			{
+				$staticrent=new ImmoRent($db);
+				$staticrent->fetch($object->fk_rent);				
+				print $staticrent->getNomUrl(1, 0, 'showall');
+			}
+			elseif ($val['label'] == 'Renter') 
+			{
+				$staticrenter=new ImmoRenter($db);
+				$staticrenter->fetch($object->fk_renter);			
+				if ($staticrenter->ref)
+				{
+					$staticrenter->ref=$staticrenter->getFullName($langs);
+				}
+				print $staticrenter->ref;
+			}
+			elseif ($val['label'] == 'TypePayment')
+			{
+				if ($object->fk_mode_reglement)
+				{
+					$tmparray=$object->setPaymentMethods($object->fk_mode_reglement,'int');
+					$object->mode_code=$tmparray['code'];
+					$object->mode_payment=$tmparray['libelle'];
+				}
+				// Payment mode
+				$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none');
+			}
+			elseif ($val['label'] == 'BankAccount')
+			{
+				if ($object->fk_bank)
+				{
+					$bankline=new AccountLine($db);
+					$result=$bankline->fetch($object->fk_bank);					
+				}
+				// Payment bank
+				print $bankline->getNomUrl(1, 0, 'showall');
+			}
+			else
+			{
+				print $object->showOutputField($val, $key, $obj->$key, '');
+			}
 			print '</td>';
 			if (! $i) $totalarray['nbfield']++;
 			if (! empty($val['isameasure']))

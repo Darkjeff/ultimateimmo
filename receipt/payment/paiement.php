@@ -270,7 +270,7 @@ if (GETPOST('action', 'aZ09') == 'create')
 		$object->fetch($receipt->fk_payment);
 		
 		// Reference
-		$tmpref= GETPOST('ref','alpha')?GETPOST('ref','alpha'):$receipt->ref;
+		$tmpref= GETPOST('ref','alpha')?GETPOST('ref','alpha'):$receipt->id;
         print '<tr><td class="titlefieldcreate"><span class="fieldrequired">'.$langs->trans('Reference').'</span></td><td>'.$tmpref."</td></tr>\n";
 
         // Date payment
@@ -350,7 +350,7 @@ if (GETPOST('action', 'aZ09') == 'create')
 
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	print '<td class="left">'.$langs->trans("ImmoRent").'</td>';
+	print '<td class="left">'.$langs->trans("ImmoReceipt").'</td>';
 	print '<td class="right">'.$langs->trans("Amount").'</td>';
 	print '<td class="right">'.$langs->trans("AlreadyPaid").'</td>';
 	print '<td class="right">'.$langs->trans("RemainderToPay").'</td>';
