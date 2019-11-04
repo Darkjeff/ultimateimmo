@@ -61,9 +61,11 @@ $backtopage = GETPOST('backtopage', 'alpha');
 $socid 		= GETPOST('socid', 'int');
 $accountid	= GETPOST('accountid', 'int');
 $fk_mode_reglement	= GETPOST("fk_mode_reglement");
+$receipt_id = GETPOST('receipt', 'int');
 
 // Initialize technical objects
 $object=new ImmoPayment($db);
+
 $extrafields = new ExtraFields($db);
 $diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immopaymentcard'));     // Note that conf->hooks_modules contains array
@@ -130,46 +132,93 @@ if ($action == 'add')
 {
 	if ($cancel)
 	{
-		$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$object->id;
+		$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$receipt->id;
 		header("Location: ".$loc);
 		exit;
 	}
 
-	$date_payment = @dol_mktime(0, 0, 0, GETPOST("remonth"), GETPOST("reday"), GETPOST("reyear"));
-	if (! $date_payment) {
-		$mesg = '<div class="error">' . $langs->trans("ErrorFieldRequired", $langs->transnoentities("Datepaie")) . '</div>';
+	$date_payment = @dol_mktime(0, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
+	if (! $date_payment) 
+	{
+		$mesg = $langs->trans("ErrorFieldRequired", $langs->transnoentities("Datepaie"));
+		setEventMessages($mesg, null, 'errors');
 		$action = 'create';
-	} else {
-		$paie = new Immopayment($db);
+	} 
+	else 
+	{
+		$payment = new Immopayment($db);
 		
-		$paie->fk_rent			= GETPOST("fk_rent");
-		$paie->fk_property		= GETPOST("fk_property");
-		$paie->fk_renter		= GETPOST("fk_renter");
-		$paie->amount			= GETPOST("amount");
-		$paie->note_public		= GETPOST("note_public");
-		$paie->date_payment		= $date_payment;
-		$paie->fk_receipt		= GETPOST("fk_receipt");
-    	$paie->fk_bank			= GETPOST("accountid");
-		$paie->fk_mode_reglement= GETPOST("fk_mode_reglement");
-    	$paie->num_payment		= GETPOST("num_payment");
-		$paie->fk_owner			= $user->id;
+		$payment->fk_rent			= GETPOST("fk_rent");
+		$payment->fk_property		= GETPOST("fk_property");
+		$payment->fk_renter			= GETPOST("fk_renter");
+		$payment->amount			= GETPOST("amount");
+		$payment->note_public		= GETPOST("note_public");
+		$payment->date_payment		= $date_payment;
+		$payment->fk_receipt		= GETPOST("fk_receipt");
+    	$payment->fk_bank			= GETPOST("accountid");
+		$payment->fk_mode_reglement= GETPOST("fk_mode_reglement");
+    	$payment->num_payment		= GETPOST("num_payment");
+		$payment->fk_owner			= $user->id;
 		
-		$id = $paie->create($user);
-		header("Location: " .dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$paie->fk_receipt);
+		$id = $payment->create($user);
+		header("Location: " .dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$payment->fk_receipt);
 		if ($id > 0) {
-		} else {
-			$mesg = '<div class="error">' . $paie->error . '</div>';
+		} 
+		else 
+		{
+			setEventMessages($payment->error, null, 'errors');
 		}
+	}
+}
+
+/*
+ *	Delete paiement
+ */
+
+if ($action == 'delete') 
+{	
+	if ($id)
+	{
+		$payment = new Immopayment($db);				
+		$payment->id = $id;		
+		$id = $payment->delete($user);		
+	}	
+	header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$receipt_id);
+}
+
+// Update 
+
+if ($action == 'maj') 
+{
+	$date_payment = @dol_mktime(0, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
+	if (! $date_payment) 
+	{
+		$mesg = $langs->trans("ErrorFieldRequired", $langs->transnoentities("Datepaie"));
+		setEventMessages($mesg, null, 'errors');
+		$action = 'update';
+	} 
+	else 
+	{
+		$payment = new Immopayment($db);
+		
+		$result = $payment->fetch($id);
+		
+		$payment->amount		= GETPOST("amount");
+		$payment->note_public	= GETPOST("note_public");
+		$payment->date_payment	= $date_payment;
+		
+		$result = $payment->update($user);
+		header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$receipt_id);		
 	}
 }
 
 if ($action == 'addall') 
 {
-	$date_payment = dol_mktime(12, 0, 0, GETPOST("date_paymentmonth"), GETPOST("date_paymentday"), GETPOST("date_paymentyear"));
+	$date_payment = dol_mktime(12, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
 	
 	if (! $date_payment) 
 	{
-		$mesg = $langs->trans("ErrorFieldRequired", $langs->transnoentities("toto"));
+		$mesg = $langs->trans("ErrorFieldRequired", $langs->transnoentities("Datepaie"));
 		setEventMessages($mesg, null, 'errors');
 		$action = 'createall';
 	} 
@@ -182,7 +231,8 @@ if ($action == 'addall')
 			{			
 				$tmp_array = explode('_', $key);
 				
-				if (count($tmp_array) > 0) {
+				if (count($tmp_array) > 0) 
+				{
 					$reference = $tmp_array[1];
 					$amount= GETPOST('incomeprice_'.$reference);
 				
@@ -216,36 +266,36 @@ if ($action == 'addall')
 }
 
 if ($action == 'update')
-	{
-		$date_payment = dol_mktime(12, 0, 0, GETPOST("paiemonth"), GETPOST("paieday"), GETPOST("paieyear"));
-		
-		$payment = new ImmoPayment($db);
-		$result = $payment->fetch($id);
-		
-		$rent=new ImmoRent($db);
-		$rent->fetch($payment->fk_rent);
-		
-		$payment->ref 		= GETPOST('ref');
-		
-		$payment->fk_rent 		= GETPOST("fk_rent");
-		$payment->fk_property 	= GETPOST("fk_property");
-		$payment->fk_renter 	= GETPOST("fk_renter");
-		$payment->fk_soc 		= GETPOST("fk_soc");
-		$payment->fk_owner 		= GETPOST("fk_owner");		
-		$payment->date_echeance = $date_echeance;
-		$payment->note_public 	= GETPOST("note_public");
-		$payment->status 		= GETPOST("status");
-		$payment->date_payment 	= $date_payment;
-		$payment->fk_mode_reglement = $fk_mode_reglement;
-		
-		$result = $payment->update($user);
-		header("Location: ".dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1).'?id='.$payment->id);
-		if ($id > 0) {
-			// $mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
-		} else {
-			$mesg = '<div class="error">' . $payment->error . '</div>';
-		}
+{
+	$date_payment = dol_mktime(12, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
+	
+	$payment = new ImmoPayment($db);
+	$result = $payment->fetch($id);
+	
+	$rent=new ImmoRent($db);
+	$rent->fetch($payment->fk_rent);
+	
+	$payment->ref 		= GETPOST('ref');
+	
+	$payment->fk_rent 		= GETPOST("fk_rent");
+	$payment->fk_property 	= GETPOST("fk_property");
+	$payment->fk_renter 	= GETPOST("fk_renter");
+	$payment->fk_soc 		= GETPOST("fk_soc");
+	$payment->fk_owner 		= GETPOST("fk_owner");		
+	$payment->date_echeance = $date_echeance;
+	$payment->note_public 	= GETPOST("note_public");
+	$payment->status 		= GETPOST("status");
+	$payment->date_payment 	= $date_payment;
+	$payment->fk_mode_reglement = $fk_mode_reglement;
+	
+	$result = $payment->update($user);
+	header("Location: ".dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1).'?id='.$payment->id);
+	if ($id > 0) {
+		// $mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
+	} else {
+		$mesg = '<div class="error">' . $payment->error . '</div>';
 	}
+}
 
 
 /*
@@ -270,11 +320,20 @@ llxHeader('',$langs->trans("ImmoPayment"),'');
 // Part to create
 if ($action == 'create')
 {
+	$receipt = new Immoreceipt($db);
+	$result = $receipt->fetch($id);
+
+	$total = $receipt->total_amount;
+	
 	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoPayment")));
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="add">';
+	print '<input type="hidden" name="fk_rent" value="'.$receipt->fk_rent.'">';
+	print '<input type="hidden" name="fk_property" value="'.$receipt->fk_property.'">';
+	print '<input type="hidden" name="fk_renter" value="'.$receipt->fk_renter.'">';
+	print '<input type="hidden" name="fk_receipt" value="'.$id.'">';
 	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
 
 	dol_fiche_head(array(), '');
@@ -722,7 +781,7 @@ if ($action == 'createall')
 	
 	// Due date	
 	print '<td class="center">';
-	print $form->selectDate(! empty($date_payment) ? $date_payment : '-1', 'payment', 0, 0, 0, 'fiche_payment', 1);
+	print $form->selectDate(! empty($date_payment) ? $date_payment : '-1', 'payment', 0, 0, 0, 'addall', 1);
 	print '</td>';
 	
 	// note_public
@@ -746,12 +805,12 @@ if ($action == 'createall')
 	/*
 	 * List receipt
 	 */
-	$sql = "SELECT rec.rowid as reference, rec.ref as receiptname, loc.lastname as nom, l.address  , l.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance ,  rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract , c.preavis";
-	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt rec";
+	$sql = "SELECT rec.rowid as reference, rec.ref as receiptname, loc.lastname as nom, l.address, l.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract, c.preavis";
+	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
-	$sql .= " WHERE rec.paye = 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND  c.rowid = rec.fk_rent AND c.preavis =0 ";
+	$sql .= " WHERE rec.paye = 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND c.rowid = rec.fk_rent AND c.preavis = 0 ";
 	$resql = $db->query($sql);
 	if ($resql) 
 	{
@@ -771,8 +830,8 @@ if ($action == 'createall')
 		print '<td align="right">' . $langs->trans('income') . '</td>';
 		print "</tr>\n";
 		
-		if ($num > 0) {
-			
+		if ($num > 0) 
+		{		
 			while ( $i < $num ) 
 			{
 				$objp = $db->fetch_object($resql);
@@ -783,18 +842,18 @@ if ($action == 'createall')
 				print '<td>' . $objp->nom . '</td>';
 				
 				print '<td align="right">' . price($objp->total) . '</td>';
-				print '<td align="right">' . price($objp->paiepartiel) . '</td>';
+				print '<td align="right">' . price($objp->partial_payment) . '</td>';
 				print '<td align="right">' . price($objp->balance) . '</td>';
 				
-					print '<input type="hidden" name="fk_rent' . $objp->reference . '" size="10" value="' . $objp->refcontract . '">';
-					print '<input type="hidden" name="fk_property_' . $objp->reference . '" size="10" value="' . $objp->reflocal . '">';
-					print '<input type="hidden" name="fk_renter_' . $objp->reference . '" size="10" value="' . $objp->reflocataire . '">';
-					print '<input type="hidden" name="receipt_' . $objp->reference . '" size="10" value="' . $objp->reference . '">';
+				print '<input type="hidden" name="fk_rent' . $objp->reference . '" size="10" value="' . $objp->refcontract . '">';
+				print '<input type="hidden" name="fk_property_' . $objp->reference . '" size="10" value="' . $objp->reflocal . '">';
+				print '<input type="hidden" name="fk_renter_' . $objp->reference . '" size="10" value="' . $objp->reflocataire . '">';
+				print '<input type="hidden" name="receipt_' . $objp->reference . '" size="10" value="' . $objp->reference . '">';
 				
 				// Colonne imput income
 				print '<td align="right">';
-			print '<input type="text" name="incomeprice_' . $objp->reference . '" id="incomeprice_' . $objp->reference . '" size="6" value="" class="flat">';
-			print '</td>';				
+				print '<input type="text" name="incomeprice_' . $objp->reference . '" id="incomeprice_' . $objp->reference . '" size="6" value="" class="flat">';
+				print '</td>';				
 	
 				print '</tr>';
 				
@@ -805,15 +864,70 @@ if ($action == 'createall')
 		print "</table>\n";
 		$db->free($resql);
 	} 
-
-	else {
+	else 
+	{
 		dol_print_error($db);
 	}
 	print '<div class="tabsAction">' . "\n";
-	print '<div class="inline-block divButAction"><input type="submit"  name="button_addallpaiement" id="button_addallpaiement" class="butAction" value="' . $langs->trans("Payed") . '" /></div>';
+	print '<div class="inline-block divButAction"><input type="submit"  name="button_addallpayment" id="button_addallpayment" class="butAction" value="' . $langs->trans("Payed") . '" /></div>';
 	print '</div>';
-	print '</form>';
+	print '</form>';	
+}
+
+/* *************************************************************************** */
+/*                                                                             */
+/* Mode fiche                                                                  */
+/*                                                                             */
+/* *************************************************************************** */
+if ($action == 'update') 
+{
+	$receipt = new Immoreceipt($db);
+	$result = $receipt->fetch($receipt_id);
+
+	$payment = new Immopayment($db);
+
+	$result = $payment->fetch($id);
 	
+	print '<form action="card.php" method="post">';
+	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+	print '<input type="hidden" name="action" value="maj">';
+	print '<input type="hidden" name="id" value="' . GETPOST("id") . '">' . "\n";
+	print '<input type="hidden" name="receipt" value="' . $receipt_id . '">' . "\n";
+	
+	print '<table class="border" width="100%">';
+	
+	print '<input type="hidden" name="fk_contract" size="10" value="' . $receipt->fk_contract . '">';
+	print '<input type="hidden" name="fk_property" size="10" value="' . $receipt->fk_property . '">';
+	print '<input type="hidden" name="fk_renter" size="10" value="' . $receipt->fk_renter . '">';
+	print '<input type="hidden" name="fk_receipt" size="10" value="' . $id . '">';
+
+	print '<tr><td class="titlefield">' . $langs->trans("NomAppartement") . '</td><td>' . $receipt->nomlocal . '</td></tr>';
+
+	print '<tr><td>' . $langs->trans("NomLocataire") . '</td><td>' . $receipt->nomlocataire . '</td></tr>';
+
+	print '<tr><td>' . $langs->trans("RefLoyer") . '</td><td>' . $receipt->name . '</td></tr>';
+	
+	print '<tr><td>' . $langs->trans("Amount") . '</td>';
+	print '<td><input name="amount" size="30" value="' . round($payment->amount,2) . '"</td></tr>';
+	
+	print '<tr><td>' . $langs->trans("Comment") . '</td>';
+	print '<td><input name="comment" size="10" value="' . $payment->comment . '"</td></tr>';
+	
+	print '<tr><td>' . $langs->trans("DatePaiement") . '</td>';
+	print '<td align="left">';
+	print $form->select_date(! empty($payment->date_payment) ? $payment->date_payment : '-1', 'payment', 0, 0, 0, 'card', 1);
+	print '</td>';
+	
+	print '</table>';
+
+	dol_fiche_end();
+
+	print '<div align="center">';
+	print '<input type="submit" value="'.$langs->trans("AddProperty").'" name="bouton" class="button" />';
+	print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="'.$langs->trans("Cancel").'" class="button" onclick="history.go(-1)" />';
+	print '</div>';
+
+	print '</form>';
 }
 
 

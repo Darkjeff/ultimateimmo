@@ -563,8 +563,8 @@ class ImmoReceipt extends CommonObject
 		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
 		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
 		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorent as ic ON t.fk_rent = ic.rowid';
-		//$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as pm ON t.fk_payment = pm.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as cp ON t.fk_mode_reglement = cp.id';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as pm ON t.fk_payment = pm.rowid';
+		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as cp ON pm.fk_mode_reglement = cp.id';
 
 		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
