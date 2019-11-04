@@ -129,8 +129,8 @@ class ImmoReceipt extends CommonObject
 		'rentamount' => array('type'=>'price', 'label'=>'RentAmount', 'enabled'=>1, 'visible'=>1, 'position'=>65, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'chargesamount' => array('type'=>'price', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text",),
 		'total_amount' => array('type'=>'price', 'label'=>'TotalAmount', 'enabled'=>1, 'visible'=>1, 'position'=>75, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
-		'balance' => array('type'=>'price', 'label'=>'Balance', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
-		'partial_payment' => array('type'=>'price', 'label'=>'PartialPayment', 'enabled'=>1, 'visible'=>1, 'position'=>85, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
+		'partial_payment' => array('type'=>'price', 'label'=>'PartialPayment', 'enabled'=>1, 'visible'=>1, 'position'=>80, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
+		'balance' => array('type'=>'price', 'label'=>'Balance', 'enabled'=>1, 'visible'=>1, 'position'=>85, 'notnull'=>-1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text",),
 		'paye' => array('type'=>'integer', 'label'=>'Paye', 'enabled'=>1, 'visible'=>1, 'position'=>90, 'notnull'=>-1,),
 		'vat_amount' => array('type'=>'price', 'label'=>'VatAmount', 'enabled'=>1, 'visible'=>1, 'position'=>95, 'notnull'=>-1,),
 		'vat_tx' => array('type'=>'integer', 'label'=>'VatTx', 'enabled'=>1, 'visible'=>1, 'position'=>96, 'notnull'=>-1,),
@@ -164,9 +164,9 @@ class ImmoReceipt extends CommonObject
 	public $rentamount;
 	public $chargesamount;
 	public $total_amount;
+	public $partial_payment;
 	public $balance;
 	//public $fk_payment;
-	public $partial_payment;
 	public $paye;
 	public $vat_amount;
 	public $vat_tx;

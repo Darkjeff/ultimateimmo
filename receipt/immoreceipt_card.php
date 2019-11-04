@@ -1064,19 +1064,17 @@ if ($action == 'create')
 			}
 			elseif ($val['label'] == 'Balance') 
 			{
-				$balance = price($object->total_amount) - price($object->partial_payment);
+				$balance = $object->total_amount - $object->partial_payment;
 				if ($object->balance)
 				{
-					print $balance;
+					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
 				}			
 			}
 			else
 			{
 				print $object->showOutputField($val, $key, $value, '', '', '', 0);
 			}
-			//print $object->showOutputField($val, $key, $value, '', '', '', 0);
 
-			//print dol_escape_htmltag($object->$key, 1, 1);
 			print '</td>';
 			print '</tr>';
 		}
