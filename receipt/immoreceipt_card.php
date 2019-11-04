@@ -865,9 +865,14 @@ if ($action == 'create')
 		
 		$soc = new Societe($db);
 		$soc->fetch($object->socid);
+		
+		$object=new ImmoReceipt($db);
+		$result=$object->fetch($id);
 
 		$head = immoreceiptPrepareHead($object);
 		dol_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'immoreceipt@ultimateimmo');
+		
+		$totalpaye = $object->getSommePaiement();
 
 		$formconfirm = '';
 
@@ -937,7 +942,7 @@ if ($action == 'create')
 		// Object card
 		// ------------------------------------------------------------
 		$linkback = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?restore_lastsearch_values=1'.(! empty($socid)?'&socid='.$socid : '').'">'. $langs->trans("BackToList").'</a>';
-		
+		$object->fetch_thirdparty();
 		$morehtmlref='<div class="refidno">';
 		// Ref renter
 		$staticImmorenter=new ImmoRenter($db);
@@ -948,6 +953,8 @@ if ($action == 'create')
 		$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'renter');
 		if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?socid='.$object->thirdparty->id.'&search_fk_soc='.urlencode($object->thirdparty->id).'">'.$langs->trans("OtherReceipts").'</a>)';
 		$morehtmlref.='</div>';
+		
+		$object->totalpaye = $totalpaye;   // To give a chance to dol_banner_tab to use already paid amount to show correct status
 		
 		dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '', 0, '', '');
 
@@ -1063,7 +1070,11 @@ if ($action == 'create')
 					print $balance;
 				}			
 			}
-			print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			else
+			{
+				print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			}
+			//print $object->showOutputField($val, $key, $value, '', '', '', 0);
 
 			//print dol_escape_htmltag($object->$key, 1, 1);
 			print '</td>';
