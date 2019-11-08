@@ -864,33 +864,8 @@ if ($action == 'create')
 		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key, 'none'):$object->$key;
 		else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
 		//var_dump($val.' '.$key.' '.$value);
-		if ($val['label'] == 'PartialPayment') 
-		{
-			$sql = "SELECT sum(p.amount) as total";
-			$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
-			$sql.= " WHERE p.fk_receipt = ".$object->id;
-			$resql = $db->query($sql);
-			
-			if ($resql)
-			{
-				$obj=$db->fetch_object($resql);
-				$object->partial_payment = price($obj->total, 0, $outputlangs, 1, -1, -1, $conf->currency);
-				$db->free();					
-			}					
-			if ($object->partial_payment)
-			{
-				print $object->partial_payment;
-			}			
-		}
-		elseif ($val['label'] == 'Balance') 
-		{
-			$balance = $object->total_amount - $object->partial_payment;
-			if ($object->balance)
-			{
-				print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
-			}			
-		}
-		elseif ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		
+		if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		print '</td>';
 		print '</tr>';
@@ -1056,6 +1031,32 @@ if ($action == 'create')
 				}
 				print $staticrenter->ref;
 			}
+			elseif ($val['label'] == 'PartialPayment') 
+			{
+				$sql = "SELECT sum(p.amount) as total";
+				$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
+				$sql.= " WHERE p.fk_receipt = ".$object->id;
+				$resql = $db->query($sql);
+				
+				if ($resql)
+				{
+					$obj=$db->fetch_object($resql);
+					$object->partial_payment = price($obj->total, 0, $outputlangs, 1, -1, -1, $conf->currency);
+					$db->free();					
+				}					
+				if ($object->partial_payment)
+				{
+					print $object->partial_payment;
+				}			
+			}
+			elseif ($val['label'] == 'Balance') 
+			{
+				$balance = $object->total_amount - $object->partial_payment;
+				if ($object->balance)
+				{
+					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
+				}			
+			}
 			else
 			{
 				print $object->showOutputField($val, $key, $value, '', '', '', 0);
@@ -1096,37 +1097,9 @@ if ($action == 'create')
 			print '"';
 			print '>'.$langs->trans($val['label']).'</td>';
 			print '<td>';
-			if ($val['label'] == 'PartialPayment') 
-			{
-				$sql = "SELECT sum(p.amount) as total";
-				$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
-				$sql.= " WHERE p.fk_receipt = ".$object->id;
-				$resql = $db->query($sql);
-				
-				if ($resql)
-				{
-					$obj=$db->fetch_object($resql);
-					$object->partial_payment = price($obj->total, 0, $outputlangs, 1, -1, -1, $conf->currency);
-					$db->free();					
-				}					
-				if ($object->partial_payment)
-				{
-					print $object->partial_payment;
-				}			
-			}
-			elseif ($val['label'] == 'Balance') 
-			{
-				$balance = $object->total_amount - $object->partial_payment;
-				if ($object->balance)
-				{
-					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
-				}			
-			}
-			else
-			{
-				print $object->showOutputField($val, $key, $value, '', '', '', 0);
-			}
 
+			print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			//var_dump($val.' '.$key.' '.$value);
 			print '</td>';
 			print '</tr>';
 		}
