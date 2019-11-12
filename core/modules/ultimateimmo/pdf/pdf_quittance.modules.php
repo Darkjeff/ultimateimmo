@@ -321,17 +321,28 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 				$pdf->SetXY($posX, $posY);
 
-				$montantpay = 0;
+				$amountalreadypaid = 0;
 				
-				if (! empty($object->partial_payment)) {
-					$montantpay = $object->partial_payment;
-					var_dump($montantpay);exit;
+				if (! empty($object->partial_payment)) 
+				{
+					$sql = "SELECT sum(p.amount) as total";
+					$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
+					$sql.= " WHERE p.fk_receipt = ".$object->id;
+					$resql = $this->db->query($sql);
+					
+					if ($resql)
+					{
+						$obj=$this->db->fetch_object($resql);
+						$object->partial_payment = price($obj->total, 0, $outputlangs, 1, -1, -1, $conf->currency);						
+						$this->db->free();					
+					}
+					$amountalreadypaid = $object->partial_payment;
 				}
-				$text = 'Reçu de ' . $renter->civilite . '' .$renter->firstname. ' '.$renter->lastname. ' la somme de ' . price($montantpay) . '€' . "\n";
+				$text = 'Reçu de ' . $renter->civilite . '' .$renter->firstname. ' '.$renter->lastname. ' la somme de ' . $amountalreadypaid . "\n";
 				;
 
 				$dtpaiement = $paiement->date_payment;
-				//var_dump(dol_print_date($dtpaiement, 'day'));exit;
+
 				if (empty($dtpaiement)) {
 					$dtpaiement = $object->echeance;
 				}

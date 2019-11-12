@@ -310,7 +310,7 @@ if (empty($reshook))
 		$object->chargesamount = GETPOST("chargesamount");
 		$object->total_amount = GETPOST("total_amount");
 		$object->balance = GETPOST("balance");
-		//$object->partial_payment = GETPOST("partial_payment");
+		$object->partial_payment = GETPOST("partial_payment");
 		$object->fk_payment = GETPOST("fk_payment");
 		$object->paye = GETPOST("paye");
 		$object->vat_amount = GETPOST("vat_amount");
@@ -1031,32 +1031,6 @@ if ($action == 'create')
 				}
 				print $staticrenter->ref;
 			}
-			elseif ($val['label'] == 'PartialPayment') 
-			{
-				$sql = "SELECT sum(p.amount) as total";
-				$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
-				$sql.= " WHERE p.fk_receipt = ".$object->id;
-				$resql = $db->query($sql);
-				
-				if ($resql)
-				{
-					$obj=$db->fetch_object($resql);
-					$object->partial_payment = price($obj->total, 0, $outputlangs, 1, -1, -1, $conf->currency);
-					$db->free();					
-				}					
-				if ($object->partial_payment)
-				{
-					print $object->partial_payment;
-				}			
-			}
-			elseif ($val['label'] == 'Balance') 
-			{
-				$balance = $object->total_amount - $object->partial_payment;
-				if ($object->balance)
-				{
-					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
-				}			
-			}
 			else
 			{
 				print $object->showOutputField($val, $key, $value, '', '', '', 0);
@@ -1097,8 +1071,48 @@ if ($action == 'create')
 			print '"';
 			print '>'.$langs->trans($val['label']).'</td>';
 			print '<td>';
-
-			print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			
+			if ($val['label'] == 'PartialPayment') 
+			{
+				$sql = "SELECT sum(p.amount) as total";
+				$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
+				$sql.= " WHERE p.fk_receipt = ".$object->id;
+				$resql = $db->query($sql);
+				
+				if ($resql)
+				{
+					$obj=$db->fetch_object($resql);
+					$object->partial_payment = price($obj->total, 0, $outputlangs, 1, -1, -1, $conf->currency);
+					$db->free();					
+				}					
+				if ($object->partial_payment)
+				{
+					print $object->partial_payment;
+				}			
+			}
+			elseif ($val['label'] == 'Balance') 
+			{
+				$balance = $object->total_amount - $object->partial_payment;
+				if ($object->balance)
+				{
+					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
+				}			
+			}
+			elseif ($val['label'] == 'Paye') 
+			{
+				if ($object->partial_payment!==$object->total_amount)
+				{
+					print $object->paye==0;
+				}
+				elseif ($object->balance==0)
+				{
+					print $object->paye==1;
+				}
+			}
+			else
+			{
+				print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			}
 			//var_dump($val.' '.$key.' '.$value);
 			print '</td>';
 			print '</tr>';
