@@ -579,6 +579,47 @@ while ($i < min($num, $limit))
 				}
 				print $staticrenter->ref;
 			}
+			elseif ($val['label'] == 'PartialPayment') 
+			{
+				$sql = "SELECT sum(p.amount) as total";
+				$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
+				$sql.= " WHERE p.fk_receipt = ".$object->id;
+				$resql1 = $db->query($sql);
+				
+				if ($resql1)
+				{
+					$obj1=$db->fetch_object($resql1);
+					$object->partial_payment = price($obj1->total, 0, $outputlangs, 1, -1, -1, $conf->currency);
+					$db->free();					
+				}					
+				if ($object->partial_payment < $object->total_amount)
+				{
+					print $object->partial_payment;
+				}			
+			}
+			elseif ($val['label'] == 'Balance') 
+			{
+				$balance = $object->total_amount - $obj1->total;
+				if ($balance>=0)
+				{
+					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
+				}			
+			}
+			elseif ($val['label'] == 'Paye') 
+			{
+				if ($object->partial_payment==0)
+				{
+					print $object->paye=$langs->trans('UnPaidReceipt');
+				}
+				elseif ($balance==0)
+				{
+					print $object->paye=$langs->trans('PaidReceipt');
+				}
+				else
+				{
+					print $object->paye=$langs->trans('PartiallyPaidReceipt');
+				}
+			}
 			else
 			{
 				print $object->showOutputField($val, $key, $obj->$key, '');

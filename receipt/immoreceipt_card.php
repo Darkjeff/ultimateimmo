@@ -1085,28 +1085,32 @@ if ($action == 'create')
 					$object->partial_payment = price($obj->total, 0, $outputlangs, 1, -1, -1, $conf->currency);
 					$db->free();					
 				}					
-				if ($object->partial_payment)
+				if ($object->partial_payment < $object->total_amount)
 				{
 					print $object->partial_payment;
 				}			
 			}
 			elseif ($val['label'] == 'Balance') 
 			{
-				$balance = $object->total_amount - $object->partial_payment;
-				if ($object->balance)
+				$balance = $object->total_amount - $obj->total;
+				if ($balance>=0)
 				{
 					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
 				}			
 			}
 			elseif ($val['label'] == 'Paye') 
 			{
-				if ($object->partial_payment!==$object->total_amount)
+				if ($object->partial_payment==0)
 				{
-					print $object->paye==0;
+					print $object->paye=$langs->trans('UnPaidReceipt');
 				}
-				elseif ($object->balance==0)
+				elseif ($balance==0)
 				{
-					print $object->paye==1;
+					print $object->paye=$langs->trans('PaidReceipt');
+				}
+				else
+				{
+					print $object->paye=$langs->trans('PartiallyPaidReceipt');
 				}
 			}
 			else
