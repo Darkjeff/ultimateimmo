@@ -810,7 +810,7 @@ if ($action == 'createall')
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
-	$sql .= " WHERE rec.paye = 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND c.rowid = rec.fk_rent AND c.preavis = 0 ";
+	$sql .= " WHERE rec.balance <> 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND c.rowid = rec.fk_rent AND c.preavis = 0 ";
 	$resql = $db->query($sql);
 	if ($resql) 
 	{
