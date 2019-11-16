@@ -861,26 +861,16 @@ if ($action == 'create')
 			print '</td>';
 			print '<td>';
 			if ($val['label'] == 'PartialPayment') 
-			{
-				$sql = "SELECT sum(p.amount) as total";
-				$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
-				$sql.= " WHERE p.fk_receipt = ".$object->id;
-				$resql = $db->query($sql);
-				
-				if ($resql)
+			{					
+				if ($object->getSommePaiement())
 				{
-					$obj=$db->fetch_object($resql);
-					$object->partial_payment = price($obj->total, 0, $outputlangs, 1, -1, -1, $conf->currency);
-					$db->free();					
-				}					
-				if ($object->partial_payment < $object->total_amount)
-				{
-					print '<input name="partial_payment" class="flat" size="8" value="' . $object->partial_payment . '">';
+					$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+					print '<input name="partial_payment" class="flat" size="8" value="' . $totalpaye . '">';
 				}			
 			}
 			elseif ($val['label'] == 'Balance') 
 			{
-				$balance = $object->total_amount - $obj->total;
+				$balance = $object->total_amount - $object->getSommePaiement();
 				if ($balance>=0)
 				{
 					$balance = price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
@@ -889,7 +879,7 @@ if ($action == 'create')
 			}
 			elseif ($val['label'] == 'Paye') 
 			{
-				if ($object->partial_payment==0)
+				if ($totalpaye==0)
 				{
 					$object->paye=$langs->trans('UnPaidReceipt');
 					print '<input name="unpaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
