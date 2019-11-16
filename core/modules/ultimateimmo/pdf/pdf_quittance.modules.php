@@ -267,7 +267,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$property = new ImmoProperty($this->db);
 			$result = $property->fetch($object->fk_property);
 
-			$paiement = new Immopayment($this->db);
+			$paiement = new ImmoPayment($this->db);
 			$result = $paiement->fetch_by_loyer($object->id);
 
 			if (! empty($object->id))
@@ -322,25 +322,14 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->SetXY($posX, $posY);
 
 				$amountalreadypaid = 0;
-				
-				if (! empty($object->partial_payment)) 
+				if ($object->getSommePaiement())
 				{
-					$sql = "SELECT sum(p.amount) as total";
-					$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
-					$sql.= " WHERE p.fk_receipt = ".$object->id;
-					$resql = $this->db->query($sql);
-					
-					if ($resql)
-					{
-						$obj=$this->db->fetch_object($resql);
-						$object->partial_payment = price($obj->total, 0, $outputlangs, 1, -1, -1, $conf->currency);						
-						$this->db->free();					
-					}
-					$amountalreadypaid = $object->partial_payment;
-				}
+					$amountalreadypaid = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+				}	
+
 				$text = 'Reçu de ' . $renter->civilite . '' .$renter->firstname. ' '.$renter->lastname. ' la somme de ' . $amountalreadypaid . "\n";
 				;
-
+//var_dump($paiement);exit;
 				$dtpaiement = $paiement->date_payment;
 
 				if (empty($dtpaiement)) {
