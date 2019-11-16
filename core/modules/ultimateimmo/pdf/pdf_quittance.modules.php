@@ -649,7 +649,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		pdf_pagehead($pdf, $outputlangs, $this->page_hauteur);
 
 		// Show Draft Watermark
-		if($object->statut==ImmoReceipt::STATUS_DRAFT && (! empty($conf->global->FACTURE_DRAFT_WATERMARK)) )
+		if($object->status==ImmoReceipt::STATUS_DRAFT && (! empty($conf->global->FACTURE_DRAFT_WATERMARK)) )
         {
 		      pdf_watermark($pdf, $outputlangs, $this->page_hauteur, $this->page_largeur, 'mm', $conf->global->FACTURE_DRAFT_WATERMARK);
         }
@@ -702,7 +702,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetTextColor(0, 0, 60);
 		$textref=$outputlangs->transnoentities("Ref")." : " . $outputlangs->convToOutputCharset($object->ref);
-		if ($object->statut == ImmoReceipt::STATUS_DRAFT)
+		if ($object->status == ImmoReceipt::STATUS_DRAFT)
 		{
 			$pdf->SetTextColor(128, 0, 0);
 			$textref.=' - '.$outputlangs->transnoentities("NotValidated");

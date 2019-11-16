@@ -135,7 +135,7 @@ class ImmoReceipt extends CommonObject
 		'vat_amount' => array('type'=>'price', 'label'=>'VatAmount', 'enabled'=>1, 'visible'=>1, 'position'=>95, 'notnull'=>-1,),
 		'vat_tx' => array('type'=>'integer', 'label'=>'VatTx', 'enabled'=>1, 'visible'=>1, 'position'=>96, 'notnull'=>-1,),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
-		'fk_statut' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>-2, 'position'=>509, 'notnull'=>-1,),
+		//'fk_statut' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>-2, 'position'=>509, 'notnull'=>-1,),
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>1, 'foreignkey'=>'llx_user.rowid',),
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'enabled'=>1, 'visible'=>-2, 'position'=>511, 'notnull'=>-1,),
 		'fk_user_valid' => array('type'=>'integer', 'label'=>'UserValid', 'enabled'=>1, 'visible'=>-2, 'position'=>512, 'notnull'=>-1,),
@@ -171,7 +171,7 @@ class ImmoReceipt extends CommonObject
 	public $vat_amount;
 	public $vat_tx;
 	public $tms;
-	public $fk_statut;
+	//public $fk_statut;
 	public $fk_user_creat;
 	public $fk_user_modif;
 	public $fk_user_valid;
@@ -243,6 +243,13 @@ class ImmoReceipt extends CommonObject
 				foreach($this->fields['status']['arrayofkeyval'] as $key2 => $val2)
 				{
 					$this->fields['status']['arrayofkeyval'][$key2]=$langs->trans($val2);
+				}
+			}
+			if (is_array($this->fields['paye']['arrayofkeyval']))
+			{
+				foreach($this->fields['paye']['arrayofkeyval'] as $key3 => $val3)
+				{
+					$this->fields['paye']['arrayofkeyval'][$key3]=$langs->trans($val3);
 				}
 			}
 		}
@@ -580,7 +587,7 @@ class ImmoReceipt extends CommonObject
         			$this->id = $id;
         			$this->set_vars_by_db($obj);
 					
-					if ($obj->fk_statut == self::STATUS_DRAFT)
+					if ($obj->status == self::STATUS_DRAFT)
 					{
 						$this->brouillon = 1;
 					}
@@ -733,7 +740,7 @@ class ImmoReceipt extends CommonObject
 	public function fetchByLocalId($id, $filter=array()) 
 	{	
 		$sql = "SELECT il.rowid as reference, il.fk_rent , il.fk_property, il.label as nomrenter, il.fk_renter, il.total_amount,";
-		$sql .= " il.rentamount, il.chargesamount, il.date_echeance, il.note_public, il.fk_statut, il.paye ,";
+		$sql .= " il.rentamount, il.chargesamount, il.date_echeance, il.note_public, il.status, il.paye ,";
 		$sql .= " il.date_start , il.date_end, il.fk_owner, il.partial_payment ";
 		$sql .= " , lc.firstname as nomlocataire , ll.label as nomlocal ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element." as il ";
@@ -932,7 +939,7 @@ class ImmoReceipt extends CommonObject
 
 		$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immoreceipt";
 		$sql.= " SET ref = '".$num."',";
-		$sql.= " fk_statut = ".self::STATUS_VALIDATED.", date_valid='".$this->db->idate($now)."', fk_user_valid=".$user->id;
+		$sql.= " status = ".self::STATUS_VALIDATED.", date_valid='".$this->db->idate($now)."', fk_user_valid=".$user->id;
 		$sql.= " WHERE rowid = ".$this->id;
 
 		dol_syslog(get_class($this)."::valid", LOG_DEBUG);
