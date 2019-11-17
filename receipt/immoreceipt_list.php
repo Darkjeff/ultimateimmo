@@ -581,25 +581,15 @@ while ($i < min($num, $limit))
 			}
 			elseif ($val['label'] == 'PartialPayment') 
 			{
-				$sql = "SELECT sum(p.amount) as total";
-				$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
-				$sql.= " WHERE p.fk_receipt = ".$object->id;
-				$resql1 = $db->query($sql);
-				
-				if ($resql1)
+				if ($object->getSommePaiement())
 				{
-					$obj1=$db->fetch_object($resql1);
-					$object->partial_payment = price($obj1->total, 0, $outputlangs, 1, -1, -1, $conf->currency);
-					$db->free();					
-				}					
-				if ($object->partial_payment < $object->total_amount)
-				{
-					print $object->partial_payment;
-				}			
+					$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+					print $totalpaye;
+				}		
 			}
 			elseif ($val['label'] == 'Balance') 
 			{
-				$balance = $object->total_amount - $obj1->total;
+				$balance = $object->total_amount - $object->getSommePaiement();
 				if ($balance>=0)
 				{
 					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
@@ -607,7 +597,7 @@ while ($i < min($num, $limit))
 			}
 			elseif ($val['label'] == 'Paye') 
 			{
-				if ($object->partial_payment==0)
+				if ($totalpaye==0)
 				{
 					print $object->paye=$langs->trans('UnPaidReceipt');
 				}
