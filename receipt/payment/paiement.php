@@ -336,7 +336,7 @@ if (GETPOST('action', 'aZ09') == 'create')
 		// Comments
 		print '<tr><td>'.$langs->trans('Comments').'</td>';
 		print '<td class="tdtop">';
-		print '<textarea name="comment" wrap="soft" class="quatrevingtpercent" rows="'.ROWS_3.'">'.GETPOST('comment', 'none').'</textarea></td></tr>';
+		print '<textarea name="note_public" wrap="soft" class="quatrevingtpercent" rows="'.ROWS_3.'">'.GETPOST('note_public', 'none').'</textarea></td></tr>';
 
         print '</table>';
 

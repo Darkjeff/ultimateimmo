@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2015       Alexandre Spangaro      <aspangaro@open-dsi.fr>
- * Copyright (C) 2018-2019 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2019  Philippe GRAND  		<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -236,9 +236,6 @@ print '<tr><td class="titlefield">'.$langs->trans('Date').'</td><td>'.dol_print_
 
 // Mode
 print '<tr><td>'.$langs->trans('Mode').'</td><td>'.$object->mode_payment.'</td></tr>';
-
-// Number
-print '<tr><td>'.$langs->trans('Number').'</td><td>'.$object->num_payment.'</td></tr>';
 
 // Amount
 print '<tr><td>'.$langs->trans('Amount').'</td><td>'.price($object->amount, 0, $outputlangs, 1, -1, -1, $conf->currency).'</td></tr>';
