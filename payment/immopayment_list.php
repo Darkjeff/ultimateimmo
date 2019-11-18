@@ -45,6 +45,7 @@ dol_include_once('/ultimateimmo/class/immopayment.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
+dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 if (! empty($conf->banque->enabled)) require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 
 // Load traductions files requiredby by page
@@ -449,8 +450,10 @@ while ($i < min($num, $limit))
 			print '>';
 			
 			if ($val['label'] == 'Ref') 
-			{				
-				print $object->rowid;
+			{	
+				$staticpayment=new ImmoPayment($db);
+				$ret=$staticpayment->fetch($object->id);
+				print $staticpayment->getNomUrl(1);
 			}
 			elseif ($val['label'] == 'Owner') 
 			{
@@ -465,7 +468,8 @@ while ($i < min($num, $limit))
 			elseif ($val['label'] == 'Contract') 
 			{
 				$staticrent=new ImmoRent($db);
-				$staticrent->fetch($object->fk_rent);				
+				$ret=$staticrent->fetch($object->fk_rent);	
+				//var_dump($ret);
 				print $staticrent->getNomUrl(1, 0, 'showall');
 			}
 			elseif ($val['label'] == 'Renter') 

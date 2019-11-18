@@ -234,15 +234,28 @@ print '<table class="border" width="100%">';
 // Date
 print '<tr><td class="titlefield">'.$langs->trans('Date').'</td><td>'.dol_print_date($object->date_payment, 'day').'</td></tr>';
 
-// Mode
-print '<tr><td>'.$langs->trans('Mode').'</td><td>'.$object->mode_payment.'</td></tr>';
+// Mode reglement
+$sql = "SELECT p.rowid, p.date_payment as dp, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label";
+$sql .= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as c ON p.fk_mode_reglement = c.id";
+$sql .= " WHERE p.rowid = ".$id;
+$sql .= " AND p.entity IN (" . getEntity($object->element).")";
+$sql .= ' ORDER BY dp';
+$resql = $db->query($sql);
+if ($resql)
+{
+	$obj=$db->fetch_object($resql);
+	$fk_mode_reglement = $obj->mode_reglement_label;
+	$db->free();
+}
+print '<tr><td>'.$langs->trans('Mode').'</td><td>'.$fk_mode_reglement.'</td></tr>';
 
 // Amount
 print '<tr><td>'.$langs->trans('Amount').'</td><td>'.price($object->amount, 0, $outputlangs, 1, -1, -1, $conf->currency).'</td></tr>';
 
 // Note
 print '<tr><td>'.$langs->trans('Note').'</td><td>'.nl2br($object->note_public).'</td></tr>';
-//var_dump($object);exit;
+
 // Bank account
 if (! empty($conf->banque->enabled))
 {

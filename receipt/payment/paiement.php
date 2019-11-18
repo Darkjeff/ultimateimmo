@@ -262,12 +262,12 @@ if (GETPOST('action', 'aZ09') == 'create')
 		print '<input type="hidden" name="id" value="'.$id.'">';
 		print '<input type="hidden" name="socid" value="'.$renter->fk_soc.'">';
 
-		dol_fiche_head();
+		dol_fiche_head(array(), '');
+
+		print '<table class="border centpercent">'."\n";
 		
-		print '<table class="border" width="100%">';
-		
-		$object = new ImmoPayment($db);
-		$object->fetch($receipt->fk_payment);
+		$paymentstatic = new ImmoPayment($db);
+		$paymentstatic->fetch($receipt->fk_payment);
 		
 		// Reference
 		$tmpref= GETPOST('ref','alpha')?GETPOST('ref','alpha'):$receipt->id;
@@ -297,14 +297,14 @@ if (GETPOST('action', 'aZ09') == 'create')
 		print "<td colspan=\"3\">".$langs->trans("Payment").'</td>';
 		print '</tr>';
 
-		 print '<tr><td><span class="fieldrequired">'.$langs->trans('Date').'</span></td><td>';
+		print '<tr><td><span class="fieldrequired">'.$langs->trans('Date').'</span></td><td>';
         $date_payment = dol_mktime(12, 0, 0, $_POST['remonth'], $_POST['reday'], $_POST['reyear']);
         $datepayment=empty($conf->global->MAIN_AUTOFILL_DATE)?(empty($_POST["remonth"])?-1:$date_payment):0;
 		print $form->selectDate($datepayment, '', '', '', '', "add_payment", 1, 1);
         print '</td></tr>';
 
 		print '<tr><td class="fieldrequired">'.$langs->trans("PaymentMode").'</td><td colspan="2">';
-		$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$object->fk_mode_reglement), 'fk_mode_reglement');
+		$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$paymentstatic->fk_mode_reglement), 'fk_mode_reglement');
 		print "</td>\n";
 		print '</tr>';
 		
@@ -312,12 +312,12 @@ if (GETPOST('action', 'aZ09') == 'create')
 		print '<tr>';
 		print '<td class="fieldrequired">'.$langs->trans('AccountToCredit').'</td>';
 		print '<td colspan="2">';
-		$form->select_comptes(isset($_POST["accountid"])?$_POST["accountid"]:$object->accountid, "accountid", 0, '', 1);  // Show open bank account list
+		$form->select_comptes(isset($_POST["accountid"])?$_POST["accountid"]:$paymentstatic->accountid, "accountid", 0, '', 1);  // Show open bank account list
 		print '</td></tr>';
 
         // Cheque number
         print '<tr><td>'.$langs->trans('Numero');
-        print ' <em>('.$langs->trans("ChequeOrTransferNumber").')</em>';
+        print '<em>('.$langs->trans("ChequeOrTransferNumber").')</em>';
         print '</td>';
         print '<td><input name="num_paiement" type="text" value="'.$paymentnum.'"></td></tr>';
 
@@ -328,381 +328,98 @@ if (GETPOST('action', 'aZ09') == 'create')
 
         // Bank name
         print '<tr><td>';
-        print ' <em>('.$langs->trans("ChequeBank").')</em>';
+        print '<em>('.$langs->trans("ChequeBank").')</em>';
         print '</td>';
         print '<td><input name="chqbank" size="30" type="text" value="'.GETPOST('chqbank', 'alphanohtml').'"></td></tr>';
 	
-
 		// Comments
 		print '<tr><td>'.$langs->trans('Comments').'</td>';
 		print '<td class="tdtop">';
-		print '<textarea name="comment" wrap="soft" class="quatrevingtpercent" rows="'.ROWS_3.'">'.GETPOST('comment', 'none').'</textarea></td></tr>';
+		print '<textarea name="note_public" wrap="soft" class="quatrevingtpercent" rows="'.ROWS_3.'">'.GETPOST('note_public', 'none').'</textarea></td></tr>';
 
         print '</table>';
 
 		dol_fiche_end();
 		
-	/*
- 	 * Autres charges impayees
-	 */
-	$num = 1;
-	$i = 0;
+		/*
+		 * Autres charges impayees
+		 */
 
-	print '<table class="noborder" width="100%">';
-	print '<tr class="liste_titre">';
-	print '<td class="left">'.$langs->trans("ImmoReceipt").'</td>';
-	print '<td class="right">'.$langs->trans("Amount").'</td>';
-	print '<td class="right">'.$langs->trans("AlreadyPaid").'</td>';
-	print '<td class="right">'.$langs->trans("RemainderToPay").'</td>';
-	print '<td class="center">'.$langs->trans("Amount").'</td>';
-	print "</tr>\n";
+		$num = 1;
+		$i = 0;
 
-	$total=0;
-	$totalrecu=0;
+		print '<table class="noborder" width="100%">';
+		print '<tr class="liste_titre">';
+		print '<td class="left">'.$langs->trans("ImmoReceipt").'</td>';
+		print '<td class="left">'.$langs->trans("ImmoRent").'</td>';
+		print '<td class="right">'.$langs->trans("Amount").'</td>';
+		print '<td class="right">'.$langs->trans("AlreadyPaid").'</td>';
+		print '<td class="right">'.$langs->trans("RemainderToPay").'</td>';
+		print '<td class="center">'.$langs->trans("Amount").'</td>';
+		print "</tr>\n";
 
-	while ($i < $num)
-	{
-		$objp = $receipt;
+		$total=0;
+		$totalrecu=0;
 
-		print '<tr class="oddeven">';
-		
-		print '<td class="left">'.$objp->ref."</td>";
-
-		print '<td class="right">'.price($objp->total_amount)."</td>";
-
-		print '<td class="right">'.price($sumpaid)."</td>";
-
-		print '<td class="right">'.price($objp->total_amount - $sumpaid)."</td>";
-
-		print '<td class="center">';
-		if ($sumpaid < $objp->total_amount)
+		while ($i < $num)
 		{
-			$namef = "amount_".$objp->id;
-			print '<input type="text" size="8" name="'.$namef.'" required="required">';
-		}
-		else
-		{
-			$errmsg=$langs->trans("AlreadyPaid");
-			setEventMessages($errmsg, null, 'errors');
-			print $errmsg;
-		}
-		print "</td>";
-//var_dump($objp);exit;
-		print "</tr>\n";                                                
-		$i++;
-	}
+			$objp = $receipt;
 
-	print "</table>";
-
-	print '<br><div class="center">';
-	print '<input type="submit" class="button" name="save" value="'.$langs->trans("Save").'">';
-	print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-	print '<input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
-	print '</div>';
-
-	print "</form>\n";
-}
-
-
-        /*
-         * List of unpaid receipts
-         
-
-        $sql = 'SELECT DISTINCT f.rowid as id, f.ref, f.total_amount,';
-		$sql.= ' p.rowid, p.fk_receipt, p.date_payment as dp, p.amount,';
-        $sql.= ' f.date_creation as dc, f.fk_soc as socid';
-        $sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f';
-		$sql.= ', '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as p';
-		$sql.= ' WHERE p.fk_receipt = f.rowid';
-		$sql.= ' AND f.entity IN ('.getEntity($object->element).')';
-        $sql.= ' AND f.fk_soc = '.$socid;*/
-		
-		// Can pay receipts of all child of parent company
-		/*if(!empty($conf->global->FACTURE_PAYMENTS_ON_DIFFERENT_THIRDPARTIES_BILLS) && !empty($receipt->thirdparty->parent)) {
-			$sql.= ' OR f.fk_soc IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe WHERE parent = '.$receipt->thirdparty->parent.')';
-		}
-		// Can pay receipts of all child of myself
-		if(!empty($conf->global->FACTURE_PAYMENTS_ON_SUBSIDIARY_COMPANIES)){
-			$sql.= ' OR f.fk_soc IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe WHERE parent = '.$receipt->thirdparty->id.')';
-		}
-        $sql.= ' AND f.paye = 0';
-        $sql.= ' AND f.fk_statut = 1'; // Statut=0 => not validated, Statut=2 => canceled
-       
-	    $sql.=' GROUP BY f.rowid';
-        // Sort invoices by date and serial number: the older one comes first
-        $sql.=' ORDER BY f.date_creation ASC, f.ref ASC';
-
-        $resql = $db->query($sql);
-        if ($resql)
-        {
-            $num = $db->num_rows($resql);
-            if ($num > 0)
-            {
-				$arraytitle=$langs->trans('ImmoReceipt');
-				if ($receipt->type == 2) $arraytitle=$langs->trans("CreditNotes");
-				$alreadypayedlabel=$langs->trans('Received');
-				if ($receipt->type == 2) { $alreadypayedlabel=$langs->trans("PaidBack"); }
-				$remaindertopay=$langs->trans('RemainderToTake');
-				if ($receipt->type == 2) { $remaindertopay=$langs->trans("RemainderToPayBack"); }
-
-                $i = 0;
-                //print '<tr><td colspan="3">';
-                print '<br>';
-                print '<table class="noborder" width="100%">';
-				
-                print '<tr class="liste_titre">';
-				//print '<td align="left">'.$langs->trans('Ref.paiement').'</td>';
-                print '<td colspan="2">'.$arraytitle.'</td>';
-                print '<td align="center">'.$langs->trans('Date').'</td>';
-                print '<td align="center">'.$langs->trans('DateMaxPayment').'</td>';
-                print '<td class="right">'.$langs->trans('AmountTTC').'</td>';
-                print '<td class="right">'.$alreadypayedlabel.'</td>';
-                print '<td class="right">'.$remaindertopay.'</td>';
-                print '<td class="right">'.$langs->trans('PaymentAmount').'</td>';
-                print '<td class="right">&nbsp;</td>';
-                print "</tr>\n";
-
-                $total=0;
-                $totalrecu=0;
-                $totalrecucreditnote=0;
-                $totalrecudeposits=0;
-
-                while ($i < $num)
-                {
-                    $objp = $db->fetch_object($resql);
-
-                    $sign=1;
-                    if ($receipt->type == ImmoReceipt::TYPE_CREDIT_NOTE) $sign=-1;
-
-					$soc = new Societe($db);
-					$soc->fetch($objp->socid);
-					
-                    $receipt=new ImmoReceipt($db);
-                    $receipt->fetch($objp->id);
-                    $paiement = $receipt->getSommePaiement();
-
-					print '<tr class="oddeven">';*/
-					/*print '<td>';
-					$payment->ref = $payment->id.'_'.$receipt->ref;
-					print $payment->getNomUrl(1, '');
-					print "</td>\n";
-
-					print '<td colspan="2">';
-                    print $receipt->getNomUrl(1, '');
-                    if ($objp->socid != $receipt->thirdparty->id) print ' - '.$soc->getNomUrl(1).' ';
-                    print "</td>\n";
-
-                    // Date
-                   	print '<td align="center">'.dol_print_date($db->jdate($objp->dc), 'day')."</td>\n";
-
-                    // Due date
-                    if ($objp->dlr > 0 )
-                    {
-                        print '<td align="center">';
-                        print dol_print_date($db->jdate($objp->dlr), 'day');
-
-                        if ($receipt->hasDelay())
-                        {
-                            print img_warning($langs->trans('Late'));
-                        }
-
-                        print '</td>';
-                    }
-                    else
-                    {
-                        print '<td align="center"></td>';
-                    }
-
-					// Price
-                    print '<td class="right" '.(($receipt->id==$id)?' style="font-weight: bold" ':'').'>'.price($sign * $objp->total_amount ).'</td>';
-
-                    // Received or paid back
-					$payment = new ImmoPayment($db);
-					$result = $payment->fetch($objp->rowid);
-					//var_dump($payment);exit;
-                    $alreadypayed=price2num($paiement, 'MT');
-                    $remaintopay=price2num($receipt->total_amount - $paiement, 'MT');
-                    //print '<td class="right">'.price($sign * $paiement);
-					print '<td class="right">'.price($sign * $alreadypayed);
-                    if ($deposits) print '+'.price($deposits);
-                    print '</td>';
-
-                    // Remain to take or to pay back
-                    print '<td class="right">'.price($sign * $remaintopay).'</td>';
-                   // $test= price(price2num($objp->total_amount  - $paiement - $deposits));
-
-                    // Amount
-                    print '<td class="right nowraponall">';
-
-                    // Add remind amount
-                    $namef = 'amount_'.$objp->recid;
-                    $nameRemain = 'remain_'.$objp->id;
-					//var_dump($_POST["rowid"]);exit;
-					
-                    if ($action != 'add_payment')
-                    {
-                        if (!empty($conf->use_javascript_ajax))
-							print img_picto("Auto fill", 'rightarrow', "class='AutoFillAmout' data-rowname='".$namef."' data-value='".($sign * $remaintopay)."'");
-                        print '<input type="text" class="maxwidth75 amount" name="'.$namef.'" value="'.dol_escape_htmltag(GETPOST($namef)).'">';
-                        print '<input type="hidden" class="remain" name="'.$nameRemain.'" value="'.$remaintopay.'">';
-                    }
-                    else
-                    {						
-                        print '<input type="text" class="maxwidth75" name="'.$namef.'_disabled" value="'.dol_escape_htmltag(GETPOST($namef)).'" disabled>';
-                        print '<input type="hidden" name="'.$namef.'" value="'.dol_escape_htmltag(GETPOST($namef)).'">';
-                    }
-                    print "</td>";
-
-                    // Warning
-                    print '<td align="center" width="16">';
-                    //print "xx".$amounts[$receipt->id]."-".$amountsresttopay[$receipt->id]."<br>";
-                    if ($amounts[$receipt->id] && (abs($amounts[$receipt->id]) > abs($amountsresttopay[$receipt->id])))
-                    {
-                        print ' '.img_warning($langs->trans("PaymentHigherThanReminderToPay"));
-                    }
-                    print '</td>';
-
-					$parameters=array();
-					$reshook=$hookmanager->executeHooks('printObjectLine', $parameters, $objp, $action); // Note that $action and $object may have been modified by hook
-
-                    print "</tr>\n";
-
-                    $total+=$objp->total;
-                    $total_amount +=$objp->total_amount ;
-                    $totalrecu+=$paiement;
-                    $totalrecudeposits+=$deposits;
-                    $i++;
-                }
-
-                if ($i > 1)
-                {
-                    // Print total
-                    print '<tr class="liste_total">';
-                    print '<td colspan="4" class="left">'.$langs->trans('TotalTTC').'</td>';
-					print '<td class="right"><b>'.price($sign * $total_amount ).'</b></td>';
-                    print '<td class="right"><b>'.price($sign * $totalrecu);
-                    if ($totalrecudeposits) print '+'.price($totalrecudeposits);
-                    print '</b></td>';
-                    print '<td class="right"><b>'.price($sign * price2num($total_amount  - $totalrecu - $totalrecucreditnote - $totalrecudeposits, 'MT')).'</b></td>';
-                    print '<td class="right" id="result" style="font-weight: bold;"></td>';		// Autofilled
-                    print '<td align="center">&nbsp;</td>';
-                    print "</tr>\n";
-                }
-                print "</table>";
-                //print "</td></tr>\n";
-            }
-            $db->free($resql);
-        }
-        else
-		{
-            dol_print_error($db);
-        }
-
-
-        // Bouton Enregistrer
-        if ($action != 'add_payment')
-        {
-        	$checkboxlabel=$langs->trans("ClosePaidInvoicesAutomatically");
-        	if ($receipt->type == 2) $checkboxlabel=$langs->trans("ClosePaidCreditNotesAutomatically");
-        	$buttontitle=$langs->trans('ToMakePayment');
-        	if ($receipt->type == 2) $buttontitle=$langs->trans('ToMakePaymentBack');
-
-        	print '<br><div class="center">';
-        	print '<input type="checkbox" checked name="closepaidreceipts"> '.$checkboxlabel;*/
-            /*if (! empty($conf->prelevement->enabled))
-            {
-                $langs->load("withdrawals");
-                if (! empty($conf->global->WITHDRAW_DISABLE_AUTOCREATE_ONPAYMENTS)) print '<br>'.$langs->trans("IfInvoiceNeedOnWithdrawPaymentWontBeClosed");
-            }
-            print '<br><input type="submit" class="button" value="'.dol_escape_htmltag($buttontitle).'"><br><br>';
-            print '</div>';
-        }
-
-        // Form to confirm payment
-        if ($action == 'add_payment')
-        {
-            $preselectedchoice=$addwarning?'no':'yes';
+			print '<tr class="oddeven">';
 			
-            print '<br>';
-            if (!empty($totalpayment)) $text=$langs->trans('ConfirmCustomerPayment', $totalpayment, $langs->trans("Currency".$conf->currency));*/
-			/*if (!empty($multicurrency_totalpayment))
+			print '<td class="left">'.$objp->ref."</td>";
+			
+			$sql = "SELECT rt.rowid, rt.ref as contract";
+			$sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immopayment as p";
+			$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r" ;
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rt ON r.fk_rent = rt.rowid" ;
+			$sql.= " WHERE p.fk_receipt = ".$id;
+			$sql .= " AND r.fk_rent = rt.rowid";
+			//print_r($sql); 
+			$resql = $db->query($sql);
+			if ($resql)
 			{
-				$text.='<br>'.$langs->trans('ConfirmCustomerPayment', $multicurrency_totalpayment, $langs->trans("paymentInInvoiceCurrency"));
+				$obj=$db->fetch_object($resql);
+				$contract = $obj->contract;
+				//var_dump($contract);
+				$db->free();
 			}
-            if (GETPOST('closepaidreceipts'))
-            {
-                $text.='<br>'.$langs->trans("AllCompletelyPayedInvoiceWillBeClosed");
-                print '<input type="hidden" name="closepaidreceipts" value="'.GETPOST('closepaidreceipts').'">';
-            }
-            print $form->formconfirm($_SERVER['PHP_SELF'].'?id='.$id.'&socid='.$renter->fk_soc.'&type='.$receipt->type, $langs->trans('ReceivedCustomersPayments'), $text, 'confirm_paiement', $formquestion, $preselectedchoice);
-        }
+			
+			print '<td class="left">'.$obj->contract."</td>";
 
-        print "</form>\n";
-    }
-}*/
+			print '<td class="right">'.price($objp->total_amount)."</td>";
 
+			print '<td class="right">'.price($sumpaid)."</td>";
 
-/**
- *  Show list of payments
- 
-if (! GETPOST('action', 'aZ09'))
-{
-    if (empty($page) || $page == -1) $page = 0;
-    $limit = GETPOST('limit', 'int')?GETPOST('limit', 'int'):$conf->liste_limit;
-    $offset = $limit * $page ;
+			print '<td class="right">'.price($objp->total_amount - $sumpaid)."</td>";
 
-    if (! $sortorder) $sortorder='DESC';
-    if (! $sortfield) $sortfield='p.date_creation';
+			print '<td class="center">';
+			if ($sumpaid < $objp->total_amount)
+			{
+				$namef = "amount_".$objp->id;
+				print '<input type="text" size="8" name="'.$namef.'" required="required">';
+			}
+			else
+			{
+				$errmsg=$langs->trans("AlreadyPaid");
+				setEventMessages($errmsg, null, 'errors');
+				print $errmsg;
+			}
+			print "</td>";
+			print "</tr>\n";                                                
+			$i++;
+		}
 
-    $sql = 'SELECT p.date_creation as dc, p.amount, f.total_amount as rec_amount, f.ref';
-    $sql.=', f.rowid as id, c.libelle as paiement_type, p.num_payment';
-    $sql.= ' FROM '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as p LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as c ON p.fk_payment = c.id';
-    $sql.= ', '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt as f';
-    $sql.= ' WHERE p.fk_receipt = f.rowid';
-    $sql.= ' AND f.entity IN (' . getEntity($object->element).')';
-    if ($socid)
-    {
-        $sql.= ' AND f.fk_soc = '.$socid;
-    }
+		print "</table>";
 
-    $sql.= ' ORDER BY '.$sortfield.' '.$sortorder;
-    $sql.= $db->plimit($limit+1, $offset);
-    $resql = $db->query($sql);
+		print '<br><div class="center">';
+		print '<input type="submit" class="button" name="save" value="'.$langs->trans("Save").'">';
+		print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		print '<input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
+		print '</div>';
 
-    if ($resql)
-    {
-        $num = $db->num_rows($resql);
-        $i = 0;
-		
-        print_barre_liste($langs->trans('Payments'), $page, $_SERVER["PHP_SELF"], '', $sortfield, $sortorder, '', $num);
-        print '<table class="noborder" width="100%">';
-        print '<tr class="liste_titre">';
-        print_liste_field_titre('Receipt', $_SERVER["PHP_SELF"], 'ref', '', '', '', $sortfield, $sortorder);
-        print_liste_field_titre('Date', $_SERVER["PHP_SELF"], 'dc', '', '', '', $sortfield, $sortorder);
-        print_liste_field_titre('Type', $_SERVER["PHP_SELF"], 'libelle', '', '', '', $sortfield, $sortorder);
-        print_liste_field_titre('Amount', $_SERVER["PHP_SELF"], 'rec_amount', '', '', '', $sortfield, $sortorder, 'right ');
-		print_liste_field_titre('', $_SERVER["PHP_SELF"], "", '', '', '', $sortfield, $sortorder, 'maxwidthsearch ');
-        print "</tr>\n";
-
-        while ($i < min($num, $limit))
-        {
-            $objp = $db->fetch_object($resql);
-
-            print '<tr class="oddeven">';
-            print '<td><a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1).'?id='.$objp->id.'">'.$objp->ref."</a></td>\n";
-            print '<td>'.dol_print_date($db->jdate($objp->dc))."</td>\n";
-            print '<td>'.$objp->paiement_type.' '.$objp->num_paiement."</td>\n";
-            print '<td class="right">'.price($objp->amount).'</td><td>&nbsp;</td>';
-
-			$parameters=array();
-			$reshook=$hookmanager->executeHooks('printObjectLine', $parameters, $objp, $action); // Note that $action and $object may have been modified by hook
-
-            print '</tr>';
-            $i++;
-        }
-        print '</table>';
-    }
-}*/
+		print "</form>\n";
+	}
 }
 llxFooter();
 

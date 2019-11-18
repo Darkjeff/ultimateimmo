@@ -535,11 +535,12 @@ class ImmoPayment extends CommonObject
     		{
     		    if ($obj)
     		    {
-        			$this->id = $id;
-					$this->ref = $id;
         			$this->set_vars_by_db($obj);
+					$this->setVarsFromFetchObj($obj);
+					$this->id = $obj->rowid;
+					$this->ref = $obj->rowid;
 
-        			$this->date_creation = $this->db->jdate($obj->date_creation);
+        			/*$this->date_creation = $this->db->jdate($obj->date_creation);
         			$this->tms = $this->db->jdate($obj->tms);
 					$this->amount			= $obj->amount;
 					$this->fk_mode_reglement = $obj->fk_mode_reglement;
@@ -552,8 +553,8 @@ class ImmoPayment extends CommonObject
 					$this->bank_account		= $obj->fk_account;
 					$this->bank_line		= $obj->fk_bank;
 				
-					$this->date_payment = $this->db->jdate($obj->date_payment);
-					$this->setVarsFromFetchObj($obj);
+					$this->date_payment = $this->db->jdate($obj->date_payment);*/
+					
 
         			return $this->id;
     		    }
