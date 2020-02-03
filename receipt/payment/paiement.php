@@ -375,13 +375,13 @@ if (GETPOST('action', 'aZ09') == 'create')
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rt ON r.fk_rent = rt.rowid" ;
 			$sql.= " WHERE p.fk_receipt = ".$id;
 			$sql .= " AND r.fk_rent = rt.rowid";
-			//print_r($sql); 
+ 
 			$resql = $db->query($sql);
 			if ($resql)
 			{
 				$obj=$db->fetch_object($resql);
 				$contract = $obj->contract;
-				//var_dump($contract);
+
 				$db->free();
 			}
 			
