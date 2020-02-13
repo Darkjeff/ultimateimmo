@@ -417,7 +417,7 @@ class ImmoOwner extends CommonObject
 	 *
 	 * @param   stdClass    $obj    Contain data of object from database
 	 */
-	private function set_vars_by_db(&$obj)
+	protected function set_vars_by_db(&$obj)
 	{
 	    foreach ($this->fields as $field => $info)
 	    {
