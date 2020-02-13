@@ -440,12 +440,12 @@ class ImmoOwner extends CommonObject
 	        {
 	            $this->{$field} = (double) $obj->{$field};
 	        }
-	        elseif($this->isNull($info))
+	        /*elseif($this->isNull($info))
 	        {
 	            $val = $obj->{$field};
 	            // zero is not null
 	            $this->{$field} = (is_null($val) || (empty($val) && $val!==0 && $val!=='0') ? null : $val);
-	        }
+	        }*/
 	        else
 	        {
 	            $this->{$field} = $obj->{$field};

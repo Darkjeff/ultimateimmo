@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2020 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -290,12 +290,12 @@ class ImmoRent extends CommonObject
 	        {
 	            $this->{$field} = (double) $obj->{$field};
 	        }
-	        elseif($this->isNull($info))
+	        /*elseif($this->isNull($info))
 	        {
 	            $val = $obj->{$field};
 	            // zero is not null
 	            $this->{$field} = (is_null($val) || (empty($val) && $val!==0 && $val!=='0') ? null : $val);
-	        }
+	        }*/
 	        else
 	        {
 	            $this->{$field} = $obj->{$field};
