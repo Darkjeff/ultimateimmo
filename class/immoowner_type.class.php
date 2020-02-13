@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2019 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2020 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,8 +105,6 @@ class ImmoOwner_Type extends CommonObject
 	public $status;
 	// END MODULEBUILDER PROPERTIES
 
-
-
 	// If this object has a subtable with lines
 
 	/**
@@ -130,8 +128,6 @@ class ImmoOwner_Type extends CommonObject
 	 */
 	//public $lines = array();
 
-
-
 	/**
 	 * Constructor
 	 *
@@ -144,20 +140,32 @@ class ImmoOwner_Type extends CommonObject
 		$this->db = $db;
 		$this->status = 1;
 
-		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible']=0;
-		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled']=0;
+		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible'] = 0;
+		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
 
 		// Unset fields that are disabled
-		foreach($this->fields as $key => $val)
+		foreach ($this->fields as $key => $val)
 		{
 			if (isset($val['enabled']) && empty($val['enabled']))
 			{
 				unset($this->fields[$key]);
 			}
 		}
-		
-		// Translate some data
-		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
+
+		// Translate some data of arrayofkeyval
+		if (is_object($langs))
+		{
+			foreach($this->fields as $key => $val)
+			{
+				if (is_array($val['arrayofkeyval']))
+				{
+					foreach($val['arrayofkeyval'] as $key2 => $val2)
+					{
+						$this->fields[$key]['arrayofkeyval'][$key2]=$langs->trans($val2);
+					}
+				}
+			}
+		}
 	}
 	
 	/**

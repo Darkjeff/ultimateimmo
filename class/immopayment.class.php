@@ -166,8 +166,6 @@ class ImmoPayment extends CommonObject
 	 */
 	//public $lines = array();
 
-
-
 	/**
 	 * Constructor
 	 *
@@ -175,15 +173,36 @@ class ImmoPayment extends CommonObject
 	 */
 	public function __construct(DoliDB $db)
 	{
-		global $conf, $user, $langs;
+		global $conf, $langs;
 
 		$this->db = $db;
 
-		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID)) $this->fields['rowid']['visible']=0;
-		if (empty($conf->multicompany->enabled)) $this->fields['entity']['enabled']=0;
+		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible'] = 0;
+		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
 
-		// Translate some data
-		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
+		// Unset fields that are disabled
+		foreach ($this->fields as $key => $val)
+		{
+			if (isset($val['enabled']) && empty($val['enabled']))
+			{
+				unset($this->fields[$key]);
+			}
+		}
+
+		// Translate some data of arrayofkeyval
+		if (is_object($langs))
+		{
+			foreach($this->fields as $key => $val)
+			{
+				if (is_array($val['arrayofkeyval']))
+				{
+					foreach($val['arrayofkeyval'] as $key2 => $val2)
+					{
+						$this->fields[$key]['arrayofkeyval'][$key2]=$langs->trans($val2);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -194,8 +213,8 @@ class ImmoPayment extends CommonObject
 	 * @param  Societe   	   $thirdparty           Thirdparty
 	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, Id of created object if OK
-	 
-	public function createCommon(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
+	 */
+	/*public function createCommon(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
 	{
 		global $langs, $object, $form;
 		
@@ -247,7 +266,7 @@ class ImmoPayment extends CommonObject
 			$sql = 'INSERT INTO '.MAIN_DB_PREFIX.$this->table_element;
 			$sql.= ' ('.implode( ", ", $keys ).')';
 			$sql.= ' VALUES ('.implode( ", ", $values ).')';
-//var_dump($sql);exit;
+
 			$res = $this->db->query($sql);
 			if ($res===false) {
 				$error++;
@@ -292,8 +311,8 @@ class ImmoPayment extends CommonObject
 	 * @param  User $user      User that creates
 	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, Id of created object if OK
-	 
-	public function create(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
+	 */
+	/*public function create(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
 	{
 		return $this->createCommon($user, $closepaidreceipts, $thirdparty, $notrigger);
 	}*/
@@ -624,7 +643,6 @@ class ImmoPayment extends CommonObject
 		$sql .= " t.fk_owner,";
 		$sql .= " t.fk_receipt";
 		$sql .= " , lc.lastname as nomlocataire , ll.label as nomlocal , lo.label as nomloyer ";
-
 
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element. ' as t';
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";

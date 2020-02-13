@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) ---Put here your own copyright and developer email---
+ * Copyright (C) 2018-2020 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,15 +135,15 @@ class ImmoCost_Detail extends CommonObject
 	 */
 	public function __construct(DoliDB $db)
 	{
-		global $conf, $langs, $user;
+		global $conf, $langs;
 
 		$this->db = $db;
 
-		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible']=0;
-		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled']=0;
+		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible'] = 0;
+		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
 
 		// Unset fields that are disabled
-		foreach($this->fields as $key => $val)
+		foreach ($this->fields as $key => $val)
 		{
 			if (isset($val['enabled']) && empty($val['enabled']))
 			{
@@ -152,13 +152,16 @@ class ImmoCost_Detail extends CommonObject
 		}
 
 		// Translate some data of arrayofkeyval
-		foreach($this->fields as $key => $val)
+		if (is_object($langs))
 		{
-			if (is_array($this->fields['status']['arrayofkeyval']))
+			foreach($this->fields as $key => $val)
 			{
-				foreach($this->fields['status']['arrayofkeyval'] as $key2 => $val2)
+				if (is_array($val['arrayofkeyval']))
 				{
-					$this->fields['status']['arrayofkeyval'][$key2]=$langs->trans($val2);
+					foreach($val['arrayofkeyval'] as $key2 => $val2)
+					{
+						$this->fields[$key]['arrayofkeyval'][$key2]=$langs->trans($val2);
+					}
 				}
 			}
 		}

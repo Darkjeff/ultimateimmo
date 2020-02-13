@@ -181,8 +181,17 @@ class ImmoRent extends CommonObject
 
 		$this->db = $db;
 
-		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID)) $this->fields['rowid']['visible']=0;
-		if (empty($conf->multicompany->enabled)) $this->fields['entity']['enabled']=0;
+		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible'] = 0;
+		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
+
+		// Unset fields that are disabled
+		foreach ($this->fields as $key => $val)
+		{
+			if (isset($val['enabled']) && empty($val['enabled']))
+			{
+				unset($this->fields[$key]);
+			}
+		}
 		
 		// Translate some data
 		$this->fields['vat']['arrayofkeyval']=array(0=>$langs->trans('No'), 1=>$langs->trans('Yes'));
