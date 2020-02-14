@@ -185,11 +185,11 @@ if (empty($reshook))
  * Put here all code to build page
  */
 
-$form=new Form($db);
-$formfile=new FormFile($db);
+$form = new Form($db);
+$formfile = new FormFile($db);
 $formImmo = new FormUltimateimmo($db);
 
-llxHeader('','ImmoProperty','');
+llxHeader('', $langs->trans('ImmoProperty'), '');
 
 // Part to create
 if ($action == 'create')
