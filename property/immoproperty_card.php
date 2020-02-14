@@ -204,16 +204,17 @@ if ($action == 'create')
 
 	dol_fiche_head(array(), '');
 
-	print '<table class="border centpercent">'."\n";
+	print '<table class="border centpercent tableforfieldcreate">'."\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
+
 	foreach($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
 
 		print '<tr id="field_'.$key.'">';
 		print '<td';
@@ -222,23 +223,24 @@ if ($action == 'create')
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
 		print '>';
-		print $langs->trans($val['label']);
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
 		
 		if ($val['label'] == 'Country') 
 		{
 			// We set country_id, country_code and country for the selected country
-			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
+			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
 			
 			if ($object->country_id)
 			{
-				$tmparray=$object->getCountry($object->country_id,'all');
-				$object->country_code=$tmparray['code'];
-				$object->country=$tmparray['label'];
+				$tmparray = $object->getCountry($object->country_id, 'all');
+				$object->country_code = $tmparray['code'];
+				$object->country = $tmparray['label'];
 			}
 			// Country
-			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
+			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));	
 		}
 		else
 		{
