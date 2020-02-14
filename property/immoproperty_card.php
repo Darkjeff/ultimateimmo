@@ -483,7 +483,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '</td>';
 		print '</tr>';
 
-		if (! empty($keyforbreak) && $key == $keyforbreak) break;						// key used for break on second column
+		//if (! empty($keyforbreak) && $key == $keyforbreak) break;						// key used for break on second column
 	}
 	print '</table>';
 	print '</div>';
