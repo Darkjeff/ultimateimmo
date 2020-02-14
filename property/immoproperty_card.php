@@ -114,7 +114,7 @@ if (empty($reshook))
 	if (empty($backtopage) || ($cancel && empty($id))) {
     	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
     		if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
-    		else $backtopage = dol_buildpath('/ultimateimmo/immoproperty_card.php', 1).'?id='.($id > 0 ? $id : '__ID__');
+    		else $backtopage = dol_buildpath('/ultimateimmo/property/immoproperty_card.php', 1).'?id='.($id > 0 ? $id : '__ID__');
     	}
     }
     $triggermodname = 'ULTIMATEIMMO_IMMOPROPERTY_MODIFY'; // Name of trigger action code to execute when we modify record
@@ -208,13 +208,13 @@ if ($action == 'create')
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
-	
+
 	foreach($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
 
 		print '<tr id="field_'.$key.'">';
 		print '<td';
@@ -223,7 +223,8 @@ if ($action == 'create')
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
 		print '>';
-		print $langs->trans($val['label']);
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
 		
