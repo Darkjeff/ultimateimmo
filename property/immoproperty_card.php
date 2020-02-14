@@ -384,9 +384,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1) . '?restore_lastsearch_values=0' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?restore_lastsearch_values=0' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
-	$morehtmlref='<div class="refidno">';
+	$morehtmlref = '<div class="refidno">';
 	/*
 	// Ref bis
 	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', 0, 1);
@@ -430,7 +430,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	*/
 	$morehtmlref.='</div>';
 
-
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
 	print '<div class="fichecenter">';
@@ -439,16 +438,19 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	$keyforbreak='fk_soc';
+	$object->fields = dol_sort_array($object->fields, 'position');
+	$keyforbreak = 'fk_soc';
 	foreach($object->fields as $key => $val)
 	{
+		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
+
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
-		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue; // We don't want this field
+		if (in_array($key, array('ref', 'status'))) continue; // Ref and status are already in dol_banner
 
-		$value=$object->$key;
+		$value = $object->$key;
 
 		print '<tr><td';
 		print ' class="titlefield';
