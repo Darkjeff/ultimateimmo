@@ -107,10 +107,12 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 
 if (empty($reshook))
 {
-	$error = 0;
+	$error=0;
 
-	$backurlforlist = dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1);
-
+	$permissiontoadd = $user->rights->ultimateimmo->write;
+	$permissiontodelete = $user->rights->ultimateimmo->delete;
+	$backurlforlist = dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1);
+	
 	if (empty($backtopage) || ($cancel && empty($id))) {
     	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
     		if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
@@ -119,29 +121,14 @@ if (empty($reshook))
     }
     $triggermodname = 'ULTIMATEIMMO_IMMOPROPERTY_MODIFY'; // Name of trigger action code to execute when we modify record
 
-	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
+	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
-	
-	// Actions when linking object each other
-    include DOL_DOCUMENT_ROOT.'/core/actions_dellink.inc.php';
 
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 
-	// Action to build doc
-    include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
-
-    if ($action == 'set_thirdparty' && $permissiontoadd)
-    {
-    	$object->setValueFrom('fk_soc', GETPOST('fk_soc', 'int'), '', '', 'date', '', $user, 'IMMOPROPERTY_MODIFY');
-    }
-    if ($action == 'classin' && $permissiontoadd)
-    {
-    	$object->setProject(GETPOST('projectid', 'int'));
-    }
-
 	// Actions to send emails
-	$triggersendname ='IMMOPROPERTY_SENTBYMAIL';
+	$triggersendname='IMMOPROPERTY_SENTBYMAIL';
 	$autocopy = 'MAIN_MAIL_AUTOCOPY_IMMOPROPERTY_TO';
 	$trackid = 'immoproperty'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
@@ -156,7 +143,7 @@ if (empty($reshook))
 		$building = $object->label;
 
 		// todo debug insert into
-		$sql1 = 'INSERT INTO '.MAIN_DB_PREFIX.'ultimateimmo_building(';
+		$sql1 = 'INSERT INTO '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty(';
 		$sql1 .= 'label,';
 		$sql1 .= 'fk_property';
 		$sql1 .= ') VALUES (';
@@ -212,7 +199,7 @@ if ($action == 'create')
 	foreach($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
 
 		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
 
@@ -244,15 +231,13 @@ if ($action == 'create')
 		}
 		else
 		{
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
-			
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');				
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
 			else $value = GETPOST($key, 'alpha');
 			print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
 		print '</td>';
-		print '</tr>';
-		
+		print '</tr>';		
 	}
 
 	// Other attributes
