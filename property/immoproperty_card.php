@@ -498,27 +498,35 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	{
 		if ($alreadyoutput)
 		{
-			if (! empty($keyforbreak) && $key == $keyforbreak) $alreadyoutput = 0;		// key used for break on second column
-			continue;
+			if (!empty($keyforbreak) && $key == $keyforbreak) 
+			{
+				$alreadyoutput = 0; // key used for break on second column
+			}
+			else 
+			{
+				continue;
+			}
 		}
 
-		if (abs($val['visible']) != 1) continue;	// Discard such field from form
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
-		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
 
-		$value=$object->$key;
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue; // We don't want this field
+		if (in_array($key, array('ref', 'status'))) continue; // Ref and status are already in dol_banner
+
+		$value = $object->$key;
 		
 		print '<tr><td';
-		print ' class="titlefield';
-		if ($val['notnull'] > 0) print ' fieldrequired';
+		print ' class="titlefield fieldname_'.$key;
+		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
 		if ($val['label'] == 'Country') 
 		{
 			if ($object->country_id)
 			{
 				include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-				$tmparray=getCountry($object->country_id,'all');
-				$object->country_code=$tmparray['code'];
-				$object->country=$tmparray['label'];
+				$tmparray = getCountry($object->country_id,'all');
+				$object->country_code = $tmparray['code'];
+				$object->country = $tmparray['label'];
 			}
 			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
@@ -526,8 +534,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		else
 		{
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-			print '"';
-			print '>'.$langs->trans($val['label']).'</td>';
+			print '">';
+			if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+			else print $langs->trans($val['label']);
+			print '</td>';
 			print '<td>';
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
@@ -542,12 +552,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '</table>';
 	print '</div>';
 	print '</div>';
-	print '</div>';
 
-	print '<div class="clearboth"></div><br>';
+	print '<div class="clearboth"></div>';
 
 	dol_fiche_end();
-
 
 	// Buttons for actions
 	if ($action != 'presend' && $action != 'editline') {
