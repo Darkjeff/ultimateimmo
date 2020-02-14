@@ -453,20 +453,25 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$value = $object->$key;
 
 		print '<tr><td';
-		print ' class="titlefield';
-		if ($val['notnull'] > 0) print ' fieldrequired';
+		print ' class="titlefield fieldname_'.$key;
+		//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '"';
-		print '>'.$langs->trans($val['label']).'</td>';
+		print '">';
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '</td>';
+		print '<td class="valuefield fieldname_'.$key;
+		if ($val['type'] == 'text') print ' wordbreak';
+		print '">';
 		print '<td>';
 		
 		if ($val['label'] == 'Owner') 
 		{
-			$staticowner=new ImmoOwner($db);
+			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);			
 			if ($staticowner->ref)
 			{
-				$staticowner->ref=$staticowner->getFullName($langs);
+				$staticowner->ref = $staticowner->getFullName($langs);
 			}
 			print $staticowner->ref;
 		}
