@@ -223,8 +223,7 @@ if ($action == 'create')
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
 		print '>';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
+		print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
 		
