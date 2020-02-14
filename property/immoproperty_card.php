@@ -482,15 +482,16 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
-
-		//if (! empty($keyforbreak) && $key == $keyforbreak) break;						// key used for break on second column
 	}
+
 	print '</table>';
+
+	// We close div and reopen for second column
 	print '</div>';
 	print '<div class="fichehalfright">';
-	print '<div class="ficheaddleft">';
+
 	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border centpercent">';
+	print '<table class="border centpercent tableforfield">';
 
 	$alreadyoutput = 1;
 	foreach($object->fields as $key => $val)
