@@ -174,11 +174,10 @@ if (empty($reshook))
  *
  */
 
-$form=new Form($db);
-$formfile=new FormFile($db);
+$form = new Form($db);
+$formfile = new FormFile($db);
 
-llxHeader('','ImmoRenter','');
-
+llxHeader('', $langs->trans('ImmoRenter'), '');
 
 // Part to create
 if ($action == 'create')
@@ -188,18 +187,20 @@ if ($action == 'create')
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="add">';
-	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
 
 	dol_fiche_head(array(), '');
 
-	print '<table class="border centpercent">'."\n";
+	print '<table class="border centpercent tableforfieldcreate">'."\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
+
 	foreach($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
 
 		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
 
@@ -210,26 +211,27 @@ if ($action == 'create')
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
 		print '>';
-		print $langs->trans($val['label']);
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
 
 		if ($val['label'] == 'BirthDay')
 		{
-			print $form->selectDate(($object->birth ? $object->birth : -1),'birth','','',1,'formsoc');
+			print $form->selectDate(($object->birth ? $object->birth : -1), 'birth', '', '', 1, 'formsoc');
 		}
 		elseif ($val['label'] == 'BirthCountry')
 		{
 			// We set country_id, country_code and country for the selected country
-			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
+			$object->country_id=GETPOST('country_id', 'int')?GETPOST('country_id','int') : $object->country_id;
 			if ($object->country_id)
 			{
-				$tmparray=$object->getCountry($object->country_id,'all');
-				$object->country_code=$tmparray['code'];
-				$object->country=$tmparray['label'];
+				$tmparray = $object->getCountry($object->country_id,'all');
+				$object->country_code = $tmparray['code'];
+				$object->country = $tmparray['label'];
 			}
 			// Country
-			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));
+			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
 		}
 		else
 		{
@@ -254,7 +256,7 @@ if ($action == 'create')
 	print '<div class="center">';
 	print '<input type="submit" class="button" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'">';
 	print '&nbsp; ';
-	print '<input type="'.($backtopage?"submit":"button").'" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"'.($backtopage?'':' onclick="javascript:history.go(-1)"').'>';	// Cancel for create does not post form if we don't know the backtopage
+	print '<input type="'.($backtopage?"submit" : "button").'" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"'.($backtopage?'':' onclick="javascript:history.go(-1)"').'>';	// Cancel for create does not post form if we don't know the backtopage
 	print '</div>';
 
 	print '</form>';
@@ -268,12 +270,13 @@ if (($id || $ref) && $action == 'edit')
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="update">';
-	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
 	print '<input type="hidden" name="id" value="'.$object->id.'">';
+	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
 
 	dol_fiche_head();
 
-	print '<table class="border centpercent">'."\n";
+	print '<table class="border centpercent tableforfieldedit">'."\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
@@ -281,41 +284,46 @@ if (($id || $ref) && $action == 'edit')
 	foreach($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
 
 		print '<tr><td';
 		print ' class="titlefieldcreate';
 		if ($val['notnull'] > 0) print ' fieldrequired';
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
-		print '>'.$langs->trans($val['label']).'</td>';
+		print '>';
+		if (! empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '</td>';
 		print '<td>';
+
 		if ($val['label'] == 'BirthDay')
 		{
-			print $form->selectDate(($object->birth ? $object->birth : -1),'birth','','',1,'formsoc');
+			print $form->selectDate(($object->birth ? $object->birth : -1), 'birth', '', '', 1, 'formsoc');
 		}
 		elseif ($val['label'] == 'BirthCountry')
 		{
 			// We set country_id, country_code and country for the selected country
-			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
+			$object->country_id = GETPOST('country_id','int') ? GETPOST('country_id', 'int') : $object->country_id;
 			if ($object->country_id)
 			{
-				$tmparray=$object->getCountry($object->country_id,'all');
-				$object->country_code=$tmparray['code'];
-				$object->country=$tmparray['label'];
+				$tmparray = $object->getCountry($object->country_id,'all');
+				$object->country_code = $tmparray['code'];
+				$object->country = $tmparray['label'];
 			}
 			// Country
-			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));
+			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
 		}
 		else
 		{
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key,'none'):$object->$key;
-			else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
-		//var_dump($val.' '.$key.' '.$value);
-		print $object->showInputField($val, $key, $value, '', '', '', 0);
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key,'none') : $object->$key;
+			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			//var_dump($val.' '.$key.' '.$value);
+			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
 		print '</td>';
 		print '</tr>';
@@ -338,7 +346,7 @@ if (($id || $ref) && $action == 'edit')
 // Part to show record
 if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
 {
-    $res = $object->fetch_optionals($object->id, $extralabels);
+    $res = $object->fetch_optionals();
 
 	$head = immorenterPrepareHead($object);
 	dol_fiche_head($head, 'card', $langs->trans("ImmoRenter"), -1, 'ultimateimmo@ultimateimmo');
@@ -349,6 +357,18 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if ($action == 'delete')
 	{
 	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoRenter'), $langs->trans('ConfirmDeleteImmoRenter'), 'confirm_delete', '', 0, 1);
+	}
+	// Confirmation to delete line
+	if ($action == 'deleteline')
+	{
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&lineid='.$lineid, $langs->trans('DeleteLine'), $langs->trans('ConfirmDeleteLine'), 'confirm_deleteline', '', 0, 1);
+	}
+	// Clone confirmation
+	if ($action == 'clone') 
+	{
+		// Create an array for form
+		$formquestion = array();
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneImmoRenter', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
 	}
 
 	// Confirmation of action xxxx
@@ -365,12 +385,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('XXX'), $text, 'confirm_xxx', $formquestion, 0, 1, 220);
 	}
 
-	if (! $formconfirm) {
-	    $parameters = array('lineid' => $lineid);
-	    $reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	    if (empty($reshook)) $formconfirm.=$hookmanager->resPrint;
-	    elseif ($reshook > 0) $formconfirm=$hookmanager->resPrint;
-	}
+	// Call Hook formConfirm
+	$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
+	$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+	if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
+	elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
 
 	// Print form confirm
 	print $formconfirm;
@@ -384,8 +403,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Thirdparty
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'renter');
 	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/rent/immorent_list.php',1).'?socid='.$object->thirdparty->id.'&search_fk_soc='.urlencode($object->thirdparty->id).'">'.$langs->trans("OtherRents").'</a>)';
-	$morehtmlref.='</div>';
-
+	$morehtmlref .= '</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
