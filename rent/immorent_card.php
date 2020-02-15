@@ -338,7 +338,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	$keyforbreak='note_private';
+	$keyforbreak='rentamount';
 	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
 
 	// Other attributes
@@ -351,6 +351,60 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<div class="clearboth"></div><br>';
 
 	dol_fiche_end();
+
+	/*
+	 * Lines
+	 */
+
+	if (!empty($object->table_element_line))
+	{
+    	// Show object lines
+    	$result = $object->getLinesArray();
+
+    	print '	<form name="addproduct" id="addproduct" action="'.$_SERVER["PHP_SELF"].'?id='.$object->id.(($action != 'editline') ? '#addline' : '#line_'.GETPOST('lineid', 'int')).'" method="POST">
+    	<input type="hidden" name="token" value="' . $_SESSION ['newtoken'].'">
+    	<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline').'">
+    	<input type="hidden" name="mode" value="">
+    	<input type="hidden" name="id" value="' . $object->id.'">
+    	';
+
+		if (!empty($conf->use_javascript_ajax) && $object->status == 0) 
+		{
+    	    include DOL_DOCUMENT_ROOT.'/core/tpl/ajaxrow.tpl.php';
+    	}
+
+    	print '<div class="div-table-responsive-no-min">';
+    	if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
+    	{
+    	    print '<table id="tablelines" class="noborder noshadow" width="100%">';
+    	}
+
+    	if (!empty($object->lines))
+    	{
+    		$object->printObjectLines($action, $mysoc, null, GETPOST('lineid', 'int'), 1);
+    	}
+
+    	// Form to add new line
+    	if ($object->status == 0 && $permissiontoadd && $action != 'selectlines')
+    	{
+    	    if ($action != 'editline')
+    	    {
+    	        // Add products/services form
+    	        $object->formAddObjectLine(1, $mysoc, $soc);
+
+    	        $parameters = array();
+    	        $reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+    	    }
+    	}
+
+    	if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
+    	{
+    	    print '</table>';
+    	}
+    	print '</div>';
+
+    	print "</form>\n";
+	}
 	
 	/*if (is_file($conf->ultimateimmo->dir_output . '/rent/bail_vide' . $id . '.pdf'))
 	{
@@ -372,8 +426,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if ($action != 'presend' && $action != 'editline') 
 	{
     	print '<div class="tabsAction">'."\n";
-    	$parameters=array();
-    	$reshook=$hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
+    	$parameters = array();
+    	$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
     	if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
     	if (empty($reshook))
@@ -381,7 +435,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     	    // Send
             print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
 
-    		if ($user->rights->ultimateimmo->write)
+    		if ($permissiontoadd)
     		{
     			print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
     		}
@@ -390,21 +444,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
     		}
 
-    		/*
-    		if ($user->rights->ultimateimmo->create)
+    		// Clone
+    		if ($permissiontoadd)
     		{
-    			if ($object->status == 1)
-    		 	{
-    		 		print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=disable">'.$langs->trans("Disable").'</a>'."\n";
-    		 	}
-    		 	else
-    		 	{
-    		 		print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=enable">'.$langs->trans("Enable").'</a>'."\n";
-    		 	}
+    			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&socid='.$object->socid.'&action=clone&object=myobject">'.$langs->trans("ToClone").'</a>'."\n";
     		}
-    		*/
 
-    		if ($user->rights->ultimateimmo->delete)
+    		if ($permissiontodelete)
     		{
     			print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
     		}
@@ -416,9 +462,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     	print '</div>'."\n";
 	}
 
-
 	// Select mail models is same action as presend
-	if (GETPOST('modelselected')) {
+	if (GETPOST('modelselected')) 
+	{
 	    $action = 'presend';
 	}
 
@@ -431,8 +477,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    $relativepath = '/rent/' . dol_sanitizeFileName($object->ref).'/';	
 	    $filedir = $conf->ultimateimmo->dir_output . $relativepath;
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-	    $genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
-	    $delallowed = $user->rights->ultimateimmo->delete;	// If you can create/edit, you can remove a file on card
+	    $genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
+	    $delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
 	    print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 48, 0, '', '', '', $soc->default_lang, '', $object);
 
 	    // Show links to link elements
@@ -444,14 +490,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	    $MAXEVENT = 10;
 
-	    $morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/rent/immorent_info.php', 1).'?id='.$object->id.'">';
+	    $morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/rent/immorent_agenda.php', 1).'?id='.$object->id.'">';
 	    $morehtmlright.= $langs->trans("SeeAll");
 	    $morehtmlright.= '</a>';
 
 	    // List of actions on element
 	    include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
 	    $formactions = new FormActions($db);
-	    $somethingshown = $formactions->showactions($object, 'immorent', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
+	    $somethingshown = $formactions->showactions($object, $object->element, (is_object($object->thirdparty) ? $object->thirdparty->id : 0), 1, '', $MAXEVENT, '', $morehtmlright);
 
 	    print '</div></div></div>';
 	}
@@ -461,15 +507,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if (GETPOST('modelselected')) $action = 'presend';
 
 	// Presend form
-	$modelmail='immorent';
-	$defaulttopic='InformationMessage';
+	$modelmail = 'immorent';
+	$defaulttopic = 'InformationMessage';
 	$diroutput = $conf->ultimateimmo->dir_output.'/rent';
 	$trackid = 'immo'.$object->id;
 
 	include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
 	 
 }
-
 
 // End of page
 llxFooter();
