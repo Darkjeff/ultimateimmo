@@ -414,65 +414,82 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
+	$object->fields = dol_sort_array($object->fields, 'position');
 	$keyforbreak='note_private';
 	foreach($object->fields as $key => $val)
 	{
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1) continue;
+		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
 		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
-		$value=$object->$key;
+		$value = $object->$key;
 
 		print '<tr><td';
-		print ' class="titlefield';
-		if ($val['notnull'] > 0) print ' fieldrequired';
+		print ' class="titlefield fieldname_'.$key;
+		//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '"';
-		print '>'.$langs->trans($val['label']).'</td>';
+		print '">';
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '<td>';
+		print '<td class="valuefield fieldname_'.$key;
+		if ($val['type'] == 'text') print ' wordbreak';
+		print '">';
 		print '<td>';
 		print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
-
-		if (! empty($keyforbreak) && $key == $keyforbreak) break;						// key used for break on second column
 	}
+
 	print '</table>';
+
+	// We close div and reopen for second column
 	print '</div>';
 	print '<div class="fichehalfright">';
-	print '<div class="ficheaddleft">';
+
 	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border centpercent">';
+	print '<table class="border centpercent tableforfield">';
 
 	$alreadyoutput = 1;
 	foreach($object->fields as $key => $val)
 	{
 		if ($alreadyoutput)
 		{
-			if (! empty($keyforbreak) && $key == $keyforbreak) $alreadyoutput = 0;		// key used for break on second column
-			continue;
+			if (!empty($keyforbreak) && $key == $keyforbreak) 
+			{
+				$alreadyoutput = 0; // key used for break on second column
+			}
+			else 
+			{
+				continue;
+			}
 		}
 
-		if (abs($val['visible']) != 1) continue;	// Discard such field from form
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
+
 		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
 		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
-		$value=$object->$key;
-		if ($object->country_id)
-		{
-			include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-			$tmparray=getCountry($object->country_id,'all');
-			$object->country_code=$tmparray['code'];
-			$object->country=$tmparray['label'];
-		}
+		$value = $object->$key;
 
 		print '<tr><td';
-		print ' class="titlefield';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['label'] == 'BirthCountry')
+		print ' class="titlefield fieldname_'.$key;
+		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
+		if ($val['label'] == 'Country') 
 		{
+			if ($object->country_id)
+			{
+				include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+				$tmparray = getCountry($object->country_id,'all');
+				$object->country_code = $tmparray['code'];
+				$object->country = $tmparray['label'];
+			}
 			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
 		}
@@ -485,8 +502,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		else
 		{
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-			print '"';
-			print '>'.$langs->trans($val['label']).'</td>';
+			print '">';
+			if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+			else print $langs->trans($val['label']);
+			print '</td>';
 			print '<td>';
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
