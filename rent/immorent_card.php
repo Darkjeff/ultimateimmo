@@ -287,24 +287,24 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	// Confirmation of action xxxx
-	 /*if ($action == 'xxx')
+	if ($action == 'xxx')
 	{
-	    $formquestion=array();
-	   
+	    $formquestion = array();
+	    /*
 	        $formquestion = array(
 	            // 'text' => $langs->trans("ConfirmClone"),
 	            // array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
 	            // array('type' => 'checkbox', 'name' => 'update_prices', 'label' => $langs->trans("PuttingPricesUpToDate"), 'value' => 1),
-	            // array('type' => 'other',    'name' => 'idwarehouse',   'label' => $langs->trans("SelectWarehouseForStockDecrease"), 'value' => $formproduct->selectWarehouses(GETPOST('idwarehouse')?GETPOST('idwarehouse'):'ifone', 'idwarehouse', '', 1)));
+	            // array('type' => 'other',    'name' => 'idwarehouse',   'label' => $langs->trans("SelectWarehouseForStockDecrease"), 'value' => $formproduct->selectWarehouses(GETPOST('idwarehouse')?GETPOST('idwarehouse'):'ifone', 'idwarehouse', '', 1)));*/
 	    
 	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('XXX'), $text, 'confirm_xxx', $formquestion, 0, 1, 220);
-	}*/
+	}
 
 	// Call Hook formConfirm
-	$parameters = array('lineid' => $lineid);
+	$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
 	$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	if (empty($reshook)) $formconfirm.=$hookmanager->resPrint;
-	elseif ($reshook > 0) $formconfirm=$hookmanager->resPrint;
+	if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
+	elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
 
 	// Print form confirm
 	print $formconfirm;
@@ -316,7 +316,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	
 	$morehtmlref='<div class="refidno">';
 	// Ref renter
-	$staticImmorenter=new ImmoRenter($db);
+	/*$staticImmorenter=new ImmoRenter($db);
 	$staticImmorenter->fetch($object->fk_renter);
 	$morehtmlref.=$form->editfieldkey("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $usercancreate, 'string', '', 0, 1);
 	$morehtmlref.=$form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $usercancreate, 'string', '', null, null, '', 1);
@@ -327,7 +327,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$result=$company->fetch($object->fk_soc);
 	}
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $company->getNomUrl(1, 'renter');	
-	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $staticImmorenter->fk_soc > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/rent/immorent_list.php',1).'?socid='.$staticImmorenter->fk_soc.'&search_fk_soc='.urlencode($staticImmorenter->fk_soc).'">'.$langs->trans("OtherRents").'</a>)';
+	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $staticImmorenter->fk_soc > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/rent/immorent_list.php',1).'?socid='.$staticImmorenter->fk_soc.'&search_fk_soc='.urlencode($staticImmorenter->fk_soc).'">'.$langs->trans("OtherRents").'</a>)';*/
 	$morehtmlref.='</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
