@@ -507,18 +507,71 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '</table>';
 	print '</div>';
 	print '</div>';
-	print '</div>';
 
 	print '<div class="clearboth"></div><br>';
 
 	dol_fiche_end();
 
+	/*
+	 * Lines
+	 */
+
+	if (!empty($object->table_element_line))
+	{
+    	// Show object lines
+    	$result = $object->getLinesArray();
+
+    	print '	<form name="addproduct" id="addproduct" action="'.$_SERVER["PHP_SELF"].'?id='.$object->id.(($action != 'editline') ? '#addline' : '#line_'.GETPOST('lineid', 'int')).'" method="POST">
+    	<input type="hidden" name="token" value="' . $_SESSION ['newtoken'].'">
+    	<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline').'">
+    	<input type="hidden" name="mode" value="">
+    	<input type="hidden" name="id" value="' . $object->id.'">
+    	';
+
+		if (!empty($conf->use_javascript_ajax) && $object->status == 0) 
+		{
+    	    include DOL_DOCUMENT_ROOT.'/core/tpl/ajaxrow.tpl.php';
+    	}
+
+    	print '<div class="div-table-responsive-no-min">';
+    	if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
+    	{
+    	    print '<table id="tablelines" class="noborder noshadow" width="100%">';
+    	}
+
+    	if (!empty($object->lines))
+    	{
+    		$object->printObjectLines($action, $mysoc, null, GETPOST('lineid', 'int'), 1);
+    	}
+
+    	// Form to add new line
+    	if ($object->status == 0 && $permissiontoadd && $action != 'selectlines')
+    	{
+    	    if ($action != 'editline')
+    	    {
+    	        // Add products/services form
+    	        $object->formAddObjectLine(1, $mysoc, $soc);
+
+    	        $parameters = array();
+    	        $reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+    	    }
+    	}
+
+    	if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
+    	{
+    	    print '</table>';
+    	}
+    	print '</div>';
+
+    	print "</form>\n";
+	}
 
 	// Buttons for actions
-	if ($action != 'presend' && $action != 'editline') {
+	if ($action != 'presend' && $action != 'editline') 
+	{
     	print '<div class="tabsAction">'."\n";
-    	$parameters=array();
-    	$reshook=$hookmanager->executeHooks('addMoreActionsButtons',$parameters,$object,$action);    // Note that $action and $object may have been modified by hook
+    	$parameters = array();
+    	$reshook = $hookmanager->executeHooks('addMoreActionsButtons',$parameters, $object, $action);    // Note that $action and $object may have been modified by hook
     	if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
     	if (empty($reshook))
@@ -526,30 +579,22 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     	    // Send
             print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
 
-    		if ($user->rights->ultimateimmo->write)
+    		if ($permissiontoadd)
     		{
     			print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
     		}
     		else
     		{
     			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
-    		}
-
-    		/*
-    		if ($user->rights->ultimateimmo->create)
+			}
+			
+			// Clone
+    		if ($permissiontoadd)
     		{
-    			if ($object->status == 1)
-    		 	{
-    		 		print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=disable">'.$langs->trans("Disable").'</a>'."\n";
-    		 	}
-    		 	else
-    		 	{
-    		 		print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=enable">'.$langs->trans("Enable").'</a>'."\n";
-    		 	}
+    			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&socid='.$object->socid.'&action=clone&object=myobject">'.$langs->trans("ToClone").'</a>'."\n";
     		}
-    		*/
 
-    		if ($user->rights->ultimateimmo->delete)
+    		if ($permissiontodelete)
     		{
     			print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
     		}
