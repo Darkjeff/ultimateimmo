@@ -493,12 +493,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
 		}
-		if ($val['label'] == 'BirthDay')
+		/*elseif ($val['label'] == 'BirthDay')
 		{
 			$object->birth = dol_print_date($db->jdate($object->birth), 'day');
 			print '<tr><td width="25%">'.$langs->trans('BirthDay').'</td><td>';
 			print $object->birth;
-		}
+		}*/
 		else
 		{
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
