@@ -316,18 +316,18 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	
 	$morehtmlref='<div class="refidno">';
 	// Ref renter
-	/*$staticImmorenter=new ImmoRenter($db);
+	$staticImmorenter = new ImmoRenter($db);
 	$staticImmorenter->fetch($object->fk_renter);
-	$morehtmlref.=$form->editfieldkey("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $usercancreate, 'string', '', 0, 1);
-	$morehtmlref.=$form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $usercancreate, 'string', '', null, null, '', 1);
+	$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $permissiontoadd, 'string', '', 0, 1);
+	$morehtmlref.=$form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $permissiontoadd, 'string', '', null, null, '', 1);
 	// Thirdparty
-	$company=new Societe($db);
+	$company = new Societe($db);
 	if ($object->fk_soc)
 	{
-		$result=$company->fetch($object->fk_soc);
+		$result = $company->fetch($object->fk_soc);
 	}
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $company->getNomUrl(1, 'renter');	
-	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $staticImmorenter->fk_soc > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/rent/immorent_list.php',1).'?socid='.$staticImmorenter->fk_soc.'&search_fk_soc='.urlencode($staticImmorenter->fk_soc).'">'.$langs->trans("OtherRents").'</a>)';*/
+	/*if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $staticImmorenter->fk_soc > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/rent/immorent_list.php',1).'?socid='.$staticImmorenter->fk_soc.'&search_fk_soc='.urlencode($staticImmorenter->fk_soc).'">'.$langs->trans("OtherRents").'</a>)';*/
 	$morehtmlref.='</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
