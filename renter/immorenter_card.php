@@ -415,7 +415,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
-	$keyforbreak='note_private';
+	$keyforbreak='civility_id';
 	foreach($object->fields as $key => $val)
 	{
 		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
@@ -493,7 +493,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
 		}
-		elseif ($val['label'] == 'BirthDay')
+		if ($val['label'] == 'BirthDay')
 		{
 			$object->birth = dol_print_date($db->jdate($object->birth), 'day');
 			print '<tr><td width="25%">'.$langs->trans('BirthDay').'</td><td>';
