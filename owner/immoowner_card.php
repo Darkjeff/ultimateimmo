@@ -420,7 +420,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		$value=$object->$key;
 
-		print '<tr><td';
+		print '<tr class="oddeven"><td';
 		print ' class="titlefield fieldname_'.$key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
