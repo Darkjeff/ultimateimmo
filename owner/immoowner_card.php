@@ -406,9 +406,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	$object->fields = dol_sort_array($object->fields, 'position');
-	$keyforbreak='note_private';
-	foreach($object->fields as $key => $val)
+	//$object->fields = dol_sort_array($object->fields, 'position');
+	$keyforbreak='address';
+	/*foreach($object->fields as $key => $val)
 	{
 		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
 
@@ -432,12 +432,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($val['type'] == 'text') print ' wordbreak';
 		print '">';
 		print '<td>';
-				
+
 		print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
-	}
+	}*/
+	include DOL_DOCUMENT_ROOT.'/core/tpl/commonfields_view.tpl.php';
 
 	print '</table>';
 
