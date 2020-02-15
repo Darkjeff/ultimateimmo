@@ -98,18 +98,25 @@ $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $obj
  *
  */
 
-$parameters=array('id'=>$id, 'rowid'=>$id);
-$reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+$parameters = array('id'=>$id, 'rowid'=>$id);
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if (empty($reshook))
 {
-	$error=0;
+	$error = 0;
 
 	$permissiontoadd = $user->rights->ultimateimmo->write;
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
-	$backurlforlist = dol_buildpath('/ultimateimmo/renter/immorenter_list.php',1);
-	$triggermodname = 'ULTIMATEIMMO_MODIFY';
+	$backurlforlist = dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1);
+
+	if (empty($backtopage) || ($cancel && empty($id))) {
+    	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
+    		if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
+    		else $backtopage = dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?id='.($id > 0 ? $id : '__ID__');
+    	}
+    }
+	$triggermodname = 'ULTIMATEIMMO_IMMORENTER_MODIFY';
 
 	/*if ($action == 'setsocid')
 	{
@@ -153,13 +160,13 @@ if (empty($reshook))
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 
 	// Actions to send emails
-	$trigger_name='ULTIMATEIMMO_SENTBYMAIL';
-	$autocopy='MAIN_MAIL_AUTOCOPY_ULTIMATEIMMO_TO';
-	$trackid='immorenter'.$object->id;
+	$triggersendname = 'IMMORENTER_SENTBYMAIL';
+	$autocopy = 'MAIN_MAIL_AUTOCOPY_IMMORENTER_TO';
+	$trackid = 'immorenter'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 }
 
-$modulepart = 'ultimateimmo';
+//$modulepart = 'ultimateimmo';
 
 
 /*
