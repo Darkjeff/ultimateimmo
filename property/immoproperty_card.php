@@ -668,7 +668,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 
 	// Select mail models is same action as presend
-	if (GETPOST('modelselected')) {
+	if (GETPOST('modelselected')) 
+	{
 		$action = 'presend';
 	}
 
@@ -681,27 +682,26 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$relativepath = '/property/' . dol_sanitizeFileName($object->ref).'/';
 		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
 		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-		$genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
-		$delallowed = $user->rights->ultimateimmo->write;	// If you can create/edit, you can remove a file on card
+		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
+		$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
 		print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
 
 		// Show links to link elements
 		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoproperty'));
 		$somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
 
-
 		print '</div><div class="fichehalfright"><div class="ficheaddleft">';
 
 		$MAXEVENT = 10;
 
-		$morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/property/immoproperty_info.php', 1).'?id='.$object->id.'">';
+		$morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/property/immoproperty_agenda.php', 1).'?id='.$object->id.'">';
 		$morehtmlright.= $langs->trans("SeeAll");
 		$morehtmlright.= '</a>';
 
 		// List of actions on element
 		include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
 		$formactions = new FormActions($db);
-		$somethingshown = $formactions->showactions($object, 'immoproperty', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
+		$somethingshown = $formactions->showactions($object, $object->element, (is_object($object->thirdparty) ? $object->thirdparty->id : 0), 1, '', $MAXEVENT, '', $morehtmlright);
 
 		print '</div></div></div>';
 	}
