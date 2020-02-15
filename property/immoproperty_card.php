@@ -287,6 +287,7 @@ if (($id || $ref) && $action == 'edit')
 		if ($val['notnull'] > 0) print ' fieldrequired';
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
+		print '>';
 		if (! empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
 		else print $langs->trans($val['label']);
 		print '</td>';
@@ -303,13 +304,13 @@ if (($id || $ref) && $action == 'edit')
 				$object->country = $tmparray['label'];
 			}
 			// Country
-			print $form->select_country((GETPOST('country_id') != '' ?GETPOST('country_id') : $object->country_id));	
+			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));	
 		}
 		else
 		{
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key,'none'):$object->$key;
-			else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key,'none') : $object->$key;
+			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
 			//var_dump($val.' '.$key.' '.$value);
 			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
 			else print $object->showInputField($val, $key, $value, '', '', '', 0);
