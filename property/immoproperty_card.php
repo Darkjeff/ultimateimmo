@@ -791,7 +791,7 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 		</script>
 
 		<br>
-		<div align="center">
+		<div class="center">
 		<div id="map" class="divmap" style="width: 90%; height: 500px;" ></div>
 		</div>
 		<?php	
