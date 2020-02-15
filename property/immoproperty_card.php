@@ -280,7 +280,7 @@ if (($id || $ref) && $action == 'edit')
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
 
 		print '<tr><td';
 		print ' class="titlefieldcreate';
@@ -291,18 +291,19 @@ if (($id || $ref) && $action == 'edit')
 		else print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
+
 		if ($val['label'] == 'Country') 
 		{			
 			// We set country_id, country_code and country for the selected country
-			$object->country_id = GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
+			$object->country_id = GETPOST('country_id','int') ? GETPOST('country_id','int') : $object->country_id;
 			if ($object->country_id)
 			{
-				$tmparray=$object->getCountry($object->country_id,'all');
+				$tmparray = $object->getCountry($object->country_id,'all');
 				$object->country_code = $tmparray['code'];
 				$object->country = $tmparray['label'];
 			}
 			// Country
-			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
+			print $form->select_country((GETPOST('country_id') != '' ?GETPOST('country_id') : $object->country_id));	
 		}
 		else
 		{
