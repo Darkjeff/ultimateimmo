@@ -336,7 +336,7 @@ if (($id || $ref) && $action == 'edit')
 // Part to show record
 if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
 {
-	$res = $object->fetch_optionals($object->id, $extralabels);
+	$res = $object->fetch_optionals();
 
 	$head = immopropertyPrepareHead($object);
 	dol_fiche_head($head, 'card', $langs->trans("ImmoProperty"), -1, 'ultimateimmo@ultimateimmo');
@@ -431,7 +431,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		}
 	}
 	*/
-	$morehtmlref.='</div>';
+	$morehtmlref .= '</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
@@ -443,7 +443,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 	$keyforbreak = 'fk_soc';
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
 		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
 
@@ -576,7 +576,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     	<input type="hidden" name="id" value="' . $object->id.'">
     	';
 
-    	if (!empty($conf->use_javascript_ajax) && $object->status == 0) {
+		if (!empty($conf->use_javascript_ajax) && $object->status == 0) 
+		{
     	    include DOL_DOCUMENT_ROOT.'/core/tpl/ajaxrow.tpl.php';
     	}
 
@@ -614,10 +615,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	// Buttons for actions
-	if ($action != 'presend' && $action != 'editline') {
+	if ($action != 'presend' && $action != 'editline') 
+	{
 		print '<div class="tabsAction">'."\n";
 		$parameters=array();
-		$reshook=$hookmanager->executeHooks('addMoreActionsButtons',$parameters,$object,$action);	// Note that $action and $object may have been modified by hook
+		$reshook=$hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);	// Note that $action and $object may have been modified by hook
 		if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 		if (empty($reshook))
@@ -625,14 +627,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			// Send
 			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
 
-			if ($user->rights->ultimateimmo->write)
-			{
-				print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
-			}
-			else
-			{
-				print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
-			}
+			// Back to draft
+            if ($object->status == $object::STATUS_VALIDATED)
+            {
+	            if ($permissiontoadd)
+	            {
+	            	print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=confirm_setdraft&confirm=yes">'.$langs->trans("SetToDraft").'</a>';
+	            }
+            }
 
 			if ($user->rights->ultimateimmo->write)
 			{
