@@ -351,11 +351,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&lineid='.$lineid, $langs->trans('DeleteLine'), $langs->trans('ConfirmDeleteLine'), 'confirm_deleteline', '', 0, 1);
 	}
 	// Clone confirmation
-	if ($action == 'clone') 
-	{
+	if ($action == 'clone') {
 		// Create an array for form
 		$formquestion = array();
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneImmoProperty', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneMyObject', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
 	}
 
 	// Confirmation of action xxxx
@@ -372,11 +371,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('XXX'), $text, 'confirm_xxx', $formquestion, 0, 1, 220);
 	}
 
-	// Call Hook formConfirm
-	$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
-	$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
-	elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
+	if (! $formconfirm) {
+		$parameters = array('lineid' => $lineid);
+		$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+		if (empty($reshook)) $formconfirm.=$hookmanager->resPrint;
+		elseif ($reshook > 0) $formconfirm=$hookmanager->resPrint;
+	}
 
 	// Print form confirm
 	print $formconfirm;
@@ -384,9 +384,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?restore_lastsearch_values=0' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1) . '?restore_lastsearch_values=0' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
-	$morehtmlref = '<div class="refidno">';
+	$morehtmlref='<div class="refidno">';
 	/*
 	// Ref bis
 	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', 0, 1);
@@ -430,6 +430,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	*/
 	$morehtmlref.='</div>';
 
+
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
 	print '<div class="fichecenter">';
@@ -438,40 +439,32 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	$object->fields = dol_sort_array($object->fields, 'position');
-	$keyforbreak = 'fk_soc';
+	$keyforbreak='fk_soc';
 	foreach($object->fields as $key => $val)
 	{
-		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
-
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
+		if (abs($val['visible']) != 1) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue; // We don't want this field
-		if (in_array($key, array('ref', 'status'))) continue; // Ref and status are already in dol_banner
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
-		$value = $object->$key;
+		$value=$object->$key;
 
 		print '<tr><td';
-		print ' class="titlefield fieldname_'.$key;
-		//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
+		print ' class="titlefield';
+		if ($val['notnull'] > 0) print ' fieldrequired';
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '">';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
-		print '</td>';
-		print '<td class="valuefield fieldname_'.$key;
-		if ($val['type'] == 'text') print ' wordbreak';
-		print '">';
+		print '"';
+		print '>'.$langs->trans($val['label']).'</td>';
 		print '<td>';
 		
 		if ($val['label'] == 'Owner') 
 		{
-			$staticowner = new ImmoOwner($db);
+			$staticowner=new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);			
 			if ($staticowner->ref)
 			{
-				$staticowner->ref = $staticowner->getFullName($langs);
+				$staticowner->ref=$staticowner->getFullName($langs);
 			}
 			print $staticowner->ref;
 		}
@@ -482,51 +475,42 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
+
+		if (! empty($keyforbreak) && $key == $keyforbreak) break;						// key used for break on second column
 	}
-
 	print '</table>';
-
-	// We close div and reopen for second column
 	print '</div>';
 	print '<div class="fichehalfright">';
-
+	print '<div class="ficheaddleft">';
 	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border centpercent tableforfield">';
+	print '<table class="border centpercent">';
 
 	$alreadyoutput = 1;
 	foreach($object->fields as $key => $val)
 	{
 		if ($alreadyoutput)
 		{
-			if (!empty($keyforbreak) && $key == $keyforbreak) 
-			{
-				$alreadyoutput = 0; // key used for break on second column
-			}
-			else 
-			{
-				continue;
-			}
+			if (! empty($keyforbreak) && $key == $keyforbreak) $alreadyoutput = 0;		// key used for break on second column
+			continue;
 		}
 
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
+		if (abs($val['visible']) != 1) continue;	// Discard such field from form
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue; // We don't want this field
-		if (in_array($key, array('ref', 'status'))) continue; // Ref and status are already in dol_banner
-
-		$value = $object->$key;
+		$value=$object->$key;
 		
 		print '<tr><td';
-		print ' class="titlefield fieldname_'.$key;
-		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
+		print ' class="titlefield';
+		if ($val['notnull'] > 0) print ' fieldrequired';
 		if ($val['label'] == 'Country') 
 		{
 			if ($object->country_id)
 			{
 				include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-				$tmparray = getCountry($object->country_id,'all');
-				$object->country_code = $tmparray['code'];
-				$object->country = $tmparray['label'];
+				$tmparray=getCountry($object->country_id,'all');
+				$object->country_code=$tmparray['code'];
+				$object->country=$tmparray['label'];
 			}
 			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
@@ -534,10 +518,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		else
 		{
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-			print '">';
-			if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-			else print $langs->trans($val['label']);
-			print '</td>';
+			print '"';
+			print '>'.$langs->trans($val['label']).'</td>';
 			print '<td>';
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
@@ -552,63 +534,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '</table>';
 	print '</div>';
 	print '</div>';
+	print '</div>';
 
-	print '<div class="clearboth"></div>';
+	print '<div class="clearboth"></div><br>';
 
 	dol_fiche_end();
 
-	/*
-	 * Lines
-	 */
-
-	if (!empty($object->table_element_line))
-	{
-    	// Show object lines
-    	$result = $object->getLinesArray();
-
-    	print '	<form name="addproduct" id="addproduct" action="'.$_SERVER["PHP_SELF"].'?id='.$object->id.(($action != 'editline') ? '#addline' : '#line_'.GETPOST('lineid', 'int')).'" method="POST">
-    	<input type="hidden" name="token" value="' . $_SESSION ['newtoken'].'">
-    	<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline').'">
-    	<input type="hidden" name="mode" value="">
-    	<input type="hidden" name="id" value="' . $object->id.'">
-    	';
-
-    	if (!empty($conf->use_javascript_ajax) && $object->status == 0) {
-    	    include DOL_DOCUMENT_ROOT.'/core/tpl/ajaxrow.tpl.php';
-    	}
-
-    	print '<div class="div-table-responsive-no-min">';
-    	if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
-    	{
-    	    print '<table id="tablelines" class="noborder noshadow" width="100%">';
-    	}
-
-    	if (!empty($object->lines))
-    	{
-    		$object->printObjectLines($action, $mysoc, null, GETPOST('lineid', 'int'), 1);
-    	}
-
-    	// Form to add new line
-    	if ($object->status == 0 && $permissiontoadd && $action != 'selectlines')
-    	{
-    	    if ($action != 'editline')
-    	    {
-    	        // Add products/services form
-    	        $object->formAddObjectLine(1, $mysoc, $soc);
-
-    	        $parameters = array();
-    	        $reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-    	    }
-    	}
-
-    	if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
-    	{
-    	    print '</table>';
-    	}
-    	print '</div>';
-
-    	print "</form>\n";
-	}
 
 	// Buttons for actions
 	if ($action != 'presend' && $action != 'editline') {
