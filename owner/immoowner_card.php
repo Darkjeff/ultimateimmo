@@ -406,9 +406,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">'."\n";
 
 	// Common attributes
-	//$object->fields = dol_sort_array($object->fields, 'position');
+	$object->fields = dol_sort_array($object->fields, 'position');
 	$keyforbreak='address';
-	/*foreach($object->fields as $key => $val)
+	foreach($object->fields as $key => $val)
 	{
 		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
 
@@ -437,8 +437,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
-	}*/
-	include DOL_DOCUMENT_ROOT.'/core/tpl/commonfields_view.tpl.php';
+	}
 
 	print '</table>';
 
@@ -470,29 +469,30 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
 		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
-		$value=$object->$key;
-
-		if ($object->country_id)
-		{
-			include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-			$tmparray=getCountry($object->country_id,'all');
-			$object->country_code=$tmparray['code'];
-			$object->country=$tmparray['label'];
-		}
+		$value = $object->$key;
 
 		print '<tr><td';
-		print ' class="titlefield';
-		if ($val['notnull'] > 0) print ' fieldrequired';
+		print ' class="titlefield fieldname_'.$key;
+		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
 		if ($val['label'] == 'Country') 
-		{ 
+		{
+			if ($object->country_id)
+			{
+				include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+				$tmparray = getCountry($object->country_id,'all');
+				$object->country_code = $tmparray['code'];
+				$object->country = $tmparray['label'];
+			}
 			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
 		}
 		else
 		{
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-			print '"';
-			print '>'.$langs->trans($val['label']).'</td>';
+			print '">';
+			if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+			else print $langs->trans($val['label']);
+			print '</td>';
 			print '<td>';
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
