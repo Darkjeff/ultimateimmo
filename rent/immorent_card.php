@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2019 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2020 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immorent.lib.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo","other"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -54,51 +54,60 @@ $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $confirm    = GETPOST('confirm', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
-$contextpage= GETPOST('contextpage', 'aZ')?GETPOST('contextpage', 'aZ'):'myobjectcard';   // To manage different context of search
+$contextpage = GETPOST('contextpage', 'aZ') ?GETPOST('contextpage', 'aZ') : 'myobjectcard'; // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
+$backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
 
 // Initialize technical objects
-$object=new ImmoRent($db);
-
+$object = new ImmoRent($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
-$hookmanager->initHooks(array('immorentcard'));     // Note that conf->hooks_modules contains array
+$hookmanager->initHooks(array('immorentcard', 'globalcard'));     // Note that conf->hooks_modules contains array
+
 // Fetch optionals attributes and labels
-$extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
-$search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
+$extrafields->fetch_name_optionals_label($object->table_element);
+
+$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
 
 // Initialize array of search criterias
-$search_all=trim(GETPOST("search_all",'alpha'));
-$search=array();
-foreach($object->fields as $key => $val)
+$search_all = trim(GETPOST("search_all", 'alpha'));
+$search = array();
+foreach ($object->fields as $key => $val)
 {
-    if (GETPOST('search_'.$key,'alpha')) $search[$key]=GETPOST('search_'.$key,'alpha');
+    if (GETPOST('search_'.$key,'alpha')) $search[$key] = GETPOST('search_'.$key, 'alpha');
 }
 
-if (empty($action) && empty($id) && empty($ref)) $action='view';
+if (empty($action) && empty($id) && empty($ref)) $action = 'view';
 
 // Load object
-include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
+include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Include fetch and fetch_thirdparty but not fetch_optionals
 
 // Security check - Protection if external user
-//if ($user->societe_id > 0) access_forbidden();
-if ($user->societe_id > 0) $socid = $user->societe_id;
-//$result = restrictedArea($user, 'ultimateimmo', $id);
+//if ($user->socid > 0) accessforbidden();
+//if ($user->socid > 0) $socid = $user->socid;
+//$isdraft = (($object->statut == $object::STATUS_DRAFT) ? 1 : 0);
+//$result = restrictedArea($user, 'mymodule', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
+
+$permissiontoread = $user->rights->ultimateimmo->rent->read;
+$permissiontoadd = $user->rights->ultimateimmo->rent->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+$permissiontodelete = $user->rights->ultimateimmo->rent->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+$permissionnote = $user->rights->ultimateimmo->rent->write; // Used by the include of actions_setnotes.inc.php
+$permissiondellink = $user->rights->ultimateimmo->rent->write; // Used by the include of actions_dellink.inc.php
+$upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1];
 
 
 /*
  * Actions
  *
- * Put here all code to do according to value of "action" parameter
  */
 
-$parameters=array();
-$reshook=$hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
+$parameters = array();
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if (empty($reshook))
 {
-	$error=0;
+	$error = 0;
 	
 	/**
 	 * Action generate bail
@@ -125,7 +134,15 @@ if (empty($reshook))
 
 	$permissiontoadd = $user->rights->ultimateimmo->write;
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
-	$backurlforlist = dol_buildpath('/ultimateimmo/rent/immorent_list.php',1);
+	$backurlforlist = dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1);
+
+	if (empty($backtopage) || ($cancel && empty($id))) {
+    	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
+    		if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
+    		else $backtopage = dol_buildpath('/ultimateimmo/rent/immorent_card.php', 1).'?id='.($id > 0 ? $id : '__ID__');
+    	}
+    }
+    $triggermodname = 'ULTIMATEIMMO_IMMORENT_MODIFY'; // Name of trigger action code to execute when we modify record
 
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
@@ -137,18 +154,18 @@ if (empty($reshook))
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 	
 	// Build doc
-	if ($action == 'builddoc' && $user->rights->ultimateimmo->write)
+	if ($action == 'builddoc' && $permissiontoadd)
 	{
 		// Save last template used to generate document
-		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model','alpha'));
+		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model', 'alpha'));
 
 		$outputlangs = $langs;
-		if (GETPOST('lang_id','aZ09'))
+		if (GETPOST('lang_id', 'aZ09'))
 		{
 			$outputlangs = new Translate("",$conf);
-			$outputlangs->setDefaultLang(GETPOST('lang_id','aZ09'));
+			$outputlangs->setDefaultLang(GETPOST('lang_id', 'aZ09'));
 		}
-		$result= $object->generateDocument($object->modelpdf, $outputlangs);
+		$result = $object->generateDocument($object->modelpdf, $outputlangs);
 		if ($result <= 0)
 		{
 			setEventMessages($object->error, $object->errors, 'errors');
@@ -157,9 +174,9 @@ if (empty($reshook))
 	}
 
 	// Actions to send emails
-	$trigger_name='IMMORENT_SENTBYMAIL';
-	$autocopy='MAIN_MAIL_AUTOCOPY_IMMORENT_TO';
-	$trackid='immorent'.$object->id;
+	$triggersendname = 'IMMORENT_SENTBYMAIL';
+	$autocopy = 'MAIN_MAIL_AUTOCOPY_IMMORENT_TO';
+	$trackid = 'immorent'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 }
 
@@ -169,10 +186,10 @@ if (empty($reshook))
  *
  */
 
-llxHeader('', $langs->trans("ImmoRents"), '');
+$form = new Form($db);
+$formfile = new FormFile($db);
 
-$form=new Form($db);
-$formfile=new FormFile($db);
+llxHeader('', $langs->trans("ImmoRents"), '');
 
 // Part to create
 if ($action == 'create')
@@ -182,11 +199,12 @@ if ($action == 'create')
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="add">';
-	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
 
 	dol_fiche_head(array(), '');
 
-	print '<table class="border centpercent">'."\n";
+	print '<table class="border centpercent tableforfieldcreate">'."\n";
 
 	// Common attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_add.tpl.php';
@@ -215,12 +233,13 @@ if (($id || $ref) && $action == 'edit')
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="update">';
-	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
 	print '<input type="hidden" name="id" value="'.$object->id.'">';
+	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
 
 	dol_fiche_head();
 
-	print '<table class="border centpercent">'."\n";
+	print '<table class="border centpercent tableforfieldedit">'."\n";
 
 	// Common attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_edit.tpl.php';
@@ -242,7 +261,7 @@ if (($id || $ref) && $action == 'edit')
 // Part to show record
 if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
 {
-    $res = $object->fetch_optionals($object->id, $extralabels);
+    $res = $object->fetch_optionals();
 
 	$head = immorentPrepareHead($object);
 	dol_fiche_head($head, 'card', $langs->trans("ImmoRents"), -1, 'ultimateimmo@ultimateimmo');
@@ -253,6 +272,18 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if ($action == 'delete')
 	{
 	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoRent'), $langs->trans('ConfirmDeleteImmoRent'), 'confirm_delete', '', 0, 1);
+	}
+	// Confirmation to delete line
+	if ($action == 'deleteline')
+	{
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&lineid='.$lineid, $langs->trans('DeleteLine'), $langs->trans('ConfirmDeleteLine'), 'confirm_deleteline', '', 0, 1);
+	}
+	// Clone confirmation
+	if ($action == 'clone') 
+	{
+		// Create an array for form
+		$formquestion = array();
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneImmoRent', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
 	}
 
 	// Confirmation of action xxxx
