@@ -294,12 +294,12 @@ if (($id || $ref) && $action == 'edit')
 		if ($val['label'] == 'Country') 
 		{			
 			// We set country_id, country_code and country for the selected country
-			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
+			$object->country_id = GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
 			if ($object->country_id)
 			{
 				$tmparray=$object->getCountry($object->country_id,'all');
-				$object->country_code=$tmparray['code'];
-				$object->country=$tmparray['label'];
+				$object->country_code = $tmparray['code'];
+				$object->country = $tmparray['label'];
 			}
 			// Country
 			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
@@ -309,8 +309,9 @@ if (($id || $ref) && $action == 'edit')
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key,'none'):$object->$key;
 			else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
-		//var_dump($val.' '.$key.' '.$value);
-		print $object->showInputField($val, $key, $value, '', '', '', 0);
+			//var_dump($val.' '.$key.' '.$value);
+			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
 		print '</td>';
 		print '</tr>';
