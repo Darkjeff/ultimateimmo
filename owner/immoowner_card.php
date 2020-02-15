@@ -420,7 +420,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		$value=$object->$key;
 
-		print '<tr class="oddeven"><td';
+		print '<tr><td';
 		print ' class="titlefield fieldname_'.$key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
@@ -471,7 +471,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		$value = $object->$key;
 
-		print '<tr class="oddeven"><td';
+		print '<tr><td';
 		print ' class="titlefield fieldname_'.$key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
 		if ($val['label'] == 'Country') 
@@ -483,7 +483,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				$object->country_code = $tmparray['code'];
 				$object->country = $tmparray['label'];
 			}
-			print '<tr class="oddeven"><td width="25%">'.$langs->trans('Country').'</td><td>';
+			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
 		}
 		else
