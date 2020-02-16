@@ -333,16 +333,16 @@ $newcardbutton = dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle'
 print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, $newcardbutton, '', $limit);
 
 // Add code for pre mass action (confirmation or email presend form)
-$topicmail="SendImmoRenterRef";
-$modelmail="immorenter";
-$objecttmp=new ImmoRenter($db);
-$trackid='xxxx'.$object->id;
+$topicmail = "SendImmoRenterRef";
+$modelmail = "immorenter";
+$objecttmp = new ImmoRenter($db);
+$trackid = 'xxxx'.$object->id;
 include DOL_DOCUMENT_ROOT.'/core/tpl/massactions_pre.tpl.php';
 
-if ($sall)
+if ($search_all)
 {
-	foreach($fieldstosearchall as $key => $val) $fieldstosearchall[$key]=$langs->trans($val);
-	print $langs->trans("FilterOnInto", $sall) . join(', ',$fieldstosearchall);
+	foreach ($fieldstosearchall as $key => $val) $fieldstosearchall[$key] = $langs->trans($val);
+	print '<div class="divsearchfieldfilter">'.$langs->trans("FilterOnInto", $search_all).join(', ', $fieldstosearchall).'</div>';
 }
 
 $moreforfilter = '';
@@ -350,8 +350,8 @@ $moreforfilter = '';
 $moreforfilter.= $langs->trans('MyFilter') . ': <input type="text" name="search_myfield" value="'.dol_escape_htmltag($search_myfield).'">';
 $moreforfilter.= '</div>';*/
 
-$parameters=array();
-$reshook=$hookmanager->executeHooks('printFieldPreListTitle', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$parameters = array();
+$reshook = $hookmanager->executeHooks('printFieldPreListTitle', $parameters, $object);    // Note that $action and $object may have been modified by hook
 if (empty($reshook)) $moreforfilter .= $hookmanager->resPrint;
 else $moreforfilter = $hookmanager->resPrint;
 
@@ -362,24 +362,34 @@ if (! empty($moreforfilter))
 	print '</div>';
 }
 
-$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
-$selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
-$selectedfields.=(count($arrayofmassactions) ? $form->showCheckAddButtons('checkforselect', 1) : '');
+$varpage = empty($contextpage) ? $_SERVER["PHP_SELF"] : $contextpage;
+$selectedfields = $form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage); // This also change content of $arrayfields
+$selectedfields .= (count($arrayofmassactions) ? $form->showCheckAddButtons('checkforselect', 1) : '');
 
-print '<div class="div-table-responsive">';		// You can use div-table-responsive-no-min if you dont need reserved height for your table
-print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
+print '<div class="div-table-responsive">'; // You can use div-table-responsive-no-min if you dont need reserved height for your table
+print '<table class="tagtable liste'.($moreforfilter ? " listwithfilterbefore" : "").'">'."\n";
 
 
 // Fields title search
 // --------------------------------------------------------------------
 print '<tr class="liste_titre">';
-foreach($object->fields as $key => $val)
+foreach ($object->fields as $key => $val)
 {
-	$align='';
-	if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
-	if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
-	if ($key == 'status') $align.=($align?' ':'').'center';
-	if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($align?' '.$align:'').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'"></td>';
+	$cssforfield = (empty($val['css']) ? '' : $val['css']);
+	if ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	elseif (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	elseif (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+	elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $val['label'] != 'TechnicalID') $cssforfield .= ($cssforfield ? ' ' : '').'right';
+	if (!empty($arrayfields['t.'.$key]['checked']))
+	{
+		print '<td class="liste_titre'.($cssforfield ? ' '.$cssforfield : '').'">';
+		if (is_array($val['arrayofkeyval'])) print $form->selectarray('search_'.$key, $val['arrayofkeyval'], $search[$key], $val['notnull'], 0, 0, '', 1, 0, 0, '', 'maxwidth75');
+		elseif (strpos($val['type'], 'integer:') === 0) {
+			print $object->showInputField($val, $key, $search[$key], '', '', 'search_', 'maxwidth150', 1);
+		}
+		elseif (! preg_match('/^(date|timestamp)/', $val['type'])) print '<input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'">';
+		print '</td>';
+	}
 }
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
