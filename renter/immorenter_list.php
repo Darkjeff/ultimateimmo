@@ -452,20 +452,22 @@ while ($i < ($limit ? min($num, $limit) : $num))
 	if (empty($obj)) break;		// Should not happen
 
 	// Store properties in $object
-	$object->id = $obj->rowid;
-	foreach($object->fields as $key => $val)
-	{
-		if (isset($obj->$key)) $object->$key = $obj->$key;
-	}
+	$object->setVarsFromFetchObj($obj);
 
 	// Show here line of result
 	print '<tr class="oddeven">';
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
 		$align='';
-		if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
-		if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
-		if ($key == 'status') $align.=($align?' ':'').'center';
+		$cssforfield = (empty($val['css']) ? '' : $val['css']);
+	    if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	    elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+
+	    if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+	    elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+
+	    if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '').'right';
+
 		if (! empty($arrayfields['t.'.$key]['checked']))
 		{
 			print '<td';
