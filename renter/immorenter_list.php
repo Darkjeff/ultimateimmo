@@ -41,8 +41,8 @@ if (! $res) die("Include of main fails");
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
-require_once __DIR__.'/class/immorenter.class.php';
-require_once __DIR__.'/class/immoowner.class.php';
+dol_include_once('/ultimateimmo/class/immorenter.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
 
 // Load traductions files required by the page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
