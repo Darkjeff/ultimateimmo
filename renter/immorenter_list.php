@@ -472,7 +472,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
 			if ($key == 'status') print $object->getLibStatut(5);
 			
-			elseif ($val['label'] == 'BirthCountry') 
+			/*elseif ($val['label'] == 'BirthCountry') 
 			{
 				if ($object->country_id)
 				{
@@ -492,7 +492,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 					$staticowner->ref=$staticowner->getFullName($langs);
 				}
 				print $staticowner->ref;
-			}
+			}*/
 			else
 			{
 				print $object->showOutputField($val, $key, $obj->$key, '');
