@@ -244,26 +244,39 @@ $reshook=$hookmanager->executeHooks('printFieldListGroupBy',$parameters);    // 
 $sql.=$hookmanager->resPrint;
 */
 
-$sql.=$db->order($sortfield,$sortorder);
+$sql .= $db->order($sortfield, $sortorder);
 
 // Count total nb of records
 $nbtotalofrecords = '';
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
 {
-	$result = $db->query($sql);
-	$nbtotalofrecords = $db->num_rows($result);
+	$resql = $db->query($sql);
+	$nbtotalofrecords = $db->num_rows($resql);
+	if (($page * $limit) > $nbtotalofrecords)	// if total of record found is smaller than page * limit, goto and load page 0
+	{
+		$page = 0;
+		$offset = 0;
+	}
 }
 
-$sql.= $db->plimit($limit+1, $offset);
-
-$resql=$db->query($sql);
-if (! $resql)
+// if total of record found is smaller than limit, no need to do paging and to restart another select with limits set.
+if (is_numeric($nbtotalofrecords) && ($limit > $nbtotalofrecords || empty($limit)))
 {
-	dol_print_error($db);
-	exit;
+	$num = $nbtotalofrecords;
 }
+else
+{
+	if ($limit) $sql .= $db->plimit($limit + 1, $offset);
 
-$num = $db->num_rows($resql);
+	$resql = $db->query($sql);
+	if (!$resql)
+	{
+		dol_print_error($db);
+		exit;
+	}
+
+	$num = $db->num_rows($resql);
+}
 
 // Direct jump if only one record found
 if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $search_all)
