@@ -481,18 +481,23 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<tr><td';
 		print ' class="titlefield fieldname_'.$key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
-		if ($val['label'] == 'Country') 
+		if ($object->country_id)
 		{
-			if ($object->country_id)
-			{
-				include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-				$tmparray = getCountry($object->country_id,'all');
-				$object->country_code = $tmparray['code'];
-				$object->country = $tmparray['label'];
-			}
+			include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+			$tmparray=getCountry($object->country_id,'all');
+			$object->country_code=$tmparray['code'];
+			$object->country=$tmparray['label'];
+		}
+
+		print '<tr><td';
+		print ' class="titlefield';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['label'] == 'BirthCountry')
+		{
 			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
 		}
+
 		/*elseif ($val['label'] == 'BirthDay')
 		{
 			$object->birth = dol_print_date($db->jdate($object->birth), 'day');
