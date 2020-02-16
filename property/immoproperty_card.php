@@ -710,8 +710,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if (GETPOST('modelselected')) $action = 'presend';
 
 	// Presend form
-	$modelmail='immoproperty';
-	$defaulttopic='InformationMessage';
+	$modelmail = 'immoproperty';
+	$defaulttopic = 'InformationMessage';
 	$diroutput = $conf->ultimateimmo->dir_output.'/property';
 	$trackid = 'immo'.$object->id;
 

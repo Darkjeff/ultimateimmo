@@ -659,15 +659,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if (GETPOST('modelselected')) $action = 'presend';
 
 	// Presend form
-	$modelmail='immorenter';
-	$defaulttopic='InformationMessage';
+	$modelmail = 'immorenter';
+	$defaulttopic = 'InformationMessage';
 	$diroutput = $conf->ultimateimmo->dir_output.'/renter';
 	$trackid = 'immo'.$object->id;
 
 	include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
 
 }
-
 
 // End of page
 llxFooter();
