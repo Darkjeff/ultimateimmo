@@ -458,7 +458,6 @@ while ($i < ($limit ? min($num, $limit) : $num))
 	print '<tr class="oddeven">';
 	foreach ($object->fields as $key => $val)
 	{
-		$align='';
 		$cssforfield = (empty($val['css']) ? '' : $val['css']);
 	    if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
 	    elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
@@ -470,9 +469,8 @@ while ($i < ($limit ? min($num, $limit) : $num))
 
 		if (! empty($arrayfields['t.'.$key]['checked']))
 		{
-			print '<td';
-			if ($align) print ' class="'.$align.'"';
-			print '>';
+			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
+			if ($key == 'status') print $object->getLibStatut(5);
 			
 			if ($val['label'] == 'BirthCountry') 
 			{
@@ -503,8 +501,8 @@ while ($i < ($limit ? min($num, $limit) : $num))
 			if (! $i) $totalarray['nbfield']++;
 			if (! empty($val['isameasure']))
 			{
-				if (! $i) $totalarray['pos'][$totalarray['nbfield']]='t.'.$key;
-				$totalarray['val']['t.'.$key] += $obj->$key;
+				if (!$i) $totalarray['pos'][$totalarray['nbfield']] = 't.'.$key;
+				$totalarray['val']['t.'.$key] += $object->$key;
 			}
 		}
 	}
