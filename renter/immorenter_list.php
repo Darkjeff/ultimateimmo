@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2019 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2020 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,14 +38,14 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
-require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
-dol_include_once('/ultimateimmo/class/immorenter.class.php');
-dol_include_once('/ultimateimmo/class/immoowner.class.php');
+require_once __DIR__.'/class/immorenter.class.php';
+require_once __DIR__.'/class/immoowner.class.php';
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo","other"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
 
 $action     = GETPOST('action','alpha')?GETPOST('action','alpha'):'view';				// The action 'add', 'create', 'edit', 'update', 'view', ...
 $massaction = GETPOST('massaction','alpha');											// The bulk action (combo box choice into lists)
