@@ -488,22 +488,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			$object->country_code=$tmparray['code'];
 			$object->country=$tmparray['label'];
 		}
-
-		print '<tr><td';
-		print ' class="titlefield';
 		if ($val['notnull'] > 0) print ' fieldrequired';
 		if ($val['label'] == 'BirthCountry')
 		{
 			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
 		}
-
-		/*elseif ($val['label'] == 'BirthDay')
-		{
-			$object->birth = dol_print_date($db->jdate($object->birth), 'day');
-			print '<tr><td width="25%">'.$langs->trans('BirthDay').'</td><td>';
-			print $object->birth;
-		}*/
 		else
 		{
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
