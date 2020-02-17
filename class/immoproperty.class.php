@@ -255,106 +255,11 @@ class ImmoProperty extends CommonObject
 		
 		// Translate some data
 		$this->fields['status']['arrayofkeyval'] = array(1=>$langs->trans('PropertyTypeStatusActive'), 9=>$langs->trans('PropertyTypeStatusCancel'));
-		$this->fields['juridique_id']['arrayofkeyval']=array(1=>$langs->trans('MonoPropriete'), 2=>$langs->trans('Copropriete'));
-		$this->fields['datebuilt']['arrayofkeyval']=array(1=>$langs->trans('DateBuilt1'), 2=>$langs->trans('DateBuilt2'), 3=>$langs->trans('DateBuilt3'), 4=>$langs->trans('DateBuilt4'), 5=>$langs->trans('DateBuilt5'));
-		$this->fields['property_type_id']['arrayofkeyval']=array(1=>$langs->trans('APA'), 2=>$langs->trans('HOU'), 3=>$langs->trans('LOC'), 4=>$langs->trans('SHO'), 5=>$langs->trans('GAR'), 6=>$langs->trans('BUL'));
+		$this->fields['juridique_id']['arrayofkeyval'] = array(1=>$langs->trans('MonoPropriete'), 2=>$langs->trans('Copropriete'));
+		$this->fields['datebuilt']['arrayofkeyval'] = array(1=>$langs->trans('DateBuilt1'), 2=>$langs->trans('DateBuilt2'), 3=>$langs->trans('DateBuilt3'), 4=>$langs->trans('DateBuilt4'), 5=>$langs->trans('DateBuilt5'));
+		$this->fields['property_type_id']['arrayofkeyval'] = array(1=>$langs->trans('APA'), 2=>$langs->trans('HOU'), 3=>$langs->trans('LOC'), 4=>$langs->trans('SHO'), 5=>$langs->trans('GAR'), 6=>$langs->trans('BUL'));
 	}
 	
-	/**
-	 * Create object into database
-	 *
-	 * @param  User $user      User that creates
-	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
-	 * @return int             <0 if KO, Id of created object if OK
-	 */
-	/*public function createCommon(User $user, $notrigger = false)
-	{
-		global $langs, $object;
-
-		$error = 0;
-
-		$now=dol_now();
-
-		$fieldvalues = $this->setSaveQuery();
-		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation']=$this->db->idate($now);
-		if (array_key_exists('fk_user_creat', $fieldvalues) && ! ($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat']=$user->id;
-		unset($fieldvalues['rowid']);	// The field 'rowid' is reserved field name for autoincrement field so we don't need it into insert.
-
-		$keys=array();
-		$values = array();
-		foreach ($fieldvalues as $k => $v) {
-			$keys[$k] = $k;
-			$value = $this->fields[$k];
-			$values[$k] = $this->quote($v, $value);
-		}
-
-		// Clean and check mandatory
-		foreach($keys as $key)
-		{
-			// If field is an implicit foreign key field
-			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key]='';
-			if (! empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key]='';
-
-			//var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
-			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && ! isset($values[$key]) && is_null($val['default']))
-			{
-				$error++;
-				$this->errors[]=$langs->trans("ErrorFieldRequired", $this->fields[$key]['label']);
-			}
-
-			// If field is an implicit foreign key field
-			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && empty($values[$key])) $values[$key]='null';
-			if (! empty($this->fields[$key]['foreignkey']) && empty($values[$key])) $values[$key]='null';
-		}
-
-		if ($error) return -1;
-
-		$this->db->begin();
-
-		if (! $error)
-		{
-			$sql = 'INSERT INTO '.MAIN_DB_PREFIX.$this->table_element;
-			$sql.= ' ('.implode( ", ", $keys ).')';
-			$sql.= ' VALUES ('.implode( ", ", $values ).')';
-
-			$res = $this->db->query($sql);
-			if ($res===false) {
-				$error++;
-				$this->errors[] = $this->db->lasterror();
-			}
-		}
-
-		if (! $error)
-		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . $this->table_element);
-		}
-
-		// Create extrafields
-		if (! $error)
-		{
-			$result=$this->insertExtraFields();
-			if ($result < 0) $error++;
-		}
-
-		// Triggers
-		if (! $error && ! $notrigger)
-		{
-			// Call triggers
-			$result=$this->call_trigger(strtoupper(get_class($this)).'_CREATE',$user);
-			if ($result < 0) { $error++; }
-			// End call triggers
-		}
-
-		// Commit or rollback
-		if ($error) {
-			$this->db->rollback();
-			return -1;
-		} else {
-			$this->db->commit();
-			return $this->id;
-		}
-	}*/
-
 	/**
 	 * Create object into database
 	 *
@@ -376,7 +281,7 @@ class ImmoProperty extends CommonObject
 	 */
 	public function createFromClone(User $user, $fromid)
 	{
-		global $hookmanager, $langs;
+		global $langs, $extrafields;
 	    $error = 0;
 
 	    dol_syslog(__METHOD__, LOG_DEBUG);
@@ -386,16 +291,38 @@ class ImmoProperty extends CommonObject
 	    $this->db->begin();
 
 	    // Load source object
-	    $object->fetchCommon($fromid);
+	    $result = $object->fetchCommon($fromid);
+	    if ($result > 0 && !empty($object->table_element_line)) $object->fetchLines();
+
+	    // get lines so they will be clone
+	    //foreach($this->lines as $line)
+	    //	$line->fetch_optionals();
+
 	    // Reset some properties
 	    unset($object->id);
 	    unset($object->fk_user_creat);
 	    unset($object->import_key);
 
+
 	    // Clear fields
-	    $object->ref = "copy_of_".$object->ref;
-	    $object->title = $langs->trans("CopyOf")." ".$object->title;
+	    $object->ref = empty($this->fields['ref']['default']) ? "copy_of_".$object->ref : $this->fields['ref']['default'];
+	    $object->label = empty($this->fields['label']['default']) ? $langs->trans("CopyOf")." ".$object->label : $this->fields['label']['default'];
+	    $object->status = self::STATUS_DRAFT;
 	    // ...
+	    // Clear extrafields that are unique
+	    if (is_array($object->array_options) && count($object->array_options) > 0)
+	    {
+	    	$extrafields->fetch_name_optionals_label($this->table_element);
+	    	foreach ($object->array_options as $key => $option)
+	    	{
+	    		$shortkey = preg_replace('/options_/', '', $key);
+	    		if (!empty($extrafields->attributes[$this->element]['unique'][$shortkey]))
+	    		{
+	    			//var_dump($key); var_dump($clonedObj->array_options[$key]); exit;
+	    			unset($object->array_options[$key]);
+	    		}
+	    	}
+	    }
 
 	    // Create clone
 		$object->context['createfromclone'] = 'createfromclone';
@@ -406,6 +333,27 @@ class ImmoProperty extends CommonObject
 	        $this->errors = $object->errors;
 	    }
 
+	    if (!$error)
+	    {
+	    	// copy internal contacts
+	    	if ($this->copy_linked_contact($object, 'internal') < 0)
+	    	{
+	    		$error++;
+	    	}
+	    }
+
+	    if (!$error)
+	    {
+	    	// copy external contacts if same company
+	    	if (property_exists($this, 'socid') && $this->socid == $object->socid)
+	    	{
+	    		if ($this->copy_linked_contact($object, 'external') < 0)
+	    			$error++;
+	    	}
+	    }
+
+	    unset($object->context['createfromclone']);
+
 	    // End
 	    if (!$error) {
 	        $this->db->commit();
@@ -415,6 +363,7 @@ class ImmoProperty extends CommonObject
 	        return -1;
 	    }
 	}
+
 	
 	/**
 	 * Function to concat keys of fields
