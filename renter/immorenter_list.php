@@ -134,9 +134,9 @@ if (is_array($extrafields->attributes[$object->table_element]['label']) && count
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
 
-$permissiontoread = $user->rights->ultimateimmo->renter->read;
-$permissiontoadd = $user->rights->ultimateimmo->renter->write;
-$permissiontodelete = $user->rights->ultimateimmo->renter->delete;
+$permissiontoread = $user->rights->ultimateimmo->read;
+$permissiontoadd = $user->rights->ultimateimmo->write;
+$permissiontodelete = $user->rights->ultimateimmo->delete;
 
 /*
  * Actions
