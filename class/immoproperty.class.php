@@ -91,7 +91,7 @@ class ImmoProperty extends CommonObject
 	 */
 	public $fields = array(
 		'rowid'         => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-2, 'noteditable'=>1, 'notnull'=> 1, 'index'=>1, 'position'=>1, 'comment'=>'Id'),
-		'ref'           => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'noteditable'=>0, 'default'=>'', 'notnull'=> 1, 'showoncombobox'=>1, 'index'=>1, 'position'=>10, 'searchall'=>1, 'comment'=>'Reference of object'), 'comment'=>"Reference of object"),
+		'ref'           => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'noteditable'=>0, 'default'=>'', 'notnull'=> 1, 'showoncombobox'=>1, 'index'=>1, 'position'=>10, 'searchall'=>1, 'comment'=>'Reference of object'),
 		'entity'        => array('type'=>'integer', 'label'=>'Entity', 'enabled'=>1, 'visible'=>0, 'notnull'=> 1, 'default'=>1, 'index'=>1, 'position'=>20),
 		'property_type_id' => array('type'=>'integer', 'label'=>'ImmoProperty_Type', 'enabled'=>1, 'visible'=>-1, 'position'=>20, 'notnull'=>1, 'arrayofkeyval'=>array('1'=>'APA', '2'=>'HOU', '3'=>'LOC', '4'=>'SHO', '5'=>'GAR', '6'=>'BUL')),
 		'fk_property'   => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'PropertyParent', 'enabled'=>1, 'visible'=>-1, 'position'=>25, 'notnull'=>-1),
