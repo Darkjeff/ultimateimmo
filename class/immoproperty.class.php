@@ -63,6 +63,10 @@ class ImmoProperty extends CommonObject
 	 */
 	public $picto = 'immoproperty@ultimateimmo';
 
+	const STATUS_DRAFT = 0;
+	const STATUS_VALIDATED = 1;
+	const STATUS_CANCELED = 9;
+
 
 	/**
 	 *  'type' if the field format.
