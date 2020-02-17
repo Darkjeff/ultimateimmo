@@ -134,9 +134,9 @@ if (is_array($extrafields->attributes[$object->table_element]['label']) && count
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
 
-$permissiontoread = $user->rights->ultimateimmo->renter->read;
-$permissiontoadd = $user->rights->ultimateimmo->renter->write;
-$permissiontodelete = $user->rights->ultimateimmo->renter->delete;
+$permissiontoread = $user->rights->ultimateimmo->read;
+$permissiontoadd = $user->rights->ultimateimmo->write;
+$permissiontodelete = $user->rights->ultimateimmo->delete;
 
 /*
  * Actions
@@ -327,7 +327,6 @@ print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 print '<input type="hidden" name="page" value="'.$page.'">';
 print '<input type="hidden" name="contextpage" value="'.$contextpage.'">';
 
-$newcardbutton='';
 $newcardbutton = dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?action=create&backtopage='.urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
 
 print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, $newcardbutton, '', $limit);
@@ -471,10 +470,35 @@ while ($i < ($limit ? min($num, $limit) : $num))
 		{
 			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
 			if ($key == 'status') print $object->getLibStatut(5);
-			else print $object->showOutputField($val, $key, $object->$key, '');
+			
+			elseif ($val['label'] == 'BirthCountry') 
+			{
+				if ($object->country_id)
+				{
+					include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+					$tmparray=getCountry($object->country_id,'all');
+					$object->country_code=$tmparray['code'];
+					$object->country=$tmparray['label'];
+				}				
+				print $object->country;
+			}
+			elseif ($val['label'] == 'Owner') 
+			{
+				$staticowner=new ImmoOwner($db);
+				$staticowner->fetch($object->fk_owner);			
+				if ($staticowner->ref)
+				{
+					$staticowner->ref=$staticowner->getFullName($langs);
+				}
+				print $staticowner->ref;
+			}
+			else
+			{
+				print $object->showOutputField($val, $key, $obj->$key, '');
+			}
 			print '</td>';
-			if (!$i) $totalarray['nbfield']++;
-			if (!empty($val['isameasure']))
+			if (! $i) $totalarray['nbfield']++;
+			if (! empty($val['isameasure']))
 			{
 				if (!$i) $totalarray['pos'][$totalarray['nbfield']] = 't.'.$key;
 				$totalarray['val']['t.'.$key] += $object->$key;
