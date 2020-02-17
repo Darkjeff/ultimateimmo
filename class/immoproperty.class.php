@@ -609,7 +609,7 @@ class ImmoProperty extends CommonObject
         $label .= '<br>';
 		$label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
 		$label .= '<br>';
-        $label .= '<b>' . $langs->trans('Label') . ':</b> ' . $this->Label;
+        $label .= '<b>' . $langs->trans('Label') . ':</b> ' . $this->label;
         if (isset($this->status)) {
         	$label.= '<br><b>' . $langs->trans("Status").":</b> ".$this->getLibStatut(5);
         }
