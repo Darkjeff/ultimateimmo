@@ -267,7 +267,7 @@ class ImmoProperty extends CommonObject
 	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, Id of created object if OK
 	 */
-	public function createCommon(User $user, $notrigger = false)
+	/*public function createCommon(User $user, $notrigger = false)
 	{
 		global $langs, $object;
 
@@ -353,7 +353,7 @@ class ImmoProperty extends CommonObject
 			$this->db->commit();
 			return $this->id;
 		}
-	}
+	}*/
 
 	/**
 	 * Create object into database
