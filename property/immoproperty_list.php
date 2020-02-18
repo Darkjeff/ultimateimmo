@@ -86,6 +86,7 @@ if (! $sortfield) $sortfield="t.".key($object->fields);   // Set here default se
 if (! $sortorder) $sortorder="ASC";
 
 // Protection if external user
+if (empty($conf->ultimateimmo->enabled)) accessforbidden('Module not enabled');
 $socid=0;
 if ($user->societe_id > 0)
 {
@@ -103,12 +104,10 @@ foreach($object->fields as $key => $val)
 }
 
 // List of fields to search into when doing a "search in all"
-$fieldstosearchall = array(
-);
-
+$fieldstosearchall = array();
 foreach($object->fields as $key => $val)
 {
-	if ($val['searchall']) $fieldstosearchall['t.'.$key]=array();
+	if ($val['searchall']) $fieldstosearchall['t.'.$key] = $val['label'];
 }
 
 // Definition of fields for list
