@@ -282,11 +282,11 @@ else
 }
 
 // Direct jump if only one record found
-if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $search_all)
+if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $search_all  && !$page)
 {
 	$obj = $db->fetch_object($resql);
 	$id = $obj->rowid;
-	header("Location: ".dol_buildpath('/ultimateimmo/property/immoproperty_card.php',1).'?id='.$id);
+	header("Location: ".dol_buildpath('/ultimateimmo/property/immoproperty_card.php', 1).'?id='.$id);
 	exit;
 }
 
