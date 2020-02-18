@@ -428,7 +428,7 @@ class ImmoProperty extends CommonObject
 	 */
 	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
-		if (empty($id) && empty($ref)) && empty($morewhere)) return -1;
+		if (empty($id) && empty($ref) && empty($morewhere)) return -1;
 		
 		global $langs;
 		
