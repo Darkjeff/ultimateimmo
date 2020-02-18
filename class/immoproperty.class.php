@@ -703,18 +703,18 @@ class ImmoProperty extends CommonObject
 	}
 
 	/**
-	 *	Charge les informations d'ordre info dans l'objet commande
+	 *	Load the info information in the object
 	 *
-	 *	@param  int		$id       Id of order
+	 *	@param  int		$id       Id of object
 	 *	@return	void
 	 */
-	function info($id)
+	public function info($id)
 	{
 		$sql = 'SELECT rowid, date_creation as datec, tms as datem,';
-		$sql.= ' fk_user_creat, fk_user_modif';
-		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql.= ' WHERE t.rowid = '.$id;
-		$result=$this->db->query($sql);
+		$sql .= ' fk_user_creat, fk_user_modif';
+		$sql .= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
+		$sql .= ' WHERE t.rowid = '.$id;
+		$result = $this->db->query($sql);
 		if ($result)
 		{
 			if ($this->db->num_rows($result))
@@ -725,7 +725,7 @@ class ImmoProperty extends CommonObject
 				{
 					$cuser = new User($this->db);
 					$cuser->fetch($obj->fk_user_author);
-					$this->user_creation   = $cuser;
+					$this->user_creation = $cuser;
 				}
 
 				if ($obj->fk_user_valid)
@@ -739,7 +739,7 @@ class ImmoProperty extends CommonObject
 				{
 					$cluser = new User($this->db);
 					$cluser->fetch($obj->fk_user_cloture);
-					$this->user_cloture   = $cluser;
+					$this->user_cloture = $cluser;
 				}
 
 				$this->date_creation     = $this->db->jdate($obj->datec);
@@ -748,7 +748,6 @@ class ImmoProperty extends CommonObject
 			}
 
 			$this->db->free($result);
-
 		}
 		else
 		{
