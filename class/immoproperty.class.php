@@ -254,7 +254,7 @@ class ImmoProperty extends CommonObject
 		}
 		
 		// Translate some data
-		$this->fields['status']['arrayofkeyval'] = array(1=>$langs->trans('PropertyTypeStatusActive'), 9=>$langs->trans('PropertyTypeStatusCancel'));
+		$this->fields['status']['arrayofkeyval'] = array(4=>$langs->trans('PropertyTypeStatusActive'), 9=>$langs->trans('PropertyTypeStatusCancel'));
 		$this->fields['juridique_id']['arrayofkeyval'] = array(1=>$langs->trans('MonoPropriete'), 2=>$langs->trans('Copropriete'));
 		$this->fields['datebuilt']['arrayofkeyval'] = array(1=>$langs->trans('DateBuilt1'), 2=>$langs->trans('DateBuilt2'), 3=>$langs->trans('DateBuilt3'), 4=>$langs->trans('DateBuilt4'), 5=>$langs->trans('DateBuilt5'));
 		$this->fields['property_type_id']['arrayofkeyval'] = array(1=>$langs->trans('APA'), 2=>$langs->trans('HOU'), 3=>$langs->trans('LOC'), 4=>$langs->trans('SHO'), 5=>$langs->trans('GAR'), 6=>$langs->trans('BUL'));
@@ -421,14 +421,14 @@ class ImmoProperty extends CommonObject
 	/**
 	 * Load object in memory from the database
 	 *
-	 * @param	int    $id				Id object
-	 * @param	string $ref				Ref
+	 * @param	int     $id				Id object
+	 * @param	string  $ref			Ref
 	 * @param	string	$morewhere		More SQL filters (' AND ...')
 	 * @return 	int         			<0 if KO, 0 if not found, >0 if OK
 	 */
 	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
-		if (empty($id) && empty($ref)) return false;
+		if (empty($id) && empty($ref)) && empty($morewhere)) return -1;
 		
 		global $langs;
 		
@@ -444,8 +444,8 @@ class ImmoProperty extends CommonObject
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country_id = c.rowid';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
 
-		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
-		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
+		if (!empty($id)) $sql .= ' WHERE t.rowid = '.$id;
+		else $sql .= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql.=$morewhere;
 		
 		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
@@ -475,7 +475,7 @@ class ImmoProperty extends CommonObject
 					if ($langs->trans("Country".$obj->country_code) != "Country".$obj->country_code)
 						$this->country = $langs->transnoentitiesnoconv("Country".$obj->country_code);
 					else
-						$this->country=$obj->country;
+						$this->country = $obj->country;
 					$this->setVarsFromFetchObj($obj);
 					return $this->id;
     		    }
