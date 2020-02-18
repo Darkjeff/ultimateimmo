@@ -144,11 +144,11 @@ $permissiontodelete = $user->rights->ultimateimmo->delete;
  *
  */
 
-if (GETPOST('cancel','alpha')) { $action='list'; $massaction=''; }
-if (! GETPOST('confirmmassaction','alpha') && $massaction != 'presend' && $massaction != 'confirm_presend') { $massaction=''; }
+if (GETPOST('cancel','alpha')) { $action = 'list'; $massaction = ''; }
+if (! GETPOST('confirmmassaction','alpha') && $massaction != 'presend' && $massaction != 'confirm_presend') { $massaction = ''; }
 
-$parameters=array();
-$reshook=$hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
+$parameters = array();
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if (empty($reshook))
@@ -159,42 +159,37 @@ if (empty($reshook))
 	// Purge search criteria
 	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') ||GETPOST('button_removefilter','alpha')) // All tests are required to be compatible with all browsers
 	{
-		foreach($object->fields as $key => $val)
+		foreach ($object->fields as $key => $val)
 		{
-			$search[$key]='';
+			$search[$key] = '';
 		}
-		$toselect='';
-		$search_array_options=array();
+		$toselect = '';
+		$search_array_options = array();
 	}
 	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') || GETPOST('button_removefilter','alpha')
 		|| GETPOST('button_search_x','alpha') || GETPOST('button_search.x','alpha') || GETPOST('button_search','alpha'))
 	{
-		$massaction='';     // Protection to avoid mass action if we force a new search during a mass action confirmation
+		$massaction = '';     // Protection to avoid mass action if we force a new search during a mass action confirmation
 	}
 
 	// Mass actions
-	$objectclass='ImmoProperty';
-	$objectlabel='ImmoProperty';
-	$permtoread = $user->rights->ultimateimmo->read;
-	$permtodelete = $user->rights->ultimateimmo->delete;
+	$objectclass = 'ImmoProperty';
+	$objectlabel = 'ImmoProperty';
 	$uploaddir = $conf->ultimateimmo->dir_output;
 	include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
 }
 
-
-
 /*
  * View
  *
- * Put here all code to render page
  */
 
-$form=new Form($db);
+$form = new Form($db);
 
-$now=dol_now();
+$now = dol_now();
 
 //$help_url="EN:Module_ImmoProperty|FR:Module_ImmoProperty_FR|ES:Módulo_ImmoProperty";
-$help_url='';
+$help_url = '';
 $title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoProperties"));
 
 
