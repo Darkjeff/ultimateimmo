@@ -199,7 +199,7 @@ foreach ($object->fields as $key => $val)
 {
 	$sql .= 't.'.$key.', ';
 }
-$sql .= 'co.label as country, soc.nom as owner';
+$sql .= 'country.label as country, soc.nom as owner';
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
 	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.' as options_'.$key.', ' : '');
@@ -211,17 +211,17 @@ $sql .= preg_replace('/^,/', '', $hookmanager->resPrint);
 $sql = preg_replace('/,\s*$/', '', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
-$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as co ON co.label = t.country_id";
+$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as country ON country.rowid = t.country_id";
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
 if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (".getEntity($object->element).")";
-else $sql.=" WHERE 1 = 1";
+else $sql .= " WHERE 1 = 1";
 foreach ($search as $key => $val)
 {
-	$mode_search=(($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
-	if ($search[$key] != '') $sql.=natural_search('t.'.$key, $search[$key], (($key == 'status')?2:$mode_search));
+	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
+	if ($search[$key] != '') $sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 }
 //if ($search_country_id && $search_country_id != '-1')       $sql .= " AND t.country_id IN (".$db->escape($search_country_id).')';
-if ($search_all) $sql.= natural_search(array_keys($fieldstosearchall), $search_all);
+if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
 // Add where from hooks
