@@ -462,19 +462,19 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				if ($object->country_id)
 				{
 					include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-					$tmparray=getCountry($object->country_id,'all');
-					$object->country_code=$tmparray['code'];
-					$object->country=$tmparray['label'];
+					$tmparray = getCountry($object->country_id, 'all');
+					$object->country_code = $tmparray['code'];
+					$object->country = $tmparray['label'];
 				}				
 				print $object->country;
 			}
 			elseif ($val['label'] == 'Owner') 
 			{
-				$staticowner=new ImmoOwner($db);
+				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);			
 				if ($staticowner->ref)
 				{
-					$staticowner->ref=$staticowner->getFullName($langs);
+					$staticowner->ref = $staticowner->getFullName($langs);
 				}
 				print $staticowner->ref;
 			}
