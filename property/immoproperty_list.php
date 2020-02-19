@@ -222,8 +222,8 @@ $sql .= " WHERE tp.label = 'Immeuble'";
 } else {
 $sql .= " WHERE tp.label <> 'Immeuble'";
 }
-if ($object->ismultientitymanaged == 1) $sql .= " AND t.entity IN (".getEntity($object->element).")";
-else $sql.=" WHERE 1 = 1";
+if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity in (".getEntity('immoproperty').")";
+//else $sql.=" WHERE 1 = 1";
 foreach($search as $key => $val)
 {
 	$mode_search=(($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
