@@ -211,21 +211,16 @@ $sql .= preg_replace('/^,/', '', $hookmanager->resPrint);
 $sql = preg_replace('/,\s*$/', '', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
-$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as co ON co.rowid = t.country_id";
+$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as co ON co.label = t.country_id";
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
 if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (".getEntity($object->element).")";
 else $sql.=" WHERE 1 = 1";
 foreach ($search as $key => $val)
 {
-	if ($key == 'status' && $search[$key] == -1) continue;
-	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key])) ? 1 : 0);
-	if (strpos($object->fields[$key]['type'], 'integer:') === 0) {
-		if ($search[$key] == '-1') $search[$key] = '';
-		$mode_search = 2;
-	}
-	if ($search[$key] != '') $sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
+	$mode_search=(($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
+	if ($search[$key] != '') $sql.=natural_search('t.'.$key, $search[$key], (($key == 'status')?2:$mode_search));
 }
-if ($search_country_id && $search_country_id != '-1')       $sql .= " AND t.country_id IN (".$db->escape($search_country_id).')';
+//if ($search_country_id && $search_country_id != '-1')       $sql .= " AND t.country_id IN (".$db->escape($search_country_id).')';
 if ($search_all) $sql.= natural_search(array_keys($fieldstosearchall), $search_all);
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
