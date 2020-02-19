@@ -216,7 +216,7 @@ $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_building as b ON b.fk_property
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as co ON co.rowid = t.country_id";
 $sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
-if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."immoproperty_extrafields as ef on (t.rowid = ef.fk_object)";
+if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
 if ($action == 'makebuilding') {
 $sql .= " WHERE tp.label = 'Immeuble'";
 } else {
