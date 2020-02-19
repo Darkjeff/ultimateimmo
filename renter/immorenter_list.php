@@ -111,7 +111,7 @@ foreach($object->fields as $key => $val)
 
 // Definition of fields for list
 $arrayfields = array();
-foreach($object->fields as $key => $val)
+foreach ($object->fields as $key => $val)
 {
 	// If $val['visible']==0, then we never show the field
 	if (!empty($val['visible'])) $arrayfields['t.'.$key] = array('label'=>$val['label'], 'checked'=>(($val['visible'] < 0) ? 0 : 1), 'enabled'=>($val['enabled'] && ($val['visible'] != 3)), 'position'=>$val['position']);
@@ -165,8 +165,8 @@ if (empty($reshook))
 		$toselect = '';
 		$search_array_options = array();
 	}
-	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') || GETPOST('button_removefilter','alpha')
-		|| GETPOST('button_search_x','alpha') || GETPOST('button_search.x','alpha') || GETPOST('button_search','alpha'))
+	if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')
+		|| GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha'))
 	{
 		$massaction = '';     // Protection to avoid mass action if we force a new search during a mass action confirmation
 	}
