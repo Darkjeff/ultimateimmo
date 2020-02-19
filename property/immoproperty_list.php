@@ -437,19 +437,15 @@ if (is_array($extrafields->attributes[$object->table_element]['computed']) && co
 
 // Loop on record
 // --------------------------------------------------------------------
-$i=0;
-$totalarray=array();
-while ($i < min($num, $limit))
+$i = 0;
+$totalarray = array();
+while ($i < ($limit ? min($num, $limit) : $num))
 {
 	$obj = $db->fetch_object($resql);
 	if (empty($obj)) break;		// Should not happen
 
 	// Store properties in $object
-	$object->id = $obj->rowid;
-	foreach($object->fields as $key => $val)
-	{
-		if (isset($obj->$key)) $object->$key = $obj->$key;
-	}
+	$object->setVarsFromFetchObj($obj);
 
 	// Show here line of result
 	print '<tr class="oddeven">';
