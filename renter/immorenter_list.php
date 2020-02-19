@@ -220,7 +220,7 @@ foreach ($search as $key => $val)
 	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
 	if ($search[$key] != '') $sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 }
-if ($search_country_id && $search_country_id != '-1')       $sql .= " AND t.country_id IN (".$db->escape($search_country_id).')';
+//if ($search_country_id && $search_country_id != '-1')       $sql .= " AND t.country_id IN (".$db->escape($search_country_id).')';
 if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
@@ -296,7 +296,7 @@ $arrayofselected = is_array($toselect) ? $toselect : array();
 $param='';
 if (!empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param .= '&contextpage='.urlencode($contextpage);
 if ($limit > 0 && $limit != $conf->liste_limit) $param .= '&limit='.urlencode($limit);
-foreach($search as $key => $val)
+foreach ($search as $key => $val)
 {
 	if (is_array($search[$key]) && count($search[$key])) foreach ($search[$key] as $skey) $param .= '&search_'.$key.'[]='.urlencode($skey);
     else $param .= '&search_'.$key.'='.urlencode($search[$key]);

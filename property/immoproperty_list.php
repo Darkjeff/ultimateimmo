@@ -226,17 +226,17 @@ if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (".getEntity
 //else $sql.=" WHERE 1 = 1";
 foreach($search as $key => $val)
 {
-	$mode_search=(($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
-	if ($search[$key] != '') $sql.=natural_search('t.'.$key, $search[$key], (($key == 'status')?2:$mode_search));
+	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
+	if ($search[$key] != '') $sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 }
-if ($search_all) $sql.= natural_search(array_keys($fieldstosearchall), $search_all);
+if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
 
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
 // Add where from hooks
-$parameters=array();
-$reshook=$hookmanager->executeHooks('printFieldListWhere', $parameters, $object);    // Note that $action and $object may have been modified by hook
-$sql.=$hookmanager->resPrint;
+$parameters = array();
+$reshook = $hookmanager->executeHooks('printFieldListWhere', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$sql .= $hookmanager->resPrint;
 
 /* If a group by is required
 $sql.= " GROUP BY "
@@ -252,33 +252,31 @@ $reshook=$hookmanager->executeHooks('printFieldListGroupBy',$parameters);    // 
 $sql.=$hookmanager->resPrint;
 */
 
-$sql.=$db->order($sortfield,$sortorder);
+$sql .= $db->order($sortfield, $sortorder);
 
 // Count total nb of records
 $nbtotalofrecords = '';
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
 {
-	$result = $db->query($sql);
-	$nbtotalofrecords = $db->num_rows($result);
+	$resql = $db->query($sql);
+	$nbtotalofrecords = $db->num_rows($resql);
+	if (($page * $limit) > $nbtotalofrecords)	// if total of record found is smaller than page * limit, goto and load page 0
+	{
+		$page = 0;
+		$offset = 0;
+	}
 }
-// if total resultset is smaller then paging size (filtering), goto and load page 0
-if (($page * $limit) > $nbtotalofrecords)
+// if total of record found is smaller than limit, no need to do paging and to restart another select with limits set.
+if (is_numeric($nbtotalofrecords) && ($limit > $nbtotalofrecords || empty($limit)))
 {
-	$page = 0;
-	$offset = 0;
-}
-// if total resultset is smaller the limit, no need to do paging.
-if (is_numeric($nbtotalofrecords) && $limit > $nbtotalofrecords)
-{
-	$resql = $result;
 	$num = $nbtotalofrecords;
 }
 else
 {
-	$sql.= $db->plimit($limit+1, $offset);
+	if ($limit) $sql .= $db->plimit($limit + 1, $offset);
 
-	$resql=$db->query($sql);
-	if (! $resql)
+	$resql = $db->query($sql);
+	if (!$resql)
 	{
 		dol_print_error($db);
 		exit;
@@ -302,16 +300,17 @@ if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && 
 
 llxHeader('', $title, $help_url);
 
-$arrayofselected=is_array($toselect)?$toselect:array();
+$arrayofselected = is_array($toselect) ? $toselect : array();
 
 $param='';
-if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param.='&contextpage='.urlencode($contextpage);
-if ($limit > 0 && $limit != $conf->liste_limit) $param.='&limit='.urlencode($limit);
-foreach($search as $key => $val)
+if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param.= '&contextpage='.urlencode($contextpage);
+if ($limit > 0 && $limit != $conf->liste_limit) $param .= '&limit='.urlencode($limit);
+foreach ($search as $key => $val)
 {
-	$param.= '&search_'.$key.'='.urlencode($search[$key]);
+	if (is_array($search[$key]) && count($search[$key])) foreach ($search[$key] as $skey) $param .= '&search_'.$key.'[]='.urlencode($skey);
+    else $param .= '&search_'.$key.'='.urlencode($search[$key]);
 }
-if ($optioncss != '')     $param.='&optioncss='.urlencode($optioncss);
+if ($optioncss != '')     $param .= '&optioncss='.urlencode($optioncss);
 // Add $param from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_param.tpl.php';
 
