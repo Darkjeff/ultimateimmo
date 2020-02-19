@@ -198,9 +198,9 @@ $title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoProperties")
 $sql = 'SELECT ';
 foreach ($object->fields as $key => $val)
 {
-	$sql.='t.'.$key.', ';
+	$sql .= 't.'.$key.', ';
 }
-$sql.='tp.label as type_property, co.label as country, b.label as building_name, soc.nom as owner';
+$sql .= 'tp.label as type_property, co.label as country, b.label as building_name, soc.nom as owner';
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
 	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.' as options_'.$key.', ' : '');
@@ -210,20 +210,20 @@ $parameters = array();
 $reshook = $hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
 $sql .= preg_replace('/^,/', '', $hookmanager->resPrint);
 $sql = preg_replace('/,\s*$/', '', $sql);
-$sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
-$sql.= " INNER JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as tp ON tp.rowid = t.property_type_id";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_building as b ON b.fk_property = t.fk_property";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as co ON co.rowid = t.country_id";
-$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
+$sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
+$sql .= " INNER JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as tp ON tp.rowid = t.property_type_id";
+$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_building as b ON b.fk_property = t.fk_property";
+$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
+$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as co ON co.rowid = t.country_id";
+$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
 if ($action == 'makebuilding') {
 $sql .= " WHERE tp.label = 'Immeuble'";
 } else {
 $sql .= " WHERE tp.label <> 'Immeuble'";
 }
-if ($object->ismultientitymanaged == 1) $sql .= " AND t.entity in (".getEntity('immoproperty').")";
-//else $sql.=" WHERE 1 = 1";
+if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (".getEntity($object->element).")";
+else $sql.=" WHERE 1 = 1";
 foreach($search as $key => $val)
 {
 	$mode_search=(($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
