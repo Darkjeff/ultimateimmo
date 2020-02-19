@@ -376,7 +376,7 @@ foreach ($object->fields as $key => $val)
 	$align='';
 	if (in_array($val['type'], array('date','datetime','timestamp'))) $align .= ($align?' ':'').'center';
 	if (in_array($val['type'], array('timestamp'))) $align .= ($align?' ':'').'nowrap';
-	if ($key == 'status') $align .= ($align?' ':'').'center';
+	//if ($key == 'status') $align .= ($align?' ':'').'center';
 	if ($key == 'civility_id') $align .= ($align?' ':'').'center';
 	if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($align?' '.$align:'').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'"></td>';
 }
