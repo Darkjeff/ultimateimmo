@@ -293,7 +293,7 @@ llxHeader('', $title, $help_url);
 
 $arrayofselected = is_array($toselect) ? $toselect : array();
 
-$param='';
+$param = '';
 if (!empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param .= '&contextpage='.urlencode($contextpage);
 if ($limit > 0 && $limit != $conf->liste_limit) $param .= '&limit='.urlencode($limit);
 foreach ($search as $key => $val)
@@ -373,7 +373,7 @@ print '<table class="tagtable liste'.($moreforfilter ? " listwithfilterbefore" :
 print '<tr class="liste_titre">';
 foreach ($object->fields as $key => $val)
 {
-	$align='';
+	$align = '';
 	if (in_array($val['type'], array('date','datetime','timestamp'))) $align .= ($align?' ':'').'center';
 	if (in_array($val['type'], array('timestamp'))) $align .= ($align?' ':'').'nowrap';
 	if ($key == 'status') $align .= ($align?' ':'').'center';
