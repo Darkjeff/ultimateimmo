@@ -222,7 +222,7 @@ $sql .= " WHERE tp.label = 'Immeuble'";
 } else {
 $sql .= " WHERE tp.label <> 'Immeuble'";
 }
-if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (".getEntity($object->element).")";
+if ($object->ismultientitymanaged == 1) $sql .= " AND t.entity IN (".getEntity($object->element).")";
 else $sql.=" WHERE 1 = 1";
 foreach($search as $key => $val)
 {
