@@ -463,8 +463,8 @@ while ($i < ($limit ? min($num, $limit) : $num))
 		if (! empty($arrayfields['t.'.$key]['checked']))
 		{
 			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
-			if ($key == 'status') print $object->getLibStatut(5);
-			
+			if ($key == 'status') print $object->getLibStatut(4);
+
 			if ($val['label'] == 'Country') 
 			{
 				if ($object->country_id)
