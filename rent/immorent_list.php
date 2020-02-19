@@ -196,24 +196,26 @@ $title = $langs->trans("ListOfRents");
 $sql = 'SELECT ';
 foreach($object->fields as $key => $val)
 {
-	$sql.='t.'.$key.', ';
+	$sql .= 't.'.$key.', ';
 }
 
 // Add fields from extrafields
-foreach ($extrafields->attribute_label as $key => $val) $sql.=($extrafields->attribute_type[$key] != 'separate' ? ", ef.".$key.' as options_'.$key : '');
+if (!empty($extrafields->attributes[$object->table_element]['label'])) {
+	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.' as options_'.$key.', ' : '');
+}
 // Add fields from hooks
-$parameters=array();
-$reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
-$sql.=$hookmanager->resPrint;
-$sql=preg_replace('/, $/','', $sql);
-$sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
-if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."immorent_extrafields as ef on (t.rowid = ef.fk_object)";
-if ($object->ismultientitymanaged == 1) $sql.= " WHERE t.entity IN (".getEntity('immorent').")";
-else $sql.=" WHERE 1 = 1";
-foreach($search as $key => $val)
+$parameters = array();
+$reshook = $hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$sql .= preg_replace('/^,/', '', $hookmanager->resPrint);
+$sql = preg_replace('/,\s*$/', '', $sql);
+$sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
+if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
+if ($object->ismultientitymanaged == 1) $sql.= " WHERE t.entity IN (".getEntity($object->element).")";
+else $sql .= " WHERE 1 = 1";
+foreach ($search as $key => $val)
 {
-	$mode_search=(($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
-	if ($search[$key] != '') $sql.=natural_search('t.'.$key, $search[$key], (($key == 'status')?2:$mode_search));
+	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
+	if ($search[$key] != '') $sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 }
 if ($search_all) $sql.= natural_search(array_keys($fieldstosearchall), $search_all);
 // Add where from extra fields
