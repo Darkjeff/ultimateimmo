@@ -379,7 +379,6 @@ foreach ($object->fields as $key => $val)
 	if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
 	if ($key == 'status') $align.=($align?' ':'').'center';
 	if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($align?' '.$align:'').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'"></td>';
-	}
 }
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
