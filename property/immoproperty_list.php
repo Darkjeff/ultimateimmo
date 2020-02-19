@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2019 Philippe GRAND       <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2020 Philippe GRAND       <philippe.grand@atoo-net.com>
  * Copyright (C) 2018      Alexandre Spangaro   <aspangaro@zendsi.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -196,18 +196,20 @@ $title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoProperties")
 // Build and execute select
 // --------------------------------------------------------------------
 $sql = 'SELECT ';
-foreach($object->fields as $key => $val)
+foreach ($object->fields as $key => $val)
 {
 	$sql.='t.'.$key.', ';
 }
 $sql.='tp.label as type_property, co.label as country, b.label as building_name, soc.nom as owner';
 // Add fields from extrafields
-foreach ($extrafields->attribute_label as $key => $val) $sql.=($extrafields->attribute_type[$key] != 'separate' ? ", ef.".$key.' as options_'.$key : '');
+if (!empty($extrafields->attributes[$object->table_element]['label'])) {
+	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.' as options_'.$key.', ' : '');
+}
 // Add fields from hooks
-$parameters=array();
-$reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
-$sql.=$hookmanager->resPrint;
-$sql=preg_replace('/, $/','', $sql);
+$parameters = array();
+$reshook = $hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$sql .= preg_replace('/^,/', '', $hookmanager->resPrint);
+$sql = preg_replace('/,\s*$/', '', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 $sql.= " INNER JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as tp ON tp.rowid = t.property_type_id";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_building as b ON b.fk_property = t.fk_property";

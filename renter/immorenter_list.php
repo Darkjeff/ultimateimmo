@@ -195,7 +195,7 @@ $title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoRenters"));
 // Build and execute select
 // --------------------------------------------------------------------
 $sql = 'SELECT ';
-foreach($object->fields as $key => $val)
+foreach ($object->fields as $key => $val)
 {
 	$sql .= 't.'.$key.', ';
 }
