@@ -311,7 +311,7 @@ if (empty($reshook))
 		$object->note_public = GETPOST("note_public");
 		$object->note_private = GETPOST("note_private");
 		$object->date_creation = GETPOST("date_creation");
-		$object->date_valid = GETPOST("date_valid");
+		$object->date_validation = GETPOST("date_validation");
 		$object->rentamount = GETPOST("rentamount");
 		$object->chargesamount = GETPOST("chargesamount");
 		$object->total_amount = GETPOST("total_amount");
