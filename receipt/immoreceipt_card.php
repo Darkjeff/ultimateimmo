@@ -166,7 +166,7 @@ if (empty($reshook))
 	// Validation
 	if ($action == 'confirm_validate' && $confirm == 'yes' && $usercancreate)
 	{
-		$result = $object->valid($user);
+		$result = $object->validate($user);
 		
 		if ($result >= 0)
 		{
