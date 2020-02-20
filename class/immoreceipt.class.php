@@ -148,41 +148,112 @@ class ImmoReceipt extends CommonObject
 		'last_main_doc' => array('type'=>'varchar(255)', 'label'=>'LastMainDoc', 'enabled'=>1, 'visible'=>-2, 'position'=>1020, 'notnull'=>-1),
 		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>-1, 'default'=>'0','index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
 	);
-	
+
+	/**
+	 * @var int ID
+	 */
 	public $rowid;
+
+	/**
+	 * @var string Ref
+	 */
 	public $ref;
-	//public $type;
+
+	/**
+	 * @var int Entity
+	 */
 	public $entity;
+
 	public $fk_rent;
+
 	public $fk_property;
+
 	public $fk_renter;
+
 	public $fk_owner;
+
 	public $fk_soc;
+
 	public $note_public;
+
 	public $note_private;
+
+	/**
+     * @var integer|string date_echeance
+     */
 	public $date_echeance;
+
+	/**
+     * @var integer|string date_start
+     */
 	public $date_start;
+
+	/**
+     * @var integer|string date_end
+     */
 	public $date_end;
+
+	/**
+     * @var integer|string date_creation
+     */
 	public $date_creation;
+
+	/**
+     * @var integer|string date_valid
+     */
 	public $date_valid;
+
 	public $label;
+
 	public $rentamount;
+
 	public $chargesamount;
+
 	public $total_amount;
+
 	public $partial_payment;
+
 	public $balance;
+
 	//public $fk_payment;
+
 	public $paye;
+
 	public $vat_amount;
+
 	public $vat_tx;
+
 	public $tms;
+
 	//public $fk_statut;
+
+	/**
+     * @var int ID
+     */
 	public $fk_user_creat;
+
+	/**
+     * @var int ID
+     */
 	public $fk_user_modif;
+
+	/**
+     * @var int ID
+     */
 	public $fk_user_valid;
+
+	/**
+     * @var string import_key
+     */
 	public $import_key;
+
 	public $model_pdf;
+
 	public $last_main_doc;
+
+	/**
+	 * @var int Status
+	 */
 	public $status;
 	// END MODULEBUILDER PROPERTIES
 
@@ -273,16 +344,18 @@ class ImmoReceipt extends CommonObject
 
 		$error = 0;
 
-		$now=dol_now();
+		$now = dol_now();
 
 		$fieldvalues = $this->setSaveQuery();
-		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation']=$this->db->idate($now);
-		if (array_key_exists('fk_user_creat', $fieldvalues) && ! ($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat']=$user->id;
+		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation'] = $this->db->idate($now);
+		if (array_key_exists('fk_user_creat', $fieldvalues) && ! ($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat'] = $user->id;
 		unset($fieldvalues['rowid']);	// The field 'rowid' is reserved field name for autoincrement field so we don't need it into insert.
+		if (array_key_exists('ref', $fieldvalues)) $fieldvalues['ref'] = dol_string_nospecial($fieldvalues['ref']); // If field is a ref, we sanitize data
 
-		$keys=array();
+		$keys = array();
 		$values = array();
-		foreach ($fieldvalues as $k => $v) {
+		foreach ($fieldvalues as $k => $v) 
+		{
 			$keys[$k] = $k;
 			$value = $this->fields[$k];
 			$values[$k] = $this->quote($v, $value);
@@ -292,20 +365,23 @@ class ImmoReceipt extends CommonObject
 		foreach($keys as $key)
 		{
 			// If field is an implicit foreign key field
-			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key]='';
-			if (! empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key]='';
+			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key] = '';
+			if (!empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key] = '';
 			if (empty($this->fields[$key]['ref']) && $values[$key] == '') $values[$key]='(PROV'.$this->id.')'; //is that ok ?
 
 			//var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
-			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && ! isset($values[$key]) && is_null($val['default']))
+			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && !isset($values[$key]) && is_null($this->fields[$key]['default']))
 			{
 				$error++;
-				$this->errors[]=$langs->trans("ErrorFieldRequired", $this->fields[$key]['label']);
+				$this->errors[] = $langs->trans("ErrorFieldRequired", $this->fields[$key]['label']);
 			}
 
 			// If field is an implicit foreign key field
-			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && empty($values[$key])) $values[$key]='null';
-			if (! empty($this->fields[$key]['foreignkey']) && empty($values[$key])) $values[$key]='null';
+			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && empty($values[$key])) {
+				if (isset($this->fields[$key]['default'])) $values[$key] = $this->fields[$key]['default'];
+				else $values[$key] = 'null';
+			}
+			if (!empty($this->fields[$key]['foreignkey']) && empty($values[$key])) $values[$key] = 'null';
 		}
 
 		if ($error) return -1;
@@ -315,8 +391,8 @@ class ImmoReceipt extends CommonObject
 		if (! $error)
 		{
 			$sql = 'INSERT INTO '.MAIN_DB_PREFIX.$this->table_element;
-			$sql.= ' ('.implode( ", ", $keys ).')';
-			$sql.= ' VALUES ('.implode( ", ", $values ).')';
+			$sql .= ' ('.implode(", ", $keys).')';
+			$sql .= ' VALUES ('.implode(", ", $values).')';
 			
 			$res = $this->db->query($sql);
 			if ($res)
@@ -341,18 +417,23 @@ class ImmoReceipt extends CommonObject
 					
 					if (! empty($modCodeUltimateimmo->code_auto)) {
 						// Force the ref to a draft value if numbering module is an automatic numbering
-						$sql = 'UPDATE '.MAIN_DB_PREFIX."ultimateimmo_immoreceipt SET ref ='(PROV".$this->id.")' WHERE ref = '(PROV)' AND rowid=".$this->id;
-						if ($this->db->query($sql))
+						$sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element." SET ref ='(PROV".$this->id.")' WHERE (ref = '(PROV)' OR ref = '') AND rowid = ".$this->id;
+						$resqlupdate = $this->db->query($sql);
+
+						if ($resqlupdate === false)
 						{
-							if ($this->id)
-							{
-								$this->ref="(PROV".$this->id.")";
-							}
+							$error++;
+							$this->errors[] = $this->db->lasterror();
+						} 
+						else 
+						{
+							$this->ref = '(PROV'.$this->id.')';
 						}
 					}
 				}
 			}
-			if ($res===false) {
+			if ($res===false) 
+			{
 				$error++;
 				$this->errors[] = $this->db->lasterror();
 			}
@@ -361,24 +442,52 @@ class ImmoReceipt extends CommonObject
 		// Create extrafields
 		if (! $error)
 		{
-			$result=$this->insertExtraFields();
+			$result = $this->insertExtraFields();
 			if ($result < 0) $error++;
 		}
 
+		// Create lines
+		if (!empty($this->table_element_line) && !empty($this->fk_element))
+		{
+			$num = (is_array($this->lines) ? count($this->lines) : 0);
+			for ($i = 0; $i < $num; $i++)
+			{
+				$line = $this->lines[$i];
+
+				$keyforparent = $this->fk_element;
+				$line->$keyforparent = $this->id;
+
+				// Test and convert into object this->lines[$i]. When coming from REST API, we may still have an array
+				//if (! is_object($line)) $line=json_decode(json_encode($line), false);  // convert recursively array into object.
+				if (!is_object($line)) $line = (object) $line;
+
+				$result = $line->create($user, 1);
+				if ($result < 0)
+				{
+					$this->error = $this->db->lasterror();
+					$this->db->rollback();
+					return -1;
+				}
+			}
+		}
+
 		// Triggers
-		if (! $error && ! $notrigger)
+		if (!$error && !$notrigger)
 		{
 			// Call triggers
-			$result=$this->call_trigger(strtoupper(get_class($this)).'_CREATE',$user);
+			$result = $this->call_trigger(strtoupper(get_class($this)).'_CREATE', $user);
 			if ($result < 0) { $error++; }
 			// End call triggers
 		}
 
 		// Commit or rollback
-		if ($error) {
+		if ($error) 
+		{
 			$this->db->rollback();
 			return -1;
-		} else {
+		} 
+		else 
+		{
 			$this->db->commit();
 			return $this->id;
 		}
