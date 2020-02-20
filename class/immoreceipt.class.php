@@ -1068,13 +1068,16 @@ class ImmoReceipt extends CommonObject
 		}
 		$this->newref = $num;
 
-		$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immoreceipt";
-		$sql.= " SET ref = '".$num."',";
-		$sql.= " status = ".self::STATUS_VALIDATED.", date_validation='".$this->db->idate($now)."', fk_user_valid=".$user->id;
-		$sql.= " WHERE rowid = ".$this->id;
+		// Validate
+		$sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element;
+		$sql .= " SET ref = '".$this->db->escape($num)."',";
+		$sql .= " status = ".self::STATUS_VALIDATED.",";
+		$sql .= " date_validation = '".$this->db->idate($now)."',";
+		$sql .= " fk_user_valid = ".$user->id;
+		$sql .= " WHERE rowid = ".$this->id;
 
-		dol_syslog(get_class($this)."::valid", LOG_DEBUG);
-		$resql=$this->db->query($sql);
+		dol_syslog(get_class($this)."::validate()", LOG_DEBUG);
+		$resql = $this->db->query($sql);
 		
 		if (! $resql)
 		{
@@ -1087,7 +1090,7 @@ class ImmoReceipt extends CommonObject
 		if (! $error && ! $notrigger)
 		{
 			// Call trigger
-			//$result=$this->call_trigger('PROPAL_VALIDATE',$user);
+			//$result = $this->call_trigger('IMMORECEIPT_VALIDATE', $user);
 			if ($result < 0) { $error++; }
 			// End call triggers
 		}
@@ -1099,50 +1102,56 @@ class ImmoReceipt extends CommonObject
 			// Rename directory if dir was a temporary ref
 			if (preg_match('/^[\(]?PROV/i', $this->ref))
 			{
-				// Rename of directory ($this->ref = old ref, $num = new ref)
-				// to not lose the linked files
+				// Now we rename also files into index
+				$sql = 'UPDATE '.MAIN_DB_PREFIX."ecm_files set filename = CONCAT('".$this->db->escape($this->newref)."', SUBSTR(filename, ".(strlen($this->ref) + 1).")), filepath = 'immoreceipt/".$this->db->escape($this->newref)."'";
+				$sql .= " WHERE filename LIKE '".$this->db->escape($this->ref)."%' AND filepath = 'immoreceipt/".$this->db->escape($this->ref)."' and entity = ".$conf->entity;
+				$resql = $this->db->query($sql);
+				if (!$resql) { $error++; $this->error = $this->db->lasterror(); }
+				// We rename directory ($this->ref = old ref, $num = new ref) in order not to lose the attachments
 				$oldref = dol_sanitizeFileName($this->ref);
 				$newref = dol_sanitizeFileName($num);
-				$dirsource = $conf->ultimateimmo->dir_output.'/'.$oldref;
-				$dirdest = $conf->ultimateimmo->dir_output.'/'.$newref;
+				$dirsource = $conf->ultimateimmo->dir_output.'/immoreceipt/'.$oldref;
+				$dirdest = $conf->ultimateimmo->dir_output.'/immoreceipt/'.$newref;
 
-				if (file_exists($dirsource))
+				if (!$error && file_exists($dirsource))
 				{
-					dol_syslog(get_class($this)."::valid rename dir ".$dirsource." into ".$dirdest);
+					dol_syslog(get_class($this)."::validate() rename dir ".$dirsource." into ".$dirdest);
+
 					if (@rename($dirsource, $dirdest))
 					{
 						dol_syslog("Rename ok");
 						// Rename docs starting with $oldref with $newref
-						$listoffiles=dol_dir_list($dirdest, 'files', 1, '^'.preg_quote($oldref,'/'));
-						foreach($listoffiles as $fileentry)
+						$listoffiles = dol_dir_list($conf->ultimateimmo->dir_output.'/immoreceipt/'.$newref, 'files', 1, '^'.preg_quote($oldref, '/'));
+						foreach ($listoffiles as $fileentry)
 						{
-							$dirsource=$fileentry['name'];
-							$dirdest=preg_replace('/^'.preg_quote($oldref,'/').'/',$newref, $dirsource);
-							$dirsource=$fileentry['path'].'/'.$dirsource;
-							$dirdest=$fileentry['path'].'/'.$dirdest;
+							$dirsource = $fileentry['name'];
+							$dirdest = preg_replace('/^'.preg_quote($oldref, '/').'/', $newref, $dirsource);
+							$dirsource = $fileentry['path'].'/'.$dirsource;
+							$dirdest = $fileentry['path'].'/'.$dirdest;
 							@rename($dirsource, $dirdest);
 						}
 					}
 				}
 			}
 
-			$this->ref=$num;
-			$this->brouillon=0;
-			$this->statut = self::STATUS_VALIDATED;
-			$this->user_valid_id=$user->id;
-			$this->datev=$now;
+			// Set new ref and current status
+		if (!$error)
+		{
+			$this->ref = $num;
+			$this->status = self::STATUS_VALIDATED;
+		}
 
+		if (!$error)
+		{
 			$this->db->commit();
 			return 1;
 		}
 		else
 		{
 			$this->db->rollback();
-			dol_syslog(get_class($this)."::valid ".$this->error,LOG_ERR);
 			return -1;
 		}
 	}
-
 	/**
 	 *  Return a link to the object card (with optionaly the picto)
 	 *
