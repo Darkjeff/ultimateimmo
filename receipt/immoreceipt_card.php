@@ -1037,7 +1037,7 @@ if ($action == 'create')
 		print '<table class="border centpercent">'."\n";
 
 		// Common attributes
-		$keyforbreak='note_private';
+		$keyforbreak='echeance';
 		
 		foreach ($object->fields as $key => $val)
 		{
