@@ -1020,6 +1020,7 @@ if ($action == 'create')
 		// Ref renter
 		$staticImmorenter = new ImmoRenter($db);
 		$staticImmorenter->fetch($object->fk_renter);
+		var_dump($staticImmorenter);
 		$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $object, $staticImmorenter->ref_client, $usercancreate, 'string', '', 0, 1);
 		$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->ref_client, $object, $usercancreate, 'string', '', null, null, '', 1);
 		// Thirdparty
