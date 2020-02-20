@@ -1133,6 +1133,7 @@ class ImmoReceipt extends CommonObject
 					}
 				}
 			}
+		}
 
 			// Set new ref and current status
 		if (!$error)
