@@ -1179,16 +1179,16 @@ if ($action == 'create')
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
 		
 		// Add symbol of currency 
-		$cursymbolbefore=$cursymbolafter='';
+		$cursymbolbefore = $cursymbolafter = '';
 		if ($object->multicurrency_code)
 		{
-			$currency_symbol=$langs->getCurrencySymbol($object->multicurrency_code);
-			$listofcurrenciesbefore=array('$','£','S/.','¥');
-			if (in_array($currency_symbol,$listofcurrenciesbefore)) $cursymbolbefore.=$currency_symbol;
+			$currency_symbol = $langs->getCurrencySymbol($object->multicurrency_code);
+			$listofcurrenciesbefore = array('$','£','S/.','¥');
+			if (in_array($currency_symbol,$listofcurrenciesbefore)) $cursymbolbefore .= $currency_symbol;
 			else
 			{
-				$tmpcur=$currency_symbol;
-				$cursymbolafter.=($tmpcur == $currency_symbol ? ' '.$tmpcur : $tmpcur);
+				$tmpcur = $currency_symbol;
+				$cursymbolafter .= ($tmpcur == $currency_symbol ? ' '.$tmpcur : $tmpcur);
 			}
 		}
 		else
@@ -1306,6 +1306,60 @@ if ($action == 'create')
 		print '<div class="clearboth"></div><br>';
 
 		dol_fiche_end();
+
+		/*
+		 * Lines
+		 */
+
+		if (!empty($object->table_element_line))
+		{
+			// Show object lines
+			$result = $object->getLinesArray();
+
+			print '	<form name="addproduct" id="addproduct" action="'.$_SERVER["PHP_SELF"].'?id='.$object->id.(($action != 'editline') ? '#addline' : '#line_'.GETPOST('lineid', 'int')).'" method="POST">
+			<input type="hidden" name="token" value="' . $_SESSION ['newtoken'].'">
+			<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline').'">
+			<input type="hidden" name="mode" value="">
+			<input type="hidden" name="id" value="' . $object->id.'">
+			';
+
+			if (!empty($conf->use_javascript_ajax) && $object->status == 0) 
+			{
+				include DOL_DOCUMENT_ROOT.'/core/tpl/ajaxrow.tpl.php';
+			}
+
+			print '<div class="div-table-responsive-no-min">';
+			if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
+			{
+				print '<table id="tablelines" class="noborder noshadow" width="100%">';
+			}
+
+			if (!empty($object->lines))
+			{
+				$object->printObjectLines($action, $mysoc, null, GETPOST('lineid', 'int'), 1);
+			}
+
+			// Form to add new line
+			if ($object->status == 0 && $permissiontoadd && $action != 'selectlines')
+			{
+				if ($action != 'editline')
+				{
+					// Add products/services form
+					$object->formAddObjectLine(1, $mysoc, $soc);
+
+					$parameters = array();
+					$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+				}
+			}
+
+			if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
+			{
+				print '</table>';
+			}
+			print '</div>';
+
+			print "</form>\n";
+		}
 		
 		if (is_file($conf->ultimateimmo->dir_output . '/receipt/quittance_' . $id . '.pdf'))
 		{
