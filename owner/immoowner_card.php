@@ -408,7 +408,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 	$keyforbreak='address';
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
 		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
 
@@ -418,7 +418,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
 		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
-		$value=$object->$key;
+		$value = $object->$key;
 
 		print '<tr><td';
 		print ' class="titlefield fieldname_'.$key;

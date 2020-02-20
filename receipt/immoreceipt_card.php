@@ -1003,10 +1003,10 @@ if ($action == 'create')
 		}
 		
 		// Call Hook formConfirm
-		$parameters = array('lineid' => $lineid);
+		$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
 		$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-		if (empty($reshook)) $formconfirm.=$hookmanager->resPrint;
-		elseif ($reshook > 0) $formconfirm=$hookmanager->resPrint;
+		if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
+		elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
 
 		// Print form confirm
 		print $formconfirm;
@@ -1016,16 +1016,16 @@ if ($action == 'create')
 		// ------------------------------------------------------------
 		$linkback = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?restore_lastsearch_values=1'.(! empty($socid)?'&socid='.$socid : '').'">'. $langs->trans("BackToList").'</a>';
 		$object->fetch_thirdparty();
-		$morehtmlref='<div class="refidno">';
+		$morehtmlref = '<div class="refidno">';
 		// Ref renter
-		$staticImmorenter=new ImmoRenter($db);
+		$staticImmorenter = new ImmoRenter($db);
 		$staticImmorenter->fetch($object->fk_renter);
-		$morehtmlref.=$form->editfieldkey("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $usercancreate, 'string', '', 0, 1);
-		$morehtmlref.=$form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $usercancreate, 'string', '', null, null, '', 1);
+		$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $usercancreate, 'string', '', 0, 1);
+		$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->getNomUrl(), $object, $usercancreate, 'string', '', null, null, '', 1);
 		// Thirdparty
-		$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'renter');
+		$morehtmlref .= '<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'renter');
 		if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?socid='.$object->thirdparty->id.'&search_fk_soc='.urlencode($object->thirdparty->id).'">'.$langs->trans("OtherReceipts").'</a>)';
-		$morehtmlref.='</div>';
+		$morehtmlref .= '</div>';
 		
 		$object->totalpaye = $totalpaye;   // To give a chance to dol_banner_tab to use already paid amount to show correct status
 		
@@ -1039,41 +1039,48 @@ if ($action == 'create')
 		// Common attributes
 		$keyforbreak='note_private';
 		
-		foreach($object->fields as $key => $val)
+		foreach ($object->fields as $key => $val)
 		{
-			// Discard if extrafield is a hidden field on form
-			if (abs($val['visible']) != 1) continue;
+			if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
 
-			if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+			// Discard if extrafield is a hidden field on form
+			if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
+
+			if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
 			if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
-			$value=$object->$key;
+			$value = $object->$key;
 
 			print '<tr><td';
-			print ' class="titlefield';
-			if ($val['notnull'] > 0) print ' fieldrequired';
+			print ' class="titlefield fieldname_'.$key;
+			//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-			print '"';
-			print '>'.$langs->trans($val['label']).'</td>';
+			print '">';
+			if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+			else print $langs->trans($val['label']);
+			print '</td>';
+			print '<td class="valuefield fieldname_'.$key;
+			if ($val['type'] == 'text') print ' wordbreak';
+			print '">';
 			print '<td>';
 			
 			if ($val['label'] == 'Owner') 
 			{
-				$staticowner=new ImmoOwner($db);
+				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);			
 				if ($staticowner->ref)
 				{
-					$staticowner->ref=$staticowner->getFullName($langs);
+					$staticowner->ref = $staticowner->getFullName($langs);
 				}
 				print $staticowner->ref;
 			}
 			elseif ($val['label'] == 'Renter') 
 			{
-				$staticrenter=new ImmoRenter($db);
+				$staticrenter = new ImmoRenter($db);
 				$staticrenter->fetch($object->fk_renter);			
 				if ($staticrenter->ref)
 				{
-					$staticrenter->ref=$staticrenter->getFullName($langs);
+					$staticrenter->ref = $staticrenter->getFullName($langs);
 				}
 				print $staticrenter->ref;
 			}
@@ -1084,15 +1091,16 @@ if ($action == 'create')
 			//print dol_escape_htmltag($object->$key, 1, 1);
 			print '</td>';
 			print '</tr>';
-
-			if (! empty($keyforbreak) && $key == $keyforbreak) break;						// key used for break on second column
 		}
+
 		print '</table>';
+
+		// We close div and reopen for second column
 		print '</div>';
 		print '<div class="fichehalfright">';
-		print '<div class="ficheaddleft">';
+
 		print '<div class="underbanner clearboth"></div>';
-		print '<table class="border centpercent">';
+		print '<table class="border centpercent tableforfield">';
 
 		$alreadyoutput = 1;
 		foreach($object->fields as $key => $val)
