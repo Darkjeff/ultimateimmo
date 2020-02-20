@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2019 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2020 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,22 +70,23 @@ $backtopage = GETPOST('backtopage', 'alpha');
 $search_fk_soc = GETPOST('search_fk_soc', 'alpha');
 
 // Initialize technical objects
-$object=new ImmoReceipt($db);
-$immorent=new ImmoRent($db);
-
+$object = new ImmoReceipt($db);
+$immorent = new ImmoRent($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immoreceiptcard','globalcard'));     // Note that conf->hooks_modules contains array
+
 // Fetch optionals attributes and labels
-$extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
-$search_array_options=$extrafields->getOptionalsFromPost($object->table_element,'','search_');
+$extrafields->fetch_name_optionals_label($object->table_element);
+
+$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
 
 // Initialize array of search criterias
-$search_all=trim(GETPOST("search_all",'alpha'));
-$search=array();
-foreach($object->fields as $key => $val)
+$search_all = trim(GETPOST("search_all",'alpha'));
+$search = array();
+foreach ($object->fields as $key => $val)
 {
-	if (GETPOST('search_'.$key,'alpha')) $search[$key]=GETPOST('search_'.$key,'alpha');
+	if (GETPOST('search_'.$key, 'alpha')) $search[$key] = GETPOST('search_'.$key, 'alpha');
 }
 
 if (empty($action) && empty($id) && empty($ref)) $action='view';
@@ -109,8 +110,8 @@ $usercandelete = $user->rights->ultimateimmo->delete || ($usercancreate && $obje
  *
  */
 
-$parameters=array();
-$reshook=$hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
+$parameters = array();
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if (empty($reshook))
@@ -243,11 +244,16 @@ if (empty($reshook))
 	
 	$error=0;
 
-    $backurlforlist = dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1);
-	if (empty($backtopage)) {
-	    if (empty($id)) $backtopage = $backurlforlist;
-	    else $backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php',1).'?id='.($id > 0 ? $id : '__ID__');
+	$permissiontoadd = $user->rights->ultimateimmo->write;
+	$permissiontodelete = $user->rights->ultimateimmo->delete;
+	$backurlforlist = dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1);
+	
+	if (empty($backtopage) || ($cancel && empty($id))) {
+    	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
+    		if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
+    		else $backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.($id > 0 ? $id : '__ID__');
     	}
+    }
 	$triggermodname = 'ULTIMATEIMMO_IMMORECEIPT_MODIFY';	// Name of trigger action code to execute when we modify record
 
 	// Actions cancel, add, update, delete or clone
@@ -535,9 +541,9 @@ if (empty($reshook))
 	}
 
 	// Actions to send emails
-	$trigger_name='IMMORECEIPT_SENTBYMAIL';
-	$autocopy='MAIN_MAIL_AUTOCOPY_IMMORECEIPT_TO';
-	$trackid='immoreceipt'.$object->id;
+	$triggersendname = 'IMMORECEIPT_SENTBYMAIL';
+	$autocopy = 'MAIN_MAIL_AUTOCOPY_IMMORECEIPT_TO';
+	$trackid = 'immoreceipt'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 }
 
@@ -547,20 +553,19 @@ if (empty($reshook))
  *
  */
 
-llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
-
-$form=new Form($db);
-$formfile=new FormFile($db);
-$paymentstatic=new ImmoPayment($db);
+$form = new Form($db);
+$formfile = new FormFile($db);
+$paymentstatic = new ImmoPayment($db);
 $bankaccountstatic = new Account($db);
 
+llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
+
 // Load object modReceipt
-$module=(! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
+$module = (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
 
 if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
 {
-	$module = substr($module, 0, dol_strlen($module)-4);
-	
+	$module = substr($module, 0, dol_strlen($module)-4);	
 }
 $result=dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php');
 
@@ -596,21 +601,22 @@ if ($action == 'create')
 	print '<form name="fiche_loyer" method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="action" value="add">';
-	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
 
 	dol_fiche_head(array(), '');
 
-	print '<table class="border centpercent">'."\n";
+	print '<table class="border centpercent tableforfieldcreate">'."\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 	
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1) continue;
-		
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
 
 		print '<tr id="field_'.$key.'">';
 		print '<td';
@@ -619,7 +625,8 @@ if ($action == 'create')
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
 		print '>';
-		print $langs->trans($val['label']);
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
 
@@ -639,17 +646,17 @@ if ($action == 'create')
 		elseif ($val['label'] == 'DateCreation')
 		{
 			// DateCreation
-			print $form->select_date(($object->date_creation ? $object->date_creation : -1), "date_creation",0,0,0,"",1,1,1);
+			print $form->select_date(($object->date_creation ? $object->date_creation : -1), "date_creation", 0, 0, 0, "", 1, 1, 1);
 		}
 		elseif ($val['label'] == 'DateStart')
 		{
 			// date_start
-			print $form->select_date(($object->date_start ? $object->date_start : -1), "date_start",0,0,0,"",1,1,1);
+			print $form->select_date(($object->date_start ? $object->date_start : -1), "date_start", 0, 0, 0, "", 1, 1, 1);
 		}
 		elseif ($val['label'] == 'DateEnd')
 		{
 			// date_end
-			print $form->select_date(($object->date_end ? $object->date_end : -1), "date_end",0,0,0,"",1,1,1);
+			print $form->select_date(($object->date_end ? $object->date_end : -1), "date_end", 0, 0, 0, "", 1, 1, 1);
 		}
 		elseif ($val['label'] == 'Echeance')
 		{
@@ -777,8 +784,8 @@ if ($action == 'create')
 
 				if ($objp->fk_soc)
 				{
-					$company=new Societe($db);
-					$result=$company->fetch($objp->fk_soc);
+					$company = new Societe($db);
+					$result = $company->fetch($objp->fk_soc);
 				}
 				
 				print '<td>' . $objp->contract . '</td>';
@@ -834,20 +841,21 @@ if ($action == 'create')
 		print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
 		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 		print '<input type="hidden" name="action" value="update">';
-		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
 		print '<input type="hidden" name="id" value="'.$object->id.'">';
+		if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+		if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
 
 		dol_fiche_head();
 
-		print '<table class="border centpercent">'."\n";
+		print '<table class="border centpercent tableforfieldedit">'."\n";
 
 		// Common attributes
 		$object->fields = dol_sort_array($object->fields, 'position');
 
-		foreach($object->fields as $key => $val)
+		foreach ($object->fields as $key => $val)
 		{
 			// Discard if extrafield is a hidden field on form
-			if (abs($val['visible']) != 1 && abs($val['visible']) != 4) continue;
+			if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
 
 			if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
 
@@ -860,6 +868,7 @@ if ($action == 'create')
 			else print $langs->trans($val['label']);
 			print '</td>';
 			print '<td>';
+
 			if ($val['label'] == 'PartialPayment') 
 			{					
 				if ($object->getSommePaiement())
@@ -930,8 +939,8 @@ if ($action == 'create')
 		$soc = new Societe($db);
 		$soc->fetch($object->socid);
 		
-		$object=new ImmoReceipt($db);
-		$result=$object->fetch($id);
+		$object = new ImmoReceipt($db);
+		$result = $object->fetch($id);
 
 		$head = immoreceiptPrepareHead($object);
 		dol_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'immoreceipt@ultimateimmo');
@@ -950,12 +959,8 @@ if ($action == 'create')
 		if ($action == 'clone') 
 		{
 			// Create an array for form
-			$formquestion = array(
-				array('type' => 'other','name' => 'socid','label' => $langs->trans("SelectThirdParty"),'value' => $form->select_company($object->fk_soc, 'socid', '(s.client=1 OR s.client=2 OR s.client=3)', 1)),
-				array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
-			);
-			// Ask confirmation to clone
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
+			$formquestion = array();
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneImmoOwner', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
 		}
 
 		// Confirmation of validation

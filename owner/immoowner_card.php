@@ -65,14 +65,14 @@ $hookmanager->initHooks(array('immoownercard', 'globalcard'));     // Note that 
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
 
-$search_array_options=$extrafields->getOptionalsFromPost($extralabels, '', 'search_');
+$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
 
 // Initialize array of search criterias
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
-foreach($object->fields as $key => $val)
+foreach ($object->fields as $key => $val)
 {
-    if (GETPOST('search_'.$key,'alpha')) $search[$key] = GETPOST('search_'.$key, 'alpha');
+    if (GETPOST('search_'.$key, 'alpha')) $search[$key] = GETPOST('search_'.$key, 'alpha');
 }
 
 if (empty($action) && empty($id) && empty($ref)) $action = 'view';
@@ -159,7 +159,7 @@ if ($action == 'create')
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
@@ -240,7 +240,7 @@ if (($id || $ref) && $action == 'edit')
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
