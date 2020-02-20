@@ -524,7 +524,6 @@ if ($num == 0)
 	print '<tr><td colspan="'.$colspan.'" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
 }
 
-
 $db->free($resql);
 
 $parameters = array('arrayfields'=>$arrayfields, 'sql'=>$sql);
