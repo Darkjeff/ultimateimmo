@@ -681,9 +681,9 @@ class ImmoRenter extends CommonObject
 
         $label = '<u>'.$langs->trans("ImmoRenter").'</u>';
         $label .= '<br>';
-		//$label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
-		//$label .= '<br>';
-        //$label .= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->lastname;
+		$label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
+		$label .= '<br>';
+        $label .= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->lastname;
         if (isset($this->status)) {
         	$label.= '<br><b>' . $langs->trans("Status").":</b> ".$this->getLibStatut(5);
         }
