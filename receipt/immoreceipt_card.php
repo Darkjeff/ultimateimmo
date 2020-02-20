@@ -1037,7 +1037,7 @@ if ($action == 'create')
 		print '<table class="border centpercent">'."\n";
 
 		// Common attributes
-		$keyforbreak='echeance';
+		$keyforbreak='date_echeance';
 		
 		foreach ($object->fields as $key => $val)
 		{
