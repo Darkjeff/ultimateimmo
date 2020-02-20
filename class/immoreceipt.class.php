@@ -128,7 +128,7 @@ class ImmoReceipt extends CommonObject
 		'date_start'    => array('type'=>'date', 'label'=>'DateStart', 'enabled'=>1, 'visible'=>-1, 'position'=>57, 'notnull'=>-1),
 		'date_end'      => array('type'=>'date', 'label'=>'DateEnd', 'enabled'=>1, 'visible'=>-1, 'position'=>58, 'notnull'=>-1),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>1, 'visible'=>-2, 'position'=>59, 'notnull'=>-1),
-		'date_valid'    => array('type'=>'datetime', 'label'=>'DateValidation', 'enabled'=>1, 'visible'=>-2, 'position'=>60, 'notnull'=>-1),
+		'date_validation'  => array('type'=>'datetime', 'label'=>'DateValidation', 'enabled'=>1, 'visible'=>-2, 'position'=>60, 'notnull'=>-1),
 		'label'         => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'searchall'=>1, 'css'=>'minwidth200', 'help'=>'Help text', 'showoncombobox'=>1),
 		'rentamount'    => array('type'=>'price', 'label'=>'RentAmount', 'enabled'=>1, 'visible'=>1, 'position'=>65, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text"),
 		'chargesamount' => array('type'=>'price', 'label'=>'ChargesAmount', 'enabled'=>1, 'visible'=>1, 'position'=>70, 'notnull'=>-1, 'isameasure'=>'1', 'help'=>"Help text"),
@@ -199,9 +199,9 @@ class ImmoReceipt extends CommonObject
 	public $date_creation;
 
 	/**
-     * @var integer|string date_valid
+     * @var integer|string date_validation
      */
-	public $date_valid;
+	public $date_validation;
 
 	public $label;
 
@@ -1021,46 +1021,46 @@ class ImmoReceipt extends CommonObject
 	}
 	
 	/**
-	 *  Set status to validated
+	 *	Validate object
 	 *
-	 *  @param	User	$user       Object user that validate
-	 *  @param	int		$notrigger	1=Does not execute triggers, 0=execute triggers
-	 *  @return int         		<0 if KO, 0=Nothing done, >=0 if OK
+	 *	@param		User	$user     		User making status change
+	 *  @param		int		$notrigger		1=Does not execute triggers, 0= execute triggers
+	 *	@return  	int						<=0 if OK, 0=Nothing done, >0 if KO
 	 */
-	function valid($user, $notrigger=0)
+	public function validate($user, $notrigger = 0)
 	{
+		global $conf, $langs;
+
 		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 
-		global $conf;
-
-		$error=0;
+		$error = 0;
 
 		// Protection
-		if ($this->statut == self::STATUS_VALIDATED)
+		if ($this->status == self::STATUS_VALIDATED)
 		{
-			dol_syslog(get_class($this)."::valid action abandonned: already validated", LOG_WARNING);
+			dol_syslog(get_class($this)."::validate action abandonned: already validated", LOG_WARNING);
 			return 0;
 		}
 
-		if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->write))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->write))))
 		{
 			$this->error='ErrorPermissionDenied';
 			dol_syslog(get_class($this)."::valid ".$this->error, LOG_ERR);
 			return -1;
-		}
+		}*/
 
-		$now=dol_now();
+		$now = dol_now();
 
 		$this->db->begin();
 
 		// Numbering module definition
-		$soc = new Societe($this->db);
-		$soc->fetch($this->socid);
+		//$soc = new Societe($this->db);
+		//$soc->fetch($this->socid);
 
 		// Define new ref
-		if (! $error && (preg_match('/^[\(]?PROV/i', $this->ref) || empty($this->ref))) // empty should not happened, but when it occurs, the test save life
+		if (!$error && (preg_match('/^[\(]?PROV/i', $this->ref) || empty($this->ref))) // empty should not happened, but when it occurs, the test save life
 		{
-			$num = $this->getNextNumRef($soc);
+			$num = $this->getNextNumRef();
 		}
 		else
 		{
@@ -1070,7 +1070,7 @@ class ImmoReceipt extends CommonObject
 
 		$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immoreceipt";
 		$sql.= " SET ref = '".$num."',";
-		$sql.= " status = ".self::STATUS_VALIDATED.", date_valid='".$this->db->idate($now)."', fk_user_valid=".$user->id;
+		$sql.= " status = ".self::STATUS_VALIDATED.", date_validation='".$this->db->idate($now)."', fk_user_valid=".$user->id;
 		$sql.= " WHERE rowid = ".$this->id;
 
 		dol_syslog(get_class($this)."::valid", LOG_DEBUG);
