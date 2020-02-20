@@ -1174,10 +1174,11 @@ class ImmoReceipt extends CommonObject
 
         $result = '';
 
-		//$label = '<u>'.$langs->trans("ImmoReceipt").'</u>';
-        //$label .= '<br>';
-        //$label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
-        if (isset($this->status)) {
+		$label = '<u>'.$langs->trans("ImmoReceipt").'</u>';
+        $label .= '<br>';
+        $label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
+		if (isset($this->status)) 
+		{
         	$label.= '<br><b>' . $langs->trans("Status").":</b> ".$this->getLibStatut(5);
         }
 
@@ -1186,45 +1187,38 @@ class ImmoReceipt extends CommonObject
         if ($option != 'nolink')
         {
 	        // Add param to save lastsearch_values or not
-	        $add_save_lastsearch_values=($save_lastsearch_value == 1 ? 1 : 0);
-	        if ($save_lastsearch_value == -1 && preg_match('/list\.php/',$_SERVER["PHP_SELF"])) $add_save_lastsearch_values=1;
-	        if ($add_save_lastsearch_values) $url.='&save_lastsearch_values=1';
+	        $add_save_lastsearch_values = ($save_lastsearch_value == 1 ? 1 : 0);
+            if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) $add_save_lastsearch_values = 1;
+            if ($add_save_lastsearch_values) $url .= '&save_lastsearch_values=1';
         }
 
-        $linkclose='';
+        $linkclose = '';
         if (empty($notooltip))
         {
             if (! empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER))
             {
-                $label=$langs->trans("ShowImmoReceipt");
-                $linkclose.=' alt="'.dol_escape_htmltag($label, 1).'"';
+                $label = $langs->trans("ShowImmoReceipt");
+                $linkclose .= ' alt="'.dol_escape_htmltag($label, 1).'"';
             }
-            $linkclose.=' title="'.dol_escape_htmltag($label, 1).'"';
-            $linkclose.=' class="classfortooltip'.($morecss?' '.$morecss:'').'"';
-
-            /*
-             $hookmanager->initHooks(array('immoreceiptdao'));
-             $parameters=array('id'=>$this->id);
-             $reshook=$hookmanager->executeHooks('getnomurltooltip',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-             if ($reshook > 0) $linkclose = $hookmanager->resPrint;
-             */
+            $linkclose .= ' title="'.dol_escape_htmltag($label, 1).'"';
+            $linkclose .= ' class="classfortooltip'.($morecss?' '.$morecss:'').'"';
         }
         else $linkclose = ($morecss?' class="'.$morecss.'"':'');
 
 		$linkstart = '<a href="'.$url.'"';
-		$linkstart.=$linkclose.'>';
-		$linkend='</a>';
+		$linkstart .= $linkclose.'>';
+		$linkend = '</a>';
 
 		$result .= $linkstart;
-		if ($withpicto) $result.=img_object(($notooltip?'':$label), ($this->picto?$this->picto:'generic'), ($notooltip?(($withpicto != 2) ? 'class="paddingright"' : ''):'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip?0:1);
-		if ($withpicto != 2) $result.= $this->ref;
+		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto?$this->picto : 'generic'), ($notooltip?(($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
+		if ($withpicto != 2) $result .= $this->ref;
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
-		global $action,$hookmanager;
+		global $action, $hookmanager;
 		$hookmanager->initHooks(array('immoreceiptdao'));
-		$parameters=array('id'=>$this->id, 'getnomurl'=>$result);
-		$reshook=$hookmanager->executeHooks('getNomUrl',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+		$parameters = array('id'=>$this->id, 'getnomurl'=>$result);
+		$reshook = $hookmanager->executeHooks('getNomUrl', $parameters, $this, $action);    // Note that $action and $object may have been modified by some hooks
 		if ($reshook > 0) $result = $hookmanager->resPrint;
 		else $result .= $hookmanager->resPrint;
 
