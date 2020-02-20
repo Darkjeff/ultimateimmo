@@ -362,7 +362,7 @@ class ImmoReceipt extends CommonObject
 		}
 
 		// Clean and check mandatory
-		foreach($keys as $key)
+		foreach ($keys as $key)
 		{
 			// If field is an implicit foreign key field
 			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key] = '';
@@ -397,18 +397,18 @@ class ImmoReceipt extends CommonObject
 			$res = $this->db->query($sql);
 			if ($res)
 			{
-				$error=0;
+				$error = 0;
 
 				$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX.$this->table_element);
 				
 				// Load object modReceipt
-				$module=(! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
+				$module = (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
 				
 				if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
 				{
 					$module = substr($module, 0, dol_strlen($module)-4);			
 				}
-				$result=dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php',1);
+				$result = dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php',1);
 				
 				if ($result >= 0)
 				{
@@ -546,20 +546,20 @@ class ImmoReceipt extends CommonObject
 	    unset($object->id);
 	    unset($object->fk_user_creat);
 	    unset($object->import_key);
-		$object->statut= self::STATUS_DRAFT;
 
 	    // Clear fields
-	    $object->ref = "(PROV)".$object->ref;
-	    $object->title = $langs->trans("CopyOf")." ".$object->title;
+	    $object->ref = empty($this->fields['ref']['default']) ? "copy_of_".$object->ref : $this->fields['ref']['default'];
+	    $object->label = empty($this->fields['label']['default']) ? $langs->trans("CopyOf")." ".$object->label : $this->fields['label']['default'];
+	    $object->status = self::STATUS_DRAFT;
 	    // ...
 	    // Clear extrafields that are unique
 	    if (is_array($object->array_options) && count($object->array_options) > 0)
 	    {
-	    	$extrafields->fetch_name_optionals_label($this->element);
-	    	foreach($object->array_options as $key => $option)
+	    	$extrafields->fetch_name_optionals_label($this->table_element);
+	    	foreach ($object->array_options as $key => $option)
 	    	{
 	    		$shortkey = preg_replace('/options_/', '', $key);
-	    		if (! empty($extrafields->attributes[$this->element]['unique'][$shortkey]))
+	    		if (!empty($extrafields->attributes[$this->element]['unique'][$shortkey]))
 	    		{
 	    			//var_dump($key); var_dump($clonedObj->array_options[$key]); exit;
 	    			unset($object->array_options[$key]);
@@ -576,15 +576,34 @@ class ImmoReceipt extends CommonObject
 		    $this->errors = array_merge($this->errors, $object->errors);
 		    $error++;
 		}
+
+		if (!$error)
+	    {
+	    	// copy internal contacts
+	    	if ($this->copy_linked_contact($object, 'internal') < 0)
+	    	{
+	    		$error++;
+	    	}
+		}
+		
+		if (!$error)
+	    {
+	    	// copy external contacts if same company
+	    	if (property_exists($this, 'socid') && $this->socid == $object->socid)
+	    	{
+	    		if ($this->copy_linked_contact($object, 'external') < 0)
+	    			$error++;
+	    	}
+	    }
 		
 		if (! $error)
 		{
 			// Hook of thirdparty module
 			if (is_object($hookmanager))
 			{
-				$parameters=array('objFrom'=>$this, 'clonedObj'=>$object);
-				$action='';
-				$reshook=$hookmanager->executeHooks('createFrom', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
+				$parameters = array('objFrom'=>$this, 'clonedObj'=>$object);
+				$action = '';
+				$reshook = $hookmanager->executeHooks('createFrom', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 				if ($reshook < 0) $error++;
 			}
 		}
@@ -592,16 +611,14 @@ class ImmoReceipt extends CommonObject
 	    unset($object->context['createfromclone']);
 
 	    // End
-		if (! $error)
+		if (!$error) 
 		{
-			$this->db->commit();
-			return $object->id;
-		}
-		else
-		{
-			$this->db->rollback();
-			return -1;
-		}
+	        $this->db->commit();
+	        return $object;
+	    } else {
+	        $this->db->rollback();
+	        return -1;
+	    }
 	}
 	
 	/**
