@@ -449,7 +449,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent tableforfield">';
 
 	$alreadyoutput = 1;
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
 		if ($alreadyoutput)
 		{

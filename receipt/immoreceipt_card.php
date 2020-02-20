@@ -1103,29 +1103,32 @@ if ($action == 'create')
 		print '<table class="border centpercent tableforfield">';
 
 		$alreadyoutput = 1;
-		foreach($object->fields as $key => $val)
+		foreach ($object->fields as $key => $val)
 		{
 			if ($alreadyoutput)
 			{
-				if (! empty($keyforbreak) && $key == $keyforbreak) $alreadyoutput = 0;		// key used for break on second column
-				continue;
+				if (!empty($keyforbreak) && $key == $keyforbreak) 
+				{
+					$alreadyoutput = 0; // key used for break on second column
+				}
+				else 
+				{
+					continue;
+				}
 			}
 
-			if (abs($val['visible']) != 1) continue;	// Discard such field from form
+			// Discard if extrafield is a hidden field on form
+			if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
+
 			if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
 			if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
-			$value=$object->$key;
+			$value = $object->$key;
 			
 			print '<tr><td';
-			print ' class="titlefield';
-			if ($val['notnull'] > 0) print ' fieldrequired';
-			
-			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-			print '"';
-			print '>'.$langs->trans($val['label']).'</td>';
-			print '<td>';
-			
+			print ' class="titlefield fieldname_'.$key;
+			//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
+
 			if ($val['label'] == 'PartialPayment') 
 			{				
 				if ($object->getSommePaiement())
@@ -1159,6 +1162,12 @@ if ($action == 'create')
 			}
 			else
 			{
+				if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+				print '">';
+				if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+				else print $langs->trans($val['label']);
+				print '</td>';
+				print '<td>';
 				print $object->showOutputField($val, $key, $value, '', '', '', 0);
 			}
 			//var_dump($val.' '.$key.' '.$value);
