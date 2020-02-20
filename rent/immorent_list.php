@@ -290,7 +290,7 @@ llxHeader('', $title, $help_url);
 $arrayofselected = is_array($toselect) ? $toselect : array();
 
 $param = '';
-if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param. = '&contextpage='.urlencode($contextpage);
+if (!empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param .= '&contextpage='.urlencode($contextpage);
 if ($limit > 0 && $limit != $conf->liste_limit) $param .= '&limit='.urlencode($limit);
 foreach ($search as $key => $val)
 {
@@ -424,37 +424,37 @@ if (is_array($extrafields->attributes[$object->table_element]['computed']) && co
 
 // Loop on record
 // --------------------------------------------------------------------
-$i=0;
-$totalarray=array();
-while ($i < min($num, $limit))
+$i = 0;
+$totalarray = array();
+while ($i < ($limit ? min($num, $limit) : $num))
 {
 	$obj = $db->fetch_object($resql);
 	if (empty($obj)) break;		// Should not happen
 
 	// Store properties in $object
-	$object->id = $obj->rowid;
-	foreach($object->fields as $key => $val)
-	{
-		if (isset($obj->$key)) $object->$key = $obj->$key;
-	}
+	$object->setVarsFromFetchObj($obj);
 
 	// Show here line of result
 	print '<tr class="oddeven">';
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
-		$align='';
-		if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
-		if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
-		if ($key == 'status') $align.=($align?' ':'').'center';
+		$cssforfield = (empty($val['css']) ? '' : $val['css']);
+	    if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	    elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+
+	    if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+	    elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+
+	    if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '').'right';
+
 		if (! empty($arrayfields['t.'.$key]['checked']))
 		{
-			print '<td';
-			if ($align) print ' class="'.$align.'"';
-			print '>';
+			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
+			if ($key == 'status') print $object->getLibStatut(5);
 			
-			if ($val['label'] == 'Owner') 
+			elseif ($val['label'] == 'Owner') 
 			{
-				$staticowner=new ImmoOwner($db);
+				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);			
 				if ($staticowner->ref)
 				{
@@ -464,11 +464,11 @@ while ($i < min($num, $limit))
 			}
 			elseif ($val['label'] == 'Renter') 
 			{
-				$staticrenter=new ImmoRenter($db);
+				$staticrenter = new ImmoRenter($db);
 				$staticrenter->fetch($object->fk_renter);			
 				if ($staticrenter->ref)
 				{
-					$staticrenter->ref=$staticrenter->getFullName($langs);
+					$staticrenter->ref = $staticrenter->getFullName($langs);
 				}
 				print $staticrenter->ref;
 			}
@@ -480,7 +480,7 @@ while ($i < min($num, $limit))
 			if (! $i) $totalarray['nbfield']++;
 			if (! empty($val['isameasure']))
 			{
-				if (! $i) $totalarray['pos'][$totalarray['nbfield']]='t.'.$key;
+				if (! $i) $totalarray['pos'][$totalarray['nbfield']] = 't.'.$key;
 				$totalarray['val']['t.'.$key] += $obj->$key;
 			}
 		}
