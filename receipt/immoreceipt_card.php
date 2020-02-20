@@ -1376,13 +1376,12 @@ if ($action == 'create')
 
 		print '</div>';
 
-
 		// Buttons for actions
 		if ($action != 'presend' && $action != 'editline') 
 		{
 			print '<div class="tabsAction">'."\n";
-			$parameters=array();
-			$reshook=$hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
+			$parameters = array();
+			$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
 			if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 			if (empty($reshook))
@@ -1435,7 +1434,7 @@ if ($action == 'create')
 				// Clone
 				if ($usercancreate)
 				{
-					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=ImmoReceipt">' . $langs->trans("ToClone") . '</a></div>';
+					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=immoreceipt">' . $langs->trans("ToClone") . '</a></div>';
 				}
 
 				if ($usercandelete)
@@ -1452,7 +1451,8 @@ if ($action == 'create')
 
 
 		// Select mail models is same action as presend
-		if (GETPOST('modelselected')) {
+		if (GETPOST('modelselected')) 
+		{
 			$action = 'presend';
 		}
 
@@ -1465,8 +1465,8 @@ if ($action == 'create')
 			$relativepath = '/receipt/' . dol_sanitizeFileName($object->ref).'/';
 			$filedir = $conf->ultimateimmo->dir_output . $relativepath;
 			$urlsource = $_SERVER["PHP_SELF"] . "?recid=" . $object->id;
-			$genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
-			$delallowed = $user->rights->ultimateimmo->create;	// If you can create/edit, you can remove a file on card
+			$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
+			$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
 			print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
 
 			// Show links to link elements
@@ -1479,13 +1479,13 @@ if ($action == 'create')
 			$MAXEVENT = 10;
 
 			$morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1).'?recid='.$object->id.'">';
-			$morehtmlright.= $langs->trans("SeeAll");
-			$morehtmlright.= '</a>';
+			$morehtmlright .= $langs->trans("SeeAll");
+			$morehtmlright .= '</a>';
 
 			// List of actions on element
 			include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
 			$formactions = new FormActions($db);
-			$somethingshown = $formactions->showactions($object, 'immoreceipt', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
+			$somethingshown = $formactions->showactions($object, $object->element, (is_object($object->thirdparty) ? $object->thirdparty->id : 0), 1, '', $MAXEVENT, '', $morehtmlright);
 
 			print '</div></div></div>';
 		}
@@ -1494,8 +1494,8 @@ if ($action == 'create')
 		 if (GETPOST('modelselected')) $action = 'presend';
 
 		 // Presend form
-		 $modelmail='immoreceipt';
-		 $defaulttopic='InformationMessage';
+		 $modelmail = 'immoreceipt';
+		 $defaulttopic = 'InformationMessage';
 		 $diroutput = $conf->ultimateimmo->dir_output.'/receipt';
 		 $trackid = 'immo'.$object->id;
 

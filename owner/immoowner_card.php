@@ -51,7 +51,7 @@ $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $confirm    = GETPOST('confirm', 'alpha');
 $cancel		= GETPOST('cancel', 'aZ09');
-$contextpage = GETPOST('contextpage', 'aZ') ?GETPOST('contextpage', 'aZ') : 'myobjectcard'; // To manage different context of search
+$contextpage = GETPOST('contextpage', 'aZ') ?GETPOST('contextpage', 'aZ') : 'immoownercard'; // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
 $socid 		= GETPOST('socid', 'int');
@@ -591,7 +591,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			// Clone
     		if ($permissiontoadd)
     		{
-    			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&socid='.$object->socid.'&action=clone&object=myobject">'.$langs->trans("ToClone").'</a>'."\n";
+    			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&socid='.$object->socid.'&action=clone&object=immoowner">'.$langs->trans("ToClone").'</a>'."\n";
     		}
 
     		if ($permissiontodelete)
@@ -651,8 +651,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	 if (GETPOST('modelselected')) $action = 'presend';
 
 	 // Presend form
-	 $modelmail='immoowner';
-	 $defaulttopic='InformationMessage';
+	 $modelmail = 'immoowner';
+	 $defaulttopic = 'InformationMessage';
 	 $diroutput = $conf->ultimateimmo->dir_output.'/owner';
 	 $trackid = 'immo'.$object->id;
 
