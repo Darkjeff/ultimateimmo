@@ -1054,13 +1054,13 @@ class ImmoReceipt extends CommonObject
 		$this->db->begin();
 
 		// Numbering module definition
-		//$soc = new Societe($this->db);
-		//$soc->fetch($this->socid);
+		$soc = new Societe($this->db);
+		$soc->fetch($this->socid);
 
 		// Define new ref
 		if (!$error && (preg_match('/^[\(]?PROV/i', $this->ref) || empty($this->ref))) // empty should not happened, but when it occurs, the test save life
 		{
-			$num = $this->getNextNumRef();
+			$num = $this->getNextNumRef($soc);
 		}
 		else
 		{
