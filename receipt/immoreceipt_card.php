@@ -182,7 +182,7 @@ if (empty($reshook))
 					$outputlangs = new Translate("", $conf);
 					$outputlangs->setDefaultLang($newlang);
 				}
-				$model=$object->model_pdf;
+				$model=$object->modelpdf;
 				
 				$ret = $object->fetch($id); // Reload to get new records
 				$object->generateDocument($model, $outputlangs, $hidedetails, $hidedesc, $hideref);
@@ -325,7 +325,7 @@ if (empty($reshook))
 		$object->fk_user_creat = GETPOST("fk_user_creat");
 		$object->fk_user_modif = GETPOST("fk_user_modif");
 		$object->fk_user_valid = GETPOST("fk_user_valid");
-		$object->model_pdf = GETPOST("model_pdf");
+		$object->modelpdf = GETPOST("modelpdf");
 		$object->last_main_doc = GETPOST("last_main_doc");
 		$object->status = GETPOST("status");
 	

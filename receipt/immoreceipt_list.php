@@ -249,7 +249,7 @@ if 	($massaction == 'validate')
 						$outputlangs = new Translate("", $conf);
 						$outputlangs->setDefaultLang($newlang);
 					}
-					$model=$immoreceipt->model_pdf;
+					$model = $immoreceipt->modelpdf;
 					$ret = $immoreceipt->fetch($val); // Reload to get new records
 					$immoreceipt->generateDocument($model, $outputlangs, $hidedetails, $hidedesc, $hideref);
 					
