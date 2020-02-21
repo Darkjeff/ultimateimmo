@@ -81,8 +81,11 @@ class ImmoReceipt extends CommonObject
 	 * Credit note status
 	 */
 	const STATUS_CANCELED = 9;
-	
-	
+
+	/**
+     * Credit note invoice
+     */
+    const TYPE_CREDIT_NOTE = 2;
 
 	/**
 	 *  'type' if the field format ('integer', 'integer:ObjectClass:PathToClass[:AddCreateButtonOrNot[:Filter]]', 'varchar(x)', 'double(24,8)', 'real', 'price', 'text', 'html', 'date', 'datetime', 'timestamp', 'duration', 'mail', 'phone', 'url', 'password')
