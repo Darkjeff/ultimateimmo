@@ -525,9 +525,10 @@ class ImmoReceipt extends CommonObject
 	    $this->db->begin();
 
 	    // Load source object
-	    $object->fetchCommon($fromid);
+		$result = $object->fetchCommon($fromid);
+	    if ($result > 0 && !empty($object->table_element_line)) $object->fetchLines();
 		
-		$objsoc=new Societe($this->db);
+		$objsoc = new Societe($this->db);
 
 		// Change socid if needed
 		if (! empty($socid) && $socid != $object->socid)
@@ -796,34 +797,34 @@ class ImmoReceipt extends CommonObject
 	 * @param  string      $filtermode   Filter mode (AND or OR)
 	 * @return array|int                 int <0 if KO, array of pages if OK
 	 */
-	public function fetchAll($sortorder='', $sortfield='', $limit=0, $offset=0, array $filter=array(), $filtermode='AND')
+	public function fetchAll($sortorder = '', $sortfield = '', $limit = 0, $offset = 0, array $filter = array(), $filtermode = 'AND')
 	{
 		global $conf;
 
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
-		$records=array();
+		$records = array();
 
 		$sql = 'SELECT';
-		$sql .= ' t.rowid';
-		// TODO Get all fields
+		$sql .= $this->getFieldList();
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element. ' as t';
-		$sql .= ' WHERE t.entity = '.$conf->entity;
+		if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql .= ' WHERE t.entity IN ('.getEntity($this->table_element).')';
+		else $sql .= ' WHERE 1 = 1';
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {
 			foreach ($filter as $key => $value) {
-				if ($key=='t.rowid') {
-					$sqlwhere[] = $key . '='. $value;
+				if ($key == 't.rowid') {
+					$sqlwhere[] = $key.'='.$value;
 				}
-				elseif (strpos($key,'date') !== false) {
+				elseif (strpos($key, 'date') !== false) {
 					$sqlwhere[] = $key.' = \''.$this->db->idate($value).'\'';
 				}
-				elseif ($key=='customsql') {
+				elseif ($key == 'customsql') {
 					$sqlwhere[] = $value;
 				}
 				else {
-					$sqlwhere[] = $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+					$sqlwhere[] = $key.' LIKE \'%'.$this->db->escape($value).'%\'';
 				}
 			}
 		}
@@ -841,16 +842,17 @@ class ImmoReceipt extends CommonObject
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
-
-			while ($obj = $this->db->fetch_object($resql))
+            $i = 0;
+			while ($i < min($limit, $num))
 			{
+			    $obj = $this->db->fetch_object($resql);
+
 				$record = new self($this->db);
+				$record->setVarsFromFetchObj($obj);
 
-				$record->id = $obj->rowid;
-				// TODO Get other fields
-
-				//var_dump($record->id);
 				$records[$record->id] = $record;
+
+				$i++;
 			}
 			$this->db->free($resql);
 
