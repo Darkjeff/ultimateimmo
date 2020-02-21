@@ -62,32 +62,33 @@ $id			= GETPOST('id','int');
 //$search_fk_soc = GETPOST('search_fk_soc', 'alpha');
 
 // Load variable for pagination
-$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
-$sortfield = GETPOST('sortfield','alpha');
-$sortorder = GETPOST('sortorder','alpha');
-$page = GETPOST('page','int');
-if (empty($page) || $page == -1) { $page = 0; }     // If $page is not defined, or '' or -1
+$limit = GETPOST('limit', 'int') ? GETPOST('limit', 'int') : $conf->liste_limit;
+$sortfield = GETPOST('sortfield', 'alpha');
+$sortorder = GETPOST('sortorder', 'alpha');
+$page = GETPOST('page', 'int');
+if (empty($page) || $page == -1 || GETPOST('button_search', 'alpha') || GETPOST('button_removefilter', 'alpha') || (empty($toselect) && $massaction === '0')) { $page = 0; }     // If $page is not defined, or '' or -1 or if we click on clear filters or if we select empty mass action
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
-//if (! $sortfield) $sortfield="p.date_fin";
-//if (! $sortorder) $sortorder="DESC";
 
 // Initialize technical objects
 $object = new ImmoReceipt($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immoreceiptlist'));     // Note that conf->hooks_modules contains array
+
 // Fetch optionals attributes and labels
-$extralabels = $extrafields->fetch_name_optionals_label('immoreceipt');	// Load $extrafields->attributes['immoreceipt']
-$search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
+$extrafields->fetch_name_optionals_label($object->table_element);
+
+$search_array_options = $extrafields->getOptionalsFromPost($object->table_element, '', 'search_');
 
 // Default sort order (if not yet defined by previous GETPOST)
 if (! $sortfield) $sortfield="t.".key($object->fields);   // Set here default search field. By default 1st field in definition.
-if (! $sortorder) $sortorder="ASC";
+if (! $sortorder) $sortorder = "ASC";
 
 // Security check
-$socid=0;
+if (empty($conf->ultimateimmo->enabled)) accessforbidden('Module not enabled');
+$socid = 0;
 if ($user->societe_id > 0)	// Protection if external user
 {
 	//$socid = $user->societe_id;
@@ -96,49 +97,58 @@ if ($user->societe_id > 0)	// Protection if external user
 //$result = restrictedArea($user, 'ultimateimmo', $id, '');
 
 // Initialize array of search criterias
-$search_all=trim(GETPOST("search_all",'alpha'));
-$search=array();
-foreach($object->fields as $key => $val)
+$search_all = trim(GETPOST("search_all", 'alpha'));
+$search = array();
+foreach ($object->fields as $key => $val)
 {
-	if (GETPOST('search_'.$key,'alpha')) $search[$key]=GETPOST('search_'.$key,'alpha');
+	if (GETPOST('search_'.$key, 'alpha') !== '') $search[$key] = GETPOST('search_'.$key, 'alpha');
+}
 	//var_dump($search['t.'.$key]);
 	//var_dump($key);
-}
 
 // List of fields to search into when doing a "search in all"
 $fieldstosearchall = array();
-foreach($object->fields as $key => $val)
+foreach ($object->fields as $key => $val)
 {
-	if ($val['searchall']) $fieldstosearchall['t.'.$key]=$val['label'];
+	if ($val['searchall']) $fieldstosearchall['t.'.$key] = $val['label'];
 }
 
 // Definition of fields for list
-$arrayfields=array();
-foreach($object->fields as $key => $val)
+$arrayfields = array();
+foreach ($object->fields as $key => $val)
 {
 	// If $val['visible']==0, then we never show the field
-	if (! empty($val['visible'])) $arrayfields['t.'.$key]=array('label'=>$val['label'], 'checked'=>(($val['visible']<0)?0:1), 'enabled'=>$val['enabled'], 'position'=>$val['position']);
+	if (!empty($val['visible'])) $arrayfields['t.'.$key] = array('label'=>$val['label'], 'checked'=>(($val['visible'] < 0) ? 0 : 1), 'enabled'=>($val['enabled'] && ($val['visible'] != 3)), 'position'=>$val['position']);
 }
 // Extra fields
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label']) > 0)
 {
 	foreach($extrafields->attributes[$object->table_element]['label'] as $key => $val)
 	{
-		if (! empty($extrafields->attributes[$object->table_element]['list'][$key]))
-			$arrayfields["ef.".$key]=array('label'=>$extrafields->attributes[$object->table_element]['label'][$key], 'checked'=>(($extrafields->attributes[$object->table_element]['list'][$key]<0)?0:1), 'position'=>$extrafields->attributes[$object->table_element]['pos'][$key], 'enabled'=>(abs($extrafields->attributes[$object->table_element]['list'][$key])!=3 && $extrafields->attributes[$object->table_element]['perms'][$key]));
+		if (!empty($extrafields->attributes[$object->table_element]['list'][$key])) {
+			$arrayfields["ef.".$key] = array(
+				'label'=>$extrafields->attributes[$object->table_element]['label'][$key],
+				'checked'=>(($extrafields->attributes[$object->table_element]['list'][$key]<0)?0:1),
+				'position'=>$extrafields->attributes[$object->table_element]['pos'][$key],
+				'enabled'=>(abs($extrafields->attributes[$object->table_element]['list'][$key])!=3 && $extrafields->attributes[$object->table_element]['perms'][$key])
+			);
+		}
 	}
 }
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
 
-
+$permissiontoread = $user->rights->ultimateimmo->read;
+$permissiontoadd = $user->rights->ultimateimmo->write;
+$permissiontodelete = $user->rights->ultimateimmo->delete;
 
 /*
  * Actions
+ * 
  */
  
- if ($action == 'validaterent') {
-	
+ if ($action == 'validaterent') 
+ {	
 	$error = 0;
 	
 	$db->begin();
@@ -152,10 +162,13 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 	//var_dump($sql1);exit;exit;
 	// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 	$resql1 = $db->query($sql1);
-	if (! $resql1) {
+	if (! $resql1) 
+	{
 		$error ++;
 		setEventMessages($db->lasterror(), null, 'errors');
-	} else {
+	} 
+	else 
+	{
 		
 		$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
 		$sql1 .= " SET paye=1";
@@ -163,23 +176,27 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 		
 		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 		$resql1 = $db->query($sql1);
-		if (! $resql1) {
+		if (! $resql1) 
+		{
 			$error ++;
 			setEventMessages($db->lasterror(), null, 'errors');
 		}
 		
-		if (! $error) {
+		if (! $error) 
+		{
 			$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
-			$sql1 .= " SET balance=total_amount-partial_payment";
+			$sql1 .= " SET balance = total_amount-partial_payment";
 			
 			// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 			$resql1 = $db->query($sql1);
-			if (! $resql1) {
+			if (! $resql1) 
+			{
 				$error ++;
 				setEventMessages($db->lasterror(), null, 'errors');
 			}
 			
-			if (! $error) {
+			if (! $error) 
+			{
 				$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immorent as ir";
 				$sql1 .= " SET ir.encours=";
 				$sql1 .= "(SELECT SUM(il.balance)";
@@ -188,7 +205,8 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 				$sql1 .= " GROUP BY il.fk_rent )";
 				
 				$resql1 = $db->query($sql1);
-			if (! $resql1) {
+			if (! $resql1) 
+			{
 				$error ++;
 				setEventMessages($db->lasterror(), null, 'errors');
 			}
@@ -198,13 +216,14 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 				$mesg=$langs->trans("Loyer mis a jour avec succes");
 				setEventMessages($mesg, null, 'mesgs');
 			}
-		} else {
+		} 
+		else 
+		{
 			$db->rollback();
 			setEventMessages($db->lasterror(), null, 'errors');
 		}
 	}
 }
-
 
 if 	($massaction == 'validate') 
 {	
@@ -246,11 +265,11 @@ if 	($massaction == 'validate')
 	}
 }
 
-if (GETPOST('cancel','alpha')) { $action='list'; $massaction=''; }
-if (! GETPOST('confirmmassaction','alpha') && $massaction != 'presend' && $massaction != 'confirm_presend') { $massaction=''; }
+if (GETPOST('cancel','alpha')) { $action = 'list'; $massaction = ''; }
+if (! GETPOST('confirmmassaction','alpha') && $massaction != 'presend' && $massaction != 'confirm_presend') { $massaction = ''; }
 
-$parameters=array();
-$reshook=$hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
+$parameters = array();
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if (empty($reshook))
@@ -259,28 +278,25 @@ if (empty($reshook))
 	include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
 	// Purge search criteria
-	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') ||GETPOST('button_removefilter','alpha')) // All tests are required to be compatible with all browsers
+	if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') ||GETPOST('button_removefilter', 'alpha')) // All tests are required to be compatible with all browsers
 	{
-		foreach($object->fields as $key => $val)
+		foreach ($object->fields as $key => $val)
 		{
-			$search[$key]='';
+			$search[$key] = '';
 		}
-		$toselect='';
-		$search_array_options=array();
+		$toselect = '';
+		$search_array_options = array();
 	}
-	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') || GETPOST('button_removefilter','alpha')
-		|| GETPOST('button_search_x','alpha') || GETPOST('button_search.x','alpha') || GETPOST('button_search','alpha'))
+	if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')
+		|| GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha'))
 	{
 		//$search_fk_soc = '';
 		$massaction = '';     // Protection to avoid mass action if we force a new search during a mass action confirmation
 	}
 
 	// Mass actions
-	$objectclass='ImmoReceipt';
-	$objectlabel='ImmoReceipt';
-	$permtoread = $user->rights->ultimateimmo->read;
-	$permtocreate = $user->rights->ultimateimmo->write;
-	$permtodelete = $user->rights->ultimateimmo->delete;
+	$objectclass = 'ImmoReceipt';
+	$objectlabel = 'ImmoReceipt';
 	$uploaddir = $conf->ultimateimmo->dir_output . '/receipt/';
 	include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
 }
@@ -289,55 +305,55 @@ if (empty($reshook))
 
 /*
  * View
+ * 
  */
 
-$form=new Form($db);
+$form = new Form($db);
 
-$now=dol_now();
+$now = dol_now();
 
 //$help_url="EN:Module_ImmoReceipt|FR:Module_ImmoReceipt_FR|ES:Módulo_ImmoReceipt";
-$help_url='';
+$help_url = '';
 $title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoReceipts"));
 
 
 // Build and execute select
 // --------------------------------------------------------------------
 $sql = 'SELECT ';
-foreach($object->fields as $key => $val)
+foreach ($object->fields as $key => $val)
 {
-	$sql.='t.'.$key.', ';
+	$sql .= 't.'.$key.', ';
 }
-$sql.='lc.lastname as nomlocataire, lc.firstname as prenomlocataire, ll.label as nomlocal, ll.rowid as property_id, soc.rowid as soc_id, soc.nom as owner_name';
+$sql .= 'lc.lastname as nomlocataire, lc.firstname as prenomlocataire, ll.label as nomlocal, ll.rowid as property_id, soc.rowid as soc_id, soc.nom as owner_name';
 // Add fields from extrafields
-if (! empty($extrafields->attributes[$object->table_element]['label']))
-foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql.=($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.' as options_'.$key.', ' : '');
-// Add fields from hooks
-$parameters=array();
-$reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
-$sql.=$hookmanager->resPrint;
-$sql=preg_replace('/, $/','', $sql);
-$sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
-$sql.= " INNER JOIN ".MAIN_DB_PREFIX."ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";
-$sql.= " INNER JOIN ".MAIN_DB_PREFIX."ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid";
-$sql.= " INNER JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
-if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
-if ($object->ismultientitymanaged == 1) $sql.= " WHERE t.entity IN (".getEntity($object->element).")";
-else $sql.=" WHERE 1 = 1";
-
-foreach($search as $key => $val)
-{
-	//if ($key == 'status' && $search[$key] == -1) continue;
-	$mode_search=(($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
-	if ($search[$key] != '') $sql.=natural_search('t.'.$key, $search[$key], (($key == 'status')?2:$mode_search));
+if (!empty($extrafields->attributes[$object->table_element]['label'])) {
+	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.' as options_'.$key.', ' : '');
 }
-if ($search_all) $sql.= natural_search(array_keys($fieldstosearchall), $search_all);
+// Add fields from hooks
+$parameters = array();
+$reshook = $hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$sql .= preg_replace('/^,/', '', $hookmanager->resPrint);
+$sql = preg_replace('/,\s*$/', '', $sql);
+$sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
+$sql .= " INNER JOIN ".MAIN_DB_PREFIX."ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";
+$sql .= " INNER JOIN ".MAIN_DB_PREFIX."ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid";
+$sql .= " INNER JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
+if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
+if ($object->ismultientitymanaged == 1) $sql.= " WHERE t.entity IN (".getEntity($object->element).")";
+else $sql .= " WHERE 1 = 1";
+foreach ($search as $key => $val)
+{
+	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key])) ? 1 : 0);
+	if ($search[$key] != '') $sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
+}
+if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
 
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
 // Add where from hooks
-$parameters=array();
-$reshook=$hookmanager->executeHooks('printFieldListWhere', $parameters, $object);    // Note that $action and $object may have been modified by hook
-$sql.=$hookmanager->resPrint;
+$parameters = array();
+$reshook = $hookmanager->executeHooks('printFieldListWhere', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$sql .= $hookmanager->resPrint;
 
 /* If a group by is required
 $sql.= " GROUP BY "
@@ -355,7 +371,7 @@ $sql.=$hookmanager->resPrint;
 $sql=preg_replace('/, $/','', $sql);
 */
 
-$sql.=$db->order($sortfield,$sortorder);
+$sql .= $db->order($sortfield, $sortorder);
 
 // Count total nb of records
 $nbtotalofrecords = '';
