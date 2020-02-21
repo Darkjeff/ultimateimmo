@@ -2,7 +2,7 @@
 /* Copyright (C) 2004-2018 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013-2016 Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2015-2018 Alexandre Spangaro   <aspangaro@zendsi.com>
- * Copyright (C) 2018-2019 Philippe GRAND       <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2020 Philippe GRAND       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

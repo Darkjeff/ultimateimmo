@@ -965,43 +965,45 @@ class ImmoReceipt extends CommonObject
 	}
 	
 	/**
-	 *  Returns the reference to the following non used Receipt depending on the active numbering module
-	 *  defined into ULTIMATEIMMO_ADDON_NUMBER
+	 *  Returns the reference to the following non used object depending on the active numbering module.
 	 *
-	 *  @param	Societe		$soc  	Object thirdparty
-	 *  @return string      		Receipt free reference
+	 *  @return string      		Object free reference
 	 */
-	function getNextNumRef($soc)
+	public function getNextNumRef()
 	{
 		global $langs, $conf;
 		$langs->load("ultimateimmo@ultimateimmo");
-		
-		$classname = $conf->global->ULTIMATEIMMO_ADDON_NUMBER;
-		
-		if (! empty($classname))
-		{
-			$mybool=false;
 
-			$file = $classname.".php";
+		if (empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)) 
+		{
+			$conf->global->ULTIMATEIMMO_ADDON_NUMBER = 'mod_ultimateimmo_simple';
+		}
+		
+		if (!empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER))
+		{
+			$mybool = false;
+
+			$file = $conf->global->ULTIMATEIMMO_ADDON_NUMBER.".php";
+			$classname = $conf->global->ULTIMATEIMMO_ADDON_NUMBER;
 
 			// Include file with class
-			$dirmodels=array_merge(array('/'),(array) $conf->modules_parts['models']);
+			$dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);
 			foreach ($dirmodels as $reldir)
 			{
 				$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/");
 
 				// Load file with numbering class (if found)
-				$mybool|=@include_once $dir.$file;
+				$mybool |= @include_once $dir.$file;
 			}
 
-            if ($mybool === false)
-            {
-                dol_print_error('',"Failed to include file ".$file);
-                return '';
-            }
+			if ($mybool === false)
+			{
+				dol_print_error('', "Failed to include file ".$file);
+				return '';
+			}
 
 			$obj = new $classname();
-			$numref = $obj->getNextValue($soc,$this);
+			$numref = $obj->getNextValue($this);
 
 			if ($numref != "")
 			{
@@ -1009,14 +1011,13 @@ class ImmoReceipt extends CommonObject
 			}
 			else
 			{
-				$this->error=$obj->error;
+				$this->error = $obj->error;
 				//dol_print_error($this->db,get_class($this)."::getNextNumRef ".$obj->error);
 				return "";
 			}
 		}
 		else
 		{
-			$langs->load("errors");
 			print $langs->trans("Error")." ".$langs->trans("Error_ULTIMATEIMMO_ADDON_NUMBER_NotDefined");
 			return "";
 		}
