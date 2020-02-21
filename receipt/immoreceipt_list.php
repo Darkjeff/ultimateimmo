@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2019 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2020 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -206,7 +206,7 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 }
 
 
-if 	($massaction == 'valid') 
+if 	($massaction == 'validate') 
 {	
 	foreach($toselect as $key => $val) 
 	{		
@@ -214,7 +214,7 @@ if 	($massaction == 'valid')
 		$result = $immoreceipt->fetch($val);		
 		if ($result >= 0)
 		{		
-			$resultvalid = $immoreceipt->valid($user);
+			$resultvalid = $immoreceipt->validate($user);
 		
 			if ($resultvalid >= 0)
 			{
