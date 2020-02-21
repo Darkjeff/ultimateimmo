@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoreceipt (
    fk_user_modif INT(11) DEFAULT NULL,
    fk_user_valid INT(11) DEFAULT NULL,
    import_key varchar(14) DEFAULT NULL,
-   model_pdf varchar(128) DEFAULT NULL,
+   modelpdf varchar(128) DEFAULT NULL,
    last_main_doc varchar(255) DEFAULT NULL,
    status INT(11) NULL DEFAULT 0
 ) ENGINE=InnoDB;
