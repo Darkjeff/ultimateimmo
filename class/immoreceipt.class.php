@@ -1175,7 +1175,8 @@ class ImmoReceipt extends CommonObject
         $result = '';
 
 		$label = '<u>'.$langs->trans("ImmoReceipt").'</u>';
-        $label .= '<br>';
+		$label .= '<br>';
+		var_dump($this);
         $label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
 		if (isset($this->status)) 
 		{
