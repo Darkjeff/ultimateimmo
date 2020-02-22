@@ -372,7 +372,7 @@ class ImmoReceipt extends CommonObject
 			if (!empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key] = '';
 			if (empty($this->fields[$key]['ref']) && $values[$key] == '') $values[$key]='(PROV'.$this->id.')'; //is that ok ?
 
-			//var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
+			var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
 			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && !isset($values[$key]) && is_null($this->fields[$key]['default']))
 			{
 				$error++;
@@ -1137,7 +1137,7 @@ class ImmoReceipt extends CommonObject
 			}
 		}
 
-			// Set new ref and current status
+		// Set new ref and current status
 		if (!$error)
 		{
 			$this->ref = $num;
