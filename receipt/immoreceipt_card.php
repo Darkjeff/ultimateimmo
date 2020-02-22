@@ -658,7 +658,7 @@ if ($action == 'create')
 			// date_end
 			print $form->select_date(($object->date_end ? $object->date_end : -1), "date_end", 0, 0, 0, "", 1, 1, 1);
 		}
-		else ($val['label'] == 'Echeance')
+		elseif ($val['label'] == 'Echeance')
 		{
 			// Echeance
 			print $form->select_date(($object->date_echeance ? $object->date_echeance : -1), "date_echeance", 0, 0, 0, "", 1, 1, 1);
