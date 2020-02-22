@@ -561,13 +561,13 @@ $bankaccountstatic = new Account($db);
 llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
 
 // Load object modReceipt
-$module = (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
+$module = (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER) ? $conf->global->ULTIMATEIMMO_ADDON_NUMBER : 'mod_ultimateimmo_simple');
 
 if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
 {
 	$module = substr($module, 0, dol_strlen($module)-4);	
 }
-$result=dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php');
+$result = dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php');
 
 if ($result >= 0)
 {
@@ -599,7 +599,7 @@ if ($action == 'create')
 	}
 
 	print '<form name="fiche_loyer" method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<input type="hidden" name="token" value="'.newToken().'">';
 	print '<input type="hidden" name="action" value="add">';
 	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
 	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
@@ -635,11 +635,11 @@ if ($action == 'create')
 			// Reference
 			if (! empty($modCodeReceipt->code_auto)) 
 			{
-				$tmpcode="(PROV)";
+				$tmpcode = "(PROV)";
 			} 
 			else 
 			{
-				$tmpcode='<input name="ref" class="maxwidth100" maxlength="128" value="'.dol_escape_htmltag(GETPOST('ref')?GETPOST('ref'):$tmpcode).'">';
+				$tmpcode = '<input name="ref" class="maxwidth100" maxlength="128" value="'.dol_escape_htmltag(GETPOST('ref')?GETPOST('ref'):$tmpcode).'">';
 			}
 			print $tmpcode;
 		}
@@ -658,18 +658,17 @@ if ($action == 'create')
 			// date_end
 			print $form->select_date(($object->date_end ? $object->date_end : -1), "date_end", 0, 0, 0, "", 1, 1, 1);
 		}
-		elseif ($val['label'] == 'Echeance')
+		else ($val['label'] == 'Echeance')
 		{
 			// Echeance
 			print $form->select_date(($object->date_echeance ? $object->date_echeance : -1), "date_echeance", 0, 0, 0, "", 1, 1, 1);
 		}
-		else
-		{
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
-			else $value = GETPOST($key, 'alpha');
-			print $object->showInputField($val, $key, $value, '', '', '', 0);
-		}
+	
+		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
+		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
+		else $value = GETPOST($key, 'alpha');
+		print $object->showInputField($val, $key, $value, '', '', '', 0);
+	
 		print '</td>';
 		print '</tr>';
 
