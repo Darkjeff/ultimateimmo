@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2004-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2019 Philippe GRAND 		<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2020 Philippe GRAND 		<philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ $type='ultimateimmo';
 
 if (empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER))
 {
-    $conf->global->ULTIMATEIMMO_ADDON_NUMBER='mod_ultimateimmo_simple';
+    $conf->global->ULTIMATEIMMO_ADDON_NUMBER='mod_ultimateimmo_standard';
 }
 
 

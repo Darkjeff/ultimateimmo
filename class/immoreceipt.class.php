@@ -405,7 +405,7 @@ class ImmoReceipt extends CommonObject
 				$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX.$this->table_element);
 				
 				// Load object modReceipt
-				$module = (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_simple');
+				$module = (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_standard');
 				
 				if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
 				{
@@ -415,7 +415,7 @@ class ImmoReceipt extends CommonObject
 				
 				if ($result >= 0)
 				{
-					dol_include_once('/ultimateimmo/core/modules/ultimateimmo/mod_ultimateimmo_simple.php');
+					dol_include_once('/ultimateimmo/core/modules/ultimateimmo/mod_ultimateimmo_standard.php');
 					$modCodeUltimateimmo = new $module();
 					
 					if (! empty($modCodeUltimateimmo->code_auto)) {
@@ -979,7 +979,7 @@ class ImmoReceipt extends CommonObject
 
 		if (empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)) 
 		{
-			$conf->global->ULTIMATEIMMO_ADDON_NUMBER = 'mod_ultimateimmo_simple';
+			$conf->global->ULTIMATEIMMO_ADDON_NUMBER = 'mod_ultimateimmo_standard';
 		}
 		
 		if (!empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER))

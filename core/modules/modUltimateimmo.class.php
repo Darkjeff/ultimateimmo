@@ -155,7 +155,7 @@ class modUltimateimmo extends DolibarrModules
 
 		$this->const[$r][0] = "ULTIMATEIMMO_ADDON_NUMBER";
 		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = "mod_ultimateimmo_simple";
+		$this->const[$r][2] = "mod_ultimateimmo_standard";
 		$this->const[$r][3] = 'Name for numbering manager for ultimateimmo';
 		$this->const[$r][4] = 0;
 		$r++;

@@ -561,7 +561,7 @@ $bankaccountstatic = new Account($db);
 llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
 
 // Load object modReceipt
-$module = (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER) ? $conf->global->ULTIMATEIMMO_ADDON_NUMBER : 'mod_ultimateimmo_simple');
+$module = (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER) ? $conf->global->ULTIMATEIMMO_ADDON_NUMBER : 'mod_ultimateimmo_standard');
 
 if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
 {
@@ -571,7 +571,7 @@ $result = dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php
 
 if ($result >= 0)
 {
-	dol_include_once('/ultimateimmo/core/modules/ultimateimmo/mod_ultimateimmo_simple.php');
+	dol_include_once('/ultimateimmo/core/modules/ultimateimmo/mod_ultimateimmo_standard.php');
 	$modCodeReceipt = new $module();
 }
 
