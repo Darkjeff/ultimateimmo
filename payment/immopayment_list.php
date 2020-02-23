@@ -506,7 +506,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				}
 				print $staticrenter->ref;
 			}
-			elseif ($val['label'] == 'TypePayment')
+			elseif ($key == 'TypePayment')
 			{
 				if ($object->fk_mode_reglement)
 				{
