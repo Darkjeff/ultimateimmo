@@ -506,7 +506,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				}
 				print $staticrenter->ref;
 			}
-			elseif ($val['label'] == 'TypePayment')
+			/*elseif ($val['label'] == 'TypePayment')
 			{
 				if ($object->fk_mode_reglement)
 				{
@@ -517,7 +517,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				// Payment mode
 				$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none');
 			}
-			/*elseif ($val['label'] == 'BankAccount')
+			elseif ($val['label'] == 'BankAccount')
 			{
 				if ($object->fk_bank)
 				{
