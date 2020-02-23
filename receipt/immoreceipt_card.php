@@ -185,7 +185,7 @@ if (empty($reshook))
 					$outputlangs = new Translate("", $conf);
 					$outputlangs->setDefaultLang($newlang);
 				}
-				$model = $object->modelpdf;
+				$model = $object->model_pdf;
 				
 				$ret = $object->fetch($id); // Reload to get new records
 				$object->generateDocument($model, $outputlangs, $hidedetails, $hidedesc, $hideref);
@@ -329,7 +329,7 @@ if (empty($reshook))
 		$object->fk_user_creat = GETPOST("fk_user_creat");
 		$object->fk_user_modif = GETPOST("fk_user_modif");
 		$object->fk_user_valid = GETPOST("fk_user_valid");
-		$object->modelpdf = GETPOST("modelpdf");
+		$object->model_pdf = GETPOST("modelpdf");
 		$object->last_main_doc = GETPOST("last_main_doc");
 		$object->status = GETPOST("status");
 	
@@ -538,7 +538,7 @@ if (empty($reshook))
 			$outputlangs = new Translate("", $conf);
 			$outputlangs->setDefaultLang(GETPOST('lang_id', 'aZ09'));
 		}
-		$result = $object->generateDocument($object->modelpdf, $outputlangs);
+		$result = $object->generateDocument($object->model_pdf, $outputlangs);
 		if ($result <= 0)
 		{
 			setEventMessages($object->error, $object->errors, 'errors');
@@ -1471,7 +1471,7 @@ if ($action == 'create')
 			$urlsource = $_SERVER["PHP_SELF"] . "?recid=" . $object->id;
 			$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
 			$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
-			print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
+			print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
 
 			// Show links to link elements
 			$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));
