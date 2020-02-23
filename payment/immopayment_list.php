@@ -506,7 +506,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				}
 				print $staticrenter->ref;
 			}
-			/*elseif ($val['label'] == 'TypePayment')
+			elseif ($val['label'] == 'TypePayment')
 			{
 				if ($object->fk_mode_reglement)
 				{
@@ -524,9 +524,9 @@ while ($i < ($limit ? min($num, $limit) : $num))
 					$bankline = new AccountLine($db);
 					$result = $bankline->fetch($object->fk_bank);		
 					// Payment bank
-					//print $bankline->getNomUrl(1, 0, 'showall');	
+					print $bankline->getNomUrl(1, 0, 'showall');	
 				}				
-			}*/
+			}
 			if ($key == 'status') print $object->getLibStatut(5);
 			else print $object->showOutputField($val, $key, $obj->$key, '');
 			
