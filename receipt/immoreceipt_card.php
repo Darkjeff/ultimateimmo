@@ -130,7 +130,8 @@ if (empty($reshook))
 	/**
 	 *	Delete rental
 	 */
-	if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes' && $usercandelete) {
+	if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes' && $usercandelete) 
+	{
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
 		$result = $receipt->delete($user);
