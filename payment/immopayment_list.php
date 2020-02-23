@@ -471,7 +471,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 		if (! empty($arrayfields['t.'.$key]['checked']))
 		{
 			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
-			if ($key == 'status') print $object->getLibStatut(5);
+			
 			
 			if ($val['label'] == 'Ref') 
 			{	
@@ -527,10 +527,9 @@ while ($i < ($limit ? min($num, $limit) : $num))
 					print $bankline->getNomUrl(1, 0, 'showall');	
 				}				
 			}
-			else
-			{
-				print $object->showOutputField($val, $key, $obj->$key, '');
-			}
+			if ($key == 'status') print $object->getLibStatut(5);
+			else print $object->showOutputField($val, $key, $obj->$key, '');
+			
 			print '</td>';
 			if (! $i) $totalarray['nbfield']++;
 			if (! empty($val['isameasure']))
