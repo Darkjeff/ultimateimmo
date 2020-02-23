@@ -407,7 +407,6 @@ print $searchpicto;
 print '</td>';
 print '</tr>'."\n";
 
-
 // Fields title label
 // --------------------------------------------------------------------
 print '<tr class="liste_titre">';
@@ -462,7 +461,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 	{
 		$cssforfield = (empty($val['css']) ? '' : $val['css']);
 	    if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
-	    //elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	    elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
 
 	    if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
 	    elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
@@ -472,7 +471,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 		if (! empty($arrayfields['t.'.$key]['checked']))
 		{
 			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
-			//if ($key == 'status') print $object->getLibStatut(5);
+			
 			
 			if ($val['label'] == 'Ref') 
 			{	
@@ -528,6 +527,8 @@ while ($i < ($limit ? min($num, $limit) : $num))
 					print $bankline->getNomUrl(1, 0, 'showall');	
 				}				
 			}
+			if ($key == 'status') print $object->getLibStatut(5);
+			
 			else
 			{
 				print $object->showOutputField($val, $key, $obj->$key, '');
