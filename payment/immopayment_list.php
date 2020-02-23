@@ -517,7 +517,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				// Payment mode
 				$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none');
 			}
-			elseif ($val['label'] == 'BankAccount')
+			/*elseif ($val['label'] == 'BankAccount')
 			{
 				if ($object->fk_bank)
 				{
@@ -526,7 +526,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 					// Payment bank
 					//print $bankline->getNomUrl(1, 0, 'showall');	
 				}				
-			}
+			}*/
 			if ($key == 'status') print $object->getLibStatut(5);
 			else print $object->showOutputField($val, $key, $obj->$key, '');
 			
