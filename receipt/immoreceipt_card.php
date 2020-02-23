@@ -152,12 +152,14 @@ if (empty($reshook))
 		if ($receipt->status == ImmoReceipt::STATUS_VALIDATED && $receipt->paye == 0)
 		{
 			$paiement = new ImmoPayment($db);
-			$result=$paiement->fetch(GETPOST('paiement_id'));
-			if ($result > 0) {
-				$result=$paiement->delete(); // If fetch ok and found
+			$result = $paiement->fetch(GETPOST('paiement_id'));
+			if ($result > 0) 
+			{
+				$result = $paiement->delete(); // If fetch ok and found
 				header("Location: ".$_SERVER['PHP_SELF']."?id=".$id);
 			}
-			if ($result < 0) {
+			if ($result < 0) 
+			{
 				setEventMessages($paiement->error, $paiement->errors, 'errors');
 			}
 		}
@@ -182,7 +184,7 @@ if (empty($reshook))
 					$outputlangs = new Translate("", $conf);
 					$outputlangs->setDefaultLang($newlang);
 				}
-				$model=$object->modelpdf;
+				$model = $object->modelpdf;
 				
 				$ret = $object->fetch($id); // Reload to get new records
 				$object->generateDocument($model, $outputlangs, $hidedetails, $hidedesc, $hideref);
@@ -516,7 +518,9 @@ if (empty($reshook))
 		header("Location: ".dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id=' .$receipt->id);
 		if ($id > 0) {
 			// $mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
-		} else {
+		} 
+		else 
+		{
 			$mesg = '<div class="error">' . $receipt->error . '</div>';
 		}
 	}
