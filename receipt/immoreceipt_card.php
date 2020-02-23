@@ -244,6 +244,7 @@ if (empty($reshook))
 	
 	$error=0;
 
+	$permissiontoread = $user->rights->ultimateimmo->read;
 	$permissiontoadd = $user->rights->ultimateimmo->write;
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$backurlforlist = dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1);
@@ -1471,7 +1472,6 @@ if ($action == 'create')
 			// Show links to link elements
 			$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));
 			$somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
-
 
 			print '</div><div class="fichehalfright"><div class="ficheaddleft">';
 
