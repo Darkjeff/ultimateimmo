@@ -525,19 +525,19 @@ if (empty($reshook))
 	if ($action == 'builddoc' && $usercancreate)
 	{
 		// Save last template used to generate document
-		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model','alpha'));
+		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model', 'alpha'));
 
 		$outputlangs = $langs;
-		if (GETPOST('lang_id','aZ09'))
+		if (GETPOST('lang_id', 'aZ09'))
 		{
-			$outputlangs = new Translate("",$conf);
-			$outputlangs->setDefaultLang(GETPOST('lang_id','aZ09'));
+			$outputlangs = new Translate("", $conf);
+			$outputlangs->setDefaultLang(GETPOST('lang_id', 'aZ09'));
 		}
-		$result= $object->generateDocument($object->modelpdf, $outputlangs);
+		$result = $object->generateDocument($object->modelpdf, $outputlangs);
 		if ($result <= 0)
 		{
 			setEventMessages($object->error, $object->errors, 'errors');
-			$action='';
+			$action = '';
 		}
 	}
 
@@ -547,7 +547,6 @@ if (empty($reshook))
 	$trackid = 'immoreceipt'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 }
-
 
 /*
  * View
