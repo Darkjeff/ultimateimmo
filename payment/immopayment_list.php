@@ -376,7 +376,7 @@ foreach ($object->fields as $key => $val)
 	$align = '';
 	if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $align.=($align?' ':'').'center';
 	if (in_array($val['type'], array('timestamp'))) $align .= ($align ? ' ' : '').'nowrap';
-	//if ($key == 'status') $align .= ($align ? ' ' : '').'center';
+	if ($key == 'status') $align .= ($align ? ' ' : '').'center';
 	if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($align?' '.$align : '').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'"></td>';
 }
 // Extra fields
@@ -400,8 +400,8 @@ print '<tr class="liste_titre">';
 foreach ($object->fields as $key => $val)
 {
 	$cssforfield = (empty($val['css']) ? '' : $val['css']);
-	if ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
-	elseif (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	//if ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
 	elseif (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
 	elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $val['label'] != 'TechnicalID') $cssforfield .= ($cssforfield ? ' ' : '').'right';
 	if (!empty($arrayfields['t.'.$key]['checked']))
