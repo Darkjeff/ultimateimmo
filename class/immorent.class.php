@@ -108,7 +108,7 @@ class ImmoRent extends CommonObject
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'visible'=>-2, 'enabled'=>1, 'position'=>510, 'notnull'=>1,),
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'visible'=>-2, 'enabled'=>1, 'position'=>511, 'notnull'=>-1,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'visible'=>-2, 'enabled'=>1, 'position'=>1000, 'notnull'=>-1,),
-		'modelpdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'enabled'=>1, 'visible'=>-2, 'position'=>1010, 'notnull'=>-1, 'index'=>1, 'searchall'=>1,),
+		'model_pdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'enabled'=>1, 'visible'=>-2, 'position'=>1010, 'notnull'=>-1, 'index'=>1, 'searchall'=>1,),
 		'status' => array('type'=>'integer', 'label'=>'Status', 'visible'=>1, 'enabled'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
 	);
 	public $rowid;
@@ -141,7 +141,7 @@ class ImmoRent extends CommonObject
 	public $fk_user_creat;
 	public $fk_user_modif;
 	public $import_key;
-	public $modelpdf;
+	public $model_pdf;
 	public $status;
 	// END MODULEBUILDER PROPERTIES
 
@@ -533,9 +533,9 @@ class ImmoRent extends CommonObject
 
 			$modele = 'bail_vide';
 
-			if ($this->modelpdf) 
+			if ($this->model_pdf) 
 			{
-				$modele = $this->modelpdf;
+				$modele = $this->model_pdf;
 			} 
 			elseif (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) 
 			{

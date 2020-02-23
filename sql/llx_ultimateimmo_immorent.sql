@@ -46,7 +46,7 @@ CREATE TABLE llx_ultimateimmo_immorent(
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
 	import_key varchar(14),
-	modelpdf varchar(128) DEFAULT NULL,	
+	model_pdf varchar(128) DEFAULT NULL,	
 	status integer NOT NULL
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

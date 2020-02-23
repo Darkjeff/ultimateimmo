@@ -28,7 +28,7 @@ ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_fk_soc (fk_soc);
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_paye (paye);
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD CONSTRAINT llx_ultimateimmo_immoreceipt_fk_user_creat FOREIGN KEY (fk_user_creat) REFERENCES llx_user(rowid);
-ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_modelpdf (modelpdf);
+ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_model_pdf (model_pdf);
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_status (status);
 -- END MODULEBUILDER INDEXES
 

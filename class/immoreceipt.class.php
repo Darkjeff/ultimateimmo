@@ -1253,7 +1253,6 @@ class ImmoReceipt extends CommonObject
 			if ($this->model_pdf) 
 			{
 				$modele = $this->model_pdf;
-				var_dump($modele);exit;
 			} 
 			elseif (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) 
 			{
