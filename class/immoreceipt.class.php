@@ -1250,7 +1250,7 @@ class ImmoReceipt extends CommonObject
 		{
 			$modele = 'quittance';
 
-			if ($this->modelpdf) 
+			if ($this->model_pdf) 
 			{
 				$modele = $this->modelpdf;
 				var_dump($modele);
