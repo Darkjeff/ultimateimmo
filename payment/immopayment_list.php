@@ -471,7 +471,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 		if (! empty($arrayfields['t.'.$key]['checked']))
 		{
 			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
-			
+			if ($key == 'status') print $object->getLibStatut(5);
 			
 			if ($val['label'] == 'Ref') 
 			{	
@@ -479,7 +479,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				$ret = $staticpayment->fetch($object->id);
 				print $staticpayment->getNomUrl(1);
 			}
-			if ($val['label'] == 'Owner') 
+			elseif ($val['label'] == 'Owner') 
 			{
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);			
@@ -489,14 +489,14 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				}
 				print $staticowner->ref;
 			}
-			if ($val['label'] == 'Contract') 
+			elseif ($val['label'] == 'Contract') 
 			{
 				$staticrent = new ImmoRent($db);
 				$ret=$staticrent->fetch($object->fk_rent);	
 				//var_dump($ret);
 				print $staticrent->getNomUrl(1, 0, 'showall');
 			}
-			if ($val['label'] == 'Renter') 
+			elseif ($val['label'] == 'Renter') 
 			{
 				$staticrenter = new ImmoRenter($db);
 				$staticrenter->fetch($object->fk_renter);			
@@ -506,7 +506,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				}
 				print $staticrenter->ref;
 			}
-			if ($val['label'] == 'TypePayment')
+			elseif ($val['label'] == 'TypePayment')
 			{
 				if ($object->fk_mode_reglement)
 				{
@@ -517,7 +517,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				// Payment mode
 				$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none');
 			}
-			if ($val['label'] == 'BankAccount')
+			elseif ($val['label'] == 'BankAccount')
 			{
 				if ($object->fk_bank)
 				{
@@ -527,10 +527,10 @@ while ($i < ($limit ? min($num, $limit) : $num))
 					print $bankline->getNomUrl(1, 0, 'showall');	
 				}				
 			}
-			if ($key == 'status') print $object->getLibStatut(5);
-			
-			else print $object->showOutputField($val, $key, $obj->$key, '');
- 
+			else
+			{
+				print $object->showOutputField($val, $key, $obj->$key, '');
+			}
 			print '</td>';
 			if (! $i) $totalarray['nbfield']++;
 			if (! empty($val['isameasure']))
