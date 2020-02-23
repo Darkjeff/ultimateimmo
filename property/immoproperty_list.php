@@ -87,7 +87,7 @@ if (! $sortorder) $sortorder="ASC";
 
 // Protection if external user
 if (empty($conf->ultimateimmo->enabled)) accessforbidden('Module not enabled');
-$socid=0;
+$socid = 0;
 if ($user->societe_id > 0)
 {
 	//$socid = $user->societe_id;
@@ -157,7 +157,7 @@ if (empty($reshook))
 	include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
 	// Purge search criteria
-	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') ||GETPOST('button_removefilter','alpha')) // All tests are required to be compatible with all browsers
+	if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') ||GETPOST('button_removefilter', 'alpha')) // All tests are required to be compatible with all browsers
 	{
 		foreach ($object->fields as $key => $val)
 		{
@@ -166,8 +166,8 @@ if (empty($reshook))
 		$toselect = '';
 		$search_array_options = array();
 	}
-	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') || GETPOST('button_removefilter','alpha')
-		|| GETPOST('button_search_x','alpha') || GETPOST('button_search.x','alpha') || GETPOST('button_search','alpha'))
+	if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')
+		|| GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha'))
 	{
 		$massaction = '';     // Protection to avoid mass action if we force a new search during a mass action confirmation
 	}
@@ -224,7 +224,7 @@ $sql .= " WHERE tp.label <> 'Immeuble'";
 }
 if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (".getEntity($object->element).")";
 //else $sql.=" WHERE 1 = 1";
-foreach($search as $key => $val)
+foreach ($search as $key => $val)
 {
 	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
 	if ($search[$key] != '') $sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
