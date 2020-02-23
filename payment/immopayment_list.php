@@ -422,73 +422,75 @@ print '</tr>'."\n";
 
 
 // Detect if we need a fetch on each output line
-$needToFetchEachLine=0;
-foreach ($extrafields->attribute_computed as $key => $val)
+$needToFetchEachLine = 0;
+if (is_array($extrafields->attributes[$object->table_element]['computed']) && count($extrafields->attributes[$object->table_element]['computed']) > 0)
 {
-	if (preg_match('/\$object/',$val)) $needToFetchEachLine++;  // There is at least one compute field that use $object
+	foreach ($extrafields->attributes[$object->table_element]['computed'] as $key => $val)
+	{
+		if (preg_match('/\$object/', $val)) $needToFetchEachLine++; // There is at least one compute field that use $object
+	}
 }
-
 
 // Loop on record
 // --------------------------------------------------------------------
-$i=0;
-$totalarray=array();
-while ($i < min($num, $limit))
+$i = 0;
+$totalarray = array();
+while ($i < ($limit ? min($num, $limit) : $num))
 {
 	$obj = $db->fetch_object($resql);
 	if (empty($obj)) break;		// Should not happen
 
 	// Store properties in $object
-	$object->id = $obj->rowid;
-	foreach($object->fields as $key => $val)
-	{
-		if (isset($obj->$key)) $object->$key = $obj->$key;
-	}
+	$object->setVarsFromFetchObj($obj);
 
 	// Show here line of result
 	print '<tr class="oddeven">';
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
-		$align='';
-		if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
-		if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
-		if ($key == 'status') $align.=($align?' ':'').'center';
+		$cssforfield = (empty($val['css']) ? '' : $val['css']);
+	    if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	    elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+
+	    if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+	    elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+
+		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '').'right';
+
 		if (! empty($arrayfields['t.'.$key]['checked']))
 		{
-			print '<td';
-			if ($align) print ' class="'.$align.'"';
-			print '>';
+			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
+			if ($key == 'status') print $object->getLibStatut(5);
 			
 			if ($val['label'] == 'Ref') 
 			{	
-				$staticpayment=new ImmoPayment($db);
-				$ret=$staticpayment->fetch($object->id);
+				$staticpayment = new ImmoPayment($db);
+				$ret = $staticpayment->fetch($object->id);
 				print $staticpayment->getNomUrl(1);
 			}
 			elseif ($val['label'] == 'Owner') 
 			{
-				$staticowner=new ImmoOwner($db);
+				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);			
 				if ($staticowner->ref)
 				{
-					$staticowner->ref=$staticowner->getFullName($langs);
+					$staticowner->ref = $staticowner->getFullName($langs);
 				}
 				print $staticowner->ref;
 			}
 			elseif ($val['label'] == 'Contract') 
 			{
-				$staticrent=new ImmoRent($db);
+				$staticrent = new ImmoRent($db);
 				$ret=$staticrent->fetch($object->fk_rent);	
 				//var_dump($ret);
 				print $staticrent->getNomUrl(1, 0, 'showall');
 			}
 			elseif ($val['label'] == 'Renter') 
 			{
-				$staticrenter=new ImmoRenter($db);
+				$staticrenter = new ImmoRenter($db);
 				$staticrenter->fetch($object->fk_renter);			
 				if ($staticrenter->ref)
 				{
-					$staticrenter->ref=$staticrenter->getFullName($langs);
+					$staticrenter->ref = $staticrenter->getFullName($langs);
 				}
 				print $staticrenter->ref;
 			}
@@ -497,8 +499,8 @@ while ($i < min($num, $limit))
 				if ($object->fk_mode_reglement)
 				{
 					$tmparray=$object->setPaymentMethods($object->fk_mode_reglement,'int');
-					$object->mode_code=$tmparray['code'];
-					$object->mode_payment=$tmparray['libelle'];
+					$object->mode_code = $tmparray['code'];
+					$object->mode_payment = $tmparray['libelle'];
 				}
 				// Payment mode
 				$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none');
@@ -507,11 +509,11 @@ while ($i < min($num, $limit))
 			{
 				if ($object->fk_bank)
 				{
-					$bankline=new AccountLine($db);
-					$result=$bankline->fetch($object->fk_bank);					
-				}
-				// Payment bank
-				print $bankline->getNomUrl(1, 0, 'showall');
+					$bankline = new AccountLine($db);
+					$result = $bankline->fetch($object->fk_bank);		
+					// Payment bank
+					print $bankline->getNomUrl(1, 0, 'showall');	
+				}				
 			}
 			else
 			{
