@@ -528,7 +528,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				}				
 			}
 			if ($key == 'status') print $object->getLibStatut(5);
-			else if ($key !== 'Ref') print $object->showOutputField($val, $key, $obj->$key, '');
+			else print $object->showOutputField($val, $key, $obj->$key, '');
 			
 			print '</td>';
 			if (! $i) $totalarray['nbfield']++;
