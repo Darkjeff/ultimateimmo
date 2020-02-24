@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2019  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2020  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ CREATE TABLE llx_ultimateimmo_immorenter(
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
 	import_key varchar(14), 
-	modelpdf varchar(128),
+	model_pdf varchar(128),
 	status integer NOT NULL  		
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

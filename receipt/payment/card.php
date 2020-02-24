@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2015       Alexandre Spangaro      <aspangaro@open-dsi.fr>
- * Copyright (C) 2018-2019  Philippe GRAND  		<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2020  Philippe GRAND  		<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,7 +123,7 @@ if ($action == 'confirm_valide' && $confirm == 'yes' && $usercancreate)
 				$outputlangs->setDefaultLang($_REQUEST['lang_id']);
 			}
 			if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE)) {
-				$rec->generateDocument($rec->modelpdf, $outputlangs);
+				$rec->generateDocument($rec->model_pdf, $outputlangs);
 			}
 		}
 
