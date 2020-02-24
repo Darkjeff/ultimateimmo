@@ -136,15 +136,15 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 /*
  * Actions
  */
- 
+
  if ($action == 'validaterent') {
-	
+
 	$error = 0;
-	
+
 	$db->begin();
-	
+
 	$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo ";
-	$sql1 .= " SET lo.partial_payment=";
+	$sql1 .= " SET partial_payment=";
 	$sql1 .= "(SELECT SUM(p.amount)";
 	$sql1 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 	$sql1 .= " WHERE lo.rowid = p.fk_receipt";
@@ -156,45 +156,45 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 		$error ++;
 		setEventMessages($db->lasterror(), null, 'errors');
 	} else {
-		
+
 		$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
 		$sql1 .= " SET paye=1";
 		$sql1 .= " WHERE total_amount=partial_payment";
-		
+
 		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 		$resql1 = $db->query($sql1);
 		if (! $resql1) {
 			$error ++;
 			setEventMessages($db->lasterror(), null, 'errors');
 		}
-		
+
 		if (! $error) {
 			$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
 			$sql1 .= " SET balance=total_amount-partial_payment";
-			
+
 			// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 			$resql1 = $db->query($sql1);
 			if (! $resql1) {
 				$error ++;
 				setEventMessages($db->lasterror(), null, 'errors');
 			}
-			
+
 			if (! $error) {
 				$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immorent as ir";
-				$sql1 .= " SET ir.encours=";
+				$sql1 .= " SET encours=";
 				$sql1 .= "(SELECT SUM(il.balance)";
 				$sql1 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
 				$sql1 .= " WHERE ir.rowid = il.fk_rent";
 				$sql1 .= " GROUP BY il.fk_rent )";
-				
+
 				$resql1 = $db->query($sql1);
 			if (! $resql1) {
 				$error ++;
 				setEventMessages($db->lasterror(), null, 'errors');
 			}
-				
+
 				$db->commit();
-				
+
 				$mesg=$langs->trans("Loyer mis a jour avec succes");
 				setEventMessages($mesg, null, 'mesgs');
 			}
