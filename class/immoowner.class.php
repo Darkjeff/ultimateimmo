@@ -278,7 +278,7 @@ class ImmoOwner extends CommonObject
 
 		$error = 0;
 
-		$now=dol_now();
+		$now = dol_now();
 
 		$fieldvalues = $this->setSaveQuery();
 		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation']=$this->db->idate($now);

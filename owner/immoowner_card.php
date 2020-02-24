@@ -51,7 +51,7 @@ $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $confirm    = GETPOST('confirm', 'alpha');
 $cancel		= GETPOST('cancel', 'aZ09');
-$contextpage = GETPOST('contextpage', 'aZ') ?GETPOST('contextpage', 'aZ') : 'myobjectcard'; // To manage different context of search
+$contextpage = GETPOST('contextpage', 'aZ') ?GETPOST('contextpage', 'aZ') : 'immoownercard'; // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
 $socid 		= GETPOST('socid', 'int');
@@ -65,14 +65,14 @@ $hookmanager->initHooks(array('immoownercard', 'globalcard'));     // Note that 
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
 
-$search_array_options=$extrafields->getOptionalsFromPost($extralabels, '', 'search_');
+$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
 
 // Initialize array of search criterias
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
-foreach($object->fields as $key => $val)
+foreach ($object->fields as $key => $val)
 {
-    if (GETPOST('search_'.$key,'alpha')) $search[$key] = GETPOST('search_'.$key, 'alpha');
+    if (GETPOST('search_'.$key, 'alpha')) $search[$key] = GETPOST('search_'.$key, 'alpha');
 }
 
 if (empty($action) && empty($id) && empty($ref)) $action = 'view';
@@ -159,7 +159,7 @@ if ($action == 'create')
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
@@ -240,7 +240,7 @@ if (($id || $ref) && $action == 'edit')
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
@@ -408,7 +408,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 	$keyforbreak='address';
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
 		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
 
@@ -418,7 +418,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
 		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
-		$value=$object->$key;
+		$value = $object->$key;
 
 		print '<tr><td';
 		print ' class="titlefield fieldname_'.$key;
@@ -449,7 +449,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent tableforfield">';
 
 	$alreadyoutput = 1;
-	foreach($object->fields as $key => $val)
+	foreach ($object->fields as $key => $val)
 	{
 		if ($alreadyoutput)
 		{
@@ -591,7 +591,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			// Clone
     		if ($permissiontoadd)
     		{
-    			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&socid='.$object->socid.'&action=clone&object=myobject">'.$langs->trans("ToClone").'</a>'."\n";
+    			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&socid='.$object->socid.'&action=clone&object=immoowner">'.$langs->trans("ToClone").'</a>'."\n";
     		}
 
     		if ($permissiontodelete)
@@ -624,7 +624,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;		
 	    $genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
 	    $delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
-	    print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
+	    print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
 
 	    // Show links to link elements
 	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immoowner'));
@@ -651,8 +651,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	 if (GETPOST('modelselected')) $action = 'presend';
 
 	 // Presend form
-	 $modelmail='immoowner';
-	 $defaulttopic='InformationMessage';
+	 $modelmail = 'immoowner';
+	 $defaulttopic = 'InformationMessage';
 	 $diroutput = $conf->ultimateimmo->dir_output.'/owner';
 	 $trackid = 'immo'.$object->id;
 

@@ -2,7 +2,7 @@
 /* Copyright (C) 2004-2018 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013-2016 Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2015-2018 Alexandre Spangaro   <aspangaro@zendsi.com>
- * Copyright (C) 2018-2019 Philippe GRAND       <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2020 Philippe GRAND       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,7 +155,7 @@ class modUltimateimmo extends DolibarrModules
 
 		$this->const[$r][0] = "ULTIMATEIMMO_ADDON_NUMBER";
 		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = "mod_ultimateimmo_simple";
+		$this->const[$r][2] = "mod_ultimateimmo_standard";
 		$this->const[$r][3] = 'Name for numbering manager for ultimateimmo';
 		$this->const[$r][4] = 0;
 		$r++;

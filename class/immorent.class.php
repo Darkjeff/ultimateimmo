@@ -533,16 +533,19 @@ class ImmoRent extends CommonObject
 
 			$modele = 'bail_vide';
 
-			if ($this->model_pdf) {
+			if ($this->model_pdf) 
+			{
 				$modele = $this->model_pdf;
-			} elseif (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) {
+			} 
+			elseif (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) 
+			{
 				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
 			}
 		}
 
 		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
 
-		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref,$moreparams);
+		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref, $moreparams);
 	}
 
 	/**
