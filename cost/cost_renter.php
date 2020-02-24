@@ -3,6 +3,7 @@
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2018-2019 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2020      Thomas OURSEL         <contact@ogest.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,17 +116,17 @@ $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property  ";
 //$sql .= "  AND lo.paye = 1 ";
-$sql .= " GROUP BY ll.fk_property";
+$sql .= " GROUP BY ll.fk_property, ii.label";
 
 $resql = $db->query ( $sql );
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows ( $resql );
-	
+
 	while ( $i < $num ) {
-		
+
 		$row = $db->fetch_row ( $resql );
-		
+
 		print '<tr><td>' . $row [0] . '</td>';
 		print '<td align="right">' . $row [1] . '</td>';
 		print '<td align="right">' . $row [2] . '</td>';
@@ -194,18 +195,18 @@ $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, 
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge récupérable/locative' ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
-$sql .= " GROUP BY ll.fk_property";
+$sql .= " GROUP BY ll.fk_property, ii.label";
 
 
 $resql = $db->query ( $sql );
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows ( $resql );
-	
+
 	while ( $i < $num ) {
-		
+
 		$row = $db->fetch_row ( $resql );
-		
+
 		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td align="right">' . $row [1] . '</td>';
 		print '<td align="right">' . $row [2] . '</td>';
@@ -257,7 +258,7 @@ $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 //$sql .= "  AND lo.paye = 1 ";
-$sql .= " GROUP BY lo.fk_property";
+$sql .= " GROUP BY lo.fk_property, ii.label";
 
 $resqlencaissement = $db->query ( $sql );
 
@@ -284,7 +285,7 @@ $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, 
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge récupérable/locative' ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
-$sql .= " GROUP BY ic.fk_property";
+$sql .= " GROUP BY ic.fk_property, ii.label";
 
 $resqlpaiement = $db->query ( $sql );
 if ($resqlpaiement && $resqlencaissement) {

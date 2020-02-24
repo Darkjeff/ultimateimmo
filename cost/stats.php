@@ -3,6 +3,7 @@
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2018-2019 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2020      Thomas OURSEL         <contact@ogest.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,18 +113,18 @@ $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND ic.fk_cost_type = it.rowid";
 $sql .= "  AND ic.fk_property = ii.rowid AND ii.fk_property = ib.fk_property";
 
-$sql .= " GROUP BY ii.fk_property, it.label";
+$sql .= " GROUP BY ii.fk_property, it.label, ib.label";
 
 $resql = $db->query ( $sql );
-if ($resql) 
+if ($resql)
 {
 	$i = 0;
 	$num = $db->num_rows ( $resql );
-	
-	while ( $i < $num ) 
-	{		
+
+	while ( $i < $num )
+	{
 		$row = $db->fetch_row ( $resql );
-		
+
 		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td class="left">' . $row [1] . '</td>';
 		print '<td class="right">' . $row [2] . '</td>';
@@ -189,15 +190,15 @@ $sql .= "  AND ic.fk_cost_type = it.rowid";
 
 
 $resql = $db->query ( $sql );
-if ($resql) 
+if ($resql)
 {
 	$i = 0;
 	$num = $db->num_rows ( $resql );
-	
-	while ( $i < $num ) 
-	{		
+
+	while ( $i < $num )
+	{
 		$row = $db->fetch_row ( $resql );
-		
+
 		print '<tr class="oddeven"><td width=10%>'.$row[0].'</td>';
 		print '<td class="left" width=10%>';
 		print '<td class="right">' . $row [1] . '</td>';
@@ -217,8 +218,8 @@ if ($resql)
 		$i ++;
 	}
 	$db->free ( $resql );
-} 
-else 
+}
+else
 {
 	print $db->lasterror (); // affiche la derniere erreur sql
 }
