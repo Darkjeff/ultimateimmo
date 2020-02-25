@@ -72,6 +72,11 @@ print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
 
 $y = $year_current;
+$months_list = [];
+for($month_num = 1; $month_num <= 12 ; $month_num++)
+{
+	$months_list[$month_num] = date('F', mktime(0, 0, 0, $month_num, 10));
+}
 
 print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
@@ -80,18 +85,11 @@ print '</tr><tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Paiement Charge locataire").'</td>';
-print '<td align="right">'.$langs->trans("January").'</td>';
-print '<td align="right">'.$langs->trans("February").'</td>';
-print '<td align="right">'.$langs->trans("March").'</td>';
-print '<td align="right">'.$langs->trans("April").'</td>';
-print '<td align="right">'.$langs->trans("May").'</td>';
-print '<td align="right">'.$langs->trans("June").'</td>';
-print '<td align="right">'.$langs->trans("July").'</td>';
-print '<td align="right">'.$langs->trans("August").'</td>';
-print '<td align="right">'.$langs->trans("September").'</td>';
-print '<td align="right">'.$langs->trans("October").'</td>';
-print '<td align="right">'.$langs->trans("November").'</td>';
-print '<td align="right">'.$langs->trans("December").'</td>';
+foreach($months_list as $month_name)
+{
+	print '<td align="right">'.$langs->trans($month_name).'</td>';
+}
+
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 $sql = "SELECT ii.label AS nom_immeuble,";
@@ -121,11 +119,11 @@ $resql = $db->query ( $sql );
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows ( $resql );
-	
+
 	while ( $i < $num ) {
-		
+
 		$row = $db->fetch_row ( $resql );
-		
+
 		print '<tr><td>' . $row [0] . '</td>';
 		print '<td align="right">' . $row [1] . '</td>';
 		print '<td align="right">' . $row [2] . '</td>';
@@ -201,11 +199,11 @@ $resql = $db->query ( $sql );
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows ( $resql );
-	
+
 	while ( $i < $num ) {
-		
+
 		$row = $db->fetch_row ( $resql );
-		
+
 		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td align="right">' . $row [1] . '</td>';
 		print '<td align="right">' . $row [2] . '</td>';
