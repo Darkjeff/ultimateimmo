@@ -3,6 +3,7 @@
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2018-2019 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2020      Thomas OURSEL         <contact@ogest.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,19 +94,19 @@ foreach($months_list as $month_name)
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 $sql = "SELECT ii.label AS nom_immeuble,";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=1,lo.chargesamount,0)),2) AS 'Janvier',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=2,lo.chargesamount,0)),2) AS 'Fevrier',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=3,lo.chargesamount,0)),2) AS 'Mars',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=4,lo.chargesamount,0)),2) AS 'Avril',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=5,lo.chargesamount,0)),2) AS 'Mai',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=6,lo.chargesamount,0)),2) AS 'Juin',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=7,lo.chargesamount,0)),2) AS 'Juillet',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=8,lo.chargesamount,0)),2) AS 'Aout',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=9,lo.chargesamount,0)),2) AS 'Septembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=10,lo.chargesamount,0)),2) AS 'Octobre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=11,lo.chargesamount,0)),2) AS 'Novembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=12,lo.chargesamount,0)),2) AS 'Decembre',";
-$sql .= "  ROUND(SUM(lo.chargesamount),2) as 'Total'";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=1 then lo.chargesamount else 0 end),2) AS Janvier,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=2 then lo.chargesamount else 0 end),2) AS Fevrier,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=3 then lo.chargesamount else 0 end),2) AS Mars,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=4 then lo.chargesamount else 0 end),2) AS Avril,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=5 then lo.chargesamount else 0 end),2) AS Mai,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=6 then lo.chargesamount else 0 end),2) AS Juin,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=7 then lo.chargesamount else 0 end),2) AS Juillet,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=8 then lo.chargesamount else 0 end),2) AS Aout,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=9 then lo.chargesamount else 0 end),2) AS Septembre,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=10 then lo.chargesamount else 0 end),2) AS Octobre,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=11 then lo.chargesamount else 0 end),2) AS Novembre,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=12 then lo.chargesamount else 0 end),2) AS Decembre,";
+$sql .= "  ROUND(SUM(lo.chargesamount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
@@ -113,7 +114,7 @@ $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property  ";
 //$sql .= "  AND lo.paye = 1 ";
-$sql .= " GROUP BY ll.fk_property";
+$sql .= " GROUP BY ll.fk_property, ii.label";
 
 $resql = $db->query ( $sql );
 if ($resql) {
@@ -170,19 +171,19 @@ print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 
 $sql = "SELECT ii.label AS nom_immeuble,";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=1,ic.amount,0)),2) AS 'Janvier',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=2,ic.amount,0)),2) AS 'Fevrier',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=3,ic.amount,0)),2) AS 'Mars',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=4,ic.amount,0)),2) AS 'Avril',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=5,ic.amount,0)),2) AS 'Mai',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=6,ic.amount,0)),2) AS 'Juin',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=7,ic.amount,0)),2) AS 'Juillet',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=8,ic.amount,0)),2) AS 'Aout',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=9,ic.amount,0)),2) AS 'Septembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
-$sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=1 then ic.amount else 0 end),2) AS Janvier,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=2 then ic.amount else 0 end),2) AS Fevrier,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=3 then ic.amount else 0 end),2) AS Mars,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=4 then ic.amount else 0 end),2) AS Avril,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=5 then ic.amount else 0 end),2) AS Mai,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=6 then ic.amount else 0 end),2) AS Juin,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=7 then ic.amount else 0 end),2) AS Juillet,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=8 then ic.amount else 0 end),2) AS Aout,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=9 then ic.amount else 0 end),2) AS Septembre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=10 then ic.amount else 0 end),2) AS Octobre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=11 then ic.amount else 0 end),2) AS Novembre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=12 then ic.amount else 0 end),2) AS Decembre,";
+$sql .= "  ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
@@ -192,7 +193,7 @@ $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, 
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge récupérable/locative' ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
-$sql .= " GROUP BY ll.fk_property";
+$sql .= " GROUP BY ll.fk_property, ii.label";
 
 
 $resql = $db->query ( $sql );
@@ -235,19 +236,19 @@ print '</tr>';
 $value_array=array();
 
 $sql = "SELECT ii.label AS nom_immeuble,";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=1,lo.chargesamount,0)),2) AS 'Janvier',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=2,lo.chargesamount,0)),2) AS 'Fevrier',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=3,lo.chargesamount,0)),2) AS 'Mars',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=4,lo.chargesamount,0)),2) AS 'Avril',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=5,lo.chargesamount,0)),2) AS 'Mai',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=6,lo.chargesamount,0)),2) AS 'Juin',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=7,lo.chargesamount,0)),2) AS 'Juillet',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=8,lo.chargesamount,0)),2) AS 'Aout',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=9,lo.chargesamount,0)),2) AS 'Septembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=10,lo.chargesamount,0)),2) AS 'Octobre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=11,lo.chargesamount,0)),2) AS 'Novembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lo.date_echeance)=12,lo.chargesamount,0)),2) AS 'Decembre',";
-$sql .= "  ROUND(SUM(lo.chargesamount),2) as 'Total'";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=1 then lo.chargesamount else 0 end),2) AS Janvier,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=2 then lo.chargesamount else 0 end),2) AS Fevrier,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=3 then lo.chargesamount else 0 end),2) AS Mars,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=4 then lo.chargesamount else 0 end),2) AS Avril,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=5 then lo.chargesamount else 0 end),2) AS Mai,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=6 then lo.chargesamount else 0 end),2) AS Juin,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=7 then lo.chargesamount else 0 end),2) AS Juillet,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=8 then lo.chargesamount else 0 end),2) AS Aout,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=9 then lo.chargesamount else 0 end),2) AS Septembre,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=10 then lo.chargesamount else 0 end),2) AS Octobre,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=11 then lo.chargesamount else 0 end),2) AS Novembre,";
+$sql .= "  ROUND(SUM(case when MONTH(lo.date_echeance)=12 then lo.chargesamount else 0 end),2) AS Decembre,";
+$sql .= "  ROUND(SUM(lo.chargesamount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
@@ -255,24 +256,24 @@ $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 //$sql .= "  AND lo.paye = 1 ";
-$sql .= " GROUP BY lo.fk_property";
+$sql .= " GROUP BY lo.fk_property, ii.label";
 
 $resqlencaissement = $db->query ( $sql );
 
 $sql = "SELECT ii.label AS nom_immeuble,";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=1,ic.amount,0)),2) AS 'Janvier',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=2,ic.amount,0)),2) AS 'Fevrier',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=3,ic.amount,0)),2) AS 'Mars',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=4,ic.amount,0)),2) AS 'Avril',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=5,ic.amount,0)),2) AS 'Mai',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=6,ic.amount,0)),2) AS 'Juin',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=7,ic.amount,0)),2) AS 'Juillet',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=8,ic.amount,0)),2) AS 'Aout',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=9,ic.amount,0)),2) AS 'Septembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
-$sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=1 then ic.amount else 0 end),2) AS Janvier,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=2 then ic.amount else 0 end),2) AS Fevrier,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=3 then ic.amount else 0 end),2) AS Mars,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=4 then ic.amount else 0 end),2) AS Avril,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=5 then ic.amount else 0 end),2) AS Mai,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=6 then ic.amount else 0 end),2) AS Juin,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=7 then ic.amount else 0 end),2) AS Juillet,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=8 then ic.amount else 0 end),2) AS Aout,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=9 then ic.amount else 0 end),2) AS Septembre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=10 then ic.amount else 0 end),2) AS Octobre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=11 then ic.amount else 0 end),2) AS Novembre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=12 then ic.amount else 0 end),2) AS Decembre,";
+$sql .= "  ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
@@ -282,7 +283,7 @@ $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, 
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge récupérable/locative' ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
-$sql .= " GROUP BY ic.fk_property";
+$sql .= " GROUP BY ic.fk_property, ii.label";
 
 $resqlpaiement = $db->query ( $sql );
 if ($resqlpaiement && $resqlencaissement) {

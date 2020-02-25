@@ -3,6 +3,7 @@
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2018-2019 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2020      Thomas OURSEL         <contact@ogest.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,19 +92,19 @@ print '<td class="right">'.$langs->trans("December").'</td>';
 print '<td class="right">'.$langs->trans("Total").'</td></tr>';
 
 $sql = "SELECT it.label AS type_charge, ib.label AS nom_immeuble,";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=1,ic.amount,0)),2) AS 'Janvier',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=2,ic.amount,0)),2) AS 'Fevrier',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=3,ic.amount,0)),2) AS 'Mars',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=4,ic.amount,0)),2) AS 'Avril',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=5,ic.amount,0)),2) AS 'Mai',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=6,ic.amount,0)),2) AS 'Juin',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=7,ic.amount,0)),2) AS 'Juillet',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=8,ic.amount,0)),2) AS 'Aout',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=9,ic.amount,0)),2) AS 'Septembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
-$sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=1 then ic.amount else 0 end),2) AS Janvier,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=2 then ic.amount else 0 end),2) AS Fevrier,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=3 then ic.amount else 0 end),2) AS Mars,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=4 then ic.amount else 0 end),2) AS Avril,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=5 then ic.amount else 0 end),2) AS Mai,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=6 then ic.amount else 0 end),2) AS Juin,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=7 then ic.amount else 0 end),2) AS Juillet,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=8 then ic.amount else 0 end),2) AS Aout,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=9 then ic.amount else 0 end),2) AS Septembre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=10 then ic.amount else 0 end),2) AS Octobre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=11 then ic.amount else 0 end),2) AS Novembre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=12 then ic.amount else 0 end),2) AS Decembre,";
+$sql .= "  ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ii";
@@ -112,18 +113,18 @@ $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND ic.fk_cost_type = it.rowid";
 $sql .= "  AND ic.fk_property = ii.rowid AND ii.fk_property = ib.fk_property";
 
-$sql .= " GROUP BY ii.fk_property, it.label";
+$sql .= " GROUP BY ii.fk_property, it.label, ib.label";
 
 $resql = $db->query ( $sql );
-if ($resql) 
+if ($resql)
 {
 	$i = 0;
 	$num = $db->num_rows ( $resql );
-	
-	while ( $i < $num ) 
-	{		
+
+	while ( $i < $num )
+	{
 		$row = $db->fetch_row ( $resql );
-		
+
 		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td class="left">' . $row [1] . '</td>';
 		print '<td class="right">' . $row [2] . '</td>';
@@ -167,20 +168,20 @@ print '<td class="right">'.$langs->trans("November").'</td>';
 print '<td class="right">'.$langs->trans("December").'</td>';
 print '<td class="right">'.$langs->trans("Total").'</td></tr>';
 
-$sql = "SELECT 'Total charge' AS 'Total',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=1,ic.amount,0)),2) AS 'Janvier',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=2,ic.amount,0)),2) AS 'Fevrier',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=3,ic.amount,0)),2) AS 'Mars',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=4,ic.amount,0)),2) AS 'Avril',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=5,ic.amount,0)),2) AS 'Mai',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=6,ic.amount,0)),2) AS 'Juin',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=7,ic.amount,0)),2) AS 'Juillet',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=8,ic.amount,0)),2) AS 'Aout',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=9,ic.amount,0)),2) AS 'Septembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=10,ic.amount,0)),2) AS 'Octobre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=11,ic.amount,0)),2) AS 'Novembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(ic.date_creation)=12,ic.amount,0)),2) AS 'Decembre',";
-$sql .= "  ROUND(SUM(ic.amount),2) as 'Total'";
+$sql = "SELECT 'Total charge' AS Total,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=1 then ic.amount else 0 end),2) AS Janvier,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=2 then ic.amount else 0 end),2) AS Fevrier,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=3 then ic.amount else 0 end),2) AS Mars,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=4 then ic.amount else 0 end),2) AS Avril,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=5 then ic.amount else 0 end),2) AS Mai,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=6 then ic.amount else 0 end),2) AS Juin,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=7 then ic.amount else 0 end),2) AS Juillet,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=8 then ic.amount else 0 end),2) AS Aout,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=9 then ic.amount else 0 end),2) AS Septembre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=10 then ic.amount else 0 end),2) AS Octobre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=11 then ic.amount else 0 end),2) AS Novembre,";
+$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=12 then ic.amount else 0 end),2) AS Decembre,";
+$sql .= "  ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
@@ -189,15 +190,15 @@ $sql .= "  AND ic.fk_cost_type = it.rowid";
 
 
 $resql = $db->query ( $sql );
-if ($resql) 
+if ($resql)
 {
 	$i = 0;
 	$num = $db->num_rows ( $resql );
-	
-	while ( $i < $num ) 
-	{		
+
+	while ( $i < $num )
+	{
 		$row = $db->fetch_row ( $resql );
-		
+
 		print '<tr class="oddeven"><td width=10%>'.$row[0].'</td>';
 		print '<td class="left" width=10%>';
 		print '<td class="right">' . $row [1] . '</td>';
@@ -217,8 +218,8 @@ if ($resql)
 		$i ++;
 	}
 	$db->free ( $resql );
-} 
-else 
+}
+else
 {
 	print $db->lasterror (); // affiche la derniere erreur sql
 }
