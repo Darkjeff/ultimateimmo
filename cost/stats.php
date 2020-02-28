@@ -73,38 +73,27 @@ print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
 
 $y = $year_current;
+$months_list = [];
+for($month_num = 1; $month_num <= 12 ; $month_num++)
+{
+	$months_list[$month_num] = date('F', mktime(0, 0, 0, $month_num, 10));
+}
 
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre oddeven"><td width=10%>'.$langs->trans("Type").'</td>';
 print '<td class="left" width=10%>'.$langs->trans("Building").'</td>';
-print '<td class="right">'.$langs->trans("January").'</td>';
-print '<td class="right">'.$langs->trans("February").'</td>';
-print '<td class="right">'.$langs->trans("March").'</td>';
-print '<td class="right">'.$langs->trans("April").'</td>';
-print '<td class="right">'.$langs->trans("May").'</td>';
-print '<td class="right">'.$langs->trans("June").'</td>';
-print '<td class="right">'.$langs->trans("July").'</td>';
-print '<td class="right">'.$langs->trans("August").'</td>';
-print '<td class="right">'.$langs->trans("September").'</td>';
-print '<td class="right">'.$langs->trans("October").'</td>';
-print '<td class="right">'.$langs->trans("November").'</td>';
-print '<td class="right">'.$langs->trans("December").'</td>';
+foreach( $months_list as $month_name )
+{
+	print '<td align="right">'.$langs->trans($month_name).'</td>';
+}
 print '<td class="right">'.$langs->trans("Total").'</td></tr>';
 
-$sql = "SELECT it.label AS type_charge, ib.label AS nom_immeuble,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=1 then ic.amount else 0 end),2) AS Janvier,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=2 then ic.amount else 0 end),2) AS Fevrier,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=3 then ic.amount else 0 end),2) AS Mars,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=4 then ic.amount else 0 end),2) AS Avril,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=5 then ic.amount else 0 end),2) AS Mai,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=6 then ic.amount else 0 end),2) AS Juin,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=7 then ic.amount else 0 end),2) AS Juillet,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=8 then ic.amount else 0 end),2) AS Aout,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=9 then ic.amount else 0 end),2) AS Septembre,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=10 then ic.amount else 0 end),2) AS Octobre,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=11 then ic.amount else 0 end),2) AS Novembre,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=12 then ic.amount else 0 end),2) AS Decembre,";
-$sql .= "  ROUND(SUM(ic.amount),2) as Total";
+$sql = "SELECT it.label AS type_charge, ib.label AS nom_immeuble";
+foreach( $months_list as $month_num => $month_name )
+{
+	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
+}
+$sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ii";
@@ -124,22 +113,16 @@ if ($resql)
 	while ( $i < $num )
 	{
 		$row = $db->fetch_row ( $resql );
+		$total = 0;
 
 		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td class="left">' . $row [1] . '</td>';
-		print '<td class="right">' . $row [2] . '</td>';
-		print '<td class="right">' . $row [3] . '</td>';
-		print '<td class="right">' . $row [4] . '</td>';
-		print '<td class="right">' . $row [5] . '</td>';
-		print '<td class="right">' . $row [6] . '</td>';
-		print '<td class="right">' . $row [7] . '</td>';
-		print '<td class="right">' . $row [8] . '</td>';
-		print '<td class="right">' . $row [9] . '</td>';
-		print '<td class="right">' . $row [10] . '</td>';
-		print '<td class="right">' . $row [11] . '</td>';
-		print '<td class="right">' . $row [12] . '</td>';
-        print '<td class="right">' . $row [13] . '</td>';
-		print '<td class="right">' . $row [14] . '</td>';
+		foreach( $months_list as $month_num => $month_name )
+		{
+			print '<td align="right">' . $row [$month_num+1] . '</td>';
+			$total += $row [$month_num+1];
+		}
+		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
 		$i ++;
 	}
@@ -154,34 +137,18 @@ print "<br>";
 print '<table class="noborder  oddeven" width="100%">';
 print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Total").'</td>';
 print '<td class="left" width=10%></td>';
-print '<td class="right">'.$langs->trans("January").'</td>';
-print '<td class="right">'.$langs->trans("February").'</td>';
-print '<td class="right">'.$langs->trans("March").'</td>';
-print '<td class="right">'.$langs->trans("April").'</td>';
-print '<td class="right">'.$langs->trans("May").'</td>';
-print '<td class="right">'.$langs->trans("June").'</td>';
-print '<td class="right">'.$langs->trans("July").'</td>';
-print '<td class="right">'.$langs->trans("August").'</td>';
-print '<td class="right">'.$langs->trans("September").'</td>';
-print '<td class="right">'.$langs->trans("October").'</td>';
-print '<td class="right">'.$langs->trans("November").'</td>';
-print '<td class="right">'.$langs->trans("December").'</td>';
+foreach( $months_list as $month_name )
+{
+	print '<td align="right">'.$langs->trans($month_name).'</td>';
+}
 print '<td class="right">'.$langs->trans("Total").'</td></tr>';
 
-$sql = "SELECT 'Total charge' AS Total,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=1 then ic.amount else 0 end),2) AS Janvier,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=2 then ic.amount else 0 end),2) AS Fevrier,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=3 then ic.amount else 0 end),2) AS Mars,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=4 then ic.amount else 0 end),2) AS Avril,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=5 then ic.amount else 0 end),2) AS Mai,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=6 then ic.amount else 0 end),2) AS Juin,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=7 then ic.amount else 0 end),2) AS Juillet,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=8 then ic.amount else 0 end),2) AS Aout,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=9 then ic.amount else 0 end),2) AS Septembre,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=10 then ic.amount else 0 end),2) AS Octobre,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=11 then ic.amount else 0 end),2) AS Novembre,";
-$sql .= "  ROUND(SUM(case when MONTH(ic.date_creation)=12 then ic.amount else 0 end),2) AS Decembre,";
-$sql .= "  ROUND(SUM(ic.amount),2) as Total";
+$sql = "SELECT 'Total charge' AS Total";
+foreach( $months_list as $month_num => $month_name )
+{
+	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
+}
+$sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
@@ -198,22 +165,16 @@ if ($resql)
 	while ( $i < $num )
 	{
 		$row = $db->fetch_row ( $resql );
+		$total = 0;
 
 		print '<tr class="oddeven"><td width=10%>'.$row[0].'</td>';
 		print '<td class="left" width=10%>';
-		print '<td class="right">' . $row [1] . '</td>';
-		print '<td class="right">' . $row [2] . '</td>';
-		print '<td class="right">' . $row [3] . '</td>';
-		print '<td class="right">' . $row [4] . '</td>';
-		print '<td class="right">' . $row [5] . '</td>';
-		print '<td class="right">' . $row [6] . '</td>';
-		print '<td class="right">' . $row [7] . '</td>';
-		print '<td class="right">' . $row [8] . '</td>';
-		print '<td class="right">' . $row [9] . '</td>';
-		print '<td class="right">' . $row [10] . '</td>';
-		print '<td class="right">' . $row [11] . '</td>';
-		print '<td class="right">' . $row [12] . '</td>';
-		print '<td class="right">' . $row [13] . '</td>';
+		foreach( $months_list as $month_num => $month_name )
+		{
+			print '<td align="right">' . $row [$month_num] . '</td>';
+			$total += $row [$month_num];
+		}
+		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
 		$i ++;
 	}
