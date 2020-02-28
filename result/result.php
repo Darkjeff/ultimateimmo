@@ -98,6 +98,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
@@ -152,6 +153,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)='.$month_num.' then lo.chargesamount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(lo.chargesamount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
@@ -200,6 +202,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
@@ -215,6 +218,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)='.$month_num.' then lo.chargesamount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(lo.chargesamount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
@@ -292,6 +296,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
@@ -342,6 +347,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
@@ -358,6 +364,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)='.$month_num.' then lo.chargesamount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(lo.chargesamount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
@@ -374,6 +381,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
@@ -456,6 +464,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
@@ -507,6 +516,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
@@ -523,6 +533,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)='.$month_num.' then lo.chargesamount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(lo.chargesamount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
@@ -539,6 +550,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
@@ -557,6 +569,7 @@ foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
 }
+$sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
