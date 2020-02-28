@@ -93,7 +93,7 @@ foreach( $months_list as $month_name )
 }
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ii.label AS nom_immeuble";
+$sql = "SELECT ib.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
@@ -101,12 +101,12 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
+$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ib.fk_property";
 
-$sql .= " GROUP BY ll.fk_property, ii.label";
+$sql .= " GROUP BY ll.fk_property, ib.label";
 
 $resql = $db->query ( $sql );
 if ($resql)
@@ -148,20 +148,20 @@ foreach( $months_list as $month_name )
 }
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ii.label AS nom_immeuble";
+$sql = "SELECT ib.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
-	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)='.$month_num.' then lo.chargesamount else 0 end),2) AS month_'.$month_num;
+	$sql .= ', ROUND(SUM(case when MONTH(ir.date_echeance)='.$month_num.' then ir.chargesamount else 0 end),2) AS month_'.$month_num;
 }
-$sql .= ", ROUND(SUM(lo.chargesamount),2) as Total";
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property  ";
+$sql .= ", ROUND(SUM(ir.chargesamount),2) as Total";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
+$sql .= " WHERE ir.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
+$sql .= "  AND ir.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= "  AND ir.fk_property = ip.rowid AND ip.fk_property = ib.fk_property  ";
 
-$sql .= " GROUP BY ll.fk_property, ii.label";
+$sql .= " GROUP BY ip.fk_property, ib.label";
 
 $resql = $db->query ( $sql );
 if ($resql)
@@ -197,7 +197,7 @@ print '</tr>';
 
 $value_array=array();
 
-$sql = "SELECT ii.label AS nom_immeuble";
+$sql = "SELECT ib.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
@@ -205,34 +205,34 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
-$sql .= " GROUP BY ll.fk_property, ii.label";
+$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ib.fk_property";
+$sql .= " GROUP BY ll.fk_property, ib.label";
 
 $resqlencaissement = $db->query ( $sql );
 
-$sql = "SELECT ii.label AS nom_immeuble";
+$sql = "SELECT ib.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
-	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)='.$month_num.' then lo.chargesamount else 0 end),2) AS month_'.$month_num;
+	$sql .= ', ROUND(SUM(case when MONTH(ir.date_echeance)='.$month_num.' then ir.chargesamount else 0 end),2) AS month_'.$month_num;
 }
-$sql .= ", ROUND(SUM(lo.chargesamount),2) as Total";
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
+$sql .= ", ROUND(SUM(ir.chargesamount),2) as Total";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
+$sql .= " WHERE ir.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
+$sql .= "  AND ir.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= "  AND ir.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 
-$sql .= " GROUP BY ll.fk_property, ii.label";
+$sql .= " GROUP BY ip.fk_property, ib.label";
 
 $resqlpaiement = $db->query ( $sql );
 if ($resqlpaiement && $resqlencaissement)
 {
 	$i = 0;
-	$num = $db->num_rows ( $resqlencaissement );
+	$num = max($db->num_rows ( $resqlpaiement ), $db->num_rows ( $resqlencaissement ));
 
 	while ( $i < $num )
 	{
@@ -291,7 +291,7 @@ foreach( $months_list as $month_name )
 }
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ii.label AS nom_immeuble";
+$sql = "SELECT ib.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
@@ -299,15 +299,15 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge déductible' ";
-$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
+$sql .= "  AND ic.fk_property = ip.rowid AND ip.fk_property = ib.fk_property ";
 
-$sql .= " GROUP BY ll.fk_property, ii.label";
+$sql .= " GROUP BY ip.fk_property, ib.label";
 
 
 $resql = $db->query ( $sql );
@@ -342,7 +342,7 @@ print "</table>\n";
 
 $value_array=array();
 
-$sql = "SELECT ii.label AS nom_immeuble";
+$sql = "SELECT ib.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
@@ -350,33 +350,33 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
+$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ib.fk_property";
 
-$sql .= " GROUP BY ll.fk_property, ii.label";
+$sql .= " GROUP BY ll.fk_property, ib.label";
 
 $resqlencaissement = $db->query ( $sql );
 
-$sql = "SELECT ii.label AS nom_immeuble";
+$sql = "SELECT ib.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
-	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)='.$month_num.' then lo.chargesamount else 0 end),2) AS month_'.$month_num;
+	$sql .= ', ROUND(SUM(case when MONTH(ir.date_echeance)='.$month_num.' then ir.chargesamount else 0 end),2) AS month_'.$month_num;
 }
-$sql .= ", ROUND(SUM(lo.chargesamount),2) as Total";
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
-$sql .= " GROUP BY ll.fk_property, ii.label";
+$sql .= ", ROUND(SUM(ir.chargesamount),2) as Total";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
+$sql .= " WHERE ir.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
+$sql .= "  AND ir.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= "  AND ir.fk_property = ip.rowid AND ip.fk_property = ib.fk_property ";
+$sql .= " GROUP BY ip.fk_property, ib.label";
 
 $resqlpaiement = $db->query ( $sql );
 
 
-$sql = "SELECT ii.label AS nom_immeuble";
+$sql = "SELECT ib.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
@@ -384,22 +384,22 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge déductible' ";
-$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
+$sql .= "  AND ic.fk_property = ip.rowid AND ip.fk_property = ib.fk_property ";
 
-$sql .= " GROUP BY ll.fk_property, ii.label";
+$sql .= " GROUP BY ip.fk_property, ib.label";
 
 $resqlcharged = $db->query ( $sql );
 
 if ($resqlpaiement && $resqlencaissement && $resqlcharged )
 {
 	$i = 0;
-	$num = $db->num_rows ( $resqlencaissement );
+	$num = max($db->num_rows ( $resqlpaiement ), $db->num_rows ( $resqlencaissement ), $db->num_rows ( $resqlcharged ));
 
 	while ( $i < $num )
 	{
@@ -459,7 +459,7 @@ foreach( $months_list as $month_name )
 }
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ii.label AS nom_immeuble";
+$sql = "SELECT ib.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
@@ -467,15 +467,15 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.famille = 'Charge non déductible' ";
-$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
+$sql .= "  AND it.famille != 'Charge non déductible' ";
+$sql .= "  AND ic.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 
-$sql .= " GROUP BY ll.fk_property, ii.label";
+$sql .= " GROUP BY ip.fk_property, ib.label";
 
 
 $resql = $db->query ( $sql );
@@ -519,10 +519,10 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
+$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ib.fk_property";
 
 
 
@@ -531,15 +531,15 @@ $resqlencaissement = $db->query ( $sql );
 $sql = "SELECT 'Total' AS Total";
 foreach( $months_list as $month_num => $month_name )
 {
-	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)='.$month_num.' then lo.chargesamount else 0 end),2) AS month_'.$month_num;
+	$sql .= ', ROUND(SUM(case when MONTH(ir.date_echeance)='.$month_num.' then ir.chargesamount else 0 end),2) AS month_'.$month_num;
 }
-$sql .= ", ROUND(SUM(lo.chargesamount),2) as Total";
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
+$sql .= ", ROUND(SUM(ir.chargesamount),2) as Total";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
+$sql .= " WHERE ir.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
+$sql .= "  AND ir.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= "  AND ir.fk_property = ip.rowid AND ip.fk_property = ib.fk_property ";
 
 
 $resqlpaiement = $db->query ( $sql );
@@ -553,13 +553,13 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.famille = 'Charge déductible' ";
-$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
+$sql .= "  AND it.famille = 'Charge non déductible' ";
+$sql .= "  AND ic.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 
 
 $resqlcharged = $db->query ( $sql );
@@ -572,20 +572,20 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.famille = 'Charge non déductible' ";
-$sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property";
+$sql .= "  AND it.famille != 'Charge non déductible' ";
+$sql .= "  AND ic.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 
 $resqlchargend = $db->query ( $sql );
 
 if ($resqlpaiement && $resqlencaissement && $resqlcharged && $resqlchargend  )
 {
 	$i = 0;
-	$num = $db->num_rows ( $resqlencaissement );
+	$num = max($db->num_rows ( $resqlpaiement ), $db->num_rows ( $resqlencaissement ), $db->num_rows ( $resqlcharged ), $db->num_rows ( $resqlchargend ));
 
 	while ( $i < $num )
 	{
@@ -610,7 +610,6 @@ else
 {
 	print $db->lasterror (); // affiche la derniere erreur sql
 }
-
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre"><td width="10%">'.$langs->trans("Revenu Net").'</td>';
