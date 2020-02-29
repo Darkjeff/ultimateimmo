@@ -3,6 +3,7 @@
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2018-2019 Philippe GRAND       <philippe.grand@atoo-net.com>
+ * Copyright (C) 2020      Thomas OURSEL         <contact@ogest.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,10 +49,13 @@ $langs->loadLangs(array("ultimateimmo@ultimateimmo","other","bills"));
 
 // Filter
 $year = $_GET ["year"];
-if ($year == 0) {
+if ($year == 0)
+{
 	$year_current = strftime ( "%Y", time () );
 	$year_start = $year_current;
-} else {
+}
+else
+{
 	$year_current = $year;
 	$year_start = $year;
 }
@@ -70,38 +74,26 @@ print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
 
 $y = $year_current;
+$months_list = [];
+for($month_num = 1; $month_num <= 12 ; $month_num++)
+{
+	$months_list[$month_num] = date('F', mktime(0, 0, 0, $month_num, 10));
+}
 
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td></tr>';
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Appartement").'</td>';
-print '<td align="right">'.$langs->trans("January").'</td>';
-print '<td align="right">'.$langs->trans("February").'</td>';
-print '<td align="right">'.$langs->trans("March").'</td>';
-print '<td align="right">'.$langs->trans("April").'</td>';
-print '<td align="right">'.$langs->trans("May").'</td>';
-print '<td align="right">'.$langs->trans("June").'</td>';
-print '<td align="right">'.$langs->trans("July").'</td>';
-print '<td align="right">'.$langs->trans("August").'</td>';
-print '<td align="right">'.$langs->trans("September").'</td>';
-print '<td align="right">'.$langs->trans("October").'</td>';
-print '<td align="right">'.$langs->trans("November").'</td>';
-print '<td align="right">'.$langs->trans("December").'</td>';
+foreach( $months_list as $month_name )
+{
+	print '<td align="right">'.$langs->trans($month_name).'</td>';
+}
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ll.label AS nom_local,";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=1,lp.amount,0)),2) AS 'Janvier',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=2,lp.amount,0)),2) AS 'Fevrier',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=3,lp.amount,0)),2) AS 'Mars',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=4,lp.amount,0)),2) AS 'Avril',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=5,lp.amount,0)),2) AS 'Mai',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=6,lp.amount,0)),2) AS 'Juin',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=7,lp.amount,0)),2) AS 'Juillet',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=8,lp.amount,0)),2) AS 'Aout',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=9,lp.amount,0)),2) AS 'Septembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=10,lp.amount,0)),2) AS 'Octobre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=11,lp.amount,0)),2) AS 'Novembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre',";
-$sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
+$sql = "SELECT ll.label AS nom_local";
+foreach( $months_list as $month_num => $month_name )
+{
+	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
+}
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
@@ -114,34 +106,30 @@ $sql .= "  AND lp.fk_property = ll.rowid ";
 $sql .= " GROUP BY ll.label";
 
 $resql = $db->query($sql);
-if ($resql) 
+if ($resql)
 {
 	$i = 0;
 	$num = $db->num_rows($resql);
-	
-	while ( $i < $num ) 
-	{	
+
+	while ( $i < $num )
+	{
 		$row = $db->fetch_row ( $resql );
-		
+		$total = 0;
+
 		print '<tr class="oddeven"><td>'.$row[0].'</td>';
-		print '<td align="right">' . $row [1] . '</td>';
-		print '<td align="right">' . $row [2] . '</td>';
-		print '<td align="right">' . $row [3] . '</td>';
-		print '<td align="right">' . $row [4] . '</td>';
-		print '<td align="right">' . $row [5] . '</td>';
-		print '<td align="right">' . $row [6] . '</td>';
-		print '<td align="right">' . $row [7] . '</td>';
-		print '<td align="right">' . $row [8] . '</td>';
-		print '<td align="right">' . $row [9] . '</td>';
-		print '<td align="right">' . $row [10] . '</td>';
-		print '<td align="right">' . $row [11] . '</td>';
-		print '<td align="right">' . $row [12] . '</td>';
-		print '<td align="right"><b>' . $row [13] . '</b></td>';
+		foreach( $months_list as $month_num => $month_name )
+		{
+			print '<td align="right">' . $row [$month_num] . '</td>';
+			$total += $row [$month_num];
+		}
+		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
 		$i ++;
 	}
 	$db->free ( $resql );
-} else {
+}
+else
+{
 	print $db->lasterror (); // affiche la derniere erreur sql
 }
 
@@ -152,34 +140,17 @@ print '</tr><tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Total").'</td>';
-print '<td align="right">'.$langs->trans("January").'</td>';
-print '<td align="right">'.$langs->trans("February").'</td>';
-print '<td align="right">'.$langs->trans("March").'</td>';
-print '<td align="right">'.$langs->trans("April").'</td>';
-print '<td align="right">'.$langs->trans("May").'</td>';
-print '<td align="right">'.$langs->trans("June").'</td>';
-print '<td align="right">'.$langs->trans("July").'</td>';
-print '<td align="right">'.$langs->trans("August").'</td>';
-print '<td align="right">'.$langs->trans("September").'</td>';
-print '<td align="right">'.$langs->trans("October").'</td>';
-print '<td align="right">'.$langs->trans("November").'</td>';
-print '<td align="right">'.$langs->trans("December").'</td>';
+foreach( $months_list as $month_name )
+{
+	print '<td align="right">'.$langs->trans($month_name).'</td>';
+}
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT 'Total loyer' AS 'Total',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=1,lp.amount,0)),2) AS 'Janvier',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=2,lp.amount,0)),2) AS 'Fevrier',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=3,lp.amount,0)),2) AS 'Mars',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=4,lp.amount,0)),2) AS 'Avril',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=5,lp.amount,0)),2) AS 'Mai',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=6,lp.amount,0)),2) AS 'Juin',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=7,lp.amount,0)),2) AS 'Juillet',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=8,lp.amount,0)),2) AS 'Aout',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=9,lp.amount,0)),2) AS 'Septembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=10,lp.amount,0)),2) AS 'Octobre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=11,lp.amount,0)),2) AS 'Novembre',";
-$sql .= "  ROUND(SUM(IF(MONTH(lp.date_payment)=12,lp.amount,0)),2) AS 'Decembre',";
-$sql .= "  ROUND(SUM(lp.amount),2) as 'Total'";
+$sql = "SELECT 'Total loyer' AS Total";
+foreach( $months_list as $month_num => $month_name )
+{
+	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
+}
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
@@ -193,30 +164,26 @@ $resql = $db->query ( $sql );
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows ( $resql );
-	
+
 	while ( $i < $num ) {
-		
+
 		$row = $db->fetch_row ( $resql );
-		
+		$total = 0;
+
 		print '<tr class="oddeven"><td>'.$row[0].'</td>';
-		print '<td align="right">' . $row [1] . '</td>';
-		print '<td align="right">' . $row [2] . '</td>';
-		print '<td align="right">' . $row [3] . '</td>';
-		print '<td align="right">' . $row [4] . '</td>';
-		print '<td align="right">' . $row [5] . '</td>';
-		print '<td align="right">' . $row [6] . '</td>';
-		print '<td align="right">' . $row [7] . '</td>';
-		print '<td align="right">' . $row [8] . '</td>';
-		print '<td align="right">' . $row [9] . '</td>';
-		print '<td align="right">' . $row [10] . '</td>';
-		print '<td align="right">' . $row [11] . '</td>';
-		print '<td align="right">' . $row [12] . '</td>';
-		print '<td align="right"><b>' . $row [13] . '</b></td>';
+		foreach( $months_list as $month_num => $month_name )
+		{
+			print '<td align="right">' . $row [$month_num] . '</td>';
+			$total += $row [$month_num];
+		}
+		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
 		$i ++;
 	}
 	$db->free ( $resql );
-} else {
+}
+else
+{
 	print $db->lasterror (); // affiche la derniere erreur sql
 }
 

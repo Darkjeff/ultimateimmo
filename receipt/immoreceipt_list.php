@@ -144,17 +144,17 @@ $permissiontodelete = $user->rights->ultimateimmo->delete;
 
 /*
  * Actions
- * 
+ *
  */
- 
- if ($action == 'validaterent') 
- {	
+
+ if ($action == 'validaterent')
+ {
 	$error = 0;
-	
+
 	$db->begin();
-	
+
 	$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo ";
-	$sql1 .= " SET lo.partial_payment=";
+	$sql1 .= " SET partial_payment=";
 	$sql1 .= "(SELECT SUM(p.amount)";
 	$sql1 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 	$sql1 .= " WHERE lo.rowid = p.fk_receipt";
@@ -162,62 +162,62 @@ $permissiontodelete = $user->rights->ultimateimmo->delete;
 	//var_dump($sql1);exit;exit;
 	// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 	$resql1 = $db->query($sql1);
-	if (! $resql1) 
+	if (! $resql1)
 	{
 		$error ++;
 		setEventMessages($db->lasterror(), null, 'errors');
-	} 
-	else 
+	}
+	else
 	{
-		
+
 		$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
 		$sql1 .= " SET paye=1";
 		$sql1 .= " WHERE total_amount=partial_payment";
-		
+
 		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 		$resql1 = $db->query($sql1);
-		if (! $resql1) 
+		if (! $resql1)
 		{
 			$error ++;
 			setEventMessages($db->lasterror(), null, 'errors');
 		}
-		
-		if (! $error) 
+
+		if (! $error)
 		{
 			$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
 			$sql1 .= " SET balance = total_amount-partial_payment";
-			
+
 			// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 			$resql1 = $db->query($sql1);
-			if (! $resql1) 
+			if (! $resql1)
 			{
 				$error ++;
 				setEventMessages($db->lasterror(), null, 'errors');
 			}
-			
-			if (! $error) 
+
+			if (! $error)
 			{
 				$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immorent as ir";
-				$sql1 .= " SET ir.encours=";
+				$sql1 .= " SET encours=";
 				$sql1 .= "(SELECT SUM(il.balance)";
 				$sql1 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
 				$sql1 .= " WHERE ir.rowid = il.fk_rent";
 				$sql1 .= " GROUP BY il.fk_rent )";
-				
+
 				$resql1 = $db->query($sql1);
-			if (! $resql1) 
+			if (! $resql1)
 			{
 				$error ++;
 				setEventMessages($db->lasterror(), null, 'errors');
 			}
-				
+
 				$db->commit();
-				
+
 				$mesg=$langs->trans("Loyer mis a jour avec succes");
 				setEventMessages($mesg, null, 'mesgs');
 			}
-		} 
-		else 
+		}
+		else
 		{
 			$db->rollback();
 			setEventMessages($db->lasterror(), null, 'errors');
@@ -225,16 +225,16 @@ $permissiontodelete = $user->rights->ultimateimmo->delete;
 	}
 }
 
-if 	($massaction == 'validate') 
-{	
-	foreach($toselect as $key => $val) 
-	{		
-		$immoreceipt = new ImmoReceipt($db);	
-		$result = $immoreceipt->fetch($val);		
+if 	($massaction == 'validate')
+{
+	foreach($toselect as $key => $val)
+	{
+		$immoreceipt = new ImmoReceipt($db);
+		$result = $immoreceipt->fetch($val);
 		if ($result >= 0)
-		{		
+		{
 			$resultvalid = $immoreceipt->validate($user);
-		
+
 			if ($resultvalid >= 0)
 			{
 				if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE))
@@ -244,7 +244,7 @@ if 	($massaction == 'validate')
 					$newlang = '';
 					if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id','aZ09')) $newlang = GETPOST('lang_id','aZ09');
 					if ($conf->global->MAIN_MULTILANGS && empty($newlang))	$newlang = $immoreceipt->thirdparty->default_lang;
-					if (! empty($newlang)) 
+					if (! empty($newlang))
 					{
 						$outputlangs = new Translate("", $conf);
 						$outputlangs->setDefaultLang($newlang);
@@ -252,10 +252,10 @@ if 	($massaction == 'validate')
 					$model = $immoreceipt->model_pdf;
 					$ret = $immoreceipt->fetch($val); // Reload to get new records
 					$immoreceipt->generateDocument($model, $outputlangs, $hidedetails, $hidedesc, $hideref);
-					
-				}			
-			} 
-			else 
+
+				}
+			}
+			else
 			{
 				$langs->load("errors");
 				if (count($immoreceipt->errors) > 0) setEventMessages($immoreceipt->error, $immoreceipt->errors, 'errors');
@@ -305,7 +305,7 @@ if (empty($reshook))
 
 /*
  * View
- * 
+ *
  */
 
 $form = new Form($db);
@@ -583,44 +583,44 @@ while ($i < ($limit ? min($num, $limit) : $num))
 		{
 			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
 			if ($key == 'status') print $object->getLibStatut(5);
-			
-			elseif ($val['label'] == 'Owner') 
+
+			elseif ($val['label'] == 'Owner')
 			{
 				$staticowner = new ImmoOwner($db);
-				$staticowner->fetch($object->fk_owner);			
+				$staticowner->fetch($object->fk_owner);
 				if ($staticowner->ref)
 				{
 					$staticowner->ref = $staticowner->getFullName($langs);
 				}
 				print $staticowner->ref;
 			}
-			elseif ($val['label'] == 'Renter') 
+			elseif ($val['label'] == 'Renter')
 			{
 				$staticrenter = new ImmoRenter($db);
-				$staticrenter->fetch($object->fk_renter);			
+				$staticrenter->fetch($object->fk_renter);
 				if ($staticrenter->ref)
 				{
 					$staticrenter->ref = $staticrenter->getFullName($langs);
 				}
 				print $staticrenter->ref;
 			}
-			elseif ($val['label'] == 'PartialPayment') 
+			elseif ($val['label'] == 'PartialPayment')
 			{
 				if ($object->getSommePaiement())
 				{
 					$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
 					print $totalpaye;
-				}		
+				}
 			}
-			elseif ($val['label'] == 'Balance') 
+			elseif ($val['label'] == 'Balance')
 			{
 				$balance = $object->total_amount - $object->getSommePaiement();
 				if ($balance>=0)
 				{
 					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
-				}			
+				}
 			}
-			elseif ($val['label'] == 'Paye') 
+			elseif ($val['label'] == 'Paye')
 			{
 				if ($totalpaye==0)
 				{
