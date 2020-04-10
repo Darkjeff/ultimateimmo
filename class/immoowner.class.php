@@ -24,6 +24,7 @@
 
 // Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 //require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 //require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
@@ -224,8 +225,6 @@ class ImmoOwner extends CommonObject
 	 */
 	//public $lines = array();
 
-
-
 	/**
 	 * Constructor
 	 *
@@ -274,18 +273,19 @@ class ImmoOwner extends CommonObject
 	 */
 	public function createCommon(User $user, $notrigger = false)
 	{
-		global $langs;
+		global $langs, $object;
 
 		$error = 0;
 
 		$now = dol_now();
 
 		$fieldvalues = $this->setSaveQuery();
-		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation']=$this->db->idate($now);
+		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation'] = $this->db->idate($now);
+		if (array_key_exists('birth', $fieldvalues) && empty($fieldvalues['birth'])) $fieldvalues['birth'] = $this->db->jdate($object->birth);
 		if (array_key_exists('fk_user_creat', $fieldvalues) && ! ($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat']=$user->id;
 		unset($fieldvalues['rowid']);	// The field 'rowid' is reserved field name for autoincrement field so we don't need it into insert.
 
-		$keys=array();
+		$keys = array();
 		$values = array();
 		foreach ($fieldvalues as $k => $v) {
 			$keys[$k] = $k;
@@ -297,19 +297,19 @@ class ImmoOwner extends CommonObject
 		foreach($keys as $key)
 		{
 			// If field is an implicit foreign key field
-			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key]='';
-			if (! empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key]='';
+			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key] = '';
+			if (! empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key] = '';
 
 			//var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
-			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && ! isset($values[$key]) && is_null($val['default']))
+			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && !isset($values[$key]) && is_null($this->fields[$key]['default']))
 			{
 				$error++;
-				$this->errors[]=$langs->trans("ErrorFieldRequired", $this->fields[$key]['label']);
+				$this->errors[] = $langs->trans("ErrorFieldRequired", $this->fields[$key]['label']);
 			}
 
 			// If field is an implicit foreign key field
 			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && empty($values[$key])) $values[$key]='null';
-			if (! empty($this->fields[$key]['foreignkey']) && empty($values[$key])) $values[$key]='null';
+			if (! empty($this->fields[$key]['foreignkey']) && empty($values[$key])) $values[$key] = 'null';
 		}
 
 		if ($error) return -1;
@@ -323,7 +323,7 @@ class ImmoOwner extends CommonObject
 			$sql.= ' VALUES ('.implode( ", ", $values ).')';
 
 			$res = $this->db->query($sql);
-			if ($res===false) {
+			if ($res === false) {
 				$error++;
 				$this->errors[] = $this->db->lasterror();
 			}
@@ -335,27 +335,73 @@ class ImmoOwner extends CommonObject
 			$this->birth = $this->db->jdate($res->birth);
 		}
 
+		// If we have a field ref with a default value of (PROV)
+		if (!$error)
+		{
+		    if (key_exists('ref', $this->fields) && $this->fields['ref']['notnull'] > 0 && !is_null($this->fields['ref']['default']) && $this->fields['ref']['default'] == '(PROV)')
+		    {
+		        $sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element." SET ref = '(PROV".$this->id.")' WHERE (ref = '(PROV)' OR ref = '') AND rowid = ".$this->id;
+		        $resqlupdate = $this->db->query($sql);
+
+		        if ($resqlupdate === false)
+		        {
+		            $error++;
+		            $this->errors[] = $this->db->lasterror();
+		        } else {
+		        	$this->ref = '(PROV'.$this->id.')';
+		        }
+		    }
+		}
+
 		// Create extrafields
 		if (! $error)
 		{
-			$result=$this->insertExtraFields();
+			$result = $this->insertExtraFields();
 			if ($result < 0) $error++;
+		}
+
+		// Create lines
+		if (!empty($this->table_element_line) && !empty($this->fk_element))
+		{
+			$num = (is_array($this->lines) ? count($this->lines) : 0);
+			for ($i = 0; $i < $num; $i++)
+			{
+				$line = $this->lines[$i];
+
+				$keyforparent = $this->fk_element;
+				$line->$keyforparent = $this->id;
+
+				// Test and convert into object this->lines[$i]. When coming from REST API, we may still have an array
+				//if (! is_object($line)) $line=json_decode(json_encode($line), false);  // convert recursively array into object.
+				if (!is_object($line)) $line = (object) $line;
+
+				$result = $line->create($user, 1);
+				if ($result < 0)
+				{
+					$this->error = $this->db->lasterror();
+					$this->db->rollback();
+					return -1;
+				}
+			}
 		}
 
 		// Triggers
 		if (! $error && ! $notrigger)
 		{
 			// Call triggers
-			$result=$this->call_trigger(strtoupper(get_class($this)).'_CREATE',$user);
+			$result = $this->call_trigger(strtoupper(get_class($this)).'_CREATE', $user);
 			if ($result < 0) { $error++; }
 			// End call triggers
 		}
 
 		// Commit or rollback
-		if ($error) {
+		if ($error) 
+		{
 			$this->db->rollback();
 			return -1;
-		} else {
+		} 
+		else 
+		{
 			$this->db->commit();
 			return $this->id;
 		}
