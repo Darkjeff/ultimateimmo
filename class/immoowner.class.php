@@ -545,9 +545,9 @@ class ImmoOwner extends CommonObject
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
 		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country_id = c.rowid';
 
-		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
+		if(! empty($id)) $sql.= ' WHERE t.rowid = '.$id;
 		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
-		if ($morewhere) $sql.=$morewhere;
+		if ($morewhere) $sql .= $morewhere;
 		
 		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
@@ -573,7 +573,7 @@ class ImmoOwner extends CommonObject
 					}
 					else
 					{
-						$this->country=$obj->country;
+						$this->country = $obj->country;
 					}
 					$this->setVarsFromFetchObj($obj);
 					
