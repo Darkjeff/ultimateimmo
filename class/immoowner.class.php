@@ -618,14 +618,14 @@ class ImmoOwner extends CommonObject
 	 *
 	 * @return int         <0 if KO, 0 if not found, >0 if OK
 	 */
-	/*public function fetchLines()
+	public function fetchLines()
 	{
-		$this->lines=array();
+		$this->lines = array();
 
 		// Load lines with object ImmoOwnerLine
-
-		return count($this->lines)?1:0;
-	}*/
+		$result = $this->fetchLinesCommon();
+		return $result;
+	}
 
 	/**
 	 * Update object into database
