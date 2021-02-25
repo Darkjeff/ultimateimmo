@@ -276,6 +276,7 @@ else
 	if ($limit) $sql .= $db->plimit($limit + 1, $offset);
 
 	$resql = $db->query($sql);
+	var_dump ($resql);
 	if (!$resql)
 	{
 		dol_print_error($db);

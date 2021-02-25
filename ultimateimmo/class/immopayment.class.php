@@ -368,11 +368,11 @@ class ImmoPayment extends CommonObject
 		if ($totalamount != 0)
 		{
 			$sql = "INSERT INTO ".MAIN_DB_PREFIX."ultimateimmo_immopayment (fk_receipt, date_creation, date_payment, amount,";
-			$sql.= " fk_mode_reglement, num_payment, note_public, fk_user_creat, fk_bank)";
+			$sql.= " fk_mode_reglement, fk_property, fk_renter, fk_rent, num_payment, note_public, fk_user_creat, fk_bank)";
 			$sql.= " VALUES (".$this->rowid.", '".$this->db->idate($now)."',";
 			$sql.= " '".$this->db->idate($this->date_payment)."',";
 			$sql.= " ".$totalamount.",";
-			$sql.= " ".$this->fk_mode_reglement.", '".$this->db->escape($this->num_payment)."', '".$this->db->escape($this->note_public)."', ".$user->id.",";
+			$sql.= " ".$this->fk_mode_reglement.",'".$this->db->escape($this->fk_property)."','".$this->db->escape($this->fk_renter)."','".$this->db->escape($this->fk_rent)."',  '".$this->db->escape($this->num_payment)."', '".$this->db->escape($this->note_public)."', ".$user->id.",";
 			$sql.= " 0)";
 
 			dol_syslog(get_class($this)."::create", LOG_DEBUG);

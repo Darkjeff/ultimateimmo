@@ -43,6 +43,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
+dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "companies", "other"));
@@ -471,6 +472,16 @@ while ($i < ($limit ? min($num, $limit) : $num))
 					$staticrenter->ref = $staticrenter->getFullName($langs);
 				}
 				print $staticrenter->ref;
+			}
+			elseif ($val['label'] == 'Property') 
+			{
+				$staticproperty = new ImmoProperty($db);
+				$staticproperty->fetch($object->fk_property);			
+				if ($staticproperty->ref)
+				{
+					$staticproperty->ref = $staticproperty->name;
+				}
+				print $staticproperty->ref;
 			}
 			else
 			{
