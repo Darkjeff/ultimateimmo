@@ -250,7 +250,8 @@ $reshook=$hookmanager->executeHooks('printFieldListGroupBy',$parameters);    // 
 $sql.=$hookmanager->resPrint;
 */
 
-$sql .= $db->order($sortfield, $sortorder);
+//$sql .= $db->order($sortfield, $sortorder);
+$sql .= " ORDER BY t.date_payment DESC";
 
 // Count total nb of records
 $nbtotalofrecords = '';
