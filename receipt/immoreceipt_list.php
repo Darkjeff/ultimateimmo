@@ -371,7 +371,8 @@ $sql.=$hookmanager->resPrint;
 $sql=preg_replace('/, $/','', $sql);
 */
 
-$sql .= $db->order($sortfield, $sortorder);
+//$sql .= $db->order($sortfield, $sortorder);
+$sql .= " ORDER BY t.date_echeance DESC";
 
 // Count total nb of records
 $nbtotalofrecords = '';
