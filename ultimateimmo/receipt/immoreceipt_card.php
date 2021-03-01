@@ -210,8 +210,8 @@ if (empty($reshook))
 		$file = 'quittance_' . $id . '.pdf';
 		
 		//$result = ultimateimmo_pdf_create($db, $id, '', 'quittance', $outputlangs, $file);
-		generateDocument($modele, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0, $moreparams = null)
-		$result = generateDocument( 'quittance', $outputlangs, $file);
+		
+		$result = generateDocument( 'quittance', $outputlangs,0,0,0,null);
 		
 		if ($result > 0) 
 		{
