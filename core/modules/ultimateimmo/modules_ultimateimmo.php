@@ -54,6 +54,46 @@ abstract class ModelePDFUltimateimmo extends CommonDocGenerator
 }
 
 /**
+ * \brief Crée un document PDF
+ * \param db objet base de donnee
+ * \param modele modele à utiliser
+ * \param		outputlangs		objet lang a utiliser pour traduction
+ * \return int <0 if KO, >0 if OK
+ */
+function ultimateimmo_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file) {
+	global $conf, $langs;
+	$langs->load ( 'immobilier@immobilier' );
+	
+	// Charge le modele
+	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
+	
+	if (file_exists ( $nomModele )) {
+		require_once ($nomModele);
+		
+		$classname = "pdf_" . $typeModele;
+		
+		$obj = new $classname ( $db );
+		$obj->message = $message;
+		
+		// We save charset_output to restore it because write_file can change it if needed for
+		// output format that does not support UTF8.
+		$sav_charset_output = $outputlangs->charset_output;
+		if ($obj->write_file ( $id, $outputlangs, $file, $socid, $courrier ) > 0) {
+			$outputlangs->charset_output = $sav_charset_output;
+			return 1;
+		} else {
+			$outputlangs->charset_output = $sav_charset_output;
+			dol_print_error ( $db, "pdf_create Error: " . $obj->error );
+			return - 1;
+		}
+	} else {
+		dol_print_error ( '', $langs->trans ( "Error" ) . " " . $langs->trans ( "ErrorFileDoesNotExists", $file ) );
+		return - 1;
+	}
+}
+
+
+/**
  *  Classe mere des modeles de numerotation des references de ultimateimmo
  */
 abstract class ModeleNumRefUltimateimmo
