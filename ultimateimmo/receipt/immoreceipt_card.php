@@ -1419,7 +1419,7 @@ if ($action == 'create')
 				}
 				
 				////// generate pdf
-				print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=quittance&id='.$id.'">'.$langs->trans('Quittance').'</a></div>';
+				print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=builddoc&id='.$id.'">'.$langs->trans('Quittance').'</a></div>';
 
 				// Create payment
 				if ($receipt->paye == 0 && $usercancreate)
