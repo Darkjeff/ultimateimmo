@@ -805,13 +805,13 @@ if ($action == 'createall')
 	/*
 	 * List receipt
 	 */
-	$sql = "SELECT rec.rowid as reference, rec.ref as receiptname, loc.lastname as nom, l.address, l.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract, c.preavis";
+	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, l.address, l.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract, c.preavis";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
-	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
+	//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l ON l.rowid = rec.fk_property";
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c ON c.rowid = rec.fk_rent";
-	$sql .= " WHERE rec.balance <> 0 AND c.preavis = 0 ";
+	$sql .= " WHERE rec.paye <> 1 AND c.preavis = 0 ";
 	$resql = $db->query($sql);
 	
 	if ($resql) 
