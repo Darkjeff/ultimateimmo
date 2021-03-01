@@ -209,7 +209,9 @@ if (empty($reshook))
 		
 		$file = 'quittance_' . $id . '.pdf';
 		
-		$result = ultimateimmo_pdf_create($db, $id, '', 'quittance', $outputlangs, $file);
+		//$result = ultimateimmo_pdf_create($db, $id, '', 'quittance', $outputlangs, $file);
+		generateDocument($modele, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0, $moreparams = null)
+		$result = generateDocument( 'quittance', $outputlangs, $file);
 		
 		if ($result > 0) 
 		{
@@ -1415,6 +1417,9 @@ if ($action == 'create')
 				{
 					print '<a class="butActionRefused classfortooltip" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
 				}
+				
+				////// generate pdf
+				print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=quittance&id='.$id.'">'.$langs->trans('Quittance').'</a></div>';
 
 				// Create payment
 				if ($receipt->paye == 0 && $usercancreate)

@@ -268,7 +268,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$result = $property->fetch($object->fk_property);
 
 			$paiement = new ImmoPayment($this->db);
-			$result = $paiement->fetch_by_loyer($object->id);
+			$result = $paiement->fetch_by_loyer($object->rowid);
 
 			if (! empty($object->id))
 			{
