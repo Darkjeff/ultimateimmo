@@ -69,11 +69,14 @@ $amounts=array();
 $amountsresttopay=array();
 $addwarning=0;
 
+$receipt=new ImmoReceipt($db);
+$receipt->fetch($id);
+
+var_dump ($id) ;
+
 $object = new ImmoPayment($db);
 $object->fetch($receipt->fk_payment);
 
-$receipt=new ImmoReceipt($db);
-$receipt->fetch($id);
 
 $renter=new ImmoRenter($db);
 $renter->fetch($receipt->fk_renter);
@@ -173,10 +176,12 @@ if ($action == 'add_payment')
 
     		// Create a line of payments
     		$payment = new ImmoPayment($db);
+			$receipt = new ImmoReceipt($db);
+			$result = $receipt->fetch($id);
 
 			$payment->ref          = $receipt->ref;
 			$payment->rowid        = $id;
-			$payment->fk_rent	   = GETPOST('fk_rent','int');
+			$payment->fk_rent	   = $receipt->fk_rent;
 			$payment->fk_property  = $receipt->fk_property;
 			$payment->fk_renter	   = $receipt->fk_renter;
 			$payment->fk_payment   = $receipt->fk_payment;
@@ -275,6 +280,9 @@ if (GETPOST('action', 'aZ09') == 'create')
 
         // Date payment
        print '<tr><td>'.$langs->trans("Date")."</td><td colspan=\"2\">".dol_print_date($receipt->date_echeance, 'day')."</td></tr>\n";
+	   print '<tr><td>'.$langs->trans("rent")."</td><td colspan=\"2\">".$receipt->fk_rent."</td></tr>\n";
+	   print '<tr><td>'.$langs->trans("property")."</td><td colspan=\"2\">".$receipt->fk_property."</td></tr>\n";
+	   print '<tr><td>'.$langs->trans("renter")."</td><td colspan=\"2\">".$receipt->fk_renter."</td></tr>\n";
 		
 		// Total amount
 		print '<tr><td>'.$langs->trans("Amount")."</td><td colspan=\"2\">".price($receipt->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency).'</td></tr>';
