@@ -1260,7 +1260,7 @@ class ImmoReceipt extends CommonObject
 			}
 		}
 
-		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
+		$modelpath = "ultimateimmo/core/modules/ultimateimmo/doc/";
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref, $moreparams);
 	}
@@ -1367,7 +1367,70 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function initAsSpecimen()
 	{
-		$this->initAsSpecimenCommon();
+		//$this->initAsSpecimenCommon();
+		$now = dol_now();
+
+		 // Load array of rents rentids
+		 $num_rents = 0;
+		 $rentids = array();
+		 $sql = "SELECT rowid";
+		 $sql .= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immorent";
+		 $sql .= " WHERE entity IN (".getEntity('product').")";
+		 $resql = $this->db->query($sql);
+		 if ($resql)
+		 {
+			 $num_rents = $this->db->num_rows($resql);
+			 $i = 0;
+			 while ($i < $num_rents)
+			 {
+				 $i++;
+				 $row = $this->db->fetch_row($resql);
+				 $rentids[$i] = $row[0];
+			 }
+		 }
+
+		// Initialise parameters
+		$this->rowid = 0;
+		$this->ref = 'SPECIMEN';
+		$this->specimen = 1;
+		$this->label = 'IMMORECEIPT SPECIMEN';
+		$this->date_echeance = $now;
+		$this->date_creation = $now;
+		$this->date_start = $now;
+		$this->date_end = $now + (3600 * 24 * 365);
+		$this->rentamount = 1000;
+		$this->note_public = 'This is a comment';
+
+		// Lines
+        $nbp = 5;
+        $xnbp = 0;
+		while ($xnbp < $nbp) {
+
+			$line = new immoreceiptLine();
+
+			$line->nomlocal = 'nomlocal';
+			$line->label = 'nomrenter';
+			$line->nomlocataire = 'M & Mme Locator';
+			$line->total_amount = 1000;
+			$line->rentamount = 800;
+			$line->chargesamount = 200;
+			$line->date_echeance = $this->db->jdate($now);
+			$line->note_public = 'blablabla';
+			$line->date_start = $this->db->jdate($now);
+			$line->date_end = $this->db->jdate($now);
+			$line->encours = 2500;
+			$line->regul = 1500;
+			$line->partial_payment = 500;
+
+			if ($num_rents > 0)
+            {
+                $rentid = mt_rand(1, $num_rents);
+                $line->fk_rent = $rentids[$rentid];
+            }
+
+			$this->lines[$xnbp] = $line;
+			$xnbp++;
+		}
 	}
 
 
