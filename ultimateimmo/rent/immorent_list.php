@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2020 Philippe GRAND       <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -427,8 +427,7 @@ if (is_array($extrafields->attributes[$object->table_element]['computed']) && co
 // --------------------------------------------------------------------
 $i = 0;
 $totalarray = array();
-while ($i < ($limit ? min($num, $limit) : $num))
-{
+while ($i < ($limit ? min($num, $limit) : $num)) {
 	$obj = $db->fetch_object($resql);
 	if (empty($obj)) break;		// Should not happen
 
@@ -437,69 +436,56 @@ while ($i < ($limit ? min($num, $limit) : $num))
 
 	// Show here line of result
 	print '<tr class="oddeven">';
-	foreach ($object->fields as $key => $val)
-	{
+	foreach ($object->fields as $key => $val) {
 		$cssforfield = (empty($val['css']) ? '' : $val['css']);
-	    if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
-	    elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+		if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '') . 'center';
+		elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 
-	    if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
-	    elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+		if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
+		elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
 
-	    if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '').'right';
+		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'right';
 
-		if (! empty($arrayfields['t.'.$key]['checked']))
-		{
-			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
+		if (!empty($arrayfields['t.' . $key]['checked'])) {
+			print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
 			if ($key == 'status') print $object->getLibStatut(5);
-			
-			elseif ($val['label'] == 'Owner') 
-			{
+
+			elseif ($val['label'] == 'Property') {
+				$staticproperty = new ImmoProperty($db);
+				$staticproperty->fetch($object->fk_property);
+				if ($staticproperty->ref) {
+					$staticproperty->ref = $staticproperty->label;
+				}
+				print $staticproperty->ref;
+			} elseif ($val['label'] == 'Owner') {
 				$staticowner = new ImmoOwner($db);
-				$staticowner->fetch($object->fk_owner);			
-				if ($staticowner->ref)
-				{
-					$staticowner->ref=$staticowner->getFullName($langs);
+				$staticowner->fetch($object->fk_owner);
+				if ($staticowner->ref) {
+					$staticowner->ref = $staticowner->getFullName($langs);
 				}
 				print $staticowner->ref;
-			}
-			elseif ($val['label'] == 'Renter') 
-			{
+			} elseif ($val['label'] == 'Renter') {
 				$staticrenter = new ImmoRenter($db);
-				$staticrenter->fetch($object->fk_renter);			
-				if ($staticrenter->ref)
-				{
+				$staticrenter->fetch($object->fk_renter);
+				if ($staticrenter->ref) {
 					$staticrenter->ref = $staticrenter->getFullName($langs);
 				}
 				print $staticrenter->ref;
-			}
-			elseif ($val['label'] == 'Property') 
-			{
-				$staticproperty = new ImmoProperty($db);
-				$staticproperty->fetch($object->fk_property);			
-				if ($staticproperty->ref)
-				{
-					$staticproperty->ref = $staticproperty->name;
-				}
-				print $staticproperty->ref;
-			}
-			else
-			{
+			} else {
 				print $object->showOutputField($val, $key, $obj->$key, '');
 			}
 			print '</td>';
-			if (! $i) $totalarray['nbfield']++;
-			if (! empty($val['isameasure']))
-			{
-				if (! $i) $totalarray['pos'][$totalarray['nbfield']] = 't.'.$key;
-				$totalarray['val']['t.'.$key] += $obj->$key;
+			if (!$i) $totalarray['nbfield']++;
+			if (!empty($val['isameasure'])) {
+				if (!$i) $totalarray['pos'][$totalarray['nbfield']] = 't.' . $key;
+				$totalarray['val']['t.' . $key] += $obj->$key;
 			}
 		}
 	}
 	// Extra fields
-	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_print_fields.tpl.php';
+	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_print_fields.tpl.php';
 	// Fields from hook
-	$parameters = array('arrayfields'=>$arrayfields, 'object'=>$object, 'obj'=>$obj, 'i'=>$i, 'totalarray'=>&$totalarray);
+	$parameters = array('arrayfields' => $arrayfields, 'object' => $object, 'obj' => $obj, 'i' => $i, 'totalarray' => &$totalarray);
 	$reshook = $hookmanager->executeHooks('printFieldListValue', $parameters, $object); // Note that $action and $object may have been modified by hook
 	print $hookmanager->resPrint;
 	// Action column
@@ -508,10 +494,10 @@ while ($i < ($limit ? min($num, $limit) : $num))
 	{
 		$selected = 0;
 		if (in_array($object->id, $arrayofselected)) $selected = 1;
-		print '<input id="cb'.$object->id.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$object->id.'"'.($selected ? ' checked="checked"' : '').'>';
+		print '<input id="cb' . $object->id . '" class="flat checkforselect" type="checkbox" name="toselect[]" value="' . $object->id . '"' . ($selected ? ' checked="checked"' : '') . '>';
 	}
 	print '</td>';
-	if (! $i) $totalarray['nbfield']++;
+	if (!$i) $totalarray['nbfield']++;
 
 	print '</tr>';
 
