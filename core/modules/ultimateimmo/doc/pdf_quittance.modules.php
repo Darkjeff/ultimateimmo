@@ -1,7 +1,7 @@
 <?php
 /**
  * Copyright (C) 2012-2013 Florian Henry  <florian.henry@open-concept.pro>
- * Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,9 +63,9 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 	/**
      * @var array() Minimum version of PHP required by module.
-	 * e.g.: PHP ≥ 5.4 = array(5, 4)
+	 * e.g.: PHP ≥ 5.6 = array(5, 6)
      */
-	public $phpmin = array(5, 4); 
+	public $phpmin = array(5, 6); 
 
 	/**
      * Dolibarr version of the loaded document
@@ -165,7 +165,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 	 * file Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
-	function write_file($object, $outputlangs, $file='', $socid=null, $courrier=null)
+	function write_file($object, $outputlangs, $file = '', $socid = null, $courrier = null)
 	{
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
@@ -184,64 +184,55 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		// dol_syslog ( "pdf_quittance::debug loyer=" . var_export ( $object, true ) );
 
 		// Definition of $dir and $file
-		if ($object->specimen)
-		{
-			$dir = $conf->ultimateimmo->dir_output."/";
+		if ($object->specimen) {
+			$dir = $conf->ultimateimmo->dir_output . "/";
 			$file = $dir . "/SPECIMEN.pdf";
-		}
-		else
-		{
+		} else {
 			$objectref = dol_sanitizeFileName($object->ref);
 			$dir = $conf->ultimateimmo->dir_output . "/receipt/" . $objectref;
 			$file = $dir . "/" . $objectref . ".pdf";
 		}
 
-		if (! file_exists($dir))
-		{
-			if (dol_mkdir($dir) < 0)
-			{
+		if (!file_exists($dir)) {
+			if (dol_mkdir($dir) < 0) {
 				$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
 				return 0;
 			}
 		}
 
-		if (file_exists($dir))
-		{
+		if (file_exists($dir)) {
 			// Add pdfgeneration hook
-			if (! is_object($hookmanager))
-			{
-				include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
-				$hookmanager=new HookManager($this->db);
+			if (!is_object($hookmanager)) {
+				include_once DOL_DOCUMENT_ROOT . '/core/class/hookmanager.class.php';
+				$hookmanager = new HookManager($this->db);
 			}
 			$hookmanager->initHooks(array('pdfgeneration'));
-			$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
+			$parameters = array('file' => $file, 'object' => $object, 'outputlangs' => $outputlangs);
 			global $action;
-			$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
-			
+			$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
+
 			// Set nblignes with the new facture lines content after hook
 			$nblignes = count($object->lines);
 			//$nbpayments = count($object->getListOfPayments()); TODO : add method
 
 			// Create pdf instance
-			$pdf=pdf_getInstance($this->format);
+			$pdf = pdf_getInstance($this->format);
 			$default_font_size = pdf_getPDFFontSize($outputlangs);	// Must be after pdf_getInstance
 			$pdf->SetAutoPageBreak(1, 0);
 
-			$heightforinfotot = 50+(4*$nbpayments);	// Height reserved to output the info and total part and payment part
-			$heightforfreetext= (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT)?$conf->global->MAIN_PDF_FREETEXT_HEIGHT:5);	// Height reserved to output the free text on last page
-			$heightforfooter = $this->marge_basse + (empty($conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS)?12:22);	// Height reserved to output the footer (value include bottom margin)
+			$heightforinfotot = 50 + (4 * $nbpayments);	// Height reserved to output the info and total part and payment part
+			$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5);	// Height reserved to output the free text on last page
+			$heightforfooter = $this->marge_basse + (empty($conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS) ? 12 : 22);	// Height reserved to output the footer (value include bottom margin)
 
-			if (class_exists('TCPDF'))
-			{
+			if (class_exists('TCPDF')) {
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
 			$pdf->SetFont(pdf_getPDFFont($outputlangs));
-			
+
 			// Set path to the background PDF File
-			if (! empty($conf->global->MAIN_ADD_PDF_BACKGROUND))
-			{
-				$pagecount = $pdf->setSourceFile($conf->mycompany->dir_output.'/'.$conf->global->MAIN_ADD_PDF_BACKGROUND);
+			if (!empty($conf->global->MAIN_ADD_PDF_BACKGROUND)) {
+				$pagecount = $pdf->setSourceFile($conf->mycompany->dir_output . '/' . $conf->global->MAIN_ADD_PDF_BACKGROUND);
 				$tplidx = $pdf->importPage(1);
 			}
 
@@ -251,9 +242,9 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$pdf->SetTitle($outputlangs->convToOutputCharset($object->label));
 			$pdf->SetSubject($outputlangs->transnoentities("Quittance"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (ultimateimmo module)');
-			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->firstname)." ".$outputlangs->convToOutputCharset($user->lastname));
+			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->firstname) . " " . $outputlangs->convToOutputCharset($user->lastname));
 			$pdf->SetKeyWords($outputlangs->convToOutputCharset($object->label) . " " . $outputlangs->transnoentities("Document"));
-			if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) $pdf->SetCompression(false);
+			if (!empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) $pdf->SetCompression(false);
 
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 
@@ -329,7 +320,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 				$text = 'Reçu de ' . $renter->civilite . '' .$renter->firstname. ' '.$renter->lastname. ' la somme de ' . $amountalreadypaid . "\n";
 				;
-//var_dump($paiement);exit;
+
 				$dtpaiement = $paiement->date_payment;
 
 				if (empty($dtpaiement)) {
@@ -621,7 +612,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 	/**
 	 *  Show top header of page.
 	 *
-	 *  @param	PDF			$pdf     		Object PDF
+	 *  @param	TCPDF		$pdf     		Object PDF
 	 *  @param  Object		$object     	Object to show
 	 *  @param  int	    	$showaddress    0=no, 1=yes
 	 *  @param  Translate	$outputlangs	Object lang for output
@@ -639,43 +630,36 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		pdf_pagehead($pdf, $outputlangs, $this->page_hauteur);
 
 		// Show Draft Watermark
-		if($object->status==ImmoReceipt::STATUS_DRAFT && (! empty($conf->global->FACTURE_DRAFT_WATERMARK)) )
-        {
-		      pdf_watermark($pdf, $outputlangs, $this->page_hauteur, $this->page_largeur, 'mm', $conf->global->FACTURE_DRAFT_WATERMARK);
-        }
+		if ($object->status == ImmoReceipt::STATUS_DRAFT && (!empty($conf->global->FACTURE_DRAFT_WATERMARK))) {
+			pdf_watermark($pdf, $outputlangs, $this->page_hauteur, $this->page_largeur, 'mm', $conf->global->FACTURE_DRAFT_WATERMARK);
+		}
 
 		$pdf->SetTextColor(0, 0, 60);
 		$pdf->SetFont('', 'B', $default_font_size + 3);
 
 		$w = 110;
 
-		$posy=$this->marge_haute;
-        $posx=$this->page_largeur-$this->marge_droite-$w;
+		$posy = $this->marge_haute;
+		$posx = $this->page_largeur - $this->marge_droite - $w;
+		$tab_width = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
 
 		$pdf->SetXY($this->marge_gauche, $posy);
 
 		// Logo
-		if (empty($conf->global->PDF_DISABLE_MYCOMPANY_LOGO))
-		{
-			$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
-			if ($this->emetteur->logo)
-			{
-				if (is_readable($logo))
-				{
-				    $height=pdf_getHeightForLogo($logo);
+		if (empty($conf->global->PDF_DISABLE_MYCOMPANY_LOGO)) {
+			$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
+			if ($this->emetteur->logo) {
+				if (is_readable($logo)) {
+					$height = pdf_getHeightForLogo($logo);
 					$pdf->Image($logo, $this->marge_gauche, $posy, 0, $height);	// width=0 (auto)
-				}
-				else
-				{
+				} else {
 					$pdf->SetTextColor(200, 0, 0);
 					$pdf->SetFont('', 'B', $default_font_size - 2);
 					$pdf->MultiCell($w, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
 					$pdf->MultiCell($w, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
 				}
-			}
-			else
-			{
-				$text=$this->emetteur->name;
+			} else {
+				$text = $this->emetteur->name;
 				$pdf->MultiCell($w, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 			}
 		}
@@ -683,112 +667,107 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		$pdf->SetFont('', 'B', $default_font_size + 3);
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetTextColor(0, 0, 60);
-		$title=$outputlangs->transnoentities("Quittance");
+		$title = $outputlangs->transnoentities("Quittance");
 		$pdf->MultiCell($w, 3, $title, '', 'R');
 
 		$pdf->SetFont('', 'B', $default_font_size);
 
-		$posy+=5;
+		$posy += 5;
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetTextColor(0, 0, 60);
-		$textref=$outputlangs->transnoentities("Ref")." : " . $outputlangs->convToOutputCharset($object->ref);
-		if ($object->status == ImmoReceipt::STATUS_DRAFT)
-		{
+		$textref = $outputlangs->transnoentities("Ref") . " : " . $outputlangs->convToOutputCharset($object->ref);
+		if ($object->status == ImmoReceipt::STATUS_DRAFT) {
 			$pdf->SetTextColor(128, 0, 0);
-			$textref.=' - '.$outputlangs->transnoentities("NotValidated");
+			$textref .= ' - ' . $outputlangs->transnoentities("NotValidated");
 		}
 		$pdf->MultiCell($w, 4, $textref, '', 'R');
 
-		$posy+=1;
+		$posy += 1;
 		$pdf->SetFont('', '', $default_font_size - 2);
-
-		if ($object->ref_client)
-		{
-			$posy+=4;
+		$renter = new ImmoRenter($this->db);
+		$renter->fetch($object->fk_renter);
+//var_dump($renter);exit;
+		if ($renter->ref) {
+			$posy += 4;
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetTextColor(0, 0, 60);
-			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("RefCustomer")." : " . $outputlangs->convToOutputCharset($object->ref_client), '', 'R');
+			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("RefCustomer") . " : " . $outputlangs->convToOutputCharset($renter->ref), '', 'R');
 		}
 
-		if ($object->type != 2)
-		{
-			$posy+=3;
+		if ($object->type != 2) {
+			$posy += 3;
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetTextColor(0, 0, 60);
-			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("DateDue")." : " . dol_print_date($object->date_lim_reglement, "day", false, $outputlangs, true), '', 'R');
+			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("DateDue") . " : " . dol_print_date($object->date_echeance, "day", false, $outputlangs, true), '', 'R');
 		}
 
-		if ($object->thirdparty->code_client)
-		{
-			$posy+=3;
+		if ($object->thirdparty->code_client) {
+			$posy += 3;
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetTextColor(0, 0, 60);
-			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("CustomerCode")." : " . $outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
+			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("CustomerCode") . " : " . $outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
 		}
 
-		$posy+=1;
+		$posy += 1;
 
 		$top_shift = 0;
 		// Show list of linked objects
 		$current_y = $pdf->getY();
 		$posy = pdf_writeLinkedObjects($pdf, $object, $outputlangs, $posx, $posy, $w, 3, 'R', $default_font_size);
-		if ($current_y < $pdf->getY())
-		{
+		if ($current_y < $pdf->getY()) {
 			$top_shift = $pdf->getY() - $current_y;
 		}
 
-		if ($showaddress)
-		{
+		if ($showaddress) {
 			// Sender properties
 			$owner = new ImmoOwner($this->db);
 			$result = $owner->fetch($object->fk_owner);
-			if ($owner->country_id)
-			{
-				$tmparray=$owner->getCountry($owner->country_id,'all');
-				$owner->country_code=$tmparray['code'];
-				$owner->country=$tmparray['label'];
+			if ($owner->country_id) {
+				$tmparray = $owner->getCountry($owner->country_id, 'all');
+				$owner->country_code = $tmparray['code'];
+				$owner->country = $tmparray['label'];
 			}
 			$carac_emetteur = pdf_build_address($outputlangs, $owner, $object->thirdparty, '', 0, 'source', $object);
 
 			// Show sender
-			$posy=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 42;
-			$posy+=$top_shift;
-			$posx=$this->marge_gauche;
-			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT)) $posx=$this->page_largeur-$this->marge_droite-80;
+			$posy = !empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 42;
+			$posy += $top_shift;
+			$posx = $this->marge_gauche;
+			if (!empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT)) $posx = $this->page_largeur - $this->marge_droite - 80;
 
-			$hautcadre=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 38 : 40;
-			$widthrecbox=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 92 : 82;
+			$hautcadre = !empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 38 : 40;
+			$widthrecbox = !empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 92 : 82;
 
 
 			// Show sender frame
 			$pdf->SetTextColor(0, 0, 0);
 			$pdf->SetFont('', '', $default_font_size + 5);
-			$pdf->SetXY($posx, $posy-5);
+			$pdf->SetXY($posx, $posy - 5);
 			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Bailleur'), 1, 'C');
-			$posy=$pdf->getY();
+			$posy = $pdf->getY();
 			$pdf->SetXY($posx, $posy);
 			$pdf->SetFillColor(230, 230, 230);
 			$pdf->MultiCell($widthrecbox, $hautcadre, "", 1, 'R', 1);
 			$pdf->SetTextColor(0, 0, 60);
 
 			// Show sender name
-			$pdf->SetXY($posx+2, $posy+3);
+			$pdf->SetXY($posx + 2, $posy + 3);
 			$pdf->SetFont('', 'B', $default_font_size);
-			$pdf->MultiCell($widthrecbox-2, 4, $outputlangs->convToOutputCharset($owner->getFullName($outputlangs)), 0, 'L');
-			$posy=$pdf->getY();
+			$pdf->MultiCell($widthrecbox - 2, 4, $outputlangs->convToOutputCharset($owner->getFullName($outputlangs)), 0, 'L');
+			$posy = $pdf->getY();
 
 			// Show sender information
-			$pdf->SetXY($posx+2, $posy);
+			$pdf->SetXY($posx + 2, $posy);
 			$pdf->SetFont('', '', $default_font_size - 1);
-			$pdf->MultiCell($widthrecbox-2, 4, $carac_emetteur, 0, 'L');
-			$posy=$pdf->getY();
-			
+			$pdf->MultiCell($widthrecbox - 2, 4, $carac_emetteur, 0, 'L');
+			$posy = $pdf->getY();
+
 
 			//Recipient name
 			$renter = new ImmoRenter($this->db);
 			$result = $renter->fetch($object->fk_renter);
-			$carac_client_name= $outputlangs->convToOutputCharset($renter->getFullName($outputlangs));
-			
+			$carac_client_name = $outputlangs->convToOutputCharset($renter->getFullName($outputlangs));
+
 			$property = new ImmoProperty($this->db);
 			$result = $property->fetch($object->fk_property);
 			$carac_client .= $property->label . "\n";
@@ -796,23 +775,23 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$carac_client .= $property->zip . ' ' . $property->town;
 
 			// Show recipient
-			$widthrecbox=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 92 : 100;
-			if ($this->page_largeur < 210) $widthrecbox=84;	// To work with US executive format
-			$posy=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 42;
-			$posy+=$top_shift;
-			$posx=$this->page_largeur-$this->marge_droite-$widthrecbox;
-			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT)) $posx=$this->marge_gauche;
+			$widthrecbox = !empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 92 : 100;
+			if ($this->page_largeur < 210) $widthrecbox = 84;	// To work with US executive format
+			$posy = !empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 40 : 42;
+			$posy += $top_shift;
+			$posx = $this->page_largeur - $this->marge_droite - $widthrecbox;
+			if (!empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT)) $posx = $this->marge_gauche;
 
 			// Bloc Locataire
 			$pdf->SetTextColor(0, 0, 0);
 			$pdf->SetFont('', '', $default_font_size + 5);
-			$pdf->SetXY($posx, $posy-5);
+			$pdf->SetXY($posx, $posy - 5);
 			$pdf->MultiCell($widthrecbox, 3, $outputlangs->convToOutputCharset('Locataire Destinataire'), 1, 'C');
-			$posy=$pdf->getY();
+			$posy = $pdf->getY();
 			$pdf->Rect($posx, $posy, $widthrecbox, $hautcadre);
 
 			// Show recipient name
-			$pdf->SetXY($posx+2, $posy+3);
+			$pdf->SetXY($posx + 2, $posy + 3);
 			$pdf->SetFont('', 'B', $default_font_size);
 			$pdf->MultiCell($widthrecbox, 2, $carac_client_name, 0, 'L');
 
@@ -820,10 +799,8 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 			// Show recipient information
 			$pdf->SetFont('', '', $default_font_size - 1);
-			$pdf->SetXY($posx+2, $posy);
+			$pdf->SetXY($posx + 2, $posy);
 			$pdf->MultiCell($widthrecbox, 4, $carac_client, 0, 'L');
-			
-			
 		}
 
 		$pdf->SetTextColor(0, 0, 0);
