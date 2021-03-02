@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2020 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
+dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 
 // Load traductions files required by the page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
@@ -71,6 +72,7 @@ $pagenext = $page + 1;
 
 // Initialize technical objects
 $object = new ImmoRenter($db);
+//var_dump($object);exit;
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immorenterlist'));     // Note that conf->hooks_modules contains array
@@ -95,7 +97,7 @@ if ($user->socid > 0)	// Protection if external user
 //$result = restrictedArea($user, 'ultimateimmo', $id,'');
 
 // Initialize array of search criterias
-$search_all = trim(GETPOST("search_all", 'alpha'));
+$search_all = GETPOST('search_all', 'alphanohtml') ? trim(GETPOST('search_all', 'alphanohtml')) : trim(GETPOST('sall', 'alphanohtml'));
 $search = array();
 foreach ($object->fields as $key => $val)
 {
@@ -137,6 +139,15 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 $permissiontoread = $user->rights->ultimateimmo->read;
 $permissiontoadd = $user->rights->ultimateimmo->write;
 $permissiontodelete = $user->rights->ultimateimmo->delete;
+
+// Security check
+if (empty($conf->ultimateimmo->enabled)) accessforbidden('Module not enabled');
+$socid = 0;
+if ($user->socid > 0)	// Protection if external user
+{
+	//$socid = $user->socid;
+	accessforbidden();
+}
 
 /*
  * Actions
@@ -217,8 +228,13 @@ if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (".getEntity
 else $sql .= " WHERE 1 = 1";
 foreach ($search as $key => $val)
 {
+	if ($key == 'status' && $search[$key] == -1) continue;
 	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key])) ? 1 : 0);
-	if ($search[$key] != '') $sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
+	if (strpos($object->fields[$key]['type'], 'integer:') === 0) {
+		if ($search[$key] == '-1') $search[$key] = '';
+		$mode_search = 2;
+	}
+	if ($search[$key] != '') $sql .= natural_search($key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 }
 //if ($search_country_id && $search_country_id != '-1')       $sql .= " AND t.country_id IN (".$db->escape($search_country_id).')';
 if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
@@ -247,8 +263,7 @@ $sql .= $db->order($sortfield, $sortorder);
 
 // Count total nb of records
 $nbtotalofrecords = '';
-if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
-{
+if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$resql = $db->query($sql);
 	$nbtotalofrecords = $db->num_rows($resql);
 	if (($page * $limit) > $nbtotalofrecords)	// if total of record found is smaller than page * limit, goto and load page 0
@@ -259,17 +274,13 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
 }
 
 // if total of record found is smaller than limit, no need to do paging and to restart another select with limits set.
-if (is_numeric($nbtotalofrecords) && ($limit > $nbtotalofrecords || empty($limit)))
-{
+if (is_numeric($nbtotalofrecords) && ($limit > $nbtotalofrecords || empty($limit))) {
 	$num = $nbtotalofrecords;
-}
-else
-{
+} else {
 	if ($limit) $sql .= $db->plimit($limit + 1, $offset);
 
 	$resql = $db->query($sql);
-	if (!$resql)
-	{
+	if (!$resql) {
 		dol_print_error($db);
 		exit;
 	}
@@ -278,11 +289,10 @@ else
 }
 
 // Direct jump if only one record found
-if ($num == 1 && !empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $search_all && !$page)
-{
+if ($num == 1 && !empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $search_all && !$page) {
 	$obj = $db->fetch_object($resql);
 	$id = $obj->rowid;
-	header("Location: ".dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?id='.$id);
+	header("Location: " . dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1) . '?id=' . $id);
 	exit;
 }
 
@@ -328,7 +338,7 @@ print '<input type="hidden" name="contextpage" value="'.$contextpage.'">';
 
 $newcardbutton = dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?action=create&backtopage='.urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
 
-print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, $newcardbutton, '', $limit);
+print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, $newcardbutton, '', $limit, 0, 0, 1);
 
 // Add code for pre mass action (confirmation or email presend form)
 $topicmail = "SendImmoRenterRef";
@@ -373,12 +383,20 @@ print '<table class="tagtable liste'.($moreforfilter ? " listwithfilterbefore" :
 print '<tr class="liste_titre">';
 foreach ($object->fields as $key => $val)
 {
-	$align = '';
-	if (in_array($val['type'], array('date','datetime','timestamp'))) $align .= ($align?' ':'').'center';
-	if (in_array($val['type'], array('timestamp'))) $align .= ($align?' ':'').'nowrap';
-	if ($key == 'status') $align .= ($align?' ':'').'center';
-	if ($key == 'civility_id') $align .= ($align?' ':'').'center';
-	if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($align?' '.$align:'').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'"></td>';
+	$cssforfield = (empty($val['css']) ? '' : $val['css']);
+	if ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	elseif (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	elseif (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+	elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $val['label'] != 'TechnicalID') $cssforfield .= ($cssforfield ? ' ' : '').'right';
+	if (!empty($arrayfields['t.'.$key]['checked']))
+	{
+		print '<td class="liste_titre'.($cssforfield ? ' '.$cssforfield : '').'">';
+		if (is_array($val['arrayofkeyval'])) print $form->selectarray('search_'.$key, $val['arrayofkeyval'], $search[$key], $val['notnull'], 0, 0, '', 1, 0, 0, '', 'maxwidth75');
+		elseif (strpos($val['type'], 'integer:') === 0) {
+			print $object->showInputField($val, $key, $search[$key], '', '', 'search_', 'maxwidth150', 1);
+		} elseif (!preg_match('/^(date|timestamp)/', $val['type'])) print '<input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'">';
+		print '</td>';
+	}
 }
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
@@ -400,11 +418,15 @@ print '</tr>'."\n";
 print '<tr class="liste_titre">';
 foreach ($object->fields as $key => $val)
 {
-	$align = '';
-	if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
-	if (in_array($val['type'], array('timestamp'))) $align .= ($align?' ':'').'nowrap';
-	if ($key == 'status') $align .= ($align?' ':'').'center';
-	if (! empty($arrayfields['t.'.$key]['checked'])) print getTitleFieldOfList($arrayfields['t.'.$key]['label'], 0, $_SERVER['PHP_SELF'], 't.'.$key, '', $param, ($align?'class="'.$align.'"':''), $sortfield, $sortorder, $align.' ')."\n";
+	$cssforfield = (empty($val['css']) ? '' : $val['css']);
+	if ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	elseif (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
+	elseif (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+	elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $val['label'] != 'TechnicalID') $cssforfield .= ($cssforfield ? ' ' : '').'right';
+	if (!empty($arrayfields['t.'.$key]['checked']))
+	{
+		print getTitleFieldOfList($arrayfields['t.'.$key]['label'], 0, $_SERVER['PHP_SELF'], 't.'.$key, '', $param, ($cssforfield ? 'class="'.$cssforfield.'"' : ''), $sortfield, $sortorder, ($cssforfield ? $cssforfield.' ' : ''))."\n";
+	}
 }
 
 // Extra fields
@@ -441,53 +463,51 @@ while ($i < ($limit ? min($num, $limit) : $num))
 
 	// Show here line of result
 	print '<tr class="oddeven">';
-	foreach ($object->fields as $key => $val)
-	{
+	foreach ($object->fields as $key => $val) {
 		$cssforfield = (empty($val['css']) ? '' : $val['css']);
-	    if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
-	    elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+		if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '') . 'center';
+		elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 
-	    if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
-	    elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+		if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
+		elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
 
-	    if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '').'right';
+		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'right';
 
-		if (! empty($arrayfields['t.'.$key]['checked']))
-		{
-			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
+		if (!empty($arrayfields['t.' . $key]['checked'])) {
+			print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
 			if ($key == 'status') print $object->getLibStatut(5);
-			
-			elseif ($val['label'] == 'BirthCountry') 
-			{
-				if ($object->country_id)
-				{
-					include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+
+			elseif ($val['label'] == 'Property') {
+				$staticproperty = new ImmoProperty($db);
+				$staticproperty->fetch($object->fk_property);
+				var_dump($object->fk_property);
+				if ($staticproperty->ref) {
+					$staticproperty->ref = $staticproperty->label;
+				}
+				print $staticproperty->ref;
+			} elseif ($val['label'] == 'BirthCountry') {
+				if ($object->country_id) {
+					include_once(DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 					$tmparray = getCountry($object->country_id, 'all');
 					$object->country_code = $tmparray['code'];
 					$object->country = $tmparray['label'];
-				}				
+				}
 				print $object->country;
-			}
-			elseif ($val['label'] == 'Owner') 
-			{
+			} elseif ($val['label'] == 'Owner') {
 				$staticowner = new ImmoOwner($db);
-				$staticowner->fetch($object->fk_owner);			
-				if ($staticowner->ref)
-				{
+				$staticowner->fetch($object->fk_owner);
+				if ($staticowner->ref) {
 					$staticowner->ref = $staticowner->getFullName($langs);
 				}
 				print $staticowner->ref;
-			}
-			else
-			{
+			} else {
 				print $object->showOutputField($val, $key, $obj->$key, '');
 			}
 			print '</td>';
-			if (! $i) $totalarray['nbfield']++;
-			if (! empty($val['isameasure']))
-			{
-				if (!$i) $totalarray['pos'][$totalarray['nbfield']] = 't.'.$key;
-				$totalarray['val']['t.'.$key] += $object->$key;
+			if (!$i) $totalarray['nbfield']++;
+			if (!empty($val['isameasure'])) {
+				if (!$i) $totalarray['pos'][$totalarray['nbfield']] = 't.' . $key;
+				$totalarray['val']['t.' . $key] += $object->$key;
 			}
 		}
 	}

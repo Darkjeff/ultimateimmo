@@ -770,7 +770,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 			$property = new ImmoProperty($this->db);
 			$result = $property->fetch($object->fk_property);
-			$carac_client .= $property->label . "\n";
+			$carac_client = $property->label . "\n";
 			$carac_client .= $property->address . "\n";
 			$carac_client .= $property->zip . ' ' . $property->town;
 
