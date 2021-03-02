@@ -480,7 +480,6 @@ while ($i < ($limit ? min($num, $limit) : $num))
 			elseif ($val['label'] == 'Property') {
 				$staticproperty = new ImmoProperty($db);
 				$staticproperty->fetch($object->fk_property);
-				var_dump($object->fk_property);
 				if ($staticproperty->ref) {
 					$staticproperty->ref = $staticproperty->label;
 				}
