@@ -409,7 +409,7 @@ $parameters = array('arrayfields'=>$arrayfields, 'param'=>$param, 'sortfield'=>$
 $reshook = $hookmanager->executeHooks('printFieldListTitle', $parameters, $object); // Note that $action and $object may have been modified by hook
 print $hookmanager->resPrint;
 // Action column
-print getTitleFieldOfList($selectedfields, 0, $_SERVER["PHP_SELF"], '', '', '', '', $sortfield, $sortorder, 'center maxwidthsearch ')."\n";
+print getTitleFieldOfList($selectedfields, 0, $_SERVER["PHP_SELF"], '', '', '<span class="fas fa-building paddingright classfortooltip" style=" color: #37a;"></span>', '', $sortfield, $sortorder, 'center maxwidthsearch ')."\n";
 print '</tr>'."\n";
 
 
