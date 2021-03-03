@@ -19,28 +19,34 @@
 /**
  *   	\file       immorenter_list.php
  *		\ingroup    ultimateimmo
- *		\brief      List page for immorenter
+ *		\brief      Page List for immorenter
  */
 
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
 // Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
+if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
+if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
+if (!$res) die("Include of main fails");
 
-require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
@@ -64,8 +70,8 @@ $id			= GETPOST('id','int');
 $limit = GETPOST('limit', 'int') ? GETPOST('limit', 'int') : $conf->liste_limit;
 $sortfield = GETPOST('sortfield', 'alpha');
 $sortorder = GETPOST('sortorder', 'alpha');
-$page = GETPOST('page', 'int');
-if (empty($page) || $page == -1 || GETPOST('button_search', 'alpha') || GETPOST('button_removefilter', 'alpha') || (empty($toselect) && $massaction === '0')) { $page = 0; }     // If $page is not defined, or '' or -1 or if we click on clear filters or if we select empty mass action
+$page = GETPOSTISSET('pageplusone') ? (GETPOST('pageplusone') - 1) : GETPOST("page", 'int');
+if (empty($page) || $page < 0 || GETPOST('button_search', 'alpha') || GETPOST('button_removefilter', 'alpha')) { $page = 0; }     // If $page is not defined, or '' or -1 or if we click on clear filters
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -84,16 +90,6 @@ $search_array_options = $extrafields->getOptionalsFromPost($object->table_elemen
 // Default sort order (if not yet defined by previous GETPOST)
 if (! $sortfield) $sortfield = "t.".key($object->fields);   // Set here default search field. By default 1st field in definition.
 if (! $sortorder) $sortorder = "ASC";
-
-// Security check
-if (empty($conf->ultimateimmo->enabled)) accessforbidden('Module not enabled');
-$socid = 0;
-if ($user->socid > 0)	// Protection if external user
-{
-	//$socid = $user->socid;
-	accessforbidden();
-}
-//$result = restrictedArea($user, 'ultimateimmo', $id,'');
 
 // Initialize array of search criterias
 $search_all = GETPOST('search_all', 'alphanohtml') ? trim(GETPOST('search_all', 'alphanohtml')) : trim(GETPOST('sall', 'alphanohtml'));
@@ -209,7 +205,7 @@ foreach ($object->fields as $key => $val)
 {
 	$sql .= 't.'.$key.', ';
 }
-$sql .= 'country.label as country, country.rowid, soc.nom as owner';
+$sql .= 'country.label as country, country.rowid, soc.nom as owner, rent.rowid';
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
 	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.' as options_'.$key.', ' : '');
@@ -221,6 +217,7 @@ $sql .= preg_replace('/^,/', '', $hookmanager->resPrint);
 $sql = preg_replace('/,\s*$/', '', $sql);
 $sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
+$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_immorent as rent ON rent.rowid = t.fk_rent";
 $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as country ON country.rowid = t.country_id";
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
 if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (".getEntity($object->element).")";
