@@ -75,41 +75,40 @@ class ImmoRent extends CommonObject
 	 *  'showoncombobox' if field must be shown into the label of combobox
 	 */
 
-	// BEGIN MODULEBUILDER PROPERTIES
 	/**
 	 * @var array  Array with all fields and their property. Do not use it as a static var. It may be modified by constructor.
 	 */
-	public $fields=array(
-		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'visible'=>-1, 'enabled'=>1, 'position'=>1, 'notnull'=>1, 'index'=>1, 'comment'=>"Id",),
-		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'visible'=>1, 'enabled'=>1, 'position'=>10, 'notnull'=>1, 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object",),
-		'entity' => array('type'=>'integer', 'label'=>'Entity', 'visible'=>0, 'enabled'=>1, 'position'=>20, 'notnull'=>1, 'index'=>1,),
-		'fk_property' => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>25, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'ultimateimmo_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty", ),
-		'fk_owner' => array('type'=>'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label'=>'Owner', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToOwner",),		
-		'fk_renter' => array('type'=>'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label'=>'Renter', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'ultimateimmo_immorenter.rowid', 'searchall'=>1, 'help'=>"LinkToRenter",),
-		'fk_bank' => array('type'=>'integer:Account:compta/bank/class/account.class.php', 'label'=>'Account', 'visible'=>1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1, 'index'=>1, 'foreignkey'=> 'bank_account.id', 'searchall'=>1, 'help'=>"LinkToAccount",),
-		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>42, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty", 'foreignkey'=>'societe.rowid',),
-		'location_type_id' => array('type'=>'integer', 'label'=>'ImmorentType', 'enabled'=>1, 'visible'=>1, 'position'=>44, 'notnull'=>-1, 'arrayofkeyval'=>array('1'=>'EmptyHousing', '2'=>'FurnishedApartment')),
-		'vat' => array('type'=>'integer', 'label'=>'VAT', 'visible'=>-1, 'enabled'=>1, 'position'=>45, 'notnull'=>-1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
-		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>50, 'notnull'=>-1,),
-		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>55, 'notnull'=>-1,),
-		'rentamount' => array('type'=>'price', 'label'=>'RentAmount', 'visible'=>1, 'enabled'=>1, 'position'=>60, 'notnull'=>-1, 'isameasure'=>1,),
-		'chargesamount' => array('type'=>'price', 'label'=>'ChargesAmount', 'visible'=>1, 'enabled'=>1, 'position'=>65, 'notnull'=>-1, 'isameasure'=>1,),
-		'totalamount' => array('type'=>'price', 'label'=>'TotalAmount', 'visible'=>1, 'enabled'=>1, 'position'=>70, 'notnull'=>-1, 'isameasure'=>1,),
-		'deposit' => array('type'=>'price', 'label'=>'Deposit', 'visible'=>1, 'enabled'=>1, 'position'=>75, 'notnull'=>-1,),
-		'encours' => array('type'=>'price', 'label'=>'Encours', 'visible'=>1, 'enabled'=>1, 'position'=>80, 'notnull'=>-1,),
-		'periode' => array('type'=>'varchar(128)', 'label'=>'Periode', 'visible'=>-1, 'enabled'=>1, 'position'=>85, 'notnull'=>-1,),
-		'preavis' => array('type'=>'integer', 'label'=>'Preavis', 'visible'=>-1, 'enabled'=>1, 'position'=>85, 'notnull'=>-1, 'arrayofkeyval'=>array('0'=>'No', '1'=>'Yes')),
-		'date_start' => array('type'=>'date', 'label'=>'DateStartRent', 'visible'=>-1, 'enabled'=>1, 'position'=>90, 'notnull'=>-1,),
-		'date_end' => array('type'=>'date', 'label'=>'date_end', 'visible'=>-1, 'enabled'=>1, 'position'=>95, 'notnull'=>-1,),
-		'date_next_rent' => array('type'=>'date', 'label'=>'DateNextRent', 'visible'=>-1, 'enabled'=>1, 'position'=>100, 'notnull'=>-1,),
-		'date_last_regul' => array('type'=>'date', 'label'=>'DateLastRegul', 'visible'=>-1, 'enabled'=>1, 'position'=>110, 'notnull'=>-1,),
-		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'visible'=>-2, 'enabled'=>1, 'position'=>500, 'notnull'=>1,),
-		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'visible'=>-2, 'enabled'=>1, 'position'=>501, 'notnull'=>1,),
-		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'visible'=>-2, 'enabled'=>1, 'position'=>510, 'notnull'=>1,),
-		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'visible'=>-2, 'enabled'=>1, 'position'=>511, 'notnull'=>-1,),
-		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'visible'=>-2, 'enabled'=>1, 'position'=>1000, 'notnull'=>-1,),
-		'model_pdf' => array('type'=>'varchar(128)', 'label'=>'ModelPdf', 'enabled'=>1, 'visible'=>-2, 'position'=>1010, 'notnull'=>-1, 'index'=>1, 'searchall'=>1,),
-		'status' => array('type'=>'integer', 'label'=>'Status', 'visible'=>1, 'enabled'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
+	public $fields = array(
+		'rowid' => array('type' => 'integer', 'label' => 'TechnicalID', 'visible' => -1, 'enabled' => 1, 'position' => 1, 'notnull' => 1, 'index' => 1, 'comment' => "Id",),
+		'ref' => array('type' => 'varchar(128)', 'label' => 'Ref', 'visible' => 1, 'enabled' => 1, 'position' => 10, 'notnull' => 1, 'index' => 1, 'searchall' => 1, 'comment' => "Reference of object",),
+		'entity' => array('type' => 'integer', 'label' => 'Entity', 'visible' => 0, 'enabled' => 1, 'position' => 20, 'notnull' => 1, 'index' => 1,),
+		'fk_property' => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'Property', 'visible' => 1, 'enabled' => 1, 'position' => 25, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immoproperty.rowid', 'searchall' => 1, 'help' => "LinkToProperty",),
+		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'visible' => 1, 'enabled' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToOwner",),
+		'fk_renter' => array('type' => 'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label' => 'Renter', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immorenter.rowid', 'searchall' => 1, 'help' => "LinkToRenter",),
+		'fk_bank' => array('type' => 'integer:Account:compta/bank/class/account.class.php', 'label' => 'Account', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'bank_account.id', 'searchall' => 1, 'help' => "LinkToAccount",),
+		'fk_soc' => array('type' => 'integer:Societe:societe/class/societe.class.php', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 42, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirparty", 'foreignkey' => 'societe.rowid',),
+		'location_type_id' => array('type' => 'integer', 'label' => 'ImmorentType', 'enabled' => 1, 'visible' => 1, 'position' => 44, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'EmptyHousing', '2' => 'FurnishedApartment')),
+		'vat' => array('type' => 'integer', 'label' => 'VAT', 'visible' => -1, 'enabled' => 1, 'position' => 45, 'notnull' => -1, 'index' => 1, 'arrayofkeyval' => array('0' => 'No', '1' => 'Yes')),
+		'note_public' => array('type' => 'html', 'label' => 'NotePublic', 'visible' => -1, 'enabled' => 1, 'position' => 50, 'notnull' => -1,),
+		'note_private' => array('type' => 'html', 'label' => 'NotePrivate', 'visible' => -1, 'enabled' => 1, 'position' => 55, 'notnull' => -1,),
+		'rentamount' => array('type' => 'price', 'label' => 'RentAmount', 'visible' => 1, 'enabled' => 1, 'position' => 60, 'notnull' => -1, 'isameasure' => 1,),
+		'chargesamount' => array('type' => 'price', 'label' => 'ChargesAmount', 'visible' => 1, 'enabled' => 1, 'position' => 65, 'notnull' => -1, 'isameasure' => 1,),
+		'totalamount' => array('type' => 'price', 'label' => 'TotalAmount', 'visible' => 1, 'enabled' => 1, 'position' => 70, 'notnull' => -1, 'isameasure' => 1,),
+		'deposit' => array('type' => 'price', 'label' => 'Deposit', 'visible' => 1, 'enabled' => 1, 'position' => 75, 'notnull' => -1,),
+		'encours' => array('type' => 'price', 'label' => 'Encours', 'visible' => 1, 'enabled' => 1, 'position' => 80, 'notnull' => -1,),
+		'periode' => array('type' => 'varchar(128)', 'label' => 'Periode', 'visible' => -1, 'enabled' => 1, 'position' => 85, 'notnull' => -1,),
+		'preavis' => array('type' => 'integer', 'label' => 'Preavis', 'visible' => -1, 'enabled' => 1, 'position' => 85, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'No', '2' => 'Yes')),
+		'date_start' => array('type' => 'date', 'label' => 'DateStartRent', 'visible' => -1, 'enabled' => 1, 'position' => 90, 'notnull' => -1,),
+		'date_end' => array('type' => 'date', 'label' => 'date_end', 'visible' => -1, 'enabled' => 1, 'position' => 95, 'notnull' => -1,),
+		'date_next_rent' => array('type' => 'date', 'label' => 'DateNextRent', 'visible' => -1, 'enabled' => 1, 'position' => 100, 'notnull' => -1,),
+		'date_last_regul' => array('type' => 'date', 'label' => 'DateLastRegul', 'visible' => -1, 'enabled' => 1, 'position' => 110, 'notnull' => -1,),
+		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'visible' => -2, 'enabled' => 1, 'position' => 500, 'notnull' => 1,),
+		'tms' => array('type' => 'timestamp', 'label' => 'DateModification', 'visible' => -2, 'enabled' => 1, 'position' => 501, 'notnull' => 1,),
+		'fk_user_creat' => array('type' => 'integer', 'label' => 'UserAuthor', 'visible' => -2, 'enabled' => 1, 'position' => 510, 'notnull' => 1,),
+		'fk_user_modif' => array('type' => 'integer', 'label' => 'UserModif', 'visible' => -2, 'enabled' => 1, 'position' => 511, 'notnull' => -1,),
+		'import_key' => array('type' => 'varchar(14)', 'label' => 'ImportId', 'visible' => -2, 'enabled' => 1, 'position' => 1000, 'notnull' => -1,),
+		'model_pdf' => array('type' => 'varchar(128)', 'label' => 'ModelPdf', 'enabled' => 1, 'visible' => -2, 'position' => 1010, 'notnull' => -1, 'index' => 1, 'searchall' => 1,),
+		'status' => array('type' => 'integer', 'label' => 'Status', 'visible' => 1, 'enabled' => 1, 'position' => 1000, 'notnull' => 1, 'index' => 1, 'arrayofkeyval' => array('0' => 'Draft', '1' => 'Active', '-1' => 'Cancel')),
 	);
 	public $rowid;
 	public $ref;
@@ -143,8 +142,6 @@ class ImmoRent extends CommonObject
 	public $import_key;
 	public $model_pdf;
 	public $status;
-	// END MODULEBUILDER PROPERTIES
-
 
 
 	// If this object has a subtable with lines
@@ -185,18 +182,16 @@ class ImmoRent extends CommonObject
 		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
 
 		// Unset fields that are disabled
-		foreach ($this->fields as $key => $val)
-		{
-			if (isset($val['enabled']) && empty($val['enabled']))
-			{
+		foreach ($this->fields as $key => $val) {
+			if (isset($val['enabled']) && empty($val['enabled'])) {
 				unset($this->fields[$key]);
 			}
 		}
-		
+
 		// Translate some data
-		$this->fields['vat']['arrayofkeyval']=array(0=>$langs->trans('No'), 1=>$langs->trans('Yes'));
-		$this->fields['location_type_id']['arrayofkeyval']=array(1=>$langs->trans('EmptyHousing'), 2=>$langs->trans('FurnishedApartment'));
-		$this->fields['status']['arrayofkeyval']=array(0=>$langs->trans('Draft'), 1=>$langs->trans('Active'), -1=>$langs->trans('Cancel'));
+		$this->fields['vat']['arrayofkeyval'] = array(1 => $langs->trans('No'), 2 => $langs->trans('Yes'));
+		$this->fields['location_type_id']['arrayofkeyval'] = array(1 => $langs->trans('EmptyHousing'), 2 => $langs->trans('FurnishedApartment'));
+		$this->fields['status']['arrayofkeyval'] = array(0 => $langs->trans('Draft'), 1 => $langs->trans('Active'), -1 => $langs->trans('Cancel'));
 	}
 
 	/**
