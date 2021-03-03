@@ -787,13 +787,17 @@ class ImmoRenter extends CommonObject
         $label = '<u>'.$langs->trans("ImmoRenter").'</u>';
         $label .= '<br>';
 		$label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
+		
+    	///// todo find ID 
+    	$label .= '<br>';
+    	$label .= '<b>'.$langs->trans('id').':</b> '.$id;
 		$label .= '<br>';
         $label .= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->lastname;
         if (isset($this->status)) {
         	$label.= '<br><b>' . $langs->trans("Status").":</b> ".$this->getLibStatut(5);
         }
 
-        $url = dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?id='.$this->id;
+        $url = dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?id='.$this->ref;
 
         if ($option != 'nolink')
         {
