@@ -43,7 +43,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
-dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immorent.class.php');
 
 // Load traductions files required by the page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
@@ -72,7 +72,6 @@ $pagenext = $page + 1;
 
 // Initialize technical objects
 $object = new ImmoRenter($db);
-//var_dump($object);exit;
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('immorenterlist'));     // Note that conf->hooks_modules contains array
@@ -478,10 +477,10 @@ while ($i < ($limit ? min($num, $limit) : $num))
 			if ($key == 'status') print $object->getLibStatut(5);
 
 			elseif ($val['label'] == 'Property') {
-				$staticproperty = new ImmoProperty($db);
-				$staticproperty->fetch($object->fk_property);
-				if ($staticproperty->ref) {
-					$staticproperty->ref = $staticproperty->label;
+				$staticrent = new ImmoRent($db);
+				$staticrent->fetch($object->fk_rent);
+				if ($staticrent->ref) {
+					$staticrent->ref = $staticrent->label;
 				}
 				print $staticproperty->ref;
 			} elseif ($val['label'] == 'BirthCountry') {
