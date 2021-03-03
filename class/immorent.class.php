@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2020 Philippe GRAND <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,10 @@ class ImmoRent extends CommonObject
 	 */
 	public $picto = 'immorent@ultimateimmo';
 
+	const STATUS_DRAFT = 0;
+	const STATUS_VALIDATED = 1;
+	const STATUS_CANCELED = 9;
+
 
 	/**
 	 *  'type' if the field format.
@@ -102,7 +106,7 @@ class ImmoRent extends CommonObject
 		'date_end' => array('type' => 'date', 'label' => 'date_end', 'visible' => -1, 'enabled' => 1, 'position' => 95, 'notnull' => -1,),
 		'date_next_rent' => array('type' => 'date', 'label' => 'DateNextRent', 'visible' => -1, 'enabled' => 1, 'position' => 100, 'notnull' => -1,),
 		'date_last_regul' => array('type' => 'date', 'label' => 'DateLastRegul', 'visible' => -1, 'enabled' => 1, 'position' => 110, 'notnull' => -1,),
-		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'visible' => -2, 'enabled' => 1, 'position' => 500, 'notnull' => 1,),
+		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'visible' => 1, 'enabled' => 1, 'position' => 500, 'notnull' => 1,),
 		'tms' => array('type' => 'timestamp', 'label' => 'DateModification', 'visible' => -2, 'enabled' => 1, 'position' => 501, 'notnull' => 1,),
 		'fk_user_creat' => array('type' => 'integer', 'label' => 'UserAuthor', 'visible' => -2, 'enabled' => 1, 'position' => 510, 'notnull' => 1,),
 		'fk_user_modif' => array('type' => 'integer', 'label' => 'UserModif', 'visible' => -2, 'enabled' => 1, 'position' => 511, 'notnull' => -1,),
