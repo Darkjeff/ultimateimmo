@@ -484,12 +484,10 @@ if (empty($reshook)) {
 		}
 	}*/
 
-	if ($action == 'set_thirdparty' && $permissiontoadd)
-	{
+	if ($action == 'set_thirdparty' && $permissiontoadd) {
 		$object->setValueFrom('fk_soc', GETPOST('fk_soc', 'int'), '', '', 'date', '', $user, 'IMMORECEIPT_MODIFY');
 	}
-	if ($action == 'classin' && $permissiontoadd)
-	{
+	if ($action == 'classin' && $permissiontoadd) {
 		$object->setProject(GETPOST('projectid', 'int'));
 	}
 
@@ -695,12 +693,12 @@ if ($action == 'create')
 		/*
 		 * List of contracts
 		 */
-		$sql = "SELECT c.rowid as contractid, c.ref as contract, loc.lastname as rentername, o.lastname as ownername, l.ref as localref, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner, o.rowid, o.fk_soc, loc.fk_owner";
+		$sql = "SELECT c.rowid as contractid, c.ref as contract, loc.lastname as rentername, o.lastname as ownername, l.ref as localref, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner, o.rowid, o.fk_soc, l.fk_owner";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
 		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as o";
-		$sql .= " WHERE preavis = 0 AND loc.rowid = c.fk_renter AND l.rowid = c.fk_property AND o.rowid = loc.fk_owner ";
+		$sql .= " WHERE preavis = 1 AND loc.rowid = c.fk_renter AND l.rowid = c.fk_property AND o.rowid = l.fk_owner ";
 		//echo $sql;exit;
 		$resql = $db->query($sql);
 		if ($resql)
