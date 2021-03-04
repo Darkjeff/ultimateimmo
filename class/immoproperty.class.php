@@ -245,19 +245,17 @@ class ImmoProperty extends CommonObject
 		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
 
 		// Unset fields that are disabled
-		foreach ($this->fields as $key => $val)
-		{
-			if (isset($val['enabled']) && empty($val['enabled']))
-			{
+		foreach ($this->fields as $key => $val) {
+			if (isset($val['enabled']) && empty($val['enabled'])) {
 				unset($this->fields[$key]);
 			}
 		}
-		
+
 		// Translate some data
-		$this->fields['status']['arrayofkeyval'] = array(1=>$langs->trans('PropertyTypeStatusActive'), 9=>$langs->trans('PropertyTypeStatusCancel'));
-		$this->fields['juridique_id']['arrayofkeyval'] = array(1=>$langs->trans('MonoPropriete'), 2=>$langs->trans('Copropriete'));
-		$this->fields['datebuilt']['arrayofkeyval'] = array(1=>$langs->trans('DateBuilt1'), 2=>$langs->trans('DateBuilt2'), 3=>$langs->trans('DateBuilt3'), 4=>$langs->trans('DateBuilt4'), 5=>$langs->trans('DateBuilt5'));
-		$this->fields['property_type_id']['arrayofkeyval'] = array(1=>$langs->trans('APA'), 2=>$langs->trans('HOU'), 3=>$langs->trans('LOC'), 4=>$langs->trans('SHO'), 5=>$langs->trans('GAR'), 6=>$langs->trans('BUL'));
+		$this->fields['status']['arrayofkeyval'] = array(1 => $langs->trans('PropertyTypeStatusActive'), 9 => $langs->trans('PropertyTypeStatusCancel'));
+		$this->fields['juridique_id']['arrayofkeyval'] = array(1 => $langs->trans('MonoPropriete'), 2 => $langs->trans('Copropriete'));
+		$this->fields['datebuilt']['arrayofkeyval'] = array(1 => $langs->trans('DateBuilt1'), 2 => $langs->trans('DateBuilt2'), 3 => $langs->trans('DateBuilt3'), 4 => $langs->trans('DateBuilt4'), 5 => $langs->trans('DateBuilt5'));
+		$this->fields['property_type_id']['arrayofkeyval'] = array(1 => $langs->trans('APA'), 2 => $langs->trans('HOU'), 3 => $langs->trans('LOC'), 4 => $langs->trans('SHO'), 5 => $langs->trans('GAR'), 6 => $langs->trans('BUL'));
 	}
 	
 	/**
@@ -498,7 +496,7 @@ class ImmoProperty extends CommonObject
 		    return -1;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -509,31 +507,30 @@ class ImmoProperty extends CommonObject
 	public function fetch($id, $ref = null)
 	{
 		$result = $this->fetchCommon($id, $ref);
-		if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
+		if ($result > 0 && !empty($this->table_element_line)) $this->fetchLines();
 		return $result;
 	}
-	
-	 function fetchAllByBuilding($activ = 1) 
-	 {
+
+	function fetchAllByBuilding($activ = 1)
+	{
 		global $user;
-		
+
 		$sql = "SELECT * ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
 		$sql .= " WHERE l.status = " . $activ . "  ";
 		$sql .= " AND l.fk_property = " . $this->id;
 		$sql .= " ORDER BY label";
-		
+
 		dol_syslog(get_class($this) . "::fetchAllByBuilding sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
-		if ($resql) 
-		{			
-			$this->line = array ();
+		if ($resql) {
+			$this->line = array();
 			$num = $this->db->num_rows($resql);
-			
+
 			while ($obj = $this->db->fetch_object($resql)) {
-							
+
 				$line = new ImmopropertyLine();
-				
+
 				$line->id = $obj->rowid;
 				$line->fk_property = $obj->fk_property;
 				$line->label = $obj->label;
@@ -541,16 +538,15 @@ class ImmoProperty extends CommonObject
 				$line->status = $obj->status;
 				$line->area = $obj->area;
 				$line->fk_owner = $obj->fk_owner;
-				
-				$this->lines[] = $line;
 
+				$this->lines[] = $line;
 			}
 			$this->db->free($resql);
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetchAllByBuilding " . $this->error, LOG_ERR);
-			return - 1;
+			return -1;
 		}
 	}
 
@@ -559,14 +555,14 @@ class ImmoProperty extends CommonObject
 	 *
 	 * @return int         <0 if KO, 0 if not found, >0 if OK
 	 */
-	/*public function fetchLines()
+	public function fetchLines()
 	{
-		$this->lines=array();
+		$this->lines = array();
 
 		// Load lines with object ImmoPropertyLine
 
-		return count($this->lines)?1:0;
-	}*/
+		return count($this->lines) ? 1 : 0;
+	}
 
 	/**
 	 * Update object into database
