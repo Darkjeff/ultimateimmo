@@ -107,7 +107,7 @@ class ImmoRenter extends CommonObject
 		'lastname' => array('type' => 'varchar(255)', 'label' => 'Lastname', 'visible' => 1, 'enabled' => 1, 'position' => 70, 'notnull' => -1, 'searchall' => 1,),
 		'email' => array('type' => 'varchar(255)', 'label' => 'Email', 'visible' => 1, 'enabled' => 1, 'position' => 75, 'notnull' => -1,),
 		'birth' => array('type' => 'date', 'label' => 'BirthDay', 'visible' => 1, 'enabled' => 1, 'position' => 80, 'notnull' => -1,),
-		'country_id' => array('type' => 'integer:c_country:label::rowid', 'label' => 'BirthCountry', 'enabled' => 1, 'visible' => 1, 'position' => 82, 'notnull' => -1,),
+		'country_id' => array('type' => 'varchar:c_country:label:code:rowid', 'label' => 'BirthCountry', 'enabled' => 1, 'visible' => 1, 'position' => 82, 'notnull' => -1,),
 		'phone' => array('type' => 'varchar(30)', 'label' => 'Phone', 'visible' => -1, 'enabled' => 1, 'position' => 85, 'notnull' => -1,),
 		'phone_mobile' => array('type' => 'varchar(30)', 'label' => 'PhoneMobile', 'visible' => 1, 'enabled' => 1, 'position' => 90, 'notnull' => -1,),
 		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'visible' => -2, 'enabled' => 1, 'position' => 500, 'notnull' => 1,),
@@ -554,7 +554,7 @@ class ImmoRenter extends CommonObject
 		$array = array_splice($array, 0, count($array), array($array[0]));
 		$array = implode(', t.', $array);
 		//var_dump($this->table_element);exit;
-		$sql = 'SELECT ' . $array.',';
+		$sql = 'SELECT ' . $array . ',';
 		$sql .= ' country.rowid as country_id, country.label as country';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
@@ -580,13 +580,13 @@ class ImmoRenter extends CommonObject
 
 					$this->birth = $this->db->jdate($obj->birth);
 
-					/*$this->country_id	= $obj->country_id;
+					$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
 					if ($langs->trans("Country" . $obj->country_code) != "Country" . $obj->country_code) {
 						$this->country = $langs->transnoentitiesnoconv("Country" . $obj->country_code);
 					} else {
 						$this->country = $obj->country;
-					}*/
+					}
 					$this->setVarsFromFetchObj($obj);
 
 					return $this->id;
@@ -791,14 +791,13 @@ class ImmoRenter extends CommonObject
 	{
 		global $conf, $langs;
 
-		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 
 		$error = 0;
 
 		// Protection
-		if ($this->status == self::STATUS_VALIDATED)
-		{
-			dol_syslog(get_class($this)."::validate action abandonned: already validated", LOG_WARNING);
+		if ($this->status == self::STATUS_VALIDATED) {
+			dol_syslog(get_class($this) . "::validate action abandonned: already validated", LOG_WARNING);
 			return 0;
 		}
 
@@ -827,24 +826,22 @@ class ImmoRenter extends CommonObject
 
 		if (!empty($num)) {
 			// Validate
-			$sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element;
-			$sql .= " SET ref = '".$this->db->escape($num)."',";
-			$sql .= " status = ".self::STATUS_VALIDATED;
-			if (!empty($this->fields['date_validation'])) $sql .= ", date_validation = '".$this->db->idate($now)."',";
-			if (!empty($this->fields['fk_user_valid'])) $sql .= ", fk_user_valid = ".$user->id;
-			$sql .= " WHERE rowid = ".$this->id;
+			$sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element;
+			$sql .= " SET ref = '" . $this->db->escape($num) . "',";
+			$sql .= " status = " . self::STATUS_VALIDATED;
+			if (!empty($this->fields['date_validation'])) $sql .= ", date_validation = '" . $this->db->idate($now) . "',";
+			if (!empty($this->fields['fk_user_valid'])) $sql .= ", fk_user_valid = " . $user->id;
+			$sql .= " WHERE rowid = " . $this->id;
 
-			dol_syslog(get_class($this)."::validate()", LOG_DEBUG);
+			dol_syslog(get_class($this) . "::validate()", LOG_DEBUG);
 			$resql = $this->db->query($sql);
-			if (!$resql)
-			{
+			if (!$resql) {
 				dol_print_error($this->db);
 				$this->error = $this->db->lasterror();
 				$error++;
 			}
 
-			if (!$error && !$notrigger)
-			{
+			if (!$error && !$notrigger) {
 				// Call trigger
 				$result = $this->call_trigger('IMMORENTER_VALIDATE', $user);
 				if ($result < 0) $error++;
@@ -852,39 +849,37 @@ class ImmoRenter extends CommonObject
 			}
 		}
 
-		if (!$error)
-		{
+		if (!$error) {
 			$this->oldref = $this->ref;
 
 			// Rename directory if dir was a temporary ref
-			if (preg_match('/^[\(]?PROV/i', $this->ref))
-			{
+			if (preg_match('/^[\(]?PROV/i', $this->ref)) {
 				// Now we rename also files into index
-				$sql = 'UPDATE '.MAIN_DB_PREFIX."ecm_files set filename = CONCAT('".$this->db->escape($this->newref)."', SUBSTR(filename, ".(strlen($this->ref) + 1).")), filepath = 'immorenter/".$this->db->escape($this->newref)."'";
-				$sql .= " WHERE filename LIKE '".$this->db->escape($this->ref)."%' AND filepath = 'immorenter/".$this->db->escape($this->ref)."' and entity = ".$conf->entity;
+				$sql = 'UPDATE ' . MAIN_DB_PREFIX . "ecm_files set filename = CONCAT('" . $this->db->escape($this->newref) . "', SUBSTR(filename, " . (strlen($this->ref) + 1) . ")), filepath = 'immorenter/" . $this->db->escape($this->newref) . "'";
+				$sql .= " WHERE filename LIKE '" . $this->db->escape($this->ref) . "%' AND filepath = 'immorenter/" . $this->db->escape($this->ref) . "' and entity = " . $conf->entity;
 				$resql = $this->db->query($sql);
-				if (!$resql) { $error++; $this->error = $this->db->lasterror(); }
+				if (!$resql) {
+					$error++;
+					$this->error = $this->db->lasterror();
+				}
 
 				// We rename directory ($this->ref = old ref, $num = new ref) in order not to lose the attachments
 				$oldref = dol_sanitizeFileName($this->ref);
 				$newref = dol_sanitizeFileName($num);
-				$dirsource = $conf->ultimateimmo->dir_output.'/immorenter/'.$oldref;
-				$dirdest = $conf->ultimateimmo->dir_output.'/immorenter/'.$newref;
-				if (!$error && file_exists($dirsource))
-				{
-					dol_syslog(get_class($this)."::validate() rename dir ".$dirsource." into ".$dirdest);
+				$dirsource = $conf->ultimateimmo->dir_output . '/immorenter/' . $oldref;
+				$dirdest = $conf->ultimateimmo->dir_output . '/immorenter/' . $newref;
+				if (!$error && file_exists($dirsource)) {
+					dol_syslog(get_class($this) . "::validate() rename dir " . $dirsource . " into " . $dirdest);
 
-					if (@rename($dirsource, $dirdest))
-					{
+					if (@rename($dirsource, $dirdest)) {
 						dol_syslog("Rename ok");
 						// Rename docs starting with $oldref with $newref
-						$listoffiles = dol_dir_list($conf->ultimateimmo->dir_output.'/immorenter/'.$newref, 'files', 1, '^'.preg_quote($oldref, '/'));
-						foreach ($listoffiles as $fileentry)
-						{
+						$listoffiles = dol_dir_list($conf->ultimateimmo->dir_output . '/immorenter/' . $newref, 'files', 1, '^' . preg_quote($oldref, '/'));
+						foreach ($listoffiles as $fileentry) {
 							$dirsource = $fileentry['name'];
-							$dirdest = preg_replace('/^'.preg_quote($oldref, '/').'/', $newref, $dirsource);
-							$dirsource = $fileentry['path'].'/'.$dirsource;
-							$dirdest = $fileentry['path'].'/'.$dirdest;
+							$dirdest = preg_replace('/^' . preg_quote($oldref, '/') . '/', $newref, $dirsource);
+							$dirsource = $fileentry['path'] . '/' . $dirsource;
+							$dirdest = $fileentry['path'] . '/' . $dirdest;
 							@rename($dirsource, $dirdest);
 						}
 					}
@@ -893,14 +888,12 @@ class ImmoRenter extends CommonObject
 		}
 
 		// Set new ref and current status
-		if (!$error)
-		{
+		if (!$error) {
 			$this->ref = $num;
 			$this->status = self::STATUS_VALIDATED;
 		}
 
-		if (!$error)
-		{
+		if (!$error) {
 			$this->db->commit();
 			return 1;
 		} else {

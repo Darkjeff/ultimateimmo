@@ -200,7 +200,7 @@ foreach ($object->fields as $key => $val)
 {
 	$sql .= 't.'.$key.', ';
 }
-$sql .= 'tp.label as type_property, co.label as country, b.label as building_name, soc.nom as owner';
+$sql .= 'tp.label as type_property, country.label as country, country.rowid as countryid, b.label as building_name, soc.nom as owner';
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
 	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.' as options_'.$key.', ' : '');
@@ -214,7 +214,7 @@ $sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 $sql .= " INNER JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as tp ON tp.rowid = t.property_type_id";
 $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_building as b ON b.fk_property = t.fk_property";
 $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = t.fk_owner";
-$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as co ON co.rowid = t.country_id";
+$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as country ON country.rowid = t.country_id";
 $sql .= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
 if ($action == 'makebuilding') {
@@ -439,8 +439,7 @@ if (is_array($extrafields->attributes[$object->table_element]['computed']) && co
 // --------------------------------------------------------------------
 $i = 0;
 $totalarray = array();
-while ($i < ($limit ? min($num, $limit) : $num))
-{
+while ($i < ($limit ? min($num, $limit) : $num)) {
 	$obj = $db->fetch_object($resql);
 	if (empty($obj)) break;		// Should not happen
 
@@ -449,39 +448,32 @@ while ($i < ($limit ? min($num, $limit) : $num))
 
 	// Show here line of result
 	print '<tr class="oddeven">';
-	foreach ($object->fields as $key => $val)
-	{
+	foreach ($object->fields as $key => $val) {
 		$cssforfield = (empty($val['css']) ? '' : $val['css']);
-	    if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
-	    elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+		if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '') . 'center';
+		elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 
-	    if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
-	    elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+		if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
+		elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
 
-		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '').'right';
-		
-		if (! empty($arrayfields['t.'.$key]['checked']))
-		{
-			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
+		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'right';
+
+		if (!empty($arrayfields['t.' . $key]['checked'])) {
+			print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
 			if ($key == 'status') print $object->getLibStatut(5);
-			
-			if ($val['label'] == 'Country') 
-			{
-				if ($object->country_id)
-				{
-					include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+
+			elseif ($val['label'] == 'Country') {
+				if ($object->country_id) {
+					include_once(DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 					$tmparray = getCountry($object->country_id, 'all');
 					$object->country_code = $tmparray['code'];
 					$object->country = $tmparray['label'];
-				}				
+				}
 				print $object->country;
-			}
-			elseif ($val['label'] == 'Owner') 
-			{
+			} elseif ($val['label'] == 'Owner') {
 				$staticowner = new ImmoOwner($db);
-				$staticowner->fetch($object->fk_owner);			
-				if ($staticowner->ref)
-				{
+				$staticowner->fetch($object->fk_owner);
+				if ($staticowner->ref) {
 					$staticowner->ref = $staticowner->getFullName($langs);
 				}
 				print $staticowner->ref;
@@ -498,24 +490,21 @@ while ($i < ($limit ? min($num, $limit) : $num))
 					$object->juridique=$tmparray['label'];
 				}
 				print $object->juridique;
-			}*/
-			else
-			{
+			}*/ else {
 				print $object->showOutputField($val, $key, $obj->$key, '');
 			}
 			print '</td>';
-			if (! $i) $totalarray['nbfield']++;
-			if (! empty($val['isameasure']))
-			{
-				if (! $i) $totalarray['pos'][$totalarray['nbfield']] = 't.'.$key;
-				$totalarray['val']['t.'.$key] += $obj->$key;
+			if (!$i) $totalarray['nbfield']++;
+			if (!empty($val['isameasure'])) {
+				if (!$i) $totalarray['pos'][$totalarray['nbfield']] = 't.' . $key;
+				$totalarray['val']['t.' . $key] += $obj->$key;
 			}
 		}
 	}
 	// Extra fields
-	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_print_fields.tpl.php';
+	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_print_fields.tpl.php';
 	// Fields from hook
-	$parameters = array('arrayfields'=>$arrayfields, 'object'=>$object, 'obj'=>$obj, 'i'=>$i, 'totalarray'=>&$totalarray);
+	$parameters = array('arrayfields' => $arrayfields, 'object' => $object, 'obj' => $obj, 'i' => $i, 'totalarray' => &$totalarray);
 	$reshook = $hookmanager->executeHooks('printFieldListValue', $parameters, $object); // Note that $action and $object may have been modified by hook
 	print $hookmanager->resPrint;
 	// Action column
@@ -524,12 +513,12 @@ while ($i < ($limit ? min($num, $limit) : $num))
 	{
 		$selected = 0;
 		if (in_array($object->id, $arrayofselected)) $selected = 1;
-		print '<input id="cb'.$object->id.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$object->id.'"'.($selected ? ' checked="checked"' : '').'>';
+		print '<input id="cb' . $object->id . '" class="flat checkforselect" type="checkbox" name="toselect[]" value="' . $object->id . '"' . ($selected ? ' checked="checked"' : '') . '>';
 	}
 	print '</td>';
-	if (! $i) $totalarray['nbfield']++;
+	if (!$i) $totalarray['nbfield']++;
 
-	print '</tr>'."\n";
+	print '</tr>' . "\n";
 
 	$i++;
 }
