@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2020 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,22 +23,29 @@
  */
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
 // Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
+if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
+if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
+if (!$res) die("Include of main fails");
 
-include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
-include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formprojet.class.php';
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immoowner.lib.php');
 
@@ -51,7 +58,7 @@ $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $confirm    = GETPOST('confirm', 'alpha');
 $cancel		= GETPOST('cancel', 'aZ09');
-$contextpage = GETPOST('contextpage', 'aZ') ?GETPOST('contextpage', 'aZ') : 'immoownercard'; // To manage different context of search
+$contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'immoownercard'; // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
 $socid 		= GETPOST('socid', 'int');
@@ -59,7 +66,7 @@ $socid 		= GETPOST('socid', 'int');
 // Initialize technical objects
 $object = new ImmoOwner($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/' . $user->id;
 $hookmanager->initHooks(array('immoownercard', 'globalcard'));     // Note that conf->hooks_modules contains array
 
 // Fetch optionals attributes and labels
@@ -70,15 +77,14 @@ $search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'se
 // Initialize array of search criterias
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
-foreach ($object->fields as $key => $val)
-{
-    if (GETPOST('search_'.$key, 'alpha')) $search[$key] = GETPOST('search_'.$key, 'alpha');
+foreach ($object->fields as $key => $val) {
+	if (GETPOST('search_' . $key, 'alpha')) $search[$key] = GETPOST('search_' . $key, 'alpha');
 }
 
 if (empty($action) && empty($id) && empty($ref)) $action = 'view';
 
 // Load object
-include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Include fetch and fetch_thirdparty but not fetch_optionals
+include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Include fetch and fetch_thirdparty but not fetch_optionals
 
 // Security check - Protection if external user
 //if ($user->socid > 0) accessforbidden();
@@ -86,11 +92,11 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be inclu
 //$isdraft = (($object->statut == $object::STATUS_DRAFT) ? 1 : 0);
 //$result = restrictedArea($user, 'mymodule', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
 
-$permissiontoread = $user->rights->ultimateimmo->owner->read;
-$permissiontoadd = $user->rights->ultimateimmo->owner->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
-$permissiontodelete = $user->rights->ultimateimmo->owner->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
-$permissionnote = $user->rights->ultimateimmo->owner->write; // Used by the include of actions_setnotes.inc.php
-$permissiondellink = $user->rights->ultimateimmo->owner->write; // Used by the include of actions_dellink.inc.php
+$permissiontoread = $user->rights->ultimateimmo->read;
+$permissiontoadd = $user->rights->ultimateimmo->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+$permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+$permissionnote = $user->rights->ultimateimmo->write; // Used by the include of actions_setnotes.inc.php
+$permissiondellink = $user->rights->ultimateimmo->write; // Used by the include of actions_dellink.inc.php
 $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1];
 
 /*
@@ -106,8 +112,6 @@ if (empty($reshook))
 {
 	$error=0;
 
-	$permissiontoadd = $user->rights->ultimateimmo->write;
-	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$backurlforlist = dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1);
 
 	if (empty($backtopage) || ($cancel && empty($id))) {
@@ -121,14 +125,24 @@ if (empty($reshook))
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
 
+	// Actions when linking object each other
+	include DOL_DOCUMENT_ROOT.'/core/actions_dellink.inc.php';
+
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 
+	if ($action == 'set_thirdparty' && $permissiontoadd) {
+		$object->setValueFrom('fk_soc', GETPOST('fk_soc', 'int'), '', '', 'date', '', $user, 'IMMOOWNER_MODIFY');
+	}
+	if ($action == 'classin' && $permissiontoadd) {
+		$object->setProject(GETPOST('projectid', 'int'));
+	}
+
 	// Actions to send emails
 	$triggersendname = 'IMMOOWNER_SENTBYMAIL';
-	$autocopy='MAIN_MAIL_AUTOCOPY_IMMOOWNER_TO';
-	$trackid = 'immoowner'.$object->id;
-	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
+	$autocopy = 'MAIN_MAIL_AUTOCOPY_IMMOOWNER_TO';
+	$trackid = 'immoowner' . $object->id;
+	include DOL_DOCUMENT_ROOT . '/core/actions_sendmails.inc.php';
 }
 
 /*
@@ -138,13 +152,15 @@ if (empty($reshook))
 
 $form = new Form($db);
 $formfile = new FormFile($db);
+$formproject = new FormProjets($db);
+$formcompany = new FormCompany($db);
 
 llxHeader('',$langs->trans('ImmoOwner'), '');
 
 // Part to create
 if ($action == 'create')
 {
-	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoOwner")));
+	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoOwner")), '', 'object_'.$object->picto);
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -178,7 +194,21 @@ if ($action == 'create')
 		print '</td>';
 		print '<td>';
 
-		if ($val['label'] == 'Country') 
+		if ($val['label'] == 'Civility') 
+		{			
+			// We set civility_id, civility_code and civility for the selected civility
+			$object->civility_id = GETPOST('civility_id', 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
+			
+			if ($object->civility_id)
+			{
+				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
+				$object->country_code = $tmparray['code'];
+				$object->country = $tmparray['label'];
+			}
+			// civility
+			print $formcompany->select_civility((GETPOST('civility_id') != '' ? GETPOST('civility_id') : $object->civility_id));	
+		}
+		elseif ($val['label'] == 'Country') 
 		{			
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
@@ -224,7 +254,7 @@ if ($action == 'create')
 // Part to edit record
 if (($id || $ref) && $action == 'edit')
 {
-	print load_fiche_titre($langs->trans("ImmoOwner"));
+	print load_fiche_titre($langs->trans("ImmoOwner"), '', 'object_'.$object->picto);
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -258,7 +288,21 @@ if (($id || $ref) && $action == 'edit')
 		print '</td>';
 		print '<td>';
 
-		if ($val['label'] == 'Country') 
+		if ($val['label'] == 'Civility') 
+		{			
+			// We set civility_id, civility_code and civility for the selected civility
+			$object->civility_id = GETPOST('civility_id', 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
+			
+			if ($object->civility_id)
+			{
+				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
+				$object->civility_code = $tmparray['code'];
+				$object->civility = $tmparray['label'];
+			}
+			// civility
+			print $formcompany->select_civility((GETPOST('civility_id') != '' ? GETPOST('civility_id') : $object->civility_id));	
+		}		
+		elseif ($val['label'] == 'Country') 
 		{			
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id','int') ? GETPOST('country_id','int') : $object->country_id;

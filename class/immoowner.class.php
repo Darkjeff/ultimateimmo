@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2020 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,10 @@ class ImmoOwner extends CommonObject
 	 */
 	public $picto = 'immoowner@ultimateimmo';
 
+	const STATUS_DRAFT = 0;
+	const STATUS_VALIDATED = 1;
+	const STATUS_CANCELED = 9;
+
 
 	/**
 	 *  'type' if the field format ('integer', 'integer:ObjectClass:PathToClass[:AddCreateButtonOrNot[:Filter]]', 'varchar(x)', 'double(24,8)', 'real', 'price', 'text', 'html', 'date', 'datetime', 'timestamp', 'duration', 'mail', 'phone', 'url', 'password')
@@ -87,39 +91,41 @@ class ImmoOwner extends CommonObject
 	 *
 	 *  Note: To have value dynamic, you can set value to 0 in definition and edit the value on the fly into the constructor.
 	 */
-
+	//'arrayofkeyval' => array('0' => 'MME', '1' => 'MLE', '2' => 'MR')
 	// BEGIN MODULEBUILDER PROPERTIES
 	/**
 	 * @var array  Array with all fields and their property. Do not use it as a static var. It may be modified by constructor.
 	 */
 	public $fields = array(
-		'rowid'         => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-2, 'noteditable'=>1, 'notnull'=> 1, 'index'=>1, 'position'=>1, 'comment'=>'Id'),
-		'ref'           => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'noteditable'=>0, 'default'=>'', 'notnull'=> 1, 'showoncombobox'=>1, 'index'=>1, 'position'=>10, 'searchall'=>1, 'comment'=>'Reference of object'),
-	    'entity'        => array('type'=>'integer', 'label'=>'Entity', 'enabled'=>1, 'visible'=>0, 'notnull'=> 1, 'default'=>1, 'index'=>1, 'position'=>20),
-		'fk_soc' 		=> array('type'=>'integer:Societe:societe/class/societe.class.php', 'label'=>'ThirdParty', 'visible'=>1, 'enabled'=>1, 'position'=>30, 'notnull'=>-1, 'index'=>1, 'searchall'=>1, 'help'=>"LinkToThirparty",),
-		'societe' 		=> array('type'=>'varchar(128)', 'label'=>'Societe', 'visible'=>1, 'enabled'=>1, 'position'=>36, 'notnull'=>-1,),
-		'fk_owner_type' => array('type'=>'integer:ImmoOwner_Type:ultimateimmo/class/immoowner_type.class.php', 'label'=>'MenuImmoOwnerType', 'enabled'=>1, 'visible'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToOwnerType",),
-		'note_public' 	=> array('type'=>'html', 'label'=>'NotePublic', 'visible'=>-1, 'enabled'=>1, 'position'=>40, 'notnull'=>-1,),
-		'note_private' 	=> array('type'=>'html', 'label'=>'NotePrivate', 'visible'=>-1, 'enabled'=>1, 'position'=>45, 'notnull'=>-1,),
-		'civility_id' 	=> array('type'=>'integer', 'label'=>'Civility', 'visible'=>1, 'enabled'=>1, 'position'=>50, 'notnull'=>1, 'arrayofkeyval'=>array('0'=>'MME', '1'=>'MLE', '2'=>'MR')),
-		'firstname' 	=> array('type'=>'varchar(255)', 'label'=>'Firstname', 'visible'=>-1, 'enabled'=>1, 'position'=>55, 'notnull'=>1,),
-		'lastname' 		=> array('type'=>'varchar(255)', 'label'=>'Lastname', 'visible'=>-1, 'enabled'=>1, 'position'=>60, 'notnull'=>1, 'searchall'=>1,),
-		'address' 		=> array('type'=>'varchar(255)', 'label'=>'Address', 'enabled'=>1, 'visible'=>1, 'position'=>61, 'notnull'=>-1,),
-		'zip' 			=> array('type'=>'varchar(32)', 'label'=>'Zip', 'enabled'=>1, 'visible'=>1, 'position'=>62, 'notnull'=>-1,),
-		'town' 			=> array('type'=>'varchar(64)', 'label'=>'Town', 'enabled'=>1, 'visible'=>1, 'position'=>63, 'notnull'=>-1,),
-		'country_id' 	=> array('type'=>'integer', 'label'=>'Country', 'enabled'=>1, 'visible'=>1, 'position'=>64, 'notnull'=>-1,),
-		'email' 		=> array('type'=>'varchar(255)', 'label'=>'Email', 'visible'=>-1, 'enabled'=>1, 'position'=>65, 'notnull'=>1, 'searchall'=>1,),
-		'birth' 		=> array('type'=>'date', 'label'=>'BirthDay', 'visible'=>-1, 'enabled'=>1, 'position'=>70, 'notnull'=>-1,),
-		'phone' 		=> array('type'=>'varchar(30)', 'label'=>'Phone', 'visible'=>-1, 'enabled'=>1, 'position'=>75, 'notnull'=>-1,),
-		'phone_mobile' 	=> array('type'=>'varchar(30)', 'label'=>'PhoneMobile', 'visible'=>-1, 'enabled'=>1, 'position'=>80, 'notnull'=>-1,),
-		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'visible'=>-2, 'enabled'=>1, 'position'=>500, 'notnull'=>1,),
-		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'visible'=>-2, 'enabled'=>1, 'position'=>501, 'notnull'=>1,),
-		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'visible'=>-2, 'enabled'=>1, 'position'=>510, 'notnull'=>1,),
-		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'visible'=>-2, 'enabled'=>1, 'position'=>511, 'notnull'=>-1,),
-		'import_key' 	=> array('type'=>'varchar(14)', 'label'=>'ImportId', 'visible'=>-2, 'enabled'=>1, 'position'=>1000, 'notnull'=>-1,),
-		'status' 		=> array('type'=>'integer', 'label'=>'Status', 'visible'=>1, 'enabled'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 
-		'arrayofkeyval' =>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
-		
+		'rowid'         => array('type' => 'integer', 'label' => 'TechnicalID', 'enabled' => 1, 'visible' => -2, 'noteditable' => 1, 'notnull' => 1, 'index' => 1, 'position' => 1, 'comment' => 'Id'),
+		'ref'           => array('type' => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1, 'showoncombobox' => 1, 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
+		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
+		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirparty'),
+		'societe' 		=> array('type' => 'varchar(128)', 'label' => 'Societe', 'visible' => 1, 'enabled' => 1, 'position' => 36, 'notnull' => -1,),
+		'fk_owner_type' => array('type' => 'integer:ImmoOwner_Type:ultimateimmo/class/immoowner_type.class.php', 'label' => 'MenuImmoOwnerType', 'enabled' => 1, 'visible' => 1, 'position' => 35, 'notnull' => -1, 'index' => 1, 'help' => "LinkToOwnerType",),
+		'note_public' 	=> array('type' => 'html', 'label' => 'NotePublic', 'visible' => -1, 'enabled' => 1, 'position' => 40, 'notnull' => -1,),
+		'note_private' 	=> array('type' => 'html', 'label' => 'NotePrivate', 'visible' => -1, 'enabled' => 1, 'position' => 45, 'notnull' => -1,),
+		'civility_id' 	=> array('type' => 'integer:c_civility:label:code:rowid', 'label' => 'Civility', 'visible' => 1, 'enabled' => 1, 'position' => 50, 'notnull' => 1,),
+		'firstname' 	=> array('type' => 'varchar(255)', 'label' => 'Firstname', 'visible' => -1, 'enabled' => 1, 'position' => 55, 'notnull' => 1,),
+		'lastname' 		=> array('type' => 'varchar(255)', 'label' => 'Lastname', 'visible' => -1, 'enabled' => 1, 'position' => 60, 'notnull' => 1, 'searchall' => 1,),
+		'address' 		=> array('type' => 'varchar(255)', 'label' => 'Address', 'enabled' => 1, 'visible' => 1, 'position' => 61, 'notnull' => -1,),
+		'zip' 			=> array('type' => 'varchar(32)', 'label' => 'Zip', 'enabled' => 1, 'visible' => 1, 'position' => 62, 'notnull' => -1,),
+		'town' 			=> array('type' => 'varchar(64)', 'label' => 'Town', 'enabled' => 1, 'visible' => 1, 'position' => 63, 'notnull' => -1,),
+		'country_id' 	=> array('type' => 'integer', 'label' => 'Country', 'enabled' => 1, 'visible' => 1, 'position' => 64, 'notnull' => -1,),
+		'email' 		=> array('type' => 'varchar(255)', 'label' => 'Email', 'visible' => -1, 'enabled' => 1, 'position' => 65, 'notnull' => 1, 'searchall' => 1,),
+		'birth' 		=> array('type' => 'date', 'label' => 'BirthDay', 'visible' => -1, 'enabled' => 1, 'position' => 70, 'notnull' => -1,),
+		'phone' 		=> array('type' => 'varchar(30)', 'label' => 'Phone', 'visible' => -1, 'enabled' => 1, 'position' => 75, 'notnull' => -1,),
+		'phone_mobile' 	=> array('type' => 'varchar(30)', 'label' => 'PhoneMobile', 'visible' => -1, 'enabled' => 1, 'position' => 80, 'notnull' => -1,),
+		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'visible' => -2, 'enabled' => 1, 'position' => 500, 'notnull' => 1,),
+		'tms' => array('type' => 'timestamp', 'label' => 'DateModification', 'visible' => -2, 'enabled' => 1, 'position' => 501, 'notnull' => 1,),
+		'fk_user_creat' => array('type' => 'integer', 'label' => 'UserAuthor', 'visible' => -2, 'enabled' => 1, 'position' => 510, 'notnull' => 1,),
+		'fk_user_modif' => array('type' => 'integer', 'label' => 'UserModif', 'visible' => -2, 'enabled' => 1, 'position' => 511, 'notnull' => -1,),
+		'import_key' 	=> array('type' => 'varchar(14)', 'label' => 'ImportId', 'visible' => -2, 'enabled' => 1, 'position' => 1000, 'notnull' => -1,),
+		'status' 		=> array(
+			'type' => 'integer', 'label' => 'Status', 'visible' => 1, 'enabled' => 1, 'position' => 1000, 'notnull' => 1, 'index' => 1,
+			'arrayofkeyval' => array('0' => 'Draft', '1' => 'Active', '-1' => 'Cancel')
+		),
+
 	);
 
 	/**
@@ -263,7 +269,7 @@ class ImmoOwner extends CommonObject
 			}
 		}
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
@@ -282,7 +288,7 @@ class ImmoOwner extends CommonObject
 		$fieldvalues = $this->setSaveQuery();
 		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation'] = $this->db->idate($now);
 		if (array_key_exists('birth', $fieldvalues) && empty($fieldvalues['birth'])) $fieldvalues['birth'] = $this->db->jdate($object->birth);
-		if (array_key_exists('fk_user_creat', $fieldvalues) && ! ($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat']=$user->id;
+		if (array_key_exists('fk_user_creat', $fieldvalues) && !($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat'] = $user->id;
 		unset($fieldvalues['rowid']);	// The field 'rowid' is reserved field name for autoincrement field so we don't need it into insert.
 
 		$keys = array();
@@ -294,33 +300,30 @@ class ImmoOwner extends CommonObject
 		}
 
 		// Clean and check mandatory
-		foreach($keys as $key)
-		{
+		foreach ($keys as $key) {
 			// If field is an implicit foreign key field
 			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key] = '';
-			if (! empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key] = '';
+			if (!empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key] = '';
 
 			//var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
-			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && !isset($values[$key]) && is_null($this->fields[$key]['default']))
-			{
+			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && !isset($values[$key]) && is_null($this->fields[$key]['default'])) {
 				$error++;
 				$this->errors[] = $langs->trans("ErrorFieldRequired", $this->fields[$key]['label']);
 			}
 
 			// If field is an implicit foreign key field
-			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && empty($values[$key])) $values[$key]='null';
-			if (! empty($this->fields[$key]['foreignkey']) && empty($values[$key])) $values[$key] = 'null';
+			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && empty($values[$key])) $values[$key] = 'null';
+			if (!empty($this->fields[$key]['foreignkey']) && empty($values[$key])) $values[$key] = 'null';
 		}
 
 		if ($error) return -1;
 
 		$this->db->begin();
 
-		if (! $error)
-		{
-			$sql = 'INSERT INTO '.MAIN_DB_PREFIX.$this->table_element;
-			$sql.= ' ('.implode( ", ", $keys ).')';
-			$sql.= ' VALUES ('.implode( ", ", $values ).')';
+		if (!$error) {
+			$sql = 'INSERT INTO ' . MAIN_DB_PREFIX . $this->table_element;
+			$sql .= ' (' . implode(", ", $keys) . ')';
+			$sql .= ' VALUES (' . implode(", ", $values) . ')';
 
 			$res = $this->db->query($sql);
 			if ($res === false) {
@@ -329,43 +332,36 @@ class ImmoOwner extends CommonObject
 			}
 		}
 
-		if (! $error)
-		{
+		if (!$error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . $this->table_element);
 			$this->birth = $this->db->jdate($res->birth);
 		}
 
 		// If we have a field ref with a default value of (PROV)
-		if (!$error)
-		{
-		    if (key_exists('ref', $this->fields) && $this->fields['ref']['notnull'] > 0 && !is_null($this->fields['ref']['default']) && $this->fields['ref']['default'] == '(PROV)')
-		    {
-		        $sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element." SET ref = '(PROV".$this->id.")' WHERE (ref = '(PROV)' OR ref = '') AND rowid = ".$this->id;
-		        $resqlupdate = $this->db->query($sql);
+		if (!$error) {
+			if (key_exists('ref', $this->fields) && $this->fields['ref']['notnull'] > 0 && !is_null($this->fields['ref']['default']) && $this->fields['ref']['default'] == '(PROV)') {
+				$sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element . " SET ref = '(PROV" . $this->id . ")' WHERE (ref = '(PROV)' OR ref = '') AND rowid = " . $this->id;
+				$resqlupdate = $this->db->query($sql);
 
-		        if ($resqlupdate === false)
-		        {
-		            $error++;
-		            $this->errors[] = $this->db->lasterror();
-		        } else {
-		        	$this->ref = '(PROV'.$this->id.')';
-		        }
-		    }
+				if ($resqlupdate === false) {
+					$error++;
+					$this->errors[] = $this->db->lasterror();
+				} else {
+					$this->ref = '(PROV' . $this->id . ')';
+				}
+			}
 		}
 
 		// Create extrafields
-		if (! $error)
-		{
+		if (!$error) {
 			$result = $this->insertExtraFields();
 			if ($result < 0) $error++;
 		}
 
 		// Create lines
-		if (!empty($this->table_element_line) && !empty($this->fk_element))
-		{
+		if (!empty($this->table_element_line) && !empty($this->fk_element)) {
 			$num = (is_array($this->lines) ? count($this->lines) : 0);
-			for ($i = 0; $i < $num; $i++)
-			{
+			for ($i = 0; $i < $num; $i++) {
 				$line = $this->lines[$i];
 
 				$keyforparent = $this->fk_element;
@@ -376,8 +372,7 @@ class ImmoOwner extends CommonObject
 				if (!is_object($line)) $line = (object) $line;
 
 				$result = $line->create($user, 1);
-				if ($result < 0)
-				{
+				if ($result < 0) {
 					$this->error = $this->db->lasterror();
 					$this->db->rollback();
 					return -1;
@@ -386,22 +381,20 @@ class ImmoOwner extends CommonObject
 		}
 
 		// Triggers
-		if (! $error && ! $notrigger)
-		{
+		if (!$error && !$notrigger) {
 			// Call triggers
-			$result = $this->call_trigger(strtoupper(get_class($this)).'_CREATE', $user);
-			if ($result < 0) { $error++; }
+			$result = $this->call_trigger(strtoupper(get_class($this)) . '_CREATE', $user);
+			if ($result < 0) {
+				$error++;
+			}
 			// End call triggers
 		}
 
 		// Commit or rollback
-		if ($error) 
-		{
+		if ($error) {
 			$this->db->rollback();
 			return -1;
-		} 
-		else 
-		{
+		} else {
 			$this->db->commit();
 			return $this->id;
 		}
@@ -429,43 +422,43 @@ class ImmoOwner extends CommonObject
 	public function createFromClone(User $user, $fromid)
 	{
 		global $hookmanager, $langs;
-	    $error = 0;
+		$error = 0;
 
-	    dol_syslog(__METHOD__, LOG_DEBUG);
+		dol_syslog(__METHOD__, LOG_DEBUG);
 
-	    $object = new self($this->db);
+		$object = new self($this->db);
 
-	    $this->db->begin();
+		$this->db->begin();
 
-	    // Load source object
-	    $object->fetchCommon($fromid);
-	    // Reset some properties
-	    unset($object->id);
-	    unset($object->fk_user_creat);
-	    unset($object->import_key);
+		// Load source object
+		$object->fetchCommon($fromid);
+		// Reset some properties
+		unset($object->id);
+		unset($object->fk_user_creat);
+		unset($object->import_key);
 
-	    // Clear fields
-	    $object->ref = "copy_of_".$object->ref;
-	    $object->title = $langs->trans("CopyOf")." ".$object->title;
-	    // ...
+		// Clear fields
+		$object->ref = "copy_of_" . $object->ref;
+		$object->title = $langs->trans("CopyOf") . " " . $object->title;
+		// ...
 
-	    // Create clone
+		// Create clone
 		$object->context['createfromclone'] = 'createfromclone';
-	    $result = $object->createCommon($user);
-	    if ($result < 0) {
-	        $error++;
-	        $this->error = $object->error;
-	        $this->errors = $object->errors;
-	    }
+		$result = $object->createCommon($user);
+		if ($result < 0) {
+			$error++;
+			$this->error = $object->error;
+			$this->errors = $object->errors;
+		}
 
-	    // End
-	    if (!$error) {
-	        $this->db->commit();
-	        return $object;
-	    } else {
-	        $this->db->rollback();
-	        return -1;
-	    }
+		// End
+		if (!$error) {
+			$this->db->commit();
+			return $object;
+		} else {
+			$this->db->rollback();
+			return -1;
+		}
 	}
 	
 	/**
@@ -478,7 +471,7 @@ class ImmoOwner extends CommonObject
 	    $keys = array_keys($this->fields);
 	    return implode(',', $keys);
 	}
-	
+
 	/**
 	 * Function to load data into current object this
 	 *
@@ -486,41 +479,30 @@ class ImmoOwner extends CommonObject
 	 */
 	protected function set_vars_by_db(&$obj)
 	{
-	    foreach ($this->fields as $field => $info)
-	    {
-	        if($this->isDate($info))
-	        {
-	            if(empty($obj->{$field}) || $obj->{$field} === '0000-00-00 00:00:00' || $obj->{$field} === '1000-01-01 00:00:00') $this->{$field} = 0;
-	            else $this->{$field} = strtotime($obj->{$field});
-	        }
-	        elseif($this->isArray($info))
-	        {
-	            $this->{$field} = @unserialize($obj->{$field});
-	            // Hack for data not in UTF8
-	            if($this->{$field } === FALSE) @unserialize(utf8_decode($obj->{$field}));
-	        }
-	        elseif($this->isInt($info))
-	        {
-	            $this->{$field} = (int) $obj->{$field};
-	        }
-	        elseif($this->isFloat($info))
-	        {
-	            $this->{$field} = (double) $obj->{$field};
-	        }
-	        /*elseif($this->isNull($info))
+		foreach ($this->fields as $field => $info) {
+			if ($this->isDate($info)) {
+				if (empty($obj->{$field}) || $obj->{$field} === '0000-00-00 00:00:00' || $obj->{$field} === '1000-01-01 00:00:00') $this->{$field} = 0;
+				else $this->{$field} = strtotime($obj->{$field});
+			} elseif ($this->isArray($info)) {
+				$this->{$field} = @unserialize($obj->{$field});
+				// Hack for data not in UTF8
+				if ($this->{$field} === FALSE) @unserialize(utf8_decode($obj->{$field}));
+			} elseif ($this->isInt($info)) {
+				$this->{$field} = (int) $obj->{$field};
+			} elseif ($this->isFloat($info)) {
+				$this->{$field} = (float) $obj->{$field};
+			}
+			/*elseif($this->isNull($info))
 	        {
 	            $val = $obj->{$field};
 	            // zero is not null
 	            $this->{$field} = (is_null($val) || (empty($val) && $val!==0 && $val!=='0') ? null : $val);
-	        }*/
-	        else
-	        {
-	            $this->{$field} = $obj->{$field};
-	        }
-
-	    }
+	        }*/ else {
+				$this->{$field} = $obj->{$field};
+			}
+		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -532,67 +514,65 @@ class ImmoOwner extends CommonObject
 	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
 		if (empty($id) && empty($ref)) return false;
-		
+
 		global $langs;
-		
+
 		$array = preg_split("/[\s,]+/", $this->get_field_list());
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), array($array[0]));
 		$array = implode(', t.', $array);
 
-		$sql = 'SELECT '.$array.',';
-		$sql.= ' c.rowid as country_id, c.code as country_code, c.label as country';
-		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as c ON t.country_id = c.rowid';
+		$sql = 'SELECT ' . $array . ',';
+		$sql .= ' country.rowid as country_id, country.code as country_code, country.label as country,';
+		$sql .= ' civility.rowid as civility_id, civility.code as civility_code, civility.label as civility';
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_civility as civility ON t.civility_id = civility.rowid';
 
-		if(! empty($id)) $sql.= ' WHERE t.rowid = '.$id;
-		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
+		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
+		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql .= $morewhere;
-		
-		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
+
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
-		if ($res)
-		{
-			if ($obj = $this->db->fetch_object($res))
-    		{
-				if ($obj)
-				{
+		if ($res) {
+			if ($obj = $this->db->fetch_object($res)) {
+				if ($obj) {
 					$this->id = $id;
 					$this->set_vars_by_db($obj);
-					
+
 					$this->date_creation = $this->db->jdate($obj->date_creation);
 					$this->tms = $this->db->jdate($obj->tms);
-					
+
 					$this->birth = $this->db->jdate($obj->birth);
-					
+
+					$this->civility_id	= $obj->civility_id;
+					$this->civility_code	= $obj->civility_code;
+					if ($langs->trans("Civility" . $obj->civility_code) != "Civility" . $obj->civility_code) {
+						$this->civility = $langs->transnoentitiesnoconv("Civility" . $obj->civility_code);
+					} else {
+						$this->civility = $obj->civility;
+					}
+
 					$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
-					if ($langs->trans("Country".$obj->country_code) != "Country".$obj->country_code)
-					{
-						$this->country = $langs->transnoentitiesnoconv("Country".$obj->country_code);
-					}
-					else
-					{
+					if ($langs->trans("Country" . $obj->country_code) != "Country" . $obj->country_code) {
+						$this->country = $langs->transnoentitiesnoconv("Country" . $obj->country_code);
+					} else {
 						$this->country = $obj->country;
 					}
 					$this->setVarsFromFetchObj($obj);
-					
+
 					return $this->id;
-				}
-				else
-				{
+				} else {
 					return 0;
 				}
+			} else {
+				$this->error = $this->db->lasterror();
+				$this->errors[] = $this->error;
+				return -1;
 			}
-    		else
-    		{
-    			$this->error = $this->db->lasterror();
-    			$this->errors[] = $this->error;
-    			return -1;
-    		}
-		}
-		else
-		{
+		} else {
 			$this->error = $this->db->lasterror();
 			$this->errors[] = $this->error;
 			return -1;
@@ -930,6 +910,22 @@ class ImmoOwner extends CommonObject
 		}
 		else dol_print_error($dbtouse,'');
 		return 'Error';
+	}
+
+	/**
+	 *    Return civility label of owner
+	 *
+	 *    @return	string      			Translated name of civility
+	 */
+	public function getCivilityLabel()
+	{
+		global $langs;
+
+		$code = ($this->civility_code ? $this->civility_code : (!empty($this->civility_id) ? $this->civility : (!empty($this->civilite) ? $this->civilite : '')));
+		if (empty($code)) return '';
+
+		$langs->load("dict");
+		return $langs->getLabelFromKey($this->db, "Civility" . $code, "c_civility", "code", "label", $code);
 	}
 }
 
