@@ -101,11 +101,11 @@ class ImmoOwner extends CommonObject
 		'ref'           => array('type' => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1, 'showoncombobox' => 1, 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
 		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
 		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirparty'),
-		'societe' 		=> array('type' => 'varchar(128)', 'label' => 'Societe', 'visible' => 1, 'enabled' => 1, 'position' => 36, 'notnull' => -1,),
-		'fk_owner_type' => array('type' => 'integer:ImmoOwner_Type:ultimateimmo/class/immoowner_type.class.php', 'label' => 'MenuImmoOwnerType', 'enabled' => 1, 'visible' => 1, 'position' => 35, 'notnull' => -1, 'index' => 1, 'help' => "LinkToOwnerType",),
+		'societe' 		=> array('type' => 'varchar(128)', 'label' => 'Societe', 'visible' => 1, 'enabled' => 1, 'position' => 34, 'notnull' => -1,),
+		'fk_owner_type' => array('type' => 'integer:ImmoOwner_Type:ultimateimmo/class/immoowner_type.class.php', 'label' => 'MenuImmoOwnerType', 'enabled' => 1, 'visible' => 1, 'position' => 32, 'notnull' => -1, 'index' => 1, 'help' => "LinkToOwnerType",),
 		'note_public' 	=> array('type' => 'html', 'label' => 'NotePublic', 'visible' => -1, 'enabled' => 1, 'position' => 40, 'notnull' => -1,),
 		'note_private' 	=> array('type' => 'html', 'label' => 'NotePrivate', 'visible' => -1, 'enabled' => 1, 'position' => 45, 'notnull' => -1,),
-		'civility_id' 	=> array('type' => 'integer:c_civility:label:code:rowid', 'label' => 'Civility', 'visible' => 1, 'enabled' => 1, 'position' => 50, 'notnull' => 1,),
+		'civility_id' => array('type' => 'integer:c_civility:code:label:rowid', 'label' => 'Civility', 'visible' => -1, 'enabled' => 1, 'position' => 50, 'notnull' => 1,),
 		'firstname' 	=> array('type' => 'varchar(255)', 'label' => 'Firstname', 'visible' => -1, 'enabled' => 1, 'position' => 55, 'notnull' => 1,),
 		'lastname' 		=> array('type' => 'varchar(255)', 'label' => 'Lastname', 'visible' => -1, 'enabled' => 1, 'position' => 60, 'notnull' => 1, 'searchall' => 1,),
 		'address' 		=> array('type' => 'varchar(255)', 'label' => 'Address', 'enabled' => 1, 'visible' => 1, 'position' => 61, 'notnull' => -1,),
@@ -153,7 +153,9 @@ class ImmoOwner extends CommonObject
 
 	public $note_private;
 
-	public $civility_id;
+	public $civility_id;	// In fact we store civility_code
+	public $civility_code;
+	public $civility;
 
 	public $firstname;
 
@@ -205,7 +207,6 @@ class ImmoOwner extends CommonObject
 	 */
 	public $status;
 	// END MODULEBUILDER PROPERTIES
-
 
 
 	// If this object has a subtable with lines
@@ -521,39 +522,43 @@ class ImmoOwner extends CommonObject
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), array($array[0]));
 		$array = implode(', t.', $array);
-
+		/*$search = 'civility_id';
+		$replace = 'civility_id as civility_code';
+		$array = str_replace($search, $replace, $array);*/
+		
 		$sql = 'SELECT ' . $array . ',';
-		$sql .= ' country.rowid as country_id, country.code as country_code, country.label as country,';
-		$sql .= ' civility.rowid as civility_id, civility.code as civility_code, civility.label as civility';
+		//print_r($sql);exit;
+		$sql .= 'country.rowid as country_id, country.code as country_code, country.label as country, civility.rowid as civility_id, civility.code as civility_code, civility.label as civility';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_civility as civility ON t.civility_id = civility.rowid';
-
+		//print_r($sql);exit;
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
 		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql .= $morewhere;
-//print_r($sql);exit;
+
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
+		//print_r($res);exit;
 		if ($res) {
 			if ($obj = $this->db->fetch_object($res)) {
 				if ($obj) {
-					$this->id = $id;
-					$this->set_vars_by_db($obj);
-
+					$this->id = $obj->rowid;
+					//$this->set_vars_by_db($obj);
+					
 					$this->date_creation = $this->db->jdate($obj->date_creation);
 					$this->tms = $this->db->jdate($obj->tms);
 
 					$this->birth = $this->db->jdate($obj->birth);
 
-					$this->civility_id	= $obj->civility_id;
-					$this->civility_code	= $obj->civility_code;
+					$this->civility_id    = $obj->civility_id;
+					$this->civility_code  = $obj->civility_code; 
 					if ($langs->trans("Civility" . $obj->civility_code) != "Civility" . $obj->civility_code) {
-						$this->civility = $langs->transnoentitiesnoconv("Civility" . $obj->civility_code);
+						$this->civility = $langs->transnoentitiesnoconv("Civility" .  $obj->civility_code);
 					} else {
 						$this->civility = $obj->civility;
 					}
-
+					//var_dump($obj);exit;
 					$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
 					if ($langs->trans("Country" . $obj->country_code) != "Country" . $obj->country_code) {
@@ -629,6 +634,82 @@ class ImmoOwner extends CommonObject
 	public function delete(User $user, $notrigger = false)
 	{
 		return $this->deleteCommon($user, $notrigger);
+	}
+
+		/**
+	 * Load list of objects in memory from the database.
+	 *
+	 * @param  string      $sortorder    Sort Order
+	 * @param  string      $sortfield    Sort field
+	 * @param  int         $limit        limit
+	 * @param  int         $offset       Offset
+	 * @param  array       $filter       Filter array. Example array('field'=>'valueforlike', 'customurl'=>...)
+	 * @param  string      $filtermode   Filter mode (AND or OR)
+	 * @return array|int                 int <0 if KO, array of pages if OK
+	 */
+	public function fetchAll($sortorder = '', $sortfield = '', $limit = 0, $offset = 0, array $filter = array(), $filtermode = 'AND')
+	{
+		global $conf;
+
+		dol_syslog(__METHOD__, LOG_DEBUG);
+
+		$records = array();
+
+		$sql = 'SELECT ';
+		$sql .= $this->getFieldList();
+		$sql .= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
+		if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql .= ' WHERE t.entity IN ('.getEntity($this->table_element).')';
+		else $sql .= ' WHERE 1 = 1';
+		// Manage filter
+		$sqlwhere = array();
+		if (count($filter) > 0) {
+			foreach ($filter as $key => $value) {
+				if ($key == 't.rowid') {
+					$sqlwhere[] = $key.'='.$value;
+				} elseif (strpos($key, 'date') !== false) {
+					$sqlwhere[] = $key.' = \''.$this->db->idate($value).'\'';
+				} elseif ($key == 'customsql') {
+					$sqlwhere[] = $value;
+				} else {
+					$sqlwhere[] = $key.' LIKE \'%'.$this->db->escape($value).'%\'';
+				}
+			}
+		}
+		if (count($sqlwhere) > 0) {
+			$sql .= ' AND ('.implode(' '.$filtermode.' ', $sqlwhere).')';
+		}
+
+		if (!empty($sortfield)) {
+			$sql .= $this->db->order($sortfield, $sortorder);
+		}
+		if (!empty($limit)) {
+			$sql .= ' '.$this->db->plimit($limit, $offset);
+		}
+
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			while ($i < min($limit, $num))
+			{
+				$obj = $this->db->fetch_object($resql);
+
+				$record = new self($this->db);
+				$record->setVarsFromFetchObj($obj);
+
+				$records[$record->id] = $record;
+
+				$i++;
+			}
+			$this->db->free($resql);
+
+			return $records;
+		} else {
+			$this->errors[] = 'Error '.$this->db->lasterror();
+			dol_syslog(__METHOD__.' '.join(',', $this->errors), LOG_ERR);
+
+			return -1;
+		}
 	}
 
 	/**
@@ -707,9 +788,9 @@ class ImmoOwner extends CommonObject
 	 *  @param	int		$mode          0=libelle long, 1=libelle court, 2=Picto + Libelle court, 3=Picto, 4=Picto + Libelle long, 5=Libelle court + Picto
 	 *  @return	string 			       Label of status
 	 */
-	function getLibStatut($mode=0)
+	function getLibStatut($mode = 0)
 	{
-		return $this->LibStatut($this->status,$mode);
+		return $this->LibStatut($this->status, $mode);
 	}
 
 	/**
@@ -719,45 +800,38 @@ class ImmoOwner extends CommonObject
 	 *  @param  int		$mode          	0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto, 6=Long label + Picto
 	 *  @return string 			       	Label of status
 	 */
-	static function LibStatut($status,$mode=0)
+	static function LibStatut($status, $mode = 0)
 	{
 		global $langs;
 
-		if ($mode == 0)
-		{
-			$prefix='';
+		if ($mode == 0) {
+			$prefix = '';
 			if ($status == 1) return $langs->trans('Enabled');
 			if ($status == 0) return $langs->trans('Disabled');
 		}
-		if ($mode == 1)
-		{
+		if ($mode == 1) {
 			if ($status == 1) return $langs->trans('Enabled');
 			if ($status == 0) return $langs->trans('Disabled');
 		}
-		if ($mode == 2)
-		{
-			if ($status == 1) return img_picto($langs->trans('Enabled'),'statut4').' '.$langs->trans('Enabled');
-			if ($status == 0) return img_picto($langs->trans('Disabled'),'statut5').' '.$langs->trans('Disabled');
+		if ($mode == 2) {
+			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4') . ' ' . $langs->trans('Enabled');
+			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5') . ' ' . $langs->trans('Disabled');
 		}
-		if ($mode == 3)
-		{
-			if ($status == 1) return img_picto($langs->trans('Enabled'),'statut4');
-			if ($status == 0) return img_picto($langs->trans('Disabled'),'statut5');
+		if ($mode == 3) {
+			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4');
+			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5');
 		}
-		if ($mode == 4)
-		{
-			if ($status == 1) return img_picto($langs->trans('Enabled'),'statut4').' '.$langs->trans('Enabled');
-			if ($status == 0) return img_picto($langs->trans('Disabled'),'statut5').' '.$langs->trans('Disabled');
+		if ($mode == 4) {
+			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4') . ' ' . $langs->trans('Enabled');
+			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5') . ' ' . $langs->trans('Disabled');
 		}
-		if ($mode == 5)
-		{
-			if ($status == 1) return $langs->trans('Enabled').' '.img_picto($langs->trans('Enabled'),'statut4');
-			if ($status == 0) return $langs->trans('Disabled').' '.img_picto($langs->trans('Disabled'),'statut5');
+		if ($mode == 5) {
+			if ($status == 1) return $langs->trans('Enabled') . ' ' . img_picto($langs->trans('Enabled'), 'statut4');
+			if ($status == 0) return $langs->trans('Disabled') . ' ' . img_picto($langs->trans('Disabled'), 'statut5');
 		}
-		if ($mode == 6)
-		{
-			if ($status == 1) return $langs->trans('Enabled').' '.img_picto($langs->trans('Enabled'),'statut4');
-			if ($status == 0) return $langs->trans('Disabled').' '.img_picto($langs->trans('Disabled'),'statut5');
+		if ($mode == 6) {
+			if ($status == 1) return $langs->trans('Enabled') . ' ' . img_picto($langs->trans('Enabled'), 'statut4');
+			if ($status == 0) return $langs->trans('Disabled') . ' ' . img_picto($langs->trans('Disabled'), 'statut5');
 		}
 	}
 
@@ -770,32 +844,27 @@ class ImmoOwner extends CommonObject
 	function info($id)
 	{
 		$sql = 'SELECT rowid, date_creation as datec, tms as datem,';
-		$sql.= ' fk_user_creat, fk_user_modif';
-		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql.= ' WHERE t.rowid = '.$id;
-		$result=$this->db->query($sql);
-		if ($result)
-		{
-			if ($this->db->num_rows($result))
-			{
+		$sql .= ' fk_user_creat, fk_user_modif';
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
+		$sql .= ' WHERE t.rowid = ' . $id;
+		$result = $this->db->query($sql);
+		if ($result) {
+			if ($this->db->num_rows($result)) {
 				$obj = $this->db->fetch_object($result);
 				$this->id = $obj->rowid;
-				if ($obj->fk_user_author)
-				{
+				if ($obj->fk_user_author) {
 					$cuser = new User($this->db);
 					$cuser->fetch($obj->fk_user_author);
 					$this->user_creation   = $cuser;
 				}
 
-				if ($obj->fk_user_valid)
-				{
+				if ($obj->fk_user_valid) {
 					$vuser = new User($this->db);
 					$vuser->fetch($obj->fk_user_valid);
 					$this->user_validation = $vuser;
 				}
 
-				if ($obj->fk_user_cloture)
-				{
+				if ($obj->fk_user_cloture) {
 					$cluser = new User($this->db);
 					$cluser->fetch($obj->fk_user_cloture);
 					$this->user_cloture   = $cluser;
@@ -807,10 +876,7 @@ class ImmoOwner extends CommonObject
 			}
 
 			$this->db->free($result);
-
-		}
-		else
-		{
+		} else {
 			dol_print_error($this->db);
 		}
 	}
@@ -826,6 +892,28 @@ class ImmoOwner extends CommonObject
 		$this->initAsSpecimenCommon();
 	}
 
+	/**
+	 * 	Create an array of owner lines
+	 *
+	 * 	@return int		>0 if OK, <0 if KO
+	 */
+	public function getLinesArray()
+	{
+		$this->lines = array();
+
+		$objectline = new ImmoOwnerLine($this->db);
+		$result = $objectline->fetchAll('ASC', 'position', 0, 0, array('customsql'=>'fk_myobject = '.$this->id));
+
+		if (is_numeric($result))
+		{
+			$this->error = $this->error;
+			$this->errors = $this->errors;
+			return $result;
+		} else {
+			$this->lines = $result;
+			return $this->lines;
+		}
+	}
 
 	/**
 	 * Action executed by scheduler
@@ -838,7 +926,7 @@ class ImmoOwner extends CommonObject
 		global $conf, $langs;
 
 		$this->output = '';
-		$this->error='';
+		$this->error = '';
 
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
@@ -862,70 +950,105 @@ class ImmoOwner extends CommonObject
 	 *    @param      int		$searchlabel    Label of country to search (warning: searching on label is not reliable)
 	 *    @return     mixed       				String with country code or translated country name or Array('id','code','label')
 	 */
-	function getCountry($searchkey, $withcode='', $dbtouse=0, $outputlangs='', $entconv=1, $searchlabel='')
+	function getCountry($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
 	{
-		global $db,$langs;
+		global $db, $langs;
 
-		$result='';
+		$result = '';
 
 		// Check parameters
-		if (empty($searchkey) && empty($searchlabel))
-		{
-			if ($withcode === 'all') return array('id'=>'','code'=>'','label'=>'');
+		if (empty($searchkey) && empty($searchlabel)) {
+			if ($withcode === 'all') return array('id' => '', 'code' => '', 'label' => '');
 			else return '';
 		}
-		if (! is_object($dbtouse)) $dbtouse=$db;
-		if (! is_object($outputlangs)) $outputlangs=$langs;
+		if (!is_object($dbtouse)) $dbtouse = $db;
+		if (!is_object($outputlangs)) $outputlangs = $langs;
 
-		$sql = "SELECT rowid, code, label FROM ".MAIN_DB_PREFIX."c_country";
-		if (is_numeric($searchkey)) $sql.= " WHERE rowid=".$searchkey;
-		elseif (! empty($searchkey)) $sql.= " WHERE code='".$db->escape($searchkey)."'";
-		else $sql.= " WHERE label='".$db->escape($searchlabel)."'";
+		$sql = "SELECT rowid, code, label FROM " . MAIN_DB_PREFIX . "c_country";
+		if (is_numeric($searchkey)) $sql .= " WHERE rowid=" . $searchkey;
+		elseif (!empty($searchkey)) $sql .= " WHERE code='" . $db->escape($searchkey) . "'";
+		else $sql .= " WHERE label='" . $db->escape($searchlabel) . "'";
 
-		$resql=$dbtouse->query($sql);
-		if ($resql)
-		{
+		$resql = $dbtouse->query($sql);
+		if ($resql) {
 			$obj = $dbtouse->fetch_object($resql);
-			if ($obj)
-			{
-				$label=((! empty($obj->label) && $obj->label!='-')?$obj->label:'');
-				if (is_object($outputlangs))
-				{
+			if ($obj) {
+				$label = ((!empty($obj->label) && $obj->label != '-') ? $obj->label : '');
+				if (is_object($outputlangs)) {
 					$outputlangs->load("dict");
-					if ($entconv) $label=($obj->code && ($outputlangs->trans("Country".$obj->code)!="Country".$obj->code))?$outputlangs->trans("Country".$obj->code):$label;
-					else $label=($obj->code && ($outputlangs->transnoentitiesnoconv("Country".$obj->code)!="Country".$obj->code))?$outputlangs->transnoentitiesnoconv("Country".$obj->code):$label;
+					if ($entconv) $label = ($obj->code && ($outputlangs->trans("Country" . $obj->code) != "Country" . $obj->code)) ? $outputlangs->trans("Country" . $obj->code) : $label;
+					else $label = ($obj->code && ($outputlangs->transnoentitiesnoconv("Country" . $obj->code) != "Country" . $obj->code)) ? $outputlangs->transnoentitiesnoconv("Country" . $obj->code) : $label;
 				}
-				if ($withcode == 1) $result=$label?"$obj->code - $label":"$obj->code";
-				else if ($withcode == 2) $result=$obj->code;
-				else if ($withcode == 3) $result=$obj->rowid;
-				else if ($withcode === 'all') $result=array('id'=>$obj->rowid,'code'=>$obj->code,'label'=>$label);
-				else $result=$label;
-			}
-			else
-			{
-				$result='NotDefined';
+				if ($withcode == 1) $result = $label ? "$obj->code - $label" : "$obj->code";
+				else if ($withcode == 2) $result = $obj->code;
+				else if ($withcode == 3) $result = $obj->rowid;
+				else if ($withcode === 'all') $result = array('id' => $obj->rowid, 'code' => $obj->code, 'label' => $label);
+				else $result = $label;
+			} else {
+				$result = 'NotDefined';
 			}
 			$dbtouse->free($resql);
 			return $result;
-		}
-		else dol_print_error($dbtouse,'');
+		} else dol_print_error($dbtouse, '');
 		return 'Error';
 	}
 
 	/**
-	 *    Return civility label of owner
+	 *     Return civility label, code or id from an id, code or label
 	 *
-	 *    @return	string      			Translated name of civility
+	 *    @param      int		$searchkey      Id or code of civility to search
+	 *    @param      string	$withcode   	'0'=Return label,
+	 *    										'1'=Return code + label,
+	 *    										'2'=Return code from id,
+	 *    										'3'=Return id from code,
+	 * 	   										'all'=Return array('id'=>,'code'=>,'label'=>)
+	 *    @param      DoliDB	$dbtouse       	Database handler (using in global way may fail because of conflicts with some autoload features)
+	 *    @param      Translate	$outputlangs	Langs object for output translation
+	 *    @param      int		$entconv       	0=Return value without entities and not converted to output charset, 1=Ready for html output
+	 *    @param      int		$searchlabel    Label of civility to search (warning: searching on label is not reliable)
+	 *    @return     mixed       				String with civility code or translated civility name or Array('id','code','label')
 	 */
-	public function getCivilityLabel()
+	public function getCivilityLabel($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
 	{
-		global $langs;
+		global $db, $langs;
 
-		$code = ($this->civility_code ? $this->civility_code : (!empty($this->civility_id) ? $this->civility : (!empty($this->civilite) ? $this->civilite : '')));
-		if (empty($code)) return '';
+		$result = '';
 
-		$langs->load("dict");
-		return $langs->getLabelFromKey($this->db, "Civility" . $code, "c_civility", "code", "label", $code);
+		// Check parameters
+		if (empty($searchkey) && empty($searchlabel)) {
+			if ($withcode === 'all') return array('id' => '', 'code' => '', 'label' => '');
+			else return '';
+		}
+		if (!is_object($dbtouse)) $dbtouse = $db;
+		if (!is_object($outputlangs)) $outputlangs = $langs;
+
+		$sql = "SELECT rowid, code, label FROM " . MAIN_DB_PREFIX . "c_civility";
+		if (is_numeric($searchkey)) $sql .= " WHERE rowid=" . $searchkey;
+		elseif (!empty($searchkey)) $sql .= " WHERE code='" . $db->escape($searchkey) . "'";
+		else $sql .= " WHERE label='" . $db->escape($searchlabel) . "'";
+
+		$resql = $dbtouse->query($sql);
+		if ($resql) {
+			$obj = $dbtouse->fetch_object($resql);
+			if ($obj) {
+				$label = ((!empty($obj->label) && $obj->label != '-') ? $obj->label : '');
+				if (is_object($outputlangs)) {
+					$outputlangs->load("dict");
+					if ($entconv) $label = ($obj->code && ($outputlangs->trans("Civility" . $obj->code) != "Civility" . $obj->code)) ? $outputlangs->trans("Civility" . $obj->code) : $label;
+					else $label = ($obj->code && ($outputlangs->transnoentitiesnoconv("Civility" . $obj->code) != "Civility" . $obj->code)) ? $outputlangs->transnoentitiesnoconv("Civility" . $obj->code) : $label;
+				}
+				if ($withcode == 1) $result = $label ? "$obj->code - $label" : "$obj->code";
+				else if ($withcode == 2) $result = $obj->code;
+				else if ($withcode == 3) $result = $obj->rowid;
+				else if ($withcode === 'all') $result = array('id' => $obj->rowid, 'code' => $obj->code, 'label' => $label);
+				else $result = $label;
+			} else {
+				$result = 'NotDefined';
+			}
+			$dbtouse->free($resql);
+			return $result;
+		} else dol_print_error($dbtouse, '');
+		return 'Error';
 	}
 }
 
@@ -933,7 +1056,7 @@ class ImmoOwner extends CommonObject
 /**
  * Class ImmoOwnerLine. You can also remove this and generate a CRUD class for lines objects.
  */
-/*
+
 class ImmoOwnerLine
 {
 	// @var int ID
@@ -943,4 +1066,3 @@ class ImmoOwnerLine
 	// @var mixed Sample line property 2
 	public $prop2;
 }
-*/

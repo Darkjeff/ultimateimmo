@@ -195,18 +195,20 @@ if ($action == 'create')
 		print '<td>';
 
 		if ($val['label'] == 'Civility') 
-		{			
+		{					
 			// We set civility_id, civility_code and civility for the selected civility
-			$object->civility_id = GETPOST('civility_id', 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
-			
-			if ($object->civility_id)
+			$object->civility_id	= GETPOST("civility_id", 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
+
+			if ($object->country_id)
 			{
 				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
-				$object->country_code = $tmparray['code'];
-				$object->country = $tmparray['label'];
+				$object->civility_code = $tmparray['code'];
+				$object->civility = $tmparray['label'];
 			}
+			
 			// civility
-			print $formcompany->select_civility((GETPOST('civility_id') != '' ? GETPOST('civility_id') : $object->civility_id));	
+			print $formcompany->select_civility(GETPOSTISSET("civility_id") != ''? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');
+			//var_dump($object->civility_id);exit;	
 		}
 		elseif ($val['label'] == 'Country') 
 		{			
@@ -289,19 +291,18 @@ if (($id || $ref) && $action == 'edit')
 		print '<td>';
 
 		if ($val['label'] == 'Civility') 
-		{			
+		{					
 			// We set civility_id, civility_code and civility for the selected civility
-			$object->civility_id = GETPOST('civility_id', 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
-			
+			$object->civility_id = GETPOST('civility_id','int') ? GETPOST('civility_id','int') : $object->civility_id;
 			if ($object->civility_id)
 			{
-				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
+				$tmparray = $object->getCivilityLabel($object->civility_id,'all');
 				$object->civility_code = $tmparray['code'];
 				$object->civility = $tmparray['label'];
 			}
-			// civility
-			print $formcompany->select_civility((GETPOST('civility_id') != '' ? GETPOST('civility_id') : $object->civility_id));	
-		}		
+			print $formcompany->select_civility(GETPOSTISSET("civility_id") != ''? GETPOST("civility_id", 'int') : $object->civility_id);
+			//var_dump($tmparray);exit;	
+		}	
 		elseif ($val['label'] == 'Country') 
 		{			
 			// We set country_id, country_code and country for the selected country
@@ -478,9 +479,19 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '">';
 		print '<td>';
 
-		//{
+		if ($val['label'] == 'Civility') {
+			// We set civility_id, civility_code and civility for the selected civility	
+			if ($object->civility_id) {
+				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
+				$object->civility_code = $tmparray['code'];
+				$object->civility = $tmparray['label'];
+				//var_dump($object);exit;
+			}
+			print '<tr><td>' . $langs->trans('Civility') . '</td><td>';
+			print $object->civility;
+		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
-		//}
+		}
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
@@ -516,16 +527,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<tr><td';
 		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
-		if ($val['label'] == 'Civility') {
-			if ($object->civility_id) {
-				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
-				$object->civility_code = $tmparray['code'];
-				$object->civility = $tmparray['label'];
-			}
-			print '<tr><td width="25%">' . $langs->trans('Civility') . '</td><td>';
-			print $object->civility;
-		} 
-		elseif ($val['label'] == 'Country') {
+		if ($val['label'] == 'Country') {
 			if ($object->country_id) {
 				include_once(DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 				$tmparray = getCountry($object->country_id, 'all');

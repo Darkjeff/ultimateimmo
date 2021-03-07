@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2019 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -449,7 +449,15 @@ while ($i < ($limit ? min($num, $limit) : $num))
 		{
 			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
 			if ($key == 'status') print $object->getLibStatut(5);
-			
+
+			if ($val['label'] == 'Civility') {
+				if ($object->civility_id) {
+					$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
+					$object->civility_code = $tmparray['code'];
+					$object->civility = $tmparray['label'];
+				}
+				print $object->civility;
+			}
 			elseif ($val['label'] == 'Country') 
 			{
 				if ($object->country_id)
