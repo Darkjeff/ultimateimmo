@@ -1044,7 +1044,7 @@ class ImmoOwner extends CommonObject
 		return 'Error';
 	}
 
-/**
+	/**
 	 *  Return combo list with people title
 	 *
 	 *  @param  string	$selected   	Id or Code or Label of preselected

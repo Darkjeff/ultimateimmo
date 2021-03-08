@@ -466,15 +466,22 @@ while ($i < ($limit ? min($num, $limit) : $num))
 		elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 
 		if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
-		elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
+		if ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
+		if ($key == 'civility') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
 
 		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'right';
 
 		if (!empty($arrayfields['t.' . $key]['checked'])) {
 			print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
 			if ($key == 'status') print $object->getLibStatut(5);
-
-			elseif ($val['label'] == 'Property') {
+			elseif ($val['label'] == 'Civility') {
+				if ($object->civility_id) {
+					$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
+					$object->civility_code = $tmparray['code'];
+					$object->civility = $tmparray['label'];
+				}
+				print $object->civility;
+			} elseif ($val['label'] == 'Property') {
 				$staticrent = new ImmoRent($db);
 				$staticrent->fetch($object->fk_rent);
 				if ($staticrent->ref) {
