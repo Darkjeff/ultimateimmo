@@ -441,9 +441,9 @@ while ($i < ($limit ? min($num, $limit) : $num))
 	    elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
 
 	    if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
-	    elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+	    if ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
 		if ($key == 'civility') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
-		if ($key == 'country') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+		elseif ($key == 'country') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
 
 		if (!empty($arrayfields['t.'.$key]['checked']))
 		{
