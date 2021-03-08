@@ -105,7 +105,7 @@ class ImmoOwner extends CommonObject
 		'fk_owner_type' => array('type' => 'integer:ImmoOwner_Type:ultimateimmo/class/immoowner_type.class.php', 'label' => 'MenuImmoOwnerType', 'enabled' => 1, 'visible' => 1, 'position' => 32, 'notnull' => -1, 'index' => 1, 'help' => "LinkToOwnerType",),
 		'note_public' 	=> array('type' => 'html', 'label' => 'NotePublic', 'visible' => -1, 'enabled' => 1, 'position' => 40, 'notnull' => -1,),
 		'note_private' 	=> array('type' => 'html', 'label' => 'NotePrivate', 'visible' => -1, 'enabled' => 1, 'position' => 45, 'notnull' => -1,),
-		'civility_id' => array('type' => 'integer:c_civility:code:label:rowid', 'label' => 'Civility', 'visible' => -1, 'enabled' => 1, 'position' => 50, 'notnull' => 1,),
+		'civility_id' => array('type' => 'integer', 'label' => 'Civility', 'visible' => -1, 'enabled' => 1, 'position' => 50, 'notnull' => 1,),
 		'firstname' 	=> array('type' => 'varchar(255)', 'label' => 'Firstname', 'visible' => -1, 'enabled' => 1, 'position' => 55, 'notnull' => 1,),
 		'lastname' 		=> array('type' => 'varchar(255)', 'label' => 'Lastname', 'visible' => -1, 'enabled' => 1, 'position' => 60, 'notnull' => 1, 'searchall' => 1,),
 		'address' 		=> array('type' => 'varchar(255)', 'label' => 'Address', 'enabled' => 1, 'visible' => 1, 'position' => 61, 'notnull' => -1,),
@@ -289,7 +289,6 @@ class ImmoOwner extends CommonObject
 		$fieldvalues = $this->setSaveQuery();
 		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation'] = $this->db->idate($now);
 		if (array_key_exists('birth', $fieldvalues) && empty($fieldvalues['birth'])) $fieldvalues['birth'] = $this->db->jdate($object->birth);
-		if (array_key_exists('civility_id', $fieldvalues) && empty($fieldvalues['civility_id'])) $fieldvalues['civility_id'] = $this->db->jdate($object->birth);
 		if (array_key_exists('fk_user_creat', $fieldvalues) && !($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat'] = $user->id;
 		unset($fieldvalues['rowid']);	// The field 'rowid' is reserved field name for autoincrement field so we don't need it into insert.
 
@@ -523,29 +522,26 @@ class ImmoOwner extends CommonObject
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), array($array[0]));
 		$array = implode(', t.', $array);
-		/*$search = 'civility_id';
-		$replace = 'civility_id as civility_code';
-		$array = str_replace($search, $replace, $array);*/
 		
 		$sql = 'SELECT ' . $array . ',';
-		//print_r($sql);exit;
+		
 		$sql .= 'country.rowid as country_id, country.code as country_code, country.label as country, civility.rowid as civility_id, civility.code as civility_code, civility.label as civility';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_civility as civility ON t.civility_id = civility.rowid';
-		//print_r($sql);exit;
+		
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
 		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql .= $morewhere;
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
-		//print_r($res);exit;
+		
 		if ($res) {
 			if ($obj = $this->db->fetch_object($res)) {
 				if ($obj) {
 					$this->id = $obj->rowid;
-					//$this->set_vars_by_db($obj);
+					$this->set_vars_by_db($obj);
 					
 					$this->date_creation = $this->db->jdate($obj->date_creation);
 					$this->tms = $this->db->jdate($obj->tms);
@@ -559,7 +555,7 @@ class ImmoOwner extends CommonObject
 					} else {
 						$this->civility = $obj->civility;
 					}
-					//var_dump($obj);exit;
+					
 					$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
 					if ($langs->trans("Country" . $obj->country_code) != "Country" . $obj->country_code) {
@@ -1046,6 +1042,68 @@ class ImmoOwner extends CommonObject
 			return $result;
 		} else dol_print_error($dbtouse, '');
 		return 'Error';
+	}
+
+/**
+	 *  Return combo list with people title
+	 *
+	 *  @param  string	$selected   	Id or Code or Label of preselected
+	 * 	@param	string	$htmlname		Name of HTML select combo field
+	 *  @param  string	$htmloption     More html options on select object
+	 *  @param	integer	$maxlength		Max length for labels (0=no limit)
+	 *  @param  string  $morecss        Add more css on SELECT element
+	 *  @param	string	$usecodeaskey	''=Use id as key (default), 'code3'=Use code on 3 alpha as key, 'code2"=Use code on 2 alpha as key
+	 *  @return	string					String with HTML select
+	 */
+	public function select_civility($selected = '', $htmlname = 'civility_id', $htmloption = '', $maxlength = 0, $morecss = 'maxwidth100', $usecodeaskey = '')
+	{
+		// phpcs:enable
+		global $conf, $langs, $user;
+		$langs->load("dict");
+
+		$out = '';
+		$civilityArray = array();
+
+		$sql = "SELECT rowid, code, label, active FROM " . MAIN_DB_PREFIX . "c_civility";
+		$sql .= " WHERE active = 1";
+
+		dol_syslog("Form::select_civility", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$out .= '<select class="flat' . ($morecss ? ' ' . $morecss : '') . '" name="' . $htmlname . '" id="' . $htmlname . '">';
+			$out .= '<option value="">&nbsp;</option>';
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			if ($num) {
+				while ($i < $num) {
+					$obj = $this->db->fetch_object($resql);
+
+					$civilityArray[$i]['rowid'] = $obj->rowid;
+					$civilityArray[$i]['code'] = $obj->code;
+					$civilityArray[$i]['label'] = ($obj->code && $langs->transnoentitiesnoconv("Civility" . $obj->code) != "Civility" . $obj->code ? $langs->transnoentitiesnoconv("Civility" . $obj->code) : ($obj->label != '-' ? $obj->label : ''));
+					$label[$i] = dol_string_unaccent($civilityArray[$i]['label']);
+					$i++;
+				}
+				foreach ($civilityArray as $row) {
+					if ($selected && $selected != '-1' && ($selected == $row['rowid'] || $selected == $row['code'] || $selected == $row['label'])) {
+						$out .= '<option value="' . ($usecodeaskey ? ($usecodeaskey == 'code2' ? $row['code'] : $row['code']) : $row['rowid']) . '" selected>';
+					} else {
+						$out .= '<option value="' . ($usecodeaskey ? ($usecodeaskey == 'code2' ? $row['code'] : $row['code']) : $row['rowid']) . '">';
+					}
+					// Si traduction existe, on l'utilise, sinon on prend le libelle par defaut
+					if ($row['label']) $out .= dol_trunc($row['label'], $maxlength, 'middle');
+					else $out .= '&nbsp;';
+					if ($row['code']) $out .= ' (' . $row['code'] . ')';
+					$out .= '</option>';
+				}
+			}
+			$out .= '</select>';
+			if ($user->admin) $out .= info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
+		} else {
+			dol_print_error($this->db);
+		}
+
+		return $out;
 	}
 }
 

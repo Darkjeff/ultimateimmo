@@ -207,7 +207,7 @@ if ($action == 'create')
 			}
 			
 			// civility
-			print $formcompany->select_civility(GETPOSTISSET("civility_id") != ''? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');
+			print $object->select_civility(GETPOSTISSET("civility_id") != ''? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');
 			//var_dump($object->civility_id);exit;	
 		}
 		elseif ($val['label'] == 'Country') 
@@ -300,7 +300,7 @@ if (($id || $ref) && $action == 'edit')
 				$object->civility_code = $tmparray['code'];
 				$object->civility = $tmparray['label'];
 			}
-			print $formcompany->select_civility(GETPOSTISSET("civility_id") != ''? GETPOST("civility_id", 'int') : $object->civility_id);
+			print $object->select_civility(GETPOSTISSET("civility_id") != ''? GETPOST("civility_id", 'int') : $object->civility_id);
 			//var_dump($tmparray);exit;	
 		}	
 		elseif ($val['label'] == 'Country') 
@@ -485,9 +485,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
 				$object->civility_code = $tmparray['code'];
 				$object->civility = $tmparray['label'];
-				//var_dump($object);exit;
 			}
-			print '<tr><td>' . $langs->trans('Civility') . '</td><td>';
 			print $object->civility;
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
