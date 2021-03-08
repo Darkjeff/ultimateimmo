@@ -23,27 +23,33 @@
  */
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php";
 // Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include substr($tmp, 0, ($i+1))."/main.inc.php";
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include dirname(substr($tmp, 0, ($i+1)))."/main.inc.php";
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include substr($tmp, 0, ($i + 1)) . "/main.inc.php";
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php";
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include "../main.inc.php";
-if (! $res && file_exists("../../main.inc.php")) $res=@include "../../main.inc.php";
-if (! $res && file_exists("../../../main.inc.php")) $res=@include "../../../main.inc.php";
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) $res = @include "../main.inc.php";
+if (!$res && file_exists("../../main.inc.php")) $res = @include "../../main.inc.php";
+if (!$res && file_exists("../../../main.inc.php")) $res = @include "../../../main.inc.php";
+if (!$res) die("Include of main fails");
 
-include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
-include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
-include_once(DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
-require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
+include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
+include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
+include_once(DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
+require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/paiement/class/paiement.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
-if (! empty($conf->accounting->enabled)) {
+if (!empty($conf->accounting->enabled)) {
 	require_once DOL_DOCUMENT_ROOT . '/accountancy/class/accountingjournal.class.php';
 }
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
@@ -133,7 +139,7 @@ if (empty($reshook)) {
 			exit();
 		} else {
 			$langs->load("errors");
-			setEventMessages($receipt->error, $receipt->errors, 'errors');
+			setEventMessages(null, $receipt->errors, 'errors');
 		}
 	}
 	// Delete payment
@@ -147,7 +153,7 @@ if (empty($reshook)) {
 				header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 			}
 			if ($result < 0) {
-				setEventMessages($paiement->error, $paiement->errors, 'errors');
+				setEventMessages(null, $paiement->errors, 'errors');
 			}
 		}
 	}
@@ -174,8 +180,8 @@ if (empty($reshook)) {
 			}
 		} else {
 			$langs->load("errors");
-			if (count($object->errors) > 0) setEventMessages($object->error, $object->errors, 'errors');
-			else setEventMessages($langs->trans($object->error), null, 'errors');
+			if (count($object->errors) > 0) setEventMessages(null, $object->errors, 'errors');
+			else setEventMessages($langs->trans(null), null, 'errors');
 		}
 	}
 
@@ -315,7 +321,7 @@ if (empty($reshook)) {
 				exit();
 			} else {
 				$db->rollback();
-				setEventMessages($object->error, $object->errors, 'errors');
+				setEventMessages(null, $object->errors, 'errors');
 				$action = "create";
 			}
 		}
@@ -596,22 +602,22 @@ if ($action == 'create')
 		elseif ($val['label'] == 'DateCreation')
 		{
 			// DateCreation
-			print $form->select_date(($object->date_creation ? $object->date_creation : -1), "date_creation", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate(($object->date_creation ? $object->date_creation : -1), "date_creation", 0, 0, 0, "", 1, 1, 1);
 		}
 		elseif ($val['label'] == 'DateStart')
 		{
 			// date_start
-			print $form->select_date(($object->date_start ? $object->date_start : -1), "date_start", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate(($object->date_start ? $object->date_start : -1), "date_start", 0, 0, 0, "", 1, 1, 1);
 		}
 		elseif ($val['label'] == 'DateEnd')
 		{
 			// date_end
-			print $form->select_date(($object->date_end ? $object->date_end : -1), "date_end", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate(($object->date_end ? $object->date_end : -1), "date_end", 0, 0, 0, "", 1, 1, 1);
 		}
 		elseif ($val['label'] == 'Echeance')
 		{
 			// Echeance
-			print $form->select_date(($object->date_echeance ? $object->date_echeance : -1), "date_echeance", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate(($object->date_echeance ? $object->date_echeance : -1), "date_echeance", 0, 0, 0, "", 1, 1, 1);
 		}
 	
 		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
@@ -677,13 +683,13 @@ if ($action == 'create')
 		
 		// Due date
 		print '<td class="center">';
-		print $form->select_date(! empty($date_echeance) ? $date_echeance : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
+		print $form->selectDate(! empty($date_echeance) ? $date_echeance : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
 		print '</td>';
 		print '<td class="center">';
-		print $form->select_date(! empty($dateperiod) ? $dateperiod : '-1', 'period', 0, 0, 0, 'fiche_loyer', 1);
+		print $form->selectDate(! empty($dateperiod) ? $dateperiod : '-1', 'period', 0, 0, 0, 'fiche_loyer', 1);
 		print '</td>';
 		print '<td class="center">';
-		print $form->select_date(! empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', 0, 0, 0, 'fiche_loyer', 1);
+		print $form->selectDate(! empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', 0, 0, 0, 'fiche_loyer', 1);
 		print '</td>';
 		
 		print '<td class="center"><input type="submit" class="button" value="' . $langs->trans("MenuAllReceiptperContract") . '"></td></tr>';
@@ -782,7 +788,7 @@ if ($action == 'create')
 		if ($action == 'delete')
 		{
 			// Param url = id de la periode à supprimer - id session
-			$ret = $form->form_confirm($_SERVER['PHP_SELF'].'?recid='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+			$ret = $form->formconfirm($_SERVER['PHP_SELF'].'?recid='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
 			if ($ret == 'html')
 			print '<br>';
 		}
@@ -929,7 +935,7 @@ if ($action == 'create')
 				if (empty($numref)) 
 				{
 					$error ++;
-					setEventMessages($object->error, $object->errors, 'errors');
+					setEventMessages(null, $object->errors, 'errors');
 				}
 			} 
 			else 
