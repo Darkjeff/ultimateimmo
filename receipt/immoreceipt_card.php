@@ -70,10 +70,22 @@ $rowid 		= GETPOST('rowid', 'int');
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'aZ09');
 $confirm    = GETPOST('confirm', 'alpha');
+$toselect   = GETPOST('toselect', 'array');
 $cancel     = GETPOST('cancel', 'aZ09');
 $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'immoreceiptcard';   // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
 $search_fk_soc = GETPOST('search_fk_soc', 'alpha');
+
+$limit = GETPOST('limit', 'int') ?GETPOST('limit', 'int') : $conf->liste_limit;
+$sortfield = GETPOST('sortfield', 'alpha');
+$sortorder = GETPOST('sortorder', 'alpha');
+$page = GETPOSTISSET('pageplusone') ? (GETPOST('pageplusone') - 1) : GETPOST("page", 'int');
+$userid = GETPOST('userid', 'int');
+$begin = GETPOST('begin');
+if (!$sortorder) $sortorder = "ASC";
+if (!$sortfield) $sortfield = "p.lastname";
+if (empty($page) || $page < 0 || GETPOST('button_search', 'alpha') || GETPOST('button_removefilter', 'alpha')) { $page = 0; }
+$offset = $limit * $page;
 
 // Initialize technical objects
 $object = new ImmoReceipt($db);
@@ -651,68 +663,90 @@ if ($action == 'create')
 /*                                                                             */
 /* *************************************************************************** */
 
-	if ($action == 'createall') 
-	{
-		print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
-		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
-		print '<input type="hidden" name="action" value="addall">';
-		
-		print '<table class="border" width="100%">';
-		
-		print '<tr class="liste_titre">';
-		
-		print '<td class="left">';
-		print $langs->trans("NomLoyer");
-		print '</td><td class="center">';
-		print $langs->trans("Echeance");
-		print '</td><td class="center">';
-		print $langs->trans("Periode_du");
-		print '</td><td class="center">';
-		print $langs->trans("Periode_au");
-		print '</td><td class="left">';
-		print '&nbsp;';
-		print '</td>';
-		print "</tr>\n";
-		
-		print '<tr class="oddeven" valign="top">';
-		
-		/*
-		 * Rent name
-		 */
-		print '<td><input name="label" size="30" value="' . GETPOST('label') . '"</td>';
-		
-		// Due date
-		print '<td class="center">';
-		print $form->selectDate(! empty($date_echeance) ? $date_echeance : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
-		print '</td>';
-		print '<td class="center">';
-		print $form->selectDate(! empty($dateperiod) ? $dateperiod : '-1', 'period', 0, 0, 0, 'fiche_loyer', 1);
-		print '</td>';
-		print '<td class="center">';
-		print $form->selectDate(! empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', 0, 0, 0, 'fiche_loyer', 1);
-		print '</td>';
-		
-		print '<td class="center"><input type="submit" class="button" value="' . $langs->trans("MenuAllReceiptperContract") . '"></td></tr>';
-		
-		print '</table>';
-		
-		/*
-		 * List of contracts
-		 */
-		$sql = "SELECT c.rowid as contractid, c.ref as contract, loc.lastname as rentername, o.lastname as ownername, l.ref as localref, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner, o.rowid, o.fk_soc, l.fk_owner";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
-		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
-		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
-		$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as o";
-		$sql .= " WHERE preavis = 1 AND loc.rowid = c.fk_renter AND l.rowid = c.fk_property AND o.rowid = l.fk_owner ";
-		//echo $sql;exit;
+if ($action == 'createall') {
+	print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
+	if ($optioncss != '') print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
+	print '<input type="hidden" name="action" value="addall">';
+
+	print '<table class="border" width="100%">';
+
+	print '<tr class="liste_titre">';
+
+	print '<td class="left">';
+	print $langs->trans("NomLoyer");
+	print '</td><td class="center">';
+	print $langs->trans("Echeance");
+	print '</td><td class="center">';
+	print $langs->trans("Periode_du");
+	print '</td><td class="center">';
+	print $langs->trans("Periode_au");
+	print '</td><td class="left">';
+	print '&nbsp;';
+	print '</td>';
+	print "</tr>\n";
+
+	print '<tr class="oddeven" valign="top">';
+
+	/*
+	 * Rent name
+	 */
+	print '<td><input name="label" size="30" value="' . GETPOST('label') . '"</td>';
+
+	// Due date
+	print '<td class="center">';
+	print $form->selectDate(!empty($date_echeance) ? $date_echeance : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
+	print '</td>';
+	print '<td class="center">';
+	print $form->selectDate(!empty($dateperiod) ? $dateperiod : '-1', 'period', 0, 0, 0, 'fiche_loyer',
+		1
+	);
+	print '</td>';
+	print '<td class="center">';
+	print $form->selectDate(!empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', 0, 0, 0, 'fiche_loyer', 1);
+	print '</td>';
+
+	print '<td class="center"><input type="submit" class="button" value="' . $langs->trans("MenuAllReceiptperContract") . '"></td></tr>';
+
+	print '</table>';
+
+	/*
+	 * List of contracts
+	 */
+	$sql = "SELECT c.rowid as contractid, c.ref as contract, loc.lastname as rentername, o.lastname as ownername, l.ref as localref, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner, o.rowid, o.fk_soc, l.fk_owner";
+	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as o";
+	$sql .= " WHERE preavis = 1 AND loc.rowid = c.fk_renter AND l.rowid = c.fk_property AND o.rowid = l.fk_owner ";
+	//echo $sql;exit;
+	// Count total nb of records
+	$nbtotalofrecords = '';
+	if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 		$resql = $db->query($sql);
-		if ($resql)
+		$nbtotalofrecords = $db->num_rows($resql);
+		if (($page * $limit) > $nbtotalofrecords)	// if total resultset is smaller then paging size (filtering), goto and load page 0
 		{
+			$page = 0;
+			$offset = 0;
+		}
+	}
+
+	$sql .= $db->plimit($limit + 1, $offset);
+	
+	$resql = $db->query($sql);
+	if ($resql) {
 		$num = $db->num_rows($resql);
+
+		$arrayofselected = is_array($toselect) ? $toselect : array();
 
 		$i = 0;
 		$total = 0;
+		$param = '';
+		if ($limit > 0 && $limit != $conf->liste_limit) $param .= '&amp;limit=' . $limit;
+		$param .= '&amp;begin=' . urlencode($begin);
+
+		//print_barre_liste($titre, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'address', 0, $newcardbutton, '', $limit, 0, 0, 1);
 
 		print '<br><table class="noborder" width="100%">';
 		print '<tr class="liste_titre">';
@@ -726,23 +760,20 @@ if ($action == 'create')
 		print '<td class="right">' . $langs->trans('RentAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('ChargesAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('TotalAmount') . '</td>';
-		print '<td class="right">' . $langs->trans('VATIsUsed') . '</td>';		
+		print '<td class="right">' . $langs->trans('VATIsUsed') . '</td>';
 		print '<td class="right">' . $langs->trans('Select') . '</td>';
 		print "</tr>\n";
 
-		if ($num > 0)
-		{
-			while ( $i < $num )
-			{
+		if ($num > 0) {
+			while ($i < $num) {
 				$objp = $db->fetch_object($resql);
 				print '<tr class="oddeven">';
 
-				if ($objp->fk_soc)
-				{
+				if ($objp->fk_soc) {
 					$company = new Societe($db);
 					$result = $company->fetch($objp->fk_soc);
 				}
-				
+
 				print '<td>' . $objp->contract . '</td>';
 				print '<td>' . $objp->localref . '</td>';
 				print '<td>' . $objp->local . '</td>';
@@ -755,7 +786,7 @@ if ($action == 'create')
 				print '<td class="right">' . price($objp->chargesamount) . '</td>';
 				print '<td class="right">' . price($objp->total) . '</td>';
 				print '<td class="right">' . yn($objp->vat) . '</td>';
-			
+
 				// Colonne choix contrat
 				print '<td class="center">';
 
@@ -763,19 +794,17 @@ if ($action == 'create')
 				print '</td>';
 				print '</tr>';
 
-				$i ++;
+				$i++;
 			}
 		}
 
 		print "</table>\n";
 		$db->free($resql);
-	}
-	else
-	{
+	} else {
 		dol_print_error($db);
 	}
 	print '</form>';
-	}
+}
 
 	// Part to edit record
 	if (($id || $ref) && $action == 'edit')
@@ -935,7 +964,7 @@ if ($action == 'create')
 				if (empty($numref)) 
 				{
 					$error ++;
-					setEventMessages(null, $object->errors, 'errors');
+					setEventMessages($object->error, $object->errors, 'errors');
 				}
 			} 
 			else 
