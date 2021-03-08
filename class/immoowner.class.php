@@ -289,6 +289,7 @@ class ImmoOwner extends CommonObject
 		$fieldvalues = $this->setSaveQuery();
 		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation'] = $this->db->idate($now);
 		if (array_key_exists('birth', $fieldvalues) && empty($fieldvalues['birth'])) $fieldvalues['birth'] = $this->db->jdate($object->birth);
+		if (array_key_exists('civility_id', $fieldvalues) && empty($fieldvalues['civility_id'])) $fieldvalues['civility_id'] = $this->db->jdate($object->birth);
 		if (array_key_exists('fk_user_creat', $fieldvalues) && !($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat'] = $user->id;
 		unset($fieldvalues['rowid']);	// The field 'rowid' is reserved field name for autoincrement field so we don't need it into insert.
 
@@ -722,65 +723,61 @@ class ImmoOwner extends CommonObject
      *  @param  int     $save_lastsearch_value      -1=Auto, 0=No save of lastsearch_values when clicking, 1=Save lastsearch_values whenclicking
      *  @return	string                              String with URL
      */
-    public function getNomUrl($withpicto = 0, $option = '', $notooltip = 0, $morecss = '', $save_lastsearch_value = -1)
-    {
-        global $conf, $langs, $hookmanager;
+	public function getNomUrl($withpicto = 0, $option = '', $notooltip = 0, $morecss = '', $save_lastsearch_value = -1)
+	{
+		global $conf, $langs, $hookmanager;
 
-        if (!empty($conf->dol_no_mouse_hover)) $notooltip = 1; // Force disable tooltips
+		if (!empty($conf->dol_no_mouse_hover)) $notooltip = 1; // Force disable tooltips
 
-        $result = '';
+		$result = '';
 
-        $label = '<u>'.$langs->trans("ImmoOwner").'</u>';
-        $label .= '<br>';
-		$label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
+		$label = '<u>' . $langs->trans("ImmoOwner") . '</u>';
 		$label .= '<br>';
-        $label .= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->lastname;
-        if (isset($this->status)) {
-        	$label.= '<br><b>' . $langs->trans("Status").":</b> ".$this->getLibStatut(5);
-        }
+		$label .= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
+		$label .= '<br>';
+		$label .= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->lastname;
+		if (isset($this->status)) {
+			$label .= '<br><b>' . $langs->trans("Status") . ":</b> " . $this->getLibStatut(5);
+		}
 
-        $url = dol_buildpath('/ultimateimmo/owner/immoowner_card.php', 1).'?id='.$this->id;
+		$url = dol_buildpath('/ultimateimmo/owner/immoowner_card.php', 1) . '?id=' . $this->id;
 
-        if ($option != 'nolink')
-        {
-            // Add param to save lastsearch_values or not
-            $add_save_lastsearch_values = ($save_lastsearch_value == 1 ? 1 : 0);
-            if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) $add_save_lastsearch_values = 1;
-            if ($add_save_lastsearch_values) $url .= '&save_lastsearch_values=1';
-        }
+		if ($option != 'nolink') {
+			// Add param to save lastsearch_values or not
+			$add_save_lastsearch_values = ($save_lastsearch_value == 1 ? 1 : 0);
+			if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) $add_save_lastsearch_values = 1;
+			if ($add_save_lastsearch_values) $url .= '&save_lastsearch_values=1';
+		}
 
-        $linkclose = '';
-        if (empty($notooltip))
-        {
-            if (!empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER))
-            {
-                $label = $langs->trans("ShowImmoOwner");
-                $linkclose .= ' alt="'.dol_escape_htmltag($label, 1).'"';
-            }
-            $linkclose .= ' title="'.dol_escape_htmltag($label, 1).'"';
-            $linkclose .= ' class="classfortooltip'.($morecss ? ' '.$morecss : '').'"';
-        }
-        else $linkclose = ($morecss ? ' class="'.$morecss.'"' : '');
+		$linkclose = '';
+		if (empty($notooltip)) {
+			if (!empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER)) {
+				$label = $langs->trans("ShowImmoOwner");
+				$linkclose .= ' alt="' . dol_escape_htmltag($label, 1) . '"';
+			}
+			$linkclose .= ' title="' . dol_escape_htmltag($label, 1) . '"';
+			$linkclose .= ' class="classfortooltip' . ($morecss ? ' ' . $morecss : '') . '"';
+		} else $linkclose = ($morecss ? ' class="' . $morecss . '"' : '');
 
-		$linkstart = '<a href="'.$url.'"';
-		$linkstart .= $linkclose.'>';
+		$linkstart = '<a href="' . $url . '"';
+		$linkstart .= $linkclose . '>';
 		$linkend = '</a>';
 
 		$result .= $linkstart;
-		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
+		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="' . (($withpicto != 2) ? 'paddingright ' : '') . 'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
 		if ($withpicto != 2) $result .= $this->ref;
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
 		global $action, $hookmanager;
 		$hookmanager->initHooks(array('immoownerdao'));
-		$parameters = array('id'=>$this->id, 'getnomurl'=>$result);
+		$parameters = array('id' => $this->id, 'getnomurl' => $result);
 		$reshook = $hookmanager->executeHooks('getNomUrl', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 		if ($reshook > 0) $result = $hookmanager->resPrint;
 		else $result .= $hookmanager->resPrint;
 
 		return $result;
-    }
+	}
 
 	/**
 	 *  Retourne le libelle du status d'un user (actif, inactif)
