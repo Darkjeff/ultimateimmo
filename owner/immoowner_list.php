@@ -442,43 +442,36 @@ while ($i < ($limit ? min($num, $limit) : $num))
 
 	    if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
 	    elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+		if ($key == 'civility') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+		if ($key == 'country') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
 
-		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '').'right';
-		
-		if (! empty($arrayfields['t.'.$key]['checked']))
+		if (!empty($arrayfields['t.'.$key]['checked']))
 		{
 			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
 			if ($key == 'status') print $object->getLibStatut(5);
-
-			if ($val['label'] == 'Civility') {
+			elseif ($val['label'] == 'Civility') {
 				if ($object->civility_id) {
 					$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
 					$object->civility_code = $tmparray['code'];
 					$object->civility = $tmparray['label'];
 				}
 				print $object->civility;
-			}
-			elseif ($val['label'] == 'Country') 
-			{
-				if ($object->country_id)
-				{
-					include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
+			} elseif ($val['label'] == 'Country') {
+				if ($object->country_id) {
+					include_once(DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 					$tmparray = getCountry($object->country_id, 'all');
 					$object->country_code = $tmparray['code'];
 					$object->country = $tmparray['label'];
-				}				
+				}
 				print $object->country;
 			}
-			else
-			{
-				print $object->showOutputField($val, $key, $obj->$key, '');
-			}
+			else print $object->showOutputField($val, $key, $object->$key, '');
 			print '</td>';
-			if (! $i) $totalarray['nbfield']++;
-			if (! empty($val['isameasure']))
+			if (!$i) $totalarray['nbfield']++;
+			if (!empty($val['isameasure']))
 			{
-				if (! $i) $totalarray['pos'][$totalarray['nbfield']]='t.'.$key;
-				$totalarray['val']['t.'.$key] += $obj->$key;
+				if (!$i) $totalarray['pos'][$totalarray['nbfield']] = 't.'.$key;
+				$totalarray['val']['t.'.$key] += $object->$key;
 			}
 		}
 	}
