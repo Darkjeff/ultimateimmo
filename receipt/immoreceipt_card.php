@@ -93,7 +93,7 @@ $immorent = new ImmoRent($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/' . $user->id;
 $hookmanager->initHooks(array('immoreceiptcard', 'globalcard'));     // Note that conf->hooks_modules contains array
-
+//var_dump($object->fields);exit;
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
 
@@ -663,6 +663,17 @@ if ($action == 'create')
 /*                                                                             */
 /* *************************************************************************** */
 
+// List of mass actions available
+$arrayofmassactions = array(
+	//'validate'=>$langs->trans("Validate"),
+	//'generate_doc'=>$langs->trans("ReGeneratePDF"),
+	//'builddoc'=>$langs->trans("PDFMerge"),
+	//'presend'=>$langs->trans("SendByMail"),
+);
+if ($permissiontodelete) $arrayofmassactions['predelete'] = '<span class="fa fa-trash paddingrightonly"></span>'.$langs->trans("Delete");
+if (GETPOST('nomassaction', 'int') || in_array($massaction, array('presend', 'predelete'))) $arrayofmassactions = array();
+$massactionbutton = $form->selectMassAction('', $arrayofmassactions);
+
 if ($action == 'createall') {
 	print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
 	if ($optioncss != '') print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
@@ -713,12 +724,12 @@ if ($action == 'createall') {
 	/*
 	 * List of contracts
 	 */
-	$sql = "SELECT c.rowid as contractid, c.ref as contract, loc.lastname as rentername, o.lastname as ownername, l.ref as localref, l.address, l.label as local, c.totalamount as total, c.rentamount , c.chargesamount, c.fk_renter as reflocataire, c.fk_property as reflocal, c.preavis as preavis, c.vat, l.fk_owner, o.rowid, o.fk_soc, l.fk_owner";
+	$sql = "SELECT rent.rowid as contractid, rent.ref as contract, loc.lastname as rentername, own.lastname as ownername, prop.ref as localref, prop.address, prop.label as local, rent.totalamount as total, rent.rentamount , rent.chargesamount, rent.fk_renter as reflocataire, rent.fk_property as reflocal, rent.preavis as preavis, rent.vat, prop.fk_owner, own.rowid, own.fk_soc, prop.fk_owner";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
-	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
-	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
-	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as o";
-	$sql .= " WHERE preavis = 1 AND loc.rowid = c.fk_renter AND l.rowid = c.fk_property AND o.rowid = l.fk_owner ";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop";
+	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as own";
+	$sql .= " WHERE preavis = 1 AND loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property AND own.rowid = prop.fk_owner ";
 	//echo $sql;exit;
 	// Count total nb of records
 	$nbtotalofrecords = '';
@@ -733,7 +744,7 @@ if ($action == 'createall') {
 	}
 
 	$sql .= $db->plimit($limit + 1, $offset);
-	
+
 	$resql = $db->query($sql);
 	if ($resql) {
 		$num = $db->num_rows($resql);
@@ -742,11 +753,6 @@ if ($action == 'createall') {
 
 		$i = 0;
 		$total = 0;
-		$param = '';
-		if ($limit > 0 && $limit != $conf->liste_limit) $param .= '&amp;limit=' . $limit;
-		$param .= '&amp;begin=' . urlencode($begin);
-
-		//print_barre_liste($titre, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'address', 0, $newcardbutton, '', $limit, 0, 0, 1);
 
 		print '<br><table class="noborder" width="100%">';
 		print '<tr class="liste_titre">';
@@ -792,7 +798,7 @@ if ($action == 'createall') {
 
 				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localref . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner .  '_' . $objp->fk_soc . '"' . ($objp->localref ? ' checked="checked"' : "") . '/>';
 				print '</td>';
-				print '</tr>';
+				print '</tr>' . "\n";
 
 				$i++;
 			}
@@ -964,7 +970,7 @@ if ($action == 'createall') {
 				if (empty($numref)) 
 				{
 					$error ++;
-					setEventMessages($object->error, $object->errors, 'errors');
+					setEventMessages(null, $object->errors, 'errors');
 				}
 			} 
 			else 
