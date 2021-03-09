@@ -83,7 +83,7 @@ $page = GETPOSTISSET('pageplusone') ? (GETPOST('pageplusone') - 1) : GETPOST("pa
 $userid = GETPOST('userid', 'int');
 $begin = GETPOST('begin');
 if (!$sortorder) $sortorder = "ASC";
-if (!$sortfield) $sortfield = "p.lastname";
+if (!$sortfield) $sortfield = "own.lastname";
 if (empty($page) || $page < 0 || GETPOST('button_search', 'alpha') || GETPOST('button_removefilter', 'alpha')) { $page = 0; }
 $offset = $limit * $page;
 
@@ -679,6 +679,8 @@ if ($action == 'createall') {
 	if ($optioncss != '') print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="addall">';
+	print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
+	print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 
 	print '<table class="border" width="100%">';
 
@@ -731,6 +733,7 @@ if ($action == 'createall') {
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as own";
 	$sql .= " WHERE preavis = 1 AND loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property AND own.rowid = prop.fk_owner ";
 	//echo $sql;exit;
+	$sql .= $db->order($sortfield, $sortorder);
 	// Count total nb of records
 	$nbtotalofrecords = '';
 	if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
@@ -753,6 +756,8 @@ if ($action == 'createall') {
 
 		$i = 0;
 		$total = 0;
+
+		//print_barre_liste($titre, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'address', 0, $newcardbutton, '', $limit, 0, 0, 1);
 
 		print '<br><table class="noborder" width="100%">';
 		print '<tr class="liste_titre">';
@@ -793,12 +798,13 @@ if ($action == 'createall') {
 				print '<td class="right">' . price($objp->total) . '</td>';
 				print '<td class="right">' . yn($objp->vat) . '</td>';
 
+
 				// Colonne choix contrat
 				print '<td class="center">';
 
 				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localref . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner .  '_' . $objp->fk_soc . '"' . ($objp->localref ? ' checked="checked"' : "") . '/>';
 				print '</td>';
-				print '</tr>' . "\n";
+				print '</tr>'."\n";
 
 				$i++;
 			}
