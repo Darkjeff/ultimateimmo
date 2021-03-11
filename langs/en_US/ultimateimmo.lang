@@ -115,6 +115,7 @@ Property = Property
 Properties = Properties
 ImmoProperties = Properties
 ImmoRents = Rents
+ImmoRent = Rental
 ImmoRenters = Renters
 ImmoCost = Quittance
 ImmoCosts = Charges locatives

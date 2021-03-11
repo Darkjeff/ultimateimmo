@@ -343,7 +343,7 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function createCommon(User $user, $notrigger = false)
 	{
-		global $langs;
+		global $langs, $conf;
 
 		$error = 0;
 

@@ -357,13 +357,13 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 			print '<td class="left">' . $objp->ref . "</td>";
 
-			$sql = "SELECT rt.rowid, rt.ref as contract";
-			$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
-			$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
-			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rt ON r.fk_rent = rt.rowid";
-			$sql .= " WHERE p.fk_receipt = " . $id;
-			$sql .= " AND r.fk_rent = rt.rowid";
-
+			$sql = "SELECT rent.rowid, rent.ref as contract";
+			$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as pmt";
+			$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rcpt";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rcpt.fk_rent = rent.rowid";
+			$sql .= " WHERE pmt.fk_receipt = " . $id;
+			$sql .= " AND rcpt.fk_rent = rent.rowid";
+			//print_r($sql);exit;
 			$resql = $db->query($sql);
 			if ($resql) {
 				$obj = $db->fetch_object($resql);
@@ -372,7 +372,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 				$db->free();
 			}
 
-			print '<td class="left">' . $obj->contract . "</td>";
+			print '<td class="left">' . $objp->fk_rent . "</td>";
 
 			print '<td class="right">' . price($objp->total_amount) . "</td>";
 

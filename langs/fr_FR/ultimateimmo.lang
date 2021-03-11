@@ -122,6 +122,7 @@ Property = Bien immobilier
 Properties = Biens
 ImmoProperties = Biens immobiliers
 ImmoRents = Locations
+ImmoRent = Location
 ImmoRenters = Locataires
 ImmoCost = Quittance
 ImmoCosts = Charges locatives
