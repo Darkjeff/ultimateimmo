@@ -162,6 +162,14 @@ if ($action == 'add') {
 		$id = $payment->create($user);
 		header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $payment->fk_receipt);
 		if ($id > 0) {
+			$label = '(CustomerReceiptPayment)';
+			if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
+			$result = $payment->addPaymentToBank($user, 'immopayment', $label, $payment->fk_bank, '', '');
+			if ($result <= 0) {
+				$errmsg = $payment->errors;
+				setEventMessages(null, $errmsg, 'errors');
+				$error++;
+			}
 		} else {
 			setEventMessages(null, $payment->errors, 'errors');
 		}
@@ -240,6 +248,15 @@ if ($action == 'addall') {
 
 						if ($result < 0) {
 							setEventMessages(null, $payment->errors, 'errors');
+						} else {
+							$label = '(CustomerReceiptPayment)';
+							if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
+							$result = $payment->addPaymentToBank($user, 'immopayment', $label, $payment->fk_bank, '', '');
+							if ($result <= 0) {
+								$errmsg = $payment->errors;
+								setEventMessages(null, $errmsg, 'errors');
+								$error++;
+							}
 						}
 					}
 				}
