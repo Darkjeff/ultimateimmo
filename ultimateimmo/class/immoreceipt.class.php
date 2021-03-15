@@ -117,7 +117,7 @@ class ImmoReceipt extends CommonObject
 	 */
 	public $fields=array(
 		'rowid'         => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>1, 'visible'=>-2, 'noteditable'=>1, 'notnull'=> 1, 'index'=>1, 'position'=>1, 'comment'=>'Id'),
-		'ref'           => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'noteditable'=>0, 'default'=>'(PROV)', 'notnull'=> 1, 'showoncombobox'=>1, 'index'=>1, 'position'=>10, 'searchall'=>1, 'comment'=>'Reference of object'),
+		'ref'           => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>1, 'visible'=>1, 'noteditable'=>0, 'default'=>'', 'notnull'=> 1, 'showoncombobox'=>1, 'index'=>1, 'position'=>10, 'searchall'=>1, 'comment'=>'Reference of object'),
 	    'entity'        => array('type'=>'integer', 'label'=>'Entity', 'enabled'=>1, 'visible'=>0, 'notnull'=> 1, 'default'=>1, 'index'=>1, 'position'=>20),
 		'fk_rent'       => array('type'=>'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label'=>'Contract', 'enabled'=>1, 'visible'=>1, 'position'=>30, 'notnull'=>-1, 'searchall'=>1, 'foreignkey'=>'ultimateimmo_immorent.rowid'),
 		'fk_property'   => array('type'=>'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label'=>'Property', 'visible'=>1, 'enabled'=>1, 'position'=>35, 'notnull'=>-1, 'index'=>1,'foreignkey'=> 'ultimateimmo_immoproperty.rowid', 'searchall'=>1, 'help'=>"LinkToProperty"),
@@ -343,7 +343,7 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function createCommon(User $user, $notrigger = false)
 	{
-		global $langs;
+		global $langs, $conf;
 
 		$error = 0;
 
@@ -1260,7 +1260,7 @@ class ImmoReceipt extends CommonObject
 			}
 		}
 
-		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
+		$modelpath = "ultimateimmo/core/modules/ultimateimmo/doc/";
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref, $moreparams);
 	}
@@ -1367,7 +1367,70 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function initAsSpecimen()
 	{
-		$this->initAsSpecimenCommon();
+		//$this->initAsSpecimenCommon();
+		$now = dol_now();
+
+		 // Load array of rents rentids
+		 $num_rents = 0;
+		 $rentids = array();
+		 $sql = "SELECT rowid";
+		 $sql .= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immorent";
+		 $sql .= " WHERE entity IN (".getEntity('product').")";
+		 $resql = $this->db->query($sql);
+		 if ($resql)
+		 {
+			 $num_rents = $this->db->num_rows($resql);
+			 $i = 0;
+			 while ($i < $num_rents)
+			 {
+				 $i++;
+				 $row = $this->db->fetch_row($resql);
+				 $rentids[$i] = $row[0];
+			 }
+		 }
+
+		// Initialise parameters
+		$this->rowid = 0;
+		$this->ref = 'SPECIMEN';
+		$this->specimen = 1;
+		$this->label = 'IMMORECEIPT SPECIMEN';
+		$this->date_echeance = $now;
+		$this->date_creation = $now;
+		$this->date_start = $now;
+		$this->date_end = $now + (3600 * 24 * 365);
+		$this->rentamount = 1000;
+		$this->note_public = 'This is a comment';
+
+		// Lines
+        $nbp = 5;
+        $xnbp = 0;
+		while ($xnbp < $nbp) {
+
+			$line = new immoreceiptLine();
+
+			$line->nomlocal = 'nomlocal';
+			$line->label = 'nomrenter';
+			$line->nomlocataire = 'M & Mme Locator';
+			$line->total_amount = 1000;
+			$line->rentamount = 800;
+			$line->chargesamount = 200;
+			$line->date_echeance = $this->db->jdate($now);
+			$line->note_public = 'blablabla';
+			$line->date_start = $this->db->jdate($now);
+			$line->date_end = $this->db->jdate($now);
+			$line->encours = 2500;
+			$line->regul = 1500;
+			$line->partial_payment = 500;
+
+			if ($num_rents > 0)
+            {
+                $rentid = mt_rand(1, $num_rents);
+                $line->fk_rent = $rentids[$rentid];
+            }
+
+			$this->lines[$xnbp] = $line;
+			$xnbp++;
+		}
 	}
 
 

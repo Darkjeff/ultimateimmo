@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2020  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2021  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ CREATE TABLE llx_ultimateimmo_immorent(
 	date_end date NOT NULL, 
 	date_next_rent date NOT NULL, 
 	date_last_regul date NOT NULL, 
-	date_creation datetime NOT NULL, 
+	date_creation datetime NULL, 
 	tms timestamp NOT NULL default CURRENT_TIMESTAMP, 
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
