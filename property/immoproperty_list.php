@@ -206,7 +206,7 @@ foreach ($object->fields as $key => $val) {
 	$sql .= 't.' . $key . ', ';
 }
 //$sql .= 'tp.label as type_property, country.label as country, country.rowid as countryid, b.label as building_name, soc.nom as owner';
-$sql .= ' co.label as country, b.label as building_name, soc.nom as owner';
+$sql .= ' country.label as country, b.label as building_name, soc.nom as owner';
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
 	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef." . $key . ' as options_' . $key . ', ' : '');
