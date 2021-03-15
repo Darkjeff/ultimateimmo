@@ -494,7 +494,7 @@ class ImmoRenter extends CommonObject
 			return -1;
 		}
 	}
-	
+
 	/**
 	 * Function to concat keys of fields
 	 *
@@ -555,7 +555,7 @@ class ImmoRenter extends CommonObject
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), array($array[0]));
 		$array = implode(', t.', $array);
-		
+
 		$sql = 'SELECT ' . $array . ',';
 
 		$sql .= 'country.rowid as country_id, country.code as country_code, country.label as country, civility.rowid as civility_id, civility.code as civility_code, civility.label as civility';
@@ -585,7 +585,7 @@ class ImmoRenter extends CommonObject
 					$this->birth = $this->db->jdate($obj->birth);
 
 					$this->civility_id    = $obj->civility_id;
-					$this->civility_code  = $obj->civility_code; 
+					$this->civility_code  = $obj->civility_code;
 					if ($langs->trans("Civility" . $obj->civility_code) != "Civility" . $obj->civility_code) {
 						$this->civility = $langs->transnoentitiesnoconv("Civility" .  $obj->civility_code);
 					} else {
@@ -1041,7 +1041,7 @@ class ImmoRenter extends CommonObject
 
 		$result .= $linkstart;
 		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="' . (($withpicto != 2) ? 'paddingright ' : '') . 'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
-		if ($withpicto != 2) $result .= $this->ref;
+		if ($withpicto != 2) $result .= $this->lastname;
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 

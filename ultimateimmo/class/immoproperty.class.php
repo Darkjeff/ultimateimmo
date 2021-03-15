@@ -48,7 +48,7 @@ class ImmoProperty extends CommonObject
 	 * @var ImmopropertyLine[] Lines
 	 */
 	public $lines = array();
-	
+
 	//public $fieldsforcombobox='ref';
 	/**
 	 * @var int  Does immoproperty support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
@@ -149,7 +149,7 @@ class ImmoProperty extends CommonObject
 	 * @var int Property_type_id
 	 */
 	public $property_type_id;
-	
+
 	/**
 	 * @var int fk_property
 	 */
@@ -159,7 +159,7 @@ class ImmoProperty extends CommonObject
      * @var string label
      */
 	public $label;
-	
+
 	public $juridique_id;
 
 	public $datebuilt;
@@ -265,7 +265,7 @@ class ImmoProperty extends CommonObject
 		$this->fields['datebuilt']['arrayofkeyval'] = array(1 => $langs->trans('DateBuilt1'), 2 => $langs->trans('DateBuilt2'), 3 => $langs->trans('DateBuilt3'), 4 => $langs->trans('DateBuilt4'), 5 => $langs->trans('DateBuilt5'));
 		$this->fields['property_type_id']['arrayofkeyval'] = array(1 => $langs->trans('APA'), 2 => $langs->trans('HOU'), 3 => $langs->trans('LOC'), 4 => $langs->trans('SHO'), 5 => $langs->trans('GAR'), 6 => $langs->trans('BUL'));
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
@@ -370,7 +370,7 @@ class ImmoProperty extends CommonObject
 	    }
 	}
 
-	
+
 	/**
 	 * Function to concat keys of fields
 	 *
@@ -381,7 +381,7 @@ class ImmoProperty extends CommonObject
 	    $keys = array_keys($this->fields);
 	    return implode(',', $keys);
 	}
-	
+
 	/**
 	 * Function to load data into current object this
 	 *
@@ -435,9 +435,9 @@ class ImmoProperty extends CommonObject
 	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
 		if (empty($id) && empty($ref) && empty($morewhere)) return -1;
-		
+
 		global $langs;
-		
+
 		$array = preg_split("/[\s,]+/", $this->get_field_list());
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), array($array[0]));
@@ -453,7 +453,7 @@ class ImmoProperty extends CommonObject
 		if (!empty($id)) $sql .= ' WHERE t.rowid = '.$id;
 		else $sql .= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql.=$morewhere;
-		
+
 		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
 		if ($res)
@@ -467,15 +467,15 @@ class ImmoProperty extends CommonObject
 
         			$this->date_creation = $this->db->jdate($obj->date_creation);
         			$this->tms = $this->db->jdate($obj->tms);
-					
+
 					/*$this->juridique_id	= $obj->juridique_id;
 					$this->juridique_code = $obj->juridique_code;
 					$this->juridique=$obj->juridique;*/
-					
+
 					$this->property_type_id	= $obj->property_type_id;
-					$this->type_code = $obj->type_code;				
+					$this->type_code = $obj->type_code;
 					$this->type=$obj->type;
-					
+
         			$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
 					if ($langs->trans("Country".$obj->country_code) != "Country".$obj->country_code)
@@ -652,7 +652,7 @@ class ImmoProperty extends CommonObject
 
 		$result .= $linkstart;
 		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
-		if ($withpicto != 2) $result .= $this->ref;
+		if ($withpicto != 2) $result .= $this->label;
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
@@ -758,7 +758,7 @@ class ImmoProperty extends CommonObject
 			dol_print_error($this->db);
 		}
 	}
-	
+
 	/**
 	 *    Return country label, code or id from an id, code or label
 	 *
@@ -823,7 +823,7 @@ class ImmoProperty extends CommonObject
 		else dol_print_error($dbtouse,'');
 		return 'Error';
 	}
-	
+
 	/**
 	 *    Return ImmoProperty_Type label, code or id from an id, code or label
 	 *
@@ -839,7 +839,7 @@ class ImmoProperty extends CommonObject
 	 *    @param      int		$searchlabel    Label of ImmoProperty_Type to search (warning: searching on label is not reliable)
 	 *    @return     mixed       				Integer with ImmoProperty_Type id or String with ImmoProperty_Type code or translated ImmoProperty_Type name or Array('id','code','label') or 'NotDefined'
 	 */
-	 
+
 	/*function getPropertyTypeLabel($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
 	{
 		global $db,$langs;
