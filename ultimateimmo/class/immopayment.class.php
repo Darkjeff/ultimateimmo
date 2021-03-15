@@ -217,11 +217,11 @@ class ImmoPayment extends CommonObject
 	/*public function createCommon(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
 	{
 		global $langs, $object, $form;
-		
+
 		$error = 0;
 
 		$now=dol_now();
-		
+
 		$fieldvalues = $this->setSaveQuery();
 		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation']=$this->db->idate($now);
 		if (array_key_exists('date_payment', $fieldvalues) && empty($fieldvalues['date_payment'])) $fieldvalues['date_payment']=$this->db->jdate($object->date_payment);
@@ -243,7 +243,7 @@ class ImmoPayment extends CommonObject
 			// If field is an implicit foreign key field
 			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key]='';
 			if (! empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key]='';
-			if (empty($this->fields[$key]['ref']) && $values[$key] == '') $values[$key]='(PROV'.$this->id.')'; 
+			if (empty($this->fields[$key]['ref']) && $values[$key] == '') $values[$key]='(PROV'.$this->id.')';
 
 			//var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
 			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && ! isset($values[$key]) && is_null($val['default']))
@@ -316,7 +316,7 @@ class ImmoPayment extends CommonObject
 	{
 		return $this->createCommon($user, $closepaidreceipts, $thirdparty, $notrigger);
 	}*/
-	
+
 	/**
 	 *  Create payment of receipt into database.
      *  Use this->amounts to have list of lines for the payment
@@ -337,6 +337,7 @@ class ImmoPayment extends CommonObject
 		if (! $this->date_payment)
 		{
 			$this->error='ErrorBadValueForParameterCreatePaymentReceipt';
+			$this->errors[]='ErrorBadValueForParameterCreatePaymentReceipt';
 			return -1;
 		}
 
@@ -360,8 +361,11 @@ class ImmoPayment extends CommonObject
         $totalamount = price2num($totalamount);
 
         // Check parameters
-        if ($totalamount == 0) return -1; // On accepte les montants negatifs pour les rejets de prelevement mais pas null
-
+        if ($totalamount == 0) {
+			$this->error='TotalAmount=0 do nothing';
+			$this->errors[]='TotalAmount=0 do nothing';
+        	return -1; // On accepte les montants negatifs pour les rejets de prelevement mais pas null
+		}
 
 		$this->db->begin();
 
@@ -369,7 +373,7 @@ class ImmoPayment extends CommonObject
 		{
 			$sql = "INSERT INTO ".MAIN_DB_PREFIX."ultimateimmo_immopayment (fk_receipt, date_creation, date_payment, amount,";
 			$sql.= " fk_mode_reglement, fk_property, fk_renter, fk_rent, num_payment, note_public, fk_user_creat, fk_bank)";
-			$sql.= " VALUES (".$this->rowid.", '".$this->db->idate($now)."',";
+			$sql.= " VALUES (".$this->fk_receipt.", '".$this->db->idate($now)."',";
 			$sql.= " '".$this->db->idate($this->date_payment)."',";
 			$sql.= " ".$totalamount.",";
 			$sql.= " ".$this->fk_mode_reglement.",'".$this->db->escape($this->fk_property)."','".$this->db->escape($this->fk_renter)."','".$this->db->escape($this->fk_rent)."',  '".$this->db->escape($this->num_payment)."', '".$this->db->escape($this->note_public)."', ".$user->id.",";
@@ -405,7 +409,8 @@ class ImmoPayment extends CommonObject
 		}
 		else
 		{
-			$this->error=$this->db->error();
+			$this->error=$this->db->lasterror();
+			$this->errors[]=$this->db->lasterror();
 			$this->db->rollback();
 			return -1;
 		}
@@ -571,9 +576,9 @@ class ImmoPayment extends CommonObject
 					$this->fk_user_modif	= $obj->fk_user_modif;
 					$this->bank_account		= $obj->fk_account;
 					$this->bank_line		= $obj->fk_bank;
-				
+
 					$this->date_payment = $this->db->jdate($obj->date_payment);*/
-					
+
 
         			return $this->id;
     		    }
@@ -652,32 +657,32 @@ class ImmoPayment extends CommonObject
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {
-			foreach ($filter as $key => $value) 
+			foreach ($filter as $key => $value)
 			{
 				$sqlwhere [] = $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 			}
 		}
-		if (count($sqlwhere) > 0) 
+		if (count($sqlwhere) > 0)
 		{
 			$sql .= ' WHERE ' . implode(' '.$filtermode.' ', $sqlwhere);
 		}
 
-		if (!empty($sortfield)) 
+		if (!empty($sortfield))
 		{
 			$sql .= $this->db->order($sortfield,$sortorder);
 		}
-		if (!empty($limit)) 
+		if (!empty($limit))
 		{
 			$sql .=  ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 		$this->lines = array();
 
 		$resql = $this->db->query($sql);
-		if ($resql) 
+		if ($resql)
 		{
 			$num = $this->db->num_rows($resql);
 
-			while ($obj = $this->db->fetch_object($resql)) 
+			while ($obj = $this->db->fetch_object($resql))
 			{
 				$line = new ImmoPaymentLine();
 
@@ -925,7 +930,7 @@ class ImmoPayment extends CommonObject
 			dol_print_error($this->db);
 		}
 	}
-	
+
 	 /**
      *      Add record into bank for payment with links between this bank record and invoices of payment.
      *      All payment properties must have been set first like after a call to create().
@@ -950,7 +955,7 @@ class ImmoPayment extends CommonObject
 
             $acc = new Account($this->db);
             $acc->fetch($accountid);
-	
+
             $total=$this->amount;
             if ($mode == 'immopayment') $amount=$total;
 
@@ -1008,7 +1013,7 @@ class ImmoPayment extends CommonObject
             return -1;
         }
     }
-	
+
 	/**
 	 *  Update link between the quittance payment and the generated line in llx_bank
 	 *
@@ -1032,7 +1037,7 @@ class ImmoPayment extends CommonObject
 			return 0;
 		}
 	}
-	
+
 	/**
 	 *  Change the payments methods
 	 *

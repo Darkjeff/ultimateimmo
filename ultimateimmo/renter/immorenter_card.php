@@ -68,17 +68,16 @@ $extrafields->fetch_name_optionals_label($object->table_element);
 $search_array_options = $extrafields->getOptionalsFromPost($object->table_element, '', 'search_');
 
 // Initialize array of search criterias
-$search_all=trim(GETPOST("search_all", 'alpha'));
+$search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
-foreach($object->fields as $key => $val)
-{
-    if (GETPOST('search_'.$key, 'alpha')) $search[$key] = GETPOST('search_'.$key, 'alpha');
+foreach ($object->fields as $key => $val) {
+	if (GETPOST('search_' . $key, 'alpha')) $search[$key] = GETPOST('search_' . $key, 'alpha');
 }
 
 if (empty($action) && empty($id) && empty($ref)) $action = 'view';
 
 // Load object
-include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Include fetch and fetch_thirdparty but not fetch_optionals
+include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Include fetch and fetch_thirdparty but not fetch_optionals
 
 // Security check - Protection if external user
 //if ($user->socid > 0) accessforbidden();
@@ -86,11 +85,11 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be inclu
 //$isdraft = (($object->statut == $object::STATUS_DRAFT) ? 1 : 0);
 //$result = restrictedArea($user, 'mymodule', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
 
-$permissiontoread = $user->rights->ultimateimmo->renter->read;
-$permissiontoadd = $user->rights->ultimateimmo->renter->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
-$permissiontodelete = $user->rights->ultimateimmo->renter->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
-$permissionnote = $user->rights->ultimateimmo->renter->write; // Used by the include of actions_setnotes.inc.php
-$permissiondellink = $user->rights->ultimateimmo->renter->write; // Used by the include of actions_dellink.inc.php
+$permissiontoread = $user->rights->ultimateimmo->read;
+$permissiontoadd = $user->rights->ultimateimmo->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+$permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+$permissionnote = $user->rights->ultimateimmo->write; // Used by the include of actions_setnotes.inc.php
+$permissiondellink = $user->rights->ultimateimmo->write; // Used by the include of actions_dellink.inc.php
 $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1];
 
 /*
@@ -156,6 +155,9 @@ if (empty($reshook))
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
 
+	// Actions when linking object each other
+	include DOL_DOCUMENT_ROOT.'/core/actions_dellink.inc.php';
+
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 
@@ -216,25 +218,30 @@ if ($action == 'create')
 		print '</td>';
 		print '<td>';
 
-		if ($val['label'] == 'BirthDay')
-		{
+		if ($val['label'] == 'Civility') {
+			// We set civility_id, civility_code and civility for the selected civility
+			$object->civility_id	= GETPOST("civility_id", 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
+
+			if ($object->country_id) {
+				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
+				$object->civility_code = $tmparray['code'];
+				$object->civility = $tmparray['label'];
+			}
+			// civility
+			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');	
+		} elseif ($val['label'] == 'BirthDay') {
 			print $form->selectDate(($object->birth ? $object->birth : -1), 'birth', '', '', 1, 'formsoc');
-		}
-		elseif ($val['label'] == 'BirthCountry')
-		{
+		} elseif ($val['label'] == 'BirthCountry') {
 			// We set country_id, country_code and country for the selected country
-			$object->country_id=GETPOST('country_id', 'int')?GETPOST('country_id','int') : $object->country_id;
-			if ($object->country_id)
-			{
-				$tmparray = $object->getCountry($object->country_id,'all');
+			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
+			if ($object->country_id) {
+				$tmparray = $object->getCountry($object->country_id, 'all');
 				$object->country_code = $tmparray['code'];
 				$object->country = $tmparray['label'];
 			}
 			// Country
 			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
-		}
-		else
-		{
+		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
 
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
@@ -243,7 +250,6 @@ if ($action == 'create')
 		}
 		print '</td>';
 		print '</tr>';
-
 	}
 
 	// Other attributes
@@ -281,12 +287,11 @@ if (($id || $ref) && $action == 'edit')
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 
-	foreach($object->fields as $key => $val)
-	{
+	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
 
 		print '<tr><td';
 		print ' class="titlefieldcreate';
@@ -294,32 +299,35 @@ if (($id || $ref) && $action == 'edit')
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
 		print '>';
-		if (! empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
 		else print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
 
-		if ($val['label'] == 'BirthDay')
-		{
+		if ($val['label'] == 'Civility') {
+			// We set civility_id, civility_code and civility for the selected civility
+			$object->civility_id = GETPOST('civility_id', 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
+			if ($object->civility_id) {
+				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
+				$object->civility_code = $tmparray['code'];
+				$object->civility = $tmparray['label'];
+			}
+			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id);	
+		} elseif ($val['label'] == 'BirthDay') {
 			print $form->selectDate(($object->birth ? $object->birth : -1), 'birth', '', '', 1, 'formsoc');
-		}
-		elseif ($val['label'] == 'BirthCountry')
-		{
+		} elseif ($val['label'] == 'BirthCountry') {
 			// We set country_id, country_code and country for the selected country
-			$object->country_id = GETPOST('country_id','int') ? GETPOST('country_id', 'int') : $object->country_id;
-			if ($object->country_id)
-			{
-				$tmparray = $object->getCountry($object->country_id,'all');
+			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
+			if ($object->country_id) {
+				$tmparray = $object->getCountry($object->country_id, 'all');
 				$object->country_code = $tmparray['code'];
 				$object->country = $tmparray['label'];
 			}
 			// Country
 			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
-		}
-		else
-		{
+		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key,'none') : $object->$key;
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
 			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
 			//var_dump($val.' '.$key.' '.$value);
 			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
@@ -352,7 +360,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	dol_fiche_head($head, 'card', $langs->trans("ImmoRenter"), -1, 'ultimateimmo@ultimateimmo');
 
 	$formconfirm = '';
-
+	//var_dump($object->id);exit;
 	// Confirmation to delete
 	if ($action == 'delete')
 	{
@@ -372,17 +380,16 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	// Confirmation of action xxxx
-	if ($action == 'xxx')
-	{
-	    $formquestion=array();
-	    /*
+	if ($action == 'xxx') {
+		$formquestion = array();
+		/*
 	        $formquestion = array(
 	            // 'text' => $langs->trans("ConfirmClone"),
 	            // array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
 	            // array('type' => 'checkbox', 'name' => 'update_prices', 'label' => $langs->trans("PuttingPricesUpToDate"), 'value' => 1),
 	            // array('type' => 'other',    'name' => 'idwarehouse',   'label' => $langs->trans("SelectWarehouseForStockDecrease"), 'value' => $formproduct->selectWarehouses(GETPOST('idwarehouse')?GETPOST('idwarehouse'):'ifone', 'idwarehouse', '', 1)));
 	    }*/
-	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('XXX'), $text, 'confirm_xxx', $formquestion, 0, 1, 220);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('XXX'), $text, 'confirm_xxx', $formquestion, 0, 1, 220);
 	}
 
 	// Call Hook formConfirm
@@ -397,12 +404,41 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/renter/immorenter_list.php',1) . '?restore_lastsearch_values=0' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1) . '?restore_lastsearch_values=0' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
-	$morehtmlref='<div class="refidno">';
+	$morehtmlref = '<div class="refidno">';
 	// Thirdparty
-	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'renter');
-	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/rent/immorent_list.php',1).'?socid='.$object->thirdparty->id.'&search_fk_soc='.urlencode($object->thirdparty->id).'">'.$langs->trans("OtherRents").'</a>)';
+	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . (is_object($object->thirdparty) ? $object->thirdparty->getNomUrl(1) : '');
+	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1) . '?socid=' . $object->thirdparty->id . '&search_fk_soc=' . urlencode($object->thirdparty->id) . '">' . $langs->trans("OtherRents") . '</a>)';
+
+	// Project
+	if (!empty($conf->projet->enabled)) {
+		$langs->load("projects");
+		$morehtmlref .= '<br>' . $langs->trans('Project') . ' ';
+		if ($permissiontoadd) {
+			if ($action != 'classify') $morehtmlref .= '<a class="editfielda" href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> ';
+			$morehtmlref .= ' : ';
+			if ($action == 'classify') {
+				$morehtmlref .= $form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'projectid', 0, 0, 1, 1);
+				$morehtmlref .= '<form method="post" action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '">';
+				$morehtmlref .= '<input type="hidden" name="action" value="classin">';
+				$morehtmlref .= '<input type="hidden" name="token" value="' . newToken() . '">';
+				$morehtmlref .= $formproject->select_projects($object->socid, $object->fk_project, 'projectid', $maxlength, 0, 1, 0, 1, 0, 0, '', 1);
+				$morehtmlref .= '<input type="submit" class="button valignmiddle" value="' . $langs->trans("Modify") . '">';
+				$morehtmlref .= '</form>';
+			} else {
+				$morehtmlref .= $form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'none', 0, 0, 0, 1);
+			}
+		} else {
+			if (!empty($object->fk_project)) {
+				$proj = new Project($db);
+				$proj->fetch($object->fk_project);
+				$morehtmlref .= ': ' . $proj->getNomUrl();
+			} else {
+				$morehtmlref .= '';
+			}
+		}
+	}
 	$morehtmlref .= '</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
@@ -411,36 +447,39 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<div class="fichecenter">';
 	print '<div class="fichehalfleft">';
 	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border centpercent">'."\n";
+	print '<table class="border centpercent tableforfield">'."\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
-	$keyforbreak='civility_id';
-	foreach($object->fields as $key => $val)
-	{
+	$keyforbreak='civility_id'; // We change column just before this field
+	//unset($object->fields['fk_project']);				// Hide field already shown in banner
+	//unset($object->fields['fk_soc']);					// Hide field already shown in banner
+	foreach ($object->fields as $key => $val) {
 		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
 
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
-		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
+		if (in_array($key, array('ref', 'status'))) continue;	// Ref and status are already in dol_banner
 
 		$value = $object->$key;
 
 		print '<tr><td';
-		print ' class="titlefield fieldname_'.$key;
+		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		if ($val['type'] == 'text' || $val['type'] == 'html'
+		) print ' tdtop';
 		print '">';
 		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
 		else print $langs->trans($val['label']);
 		print '<td>';
-		print '<td class="valuefield fieldname_'.$key;
+		print '<td class="valuefield fieldname_' . $key;
 		if ($val['type'] == 'text') print ' wordbreak';
 		print '">';
 		print '<td>';
 		print $object->showOutputField($val, $key, $value, '', '', '', 0);
+	
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
@@ -456,16 +495,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent tableforfield">';
 
 	$alreadyoutput = 1;
-	foreach($object->fields as $key => $val)
-	{
-		if ($alreadyoutput)
-		{
-			if (!empty($keyforbreak) && $key == $keyforbreak) 
-			{
+	foreach ($object->fields as $key => $val) {
+		if ($alreadyoutput) {
+			if (!empty($keyforbreak) && $key == $keyforbreak) {
 				$alreadyoutput = 0; // key used for break on second column
-			}
-			else 
-			{
+			} else {
 				continue;
 			}
 		}
@@ -479,23 +513,27 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$value = $object->$key;
 
 		print '<tr><td';
-		print ' class="titlefield fieldname_'.$key;
+		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
-		if ($object->country_id)
-		{
-			include_once(DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-			$tmparray=getCountry($object->country_id,'all');
-			$object->country_code=$tmparray['code'];
-			$object->country=$tmparray['label'];
-		}
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['label'] == 'BirthCountry')
-		{
-			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
+		if ($val['label'] == 'Civility') {
+			// We set civility_id, civility_code and civility for the selected civility	
+			if ($object->civility_id) {
+				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
+				$object->civility_code = $tmparray['code'];
+				$object->civility = $tmparray['label'];
+			}
+			print '<tr><td width="25%">' . $langs->trans('Civility') . '</td><td>';
+			print $object->civility;
+		} elseif ($val['label'] == 'BirthCountry') {
+			if ($object->country_id) {
+				include_once(DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
+				$tmparray = getCountry($object->country_id, 'all');
+				$object->country_code = $tmparray['code'];
+				$object->country = $tmparray['label'];
+			}
+			print '<tr><td width="25%">' . $langs->trans('Country') . '</td><td>';
 			print $object->country;
-		}
-		else
-		{
+		} else {
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 			print '">';
 			if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));

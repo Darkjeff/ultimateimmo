@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2019  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2021  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -31,13 +31,13 @@ CREATE TABLE llx_ultimateimmo_immoowner(
 	fk_user_modif integer, 
 	import_key varchar(14), 
 	status integer NOT NULL, 
-	civility_id integer NOT NULL, 
+	civility_id integer(3), 
 	firstname varchar(255) NOT NULL, 
 	lastname varchar(255) NOT NULL,
 	address varchar(255),
 	zip varchar(32), 
 	town varchar(64), 
-	country_id integer,	
+	fk_pays integer,	
 	email varchar(255) NOT NULL, 
 	birth date, 
 	phone varchar(30), 

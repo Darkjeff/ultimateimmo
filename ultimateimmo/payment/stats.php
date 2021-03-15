@@ -1,8 +1,9 @@
 <?php
 /* Copyright (C) 2001-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2013 Olivier Geffroy  <jeff@jeffinfo.com>
- * Copyright (C) 2018-2021 Philippe GRAND   <philippe.grand@atoo-net.com>
+ * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
+ * Copyright (C) 2018-2021 Philippe GRAND       <philippe.grand@atoo-net.com>
+ * Copyright (C) 2020      Thomas OURSEL         <contact@ogest.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +21,9 @@
  */
 
 /**
- * \file htdocs/compta/ventilation/index.php
- * \ingroup compta
- * \brief Page accueil ventilation
+ * \file httpdocs/custom/ultimateimmo/receipt/payment/stats.php
+ * \ingroup ultimateimmo
+ * \brief Page accueil encaissement
  */
 
 // Load Dolibarr environment
@@ -55,7 +56,7 @@ $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "bills"));
 // Filter
 $year = GETPOST("year", 'int');
 if ($year == 0) {
-	$year_current = strftime ( "%Y", time () );
+	$year_current = strftime("%Y", time());
 	$year_start = $year_current;
 } else {
 	$year_current = $year;
@@ -65,12 +66,12 @@ if ($year == 0) {
 /*
  * View
  */
-llxHeader ( '', 'Compta - Ventilation' );
+llxHeader('', 'Encaissement - Stats');
 
-$textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/receipt/stats.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
-$textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/receipt/stats.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';
+$textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/payment/stats.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
+$textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/payment/stats.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';
 
-print load_fiche_titre ( $langs->trans("loyer")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
+print load_fiche_titre($langs->trans("Encaissement") . " " . $textprevyear . " " . $langs->trans("Year") . " " . $year_start . " " . $textnextyear);
 
 print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
@@ -91,26 +92,25 @@ print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 $sql = "SELECT ll.label AS nom_local";
 foreach ($months_list as $month_num => $month_name) {
-	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)=' . $month_num . ' then lo.rentamount else 0 end),2) AS month_' . $month_num;
+	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)=' . $month_num . ' then lp.amount else 0 end),2) AS month_' . $month_num;
 }
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid ";
-if ($user->id != 1) {
+$sql .= " WHERE lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
+$sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
+$sql .= "  AND lp.fk_property = ll.rowid ";
+/*if ($user->id != 1) {
 	$sql .= " AND ll.fk_owner=".$user->id;
-}
+}*/
 
 $sql .= " GROUP BY ll.label";
 
-$resql = $db->query ( $sql );
+$resql = $db->query($sql);
 if ($resql) {
 	$i = 0;
-	$num = $db->num_rows ( $resql );
-	
-	while ( $i < $num ) {
-		
+	$num = $db->num_rows($resql);
+
+	while ($i < $num) {
 		$row = $db->fetch_row($resql);
 		$total = 0;
 
@@ -123,9 +123,9 @@ if ($resql) {
 		print '</tr>';
 		$i++;
 	}
-	$db->free ( $resql );
+	$db->free($resql);
 } else {
-	print $db->lasterror (); // affiche la derniere erreur sql
+	print $db->lasterror(); // affiche la derniere erreur sql
 }
 
 print "</table>\n";
@@ -142,26 +142,25 @@ print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 $sql = "SELECT 'Total loyer' AS Total";
 foreach ($months_list as $month_num => $month_name) {
-	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)=' . $month_num . ' then lo.rentamount else 0 end),2) AS month_' . $month_num;
+	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)=' . $month_num . ' then lp.amount else 0 end),2) AS month_' . $month_num;
 }
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid ";
-if ($user->id != 1) {
+$sql .= " WHERE lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
+$sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
+$sql .= "  AND lp.fk_property = ll.rowid ";
+/*if ($user->id != 1) {
 	$sql .= " AND ll.fk_owner=".$user->id;
-}
+}*/
 
-$resql = $db->query ( $sql );
+$resql = $db->query($sql);
 if ($resql) {
 	$i = 0;
-	$num = $db->num_rows ( $resql );
-	
-	while ( $i < $num ) {
-		
-		$row = $db->fetch_row ( $resql );
-		
+	$num = $db->num_rows($resql);
+
+	while ($i < $num) {
+
+		$row = $db->fetch_row($resql);
 		$total = 0;
 
 		print '<tr class="oddeven"><td>' . $row[0] . '</td>';
@@ -171,11 +170,11 @@ if ($resql) {
 		}
 		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
-		$i ++;
+		$i++;
 	}
-	$db->free ( $resql );
+	$db->free($resql);
 } else {
-	print $db->lasterror (); // affiche la derniere erreur sql
+	print $db->lasterror(); // affiche la derniere erreur sql
 }
 
 print "</table>\n";
@@ -184,5 +183,3 @@ print '</td></tr></table>';
 
 llxFooter();
 $db->close();
-
-?>
