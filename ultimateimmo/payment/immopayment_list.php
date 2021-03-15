@@ -482,7 +482,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 			} elseif($val['label'] =='Renter') {
 				if ($object->fk_renter) {
 					$renter = new ImmoRenter($db);
-					$result = $renter->fetch($object->fk_bank);
+					$result = $renter->fetch($object->fk_renter);
 					//var_dump($renter);
 					print $renter->getNomUrl(1, 0, 'showall');
 				}
