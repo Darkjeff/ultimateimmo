@@ -65,7 +65,7 @@ if ($year == 0) {
 /*
  * View
  */
-llxHeader ( '', 'Compta - Ventilation' );
+llxHeader ( '', 'Loyer - Stats' );
 
 $textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/receipt/stats.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
 $textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/receipt/stats.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';
@@ -140,18 +140,21 @@ foreach ($months_list as $month_name) {
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
-$sql = "SELECT 'Total loyer' AS Total";
+$sql = "SELECT own.firstname AS Proprio";
 foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)=' . $month_num . ' then lo.rentamount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as own";
 $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
+$sql .= "  AND ll.fk_owner = own.rowid ";
 if ($user->id != 1) {
 	$sql .= " AND ll.fk_owner=".$user->id;
 }
+$sql .= " GROUP BY ll.fk_owner";
 
 $resql = $db->query ( $sql );
 if ($resql) {
