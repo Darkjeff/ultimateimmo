@@ -460,10 +460,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 			if ($val['label'] == 'Owner') {
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);
-				if ($staticowner->ref) {
-					$staticowner->ref = $staticowner->getFullName($langs);
-				}
-				print $staticowner->ref;
+				print $staticowner->getNomUrl();
 			} elseif ($val['label'] == 'TypePayment') {
 				if ($object->fk_mode_reglement) {
 					$tmparray = $object->setPaymentMethods($object->fk_mode_reglement, 'int');
@@ -479,9 +476,22 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					// Payment bank
 					print $bankline->getNomUrl(1, 0, 'showall');
 				}
+			} elseif ($val['label'] == 'Renter') {
+				if ($object->fk_renter) {
+					$renter = new ImmoRenter($db);
+					$result = $renter->fetch($object->fk_renter);
+					print $renter->getNomUrl(1, 0, 'showall');
+				}
+			}elseif($val['label'] == 'Property') {
+				if ($object->fk_property) {
+					$property = new ImmoProperty($db);
+					$result = $property->fetch($object->fk_property);
+					print $property->getNomUrl(1, 0, 'showall');
+				}
+			} else {
+				if ($key == 'status') print $object->getLibStatut(5);
+				else print $object->showOutputField($val, $key, $obj->$key, '');
 			}
-			if ($key == 'status') print $object->getLibStatut(5);
-			else print $object->showOutputField($val, $key, $obj->$key, '');
 
 			print '</td>';
 			if (!$i) $totalarray['nbfield']++;
