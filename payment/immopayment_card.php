@@ -270,11 +270,11 @@ if ($action == 'update') {
 	$payment->fk_mode_reglement = $fk_mode_reglement;
 
 	$result = $payment->update($user);
-	header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?id=' . $payment->id);
-	if ($id > 0) {
-		// $mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
+	
+	if ($result < 0) {
+		setEventMessages(null, $payment->errors, 'errors');
 	} else {
-		$mesg = '<div class="error">' . $payment->errors . '</div>';
+		header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?id=' . $payment->id);
 	}
 }
 
@@ -307,7 +307,7 @@ if ($action == 'create') {
 	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoPayment")));
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
-	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="add">';
 	print '<input type="hidden" name="fk_rent" value="' . $receipt->fk_rent . '">';
 	print '<input type="hidden" name="fk_property" value="' . $receipt->fk_property . '">';
@@ -384,7 +384,7 @@ if (($id || $ref) && $action == 'edit') {
 	print load_fiche_titre($langs->trans("ImmoPayment"));
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
-	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="update">';
 	print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 	print '<input type="hidden" name="id" value="' . $object->id . '">';
@@ -712,7 +712,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 if ($action == 'createall') {
 
 	print '<form name="fiche_payment" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
-	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="addall">';
 
 	print '<table class="border" width="100%">';
@@ -843,7 +843,7 @@ if ($action == 'update') {
 	$result = $payment->fetch($id);
 
 	print '<form action="card.php" method="post">';
-	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="maj">';
 	print '<input type="hidden" name="id" value="' . GETPOST("id") . '">' . "\n";
 	print '<input type="hidden" name="receipt" value="' . $receipt_id . '">' . "\n";
