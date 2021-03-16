@@ -140,18 +140,21 @@ foreach ($months_list as $month_name) {
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
-$sql = "SELECT 'Total loyer' AS Total";
+$sql = "SELECT 'own.firstname' AS Proprio";
 foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)=' . $month_num . ' then lp.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as own";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND lp.fk_property = ll.rowid ";
+$sql .= "  AND ll.fk_owner = own.rowid ";
 /*if ($user->id != 1) {
 	$sql .= " AND ll.fk_owner=".$user->id;
 }*/
+$sql .= " GROUP BY ll.fk_owner";
 
 $resql = $db->query($sql);
 if ($resql) {
