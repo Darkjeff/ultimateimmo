@@ -239,24 +239,18 @@ class ImmoRenter extends CommonObject
 		}*/
 
 		// Unset fields that are disabled
-		foreach ($this->fields as $key => $val)
-		{
-			if (isset($val['enabled']) && empty($val['enabled']))
-			{
+		foreach ($this->fields as $key => $val) {
+			if (isset($val['enabled']) && empty($val['enabled'])) {
 				unset($this->fields[$key]);
 			}
 		}
 
 		// Translate some data of arrayofkeyval
-		if (is_object($langs))
-		{
-			foreach($this->fields as $key => $val)
-			{
-				if (is_array($val['arrayofkeyval']))
-				{
-					foreach($val['arrayofkeyval'] as $key2 => $val2)
-					{
-						$this->fields[$key]['arrayofkeyval'][$key2]=$langs->trans($val2);
+		if (is_object($langs)) {
+			foreach ($this->fields as $key => $val) {
+				if (is_array($val['arrayofkeyval'])) {
+					foreach ($val['arrayofkeyval'] as $key2 => $val2) {
+						$this->fields[$key]['arrayofkeyval'][$key2] = $langs->trans($val2);
 					}
 				}
 			}
@@ -327,7 +321,7 @@ class ImmoRenter extends CommonObject
 			$res = $this->db->query($sql);
 			if ($res === false) {
 				$error++;
-				$this->errors[] = $this->db->lasterror();
+				$this->errors[] = "Error ".$this->db->lasterror();
 			}
 		}
 
@@ -344,7 +338,7 @@ class ImmoRenter extends CommonObject
 
 				if ($resqlupdate === false) {
 					$error++;
-					$this->errors[] = $this->db->lasterror();
+					$this->error = "Error ".$this->db->lasterror();
 				} else {
 					$this->ref = '(PROV' . $this->id . ')';
 				}
@@ -555,7 +549,7 @@ class ImmoRenter extends CommonObject
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), array($array[0]));
 		$array = implode(', t.', $array);
-		
+
 		$sql = 'SELECT ' . $array . ',';
 
 		$sql .= 'country.rowid as country_id, country.code as country_code, country.label as country, civility.rowid as civility_id, civility.code as civility_code, civility.label as civility';
@@ -585,7 +579,7 @@ class ImmoRenter extends CommonObject
 					$this->birth = $this->db->jdate($obj->birth);
 
 					$this->civility_id    = $obj->civility_id;
-					$this->civility_code  = $obj->civility_code; 
+					$this->civility_code  = $obj->civility_code;
 					if ($langs->trans("Civility" . $obj->civility_code) != "Civility" . $obj->civility_code) {
 						$this->civility = $langs->transnoentitiesnoconv("Civility" .  $obj->civility_code);
 					} else {
@@ -606,13 +600,13 @@ class ImmoRenter extends CommonObject
 					return 0;
 				}
 			} else {
-				$this->error = $this->db->lasterror();
-				$this->errors[] = $this->error;
+				$this->error = "Error ".$this->db->lasterror();
+	            $this->errors[] = "Error ".$this->db->lasterror();
 				return -1;
 			}
 		} else {
-			$this->error = $this->db->lasterror();
-			$this->errors[] = $this->error;
+			$this->error = "Error ".$this->db->lasterror();
+			$this->errors[] = "Error ".$this->db->lasterror();
 			return -1;
 		}
 	}
@@ -699,7 +693,7 @@ class ImmoRenter extends CommonObject
 			$res = $this->db->query($sql);
 			if ($res === false) {
 				$error++;
-				$this->errors[] = $this->db->lasterror();
+				$this->errors[] = "Error ".$this->db->lasterror();
 			}
 		}
 
@@ -786,7 +780,7 @@ class ImmoRenter extends CommonObject
 			$this->db->commit();
 			return 1;
 		} else {
-			$this->error = $this->db->error();
+			$this->error = "Error ".$this->db->error();
 			$this->db->rollback();
 			return -1;
 		}
@@ -849,7 +843,7 @@ class ImmoRenter extends CommonObject
 			$resql = $this->db->query($sql);
 			if (!$resql) {
 				dol_print_error($this->db);
-				$this->error = $this->db->lasterror();
+				$this->error = "Error ".$this->db->lasterror();
 				$error++;
 			}
 
@@ -872,7 +866,7 @@ class ImmoRenter extends CommonObject
 				$resql = $this->db->query($sql);
 				if (!$resql) {
 					$error++;
-					$this->error = $this->db->lasterror();
+					$this->error = "Error ".$this->db->lasterror();
 				}
 
 				// We rename directory ($this->ref = old ref, $num = new ref) in order not to lose the attachments
@@ -924,8 +918,7 @@ class ImmoRenter extends CommonObject
 	public function setDraft($user, $notrigger = 0)
 	{
 		// Protection
-		if ($this->status <= self::STATUS_DRAFT)
-		{
+		if ($this->status <= self::STATUS_DRAFT) {
 			return 0;
 		}
 
@@ -974,8 +967,7 @@ class ImmoRenter extends CommonObject
 	public function reopen($user, $notrigger = 0)
 	{
 		// Protection
-		if ($this->status != self::STATUS_CANCELED)
-		{
+		if ($this->status != self::STATUS_CANCELED) {
 			return 0;
 		}
 
