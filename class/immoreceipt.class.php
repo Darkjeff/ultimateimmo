@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2020 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,6 +151,16 @@ class ImmoReceipt extends CommonObject
 		'last_main_doc' => array('type'=>'varchar(255)', 'label'=>'LastMainDoc', 'enabled'=>1, 'visible'=>-2, 'position'=>1020, 'notnull'=>-1),
 		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>-1, 'default'=>'0','index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
 	);
+
+	/**
+     * @var DoliDB Database handler.
+     */
+    public $db;
+
+	/**
+	 * @var string Error code (or message)
+	 */
+	public $error = '';
 
 	/**
 	 * @var int ID
@@ -306,34 +316,27 @@ class ImmoReceipt extends CommonObject
 		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
 
 		// Unset fields that are disabled
-		foreach ($this->fields as $key => $val)
-		{
-			if (isset($val['enabled']) && empty($val['enabled']))
-			{
+		foreach ($this->fields as $key => $val) {
+			if (isset($val['enabled']) && empty($val['enabled'])) {
 				unset($this->fields[$key]);
 			}
 		}
 
 		// Translate some data of arrayofkeyval
-		foreach($this->fields as $key => $val)
-		{
-			if (is_array($this->fields['status']['arrayofkeyval']))
-			{
-				foreach($this->fields['status']['arrayofkeyval'] as $key2 => $val2)
-				{
-					$this->fields['status']['arrayofkeyval'][$key2]=$langs->trans($val2);
+		foreach ($this->fields as $key => $val) {
+			if (is_array($this->fields['status']['arrayofkeyval'])) {
+				foreach ($this->fields['status']['arrayofkeyval'] as $key2 => $val2) {
+					$this->fields['status']['arrayofkeyval'][$key2] = $langs->trans($val2);
 				}
 			}
-			if (is_array($this->fields['paye']['arrayofkeyval']))
-			{
-				foreach($this->fields['paye']['arrayofkeyval'] as $key3 => $val3)
-				{
-					$this->fields['paye']['arrayofkeyval'][$key3]=$langs->trans($val3);
+			if (is_array($this->fields['paye']['arrayofkeyval'])) {
+				foreach ($this->fields['paye']['arrayofkeyval'] as $key3 => $val3) {
+					$this->fields['paye']['arrayofkeyval'][$key3] = $langs->trans($val3);
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
@@ -351,30 +354,27 @@ class ImmoReceipt extends CommonObject
 
 		$fieldvalues = $this->setSaveQuery();
 		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation'] = $this->db->idate($now);
-		if (array_key_exists('fk_user_creat', $fieldvalues) && ! ($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat'] = $user->id;
+		if (array_key_exists('fk_user_creat', $fieldvalues) && !($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat'] = $user->id;
 		unset($fieldvalues['rowid']);	// The field 'rowid' is reserved field name for autoincrement field so we don't need it into insert.
 		if (array_key_exists('ref', $fieldvalues)) $fieldvalues['ref'] = dol_string_nospecial($fieldvalues['ref']); // If field is a ref, we sanitize data
 
 		$keys = array();
 		$values = array();
-		foreach ($fieldvalues as $k => $v) 
-		{
+		foreach ($fieldvalues as $k => $v) {
 			$keys[$k] = $k;
 			$value = $this->fields[$k];
 			$values[$k] = $this->quote($v, $value);
 		}
 
 		// Clean and check mandatory
-		foreach ($keys as $key)
-		{
+		foreach ($keys as $key) {
 			// If field is an implicit foreign key field
 			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key] = '';
 			if (!empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key] = '';
-			if (empty($this->fields[$key]['ref']) && $values[$key] == '') $values[$key]='(PROV'.$this->id.')'; //is that ok ?
+			if (empty($this->fields[$key]['ref']) && $values[$key] == '') $values[$key] = '(PROV' . $this->id . ')'; //is that ok ?
 
 			//var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
-			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && !isset($values[$key]) && is_null($this->fields[$key]['default']))
-			{
+			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && !isset($values[$key]) && is_null($this->fields[$key]['default'])) {
 				$error++;
 				$this->errors[] = $langs->trans("ErrorFieldRequired", $this->fields[$key]['label']);
 			}
@@ -391,70 +391,59 @@ class ImmoReceipt extends CommonObject
 
 		$this->db->begin();
 
-		if (! $error)
-		{
-			$sql = 'INSERT INTO '.MAIN_DB_PREFIX.$this->table_element;
-			$sql .= ' ('.implode(", ", $keys).')';
-			$sql .= ' VALUES ('.implode(", ", $values).')';
-			
+		if (!$error) {
+			$sql = 'INSERT INTO ' . MAIN_DB_PREFIX . $this->table_element;
+			$sql .= ' (' . implode(", ", $keys) . ')';
+			$sql .= ' VALUES (' . implode(", ", $values) . ')';
+
 			$res = $this->db->query($sql);
-			if ($res)
-			{
+			if ($res) {
 				$error = 0;
 
-				$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX.$this->table_element);
-				
+				$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . $this->table_element);
+
 				// Load object modReceipt
-				$module = (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)?$conf->global->ULTIMATEIMMO_ADDON_NUMBER:'mod_ultimateimmo_standard');
-				
-				if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
-				{
-					$module = substr($module, 0, dol_strlen($module)-4);			
+				$module = (!empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER) ? $conf->global->ULTIMATEIMMO_ADDON_NUMBER : 'mod_ultimateimmo_standard');
+
+				if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php') {
+					$module = substr($module, 0, dol_strlen($module) - 4);
 				}
-				$result = dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php',1);
-				
-				if ($result >= 0)
-				{
+				$result = dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/' . $module . '.php', 1);
+
+				if ($result >= 0) {
 					dol_include_once('/ultimateimmo/core/modules/ultimateimmo/mod_ultimateimmo_standard.php');
 					$modCodeUltimateimmo = new $module();
-					
-					if (! empty($modCodeUltimateimmo->code_auto)) {
+
+					if (!empty($modCodeUltimateimmo->code_auto)) {
 						// Force the ref to a draft value if numbering module is an automatic numbering
-						$sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element." SET ref ='(PROV".$this->id.")' WHERE (ref = '(PROV)' OR ref = '') AND rowid = ".$this->id;
+						$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element . " SET ref ='(PROV" . $this->id . ")' WHERE (ref = '(PROV)' OR ref = '') AND rowid = " . $this->id;
 						$resqlupdate = $this->db->query($sql);
 
-						if ($resqlupdate === false)
-						{
+						if ($resqlupdate === false) {
 							$error++;
-							$this->errors[] = $this->db->lasterror();
-						} 
-						else 
-						{
-							$this->ref = '(PROV'.$this->id.')';
+							$this->errors[] = "Error ".$this->db->lasterror();
+						} else {
+							$this->ref = '(PROV' . $this->id . ')';
 						}
 					}
 				}
 			}
-			if ($res===false) 
-			{
+			if ($res === false) {
 				$error++;
-				$this->errors[] = $this->db->lasterror();
+				$this->errors[] = "Error ".$this->db->lasterror();
 			}
 		}
 
 		// Create extrafields
-		if (! $error)
-		{
+		if (!$error) {
 			$result = $this->insertExtraFields();
 			if ($result < 0) $error++;
 		}
 
 		// Create lines
-		if (!empty($this->table_element_line) && !empty($this->fk_element))
-		{
+		if (!empty($this->table_element_line) && !empty($this->fk_element)) {
 			$num = (is_array($this->lines) ? count($this->lines) : 0);
-			for ($i = 0; $i < $num; $i++)
-			{
+			for ($i = 0; $i < $num; $i++) {
 				$line = $this->lines[$i];
 
 				$keyforparent = $this->fk_element;
@@ -465,9 +454,8 @@ class ImmoReceipt extends CommonObject
 				if (!is_object($line)) $line = (object) $line;
 
 				$result = $line->create($user, 1);
-				if ($result < 0)
-				{
-					$this->error = $this->db->lasterror();
+				if ($result < 0) {
+					$this->errors[] = "Error ".$this->db->lasterror();
 					$this->db->rollback();
 					return -1;
 				}
@@ -475,22 +463,20 @@ class ImmoReceipt extends CommonObject
 		}
 
 		// Triggers
-		if (!$error && !$notrigger)
-		{
+		if (!$error && !$notrigger) {
 			// Call triggers
-			$result = $this->call_trigger(strtoupper(get_class($this)).'_CREATE', $user);
-			if ($result < 0) { $error++; }
+			$result = $this->call_trigger(strtoupper(get_class($this)) . '_CREATE', $user);
+			if ($result < 0) {
+				$error++;
+			}
 			// End call triggers
 		}
 
 		// Commit or rollback
-		if ($error) 
-		{
+		if ($error) {
 			$this->db->rollback();
 			return -1;
-		} 
-		else 
-		{
+		} else {
 			$this->db->commit();
 			return $this->id;
 		}
@@ -518,113 +504,98 @@ class ImmoReceipt extends CommonObject
 	public function createFromClone(User $user, $fromid = 0)
 	{
 		global $langs, $hookmanager, $extrafields;
-		
-	    $error = 0;
 
-	    dol_syslog(__METHOD__, LOG_DEBUG);
+		$error = 0;
 
-	    $object = new self($this->db);
+		dol_syslog(__METHOD__, LOG_DEBUG);
 
-	    $this->db->begin();
+		$object = new self($this->db);
 
-	    // Load source object
+		$this->db->begin();
+
+		// Load source object
 		$result = $object->fetchCommon($fromid);
-	    if ($result > 0 && !empty($object->table_element_line)) $object->fetchLines();
-		
+		if ($result > 0 && !empty($object->table_element_line)) $object->fetchLines();
+
 		$objsoc = new Societe($this->db);
 
 		// Change socid if needed
-		if (! empty($socid) && $socid != $object->socid)
-		{
-			if ($objsoc->fetch($socid) > 0)
-			{
-			    $object->socid = $objsoc->id;
+		if (!empty($socid) && $socid != $object->socid) {
+			if ($objsoc->fetch($socid) > 0) {
+				$object->socid = $objsoc->id;
+			}
+		} else {
+			$objsoc->fetch($object->socid);
+		}
+
+		// Reset some properties
+		unset($object->id);
+		unset($object->fk_user_creat);
+		unset($object->import_key);
+
+		// Clear fields
+		$object->ref = empty($this->fields['ref']['default']) ? "copy_of_" . $object->ref : $this->fields['ref']['default'];
+		$object->label = empty($this->fields['label']['default']) ? $langs->trans("CopyOf") . " " . $object->label : $this->fields['label']['default'];
+		$object->status = self::STATUS_DRAFT;
+		// ...
+		// Clear extrafields that are unique
+		if (is_array($object->array_options) && count($object->array_options) > 0) {
+			$extrafields->fetch_name_optionals_label($this->table_element);
+			foreach ($object->array_options as $key => $option) {
+				$shortkey = preg_replace('/options_/', '', $key);
+				if (!empty($extrafields->attributes[$this->element]['unique'][$shortkey])) {
+					//var_dump($key); var_dump($clonedObj->array_options[$key]); exit;
+					unset($object->array_options[$key]);
+				}
 			}
 		}
-		else
-		{
-		    $objsoc->fetch($object->socid);
-		}
-		
-	    // Reset some properties
-	    unset($object->id);
-	    unset($object->fk_user_creat);
-	    unset($object->import_key);
 
-	    // Clear fields
-	    $object->ref = empty($this->fields['ref']['default']) ? "copy_of_".$object->ref : $this->fields['ref']['default'];
-	    $object->label = empty($this->fields['label']['default']) ? $langs->trans("CopyOf")." ".$object->label : $this->fields['label']['default'];
-	    $object->status = self::STATUS_DRAFT;
-	    // ...
-	    // Clear extrafields that are unique
-	    if (is_array($object->array_options) && count($object->array_options) > 0)
-	    {
-	    	$extrafields->fetch_name_optionals_label($this->table_element);
-	    	foreach ($object->array_options as $key => $option)
-	    	{
-	    		$shortkey = preg_replace('/options_/', '', $key);
-	    		if (!empty($extrafields->attributes[$this->element]['unique'][$shortkey]))
-	    		{
-	    			//var_dump($key); var_dump($clonedObj->array_options[$key]); exit;
-	    			unset($object->array_options[$key]);
-	    		}
-	    	}
-	    }
-
-	    // Create clone
+		// Create clone
 		$object->context['createfromclone'] = 'createfromclone';
-	    $result = $object->createCommon($user);
-	    if ($result < 0)
-		{
-		    $this->error = $object->error;
-		    $this->errors = array_merge($this->errors, $object->errors);
-		    $error++;
+		$result = $object->createCommon($user);
+		if ($result < 0) {
+			$this->error = $object->error;
+			$this->errors = array_merge($this->errors, $object->errors);
+			$error++;
 		}
 
-		if (!$error)
-	    {
-	    	// copy internal contacts
-	    	if ($this->copy_linked_contact($object, 'internal') < 0)
-	    	{
-	    		$error++;
-	    	}
+		if (!$error) {
+			// copy internal contacts
+			if ($this->copy_linked_contact($object, 'internal') < 0) {
+				$error++;
+			}
 		}
-		
-		if (!$error)
-	    {
-	    	// copy external contacts if same company
-	    	if (property_exists($this, 'socid') && $this->socid == $object->socid)
-	    	{
-	    		if ($this->copy_linked_contact($object, 'external') < 0)
-	    			$error++;
-	    	}
-	    }
-		
-		if (! $error)
-		{
+
+		if (!$error) {
+			// copy external contacts if same company
+			if (property_exists($this, 'socid') && $this->socid == $object->socid) {
+				if ($this->copy_linked_contact($object, 'external') < 0)
+					$error++;
+			}
+		}
+
+		if (!$error) {
 			// Hook of thirdparty module
-			if (is_object($hookmanager))
-			{
-				$parameters = array('objFrom'=>$this, 'clonedObj'=>$object);
+			if (is_object($hookmanager)) {
+				$parameters = array('objFrom' => $this, 'clonedObj' => $object);
 				$action = '';
 				$reshook = $hookmanager->executeHooks('createFrom', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 				if ($reshook < 0) $error++;
 			}
 		}
 
-	    unset($object->context['createfromclone']);
+		unset($object->context['createfromclone']);
 
-	    // End
-		if (!$error) 
-		{
-	        $this->db->commit();
-	        return $object;
-	    } else {
-	        $this->db->rollback();
-	        return -1;
-	    }
+		// End
+		if (!$error) {
+			$this->db->commit();
+			return $object;
+		} else {
+			$this->db->rollback();
+			return -1;
+		}
 	}
-	
+
 	/**
 	 * Function to concat keys of fields
 	 *
@@ -632,10 +603,10 @@ class ImmoReceipt extends CommonObject
 	 */
 	private function get_field_list()
 	{
-	    $keys = array_keys($this->fields);
-	    return implode(',', $keys);
+		$keys = array_keys($this->fields);
+		return implode(',', $keys);
 	}
-	
+
 	/**
 	 * Function to load data into current object this
 	 *
@@ -643,39 +614,28 @@ class ImmoReceipt extends CommonObject
 	 */
 	private function set_vars_by_db(&$obj)
 	{
-	    foreach ($this->fields as $field => $info)
-	    {
-	        if($this->isDate($info))
-	        {
-	            if(empty($obj->{$field}) || $obj->{$field} === '0000-00-00 00:00:00' || $obj->{$field} === '1000-01-01 00:00:00') $this->{$field} = 0;
-	            else $this->{$field} = strtotime($obj->{$field});
-	        }
-	        elseif($this->isArray($info))
-	        {
-	            $this->{$field} = @unserialize($obj->{$field});
-	            // Hack for data not in UTF8
-	            if($this->{$field } === FALSE) @unserialize(utf8_decode($obj->{$field}));
-	        }
-	        elseif($this->isInt($info))
-	        {
-	            $this->{$field} = (int) $obj->{$field};
-	        }
-	        elseif($this->isFloat($info))
-	        {
-	            $this->{$field} = (double) $obj->{$field};
-	        }
-	        /*elseif($this->isNull($info))
+		foreach ($this->fields as $field => $info) {
+			if ($this->isDate($info)) {
+				if (empty($obj->{$field}) || $obj->{$field} === '0000-00-00 00:00:00' || $obj->{$field} === '1000-01-01 00:00:00') $this->{$field} = 0;
+				else $this->{$field} = strtotime($obj->{$field});
+			} elseif ($this->isArray($info)) {
+				$this->{$field} = @unserialize($obj->{$field});
+				// Hack for data not in UTF8
+				if ($this->{$field} === FALSE) @unserialize(utf8_decode($obj->{$field}));
+			} elseif ($this->isInt($info)) {
+				$this->{$field} = (int) $obj->{$field};
+			} elseif ($this->isFloat($info)) {
+				$this->{$field} = (float) $obj->{$field};
+			}
+			/*elseif($this->isNull($info))
 	        {
 	            $val = $obj->{$field};
 	            // zero is not null
 	            $this->{$field} = (is_null($val) || (empty($val) && $val!==0 && $val!=='0') ? null : $val);
-	        }*/
-	        else
-	        {
-	            $this->{$field} = $obj->{$field};
-	        }
-
-	    }
+	        }*/ else {
+				$this->{$field} = $obj->{$field};
+			}
+		}
 	}
 	
 	/**
@@ -689,7 +649,7 @@ class ImmoReceipt extends CommonObject
 	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
 		if (empty($id) && empty($ref)) return false;
-		
+
 		global $langs;
 
 		$array = preg_split("/[\s,]+/", $this->get_field_list());
@@ -697,67 +657,57 @@ class ImmoReceipt extends CommonObject
 		$array = array_splice($array, 0, count($array), $array[0]);
 		$array = implode(', t.', $array);
 
-		$sql = 'SELECT '.$array.',';
-		$sql.= ' lc.rowid as renter_id,';
-		$sql.= ' lc.email as emaillocataire,';
-		$sql.= ' cp.libelle as payment_label, cp.code as payment_code';		
-		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
-		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
-		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immorent as ic ON t.fk_rent = ic.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'ultimateimmo_immopayment as pm ON t.fk_payment = pm.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as cp ON pm.fk_mode_reglement = cp.id';
+		$sql = 'SELECT ' . $array . ',';
+		$sql .= ' lc.rowid as renter_id,';
+		$sql .= ' lc.email as emaillocataire,';
+		$sql .= ' cp.libelle as payment_label, cp.code as payment_code';
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
+		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
+		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
+		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorent as ic ON t.fk_rent = ic.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immopayment as pm ON t.fk_payment = pm.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_paiement as cp ON pm.fk_mode_reglement = cp.id';
 
-		if(!empty($id)) $sql.= ' WHERE t.rowid = '.$id;
-		else $sql.= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
-		
-		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
+		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
+		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
+
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
-		if ($res)
-		{
-    		if ($obj = $this->db->fetch_object($res))
-    		{
-    		    if ($obj)
-    		    {
-        			$this->id = $id;
-        			$this->set_vars_by_db($obj);
-					
-					if ($obj->status == self::STATUS_DRAFT)
-					{
+		if ($res) {
+			if ($obj = $this->db->fetch_object($res)) {
+				if ($obj) {
+					$this->id = $id;
+					$this->set_vars_by_db($obj);
+
+					if ($obj->status == self::STATUS_DRAFT) {
 						$this->brouillon = 1;
 					}
-					
+
 					$this->fk_mode_reglement  = $obj->fk_mode_reglement;
-                    $this->mode_reglement_code = $obj->payment_code;
-                    $this->mode_reglement = $obj->payment_label;
-        			$this->date_rent = $this->db->jdate($obj->date_rent);
+					$this->mode_reglement_code = $obj->payment_code;
+					$this->mode_reglement = $obj->payment_label;
+					$this->date_rent = $this->db->jdate($obj->date_rent);
 					$this->date_start = $this->db->jdate($obj->date_start);
 					$this->date_end = $this->db->jdate($obj->date_end);
 					$this->date_creation = $this->db->jdate($obj->date_creation);
 					$this->date_echeance = $this->db->jdate($obj->date_echeance);
-        			$this->tms = $this->db->jdate($obj->tms);
+					$this->tms = $this->db->jdate($obj->tms);
 
 					$this->setVarsFromFetchObj($obj);
 					//var_dump($obj);exit;
 					return $this->id;
-    		    }
-    		    else
-    		    {
-    		        return 0;
-    		    }
-    		}
-    		else
-    		{
-    			$this->error = $this->db->lasterror();
-    			$this->errors[] = $this->error;
-    			return -1;
-    		}
-		}
-		else
-		{
-		    $this->error = $this->db->lasterror();
-		    $this->errors[] = $this->error;
-		    return -1;
+				} else {
+					return 0;
+				}
+			} else {
+				$this->error = "Error ".$this->db->lasterror();
+	            $this->errors[] = "Error ".$this->db->lasterror();
+				return -1;
+			}
+		} else {
+			$this->error = "Error ".$this->db->lasterror();
+	            $this->errors[] = "Error ".$this->db->lasterror();
+			return -1;
 		}
 	}
 
@@ -1037,14 +987,13 @@ class ImmoReceipt extends CommonObject
 	{
 		global $conf, $langs;
 
-		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 
 		$error = 0;
 
 		// Protection
-		if ($this->status == self::STATUS_VALIDATED)
-		{
-			dol_syslog(get_class($this)."::validate action abandonned: already validated", LOG_WARNING);
+		if ($this->status == self::STATUS_VALIDATED) {
+			dol_syslog(get_class($this) . "::validate action abandonned: already validated", LOG_WARNING);
 			return 0;
 		}
 
@@ -1063,73 +1012,69 @@ class ImmoReceipt extends CommonObject
 		if (!$error && (preg_match('/^[\(]?PROV/i', $this->ref) || empty($this->ref))) // empty should not happened, but when it occurs, the test save life
 		{
 			$num = $this->getNextNumRef();
-		}
-		else
-		{
+		} else {
 			$num = $this->ref;
 		}
 		$this->newref = $num;
 
 		// Validate
-		$sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element;
-		$sql .= " SET ref = '".$this->db->escape($num)."',";
-		$sql .= " status = ".self::STATUS_VALIDATED.",";
-		$sql .= " date_validation = '".$this->db->idate($now)."',";
-		$sql .= " fk_user_valid = ".$user->id;
-		$sql .= " WHERE rowid = ".$this->id;
+		$sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element;
+		$sql .= " SET ref = '" . $this->db->escape($num) . "',";
+		$sql .= " status = " . self::STATUS_VALIDATED . ",";
+		$sql .= " date_validation = '" . $this->db->idate($now) . "',";
+		$sql .= " fk_user_valid = " . $user->id;
+		$sql .= " WHERE rowid = " . $this->id;
 
-		dol_syslog(get_class($this)."::validate()", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::validate()", LOG_DEBUG);
 		$resql = $this->db->query($sql);
-		
-		if (! $resql)
-		{
+
+		if (!$resql) {
 			dol_print_error($this->db);
-			$this->error=$this->db->lasterror();
+			$this->error = $this->db->lasterror();
 			$error++;
 		}
 
 		// Trigger calls
-		if (! $error && ! $notrigger)
-		{
+		if (!$error && !$notrigger) {
 			// Call trigger
 			//$result = $this->call_trigger('IMMORECEIPT_VALIDATE', $user);
-			if ($result < 0) { $error++; }
+			if ($result < 0) {
+				$error++;
+			}
 			// End call triggers
 		}
 
-		if (! $error)
-		{
+		if (!$error) {
 			$this->oldref = $this->ref;
 
 			// Rename directory if dir was a temporary ref
-			if (preg_match('/^[\(]?PROV/i', $this->ref))
-			{
+			if (preg_match('/^[\(]?PROV/i', $this->ref)) {
 				// Now we rename also files into index
-				$sql = 'UPDATE '.MAIN_DB_PREFIX."ecm_files set filename = CONCAT('".$this->db->escape($this->newref)."', SUBSTR(filename, ".(strlen($this->ref) + 1).")), filepath = 'immoreceipt/".$this->db->escape($this->newref)."'";
-				$sql .= " WHERE filename LIKE '".$this->db->escape($this->ref)."%' AND filepath = 'immoreceipt/".$this->db->escape($this->ref)."' and entity = ".$conf->entity;
+				$sql = 'UPDATE ' . MAIN_DB_PREFIX . "ecm_files set filename = CONCAT('" . $this->db->escape($this->newref) . "', SUBSTR(filename, " . (strlen($this->ref) + 1) . ")), filepath = 'immoreceipt/" . $this->db->escape($this->newref) . "'";
+				$sql .= " WHERE filename LIKE '" . $this->db->escape($this->ref) . "%' AND filepath = 'immoreceipt/" . $this->db->escape($this->ref) . "' and entity = " . $conf->entity;
 				$resql = $this->db->query($sql);
-				if (!$resql) { $error++; $this->error = $this->db->lasterror(); }
+				if (!$resql) {
+					$error++;
+					$this->error = $this->db->lasterror();
+				}
 				// We rename directory ($this->ref = old ref, $num = new ref) in order not to lose the attachments
 				$oldref = dol_sanitizeFileName($this->ref);
 				$newref = dol_sanitizeFileName($num);
-				$dirsource = $conf->ultimateimmo->dir_output.'/immoreceipt/'.$oldref;
-				$dirdest = $conf->ultimateimmo->dir_output.'/immoreceipt/'.$newref;
+				$dirsource = $conf->ultimateimmo->dir_output . '/immoreceipt/' . $oldref;
+				$dirdest = $conf->ultimateimmo->dir_output . '/immoreceipt/' . $newref;
 
-				if (!$error && file_exists($dirsource))
-				{
-					dol_syslog(get_class($this)."::validate() rename dir ".$dirsource." into ".$dirdest);
+				if (!$error && file_exists($dirsource)) {
+					dol_syslog(get_class($this) . "::validate() rename dir " . $dirsource . " into " . $dirdest);
 
-					if (@rename($dirsource, $dirdest))
-					{
+					if (@rename($dirsource, $dirdest)) {
 						dol_syslog("Rename ok");
 						// Rename docs starting with $oldref with $newref
-						$listoffiles = dol_dir_list($conf->ultimateimmo->dir_output.'/immoreceipt/'.$newref, 'files', 1, '^'.preg_quote($oldref, '/'));
-						foreach ($listoffiles as $fileentry)
-						{
+						$listoffiles = dol_dir_list($conf->ultimateimmo->dir_output . '/immoreceipt/' . $newref, 'files', 1, '^' . preg_quote($oldref, '/'));
+						foreach ($listoffiles as $fileentry) {
 							$dirsource = $fileentry['name'];
-							$dirdest = preg_replace('/^'.preg_quote($oldref, '/').'/', $newref, $dirsource);
-							$dirsource = $fileentry['path'].'/'.$dirsource;
-							$dirdest = $fileentry['path'].'/'.$dirdest;
+							$dirdest = preg_replace('/^' . preg_quote($oldref, '/') . '/', $newref, $dirsource);
+							$dirsource = $fileentry['path'] . '/' . $dirsource;
+							$dirdest = $fileentry['path'] . '/' . $dirdest;
 							@rename($dirsource, $dirdest);
 						}
 					}
@@ -1138,19 +1083,15 @@ class ImmoReceipt extends CommonObject
 		}
 
 		// Set new ref and current status
-		if (!$error)
-		{
+		if (!$error) {
 			$this->ref = $num;
 			$this->status = self::STATUS_VALIDATED;
 		}
 
-		if (!$error)
-		{
+		if (!$error) {
 			$this->db->commit();
 			return 1;
-		}
-		else
-		{
+		} else {
 			$this->db->rollback();
 			return -1;
 		}
@@ -1165,63 +1106,58 @@ class ImmoReceipt extends CommonObject
      *  @param  int     $save_lastsearch_value      -1=Auto, 0=No save of lastsearch_values when clicking, 1=Save lastsearch_values whenclicking
      *  @return	string                              String with URL
      */
-    public function getNomUrl($withpicto = 0, $option = '', $notooltip = 0, $morecss = '', $save_lastsearch_value = -1)
-    {
-        global $conf, $langs, $hookmanager;
+	public function getNomUrl($withpicto = 0, $option = '', $notooltip = 0, $morecss = '', $save_lastsearch_value = -1)
+	{
+		global $conf, $langs, $hookmanager;
 
-       // global $dolibarr_main_authentication, $dolibarr_main_demo;
-       // global $menumanager;
+		// global $dolibarr_main_authentication, $dolibarr_main_demo;
+		// global $menumanager;
 
-        if (! empty($conf->dol_no_mouse_hover)) $notooltip=1;   // Force disable tooltips
+		if (!empty($conf->dol_no_mouse_hover)) $notooltip = 1;   // Force disable tooltips
 
-        $result = '';
+		$result = '';
 
-		$label = '<u>'.$langs->trans("ImmoReceipt").'</u>';
+		$label = '<u>' . $langs->trans("ImmoReceipt") . '</u>';
 		$label .= '<br>';
-		$label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
+		$label .= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 		$label .= '<br>';
-		$label .= '<b>'.$langs->trans('Label').':</b> '.$this->label;
-		if (isset($this->status)) 
-		{
-        	$label.= '<br><b>' . $langs->trans("Status").":</b> ".$this->getLibStatut(5);
-        }
+		$label .= '<b>' . $langs->trans('Label') . ':</b> ' . $this->label;
+		if (isset($this->status)) {
+			$label .= '<br><b>' . $langs->trans("Status") . ":</b> " . $this->getLibStatut(5);
+		}
 
-        $url = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$this->id;
+		$url = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $this->id;
 
-        if ($option != 'nolink')
-        {
-	        // Add param to save lastsearch_values or not
-	        $add_save_lastsearch_values = ($save_lastsearch_value == 1 ? 1 : 0);
-            if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) $add_save_lastsearch_values = 1;
-            if ($add_save_lastsearch_values) $url .= '&save_lastsearch_values=1';
-        }
+		if ($option != 'nolink') {
+			// Add param to save lastsearch_values or not
+			$add_save_lastsearch_values = ($save_lastsearch_value == 1 ? 1 : 0);
+			if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) $add_save_lastsearch_values = 1;
+			if ($add_save_lastsearch_values) $url .= '&save_lastsearch_values=1';
+		}
 
-        $linkclose = '';
-        if (empty($notooltip))
-        {
-            if (! empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER))
-            {
-                $label = $langs->trans("ShowImmoReceipt");
-                $linkclose .= ' alt="'.dol_escape_htmltag($label, 1).'"';
-            }
-            $linkclose .= ' title="'.dol_escape_htmltag($label, 1).'"';
-            $linkclose .= ' class="classfortooltip'.($morecss?' '.$morecss:'').'"';
-        }
-        else $linkclose = ($morecss?' class="'.$morecss.'"':'');
+		$linkclose = '';
+		if (empty($notooltip)) {
+			if (!empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER)) {
+				$label = $langs->trans("ShowImmoReceipt");
+				$linkclose .= ' alt="' . dol_escape_htmltag($label, 1) . '"';
+			}
+			$linkclose .= ' title="' . dol_escape_htmltag($label, 1) . '"';
+			$linkclose .= ' class="classfortooltip' . ($morecss ? ' ' . $morecss : '') . '"';
+		} else $linkclose = ($morecss ? ' class="' . $morecss . '"' : '');
 
-		$linkstart = '<a href="'.$url.'"';
-		$linkstart .= $linkclose.'>';
+		$linkstart = '<a href="' . $url . '"';
+		$linkstart .= $linkclose . '>';
 		$linkend = '</a>';
 
 		$result .= $linkstart;
-		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto?$this->picto : 'generic'), ($notooltip?(($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
+		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="' . (($withpicto != 2) ? 'paddingright ' : '') . 'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
 		if ($withpicto != 2) $result .= $this->ref;
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
 		global $action, $hookmanager;
 		$hookmanager->initHooks(array('immoreceiptdao'));
-		$parameters = array('id'=>$this->id, 'getnomurl'=>$result);
+		$parameters = array('id' => $this->id, 'getnomurl' => $result);
 		$reshook = $hookmanager->executeHooks('getNomUrl', $parameters, $this, $action);    // Note that $action and $object may have been modified by some hooks
 		if ($reshook > 0) $result = $hookmanager->resPrint;
 		else $result .= $hookmanager->resPrint;
@@ -1246,16 +1182,12 @@ class ImmoReceipt extends CommonObject
 
 		$langs->load("ultimateimmo@ultimateimmo");
 
-		if (!dol_strlen($modele)) 
-		{
+		if (!dol_strlen($modele)) {
 			$modele = 'quittance';
 
-			if ($this->model_pdf) 
-			{
+			if ($this->model_pdf) {
 				$modele = $this->model_pdf;
-			} 
-			elseif (! empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) 
-			{
+			} elseif (!empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) {
 				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
 			}
 		}
@@ -1287,8 +1219,7 @@ class ImmoReceipt extends CommonObject
 	public function LibStatut($status, $mode = 0)
 	{
 		// phpcs:enable
-		if (empty($this->labelStatus) || empty($this->labelStatusShort))
-		{
+		if (empty($this->labelStatus) || empty($this->labelStatusShort)) {
 			global $langs;
 			//$langs->load("mymodule");
 			$this->labelStatus[self::STATUS_DRAFT] = $langs->trans('Draft');
@@ -1299,7 +1230,7 @@ class ImmoReceipt extends CommonObject
 			$this->labelStatusShort[self::STATUS_CANCELED] = $langs->trans('Disabled');
 		}
 
-		$statusType = 'status'.$status;
+		$statusType = 'status' . $status;
 		//if ($status == self::STATUS_VALIDATED) $statusType = 'status1';
 		if ($status == self::STATUS_CANCELED) $statusType = 'status6';
 
@@ -1316,31 +1247,26 @@ class ImmoReceipt extends CommonObject
 	{
 		$sql = 'SELECT t.rowid, t.date_creation as datec, t.tms as datem,';
 		$sql .= ' t.fk_user_creat, t.fk_user_modif';
-		$sql .= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql .= ' WHERE t.rowid = '.$id;
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
+		$sql .= ' WHERE t.rowid = ' . $id;
 		$result = $this->db->query($sql);
-		if ($result)
-		{
-			if ($this->db->num_rows($result))
-			{
+		if ($result) {
+			if ($this->db->num_rows($result)) {
 				$obj = $this->db->fetch_object($result);
 				$this->id = $obj->rowid;
-				if ($obj->fk_user_author)
-				{
+				if ($obj->fk_user_author) {
 					$cuser = new User($this->db);
 					$cuser->fetch($obj->fk_user_author);
 					$this->user_creation = $cuser;
 				}
 
-				if ($obj->fk_user_valid)
-				{
+				if ($obj->fk_user_valid) {
 					$vuser = new User($this->db);
 					$vuser->fetch($obj->fk_user_valid);
 					$this->user_validation = $vuser;
 				}
 
-				if ($obj->fk_user_cloture)
-				{
+				if ($obj->fk_user_cloture) {
 					$cluser = new User($this->db);
 					$cluser->fetch($obj->fk_user_cloture);
 					$this->user_cloture = $cluser;
@@ -1352,9 +1278,7 @@ class ImmoReceipt extends CommonObject
 			}
 
 			$this->db->free($result);
-		}
-		else
-		{
+		} else {
 			dol_print_error($this->db);
 		}
 	}
@@ -1370,24 +1294,22 @@ class ImmoReceipt extends CommonObject
 		//$this->initAsSpecimenCommon();
 		$now = dol_now();
 
-		 // Load array of rents rentids
-		 $num_rents = 0;
-		 $rentids = array();
-		 $sql = "SELECT rowid";
-		 $sql .= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immorent";
-		 $sql .= " WHERE entity IN (".getEntity('product').")";
-		 $resql = $this->db->query($sql);
-		 if ($resql)
-		 {
-			 $num_rents = $this->db->num_rows($resql);
-			 $i = 0;
-			 while ($i < $num_rents)
-			 {
-				 $i++;
-				 $row = $this->db->fetch_row($resql);
-				 $rentids[$i] = $row[0];
-			 }
-		 }
+		// Load array of rents rentids
+		$num_rents = 0;
+		$rentids = array();
+		$sql = "SELECT rowid";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorent";
+		$sql .= " WHERE entity IN (" . getEntity('product') . ")";
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$num_rents = $this->db->num_rows($resql);
+			$i = 0;
+			while ($i < $num_rents) {
+				$i++;
+				$row = $this->db->fetch_row($resql);
+				$rentids[$i] = $row[0];
+			}
+		}
 
 		// Initialise parameters
 		$this->rowid = 0;
@@ -1402,8 +1324,8 @@ class ImmoReceipt extends CommonObject
 		$this->note_public = 'This is a comment';
 
 		// Lines
-        $nbp = 5;
-        $xnbp = 0;
+		$nbp = 5;
+		$xnbp = 0;
 		while ($xnbp < $nbp) {
 
 			$line = new immoreceiptLine();
@@ -1422,11 +1344,10 @@ class ImmoReceipt extends CommonObject
 			$line->regul = 1500;
 			$line->partial_payment = 500;
 
-			if ($num_rents > 0)
-            {
-                $rentid = mt_rand(1, $num_rents);
-                $line->fk_rent = $rentids[$rentid];
-            }
+			if ($num_rents > 0) {
+				$rentid = mt_rand(1, $num_rents);
+				$line->fk_rent = $rentids[$rentid];
+			}
 
 			$this->lines[$xnbp] = $line;
 			$xnbp++;
@@ -1488,24 +1409,21 @@ class ImmoReceipt extends CommonObject
 	 */
 	function getSommePaiement()
 	{
-		$table='ultimateimmo_immopayment';
-		$field='fk_receipt';
+		$table = 'ultimateimmo_immopayment';
+		$field = 'fk_receipt';
 
 		$sql = 'SELECT sum(amount) as amount';
-		$sql.= ' FROM '.MAIN_DB_PREFIX.$table;
-		$sql.= ' WHERE '.$field.' = '.$this->id;
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $table;
+		$sql .= ' WHERE ' . $field . ' = ' . $this->id;
 
-		dol_syslog(get_class($this)."::getSommePaiement", LOG_DEBUG);
-		$resql=$this->db->query($sql);
-		if ($resql)
-		{
+		dol_syslog(get_class($this) . "::getSommePaiement", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
 			$obj = $this->db->fetch_object($resql);
 			$this->db->free($resql);
 			return $obj->amount;
-		}
-		else
-		{
-			$this->error=$this->db->lasterror();
+		} else {
+			$this->error = "Error ".$this->db->lasterror();
 			return -1;
 		}
 	}
