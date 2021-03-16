@@ -330,6 +330,7 @@ class ImmoPayment extends CommonObject
 		// Validate parameters
 		if (!$this->date_payment) {
 			$this->error = 'ErrorBadValueForParameterCreatePaymentReceipt';
+			$this->errors[] = 'ErrorBadValueForParameterCreatePaymentReceipt';
 			return -1;
 		}
 
@@ -396,8 +397,8 @@ class ImmoPayment extends CommonObject
 			$this->db->commit();
 			return $this->id;
 		} else {
-			$this->error = $this->db->error();
-			$this->errors[]=$this->db->lasterror();
+			$this->error = "Error ".$this->db->lasterror();
+			$this->errors[] = "Error ".$this->db->lasterror();
 			$this->db->rollback();
 			return -1;
 		}
@@ -569,15 +570,15 @@ class ImmoPayment extends CommonObject
 					return 0;
 				}
 			} else {
-				$this->error = $this->db->lasterror();
-				$this->errors[] = $this->errors;
+				$this->error = "Error ".$this->db->lasterror();
+	            $this->errors[] = "Error ".$this->db->lasterror();
 				$errmsg = $this->error;
 				setEventMessages($errmsg, null, 'errors');
 				return -1;
 			}
 		} else {
-			$this->error = $this->db->lasterror();
-			$this->errors[] = $this->errors;
+			$this->error = "Error ".$this->db->lasterror();
+			$this->errors[] = "Error ".$this->db->lasterror();
 			$errmsg = $this->error;
 			setEventMessages($errmsg, null, 'errors');
 			return -1;
@@ -610,7 +611,7 @@ class ImmoPayment extends CommonObject
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetchAll($sortorder='', $sortfield='', $limit=0, $offset=0, array $filter = array(), $filtermode='AND')
+	public function fetchAll($sortorder = '', $sortfield = '', $limit = 0, $offset = 0, array $filter = array(), $filtermode = 'AND')
 	{
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
@@ -627,7 +628,7 @@ class ImmoPayment extends CommonObject
 		$sql .= " t.fk_receipt";
 		$sql .= " , lc.lastname as nomlocataire , ll.label as nomlocal , lo.label as nomloyer ";
 
-		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element. ' as t';
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid ";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo ON t.fk_receipt = lo.rowid";
@@ -635,33 +636,27 @@ class ImmoPayment extends CommonObject
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {
-			foreach ($filter as $key => $value) 
-			{
-				$sqlwhere [] = $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+			foreach ($filter as $key => $value) {
+				$sqlwhere[] = $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 			}
 		}
-		if (count($sqlwhere) > 0) 
-		{
-			$sql .= ' WHERE ' . implode(' '.$filtermode.' ', $sqlwhere);
+		if (count($sqlwhere) > 0) {
+			$sql .= ' WHERE ' . implode(' ' . $filtermode . ' ', $sqlwhere);
 		}
 
-		if (!empty($sortfield)) 
-		{
-			$sql .= $this->db->order($sortfield,$sortorder);
+		if (!empty($sortfield)) {
+			$sql .= $this->db->order($sortfield, $sortorder);
 		}
-		if (!empty($limit)) 
-		{
+		if (!empty($limit)) {
 			$sql .=  ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 		$this->lines = array();
 
 		$resql = $this->db->query($sql);
-		if ($resql) 
-		{
+		if ($resql) {
 			$num = $this->db->num_rows($resql);
 
-			while ($obj = $this->db->fetch_object($resql)) 
-			{
+			while ($obj = $this->db->fetch_object($resql)) {
 				$line = new ImmoPaymentLine();
 
 				$line->rowid = $obj->rowid;
@@ -688,7 +683,7 @@ class ImmoPayment extends CommonObject
 			$this->errors[] = 'Error ' . $this->db->lasterror();
 			dol_syslog(__METHOD__ . ' ' . join(',', $this->errors), LOG_ERR);
 
-			return - 1;
+			return -1;
 		}
 	}
 
@@ -740,55 +735,51 @@ class ImmoPayment extends CommonObject
      *  @param  int     $save_lastsearch_value    	-1=Auto, 0=No save of lastsearch_values when clicking, 1=Save lastsearch_values whenclicking
 	 *	@return	string								String with URL
 	 */
-	function getNomUrl($withpicto=0, $option='', $notooltip=0, $morecss='', $save_lastsearch_value=-1)
+	function getNomUrl($withpicto = 0, $option = '', $notooltip = 0, $morecss = '', $save_lastsearch_value = -1)
 	{
 		global $db, $conf, $langs;
-        global $dolibarr_main_authentication, $dolibarr_main_demo;
-        global $menumanager;
+		global $dolibarr_main_authentication, $dolibarr_main_demo;
+		global $menumanager;
 
-        if (! empty($conf->dol_no_mouse_hover)) $notooltip=1;   // Force disable tooltips
+		if (!empty($conf->dol_no_mouse_hover)) $notooltip = 1;   // Force disable tooltips
 
-        $result = '';
-        $companylink = '';
+		$result = '';
+		$companylink = '';
 
-        $label = '<u>' . $langs->trans("ImmoPayment") . '</u>';
-        $label.= '<br>';
-        $label.= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
-		$label.= '<br>';
-        $label.= '<b>' . $langs->trans('ImmoReceipt') . ':</b> ' . $this->fk_receipt;
-		$label.= '<br>';
-        $label.= '<b>' . $langs->trans('DatePayment') . ':</b> ' . $this->date_payment;
+		$label = '<u>' . $langs->trans("ImmoPayment") . '</u>';
+		$label .= '<br>';
+		$label .= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
+		$label .= '<br>';
+		$label .= '<b>' . $langs->trans('ImmoReceipt') . ':</b> ' . $this->fk_receipt;
+		$label .= '<br>';
+		$label .= '<b>' . $langs->trans('DatePayment') . ':</b> ' . $this->date_payment;
 
-        $url = dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?id='.$this->id;
+		$url = dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?id=' . $this->id;
 
-        if ($option != 'nolink')
-        {
-	        // Add param to save lastsearch_values or not
-	        $add_save_lastsearch_values=($save_lastsearch_value == 1 ? 1 : 0);
-	        if ($save_lastsearch_value == -1 && preg_match('/list\.php/',$_SERVER["PHP_SELF"])) $add_save_lastsearch_values=1;
-	        if ($add_save_lastsearch_values) $url.='&save_lastsearch_values=1';
-        }
+		if ($option != 'nolink') {
+			// Add param to save lastsearch_values or not
+			$add_save_lastsearch_values = ($save_lastsearch_value == 1 ? 1 : 0);
+			if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) $add_save_lastsearch_values = 1;
+			if ($add_save_lastsearch_values) $url .= '&save_lastsearch_values=1';
+		}
 
-        $linkclose='';
-        if (empty($notooltip))
-        {
-            if (! empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER))
-            {
-                $label=$langs->trans("ShowImmoPayment");
-                $linkclose.=' alt="'.dol_escape_htmltag($label, 1).'"';
-            }
-            $linkclose.=' title="'.dol_escape_htmltag($label, 1).'"';
-            $linkclose.=' class="classfortooltip'.($morecss?' '.$morecss:'').'"';
-        }
-        else $linkclose = ($morecss?' class="'.$morecss.'"':'');
+		$linkclose = '';
+		if (empty($notooltip)) {
+			if (!empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER)) {
+				$label = $langs->trans("ShowImmoPayment");
+				$linkclose .= ' alt="' . dol_escape_htmltag($label, 1) . '"';
+			}
+			$linkclose .= ' title="' . dol_escape_htmltag($label, 1) . '"';
+			$linkclose .= ' class="classfortooltip' . ($morecss ? ' ' . $morecss : '') . '"';
+		} else $linkclose = ($morecss ? ' class="' . $morecss . '"' : '');
 
-		$linkstart = '<a href="'.$url.'"';
-		$linkstart.=$linkclose.'>';
-		$linkend='</a>';
+		$linkstart = '<a href="' . $url . '"';
+		$linkstart .= $linkclose . '>';
+		$linkend = '</a>';
 
 		$result .= $linkstart;
-		if ($withpicto) $result.=img_object(($notooltip?'':$label), ($this->picto?$this->picto:'generic'), ($notooltip?(($withpicto != 2) ? 'class="paddingright"' : ''):'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip?0:1);
-		if ($withpicto != 2) $result.= $this->ref;
+		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="' . (($withpicto != 2) ? 'paddingright ' : '') . 'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
+		if ($withpicto != 2) $result .= $this->ref;
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
@@ -813,45 +804,38 @@ class ImmoPayment extends CommonObject
 	 *  @param  int		$mode          	0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto, 6=Long label + Picto
 	 *  @return string 			       	Label of status
 	 */
-	static function LibStatut($status,$mode=0)
+	static function LibStatut($status, $mode = 0)
 	{
 		global $langs;
 
-		if ($mode == 0)
-		{
-			$prefix='';
+		if ($mode == 0) {
+			$prefix = '';
 			if ($status == 1) return $langs->trans('Enabled');
 			if ($status == 0) return $langs->trans('Disabled');
 		}
-		if ($mode == 1)
-		{
+		if ($mode == 1) {
 			if ($status == 1) return $langs->trans('Enabled');
 			if ($status == 0) return $langs->trans('Disabled');
 		}
-		if ($mode == 2)
-		{
-			if ($status == 1) return img_picto($langs->trans('Enabled'),'statut4').' '.$langs->trans('Enabled');
-			if ($status == 0) return img_picto($langs->trans('Disabled'),'statut5').' '.$langs->trans('Disabled');
+		if ($mode == 2) {
+			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4') . ' ' . $langs->trans('Enabled');
+			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5') . ' ' . $langs->trans('Disabled');
 		}
-		if ($mode == 3)
-		{
-			if ($status == 1) return img_picto($langs->trans('Enabled'),'statut4');
-			if ($status == 0) return img_picto($langs->trans('Disabled'),'statut5');
+		if ($mode == 3) {
+			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4');
+			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5');
 		}
-		if ($mode == 4)
-		{
-			if ($status == 1) return img_picto($langs->trans('Enabled'),'statut4').' '.$langs->trans('Enabled');
-			if ($status == 0) return img_picto($langs->trans('Disabled'),'statut5').' '.$langs->trans('Disabled');
+		if ($mode == 4) {
+			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4') . ' ' . $langs->trans('Enabled');
+			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5') . ' ' . $langs->trans('Disabled');
 		}
-		if ($mode == 5)
-		{
-			if ($status == 1) return $langs->trans('Enabled').' '.img_picto($langs->trans('Enabled'),'statut4');
-			if ($status == 0) return $langs->trans('Disabled').' '.img_picto($langs->trans('Disabled'),'statut5');
+		if ($mode == 5) {
+			if ($status == 1) return $langs->trans('Enabled') . ' ' . img_picto($langs->trans('Enabled'), 'statut4');
+			if ($status == 0) return $langs->trans('Disabled') . ' ' . img_picto($langs->trans('Disabled'), 'statut5');
 		}
-		if ($mode == 6)
-		{
-			if ($status == 1) return $langs->trans('Enabled').' '.img_picto($langs->trans('Enabled'),'statut4');
-			if ($status == 0) return $langs->trans('Disabled').' '.img_picto($langs->trans('Disabled'),'statut5');
+		if ($mode == 6) {
+			if ($status == 1) return $langs->trans('Enabled') . ' ' . img_picto($langs->trans('Enabled'), 'statut4');
+			if ($status == 0) return $langs->trans('Disabled') . ' ' . img_picto($langs->trans('Disabled'), 'statut5');
 		}
 	}
 
@@ -864,32 +848,27 @@ class ImmoPayment extends CommonObject
 	function info($id)
 	{
 		$sql = 'SELECT rowid, date_creation as datec, tms as datem,';
-		$sql.= ' fk_user_creat, fk_user_modif';
-		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql.= ' WHERE t.rowid = '.$id;
-		$result=$this->db->query($sql);
-		if ($result)
-		{
-			if ($this->db->num_rows($result))
-			{
+		$sql .= ' fk_user_creat, fk_user_modif';
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
+		$sql .= ' WHERE t.rowid = ' . $id;
+		$result = $this->db->query($sql);
+		if ($result) {
+			if ($this->db->num_rows($result)) {
 				$obj = $this->db->fetch_object($result);
 				$this->id = $obj->rowid;
-				if ($obj->fk_user_author)
-				{
+				if ($obj->fk_user_author) {
 					$cuser = new User($this->db);
 					$cuser->fetch($obj->fk_user_author);
 					$this->user_creation   = $cuser;
 				}
 
-				if ($obj->fk_user_valid)
-				{
+				if ($obj->fk_user_valid) {
 					$vuser = new User($this->db);
 					$vuser->fetch($obj->fk_user_valid);
 					$this->user_validation = $vuser;
 				}
 
-				if ($obj->fk_user_cloture)
-				{
+				if ($obj->fk_user_cloture) {
 					$cluser = new User($this->db);
 					$cluser->fetch($obj->fk_user_cloture);
 					$this->user_cloture   = $cluser;
@@ -901,10 +880,7 @@ class ImmoPayment extends CommonObject
 			}
 
 			$this->db->free($result);
-
-		}
-		else
-		{
+		} else {
 			dol_print_error($this->db);
 		}
 	}
@@ -921,76 +897,66 @@ class ImmoPayment extends CommonObject
      *      @param  string	$emetteur_banque    Name of bank
      *      @return int                 		<0 if KO, >0 if OK
      */
-    public function addPaymentToBank($user, $mode, $label, $accountid, $emetteur_nom, $emetteur_banque)
-    {
-        global $conf;
+	public function addPaymentToBank($user, $mode, $label, $accountid, $emetteur_nom, $emetteur_banque)
+	{
+		global $conf;
 
-        $error=0;
+		$error = 0;
 
-        if (! empty($conf->banque->enabled))
-        {
-            require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
+		if (!empty($conf->banque->enabled)) {
+			require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
 
-            $acc = new Account($this->db);
-            $acc->fetch($accountid);
-	
-            $total=$this->amount;
-            if ($mode == 'immopayment') $amount=$total;
+			$acc = new Account($this->db);
+			$acc->fetch($accountid);
 
-            // Insert payment into llx_bank
-            $bank_line_id = $acc->addline(
-                $this->date_payment,
-                $this->fk_mode_reglement,  // Payment mode id or code ("CHQ or VIR for example")
-                $label,
-                $amount,
-                $this->num_payment,
-                '',
-                $user,
-                $emetteur_nom,
-                $emetteur_banque
-            );
+			$total = $this->amount;
+			if ($mode == 'immopayment') $amount = $total;
 
-            // Update fk_bank in llx_paiement.
-            // On connait ainsi le paiement qui a genere l'ecriture bancaire
-            if ($bank_line_id > 0)
-            {
-                $result=$this->update_fk_bank($bank_line_id);
-                if ($result <= 0)
-                {
-                    $error++;
-                    dol_print_error($this->db);
-                }
+			// Insert payment into llx_bank
+			$bank_line_id = $acc->addline(
+				$this->date_payment,
+				$this->fk_mode_reglement,  // Payment mode id or code ("CHQ or VIR for example")
+				$label,
+				$amount,
+				$this->num_payment,
+				'',
+				$user,
+				$emetteur_nom,
+				$emetteur_banque
+			);
 
-                // Add link 'payment', 'payment_supplier', 'immopayment' in bank_url between payment and bank transaction
-                $url='';
-                if ($mode == 'immopayment') $url=dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$this->id;
-                if ($url)
-                {
-                    $result=$acc->add_url_line($bank_line_id, $this->id, $url, '(paiement)', $mode);
-                    if ($result <= 0)
-                    {
-                        $error++;
-                        dol_print_error($this->db);
-                    }
-                }
-            }
-            else
-            {
-                $this->error=$acc->error;
+			// Update fk_bank in llx_paiement.
+			// On connait ainsi le paiement qui a genere l'ecriture bancaire
+			if ($bank_line_id > 0) {
+				$result = $this->update_fk_bank($bank_line_id);
+				if ($result <= 0) {
+					$error++;
+					dol_print_error($this->db);
+				}
+
+				// Add link 'payment', 'payment_supplier', 'immopayment' in bank_url between payment and bank transaction
+				$url = '';
+				if ($mode == 'immopayment') $url = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $this->id;
+				if ($url) {
+					$result = $acc->add_url_line($bank_line_id, $this->id, $url, '(paiement)', $mode);
+					if ($result <= 0) {
+						$error++;
+						dol_print_error($this->db);
+					}
+				}
+			} else {
+				$this->error = $acc->error;
 				setEventMessages($this->error, null, 'errors');
-                $error++;
-            }
-        }
+				$error++;
+			}
+		}
 
-        if (! $error)
-        {
-            return 1;
-        }
-        else
-        {
-            return -1;
-        }
-    }
+		if (!$error) {
+			return 1;
+		} else {
+			return -1;
+		}
+	}
 	
 	/**
 	 *  Update link between the quittance payment and the generated line in llx_bank
@@ -1000,18 +966,16 @@ class ImmoPayment extends CommonObject
 	 */
 	public function update_fk_bank($id_bank)
 	{
-        // phpcs:enable
-		$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immopayment SET fk_bank = ".$id_bank." WHERE rowid = ".$this->id;
+		// phpcs:enable
+		$sql = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immopayment SET fk_bank = " . $id_bank . " WHERE rowid = " . $this->id;
 
-		dol_syslog(get_class($this)."::update_fk_bank", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::update_fk_bank", LOG_DEBUG);
 		$result = $this->db->query($sql);
-		if ($result)
-		{
+		if ($result) {
 			return 1;
-		}
-		else
-		{
-			$this->error=$this->db->error();
+		} else {
+			$this->error = "Error ".$this->db->lasterror();
+			$this->errors[] = "Error ".$this->db->lasterror();
 			return 0;
 		}
 	}
