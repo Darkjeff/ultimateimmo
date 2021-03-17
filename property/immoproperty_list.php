@@ -467,10 +467,20 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);
 				if ($staticowner->ref) {
-					$staticowner->ref = $staticowner->getFullName($langs);
+					$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
 				}
 				print $staticowner->ref;
+			} elseif ($val['label'] == 'PropertyParent') {
+				$staticproperty = new ImmoProperty($db);
+				$staticproperty->fetch($object->fk_property);
+				if ($staticproperty->ref) {
+					$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
+				}
+				print $staticproperty->ref;
+			} else {
+				print $object->showOutputField($val, $key, $obj->$key, '');
 			}
+			
 			/*
 			if ($val['label'] == 'Juridique') 
 			{ 
@@ -483,9 +493,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					$object->juridique=$tmparray['label'];
 				}
 				print $object->juridique;
-			}*/ else {
-				print $object->showOutputField($val, $key, $obj->$key, '');
-			}
+			}*/
 			print '</td>';
 			if (!$i) $totalarray['nbfield']++;
 			if (!empty($val['isameasure'])) {

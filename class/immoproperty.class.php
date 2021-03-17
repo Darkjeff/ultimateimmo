@@ -435,73 +435,65 @@ class ImmoProperty extends CommonObject
 	public function fetchCommon($id, $ref = null, $morewhere = '')
 	{
 		if (empty($id) && empty($ref) && empty($morewhere)) return -1;
-		
+
 		global $langs;
-		
+
 		$array = preg_split("/[\s,]+/", $this->get_field_list());
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), array($array[0]));
 		$array = implode(', t.', $array);
 
-		$sql = 'SELECT '.$array.',';
-		$sql.= ' country.rowid as country_id, country.code as country_code, country.label as country, j.rowid as juridique_id, j.code as juridique_code, j.label as juridique, tp.rowid as property_type_id, tp.code as type_code, tp.label as type';
-		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_immoproperty_type as tp ON t.property_type_id = tp.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_country as country ON t.country_id = country.rowid';
-		$sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
-
-		if (!empty($id)) $sql .= ' WHERE t.rowid = '.$id;
-		else $sql .= ' WHERE t.ref = '.$this->quote($ref, $this->fields['ref']);
-		if ($morewhere) $sql.=$morewhere;
+		$sql = 'SELECT ' . $array . ',';
 		
-		dol_syslog(get_class($this)."::fetch", LOG_DEBUG);
-		$res = $this->db->query($sql);
-		if ($res)
-		{
-    		if ($obj = $this->db->fetch_object($res))
-    		{
-    		    if ($obj)
-    		    {
-        			$this->id = $id;
-        			$this->set_vars_by_db($obj);
+		$sql .= ' country.rowid as country_id, country.code as country_code, country.label as country, j.rowid as juridique_id, j.code as juridique_code, j.label as juridique, tp.rowid as property_type_id, tp.code as type_code, tp.label as type';
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immoproperty_type as tp ON t.property_type_id = tp.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
 
-        			$this->date_creation = $this->db->jdate($obj->date_creation);
-        			$this->tms = $this->db->jdate($obj->tms);
-					
+		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
+		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
+		if ($morewhere) $sql .= $morewhere;
+
+		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
+		$res = $this->db->query($sql);
+		if ($res) {
+			if ($obj = $this->db->fetch_object($res)) {
+				if ($obj) {
+					$this->id = $id;
+					$this->set_vars_by_db($obj);
+
+					$this->date_creation = $this->db->jdate($obj->date_creation);
+					$this->tms = $this->db->jdate($obj->tms);
+
 					/*$this->juridique_id	= $obj->juridique_id;
 					$this->juridique_code = $obj->juridique_code;
 					$this->juridique=$obj->juridique;*/
-					
+
 					$this->property_type_id	= $obj->property_type_id;
-					$this->type_code = $obj->type_code;				
-					$this->type=$obj->type;
-					
-        			$this->country_id	= $obj->country_id;
+					$this->type_code = $obj->type_code;
+					$this->type = $obj->type;
+
+					$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
-					if ($langs->trans("Country".$obj->country_code) != "Country".$obj->country_code)
-						$this->country = $langs->transnoentitiesnoconv("Country".$obj->country_code);
+					if ($langs->trans("Country" . $obj->country_code) != "Country" . $obj->country_code)
+						$this->country = $langs->transnoentitiesnoconv("Country" . $obj->country_code);
 					else
 						$this->country = $obj->country;
 					$this->setVarsFromFetchObj($obj);
 					return $this->id;
-    		    }
-    		    else
-    		    {
-    		        return 0;
-    		    }
-    		}
-    		else
-    		{
-    			$this->error = $this->db->lasterror();
-    			$this->errors[] = $this->error;
-    			return -1;
-    		}
-		}
-		else
-		{
-		    $this->error = $this->db->lasterror();
-		    $this->errors[] = $this->error;
-		    return -1;
+				} else {
+					return 0;
+				}
+			} else {
+				$this->error = $this->db->lasterror();
+				$this->errors[] = $this->error;
+				return -1;
+			}
+		} else {
+			$this->error = $this->db->lasterror();
+			$this->errors[] = $this->error;
+			return -1;
 		}
 	}
 
