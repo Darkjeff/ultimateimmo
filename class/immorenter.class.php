@@ -96,8 +96,8 @@ class ImmoRenter extends CommonObject
 		'rowid'         => array('type' => 'integer', 'label' => 'TechnicalID', 'enabled' => 1, 'visible' => -1, 'noteditable' => 1, 'notnull' => 1, 'index' => 1, 'position' => 1, 'comment' => 'Id'),
 		'ref'           => array('type' => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1, 'showoncombobox' => 1, 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
 		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
-		'fk_rent' => array('type' => 'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label' => 'Rent', 'visible' => 1, 'enabled' => 1, 'position' => 25, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immorent.rowid', 'searchall' => 1, 'help' => "LinkToRent",),
-		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'help' => "LinkToOwner",),
+		'fk_rent' => array('type' => 'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label' => 'ImmoRent', 'visible' => 1, 'enabled' => 1, 'position' => 25, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immorent.rowid', 'searchall' => 1, 'help' => "LinkToRent",),
+		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'foreignkey'=>'ultimateimmo_immoowner.fk_owner', 'help' => "LinkToOwner",),
 		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 35, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirparty'),
 		'societe' => array('type' => 'varchar(128)', 'label' => 'Societe', 'visible' => 1, 'enabled' => 1, 'position' => 36, 'notnull' => -1,),
 		'note_public' => array('type' => 'html', 'label' => 'NotePublic', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1,),
@@ -780,7 +780,7 @@ class ImmoRenter extends CommonObject
 			$this->db->commit();
 			return 1;
 		} else {
-			$this->error = "Error ".$this->db->error();
+			$this->error = "Error " . $this->db->error();
 			$this->db->rollback();
 			return -1;
 		}
@@ -1003,7 +1003,7 @@ class ImmoRenter extends CommonObject
 		$label .= '<br>';
 		$label .= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 		$label .= '<br>';
-		$label .= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->lastname;
+		$label .= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->civility .' '.$this->firstname .' '.$this->lastname;
 		if (isset($this->status)) {
 			$label .= '<br><b>' . $langs->trans("Status") . ":</b> " . $this->getLibStatut(5);
 		}

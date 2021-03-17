@@ -319,21 +319,21 @@ $arrayofmassactions =  array(
     //'builddoc'=>$langs->trans("PDFMerge"),
     //'presend'=>$langs->trans("SendByMail"),
 );
-if ($permissiontodelete) $arrayofmassactions['predelete'] = '<span class="fa fa-trash paddingrightonly"></span>'.$langs->trans("Delete");
+if ($permissiontodelete) $arrayofmassactions['predelete'] = '<span class="fa fa-trash paddingrightonly"></span>' . $langs->trans("Delete");
 if (GETPOST('nomassaction', 'int') || in_array($massaction, array('presend', 'predelete'))) $arrayofmassactions = array();
 $massactionbutton = $form->selectMassAction('', $arrayofmassactions);
 
-print '<form method="POST" id="searchFormList" action="'.$_SERVER["PHP_SELF"].'">'."\n";
-if ($optioncss != '') print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
-print '<input type="hidden" name="token" value="'.newToken().'">';
+print '<form method="POST" id="searchFormList" action="' . $_SERVER["PHP_SELF"] . '">' . "\n";
+if ($optioncss != '') print '<input type="hidden" name="optioncss" value="' . $optioncss . '">';
+print '<input type="hidden" name="token" value="' . newToken() . '">';
 print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 print '<input type="hidden" name="action" value="list">';
-print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
-print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
-print '<input type="hidden" name="page" value="'.$page.'">';
-print '<input type="hidden" name="contextpage" value="'.$contextpage.'">';
+print '<input type="hidden" name="sortfield" value="' . $sortfield . '">';
+print '<input type="hidden" name="sortorder" value="' . $sortorder . '">';
+print '<input type="hidden" name="page" value="' . $page . '">';
+print '<input type="hidden" name="contextpage" value="' . $contextpage . '">';
 
-$newcardbutton = dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?action=create&backtopage='.urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
+$newcardbutton = dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1) . '?action=create&backtopage=' . urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
 
 print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, $newcardbutton, '', $limit, 0, 0, 1);
 
@@ -341,8 +341,8 @@ print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sort
 $topicmail = "SendImmoRenterRef";
 $modelmail = "immorenter";
 $objecttmp = new ImmoRenter($db);
-$trackid = 'xxxx'.$object->id;
-include DOL_DOCUMENT_ROOT.'/core/tpl/massactions_pre.tpl.php';
+$trackid = 'xxxx' . $object->id;
+include DOL_DOCUMENT_ROOT . '/core/tpl/massactions_pre.tpl.php';
 
 if ($search_all)
 {
@@ -476,9 +476,10 @@ while ($i < ($limit ? min($num, $limit) : $num))
 			if ($key == 'status') print $object->getLibStatut(5);
 			elseif ($val['label'] == 'Civility') {
 				if ($object->civility_id) {
+					$tmparray = array();
 					$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
-					$object->civility_code = $tmparray['code'];
-					$object->civility = $tmparray['label'];
+					if (in_array($tmparray['code'], $tmparray)) $object->civility_code = $tmparray['code'];
+					if (in_array($tmparray['label'], $tmparray)) $object->civility = $tmparray['label'];
 				}
 				print $object->civility;
 			} elseif ($val['label'] == 'Property') {

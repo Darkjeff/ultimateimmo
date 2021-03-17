@@ -158,31 +158,29 @@ $formcompany = new FormCompany($db);
 llxHeader('',$langs->trans('ImmoOwner'), '');
 
 // Part to create
-if ($action == 'create')
-{
-	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoOwner")), '', 'object_'.$object->picto);
+if ($action == 'create') {
+	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoOwner")), '', 'object_' . $object->picto);
 
-	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="add">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
+	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
 	dol_fiche_head(array(), '');
 
-	print '<table class="border centpercent tableforfieldcreate">'."\n";
+	print '<table class="border centpercent tableforfieldcreate">' . "\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 
-	foreach ($object->fields as $key => $val)
-	{
+	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
 
-		print '<tr id="field_'.$key.'">';
+		print '<tr id="field_' . $key . '">';
 		print '<td';
 		print ' class="titlefieldcreate';
 		if ($val['notnull'] > 0) print ' fieldrequired';
@@ -194,60 +192,52 @@ if ($action == 'create')
 		print '</td>';
 		print '<td>';
 
-		if ($val['label'] == 'Civility') 
-		{					
+		if ($val['label'] == 'Civility') {
 			// We set civility_id, civility_code and civility for the selected civility
 			$object->civility_id	= GETPOST("civility_id", 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
 
-			if ($object->country_id)
-			{
+			if ($object->country_id) {
 				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
 				$object->civility_code = $tmparray['code'];
 				$object->civility = $tmparray['label'];
 			}
-			
+
 			// civility
-			print $object->select_civility(GETPOSTISSET("civility_id") != ''? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');
+			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');
 			//var_dump($object->civility_id);exit;	
-		}
-		elseif ($val['label'] == 'Country') 
-		{			
+		} elseif ($val['label'] == 'Country') {
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
-			
-			if ($object->country_id)
-			{
+
+			if ($object->country_id) {
 				$tmparray = $object->getCountry($object->country_id, 'all');
 				$object->country_code = $tmparray['code'];
 				$object->country = $tmparray['label'];
 			}
 			// Country
-			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));	
-		}
-		else
-		{
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');	
-			
+			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
+		} else {
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
+
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
 			else $value = GETPOST($key, 'alpha');
 			print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
 		print '</td>';
 		print '</tr>';
-		
 	}
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
 
-	print '</table>'."\n";
+	print '</table>' . "\n";
 
 	dol_fiche_end();
 
 	print '<div class="center">';
-	print '<input type="submit" class="button" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'">';
+	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
 	print '&nbsp; ';
-	print '<input type="'.($backtopage?"submit":"button").'" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"'.($backtopage?'':' onclick="javascript:history.go(-1)"').'>';	// Cancel for create does not post form if we don't know the backtopage
+	print '<input type="' . ($backtopage ? "submit" : "button") . '" class="button" name="cancel" value="' . dol_escape_htmltag($langs->trans("Cancel")) . '"' . ($backtopage ? '' : ' onclick="javascript:history.go(-1)"') . '>';	// Cancel for create does not post form if we don't know the backtopage
 	print '</div>';
 
 	print '</form>';

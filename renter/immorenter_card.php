@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2020 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,22 +23,29 @@
  */
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
 // Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
+if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
+if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
+if (!$res) die("Include of main fails");
 
-include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
-include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
+include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
+include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formprojet.class.php';
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/lib/immorenter.lib.php');
 
@@ -51,15 +58,15 @@ $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $confirm    = GETPOST('confirm', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
-$contextpage = GETPOST('contextpage', 'aZ') ?GETPOST('contextpage', 'aZ') : 'myobjectcard'; // To manage different context of search
+$contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'myobjectcard'; // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
-$socid		= GETPOST('socid','int');
+$socid		= GETPOST('socid', 'int');
 
 // Initialize technical objects
 $object = new ImmoRenter($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/' . $user->id;
 $hookmanager->initHooks(array('immorentercard', 'globalcard'));     // Note that conf->hooks_modules contains array
 
 // Fetch optionals attributes and labels
@@ -105,8 +112,6 @@ if (empty($reshook))
 {
 	$error = 0;
 
-	$permissiontoadd = $user->rights->ultimateimmo->write;
-	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$backurlforlist = dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1);
 
 	if (empty($backtopage) || ($cancel && empty($id))) {
@@ -161,14 +166,27 @@ if (empty($reshook))
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
 
+	// Action to move up and down lines of object
+	//include DOL_DOCUMENT_ROOT.'/core/actions_lineupdown.inc.php';
+
+	// Action to build doc
+	include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
+
+	if ($action == 'set_thirdparty' && $permissiontoadd)
+	{
+		$object->setValueFrom('fk_soc', GETPOST('fk_soc', 'int'), '', '', 'date', '', $user, 'IMMORENTER_MODIFY');
+	}
+	if ($action == 'classin' && $permissiontoadd)
+	{
+		$object->setProject(GETPOST('projectid', 'int'));
+	}
+
 	// Actions to send emails
 	$triggersendname = 'IMMORENTER_SENTBYMAIL';
 	$autocopy = 'MAIN_MAIL_AUTOCOPY_IMMORENTER_TO';
 	$trackid = 'immorenter'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 }
-
-//$modulepart = 'ultimateimmo';
 
 
 /*
@@ -178,35 +196,34 @@ if (empty($reshook))
 
 $form = new Form($db);
 $formfile = new FormFile($db);
+$formproject = new FormProjets($db);
 
 llxHeader('', $langs->trans('ImmoRenter'), '');
 
 // Part to create
-if ($action == 'create')
-{
-	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoRenter")));
+if ($action == 'create') {
+	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoRenter")), '', 'object_' . $object->picto);
 
-	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="add">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
+	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
 	dol_fiche_head(array(), '');
 
-	print '<table class="border centpercent tableforfieldcreate">'."\n";
+	print '<table class="border centpercent tableforfieldcreate">' . "\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 
-	foreach($object->fields as $key => $val)
-	{
+	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue;	// We don't want this field
 
-		print '<tr id="field_'.$key.'">';
+		print '<tr id="field_' . $key . '">';
 		print '<td';
 		print ' class="titlefieldcreate';
 		if ($val['notnull'] > 0) print ' fieldrequired';
@@ -222,13 +239,14 @@ if ($action == 'create')
 			// We set civility_id, civility_code and civility for the selected civility
 			$object->civility_id	= GETPOST("civility_id", 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
 
-			if ($object->country_id) {
+			if ($object->civility_id) {
+				$tmparray = array();
 				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
-				$object->civility_code = $tmparray['code'];
-				$object->civility = $tmparray['label'];
+				if (in_array($tmparray['code'], $tmparray)) $object->civility_code = $tmparray['code'];
+				if (in_array($tmparray['label'], $tmparray)) $object->civility = $tmparray['label'];
 			}
 			// civility
-			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');	
+			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');
 		} elseif ($val['label'] == 'BirthDay') {
 			print $form->selectDate(($object->birth ? $object->birth : -1), 'birth', '', '', 1, 'formsoc');
 		} elseif ($val['label'] == 'BirthCountry') {
@@ -255,14 +273,14 @@ if ($action == 'create')
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
 
-	print '</table>'."\n";
+	print '</table>' . "\n";
 
 	dol_fiche_end();
 
 	print '<div class="center">';
-	print '<input type="submit" class="button" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'">';
+	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
 	print '&nbsp; ';
-	print '<input type="'.($backtopage?"submit" : "button").'" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"'.($backtopage?'':' onclick="javascript:history.go(-1)"').'>';	// Cancel for create does not post form if we don't know the backtopage
+	print '<input type="' . ($backtopage ? "submit" : "button") . '" class="button" name="cancel" value="' . dol_escape_htmltag($langs->trans("Cancel")) . '"' . ($backtopage ? '' : ' onclick="javascript:history.go(-1)"') . '>';	// Cancel for create does not post form if we don't know the backtopage
 	print '</div>';
 
 	print '</form>';

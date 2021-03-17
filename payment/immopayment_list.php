@@ -487,6 +487,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					$property = new ImmoProperty($db);
 					$result = $property->fetch($object->fk_property);
 					print $property->getNomUrl(1, 0, 'showall');
+					//var_dump($property);exit;
 				}
 			} else {
 				if ($key == 'status') print $object->getLibStatut(5);
