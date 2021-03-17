@@ -50,6 +50,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
+dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 
 // Load traductions files required by the page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
@@ -482,13 +483,16 @@ while ($i < ($limit ? min($num, $limit) : $num))
 					if (in_array($tmparray['label'], $tmparray)) $object->civility = $tmparray['label'];
 				}
 				print $object->civility;
-			} elseif ($val['label'] == 'Property') {
+			} elseif ($val['label'] == 'ImmoRent') {
 				$staticrent = new ImmoRent($db);
 				$staticrent->fetch($object->fk_rent);
+				$staticproperty = new ImmoProperty($db);
+				$staticproperty->fetch($staticrent->fk_property);
+				//var_dump();exit;
 				if ($staticrent->ref) {
-					$staticrent->ref = $staticrent->label;
+					$staticrent->ref = $staticrent->getNomUrl(0) . ' - ' . $staticproperty->label;
 				}
-				print $staticproperty->ref;
+				print $staticrent->ref;
 			} elseif ($val['label'] == 'BirthCountry') {
 				if ($object->country_id) {
 					include_once(DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
@@ -501,7 +505,7 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);
 				if ($staticowner->ref) {
-					$staticowner->ref = $staticowner->getFullName($langs);
+					$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
 				}
 				print $staticowner->ref;
 			} else {
