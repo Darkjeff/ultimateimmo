@@ -1105,6 +1105,22 @@ class ImmoOwner extends CommonObject
 
 		return $out;
 	}
+
+	/**
+	 *    Return civility label of contact
+	 *
+	 *    @return	string      			Translated name of civility
+	 */
+	public function getPropertyLabel()
+	{
+		global $langs;
+
+		$code = ($this->civility_code ? $this->civility_code : (!empty($this->civility_id) ? $this->civility : (!empty($this->civilite) ? $this->civilite : '')));
+		if (empty($code)) return '';
+
+		$langs->load("dict");
+		return $langs->getLabelFromKey($this->db, "Civility".$code, "c_civility", "code", "label", $code);
+	}
 }
 
 

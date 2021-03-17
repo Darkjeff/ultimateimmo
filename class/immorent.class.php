@@ -87,7 +87,7 @@ class ImmoRent extends CommonObject
 		'ref' => array('type' => 'varchar(128)', 'label' => 'Ref', 'visible' => 1, 'enabled' => 1, 'position' => 10, 'notnull' => 1, 'index' => 1, 'searchall' => 1, 'comment' => "Reference of object",),
 		'entity' => array('type' => 'integer', 'label' => 'Entity', 'visible' => 0, 'enabled' => 1, 'position' => 20, 'notnull' => 1, 'index' => 1,),
 		'fk_property' => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'Property', 'visible' => 1, 'enabled' => 1, 'position' => 25, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immoproperty.rowid', 'searchall' => 1, 'help' => "LinkToProperty",),
-		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'visible' => 1, 'enabled' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToOwner",),
+		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'visible' => 1, 'enabled' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'searchall' => 1,  'foreignkey' => 'ultimateimmo_immoowner.rowid', 'help' => "LinkToOwner",),
 		'fk_renter' => array('type' => 'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label' => 'Renter', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immorenter.rowid', 'searchall' => 1, 'help' => "LinkToRenter",),
 		'fk_bank' => array('type' => 'integer:Account:compta/bank/class/account.class.php', 'label' => 'Account', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'bank_account.id', 'searchall' => 1, 'help' => "LinkToAccount",),
 		'fk_soc' => array('type' => 'integer:Societe:societe/class/societe.class.php', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 42, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirparty", 'foreignkey' => 'societe.rowid',),
@@ -106,7 +106,7 @@ class ImmoRent extends CommonObject
 		'date_end' => array('type' => 'date', 'label' => 'date_end', 'visible' => -1, 'enabled' => 1, 'position' => 95, 'notnull' => -1,),
 		'date_next_rent' => array('type' => 'date', 'label' => 'DateNextRent', 'visible' => -1, 'enabled' => 1, 'position' => 100, 'notnull' => -1,),
 		'date_last_regul' => array('type' => 'date', 'label' => 'DateLastRegul', 'visible' => -1, 'enabled' => 1, 'position' => 110, 'notnull' => -1,),
-		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'visible' => 1, 'enabled' => 1, 'position' => 500, 'notnull' => 1,),
+		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'visible' => -1, 'enabled' => 1, 'position' => 500,),
 		'tms' => array('type' => 'timestamp', 'label' => 'DateModification', 'visible' => -2, 'enabled' => 1, 'position' => 501, 'notnull' => 1,),
 		'fk_user_creat' => array('type' => 'integer', 'label' => 'UserAuthor', 'visible' => -2, 'enabled' => 1, 'position' => 510, 'notnull' => 1,),
 		'fk_user_modif' => array('type' => 'integer', 'label' => 'UserModif', 'visible' => -2, 'enabled' => 1, 'position' => 511, 'notnull' => -1,),
@@ -321,20 +321,20 @@ class ImmoRent extends CommonObject
 		$array = implode(', t.', $array);
 
 		$sql = 'SELECT ' . $array . ',';
-		$sql .= ' t.rowid, t.location_type_id,';
-		$sql .= ' s.rowid as socid, s.nom as name,';
-		$sql .= ' lc.lastname as nomlocataire,';
-		$sql .= ' lc.firstname as firstname_renter,';
-		$sql .= ' ll.label as nomlocal';
+		
+		$sql .= ' soc.rowid as socid, soc.nom as name,';
+		$sql .= ' rentr.lastname as nomlocataire,';
+		$sql .= ' rentr.firstname as firstname_renter,';
+		$sql .= ' prop.label as nomlocal';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immorent_type as c ON t.location_type_id = c.rowid';
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as s ON t.fk_soc = s.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorenter as rentr ON t.fk_renter = rentr.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as prop ON t.fk_property = prop.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immorent_type as rent_t ON t.location_type_id = rent_t.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as soc ON t.fk_soc = soc.rowid';
 
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
 		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
-
+		//print_r($sql);exit;
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
 
@@ -447,6 +447,8 @@ class ImmoRent extends CommonObject
 		$label = '<u>' . $langs->trans("ImmoRent") . '</u>';
 		$label .= '<br>';
 		$label .= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
+		$label .= '<br>';
+		$label .= '<b>' . $langs->trans('ImmoProperty') . ':</b> ' . $this->fk_property;
 
 		$url = dol_buildpath('/ultimateimmo/rent/immorent_card.php', 1) . '?id=' . $this->id;
 
