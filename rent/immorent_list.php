@@ -23,23 +23,29 @@
  */
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
 // Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
+if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
+if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
+if (!$res) die("Include of main fails");
 
-require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
-require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+require_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
+require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
@@ -58,14 +64,16 @@ $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'im
 $backtopage = GETPOST('backtopage', 'alpha'); // Go back to a dedicated page
 $optioncss  = GETPOST('optioncss', 'aZ'); // Option for the css output (always '' except when 'print')
 
-$id			= GETPOST('id','int');
+$id			= GETPOST('id', 'int');
 
 // Load variable for pagination
 $limit = GETPOST('limit', 'int') ? GETPOST('limit', 'int') : $conf->liste_limit;
 $sortfield = GETPOST('sortfield', 'alpha');
 $sortorder = GETPOST('sortorder', 'alpha');
 $page = GETPOST('page', 'int');
-if (empty($page) || $page == -1 || GETPOST('button_search', 'alpha') || GETPOST('button_removefilter', 'alpha') || (empty($toselect) && $massaction === '0')) { $page = 0; }     // If $page is not defined, or '' or -1 or if we click on clear filters or if we select empty mass action
+if (empty($page) || $page == -1 || GETPOST('button_search', 'alpha') || GETPOST('button_removefilter', 'alpha') || (empty($toselect) && $massaction === '0')) {
+	$page = 0;
+}     // If $page is not defined, or '' or -1 or if we click on clear filters or if we select empty mass action
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -73,7 +81,7 @@ $pagenext = $page + 1;
 // Initialize technical objects
 $object = new ImmoRent($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/' . $user->id;
 $hookmanager->initHooks(array('immorentlist'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
@@ -81,14 +89,13 @@ $extrafields->fetch_name_optionals_label($object->table_element);
 $search_array_options = $extrafields->getOptionalsFromPost($object->table_element, '', 'search_');
 
 // Default sort order (if not yet defined by previous GETPOST)
-if (! $sortfield) $sortfield = "t.".key($object->fields);   // Set here default search field. By default 1st field in definition.
-if (! $sortorder) $sortorder = "ASC";
+if (!$sortfield) $sortfield = "t." . key($object->fields);   // Set here default search field. By default 1st field in definition.
+if (!$sortorder) $sortorder = "ASC";
 
 // Security check
 if (empty($conf->ultimateimmo->enabled)) accessforbidden('Module not enabled');
 $socid = 0;
-if ($user->societe_id > 0)
-{
+if ($user->societe_id > 0) {
 	//$socid = $user->societe_id;
 	accessforbidden();
 }
@@ -97,36 +104,31 @@ if ($user->societe_id > 0)
 // Initialize array of search criterias
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
-foreach($object->fields as $key => $val)
-{
-	if (GETPOST('search_'.$key, 'alpha') !== '') $search[$key] = GETPOST('search_'.$key, 'alpha');
+foreach ($object->fields as $key => $val) {
+	if (GETPOST('search_' . $key, 'alpha') !== '') $search[$key] = GETPOST('search_' . $key, 'alpha');
 }
 
 // List of fields to search into when doing a "search in all"
 $fieldstosearchall = array();
-foreach($object->fields as $key => $val)
-{
-	if ($val['searchall']) $fieldstosearchall['t.'.$key] = $val['label'];
+foreach ($object->fields as $key => $val) {
+	if ($val['searchall']) $fieldstosearchall['t.' . $key] = $val['label'];
 }
 
 // Definition of fields for list
 $arrayfields = array();
-foreach ($object->fields as $key => $val)
-{
+foreach ($object->fields as $key => $val) {
 	// If $val['visible']==0, then we never show the field
-	if (!empty($val['visible'])) $arrayfields['t.'.$key] = array('label'=>$val['label'], 'checked'=>(($val['visible'] < 0) ? 0 : 1), 'enabled'=>($val['enabled'] && ($val['visible'] != 3)), 'position'=>$val['position']);
+	if (!empty($val['visible'])) $arrayfields['t.' . $key] = array('label' => $val['label'], 'checked' => (($val['visible'] < 0) ? 0 : 1), 'enabled' => ($val['enabled'] && ($val['visible'] != 3)), 'position' => $val['position']);
 }
 // Extra fields
-if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label']) > 0)
-{
-	foreach($extrafields->attributes[$object->table_element]['label'] as $key => $val)
-	{
+if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label']) > 0) {
+	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
 		if (!empty($extrafields->attributes[$object->table_element]['list'][$key])) {
-			$arrayfields["ef.".$key] = array(
-				'label'=>$extrafields->attributes[$object->table_element]['label'][$key],
-				'checked'=>(($extrafields->attributes[$object->table_element]['list'][$key]<0)?0:1),
-				'position'=>$extrafields->attributes[$object->table_element]['pos'][$key],
-				'enabled'=>(abs($extrafields->attributes[$object->table_element]['list'][$key])!=3 && $extrafields->attributes[$object->table_element]['perms'][$key])
+			$arrayfields["ef." . $key] = array(
+				'label' => $extrafields->attributes[$object->table_element]['label'][$key],
+				'checked' => (($extrafields->attributes[$object->table_element]['list'][$key] < 0) ? 0 : 1),
+				'position' => $extrafields->attributes[$object->table_element]['pos'][$key],
+				'enabled' => (abs($extrafields->attributes[$object->table_element]['list'][$key]) != 3 && $extrafields->attributes[$object->table_element]['perms'][$key])
 			);
 		}
 	}
@@ -143,31 +145,35 @@ $permissiontodelete = $user->rights->ultimateimmo->delete;
  *
  */
 
-if (GETPOST('cancel','alpha')) { $action ='list'; $massaction = ''; }
-if (! GETPOST('confirmmassaction','alpha') && $massaction != 'presend' && $massaction != 'confirm_presend') { $massaction = ''; }
+if (GETPOST('cancel', 'alpha')) {
+	$action = 'list';
+	$massaction = '';
+}
+if (!GETPOST('confirmmassaction', 'alpha') && $massaction != 'presend' && $massaction != 'confirm_presend') {
+	$massaction = '';
+}
 
 $parameters = array();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
-if (empty($reshook))
-{
+if (empty($reshook)) {
 	// Selection of new fields
-	include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_changeselectedfields.inc.php';
 
 	// Purge search criteria
-	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') ||GETPOST('button_removefilter','alpha')) // All tests are required to be compatible with all browsers
+	if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')) // All tests are required to be compatible with all browsers
 	{
-		foreach ($object->fields as $key => $val)
-		{
+		foreach ($object->fields as $key => $val) {
 			$search[$key] = '';
 		}
 		$toselect = '';
 		$search_array_options = array();
 	}
-	if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')
-		|| GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha'))
-	{
+	if (
+		GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')
+		|| GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha')
+	) {
 		$massaction = '';     // Protection to avoid mass action if we force a new search during a mass action confirmation
 	}
 
@@ -175,7 +181,7 @@ if (empty($reshook))
 	$objectclass = 'ImmoRent';
 	$objectlabel = 'ImmoRent';
 	$uploaddir = $conf->ultimateimmo->dir_output;
-	include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_massactions.inc.php';
 }
 
 /*
@@ -195,32 +201,30 @@ $title = $langs->trans("ListOfRents");
 // Build and execute select
 // --------------------------------------------------------------------
 $sql = 'SELECT ';
-foreach($object->fields as $key => $val)
-{
-	$sql .= 't.'.$key.', ';
+foreach ($object->fields as $key => $val) {
+	$sql .= 't.' . $key . ', ';
 }
 
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
-	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.' as options_'.$key.', ' : '');
+	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef." . $key . ' as options_' . $key . ', ' : '');
 }
 // Add fields from hooks
 $parameters = array();
 $reshook = $hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
 $sql .= preg_replace('/^,/', '', $hookmanager->resPrint);
 $sql = preg_replace('/,\s*$/', '', $sql);
-$sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
-if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
-if ($object->ismultientitymanaged == 1) $sql.= " WHERE t.entity IN (".getEntity($object->element).")";
+$sql .= " FROM " . MAIN_DB_PREFIX . $object->table_element . " as t";
+if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . $object->table_element . "_extrafields as ef on (t.rowid = ef.fk_object)";
+if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (" . getEntity($object->element) . ")";
 else $sql .= " WHERE 1 = 1";
-foreach ($search as $key => $val)
-{
-	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
-	if ($search[$key] != '') $sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
+foreach ($search as $key => $val) {
+	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key])) ? 1 : 0);
+	if ($search[$key] != '') $sql .= natural_search('t.' . $key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 }
 if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
 // Add where from extra fields
-include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
+include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_sql.tpl.php';
 // Add where from hooks
 $parameters = array();
 $reshook = $hookmanager->executeHooks('printFieldListWhere', $parameters, $object);    // Note that $action and $object may have been modified by hook
@@ -454,21 +458,21 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				$staticproperty = new ImmoProperty($db);
 				$staticproperty->fetch($object->fk_property);
 				if ($staticproperty->ref) {
-					$staticproperty->ref = $staticproperty->label;
+					$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
 				}
 				print $staticproperty->ref;
 			} elseif ($val['label'] == 'Owner') {
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);
 				if ($staticowner->ref) {
-					$staticowner->ref = $staticowner->getFullName($langs);
+					$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
 				}
 				print $staticowner->ref;
 			} elseif ($val['label'] == 'Renter') {
 				$staticrenter = new ImmoRenter($db);
 				$staticrenter->fetch($object->fk_renter);
 				if ($staticrenter->ref) {
-					$staticrenter->ref = $staticrenter->getFullName($langs);
+					$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs);
 				}
 				print $staticrenter->ref;
 			} else {
