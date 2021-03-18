@@ -454,7 +454,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($val['label'] == 'Owner') {
 			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);
-			$staticowner->fetch($object->fk_owner);
 			if ($staticowner->ref) {
 				$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
 			}
