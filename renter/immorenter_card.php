@@ -291,12 +291,12 @@ if (($id || $ref) && $action == 'edit')
 {
 	print load_fiche_titre($langs->trans("ImmoRenter"));
 
-	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="update">';
-	print '<input type="hidden" name="id" value="'.$object->id.'">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	print '<input type="hidden" name="id" value="' . $object->id . '">';
+	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
+	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
 	dol_fiche_head();
 
@@ -375,7 +375,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     $res = $object->fetch_optionals();
 
 	$head = immorenterPrepareHead($object);
-	dol_fiche_head($head, 'card', $langs->trans("ImmoRenter"), -1, 'ultimateimmo@ultimateimmo');
+	dol_fiche_head($head, 'card', $langs->trans("ImmoRenter"), -1, 'contact');
 
 	$formconfirm = '';
 	//var_dump($object->id);exit;
