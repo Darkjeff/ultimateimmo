@@ -328,7 +328,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$res = $object->fetch_optionals();
 
 	$head = immopropertyPrepareHead($object);
-	dol_fiche_head($head, 'card', $langs->trans("ImmoProperty"), -1, 'ultimateimmo@ultimateimmo');
+	dol_fiche_head($head, 'card', $langs->trans("ImmoProperty"), -1, 'company');
 
 	$formconfirm = '';
 
