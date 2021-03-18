@@ -43,8 +43,9 @@ if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.
 if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
 if (!$res) die("Include of main fails");
 
-require_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
-require_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
+require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 dol_include_once('/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
@@ -355,7 +356,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     $res = $object->fetch_optionals();
 
 	$head = immorentPrepareHead($object);
-	dol_fiche_head($head, 'card', $langs->trans("ImmoRents"), -1, 'ultimateimmo@ultimateimmo');
+	dol_fiche_head($head, 'card', $langs->trans("ImmoRents"), -1, 'payment');
 
 	$formconfirm = '';
 
@@ -469,13 +470,22 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs);
 			}
 			print $staticrenter->ref;
-		} elseif ($val['label'] == 'Property') {
+		} elseif ($val['label'] == 'Property'
+		) {
 			$staticproperty = new ImmoProperty($db);
 			$staticproperty->fetch($object->fk_property);
 			if ($staticproperty->ref) {
 				$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
 			}
 			print $staticproperty->ref;
+		} elseif ($val['label'] == 'BankAccount') {
+			$accountstatic = new Account($db);
+			$accountstatic->fetch($object->fk_bank);
+			//var_dump($accountstatic);exit;
+			if ($accountstatic->ref) {
+				$accountstatic->ref = $accountstatic->getNomUrl(0) . ' - ' . $accountstatic->label;
+			}
+			print $accountstatic->ref;
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
@@ -483,7 +493,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '</td>';
 		print '</tr>';
 	}
-
+	
 	print '</table>';
 
 	// We close div and reopen for second column
