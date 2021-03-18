@@ -102,7 +102,7 @@ llxheader('', $page_name, '');
 // Configuration header
 $head = immopropertyPrepareHead($object);
 
-dol_fiche_head($head, 'diagnostic', $langs->trans("Property"), -1, 'building@ultimateimmo');
+dol_fiche_head($head, 'diagnostic', $langs->trans("Property"), -1, 'company');
 
 // Subheader
 $linkback = '<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';

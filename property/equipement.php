@@ -66,32 +66,24 @@ if (! $user->rights->ultimateimmo->read) {
 /*
  * Action
  */
-if (preg_match('/set_(.*)/',$action,$reg))
-{
-    $code=$reg[1];
-    if (dolibarr_set_const($db, $code, 1, 'chaine', 0, '', $conf->entity) > 0)
-    {
-        Header("Location: ".$_SERVER["PHP_SELF"]);
-        exit;
-    }
-    else
-    {
-        dol_print_error($db);
-    }
+if (preg_match('/set_(.*)/', $action, $reg)) {
+	$code = $reg[1];
+	if (dolibarr_set_const($db, $code, 1, 'chaine', 0, '', $conf->entity) > 0) {
+		Header("Location: " . $_SERVER["PHP_SELF"]);
+		exit;
+	} else {
+		dol_print_error($db);
+	}
 }
 
-if (preg_match('/del_(.*)/',$action,$reg))
-{
-    $code=$reg[1];
-    if (dolibarr_del_const($db, $code, $conf->entity) > 0)
-    {
-        Header("Location: ".$_SERVER["PHP_SELF"]);
-        exit;
-    }
-    else
-    {
-        dol_print_error($db);
-    }
+if (preg_match('/del_(.*)/', $action, $reg)) {
+	$code = $reg[1];
+	if (dolibarr_del_const($db, $code, $conf->entity) > 0) {
+		Header("Location: " . $_SERVER["PHP_SELF"]);
+		exit;
+	} else {
+		dol_print_error($db);
+	}
 }
 
 
@@ -114,7 +106,7 @@ llxheader('', $langs->trans($page_name), '');
 // Configuration header
 $head = immopropertyPrepareHead($object);
 
-dol_fiche_head($head, 'equipement', $langs->trans("Property"), -1, 'building@ultimateimmo');
+dol_fiche_head($head, 'equipement', $langs->trans("Property"), -1, 'company');
 
 // Subheader
 $linkback = '<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';

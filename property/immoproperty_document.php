@@ -117,7 +117,7 @@ if ($object->id) {
 	if (!empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immopropertyPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoProperty"), -1, 'immoproperty@ultimateimmo');
+	dol_fiche_head($head, 'document', $langs->trans("ImmoProperty"), -1, 'company');
 
 
 	// Build file list
