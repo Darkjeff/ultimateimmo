@@ -325,6 +325,16 @@ if (($id || $ref) && $action == 'edit') {
 		else print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
+
+		if ($val['label'] == 'BankAccount') {
+			$accountstatic = new Account($db);
+			$accountstatic->fetch($object->fk_account);
+			//var_dump($accountstatic);exit;
+			if ($accountstatic->ref) {
+				$accountstatic->ref =  $form->select_comptes($company->fk_account, 'fk_account', 0, '', 1);
+			}
+			print $accountstatic->ref;
+		}
 		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
 		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
 		else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
