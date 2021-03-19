@@ -99,7 +99,7 @@ class ImmoPayment extends CommonObject
 		'note_public' => array('type' => 'html', 'label' => 'NotePublic', 'enabled' => 1, 'visible' => -1, 'position' => 50, 'notnull' => -1,),
 		'date_payment' => array('type' => 'date', 'label' => 'DatePayment', 'enabled' => 1, 'visible' => -1, 'position' => 70, 'notnull' => 1,),
 		'amount' => array('type' => 'price', 'label' => 'Amount', 'enabled' => 1, 'visible' => 1, 'position' => 72, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1', 'help' => "Help text",),
-		'fk_mode_reglement' => array('type' => 'integer', 'label' => 'TypePayment', 'enabled' => 1, 'visible' => 1, 'position' => 75, 'notnull' => -1, 'index' => 1,/* 'arrayofkeyval'=>array('0'=>'Carte bancaire', '1'=>'Chèque', '2'=>'Espèces', '3'=>'CAF'),*/ 'help' => "LinkToTypePayment",),
+		'fk_mode_reglement' => array('type' => 'integer', 'label' => 'TypePayment', 'enabled' => 1, 'visible' => 1, 'position' => 75, 'notnull' => -1, 'index' => 1, 'help' => "LinkToTypePayment",),
 		'fk_bank' => array('type' => 'integer:Account:compta/bank/class/account.class.php', 'label' => 'BankAccount', 'enabled' => 1, 'visible' => 1, 'position' => 80, 'notnull' => -1, 'index' => 1, 'help' => "LinkToBank",),
 		'num_payment' => array('type' => 'varchar(50)', 'label' => 'NumPayment', 'enabled' => 1, 'visible' => -1, 'position' => 85, 'notnull' => -1,),
 		'check_transmitter' => array('type' => 'varchar(50)', 'label' => 'CheckTransmitter', 'enabled' => 1, 'visible' => -1, 'position' => 86, 'notnull' => -1,),
@@ -232,60 +232,93 @@ class ImmoPayment extends CommonObject
 		}
 
 		// Clean and check mandatory
-		foreach($keys as $key)
-		{
+		foreach ($keys as $key) {
 			// If field is an implicit foreign key field
-			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key]='';
-			if (! empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key]='';
-			if (empty($this->fields[$key]['ref']) && $values[$key] == '') $values[$key]='(PROV'.$this->id.')'; 
+			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key] = '';
+			if (!empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key] = '';
+			if (empty($this->fields[$key]['ref']) && $values[$key] == '') $values[$key] = '(PROV' . $this->id . ')';
 
 			//var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
-			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && ! isset($values[$key]) && is_null($val['default']))
-			{
+			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && !isset($values[$key]) && is_null($key['default'])) {
 				$error++;
-				$this->errors[]=$langs->trans("ErrorFieldRequired", $this->fields[$key]['label']);
+				$this->errors[] = $langs->trans("ErrorFieldRequired", $this->fields[$key]['label']);
 			}
 
 			// If field is an implicit foreign key field
-			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && empty($values[$key])) $values[$key]='null';
-			if (! empty($this->fields[$key]['foreignkey']) && empty($values[$key])) $values[$key]='null';
+			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && empty($values[$key])) $values[$key] = 'null';
+			if (!empty($this->fields[$key]['foreignkey']) && empty($values[$key])) $values[$key] = 'null';
 		}
 
 		if ($error) return -1;
 
 		$this->db->begin();
 
-		if (! $error)
-		{
-			$sql = 'INSERT INTO '.MAIN_DB_PREFIX.$this->table_element;
-			$sql.= ' ('.implode( ", ", $keys ).')';
-			$sql.= ' VALUES ('.implode( ", ", $values ).')';
+		if (!$error) {
+			$sql = 'INSERT INTO ' . MAIN_DB_PREFIX . $this->table_element;
+			$sql .= ' (' . implode(", ", $keys) . ')';
+			$sql .= ' VALUES (' . implode(", ", $values) . ')';
 
 			$res = $this->db->query($sql);
-			if ($res===false) {
+			if ($res === false) {
 				$error++;
 				$this->errors[] = $this->db->lasterror();
 			}
 		}
 
-		if (! $error)
-		{
+		if (!$error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . $this->table_element);
 		}
 
+		// If we have a field ref with a default value of (PROV)
+		if (!$error) {
+			if (key_exists('ref', $this->fields) && $this->fields['ref']['notnull'] > 0 && !is_null($this->fields['ref']['default']) && $this->fields['ref']['default'] == '(PROV)') {
+				$sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element . " SET ref = '(PROV" . $this->id . ")' WHERE (ref = '(PROV)' OR ref = '') AND rowid = " . $this->id;
+				$resqlupdate = $this->db->query($sql);
+
+				if ($resqlupdate === false) {
+					$error++;
+					$this->errors[] = $this->db->lasterror();
+				} else {
+					$this->ref = '(PROV' . $this->id . ')';
+				}
+			}
+		}
+
 		// Create extrafields
-		if (! $error)
-		{
-			$result=$this->insertExtraFields();
+		if (!$error) {
+			$result = $this->insertExtraFields();
 			if ($result < 0) $error++;
 		}
 
+		// Create lines
+		if (!empty($this->table_element_line) && !empty($this->fk_element)) {
+			$num = (is_array($this->lines) ? count($this->lines) : 0);
+			for ($i = 0; $i < $num; $i++) {
+				$line = $this->lines[$i];
+
+				$keyforparent = $this->fk_element;
+				$line->$keyforparent = $this->id;
+
+				// Test and convert into object this->lines[$i]. When coming from REST API, we may still have an array
+				//if (! is_object($line)) $line=json_decode(json_encode($line), false);  // convert recursively array into object.
+				if (!is_object($line)) $line = (object) $line;
+
+				$result = $line->create($user, 1);
+				if ($result < 0) {
+					$this->error = $this->db->lasterror();
+					$this->db->rollback();
+					return -1;
+				}
+			}
+		}
+
 		// Triggers
-		if (! $error && ! $notrigger)
-		{
+		if (!$error && !$notrigger) {
 			// Call triggers
-			$result=$this->call_trigger(strtoupper(get_class($this)).'_CREATE',$user);
-			if ($result < 0) { $error++; }
+			$result = $this->call_trigger(strtoupper(get_class($this)) . '_CREATE', $user);
+			if ($result < 0) {
+				$error++;
+			}
 			// End call triggers
 		}
 
@@ -403,6 +436,18 @@ class ImmoPayment extends CommonObject
 			return -1;
 		}
 	}
+
+	/**
+	 * Create object into database
+	 *
+	 * @param  User $user      User that creates
+	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
+	 * @return int             <0 if KO, Id of created object if OK
+	 */
+	/*public function create(User $user, $notrigger = false)
+	{
+		return $this->createCommon($user, $notrigger);
+	}*/
 
 	/**
 	 * Clone and object into another one
@@ -530,6 +575,7 @@ class ImmoPayment extends CommonObject
 		$sql .= ' b.fk_account';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoowner as own ON t.fk_owner = own.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as lo ON t.fk_receipt = lo.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'bank as b ON t.fk_bank = b.rowid';
@@ -544,25 +590,29 @@ class ImmoPayment extends CommonObject
 		if ($res) {
 			if ($obj = $this->db->fetch_object($res)) {
 				if ($obj) {
-					$this->set_vars_by_db($obj);
-					$this->setVarsFromFetchObj($obj);
 					$this->id = $obj->rowid;
+					$this->set_vars_by_db($obj);
+					
+					
 					$this->ref = $obj->rowid;
 
-					/*$this->date_creation = $this->db->jdate($obj->date_creation);
-        			$this->tms = $this->db->jdate($obj->tms);
+					$this->date_creation = $this->db->jdate($obj->date_creation);
+					$this->tms = $this->db->jdate($obj->tms);
 					$this->amount			= $obj->amount;
 					$this->fk_mode_reglement = $obj->fk_mode_reglement;
 					$this->num_payment		= $obj->num_payment;
 					$this->mode_code 		= $obj->mode_code;
 					$this->mode_payment		= $obj->mode_payment;
 					$this->fk_bank			= $obj->fk_bank;
+					$this->fk_owner 		= $obj->fk_owner;
 					$this->fk_user_creat	= $obj->fk_user_creat;
 					$this->fk_user_modif	= $obj->fk_user_modif;
 					$this->bank_account		= $obj->fk_account;
 					$this->bank_line		= $obj->fk_bank;
 				
-					$this->date_payment = $this->db->jdate($obj->date_payment);*/
+					$this->date_payment = $this->db->jdate($obj->date_payment);
+
+					$this->setVarsFromFetchObj($obj);
 
 
 					return $this->id;

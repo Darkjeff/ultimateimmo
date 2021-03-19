@@ -539,13 +539,15 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">' . "\n";
 
 	// Common attributes
-	$keyforbreak = 'note_private';
+	$keyforbreak = 'date_payment';
 
-	$object->fields = dol_sort_array($object->fields, 'position');
+	//$object->fields = dol_sort_array($object->fields, 'position');
 
 	foreach ($object->fields as $key => $val) {
+		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
+
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 4) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
 
 		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
 		if (in_array($key, array('ref', 'status'))) continue;	// Ref and status are already in dol_banner
@@ -560,18 +562,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
 		else print $langs->trans($val['label']);
 		print '</td>';
+		print '<td class="valuefield fieldname_' . $key;
+		if ($val['type'] == 'text') print ' wordbreak';
+		print '">';
 		print '<td>';
-		/*if ($val['label'] == 'TypePayment')
-		{
-			if ($object->fk_mode_reglement)
-			{
-				$tmparray=$object->setPaymentMethods($object->fk_mode_reglement,'int');
-				$object->mode_code=$tmparray['code'];
-				$object->mode_payment=$tmparray['libelle'];
-			}
-			// Payment mode
-			$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none');
-		}*/
+		
 		print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
@@ -580,18 +575,77 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (!empty($keyforbreak) && $key == $keyforbreak) break;						// key used for break on second column
 	}
 
+	print '</table>';
+
+	// We close div and reopen for second column
+	print '</div>';
+	print '<div class="fichehalfright">';
+
+	print '<div class="underbanner clearboth"></div>';
+	print '<table class="border centpercent tableforfield">';
+
+	$alreadyoutput = 1;
+	foreach ($object->fields as $key => $val) {
+		if ($alreadyoutput) {
+			if (!empty($keyforbreak) && $key == $keyforbreak) {
+				$alreadyoutput = 0; // key used for break on second column
+			} else {
+				continue;
+			}
+		}
+
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue;	// We don't want this field
+		if (in_array($key, array('ref', 'status'))) continue;	// Ref and status are already in dol_banner
+
+		$value = $object->$key;
+
+		print '<tr><td';
+		print ' class="titlefield fieldname_' . $key;
+		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
+		
+
+		 if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '">';
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '</td>';
+		print '<td>';
+		if ($val['label'] == 'TypePayment')
+		{
+			
+			if ($object->fk_mode_reglement)
+			{
+				
+				$tmparray=$object->setPaymentMethods($object->fk_mode_reglement,'int');
+				$object->mode_code=$tmparray['code'];
+				$object->mode_payment=$tmparray['libelle'];
+				//var_dump($tmparray);exit;
+			}
+			// Payment mode
+			print $object->mode_payment;
+			//$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, '', $object->fk_mode_reglement);
+		}else{
+		print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		}
+
+		//var_dump($val.' '.$key.' '.$value);
+		print '</td>';
+		print '</tr>';
+	}
+
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
 
 	print '</table>';
 	print '</div>';
 	print '</div>';
-	print '</div>';
 
 	print '<div class="clearboth"></div><br>';
 
 	dol_fiche_end();
-
 
 	// Buttons for actions
 	if ($action != 'presend' && $action != 'editline') {

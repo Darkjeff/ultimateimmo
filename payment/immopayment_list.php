@@ -330,7 +330,7 @@ print '<input type="hidden" name="contextpage" value="' . $contextpage . '">';
 
 $newcardbutton = dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?action=create&backtopage=' . urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
 
-print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, $newcardbutton, '', $limit, 0, 0, 1);
+print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_accountancy', 0, $newcardbutton, '', $limit, 0, 0, 1);
 
 // Add code for pre mass action (confirmation or email presend form)
 $topicmail = "SendImmoPaymentRef";
@@ -460,7 +460,18 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 			if ($val['label'] == 'Owner') {
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);
-				print $staticowner->getNomUrl();
+				if ($staticowner->ref) {
+					$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+				}
+				print $staticowner->ref;
+			} elseif ($val['label'] == 'ImmoRent') {
+				$staticrent = new ImmoRent($db);
+				$staticrent->fetch($object->fk_rent);
+				$staticproperty = new ImmoProperty($db);
+				$staticproperty->fetch($staticrent->fk_property);
+				if ($staticrent->ref) {
+					$staticrent->ref = $staticrent->getNomUrl(0) . ' - ' . $staticproperty->label;
+				}
 			} elseif ($val['label'] == 'TypePayment') {
 				if ($object->fk_mode_reglement) {
 					$tmparray = $object->setPaymentMethods($object->fk_mode_reglement, 'int');
@@ -478,16 +489,21 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				}
 			} elseif ($val['label'] == 'Renter') {
 				if ($object->fk_renter) {
-					$renter = new ImmoRenter($db);
-					$result = $renter->fetch($object->fk_renter);
-					print $renter->getNomUrl(1, 0, 'showall');
+					$staticrenter = new ImmoRenter($db);
+					$staticrenter->fetch($object->fk_renter);
+					if ($staticrenter->ref) {
+						$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs, 0);
+					}
+					print $staticrenter->ref;
 				}
 			}elseif($val['label'] == 'Property') {
 				if ($object->fk_property) {
-					$property = new ImmoProperty($db);
-					$result = $property->fetch($object->fk_property);
-					print $property->getNomUrl(1, 0, 'showall');
-					//var_dump($property);exit;
+					$staticproperty = new ImmoProperty($db);
+					$result = $staticproperty->fetch($object->fk_property);
+					if ($staticproperty->ref) {
+						$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
+					}
+					print $staticproperty->ref;
 				}
 			} else {
 				if ($key == 'status') print $object->getLibStatut(5);
