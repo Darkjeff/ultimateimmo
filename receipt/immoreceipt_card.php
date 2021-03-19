@@ -1008,499 +1008,442 @@ if ($action == 'createall') {
 		print $formconfirm;
 
 
-		// Object card
-		// ------------------------------------------------------------
-		$linkback = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?restore_lastsearch_values=1'.(! empty($socid)?'&socid='.$socid : '').'">'. $langs->trans("BackToList").'</a>';
+	// Object card
+	// ------------------------------------------------------------
+	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
-		$object->fetch_thirdparty();
-		
-		$morehtmlref = '<div class="refidno">';
-		// Ref renter
-		$staticImmorenter = new ImmoRenter($db);
-		$staticImmorenter->fetch($object->fk_renter);
-		$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $object, $staticImmorenter->ref, $permissiontoadd, 'string', '', 0, 1);
-		$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->ref . ' - ' . $staticImmorenter->getFullName($langs), $object, $permissiontoadd, 'string', '', null, null, '', 1);
-		// Thirdparty
-		$morehtmlref .= '<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'renter');
-		if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?socid='.$object->thirdparty->id.'&search_fk_soc='.urlencode($object->thirdparty->id).'">'.$langs->trans("OtherReceipts").'</a>)';
-		$morehtmlref .= '</div>';
-		
-		$object->totalpaye = $totalpaye;   // To give a chance to dol_banner_tab to use already paid amount to show correct status
-		
-		dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '', 0, '', '');
+	$object->fetch_thirdparty();
 
-		print '<div class="fichecenter">';
-		print '<div class="fichehalfleft">';
-		print '<div class="underbanner clearboth"></div>';
-		print '<table class="border centpercent">'."\n";
+	$morehtmlref = '<div class="refidno">';
+	// Ref renter
+	$staticImmorenter = new ImmoRenter($db);
+	$staticImmorenter->fetch($object->fk_renter);
+	$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $object, $staticImmorenter->ref, $permissiontoadd, 'string', '', 0, 1);
+	$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->ref . ' - ' . $staticImmorenter->getFullName($langs), $object, $permissiontoadd, 'string', '', null, null, '', 1);
+	// Thirdparty
+	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'renter');
+	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1) . '?socid=' . $object->thirdparty->id . '&search_fk_soc=' . urlencode($object->thirdparty->id) . '">' . $langs->trans("OtherReceipts") . '</a>)';
+	$morehtmlref .= '</div>';
 
-		// Common attributes
-		$keyforbreak='date_echeance';
-		
-		foreach ($object->fields as $key => $val)
-		{
-			if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
+	$object->totalpaye = $totalpaye;   // To give a chance to dol_banner_tab to use already paid amount to show correct status
 
-			// Discard if extrafield is a hidden field on form
-			if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
+	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '', 0, '', '');
 
-			if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
-			if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
+	print '<div class="fichecenter">';
+	print '<div class="fichehalfleft">';
+	print '<div class="underbanner clearboth"></div>';
+	print '<table class="border centpercent">' . "\n";
 
-			$value = $object->$key;
+	// Common attributes
+	$keyforbreak = 'date_echeance';
 
-			print '<tr><td';
-			print ' class="titlefield fieldname_'.$key;
-			//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
+	foreach ($object->fields as $key => $val) {
+		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
+
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
+		if (in_array($key, array('ref', 'status'))) continue;	// Ref and status are already in dol_banner
+
+		$value = $object->$key;
+
+		print '<tr><td';
+		print ' class="titlefield fieldname_' . $key;
+		//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '">';
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '</td>';
+		print '<td class="valuefield fieldname_' . $key;
+		if ($val['type'] == 'text') print ' wordbreak';
+		print '">';
+		print '<td>';
+
+		if ($val['label'] == 'Owner') {
+			$staticowner = new ImmoOwner($db);
+			$staticowner->fetch($object->fk_owner);
+			if ($staticowner->ref) {
+				$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+			}
+			print $staticowner->ref;
+		} elseif ($val['label'] == 'Renter') {
+			$staticrenter = new ImmoRenter($db);
+			$staticrenter->fetch($object->fk_renter);
+			if ($staticrenter->ref) {
+				$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs);
+			}
+			print $staticrenter->ref;
+		} elseif (
+			$val['label'] == 'Property'
+		) {
+			$staticproperty = new ImmoProperty($db);
+			$staticproperty->fetch($object->fk_property);
+			if ($staticproperty->ref) {
+				$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
+			}
+			print $staticproperty->ref;
+		} else {
+			print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		}
+		//print dol_escape_htmltag($object->$key, 1, 1);
+		print '</td>';
+		print '</tr>';
+	}
+
+	print '</table>';
+
+	// We close div and reopen for second column
+	print '</div>';
+	print '<div class="fichehalfright">';
+
+	print '<div class="underbanner clearboth"></div>';
+	print '<table class="border centpercent tableforfield">';
+
+	$alreadyoutput = 1;
+	foreach ($object->fields as $key => $val) {
+		if ($alreadyoutput) {
+			if (!empty($keyforbreak) && $key == $keyforbreak) {
+				$alreadyoutput = 0; // key used for break on second column
+			} else {
+				continue;
+			}
+		}
+
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue;	// We don't want this field
+		if (in_array($key, array('ref', 'status'))) continue;	// Ref and status are already in dol_banner
+
+		$value = $object->$key;
+
+		print '<tr><td';
+		print ' class="titlefield fieldname_' . $key;
+		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
+
+		if ($val['label'] == 'PartialPayment') {
+			if ($object->getSommePaiement()) {
+				$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+				print $totalpaye;
+			}
+		} elseif ($val['label'] == 'Balance') {
+			$balance = $object->total_amount - $object->getSommePaiement();
+			if ($balance >= 0) {
+				print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
+			}
+		} elseif ($val['label'] == 'Paye') {
+			if ($totalpaye == 0) {
+				print $object->paye = $langs->trans('UnPaidReceipt');
+			} elseif ($balance == 0) {
+				print $object->paye = $langs->trans('PaidReceipt');
+			} else {
+				print $object->paye = $langs->trans('PartiallyPaidReceipt');
+			}
+		} else {
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 			print '">';
 			if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
 			else print $langs->trans($val['label']);
 			print '</td>';
-			print '<td class="valuefield fieldname_'.$key;
-			if ($val['type'] == 'text') print ' wordbreak';
-			print '">';
 			print '<td>';
-			
-			if ($val['label'] == 'Owner') 
-			{
-				$staticowner = new ImmoOwner($db);
-				$staticowner->fetch($object->fk_owner);			
-				if ($staticowner->ref)
-				{
-					$staticowner->ref = $staticowner->getFullName($langs);
-				}
-				print $staticowner->ref;
-			}
-			elseif ($val['label'] == 'Renter') 
-			{
-				$staticrenter = new ImmoRenter($db);
-				$staticrenter->fetch($object->fk_renter);			
-				if ($staticrenter->ref)
-				{
-					$staticrenter->ref = $staticrenter->getFullName($langs);
-				}
-				print $staticrenter->ref;
-			}
-			else
-			{
-				print $object->showOutputField($val, $key, $value, '', '', '', 0);
-			}
-			//print dol_escape_htmltag($object->$key, 1, 1);
-			print '</td>';
-			print '</tr>';
+			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
+		//var_dump($val.' '.$key.' '.$value);
+		print '</td>';
+		print '</tr>';
+	}
 
-		print '</table>';
+	// Other attributes
+	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
 
-		// We close div and reopen for second column
-		print '</div>';
-		print '<div class="fichehalfright">';
-
-		print '<div class="underbanner clearboth"></div>';
-		print '<table class="border centpercent tableforfield">';
-
-		$alreadyoutput = 1;
-		foreach ($object->fields as $key => $val)
-		{
-			if ($alreadyoutput)
-			{
-				if (!empty($keyforbreak) && $key == $keyforbreak) 
-				{
-					$alreadyoutput = 0; // key used for break on second column
-				}
-				else 
-				{
-					continue;
-				}
-			}
-
-			// Discard if extrafield is a hidden field on form
-			if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
-
-			if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
-			if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
-
-			$value = $object->$key;
-			
-			print '<tr><td';
-			print ' class="titlefield fieldname_'.$key;
-			//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
-
-			if ($val['label'] == 'PartialPayment') 
-			{				
-				if ($object->getSommePaiement())
-				{
-					$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
-					print $totalpaye;
-				}			
-			}
-			elseif ($val['label'] == 'Balance') 
-			{
-				$balance = $object->total_amount - $object->getSommePaiement();
-				if ($balance>=0)
-				{
-					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
-				}			
-			}
-			elseif ($val['label'] == 'Paye') 
-			{
-				if ($totalpaye==0)
-				{
-					print $object->paye=$langs->trans('UnPaidReceipt');
-				}
-				elseif ($balance==0)
-				{
-					print $object->paye=$langs->trans('PaidReceipt');
-				}
-				else
-				{
-					print $object->paye=$langs->trans('PartiallyPaidReceipt');
-				}
-			}
-			else
-			{
-				if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-				print '">';
-				if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-				else print $langs->trans($val['label']);
-				print '</td>';
-				print '<td>';
-				print $object->showOutputField($val, $key, $value, '', '', '', 0);
-			}
-			//var_dump($val.' '.$key.' '.$value);
-			print '</td>';
-			print '</tr>';
+	// Add symbol of currency 
+	$cursymbolbefore = $cursymbolafter = '';
+	if ($object->multicurrency_code) {
+		$currency_symbol = $langs->getCurrencySymbol($object->multicurrency_code);
+		$listofcurrenciesbefore = array('$', '£', 'S/.', '¥');
+		if (in_array($currency_symbol, $listofcurrenciesbefore)) $cursymbolbefore .= $currency_symbol;
+		else {
+			$tmpcur = $currency_symbol;
+			$cursymbolafter .= ($tmpcur == $currency_symbol ? ' ' . $tmpcur : $tmpcur);
 		}
-		
-		// Other attributes
-		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
-		
-		// Add symbol of currency 
-		$cursymbolbefore = $cursymbolafter = '';
-		if ($object->multicurrency_code)
-		{
-			$currency_symbol = $langs->getCurrencySymbol($object->multicurrency_code);
-			$listofcurrenciesbefore = array('$','£','S/.','¥');
-			if (in_array($currency_symbol,$listofcurrenciesbefore)) $cursymbolbefore .= $currency_symbol;
-			else
-			{
-				$tmpcur = $currency_symbol;
-				$cursymbolafter .= ($tmpcur == $currency_symbol ? ' '.$tmpcur : $tmpcur);
-			}
-		}
-		else
-		{
-			$cursymbolafter = $langs->getCurrencySymbol($conf->currency);
-		}
-	
-		// List of payments
-		$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, r.partial_payment, ";
-		$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
-		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
-		$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p" ;
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_bank = b.rowid";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
-		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as c ON p.fk_mode_reglement = c.id";
-		$sql .= " WHERE r.rowid = '".$id."'";
-		$sql .= " AND p.fk_receipt = r.rowid";
-		$sql .= " AND r.entity IN (" . getEntity($object->element).")";
-		$sql .= ' ORDER BY dp';
+	} else {
+		$cursymbolafter = $langs->getCurrencySymbol($conf->currency);
+	}
 
-		$resql = $db->query($sql);
-		if ($resql)
-		{
-			$num = $db->num_rows($resql);
+	// List of payments
+	$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, r.partial_payment, ";
+	$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
+	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
+	$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_bank = b.rowid";
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as c ON p.fk_mode_reglement = c.id";
+	$sql .= " WHERE r.rowid = '" . $id . "'";
+	$sql .= " AND p.fk_receipt = r.rowid";
+	$sql .= " AND r.entity IN (" . getEntity($object->element) . ")";
+	$sql .= ' ORDER BY dp';
 
-			$i = 0;
-			$total = 0;
-			print '<table class="noborder" width="100%">';
-			print '<tr class="liste_titre">';
-			print '<td>'.$langs->trans("RefPayment").'</td>';
-			print '<td>'.$langs->trans("Date").'</td>';
-			print '<td>'.$langs->trans("Type").'</td>';
-			if (! empty($conf->banque->enabled)) {
+	$resql = $db->query($sql);
+	if ($resql) {
+		$num = $db->num_rows($resql);
+
+		$i = 0;
+		$total = 0;
+		print '<table class="noborder" width="100%">';
+		print '<tr class="liste_titre">';
+		print '<td>' . $langs->trans("RefPayment") . '</td>';
+		print '<td>' . $langs->trans("Date") . '</td>';
+		print '<td>' . $langs->trans("Type") . '</td>';
+		if (!empty($conf->banque->enabled)) {
 			print '<td class="liste_titre right">' . $langs->trans('BankAccount') . '</td>';
-			}
-			print '<td class="right">'.$langs->trans("Amount").'</td>';
-			if ($user->admin) print '<td>&nbsp;</td>';
-			print '</tr>';
+		}
+		print '<td class="right">' . $langs->trans("Amount") . '</td>';
+		if ($user->admin) print '<td>&nbsp;</td>';
+		print '</tr>';
 
-			while ( $i < $num )
-			{
-				$objp = $db->fetch_object($resql);
-				
-				$paymentstatic->id = $objp->rowid;
-				$paymentstatic->fk_rent = $objp->fk_rent;
-				$paymentstatic->datepaye = $db->jdate($objp->dp);
-				$paymentstatic->ref = $objp->ref;
-				$paymentstatic->num_paiement = $objp->num_paiement;
+		while ($i < $num) {
+			$objp = $db->fetch_object($resql);
 
-				print '<tr class="oddeven"><td>';
-				print '<a href="'.dol_buildpath('/ultimateimmo/receipt/payment/card.php',1).'?id='.$objp->rowid."&amp;receipt=".$id.'">' . img_object($langs->trans("Payment"), "payment"). ' ' .$objp->rowid.'</a></td>';
-				print '<td>'.dol_print_date($db->jdate($objp->dp), 'day').'</td>';
-				$paymentstatic->fk_mode_reglement = $objp->mode_reglement_label;
-				$paymentstatic->type_code = $objp->type_code;
-				$paymentstatic->mode_reglement_label = $objp->mode_reglement_label;
-				print '<td>'.$paymentstatic->fk_mode_reglement.'</td>';
-				
-				if (! empty($conf->banque->enabled))
-				{
-					$bankaccountstatic->id = $objp->baid;
-					$bankaccountstatic->ref = $objp->baref;
-					$bankaccountstatic->label = $objp->baref;
-					$bankaccountstatic->number = $objp->banumber;
+			$paymentstatic->id = $objp->rowid;
+			$paymentstatic->fk_rent = $objp->fk_rent;
+			$paymentstatic->datepaye = $db->jdate($objp->dp);
+			$paymentstatic->ref = $objp->ref;
+			$paymentstatic->num_paiement = $objp->num_paiement;
 
-					if (! empty($conf->accounting->enabled)) {
-						$bankaccountstatic->account_number = $objp->account_number;
+			print '<tr class="oddeven"><td>';
+			print '<a href="' . dol_buildpath('/ultimateimmo/receipt/payment/card.php', 1) . '?id=' . $objp->rowid . "&amp;receipt=" . $id . '">' . img_object($langs->trans("Payment"), "payment") . ' ' . $objp->rowid . '</a></td>';
+			print '<td>' . dol_print_date($db->jdate($objp->dp), 'day') . '</td>';
+			$paymentstatic->fk_mode_reglement = $objp->mode_reglement_label;
+			$paymentstatic->type_code = $objp->type_code;
+			$paymentstatic->mode_reglement_label = $objp->mode_reglement_label;
+			print '<td>' . $paymentstatic->fk_mode_reglement . '</td>';
 
-						$accountingjournal = new AccountingJournal($db);
-						$accountingjournal->fetch($objp->fk_accountancy_journal);
-						$bankaccountstatic->accountancy_journal = $accountingjournal->getNomUrl(0, 1, 1, '', 1);
-					}
+			if (!empty($conf->banque->enabled)) {
+				$bankaccountstatic->id = $objp->baid;
+				$bankaccountstatic->ref = $objp->baref;
+				$bankaccountstatic->label = $objp->baref;
+				$bankaccountstatic->number = $objp->banumber;
 
-					print '<td class="right">';
-					if ($bankaccountstatic->id)
-						print $bankaccountstatic->getNomUrl(1, 'transactions');
-					print '</td>';
+				if (!empty($conf->accounting->enabled)) {
+					$bankaccountstatic->account_number = $objp->account_number;
+
+					$accountingjournal = new AccountingJournal($db);
+					$accountingjournal->fetch($objp->fk_accountancy_journal);
+					$bankaccountstatic->accountancy_journal = $accountingjournal->getNomUrl(0, 1, 1, '', 1);
 				}
-				print '<td class="right">' . $cursymbolbefore.price($objp->amount, 0, $outputlangs).' '.$cursymbolafter."</td>\n";
 
 				print '<td class="right">';
-				if ($user->admin) {
-					print '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1).'?id='.$objp->rowid. "&amp;action=delete&amp;receipt=".$id.'">';
-					print img_delete();
-					print '</a>';
-				}
+				if ($bankaccountstatic->id)
+					print $bankaccountstatic->getNomUrl(1, 'transactions');
 				print '</td>';
-				print '</tr>';
-				$totalpaye = $object->getSommePaiement();
-				
-				$i ++;
 			}
+			print '<td class="right">' . $cursymbolbefore . price($objp->amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td>\n";
 
-			if ($object->paye == 0)
-			{
-				print '<tr><td colspan="4" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs).' '.$cursymbolafter . '</b>'."</td><td>&nbsp;</td></tr>\n";
-				print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs).' '.$cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
-
-				$remaintopay = $object->total_amount - $object->getSommePaiement();
-
-				print '<tr><td colspan="4" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
-				print '<td class="right"'.($remaintopay?' class="amountremaintopay"':'').'>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs).' '.$cursymbolafter."</td><td>&nbsp;</td></tr>\n";
+			print '<td class="right">';
+			if ($user->admin) {
+				print '<a href="' . dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?id=' . $objp->rowid . "&amp;action=delete&amp;receipt=" . $id . '">';
+				print img_delete();
+				print '</a>';
 			}
-			print '</table>';
-			$db->free($resql);
-		}
-		else
-		{
-			dol_print_error($db);
+			print '</td>';
+			print '</tr>';
+			$totalpaye = $object->getSommePaiement();
+
+			$i++;
 		}
 
+		if ($object->paye == 0) {
+			print '<tr><td colspan="4" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs) . ' ' . $cursymbolafter . '</b>' . "</td><td>&nbsp;</td></tr>\n";
+			print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
+
+			$remaintopay = $object->total_amount - $object->getSommePaiement();
+
+			print '<tr><td colspan="4" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
+			print '<td class="right"' . ($remaintopay ? ' class="amountremaintopay"' : '') . '>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
+		}
 		print '</table>';
-		print '</div>';
-		print '</div>';
+		$db->free($resql);
+	} else {
+		dol_print_error($db);
+	}
 
-		print '<div class="clearboth"></div><br>';
+	print '</table>';
+	print '</div>';
+	print '</div>';
 
-		dol_fiche_end();
+	print '<div class="clearboth"></div><br>';
 
-		/*
+	dol_fiche_end();
+
+	/*
 		 * Lines
 		 */
 
-		if (!empty($object->table_element_line))
-		{
-			// Show object lines
-			$result = $object->getLinesArray();
+	if (!empty($object->table_element_line)) {
+		// Show object lines
+		$result = $object->getLinesArray();
 
-			print '	<form name="addproduct" id="addproduct" action="'.$_SERVER["PHP_SELF"].'?id='.$object->id.(($action != 'editline') ? '#addline' : '#line_'.GETPOST('lineid', 'int')).'" method="POST">
-			<input type="hidden" name="token" value="' . $_SESSION ['newtoken'].'">
-			<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline').'">
+		print '	<form name="addproduct" id="addproduct" action="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . (($action != 'editline') ? '#addline' : '#line_' . GETPOST('lineid', 'int')) . '" method="POST">
+			<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">
+			<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline') . '">
 			<input type="hidden" name="mode" value="">
-			<input type="hidden" name="id" value="' . $object->id.'">
+			<input type="hidden" name="id" value="' . $object->id . '">
 			';
 
-			if (!empty($conf->use_javascript_ajax) && $object->status == 0) 
-			{
-				include DOL_DOCUMENT_ROOT.'/core/tpl/ajaxrow.tpl.php';
-			}
-
-			print '<div class="div-table-responsive-no-min">';
-			if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
-			{
-				print '<table id="tablelines" class="noborder noshadow" width="100%">';
-			}
-
-			if (!empty($object->lines))
-			{
-				$object->printObjectLines($action, $mysoc, null, GETPOST('lineid', 'int'), 1);
-			}
-
-			// Form to add new line
-			if ($object->status == 0 && $permissiontoadd && $action != 'selectlines')
-			{
-				if ($action != 'editline')
-				{
-					// Add products/services form
-					$object->formAddObjectLine(1, $mysoc, $soc);
-
-					$parameters = array();
-					$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-				}
-			}
-
-			if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
-			{
-				print '</table>';
-			}
-			print '</div>';
-
-			print "</form>\n";
-		}
-		
-		if (is_file($conf->ultimateimmo->dir_output . '/receipt/quittance_' . $id . '.pdf'))
-		{
-			print '&nbsp';
-			print '<table class="border" width="100%">';
-			print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("LinkedDocuments") . '</td></tr>';
-			// afficher
-			$legende = $langs->trans("Ouvrir");
-			print '<tr><td width="200" class="center">' . $langs->trans("Quittance") . '</td><td> ';
-			print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=ultimateimmo&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
-			print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" class="absmiddle" hspace="2px" ></a>';
-			print '</td></tr></table>';
+		if (!empty($conf->use_javascript_ajax) && $object->status == 0) {
+			include DOL_DOCUMENT_ROOT . '/core/tpl/ajaxrow.tpl.php';
 		}
 
+		print '<div class="div-table-responsive-no-min">';
+		if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline')) {
+			print '<table id="tablelines" class="noborder noshadow" width="100%">';
+		}
+
+		if (!empty($object->lines)) {
+			$object->printObjectLines($action, $mysoc, null, GETPOST('lineid', 'int'), 1);
+		}
+
+		// Form to add new line
+		if ($object->status == 0 && $permissiontoadd && $action != 'selectlines') {
+			if ($action != 'editline') {
+				// Add products/services form
+				$object->formAddObjectLine(1, $mysoc, $soc);
+
+				$parameters = array();
+				$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+			}
+		}
+
+		if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline')) {
+			print '</table>';
+		}
 		print '</div>';
 
-		// Buttons for actions
-		if ($action != 'presend' && $action != 'editline') 
-		{
-			print '<div class="tabsAction">'."\n";
-			$parameters = array();
-			$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
-			if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		print "</form>\n";
+	}
 
-			if (empty($reshook))
-			{
-				// Validate
-				if ($object->status == ImmoReceipt::STATUS_DRAFT )
-				{
-					if ($permissiontoadd)
-					{
-						print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
-					}
-					else
-					{
-						print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('Validate') . '</a></div>';
-					}
-				}
-			
-				// Send
-				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
+	if (is_file($conf->ultimateimmo->dir_output . '/receipt/quittance_' . $id . '.pdf')) {
+		print '&nbsp';
+		print '<table class="border" width="100%">';
+		print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("LinkedDocuments") . '</td></tr>';
+		// afficher
+		$legende = $langs->trans("Ouvrir");
+		print '<tr><td width="200" class="center">' . $langs->trans("Quittance") . '</td><td> ';
+		print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=ultimateimmo&file=quittance_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
+		print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" class="absmiddle" hspace="2px" ></a>';
+		print '</td></tr></table>';
+	}
 
-				// Modify
-				if ($permissiontoadd)
-				{
-					print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?recid='.$id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
-				}
-				else
-				{
-					print '<a class="butActionRefused classfortooltip" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
-				}
-				
-				////// generate pdf
-				print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=builddoc&id='.$id.'">'.$langs->trans('Quittance').'</a></div>';
+	print '</div>';
 
-				// Create payment
-				if ($receipt->paye == 0 && $permissiontoadd)
-				{
-					if ($remaintopay == 0)
-					{
-						print '<div class="inline-block divButAction"><span class="butActionRefused" title="' . $langs->trans("DisabledBecauseRemainderToPayIsZero") . '">' . $langs->trans('DoPayment') . '</span></div>';
-					}
-					else
-					{
-						print '<div class="inline-block divButAction"><a class="butAction" href="'. dol_buildpath('/ultimateimmo/receipt/payment/paiement.php',1).'?id=' . $id . '&amp;action=create">' . $langs->trans('DoPayment') . '</a></div>';
-					}
-				}
-				
-				// Classify 'paid'
-				if ($receipt->paye == 0 && round($remaintopay) <= 0) 
-				{
-					print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=paid&id='.$id.'">'.$langs->trans('ClassifyPaid').'</a></div>';
-				}
+	// Buttons for actions
+	if ($action != 'presend' && $action != 'editline') {
+		print '<div class="tabsAction">' . "\n";
+		$parameters = array();
+		$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
+		if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
-				// Clone
-				if ($permissiontoadd)
-				{
-					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=immoreceipt">' . $langs->trans("ToClone") . '</a></div>';
-				}
-
-				if ($permissiontodelete)
-				{
-					print '<div class="inline-block divButAction"><a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$id.'&amp;action=delete">'.$langs->trans('Delete').'</a></div>'."\n";
-				}
-				else
-				{
-					print '<a class="butActionRefused classfortooltip" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Delete').'</a>'."\n";
+		if (empty($reshook)) {
+			// Validate
+			if ($object->status == ImmoReceipt::STATUS_DRAFT) {
+				if ($permissiontoadd) {
+					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
+				} else {
+					print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('Validate') . '</a></div>';
 				}
 			}
-			print '</div>'."\n";
+
+			// Send
+			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
+
+			// Modify
+			if ($permissiontoadd) {
+				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
+			} else {
+				print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
+			}
+
+			////// generate pdf
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=builddoc&id=' . $id . '">' . $langs->trans('Quittance') . '</a></div>';
+
+			// Create payment
+			if ($receipt->paye == 0 && $permissiontoadd) {
+				if ($remaintopay == 0) {
+					print '<div class="inline-block divButAction"><span class="butActionRefused" title="' . $langs->trans("DisabledBecauseRemainderToPayIsZero") . '">' . $langs->trans('DoPayment') . '</span></div>';
+				} else {
+					print '<div class="inline-block divButAction"><a class="butAction" href="' . dol_buildpath('/ultimateimmo/receipt/payment/paiement.php', 1) . '?id=' . $id . '&amp;action=create">' . $langs->trans('DoPayment') . '</a></div>';
+				}
+			}
+
+			// Classify 'paid'
+			if ($receipt->paye == 0 && round($remaintopay) <= 0) {
+				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&id=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
+			}
+
+			// Clone
+			if ($permissiontoadd) {
+				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=immoreceipt">' . $langs->trans("ToClone") . '</a></div>';
+			}
+
+			if ($permissiontodelete) {
+				print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=delete">' . $langs->trans('Delete') . '</a></div>' . "\n";
+			} else {
+				print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Delete') . '</a>' . "\n";
+			}
 		}
-
-
-		// Select mail models is same action as presend
-		if (GETPOST('modelselected')) 
-		{
-			$action = 'presend';
-		}
-
-		if ($action != 'presend')
-		{
-			print '<div class="fichecenter"><div class="fichehalfleft">';
-			print '<a name="builddoc"></a>'; // ancre
-
-			// Documents generes
-			$relativepath = '/receipt/' . dol_sanitizeFileName($object->ref).'/';
-			$filedir = $conf->ultimateimmo->dir_output . $relativepath;
-			$urlsource = $_SERVER["PHP_SELF"] . "?recid=" . $object->id;
-			$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
-			$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
-			print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
-
-			// Show links to link elements
-			$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));
-			$somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
-
-			print '</div><div class="fichehalfright"><div class="ficheaddleft">';
-
-			$MAXEVENT = 10;
-
-			$morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1).'?recid='.$object->id.'">';
-			$morehtmlright .= $langs->trans("SeeAll");
-			$morehtmlright .= '</a>';
-
-			// List of actions on element
-			include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
-			$formactions = new FormActions($db);
-			$somethingshown = $formactions->showactions($object, $object->element, (is_object($object->thirdparty) ? $object->thirdparty->id : 0), 1, '', $MAXEVENT, '', $morehtmlright);
-
-			print '</div></div></div>';
-		}
-
-		//Select mail models is same action as presend
-		 if (GETPOST('modelselected')) $action = 'presend';
-
-		 // Presend form
-		 $modelmail = 'immoreceipt';
-		 $defaulttopic = 'InformationMessage';
-		 $diroutput = $conf->ultimateimmo->dir_output.'/receipt';
-		 $trackid = 'immo'.$object->id;
-
-		 include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
+		print '</div>' . "\n";
 	}
+
+	// Select mail models is same action as presend
+	if (GETPOST('modelselected')) {
+		$action = 'presend';
+	}
+
+	if ($action != 'presend') {
+		print '<div class="fichecenter"><div class="fichehalfleft">';
+		print '<a name="builddoc"></a>'; // ancre
+
+		// Documents generes
+		$relativepath = '/receipt/' . dol_sanitizeFileName($object->ref) . '/';
+		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
+		$urlsource = $_SERVER["PHP_SELF"] . "?recid=" . $object->id;
+		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
+		$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
+		print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
+
+		// Show links to link elements
+		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));
+		$somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
+
+		print '</div><div class="fichehalfright"><div class="ficheaddleft">';
+
+		$MAXEVENT = 10;
+
+		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1) . '?recid=' . $object->id . '">';
+		$morehtmlright .= $langs->trans("SeeAll");
+		$morehtmlright .= '</a>';
+
+		// List of actions on element
+		include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
+		$formactions = new FormActions($db);
+		$somethingshown = $formactions->showactions($object, $object->element, (is_object($object->thirdparty) ? $object->thirdparty->id : 0), 1, '', $MAXEVENT, '', $morehtmlright);
+
+		print '</div></div></div>';
+	}
+
+	//Select mail models is same action as presend
+	if (GETPOST('modelselected')) $action = 'presend';
+
+	// Presend form
+	$modelmail = 'immoreceipt';
+	$defaulttopic = 'InformationMessage';
+	$diroutput = $conf->ultimateimmo->dir_output . '/receipt';
+	$trackid = 'immo' . $object->id;
+
+	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';
+}
 
 // End of page
 llxFooter();
