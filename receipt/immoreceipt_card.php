@@ -939,7 +939,7 @@ if ($action == 'createall') {
 		$result = $object->fetch($id);
 
 		$head = immoreceiptPrepareHead($object);
-		dol_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'immoreceipt@ultimateimmo');
+		dol_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'bill');
 		
 		$totalpaye = $object->getSommePaiement();
 
@@ -1011,13 +1011,15 @@ if ($action == 'createall') {
 		// Object card
 		// ------------------------------------------------------------
 		$linkback = '<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?restore_lastsearch_values=1'.(! empty($socid)?'&socid='.$socid : '').'">'. $langs->trans("BackToList").'</a>';
+
 		$object->fetch_thirdparty();
+		
 		$morehtmlref = '<div class="refidno">';
 		// Ref renter
 		$staticImmorenter = new ImmoRenter($db);
 		$staticImmorenter->fetch($object->fk_renter);
 		$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $object, $staticImmorenter->ref, $permissiontoadd, 'string', '', 0, 1);
-		$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->ref, $object, $permissiontoadd, 'string', '', null, null, '', 1);
+		$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->ref . ' - ' . $staticImmorenter->getFullName($langs), $object, $permissiontoadd, 'string', '', null, null, '', 1);
 		// Thirdparty
 		$morehtmlref .= '<br>'.$langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'renter');
 		if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref.=' (<a href="'.dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php',1).'?socid='.$object->thirdparty->id.'&search_fk_soc='.urlencode($object->thirdparty->id).'">'.$langs->trans("OtherReceipts").'</a>)';
