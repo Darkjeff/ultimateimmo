@@ -47,6 +47,7 @@ require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
+dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
 
 
@@ -150,7 +151,11 @@ if ($object->id > 0) {
 	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref = '<div class="refidno">';
-	
+	$payment = new Immopayment($db);
+	$payment->fetch($id);
+	$receipt = new Immoreceipt($db);
+	$result = $receipt->fetch($payment->fk_rent);
+	$morehtmlref .= $receipt->label;
 	$morehtmlref .= '</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);

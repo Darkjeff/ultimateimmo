@@ -48,6 +48,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
+dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
 
 // Load traductions files requiredby by page
@@ -129,6 +130,14 @@ if ($object->id) {
 	// Object card
 	// ------------------------------------------------------------
 	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+
+	$morehtmlref = '<div class="refidno">';
+	$payment = new Immopayment($db);
+	$payment->fetch($id);
+	$receipt = new Immoreceipt($db);
+	$result = $receipt->fetch($payment->fk_rent);
+	$morehtmlref .= $receipt->label;
+	$morehtmlref .= '</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 

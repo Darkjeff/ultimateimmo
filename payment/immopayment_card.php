@@ -48,6 +48,9 @@ include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
 require_once DOL_DOCUMENT_ROOT . '/compta/paiement/class/paiement.class.php';
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
+dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 if (!empty($conf->banque->enabled)) require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
@@ -486,7 +489,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	$head = immopaymentPrepareHead($object);
 
-	dol_fiche_head($head, 'payment', $langs->trans("ImmoPayment"), -1, 'payment');
+	dol_fiche_head($head, 'card', $langs->trans("ImmoPayment"), -1, 'payment');
 
 	$formconfirm = '';
 
@@ -523,9 +526,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// ------------------------------------------------------------
 	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
-	//$morehtmlref = '<div class="refidno">';
-	
-	//$morehtmlref .= '</div>';
+	$morehtmlref = '<div class="refidno">';
+	$payment = new Immopayment($db);
+	$payment->fetch($id);
+	$receipt = new Immoreceipt($db);
+	$result = $receipt->fetch($payment->fk_rent);
+	$morehtmlref .= $receipt->label;
+	$morehtmlref .= '</div>';
 
 	//$morehtmlleft = '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref"><span class="fas fa-money-check-alt infobox-bank_account" style="" title="No photo"></span></div></div>';
 
@@ -567,7 +574,30 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '">';
 		print '<td>';
 		
-		print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		if ($val['label'] == 'Owner') {
+			$staticowner = new ImmoOwner($db);
+			$staticowner->fetch($object->fk_owner);
+			if ($staticowner->ref) {
+				$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+			}
+			print $staticowner->ref;
+		} elseif ($val['label'] == 'Property') {
+			$staticproperty = new ImmoProperty($db);
+			$staticproperty->fetch($object->fk_property);
+			if ($staticproperty->ref) {
+				$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
+			}
+			print $staticproperty->ref;
+		} elseif ($val['label'] == 'Renter') {
+			$staticrenter = new ImmoRenter($db);
+			$staticrenter->fetch($object->fk_renter);
+			if ($staticrenter->ref) {
+				$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs);
+			}
+			print $staticrenter->ref;
+		} else {
+			print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		}
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
