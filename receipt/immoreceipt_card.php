@@ -529,64 +529,60 @@ $bankaccountstatic = new Account($db);
 llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
 
 // Load object modReceipt
-$module = (! empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER) ? $conf->global->ULTIMATEIMMO_ADDON_NUMBER : 'mod_ultimateimmo_standard');
+$module = (!empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER) ? $conf->global->ULTIMATEIMMO_ADDON_NUMBER : 'mod_ultimateimmo_standard');
 
-if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php')
-{
-	$module = substr($module, 0, dol_strlen($module)-4);	
+if (substr($module, 0, 17) == 'mod_ultimateimmo_' && substr($module, -3) == 'php') {
+	$module = substr($module, 0, dol_strlen($module) - 4);
 }
-$result = dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/'.$module.'.php');
+$result = dol_buildpath('/ultimateimmo/core/modules/ultimateimmo/' . $module . '.php');
 
-if ($result >= 0)
-{
+if ($result >= 0) {
 	dol_include_once('/ultimateimmo/core/modules/ultimateimmo/mod_ultimateimmo_standard.php');
 	$modCodeReceipt = new $module();
 }
 
 // Part to create
-if ($action == 'create')
-{
-	print load_fiche_titre($langs->transnoentitiesnoconv("MenuNewImmoReceipt"));
-	
+if ($action == 'create') {
+	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("MenuNewImmoReceipt")), '', 'object_' . $object->picto);
+
 	$year_current = strftime("%Y", dol_now());
 	$pastmonth = strftime("%m", dol_now());
 	$pastmonthyear = $year_current;
-	if ($pastmonth == 0)
-	{
+	if ($pastmonth == 0) {
 		$pastmonth = 12;
-		$pastmonthyear --;
+		$pastmonthyear--;
 	}
 
 	$datesp = dol_mktime(0, 0, 0, $datespmonth, $datespday, $datespyear);
 	$dateep = dol_mktime(23, 59, 59, $dateepmonth, $dateepday, $dateepyear);
 
-	if (empty($datesp) || empty($dateep)) // We define date_start and date_end
+	if (empty($datesp) || empty($dateep)
+	) // We define date_start and date_end
 	{
 		$datesp = dol_get_first_day($pastmonthyear, $pastmonth, false);
 		$dateep = dol_get_last_day($pastmonthyear, $pastmonth, false);
 	}
 
-	print '<form name="fiche_loyer" method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-	print '<input type="hidden" name="token" value="'.newToken().'">';
+	print '<form name="fiche_loyer" method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="add">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
+	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
 	dol_fiche_head(array(), '');
 
-	print '<table class="border centpercent tableforfieldcreate">'."\n";
+	print '<table class="border centpercent tableforfieldcreate">' . "\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
-	
-	foreach ($object->fields as $key => $val)
-	{
+
+	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
 
-		print '<tr id="field_'.$key.'">';
+		print '<tr id="field_' . $key . '">';
 		print '<td';
 		print ' class="titlefieldcreate';
 		if ($val['notnull'] > 0) print ' fieldrequired';
@@ -598,61 +594,49 @@ if ($action == 'create')
 		print '</td>';
 		print '<td>';
 
-		if ($val['label'] == 'Ref')
-		{			
+		if ($val['label'] == 'Ref'
+		) {
 			// Reference
-			if (! empty($modCodeReceipt->code_auto)) 
-			{
+			if (!empty($modCodeReceipt->code_auto)) {
 				$tmpcode = "(PROV)";
-			} 
-			else 
-			{
-				$tmpcode = '<input name="ref" class="maxwidth100" maxlength="128" value="'.dol_escape_htmltag(GETPOST('ref')?GETPOST('ref'):$tmpcode).'">';
+			} else {
+				$tmpcode = '<input name="ref" class="maxwidth100" maxlength="128" value="' . dol_escape_htmltag(GETPOST('ref') ? GETPOST('ref') : $tmpcode) . '">';
 			}
 			print $tmpcode;
-		}
-		elseif ($val['label'] == 'DateCreation')
-		{
+		} elseif ($val['label'] == 'DateCreation') {
 			// DateCreation
 			print $form->selectDate(($object->date_creation ? $object->date_creation : -1), "date_creation", 0, 0, 0, "", 1, 1, 1);
-		}
-		elseif ($val['label'] == 'DateStart')
-		{
+		} elseif ($val['label'] == 'DateStart') {
 			// date_start
 			print $form->selectDate(($object->date_start ? $object->date_start : -1), "date_start", 0, 0, 0, "", 1, 1, 1);
-		}
-		elseif ($val['label'] == 'DateEnd')
-		{
+		} elseif ($val['label'] == 'DateEnd') {
 			// date_end
 			print $form->selectDate(($object->date_end ? $object->date_end : -1), "date_end", 0, 0, 0, "", 1, 1, 1);
-		}
-		elseif ($val['label'] == 'Echeance')
-		{
+		} elseif ($val['label'] == 'Echeance') {
 			// Echeance
 			print $form->selectDate(($object->date_echeance ? $object->date_echeance : -1), "date_echeance", 0, 0, 0, "", 1, 1, 1);
 		}
-	
+
 		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
 		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
 		else $value = GETPOST($key, 'alpha');
 		print $object->showInputField($val, $key, $value, '', '', '', 0);
-	
+
 		print '</td>';
 		print '</tr>';
-
 	}
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
 
-	print '</table>'."\n";
+	print '</table>' . "\n";
 
 	dol_fiche_end();
 
 	print '<div class="center">';
-	print '<input type="submit" class="button" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'">';
+	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
 	print '&nbsp; ';
-	print '<input type="'.($backtopage?"submit":"button").'" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"'.($backtopage?'':' onclick="javascript:history.go(-1)"').'>';	// Cancel for create does not post form if we don't know the backtopage
+	print '<input type="' . ($backtopage ? "submit" : "button") . '" class="button" name="cancel" value="' . dol_escape_htmltag($langs->trans("Cancel")) . '"' . ($backtopage ? '' : ' onclick="javascript:history.go(-1)"') . '>';	// Cancel for create does not post form if we don't know the backtopage
 	print '</div>';
 
 	print '</form>';

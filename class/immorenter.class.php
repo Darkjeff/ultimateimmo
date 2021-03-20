@@ -106,7 +106,6 @@ class ImmoRenter extends CommonObject
 		'firstname' => array('type' => 'varchar(255)', 'label' => 'Firstname', 'visible' => 1, 'enabled' => 1, 'position' => 65, 'notnull' => -1, 'searchall' => 1,),
 		'lastname' => array('type' => 'varchar(255)', 'label' => 'Lastname', 'visible' => 1, 'enabled' => 1, 'position' => 70, 'notnull' => -1, 'searchall' => 1,),
 		'email' => array('type' => 'varchar(255)', 'label' => 'Email', 'visible' => 1, 'enabled' => 1, 'position' => 75, 'notnull' => -1,),
-		'photo' =>array('type'=>'varchar(255)', 'label'=>'Photo', 'enabled'=>1, 'visible'=>-2, 'position'=>76),
 		'birth' => array('type' => 'date', 'label' => 'BirthDay', 'visible' => 1, 'enabled' => 1, 'position' => 80, 'notnull' => -1,),
 		'country_id' => array('type' => 'varchar:c_country:label:code:rowid', 'label' => 'BirthCountry', 'enabled' => 1, 'visible' => 1, 'position' => 82, 'notnull' => -1,),
 		'phone' => array('type' => 'varchar(30)', 'label' => 'Phone', 'visible' => -1, 'enabled' => 1, 'position' => 85, 'notnull' => -1,),
@@ -156,8 +155,6 @@ class ImmoRenter extends CommonObject
 	public $lastname;
 
 	public $email;
-
-	public $photo;
 
 	public $birth;
 
@@ -1003,14 +1000,6 @@ class ImmoRenter extends CommonObject
 		if (!empty($conf->dol_no_mouse_hover)) $notooltip = 1; // Force disable tooltips
 
 		$result = ''; $label = '';
-
-		if (!empty($this->photo) && class_exists('Form'))
-		{
-			$label .= '<div class="photointooltip">';
-			$label .= Form::showphoto('ultimateimmo', $this, 0, 40, 0, '', 'mini', 0); // Important, we must force height so image will have height tags and if image is inside a tooltip, the tooltip manager can calculate height and position correctly the tooltip.
-			var_dump($label);exit;
-			$label .= '</div><div style="clear: both;"></div>';
-		}
 
 		$label = '<u>' . $langs->trans("ImmoRenter") . '</u>';
 		$label .= '<br>';
