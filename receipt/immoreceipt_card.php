@@ -1018,7 +1018,7 @@ if ($action == 'createall') {
 	// Ref renter
 	$staticImmorenter = new ImmoRenter($db);
 	$staticImmorenter->fetch($object->fk_renter);
-	$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $object, $staticImmorenter->ref, $permissiontoadd, 'string', '', 0, 1);
+	$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $staticImmorenter->ref, $object, $permissiontoadd, 'string', '', 0, 1);
 	$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->ref . ' - ' . $staticImmorenter->getFullName($langs), $object, $permissiontoadd, 'string', '', null, null, '', 1);
 	// Thirdparty
 	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'renter');
@@ -1065,7 +1065,7 @@ if ($action == 'createall') {
 			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);
 			if ($staticowner->ref) {
-				$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+				$staticowner->ref = $staticowner->getNomUrl(1, '', 0) . ' - ' . $staticowner->getFullName($langs, 0);
 			}
 			print $staticowner->ref;
 		} elseif ($val['label'] == 'Renter') {
