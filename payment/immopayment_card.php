@@ -43,8 +43,8 @@ if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.
 if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
 if (!$res) die("Include of main fails");
 
-include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
-include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
+include_once DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php';
+include_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/paiement/class/paiement.class.php';
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
@@ -431,40 +431,27 @@ if (($id || $ref) && $action == 'edit') {
 		else print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
-		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
-		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
-		else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
-		/*if ($val['label'] == 'BankAccount')
-		{
-			if (! empty($conf->banque->enabled))
-			{
-				$bankaccountstatic->id = $objp->baid;
-				$bankaccountstatic->ref = $objp->baref;
-				$bankaccountstatic->label = $objp->baref;
-				$bankaccountstatic->number = $objp->banumber;
 
-				if (! empty($conf->accounting->enabled)) {
-					$bankaccountstatic->account_number = $objp->account_number;
-
-					$accountingjournal = new AccountingJournal($db);
-					$accountingjournal->fetch($objp->fk_accountancy_journal);
-					$bankaccountstatic->accountancy_journal = $accountingjournal->getNomUrl(0, 1, 1, '', 1);
-				}
-
-				if ($bankaccountstatic->id)
-					print $bankaccountstatic->getNomUrl(1, 'transactions');
+		if ($val['label'] == 'BankAccount'
+		) {
+			if ($object->fk_bank) {
+				$bankaccount = new Account($db);
+				$result = $bankaccount->fetch($object->fk_bank);
+				$form->select_comptes($object->fk_bank, 'fk_bank', 0, '', 1);
 			}
-		}*/
-
-		if ($val['label'] == 'TypePayment') {
+		} elseif ($val['label'] == 'TypePayment') {
 			// Payment mode
 			if ($object->fk_mode_reglement) $selected = $object->fk_mode_reglement;
 			else $selected = '';
 			$form->select_types_paiements($selected, 'fk_mode_reglement', 'CRDT', 0, 1);
+		} else {
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
+			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			//var_dump($val.' '.$key.' '.$value);
+			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
-		//var_dump($val.' '.$key.' '.$value);
-		if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-		else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		print '</td>';
 		print '</tr>';
 	}

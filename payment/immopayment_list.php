@@ -44,9 +44,10 @@ if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.
 if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
 if (!$res) die("Include of main fails");
 
-require_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
@@ -330,7 +331,7 @@ print '<input type="hidden" name="contextpage" value="' . $contextpage . '">';
 
 $newcardbutton = dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?action=create&backtopage=' . urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
 
-print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_accountancy', 0, $newcardbutton, '', $limit, 0, 0, 1);
+print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'object_payment', 0, $newcardbutton, '', $limit, 0, 0, 1);
 
 // Add code for pre mass action (confirmation or email presend form)
 $topicmail = "SendImmoPaymentRef";
@@ -483,10 +484,13 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				print $form->form_modes_reglement($_SERVER['PHP_SELF'], $object->fk_mode_reglement, 'none');
 			} elseif ($val['label'] == 'BankAccount') {
 				if ($object->fk_bank) {
-					$bankline = new AccountLine($db);
-					$result = $bankline->fetch($object->fk_bank);
+					$bankaccount = new Account($db);
+					$result = $bankaccount->fetch($object->fk_bank);
+					//$bankaccount->id = $object->bid;
+					//$bankaccount->ref = $object->bref;
+					//$bankaccount->number = $object->bnumber;
 					// Payment bank
-					print $bankline->getNomUrl(1, 0, 'showall');
+					print $bankaccount->getNomUrl(1, 0, 'showall');
 				}
 			} elseif ($val['label'] == 'Renter') {
 				if ($object->fk_renter) {
