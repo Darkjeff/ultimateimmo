@@ -202,6 +202,7 @@ ConfirmDeleteImmoPayment = Etes vous sûr de vouloir supprimer ce règlement ?
 OwnerName = Nom du propriétaire
 RenterName = Nom du locataire
 SendImmoReceiptRef = Envoi de la quittance %s
+RefOwner = Référence propriétaire
 ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
 TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
 ObligationsOfTheSeller = Obligations du vendeur

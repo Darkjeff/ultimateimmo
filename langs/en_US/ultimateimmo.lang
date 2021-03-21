@@ -204,6 +204,7 @@ ConfirmDeleteImmoOwner = Are you sure you want to delete this owner ?
 ConfirmCloneImmoOwner = Are you sure you want to clone this owner ?
 OwnerName = Owner Name
 RenterName = Renter Name
+RefOwner = Owner reference
 SendImmoReceiptRef = Submission of receipt %s
 ConfirmValidateReceipt = Do you confirm validation of receipt %s
 TheTechnicalDiagnosticFileDDT = The technical diagnostic file (DDT)

@@ -489,12 +489,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($val['type'] == 'text') print ' wordbreak';
 		print '">';
 		print '<td>';
-		
+
 		if ($val['label'] == 'Owner') {
 			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);
 			if ($staticowner->ref) {
-				$staticowner->ref =  $staticowner->getNomUrl(1, '', 0) . ' - ' . $staticowner->getFullName($langs, 0);
+				$staticowner->ref =  $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
 			}
 			print $staticowner->ref;
 		} elseif ($val['label'] == 'ImmoRent') {

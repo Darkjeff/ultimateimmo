@@ -445,12 +445,17 @@ class ImmoRent extends CommonObject
 
 		$result = '';
 		$companylink = '';
+		$staticproperty = new ImmoProperty($db);
+		$staticproperty->fetch($this->fk_property);
 
 		$label = '<u>' . $langs->trans("ImmoRent") . '</u>';
 		$label .= '<br>';
 		$label .= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 		$label .= '<br>';
-		$label .= '<b>' . $langs->trans('ImmoProperty') . ':</b> ' . $this->fk_property;
+		$label .= '<b>' . $langs->trans('ImmoProperty') . ':</b> ' . $staticproperty->label;
+		if (isset($this->status)) {
+			$label .= '<br><b>' . $langs->trans("Status") . ":</b> " . $this->getLibStatut(5);
+		}
 
 		$url = dol_buildpath('/ultimateimmo/rent/immorent_card.php', 1) . '?id=' . $this->id;
 
