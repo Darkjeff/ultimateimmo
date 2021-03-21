@@ -272,6 +272,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		$sql = "SELECT sum(p.amount) as total";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 		$sql .= " WHERE p.fk_receipt = " . $id;
+		//print_r($sql);exit;
 		$resql = $db->query($sql);
 		if ($resql) {
 			$obj = $db->fetch_object($resql);
@@ -368,7 +369,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 			if ($resql) {
 				$obj = $db->fetch_object($resql);
 				$contract = $obj->contract;
-
+				var_dump($obj);exit;
 				$db->free();
 			}
 

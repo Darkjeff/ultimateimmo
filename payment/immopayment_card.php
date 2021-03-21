@@ -148,7 +148,7 @@ if ($action == 'add') {
 		setEventMessages($mesg, null, 'errors');
 		$action = 'create';
 	} else {
-		$payment = new Immopayment($db);
+		$payment = new ImmoPayment($db);
 
 		$payment->fk_rent			= GETPOST("fk_rent");
 		$payment->fk_property		= GETPOST("fk_property");
@@ -185,9 +185,10 @@ if ($action == 'add') {
 
 if ($action == 'delete') {
 	if ($id) {
-		$payment = new Immopayment($db);
+		$payment = new ImmoPayment($db);
 		$payment->id = $id;
 		$id = $payment->delete($user);
+		//var_dump($payment);exit;
 	}
 	header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $receipt_id);
 }
@@ -201,7 +202,7 @@ if ($action == 'maj') {
 		setEventMessages($mesg, null, 'errors');
 		$action = 'update';
 	} else {
-		$payment = new Immopayment($db);
+		$payment = new ImmoPayment($db);
 
 		$result = $payment->fetch($id);
 
@@ -232,7 +233,7 @@ if ($action == 'addall') {
 					$amount = GETPOST('incomeprice_' . $reference);
 
 					if (!empty($reference) && !empty($amount)) {
-						$payment = new Immopayment($db);
+						$payment = new ImmoPayment($db);
 
 						$payment->fk_rent			= GETPOST('fk_rent_' . $reference);
 						$payment->fk_property		= GETPOST('fk_property_' . $reference);
@@ -514,9 +515,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref = '<div class="refidno">';
-	$payment = new Immopayment($db);
+	$payment = new ImmoPayment($db);
 	$payment->fetch($id);
-	$receipt = new Immoreceipt($db);
+	$receipt = new ImmoReceipt($db);
 	$result = $receipt->fetch($payment->fk_rent);
 	$morehtmlref .= $receipt->label;
 	$morehtmlref .= '</div>';
@@ -889,10 +890,10 @@ if ($action == 'createall') {
 /*                                                                             */
 /* *************************************************************************** */
 if ($action == 'update') {
-	$receipt = new Immoreceipt($db);
+	$receipt = new ImmoReceipt($db);
 	$result = $receipt->fetch($receipt_id);
 
-	$payment = new Immopayment($db);
+	$payment = new ImmoPayment($db);
 
 	$result = $payment->fetch($id);
 
