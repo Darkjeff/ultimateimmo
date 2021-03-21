@@ -456,8 +456,9 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 
 		if (!empty($arrayfields['t.' . $key]['checked'])) {
 			print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
+			if ($key == 'status') print $object->getLibStatut(5);
 
-			if ($val['label'] == 'Owner') {
+			elseif ($val['label'] == 'Owner') {
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);
 				if ($staticowner->ref) {
@@ -496,7 +497,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					}
 					print $staticrenter->ref;
 				}
-			}elseif($val['label'] == 'Property') {
+			} elseif ($val['label'] == 'Property') {
 				if ($object->fk_property) {
 					$staticproperty = new ImmoProperty($db);
 					$result = $staticproperty->fetch($object->fk_property);
@@ -506,8 +507,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					print $staticproperty->ref;
 				}
 			} else {
-				if ($key == 'status') print $object->getLibStatut(5);
-				else print $object->showOutputField($val, $key, $obj->$key, '');
+				print $object->showOutputField($val, $key, $obj->$key, '');
 			}
 
 			print '</td>';
