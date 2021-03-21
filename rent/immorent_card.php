@@ -62,6 +62,7 @@ $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $confirm    = GETPOST('confirm', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
+$accountid	= GETPOST('accountid', 'int');
 $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'myobjectcard'; // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
@@ -328,19 +329,16 @@ if (($id || $ref) && $action == 'edit') {
 
 		if ($val['label'] == 'BankAccount') {
 			$accountstatic = new Account($db);
-			$accountstatic->fetch($object->fk_account);
-			//var_dump($accountstatic);exit;
-			if ($accountstatic->ref) {
-				$accountstatic->ref =  $form->select_comptes($company->fk_account, 'fk_account', 0, '', 1);
-			}
-			print $accountstatic->ref;
+			$result = $accountstatic->fetch($object->fk_bank);
+			print $form->select_comptes(GETPOSTISSET('accountid', 'int') ? GETPOST('accountid', 'int') : $accountstatic->fk_bank, "accountid", 0, '', 1);  // Show open bank account list
+		} else {
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
+			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			//var_dump($val.' '.$key.' '.$value);
+			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
-		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
-		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
-		else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
-		//var_dump($val.' '.$key.' '.$value);
-		if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-		else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		print '</td>';
 		print '</tr>';
 	}
@@ -490,11 +488,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		} elseif ($val['label'] == 'BankAccount') {
 			$accountstatic = new Account($db);
 			$accountstatic->fetch($object->fk_bank);
-			//var_dump($accountstatic);exit;
+			
 			if ($accountstatic->ref) {
-				$accountstatic->ref = $accountstatic->getNomUrl(0) . ' - ' . $accountstatic->label;
+				$accountstatic->ref = $accountstatic->getNomUrl(1);
 			}
-			print $accountstatic->ref;
+			print $accountstatic->getNomUrl(1);
+			//var_dump($accountstatic->ref);exit;
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
