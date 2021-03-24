@@ -487,9 +487,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			print $staticproperty->ref;
 		} elseif ($val['label'] == 'BankAccount') {
 			$accountstatic = new Account($db);
-			$accountstatic->fetch($id);
+			$accountstatic->fetch($object->fk_account);
 			//var_dump($accountstatic->ref);exit;
-			if ($accountstatic->ref) {
+			if ($accountstatic) {
 				$accountstatic->ref = $accountstatic->getNomUrl(1);
 			}
 			print $accountstatic->ref;
