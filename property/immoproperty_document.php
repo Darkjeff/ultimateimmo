@@ -48,6 +48,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
 
 // Load traductions files requiredby by page
@@ -130,6 +131,15 @@ if ($object->id) {
 	// Object card
 	// ------------------------------------------------------------
 	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/immoproperty_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+
+	$morehtmlref = '<div class="refidno">';
+	// Ref owner
+	$staticImmoowner = new ImmoOwner($db);
+	$staticImmoowner->fetch($object->fk_owner);
+	$morehtmlref .= $form->editfieldkey("RefOwner", 'ref_owner', $staticImmoowner->ref, $object, $permissiontoadd, 'string', '', 0, 1);
+	$morehtmlref .= $form->editfieldval("RefOwner", 'ref_owner', $staticImmoowner->ref . ' - ' . $staticImmoowner->getFullName($langs), $object, $permissiontoadd, 'string', '', null, null, '', 1);
+
+	$morehtmlref .= '</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 

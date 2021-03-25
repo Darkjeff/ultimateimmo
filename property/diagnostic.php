@@ -46,6 +46,7 @@ if (!$res) die("Include of main fails");
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo"));
@@ -108,7 +109,12 @@ dol_fiche_head($head, 'diagnostic', $langs->trans("Property"), -1, 'company');
 $linkback = '<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 $morehtmlref = '<div class="refidno">';
-//
+// Ref owner
+$staticImmoowner = new ImmoOwner($db);
+$staticImmoowner->fetch($object->fk_owner);
+$morehtmlref .= $form->editfieldkey("RefOwner", 'ref_owner', $staticImmoowner->ref, $object, $permissiontoadd, 'string', '', 0, 1);
+$morehtmlref .= $form->editfieldval("RefOwner", 'ref_owner', $staticImmoowner->ref . ' - ' . $staticImmoowner->getFullName($langs), $object, $permissiontoadd, 'string', '', null, null, '', 1);
+
 $morehtmlref .= '</div>';
 
 dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
