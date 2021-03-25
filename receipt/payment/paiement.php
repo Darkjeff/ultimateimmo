@@ -369,7 +369,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 			if ($resql) {
 				$obj = $db->fetch_object($resql);
 				$contract = $obj->contract;
-				var_dump($obj);exit;
+				//var_dump($obj);exit;
 				$db->free();
 			}
 

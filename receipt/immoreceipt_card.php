@@ -751,7 +751,7 @@ if ($action == 'createall') {
 					$result = $company->fetch($objp->fk_soc);
 				}
 
-				print '<td>' . $objp->contractid . '</td>';
+				print '<td>' . $objp->contract . '</td>';
 				print '<td>' . $objp->localref . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->reflocataire . '</td>';
@@ -1033,7 +1033,7 @@ if ($action == 'createall') {
 			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);
 			if ($staticowner->ref) {
-				$staticowner->ref = $staticowner->getNomUrl(1, '', 0) . ' - ' . $staticowner->getFullName($langs, 0);
+				$staticowner->ref = $staticowner->getNomUrl(0, '', 0) . ' - ' . $staticowner->getFullName($langs, 0);
 			}
 			print $staticowner->ref;
 		} elseif ($val['label'] == 'Renter') {
@@ -1145,7 +1145,7 @@ if ($action == 'createall') {
 	$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
 	$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
-	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_bank = b.rowid";
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_account = b.rowid";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as c ON p.fk_mode_reglement = c.id";
 	$sql .= " WHERE r.rowid = '" . $id . "'";
