@@ -100,7 +100,7 @@ class ImmoPayment extends CommonObject
 		'date_payment' => array('type' => 'date', 'label' => 'DatePayment', 'enabled' => 1, 'visible' => -1, 'position' => 70, 'notnull' => 1,),
 		'amount' => array('type' => 'price', 'label' => 'Amount', 'enabled' => 1, 'visible' => 1, 'position' => 72, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1', 'help' => "Help text",),
 		'fk_mode_reglement' => array('type' => 'integer', 'label' => 'TypePayment', 'enabled' => 1, 'visible' => 1, 'position' => 75, 'notnull' => -1, 'index' => 1, 'help' => "LinkToTypePayment",),
-		'fk_bank' => array('type' => 'integer:Account:compta/bank/class/account.class.php', 'label' => 'BankAccount', 'enabled' => 1, 'visible' => 1, 'position' => 80, 'notnull' => -1, 'index' => 1, 'help' => "LinkToBank",),
+		'fk_account' => array('type' => 'integer:Account:compta/bank/class/account.class.php', 'label' => 'BankAccount', 'enabled' => 1, 'visible' => 1, 'position' => 80, 'notnull' => -1, 'index' => 1, 'help' => "LinkToBank",),
 		'num_payment' => array('type' => 'varchar(50)', 'label' => 'NumPayment', 'enabled' => 1, 'visible' => -1, 'position' => 85, 'notnull' => -1,),
 		'check_transmitter' => array('type' => 'varchar(50)', 'label' => 'CheckTransmitter', 'enabled' => 1, 'visible' => -1, 'position' => 86, 'notnull' => -1,),
 		'chequebank' => array('type' => 'varchar(50)', 'label' => 'ChequeBank', 'enabled' => 1, 'visible' => -1, 'position' => 87, 'notnull' => -1,),
@@ -124,7 +124,7 @@ class ImmoPayment extends CommonObject
 	public $amount;			    // Total amount of payment
 	public $amounts=array();    // Array of amounts
 	public $fk_mode_reglement;
-	public $fk_bank;
+	public $fk_account;
 	public $fk_payment;
 	public $num_payment;
 	public $check_transmitter;
@@ -373,7 +373,7 @@ class ImmoPayment extends CommonObject
 		if (isset($this->fk_mode_reglement)) $this->fk_mode_reglement = trim($this->fk_mode_reglement);
 		if (isset($this->num_payment))      $this->num_payment = trim($this->num_payment);
 		if (isset($this->note_public))		$this->note_public = trim($this->note_public);
-		if (isset($this->fk_bank))			$this->fk_bank = trim($this->fk_bank);
+		if (isset($this->fk_account))			$this->fk_account = trim($this->fk_account);
 		if (isset($this->fk_user_creat))	$this->fk_user_creat = trim($this->fk_user_creat);
 		if (isset($this->fk_user_modif))	$this->fk_user_modif = trim($this->fk_user_modif);
 
@@ -398,7 +398,7 @@ class ImmoPayment extends CommonObject
 
 		if ($totalamount != 0) {
 			$sql = "INSERT INTO " . MAIN_DB_PREFIX . "ultimateimmo_immopayment (fk_receipt, date_creation, date_payment, amount,";
-			$sql .= " fk_mode_reglement, fk_property, fk_renter, fk_rent, num_payment, note_public, fk_user_creat, fk_bank)";
+			$sql .= " fk_mode_reglement, fk_property, fk_renter, fk_rent, num_payment, note_public, fk_user_creat, fk_account)";
 			$sql .= " VALUES (" . $this->fk_receipt . ", '" . $this->db->idate($now) . "',";
 			$sql .= " '" . $this->db->idate($this->date_payment) . "',";
 			$sql .= " " . $totalamount . ",";
@@ -578,7 +578,7 @@ class ImmoPayment extends CommonObject
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoowner as own ON t.fk_owner = own.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as lo ON t.fk_receipt = lo.rowid';
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'bank as b ON t.fk_bank = b.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'bank as b ON t.fk_account = b.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_paiement as cp ON t.fk_mode_reglement = cp.id AND cp.entity IN (' . getEntity('c_paiement') . ')';;
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
@@ -603,12 +603,12 @@ class ImmoPayment extends CommonObject
 					$this->num_payment		= $obj->num_payment;
 					$this->mode_code 		= $obj->mode_code;
 					$this->mode_payment		= $obj->mode_payment;
-					$this->fk_bank			= $obj->fk_bank;
+					$this->fk_account			= $obj->fk_account;
 					$this->fk_owner 		= $obj->fk_owner;
 					$this->fk_user_creat	= $obj->fk_user_creat;
 					$this->fk_user_modif	= $obj->fk_user_modif;
 					$this->bank_account		= $obj->fk_account;
-					$this->bank_line		= $obj->fk_bank;
+					$this->bank_line		= $obj->fk_account;
 				
 					$this->date_payment = $this->db->jdate($obj->date_payment);
 
@@ -975,7 +975,7 @@ class ImmoPayment extends CommonObject
 				$emetteur_banque
 			);
 
-			// Update fk_bank in llx_paiement.
+			// Update fk_account in llx_paiement.
 			// On connait ainsi le paiement qui a genere l'ecriture bancaire
 			if ($bank_line_id > 0) {
 				$result = $this->update_fk_bank($bank_line_id);
@@ -1017,7 +1017,7 @@ class ImmoPayment extends CommonObject
 	public function update_fk_bank($id_bank)
 	{
 		// phpcs:enable
-		$sql = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immopayment SET fk_bank = " . $id_bank . " WHERE rowid = " . $this->id;
+		$sql = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immopayment SET fk_account = " . $id_bank . " WHERE rowid = " . $this->id;
 
 		dol_syslog(get_class($this) . "::update_fk_bank", LOG_DEBUG);
 		$result = $this->db->query($sql);

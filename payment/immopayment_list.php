@@ -337,6 +337,7 @@ print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sort
 $topicmail = "SendImmoPaymentRef";
 $modelmail = "immopayment";
 $objecttmp = new ImmoPayment($db);
+$objecttmp->fetch(0, 0, $bank_id);
 $trackid = 'xxxx' . $object->id;
 include DOL_DOCUMENT_ROOT . '/core/tpl/massactions_pre.tpl.php';
 
@@ -483,12 +484,13 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				// Payment mode
 				print $form->form_modes_reglement($_SERVER['PHP_SELF'], $object->fk_mode_reglement, 'none');
 			} elseif ($val['label'] == 'BankAccount') {
-				if ($object->fk_bank) {
+				if ($object->fk_account) {
 					$bankaccount = new Account($db);
-					$result = $bankaccount->fetch($object->fk_bank);
+					$result = $bankaccount->fetch($object->fk_account);
 					//$bankaccount->id = $object->bid;
 					//$bankaccount->ref = $object->bref;
 					//$bankaccount->number = $object->bnumber;
+					//var_dump($bankaccount);exit;
 					// Payment bank
 					print $bankaccount->getNomUrl(1, 0, 'showall');
 				}

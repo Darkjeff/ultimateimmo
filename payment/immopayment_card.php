@@ -191,11 +191,11 @@ if (empty($reshook)) {
 			$payment->note_public		= GETPOST("note_public");
 			$payment->date_payment		= $date_payment;
 			$payment->fk_receipt		= GETPOST("fk_receipt");
-			$payment->fk_bank			= GETPOST("accountid");
+			$payment->fk_account		= GETPOST("accountid");
 			$payment->fk_mode_reglement = GETPOST("fk_mode_reglement");
 			$payment->num_payment		= GETPOST("num_payment");
 			$payment->fk_owner			= $user->id;
-
+			
 			$id = $payment->create($user);
 			header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $payment->fk_receipt);
 			if ($id > 0) {
@@ -273,22 +273,22 @@ if (empty($reshook)) {
 							$payment->note_public		= GETPOST('note_public');
 							$payment->date_payment		= $date_payment;
 							$payment->fk_receipt		= GETPOST('receipt_' . $reference);
-							$payment->fk_bank			= GETPOST("accountid");
+							$payment->fk_account		= GETPOST("accountid");
 							$payment->fk_mode_reglement	= GETPOST("fk_mode_reglement");
 							$payment->num_payment		= GETPOST("num_payment");
 							$payment->fk_owner			= $user->id;
 
 							$result = $payment->create($user);
-
+							
 							if ($result < 0) {
 								setEventMessages(null, $payment->errors, 'errors');
 							} else {
 								$label = '(CustomerReceiptPayment)';
 								if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
-								$result = $payment->addPaymentToBank($user, 'immopayment', $label, $payment->fk_bank, '', '');
+								$result = $payment->addPaymentToBank($user, 'immopayment', $label, $payment->fk_account, '', '');
+								
 								if ($result <= 0) {
-									$errmsg = $payment->errors;
-									setEventMessages(null, $errmsg, 'errors');
+									setEventMessages(null, $payment->errors, 'errors');
 									$error++;
 								}
 							}
@@ -381,7 +381,7 @@ if ($action == 'create') {
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
-
+	
 	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1) continue;
@@ -408,8 +408,8 @@ if ($action == 'create') {
 		} elseif ($val['label'] == 'BankAccount') {
 			//BankAccount
 			if (!empty($conf->banque->enabled)) {
-				if ($receipt->type != 2) print '<span class="fieldrequired">' . $langs->trans('AccountToCredit') . '</span>';
-				if ($receipt->type == 2) print '<span class="fieldrequired">' . $langs->trans('AccountToDebit') . '</span>';
+				/*if ($receipt->type != 2) print '<span class="fieldrequired">' . $langs->trans('AccountToCredit') . '</span>';
+				if ($receipt->type == 2) print '<span class="fieldrequired">' . $langs->trans('AccountToDebit') . '</span>';*/
 
 				$form->select_comptes($accountid, 'accountid', 0, '', 2);
 			}
@@ -902,13 +902,13 @@ if ($action == 'createall') {
 				print '<td align="right">';
 				print '<input type="text" name="incomeprice_' . $objp->reference . '" id="incomeprice_' . $objp->reference . '" size="6" value="" class="flat">';
 				print '</td>';
-
+				//var_dump($objp);
 				print '</tr>';
 
 				$i++;
 			}
 		}
-
+		//exit;
 		print "</table>\n";
 		$db->free($resql);
 	} else {
@@ -964,7 +964,7 @@ if ($action == 'update') {
 	print '</td>';
 
 	print '</table>';
-
+	
 	dol_fiche_end();
 
 	print '<div align="center">';

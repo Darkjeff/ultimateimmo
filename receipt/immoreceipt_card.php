@@ -346,9 +346,11 @@ if (empty($reshook)) {
 
 	if ($action == 'addall') {
 		$error = 0;
-		$date_echeance = dol_mktime(12, 0, 0, GETPOST("echmonth"), GETPOST("echday"), GETPOST("echyear"));
-		$dateperiod = dol_mktime(12, 0, 0, GETPOST("periodmonth"), GETPOST("periodday"), GETPOST("periodyear"));
-		$dateperiodend = dol_mktime(12, 0, 0, GETPOST("periodendmonth"), GETPOST("periodendday"), GETPOST("periodendyear"));
+		$date_echeance = dol_mktime(12, 0, 0, GETPOST('echmonth', 'int'), GETPOST('echday', 'int'), GETPOST('echyear', 'int'));
+		
+		$dateperiod = dol_mktime(12, 0, 0, GETPOST('periodmonth', 'int'), GETPOST('periodday', 'int'), GETPOST('periodyear', 'int'));
+		//var_dump($dateperiod);exit;
+		$dateperiodend = dol_mktime(12, 0, 0, GETPOST('periodendmonth', 'int'), GETPOST('periodendday', 'int'), GETPOST('periodendyear', 'int'));
 
 		if (empty($date_echeance)) {
 			setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentities("DateDue")), null, 'errors');
@@ -432,9 +434,9 @@ if (empty($reshook)) {
 	 */
 
 	if ($action == 'update') {
-		$date_echeance = dol_mktime(12, 0, 0, GETPOST("date_echeancemonth"), GETPOST("date_echeanceday"), GETPOST("date_echeanceyear"));
-		$date_start = dol_mktime(12, 0, 0, GETPOST("date_startmonth"), GETPOST("date_startday"), GETPOST("date_startyear"));
-		$date_end = dol_mktime(12, 0, 0, GETPOST("date_endmonth"), GETPOST("date_endday"), GETPOST("date_endyear"));
+		$date_echeance = dol_mktime(12, 0, 0, GETPOST("date_echeancemonth", 'int'), GETPOST("date_echeanceday", 'int'), GETPOST("date_echeanceyear", 'int'));
+		$date_start = dol_mktime(12, 0, 0, GETPOST("date_startmonth", 'int'), GETPOST("date_startday", 'int'), GETPOST("date_startyear", 'int'));
+		$date_end = dol_mktime(12, 0, 0, GETPOST("date_endmonth", 'int'), GETPOST("date_endday", 'int'), GETPOST("date_endyear", 'int'));
 
 		$receipt = new ImmoReceipt($db);
 		$result = $receipt->fetch($id);
@@ -666,46 +668,26 @@ if ($action == 'createall') {
 	print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
 	print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 
-	print '<table class="border" width="100%">';
+	dol_fiche_head(null);
 
-	print '<tr class="liste_titre">';
+	print '<table class="border centpercent">';
 
-	print '<td class="left">';
-	print $langs->trans("NomLoyer");
-	print '</td><td class="center">';
-	print $langs->trans("Echeance");
-	print '</td><td class="center">';
-	print $langs->trans("Periode_du");
-	print '</td><td class="center">';
-	print $langs->trans("Periode_au");
-	print '</td><td class="left">';
-	print '&nbsp;';
-	print '</td>';
-	print "</tr>\n";
-
-	print '<tr class="oddeven" valign="top">';
-
-	/*
-	 * Rent name
-	 */
-	print '<td><input name="label" size="30" value="' . GETPOST('label') . '"</td>';
-
-	// Due date
-	print '<td class="center">';
-	print $form->selectDate(!empty($date_echeance) ? $date_echeance : '-1', 'ech', 0, 0, 0, 'fiche_loyer', 1);
-	print '</td>';
-	print '<td class="center">';
-	print $form->selectDate(!empty($dateperiod) ? $dateperiod : '-1', 'period', 0, 0, 0, 'fiche_loyer',
-		1
-	);
-	print '</td>';
-	print '<td class="center">';
-	print $form->selectDate(!empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', 0, 0, 0, 'fiche_loyer', 1);
-	print '</td>';
-
-	print '<td class="center"><input type="submit" class="button" value="' . $langs->trans("MenuAllReceiptperContract") . '"></td></tr>';
-
+	print '<tr><td class="fieldrequired titlefieldcreate">'.$langs->trans('NomLoyer').'</td><td>';
+	//Rent name
+	print '<input name="label" size="30" value="' . GETPOST('label') . '"';
+	print '</td></tr>';
+	print '<tr><td class="fieldrequired">'.$langs->trans('Echeance').'</td><td>';
+	print $form->selectDate(!empty($date_echeance) ? $date_echeance : '-1', 'ech', '', '', 0, "fiche_loyer", 1, 1, 0, '', '', $object->date);
+	print '</td></tr>';
+	print '<tr><td class="">'.$langs->trans('Periode_du').'</td><td>';
+	print $form->selectDate(!empty($dateperiod) ? $dateperiod : '-1', 'period', '', '', 0, "fiche_loyer", 1, 1, 0, '', '', $object->date);
+	print '</td></tr>';
+	print '<tr><td class="fieldrequired">'.$langs->trans('Periode_au').'</td><td>';
+	print $form->selectDate(!empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', '', '', 0, "fiche_loyer", 1, 1, 0, '', '', $object->date);
+	print '</td></tr>';
 	print '</table>';
+    dol_fiche_end();
+
 
 	/*
 	 * List of contracts
@@ -769,7 +751,7 @@ if ($action == 'createall') {
 					$result = $company->fetch($objp->fk_soc);
 				}
 
-				print '<td>' . $objp->contract . '</td>';
+				print '<td>' . $objp->contractid . '</td>';
 				print '<td>' . $objp->localref . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->reflocataire . '</td>';
@@ -799,6 +781,8 @@ if ($action == 'createall') {
 	} else {
 		dol_print_error($db);
 	}
+	print '<div class="center"><input type="submit" class="button" value="' . $langs->trans("MenuAllReceiptperContract") . '"></div>';
+
 	print '</form>';
 }
 
