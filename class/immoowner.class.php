@@ -98,7 +98,7 @@ class ImmoOwner extends CommonObject
 	 */
 	public $fields = array(
 		'rowid'         => array('type' => 'integer', 'label' => 'TechnicalID', 'enabled' => 1, 'visible' => -2, 'noteditable' => 1, 'notnull' => 1, 'index' => 1, 'position' => 1, 'comment' => 'Id'),
-		'ref'           => array('type' => 'varchar(128)', 'label' => 'RefOwner', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1, 'showoncombobox' => 1, 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
+		'ref'           => array('type' => 'varchar(128)', 'label' => 'RefOwner', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1,  'default'=>'(PROV)', 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
 		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
 		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirparty'),
 		'societe' 		=> array('type' => 'varchar(128)', 'label' => 'Societe', 'visible' => 1, 'enabled' => 1, 'position' => 34, 'notnull' => -1,),
@@ -106,8 +106,8 @@ class ImmoOwner extends CommonObject
 		'note_public' 	=> array('type' => 'html', 'label' => 'NotePublic', 'visible' => -1, 'enabled' => 1, 'position' => 40, 'notnull' => -1,),
 		'note_private' 	=> array('type' => 'html', 'label' => 'NotePrivate', 'visible' => -1, 'enabled' => 1, 'position' => 45, 'notnull' => -1,),
 		'civility_id' => array('type' => 'integer', 'label' => 'Civility', 'visible' => -1, 'enabled' => 1, 'position' => 50, 'notnull' => 1,),
-		'firstname' 	=> array('type' => 'varchar(255)', 'label' => 'Firstname', 'visible' => -1, 'enabled' => 1, 'position' => 55, 'notnull' => 1,),
-		'lastname' 		=> array('type' => 'varchar(255)', 'label' => 'Lastname', 'visible' => -1, 'enabled' => 1, 'position' => 60, 'notnull' => 1, 'searchall' => 1,),
+		'firstname' 	=> array('type' => 'varchar(255)', 'label' => 'Firstname', 'visible' => -1, 'enabled' => 1, 'position' => 55, 'notnull' => 1, 'showoncombobox' => 1,),
+		'lastname' 		=> array('type' => 'varchar(255)', 'label' => 'Lastname', 'visible' => -1, 'enabled' => 1, 'position' => 60, 'notnull' => 1, 'searchall' => 1, 'showoncombobox' => 1,),
 		'address' 		=> array('type' => 'varchar(255)', 'label' => 'Address', 'enabled' => 1, 'visible' => 1, 'position' => 61, 'notnull' => -1,),
 		'zip' 			=> array('type' => 'varchar(32)', 'label' => 'Zip', 'enabled' => 1, 'visible' => 1, 'position' => 62, 'notnull' => -1,),
 		'town' 			=> array('type' => 'varchar(64)', 'label' => 'Town', 'enabled' => 1, 'visible' => 1, 'position' => 63, 'notnull' => -1,),

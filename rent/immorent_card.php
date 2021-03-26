@@ -57,12 +57,12 @@ dol_include_once('/ultimateimmo/lib/immorent.lib.php');
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
 
 // Get parameters
-$id			= GETPOST('id', 'int');
+$id = (GETPOST('socid', 'int') ? GETPOST('socid', 'int') : GETPOST('id', 'int'));
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $confirm    = GETPOST('confirm', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
-$accountid	= GETPOST('accountid', 'int');
+$accountid = GETPOST("accountid") > 0 ? GETPOST("accountid", "int") : 0;
 $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'myobjectcard'; // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
@@ -151,71 +151,9 @@ if (empty($reshook)) {
 	// Actions cancel, add, update or delete
 	//include DOL_DOCUMENT_ROOT . '/core/actions_addupdatedelete.inc.php';
 	// Action to add record
-	if ($action == 'add' && !empty($permissiontoadd)) {
-		foreach ($object->fields as $key => $val) {
-			if ($object->fields[$key]['type'] == 'duration') {
-				if (GETPOST($key . 'hour') == '' && GETPOST($key . 'min') == '') continue; // The field was not submited to be edited
-			} else {
-				if (!GETPOSTISSET($key)) continue; // The field was not submited to be edited
-			}
-			// Ignore special fields
-			if (in_array($key, array('rowid', 'entity', 'date_creation', 'tms', 'fk_user_creat', 'fk_user_modif', 'import_key'))) continue;
-
-			// Set value to insert
-			if (in_array($object->fields[$key]['type'], array('text', 'html'))) {
-				$value = GETPOST($key, 'none');
-			} elseif ($object->fields[$key]['type'] == 'date') {
-				$value = dol_mktime(12, 0, 0, GETPOST($key . 'month', 'int'), GETPOST($key . 'day', 'int'), GETPOST($key . 'year', 'int'));
-			} elseif ($object->fields[$key]['type'] == 'datetime') {
-				$value = dol_mktime(GETPOST($key . 'hour', 'int'), GETPOST($key . 'min', 'int'), 0, GETPOST($key . 'month', 'int'), GETPOST($key . 'day', 'int'), GETPOST($key . 'year', 'int'));
-			} elseif ($object->fields[$key]['type'] == 'duration') {
-				$value = 60 * 60 * GETPOST($key . 'hour', 'int') + 60 * GETPOST($key . 'min', 'int');
-			} elseif (preg_match('/^(integer|price|real|double)/', $object->fields[$key]['type'])) {
-				$value = price2num(GETPOST($key, 'none')); // To fix decimal separator according to lang setup
-			} elseif ($object->fields[$key]['type'] == 'boolean') {
-				$value = (GETPOST($key) == 'on' ? 1 : 0);
-			} else {
-				$value = GETPOST($key, 'alphanohtml');
-			}
-			if (preg_match('/^integer:/i', $object->fields[$key]['type']) && $value == '-1') $value = ''; // This is an implicit foreign key field
-			if (!empty($object->fields[$key]['foreignkey']) && $value == '-1') $value = ''; // This is an explicit foreign key field
-
-			//var_dump($key.' '.$value.' '.$object->fields[$key]['type']);
-			$object->$key = $value;
-			if ($val['notnull'] > 0 && $object->$key == '' && !is_null($val['default']) && $val['default'] == '(PROV)') {
-				$object->$key = '(PROV)';
-			}
-			if ($val['notnull'] > 0 && $object->$key == '' && is_null($val['default'])
-			) {
-				$error++;
-				setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv($val['label'])), null, 'errors');
-			}
-		}
-
-		// Fill array 'array_options' with data from add form
-		if (!$error) {
-			$ret = $extrafields->setOptionalsFromPost(null, $object);
-			if ($ret < 0) $error++;
-		}
-
-		if (!$error) {
-			$result = $object->create($user);
-			if ($result > 0) {
-				// Creation OK
-				$urltogo = $backtopage ? str_replace('__ID__', $result, $backtopage) : $backurlforlist;
-				$urltogo = preg_replace('/--IDFORBACKTOPAGE--/', $object->id, $urltogo); // New method to autoselect project after a New on another form object creation
-				header("Location: " . $urltogo);
-				exit;
-			} else {
-				// Creation KO
-				if (!empty($object->errors)) setEventMessages(null, $object->errors, 'errors');
-				else setEventMessages($object->error, null, 'errors');
-				$action = 'create';
-			}
-		} else {
-			$action = 'create';
-		}
-	}
+	
+	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
+	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
 
 	// Actions when linking object each other
 	include DOL_DOCUMENT_ROOT . '/core/actions_dellink.inc.php';		// Must be include, not include_once
@@ -313,13 +251,15 @@ if (($id || $ref) && $action == 'edit') {
 
 	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4
+		) continue;
 
 		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue; // We don't want this field
 
 		print '<tr><td';
 		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['notnull'] > 0
+		) print ' fieldrequired';
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '">';
 		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
@@ -327,18 +267,19 @@ if (($id || $ref) && $action == 'edit') {
 		print '</td>';
 		print '<td>';
 
-		if ($val['label'] == 'BankAccount') {
+		/*if ($val['label'] == 'BankAccount') {
 			$accountstatic = new Account($db);
-			$result = $accountstatic->fetch($object->fk_bank);
-			print $form->select_comptes(GETPOSTISSET('accountid', 'int') ? GETPOST('accountid', 'int') : $accountstatic->fk_bank, "accountid", 0, '', 1);  // Show open bank account list
-		} else {
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
-			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
-			//var_dump($val.' '.$key.' '.$value);
-			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-			else print $object->showInputField($val, $key, $value, '', '', '', 0);
-		}
+			$result = $accountstatic->fetch($object->fk_account);
+			print $form->select_comptes(GETPOSTISSET('accountid', 'int') ? GETPOST('accountid', 'int') : $accountstatic->fk_account, "accountid", 0, '', 1);  // Show open bank account list
+		} else {*/
+		if (in_array($val['type'], array('int', 'integer'
+		))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
+		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
+		else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+		//var_dump($val.' '.$key.' '.$value);
+		if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
+		else print $object->showInputField($val, $key, $value, '', '', '', 0);
+		//}
 		print '</td>';
 		print '</tr>';
 	}
@@ -485,14 +426,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
 			}
 			print $staticproperty->ref;
-		} elseif ($val['label'] == 'BankAccount') {
+		/*} elseif ($val['label'] == 'BankAccount') {
 			$accountstatic = new Account($db);
 			$accountstatic->fetch($object->fk_account);
-			//var_dump($accountstatic->ref);exit;
+			//var_dump($accountstatic);exit;
 			if ($accountstatic) {
 				$accountstatic->ref = $accountstatic->getNomUrl(1);
 			}
-			print $accountstatic->ref;
+			print $accountstatic->ref;*/
 			
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
