@@ -616,13 +616,15 @@ if ($action == 'create') {
 			print $form->selectDate(($object->date_end ? $object->date_end : -1), "date_end", 0, 0, 0, "", 1, 1, 1);
 		} elseif ($val['label'] == 'Echeance') {
 			// Echeance
-			print $form->selectDate(($object->date_echeance ? $object->date_echeance : -1), "date_echeance", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate(($object->date_echeance ? $object->date_echeance : -1),
+			"date_echeance", 0, 0, 0, "", 1, 1, 1);
+		} else {
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
+			
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
+			else $value = GETPOST($key, 'alpha');
+			print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
-
-		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
-		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
-		else $value = GETPOST($key, 'alpha');
-		print $object->showInputField($val, $key, $value, '', '', '', 0);
 
 		print '</td>';
 		print '</tr>';
