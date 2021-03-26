@@ -81,8 +81,10 @@ $object = new ImmoOwner($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/' . $user->id;
 $hookmanager->initHooks(array('immoownerlist'));     // Note that conf->hooks_modules contains array
+
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immoowner');
+
 $search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
 
 // Default sort order (if not yet defined by previous GETPOST)
@@ -98,7 +100,7 @@ if ($user->societe_id > 0) {
 //$result = restrictedArea($user, 'ultimateimmo', $id,'');
 
 // Initialize array of search criterias
-$search_all = trim(GETPOST("search_all", 'alpha'));
+$search_all = GETPOST('search_all', 'alphanohtml') ? trim(GETPOST('search_all', 'alphanohtml')) : trim(GETPOST('sall', 'alphanohtml'));
 $search = array();
 foreach ($object->fields as $key => $val) {
 	if (GETPOST('search_' . $key, 'alpha')) $search[$key] = GETPOST('search_' . $key, 'alpha');
@@ -111,11 +113,10 @@ foreach ($object->fields as $key => $val) {
 }
 
 // Definition of fields for list
-$arrayfields=array();
-foreach($object->fields as $key => $val)
-{
+$arrayfields = array();
+foreach ($object->fields as $key => $val) {
 	// If $val['visible']==0, then we never show the field
-	if (! empty($val['visible'])) $arrayfields['t.'.$key]=array('label'=>$val['label'], 'checked'=>(($val['visible']<0)?0:1), 'enabled'=>$val['enabled'], 'position'=>$val['position']);
+	if (!empty($val['visible'])) $arrayfields['t.' . $key] = array('label' => $val['label'], 'checked' => (($val['visible'] < 0) ? 0 : 1), 'enabled' => $val['enabled'], 'position' => $val['position']);
 }
 // Extra fields
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label']) > 0)
@@ -381,13 +382,12 @@ print '</tr>' . "\n";
 // Fields title label
 // --------------------------------------------------------------------
 print '<tr class="liste_titre">';
-foreach ($object->fields as $key => $val)
-{
+foreach ($object->fields as $key => $val) {
 	$align = '';
-	if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
-	if (in_array($val['type'], array('timestamp'))) $align .= ($align?' ':'').'nowrap';
-	if ($key == 'status') $align .= ($align?' ':'').'center';
-	if (! empty($arrayfields['t.'.$key]['checked'])) print getTitleFieldOfList($arrayfields['t.'.$key]['label'], 0, $_SERVER['PHP_SELF'], 't.'.$key, '', $param, ($align?'class="'.$align.'"':''), $sortfield, $sortorder, $align.' ')."\n";
+	if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $align .= ($align ? ' ' : '') . 'center';
+	if (in_array($val['type'], array('timestamp'))) $align .= ($align ? ' ' : '') . 'nowrap';
+	if ($key == 'status') $align .= ($align ? ' ' : '') . 'center';
+	if (!empty($arrayfields['t.' . $key]['checked'])) print getTitleFieldOfList($arrayfields['t.' . $key]['label'], 0, $_SERVER['PHP_SELF'], 't.' . $key, '', $param, ($align ? 'class="' . $align . '"' : ''), $sortfield, $sortorder, $align . ' ') . "\n";
 }
 
 // Extra fields
@@ -436,6 +436,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 		if (!empty($arrayfields['t.' . $key]['checked'])) {
 			print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
 			if ($key == 'status') print $object->getLibStatut(5);
+
 			elseif ($val['label'] == 'Civility') {
 				if ($object->civility_id) {
 					$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
@@ -461,9 +462,9 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 		}
 	}
 	// Extra fields
-	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_print_fields.tpl.php';
+	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_print_fields.tpl.php';
 	// Fields from hook
-	$parameters = array('arrayfields'=>$arrayfields, 'object'=>$object, 'obj'=>$obj, 'i'=>$i, 'totalarray'=>&$totalarray);
+	$parameters = array('arrayfields' => $arrayfields, 'object' => $object, 'obj' => $obj, 'i' => $i, 'totalarray' => &$totalarray);
 	$reshook = $hookmanager->executeHooks('printFieldListValue', $parameters, $object); // Note that $action and $object may have been modified by hook
 	print $hookmanager->resPrint;
 	// Action column
