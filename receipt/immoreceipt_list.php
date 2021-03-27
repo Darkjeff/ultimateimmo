@@ -223,9 +223,9 @@ if ($massaction == 'validate') {
 		$immoreceipt = new ImmoReceipt($db);
 		$result = $immoreceipt->fetch($val);
 		
-		if ($result >= 0 && $immoreceipt->status == 'STATUS_DRAFT') {
+		if ($result >= 0 && $object->status == ImmoReceipt::STATUS_DRAFT) {
 			$resultvalid = $immoreceipt->validate($user);
-//var_dump($immoreceipt);
+
 			if ($resultvalid >= 0) {
 				if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE)) {
 					// Define output language
