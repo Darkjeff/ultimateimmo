@@ -193,7 +193,7 @@ print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
 // Configuration header
 $head = UltimateimmoAdminPrepareHead();
 
-dol_fiche_head($head, 'quittance', $langs->trans("ModuleUltimateimmoName"), -1, "building@ultimateimmo");
+print dol_get_fiche_head($head, 'quittance', $langs->trans("ModuleUltimateimmoName"), -1, "building@ultimateimmo");
 
 
 /**
@@ -521,7 +521,7 @@ print '</td></tr>';
 print '</table>';
 
 // Page end
-dol_fiche_end();
+print dol_get_fiche_end();
 
 llxFooter();
 $db->close();

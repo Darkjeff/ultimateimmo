@@ -175,7 +175,7 @@ if (empty($reshook)) {
 	// Mass actions
 	$objectclass = 'ImmoOwner';
 	$objectlabel = 'ImmoOwner';
-	$uploaddir = $conf->ultimateimmo->dir_output;
+	$uploaddir = $conf->ultimateimmo->dir_output . '/owner/';
 	include DOL_DOCUMENT_ROOT . '/core/actions_massactions.inc.php';
 }
 
@@ -452,7 +452,9 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					$object->country = $tmparray['label'];
 				}
 				print $object->country;
-			} else print $object->showOutputField($val, $key, $object->$key, '');
+			} else {
+				print $object->showOutputField($val, $key, $object->$key, '');
+			}
 			print '</td>';
 			if (!$i) $totalarray['nbfield']++;
 			if (!empty($val['isameasure'])) {
