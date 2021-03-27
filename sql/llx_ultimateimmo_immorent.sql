@@ -25,7 +25,6 @@ CREATE TABLE llx_ultimateimmo_immorent(
 	fk_account integer,
 	fk_soc integer,
 	country_id integer,	
-	nomlocal varchar(255),
 	vat varchar(4), 
 	fk_owner integer,
 	location_type_id integer,	

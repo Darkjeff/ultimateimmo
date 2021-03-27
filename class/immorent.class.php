@@ -87,7 +87,6 @@ class ImmoRent extends CommonObject
 		'ref' => array('type' => 'varchar(128)', 'label' => 'Ref', 'visible' => 1, 'enabled' => 1, 'position' => 10, 'notnull' => 1, 'default'=>'(PROV)', 'index' => 1, 'searchall' => 1, 'comment' => "Reference of object",),
 		'entity' => array('type' => 'integer', 'label' => 'Entity', 'visible' => 0, 'enabled' => 1, 'position' => 20, 'notnull' => 1, 'index' => 1,),
 		'fk_property' => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'Property', 'visible' => 1, 'enabled' => 1, 'position' => 25,  'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immoproperty.rowid', 'searchall' => 1, 'help' => "LinkToProperty", 'showoncombobox' => 1,),
-		'nomlocal' => array('type' => 'varchar(255)', 'label' => 'Nomlocal', 'visible' => 1, 'enabled' => 1, 'position' => 26, 'notnull' => 1, 'index' => 1,  'showoncombobox' => 1,),
 		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'visible' => 1, 'enabled' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'searchall' => 1,  'foreignkey' => 'ultimateimmo_immoowner.rowid', 'help' => "LinkToOwner",),
 		'fk_renter' => array('type' => 'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label' => 'Renter', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immorenter.rowid', 'searchall' => 1, 'help' => "LinkToRenter",),
 		'fk_account' => array('type' => 'integer:Account:compta/bank/class/account.class.php', 'label' => 'BankAccount', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'bank_account.id', 'searchall' => 1, 'help' => "LinkToAccount",),
@@ -124,7 +123,6 @@ class ImmoRent extends CommonObject
 	public $fk_account;
 	public $fk_soc;
 	public $location_type_id;
-	public $nomlocal;
 	public $nomlocataire;
 	public $vat;
 	public $note_public;

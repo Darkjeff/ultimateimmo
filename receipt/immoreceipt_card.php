@@ -545,7 +545,7 @@ if ($result >= 0) {
 
 // Part to create
 if ($action == 'create') {
-	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("MenuNewImmoReceipt")), '', 'object_' . $object->picto);
+	print load_fiche_titre($langs->transnoentitiesnoconv("MenuNewImmoReceipt"), '', 'object_' . $object->picto);
 
 	$year_current = strftime("%Y", dol_now());
 	$pastmonth = strftime("%m", dol_now());

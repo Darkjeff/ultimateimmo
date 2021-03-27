@@ -193,6 +193,7 @@ ImmoUnpaid = Impayée
 ImmoPaid = Payée
 PartialPayment = Paiement partiel
 NomLoyer = Dénomination de la Quittance
+OtherProperties = Autres biens
 DeleteImmoReceipt = Suppression de Quittance
 ConfirmDeleteImmoReceipt = Etes vous sûr de vouloir supprimer cette quittance ?
 CloneImmoReceipt = Cloner cette quittance 
