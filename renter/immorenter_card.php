@@ -197,6 +197,19 @@ $formproject = new FormProjets($db);
 
 llxHeader('', $langs->trans('ImmoRenter'), '');
 
+if ($conf->use_javascript_ajax) {
+	print "\n".'<script type="text/javascript" language="javascript">';
+	print 'jQuery(document).ready(function () {
+				jQuery("#selectcountry_id").change(function() {
+					document.formsoc.action.value="create";
+					document.formsoc.submit();
+				});
+				
+				initfieldrequired();
+			})';
+	print '</script>'."\n";
+}
+
 // Part to create
 if ($action == 'create') {
 	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoRenter")), '', 'object_' . $object->picto);
@@ -255,7 +268,8 @@ if ($action == 'create') {
 				$object->country = $tmparray['label'];
 			}
 			// Country
-			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
+			print $form->select_country(GETPOSTISSET('country_id') ? GETPOST('country_id', 'alpha') : $object->country_id, 'country_id');
+			if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
 
