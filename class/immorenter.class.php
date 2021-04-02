@@ -494,7 +494,7 @@ class ImmoRenter extends CommonObject
 	 *
 	 * @return string
 	 */
-	protected function getFieldList()
+	public function getFieldList($alias='')
 	{
 		$keys = array_keys($this->fields);
 		return implode(',', $keys);
