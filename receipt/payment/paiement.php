@@ -249,7 +249,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		print '<input type="hidden" name="id" value="' . $id . '">';
 		print '<input type="hidden" name="socid" value="' . $renter->fk_soc . '">';
 
-		dol_fiche_head(array(), '');
+		print dol_get_fiche_head(array(), '');
 
 		print '<table class="border centpercent">' . "\n";
 
@@ -262,9 +262,23 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 		// Date payment
 		print '<tr><td>' . $langs->trans("Date") . "</td><td colspan=\"2\">" . dol_print_date($receipt->date_echeance, 'day') . "</td></tr>\n";
-		print '<tr><td>' . $langs->trans("rent") . "</td><td colspan=\"2\">" . $receipt->fk_rent . "</td></tr>\n";
-		print '<tr><td>' . $langs->trans("property") . "</td><td colspan=\"2\">" . $receipt->fk_property . "</td></tr>\n";
-		print '<tr><td>' . $langs->trans("renter") . "</td><td colspan=\"2\">" . $receipt->fk_renter . "</td></tr>\n";
+		$rent = new ImmoRent($db);
+		$rent->fetch($receipt->fk_rent);
+		$staticproperty = new ImmoProperty($db);
+		$staticproperty->fetch($receipt->fk_property);
+		if ($rent->ref) {
+			$rent->ref = $rent->getNomUrl(0) . ' - ' . $staticproperty->label;
+		}
+		
+		print '<tr><td>' . $langs->trans("ImmoRent") . "</td><td colspan=\"2\">" . $rent->ref . "</td></tr>\n";
+		print '<tr><td>' . $langs->trans("Property") . "</td><td colspan=\"2\">" . $staticproperty->address.' '.$staticproperty->zip .' '.$staticproperty->town . "</td></tr>\n";
+		
+		$staticrenter = new ImmoRenter($db);
+		$staticrenter->fetch($receipt->fk_renter);
+		if ($staticrenter->ref) {
+			$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs);
+		}
+		print '<tr><td>' . $langs->trans("Renter") . "</td><td colspan=\"2\">" . $staticrenter->ref . "</td></tr>\n";
 
 		// Total amount
 		print '<tr><td>' . $langs->trans("Amount") . "</td><td colspan=\"2\">" . price($receipt->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td></tr>';
