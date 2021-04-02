@@ -321,7 +321,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 		// Cheque number
 		print '<tr><td>' . $langs->trans('Numero');
-		print '<em>(' . $langs->trans("ChequeOrTransferNumber") . ')</em>';
+		print '('.$langs->trans("ChequeOrTransferNumber") . ')';
 		print '</td>';
 		print '<td><input name="num_paiement" type="text" value="' . $paymentnum . '"></td></tr>';
 
@@ -332,7 +332,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 		// Bank name
 		print '<tr><td>';
-		print '<em>(' . $langs->trans("ChequeBank") . ')</em>';
+		print '(' . $langs->trans("ChequeBank") . ')';
 		print '</td>';
 		print '<td><input name="chqbank" size="30" type="text" value="' . GETPOST('chqbank', 'alphanohtml') . '"></td></tr>';
 
@@ -343,7 +343,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 		print '</table>';
 
-		dol_fiche_end();
+		print dol_get_fiche_end();
 
 		/*
 		 * Autres charges impayees
