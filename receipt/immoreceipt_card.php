@@ -571,7 +571,7 @@ if ($action == 'create') {
 	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
-	dol_fiche_head(array(), '');
+	print dol_get_fiche_head(array(), '');
 
 	print '<table class="border centpercent tableforfieldcreate">' . "\n";
 
@@ -635,7 +635,7 @@ if ($action == 'create') {
 
 	print '</table>' . "\n";
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	print '<div class="center">';
 	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
@@ -700,7 +700,7 @@ if ($action == 'createall') {
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as own";
 	$sql .= " WHERE preavis = 1 AND loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property AND own.rowid = prop.fk_owner ";
-	//echo $sql;exit;
+	//print_r($sql);exit;
 	$sql .= $db->order($sortfield, $sortorder);
 	// Count total nb of records
 	$nbtotalofrecords = '';
@@ -811,7 +811,7 @@ if ($action == 'createall') {
 		if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
 		if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
 
-		dol_fiche_head();
+		print dol_get_fiche_head();
 
 		print '<table class="border centpercent tableforfieldedit">'."\n";
 
@@ -888,7 +888,7 @@ if ($action == 'createall') {
 
 		print '</table>';
 
-		dol_fiche_end();
+		print dol_get_fiche_end();
 
 		print '<div class="center"><input type="submit" class="button" name="save" value="'.$langs->trans("Save").'">';
 		print ' &nbsp; <input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
@@ -909,7 +909,7 @@ if ($action == 'createall') {
 		$result = $object->fetch($id);
 
 		$head = immoreceiptPrepareHead($object);
-		dol_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'bill');
+		print dol_get_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'bill');
 		
 		$totalpaye = $object->getSommePaiement();
 
@@ -1245,11 +1245,11 @@ if ($action == 'createall') {
 
 	print '<div class="clearboth"></div><br>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	/*
-		 * Lines
-		 */
+	 * Lines
+	 */
 
 	if (!empty($object->table_element_line)) {
 		// Show object lines
