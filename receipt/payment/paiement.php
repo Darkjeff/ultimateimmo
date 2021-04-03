@@ -321,7 +321,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 		// Cheque number
 		print '<tr><td>' . $langs->trans('Numero');
-		print '('.$langs->trans("ChequeOrTransferNumber") . ')';
+		print '(' . $langs->trans("ChequeOrTransferNumber") . ')';
 		print '</td>';
 		print '<td><input name="num_paiement" type="text" value="' . $paymentnum . '"></td></tr>';
 
@@ -377,7 +377,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 			$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rcpt";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rcpt.fk_rent = rent.rowid";
 			$sql .= " WHERE pmt.fk_receipt = " . $id;
-			$sql .= " AND rcpt.fk_rent = rent.rowid";
+			$sql .= " AND pmt.fk_rent = rent.rowid";
 			//print_r($sql);exit;
 			$resql = $db->query($sql);
 			if ($resql) {
@@ -387,7 +387,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 				$db->free();
 			}
 
-			print '<td class="left">' . $objp->fk_rent . "</td>";
+			print '<td class="left">' . $rent->getNomUrl(0) . "</td>";
 
 			print '<td class="right">' . price($objp->total_amount) . "</td>";
 

@@ -349,7 +349,7 @@ if (empty($reshook)) {
 		$date_echeance = dol_mktime(12, 0, 0, GETPOST('echmonth', 'int'), GETPOST('echday', 'int'), GETPOST('echyear', 'int'));
 		
 		$dateperiod = dol_mktime(12, 0, 0, GETPOST('periodmonth', 'int'), GETPOST('periodday', 'int'), GETPOST('periodyear', 'int'));
-		//var_dump($dateperiod);exit;
+		
 		$dateperiodend = dol_mktime(12, 0, 0, GETPOST('periodendmonth', 'int'), GETPOST('periodendday', 'int'), GETPOST('periodendyear', 'int'));
 
 		if (empty($date_echeance)) {
@@ -372,9 +372,9 @@ if (empty($reshook)) {
 
 			foreach ($mesLignesCochees as $maLigneCochee) {
 				$receipt = new ImmoReceipt($db);
-
+				
 				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
-
+				
 				$monId = $maLigneCourante[0];
 				$monLocal = $maLigneCourante[1];
 				$monLocataire = $maLigneCourante[2];
@@ -384,13 +384,13 @@ if (empty($reshook)) {
 				$maTVA = $maLigneCourante[6];
 				$monProprio = $maLigneCourante[7];
 				$socProprio = $maLigneCourante[8];
-
+				
 				// main info rent
 				$receipt->label = GETPOST('label', 'alpha');
 				$receipt->date_echeance = $date_echeance;
 				$receipt->date_start = $dateperiod;
 				$receipt->date_end = $dateperiodend;
-
+				
 				// main info contract
 				$receipt->ref = '(PROV)';
 				$receipt->fk_rent = $monId;
@@ -670,7 +670,7 @@ if ($action == 'createall') {
 	print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
 	print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 
-	dol_fiche_head(null);
+	print dol_get_fiche_head(null);
 
 	print '<table class="border centpercent">';
 
@@ -688,7 +688,7 @@ if ($action == 'createall') {
 	print $form->selectDate(!empty($dateperiodend) ? $dateperiodend : '-1', 'periodend', '', '', 0, "fiche_loyer", 1, 1, 0, '', '', $object->date);
 	print '</td></tr>';
 	print '</table>';
-    dol_fiche_end();
+    print dol_get_fiche_end();
 
 
 	/*
