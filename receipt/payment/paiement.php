@@ -173,6 +173,7 @@ if ($action == 'add_payment') {
 
 			$payment->ref          = $receipt->ref;
 			$payment->rowid        = $id;
+			$payment->fk_receipt   = $receipt->rowid;
 			$payment->fk_rent	   = $receipt->fk_rent;
 			$payment->fk_property  = $receipt->fk_property;
 			$payment->fk_renter	   = $receipt->fk_renter;
