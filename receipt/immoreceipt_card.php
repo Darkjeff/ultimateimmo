@@ -1348,7 +1348,7 @@ if ($action == 'createall') {
 			}
 
 			// Classify 'paid'
-			if ($receipt->paye == 0 && round($remaintopay) <= 0) {
+			if ($receipt->paye == 1 && round($remaintopay) <= 0) {
 				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&id=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
 			}
 
