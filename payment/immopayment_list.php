@@ -486,11 +486,11 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 			} elseif ($val['label'] == 'BankAccount') {
 				if ($object->fk_account) {
 					$bankaccount = new Account($db);
-					$result = $bankaccount->fetch($object->fk_account);
+					$result = $bankaccount->fetch($object->fk_bank);
 					//$bankaccount->id = $object->bid;
 					//$bankaccount->ref = $object->bref;
 					//$bankaccount->number = $object->bnumber;
-					//var_dump($bankaccount);exit;
+					//var_dump($object->fk_account);exit;
 					// Payment bank
 					print $bankaccount->getNomUrl(1, 0, 'showall');
 				}
