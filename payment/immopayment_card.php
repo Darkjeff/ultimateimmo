@@ -515,7 +515,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	$head = immopaymentPrepareHead($object);
 
-	dol_fiche_head($head, 'card', $langs->trans("ImmoPayment"), -1, 'payment');
+	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoPayment"), -1, 'payment');
 
 	$formconfirm = '';
 
@@ -572,7 +572,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">' . "\n";
 
 	// Common attributes
-	//$keyforbreak = 'date_payment';
+	$keyforbreak = 'date_payment';
 
 	//$object->fields = dol_sort_array($object->fields, 'position');
 
@@ -662,7 +662,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
 
-
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '">';
 		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
@@ -672,15 +671,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($val['label'] == 'TypePayment') {
 
 			if ($object->fk_mode_reglement) {
-
 				$tmparray = $object->setPaymentMethods($object->fk_mode_reglement, 'int');
-				$object->mode_code = $tmparray['code'];
-				$object->mode_payment = $tmparray['libelle'];
-				//var_dump($tmparray);exit;
 			}
 			// Payment mode
-			print $object->mode_payment;
-			//$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, '', $object->fk_mode_reglement);
+			$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none', '', -1);
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
