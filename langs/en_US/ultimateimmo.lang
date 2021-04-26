@@ -147,9 +147,9 @@ Copropriete = Copropriete
 MonoPropriete = MonoPropriete
 DateStartRent = Date Start Rent
 TypePayment = Payment type
-NumPayment = <em>Numéro(Chèque/Virement N°)</em>
-CheckTransmitter = <em>Emetteur(Chèque/Virement N°)</em>
-ChequeBank = <em>Banque(Banque du chèque)</em>
+NumPayment = <i>Numéro(Chèque/Virement N°)</i>
+CheckTransmitter = <i>Emetteur(Chèque/Virement N°)</i>
+ChequeBank = <i>Banque(Banque du chèque)</i>
 NewImmoPropertyType = Nouveau type de bien
 ImmoProperty_Type = Type de bien immobilier
 ImmoOwner = Owner
@@ -233,6 +233,11 @@ OtherReceipts = Other Receipts
 OtherRents = Other Rents
 NumberReceiptByMonth  = Number receipts by month
 CustomerReceiptPayment = Customer receipt payment
+LinkToReceipt = Link to receipt
+LinkToOwner = Link to owner
+LinkToThirpartyRenter = You must choose here a renter thirdparty
+LinkToProperty = Link to property
+AmountPayed = Amount payed
 
 #
 # Sample page
