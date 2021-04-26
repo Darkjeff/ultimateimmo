@@ -483,7 +483,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				}
 				// Payment mode
 				print $form->form_modes_reglement($_SERVER['PHP_SELF'], $object->fk_mode_reglement, 'none');
-			} elseif ($val['label'] == 'BankAccount') {
+			/*} elseif ($val['label'] == 'BankAccount') {
 				if ($object->fk_account) {
 					$bankaccount = new Account($db);
 					$result = $bankaccount->fetch($object->fk_bank);
@@ -493,7 +493,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					//var_dump($object->fk_account);exit;
 					// Payment bank
 					print $bankaccount->getNomUrl(1, 0, 'showall');
-				}
+				}*/
 			} elseif ($val['label'] == 'Renter') {
 				if ($object->fk_renter) {
 					$staticrenter = new ImmoRenter($db);

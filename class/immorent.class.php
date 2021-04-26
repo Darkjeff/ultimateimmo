@@ -89,8 +89,7 @@ class ImmoRent extends CommonObject
 		'fk_property' => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'Property', 'visible' => 1, 'enabled' => 1, 'position' => 25,  'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immoproperty.rowid', 'searchall' => 1, 'help' => "LinkToProperty", 'showoncombobox' => 1,),
 		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'visible' => 1, 'enabled' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'searchall' => 1,  'foreignkey' => 'ultimateimmo_immoowner.rowid', 'help' => "LinkToOwner",),
 		'fk_renter' => array('type' => 'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label' => 'Renter', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immorenter.rowid', 'searchall' => 1, 'help' => "LinkToRenter",),
-		'fk_account' => array('type' => 'integer:Account:compta/bank/class/account.class.php', 'label' => 'BankAccount', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'bank_account.id', 'searchall' => 1, 'help' => "LinkToAccount",),
-		'fk_soc' => array('type' => 'integer:Societe:societe/class/societe.class.php', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 42, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirparty", 'foreignkey' => 'societe.rowid',),
+		'fk_soc' => array('type' => 'integer:Societe:societe/class/societe.class.php', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 42, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirpartyRenter", 'foreignkey' => 'societe.rowid',),
 		'location_type_id' => array('type' => 'integer', 'label' => 'ImmorentType', 'enabled' => 1, 'visible' => 1, 'position' => 44, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'EmptyHousing', '2' => 'FurnishedApartment')),
 		'vat' => array('type' => 'integer', 'label' => 'VAT', 'visible' => -1, 'enabled' => 1, 'position' => 45, 'notnull' => -1, 'index' => 1, 'arrayofkeyval' => array('0' => 'No', '1' => 'Yes')),
 		'note_public' => array('type' => 'html', 'label' => 'NotePublic', 'visible' => -1, 'enabled' => 1, 'position' => 50, 'notnull' => -1,),
@@ -120,7 +119,6 @@ class ImmoRent extends CommonObject
 	public $fk_property;
 	public $fk_owner;
 	public $fk_renter;
-	public $fk_account;
 	public $fk_soc;
 	public $location_type_id;
 	public $nomlocataire;
@@ -330,8 +328,6 @@ class ImmoRent extends CommonObject
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as prop ON t.fk_property = prop.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immorent_type as rent_t ON t.location_type_id = rent_t.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as soc ON t.fk_soc = soc.rowid';
-		//$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."bank as b ON t.fk_account = b.rowid";
-        //$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."bank_account as ba ON b.fk_account = ba.rowid";
 
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
 		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
