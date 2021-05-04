@@ -450,6 +450,7 @@ class ImmoProperty extends CommonObject
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immoproperty_type as tp ON t.property_type_id = tp.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as s ON s.rowid = t.fk_soc";
 
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
 		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
@@ -530,7 +531,7 @@ class ImmoProperty extends CommonObject
 			while ($obj = $this->db->fetch_object($resql)) {
 
 				$line = new ImmopropertyLine();
-
+				
 				$line->id = $obj->rowid;
 				$line->fk_property = $obj->fk_property;
 				$line->label = $obj->label;
@@ -929,6 +930,7 @@ class ImmopropertyLine
 	public $property_type_id;
 	public $fk_property;
 	public $fk_owner;
+	public $fk_soc;
 	public $label;
 	public $address;
 	public $building;

@@ -402,7 +402,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (in_array($key, array('ref', 'status'))) continue; // Ref and status are already in dol_banner
 
 		$value = $object->$key;
-
+		
 		print '<tr><td';
 		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
@@ -433,6 +433,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
+		var_dump($object->showOutputField($val, $key, $value, '', '', '', 0));
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
