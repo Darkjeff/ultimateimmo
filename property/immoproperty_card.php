@@ -433,7 +433,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
-		var_dump($object->showOutputField($val, $key, $value, '', '', '', 0));
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
