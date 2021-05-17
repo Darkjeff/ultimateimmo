@@ -94,20 +94,20 @@ class ImmoRenter extends CommonObject
 	 */
 	public $fields = array(
 		'rowid'         => array('type' => 'integer', 'label' => 'TechnicalID', 'enabled' => 1, 'visible' => -1, 'noteditable' => 1, 'notnull' => 1, 'index' => 1, 'position' => 1, 'comment' => 'Id'),
-		'ref'           => array('type' => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1, 'showoncombobox' => 1, 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
+		'ref'           => array('type' => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1,  'default'=>'(PROV)', 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
 		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
-		'fk_rent' => array('type' => 'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label' => 'Rent', 'visible' => 1, 'enabled' => 1, 'position' => 25, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immorent.rowid', 'searchall' => 1, 'help' => "LinkToRent",),
-		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'help' => "LinkToOwner",),
+		'fk_rent' => array('type' => 'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label' => 'ImmoRent', 'visible' => 1, 'enabled' => 1, 'position' => 25, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immorent.rowid', 'searchall' => 1, 'help' => "LinkToRent",),
+		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'foreignkey'=>'ultimateimmo_immoowner.fk_owner', 'help' => "LinkToOwner",),
 		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 35, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirparty'),
 		'societe' => array('type' => 'varchar(128)', 'label' => 'Societe', 'visible' => 1, 'enabled' => 1, 'position' => 36, 'notnull' => -1,),
 		'note_public' => array('type' => 'html', 'label' => 'NotePublic', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1,),
 		'note_private' => array('type' => 'html', 'label' => 'NotePrivate', 'visible' => 1, 'enabled' => 1, 'position' => 50, 'notnull' => -1,),
 		'civility_id' => array('type' => 'integer', 'label' => 'Civility', 'visible' => -1, 'enabled' => 1, 'position' => 60, 'notnull' => 1,),
-		'firstname' => array('type' => 'varchar(255)', 'label' => 'Firstname', 'visible' => 1, 'enabled' => 1, 'position' => 65, 'notnull' => -1, 'searchall' => 1,),
-		'lastname' => array('type' => 'varchar(255)', 'label' => 'Lastname', 'visible' => 1, 'enabled' => 1, 'position' => 70, 'notnull' => -1, 'searchall' => 1,),
+		'firstname' => array('type' => 'varchar(255)', 'label' => 'Firstname', 'visible' => 1, 'enabled' => 1, 'position' => 65, 'showoncombobox'=>1, 'notnull' => -1, 'searchall' => 1,),
+		'lastname' => array('type' => 'varchar(255)', 'label' => 'Lastname', 'visible' => 1, 'enabled' => 1, 'position' => 70, 'showoncombobox'=>1, 'notnull' => -1, 'searchall' => 1,),
 		'email' => array('type' => 'varchar(255)', 'label' => 'Email', 'visible' => 1, 'enabled' => 1, 'position' => 75, 'notnull' => -1,),
 		'birth' => array('type' => 'date', 'label' => 'BirthDay', 'visible' => 1, 'enabled' => 1, 'position' => 80, 'notnull' => -1,),
-		'country_id' => array('type' => 'varchar:c_country:label:code:rowid', 'label' => 'BirthCountry', 'enabled' => 1, 'visible' => 1, 'position' => 82, 'notnull' => -1,),
+		'country_id' => array('type' => 'integer:Ccountry:core/class/ccountry.class.php', 'label' => 'BirthCountry', 'enabled' => 1, 'visible' => 1, 'position' => 82, 'notnull' => -1,),
 		'phone' => array('type' => 'varchar(30)', 'label' => 'Phone', 'visible' => -1, 'enabled' => 1, 'position' => 85, 'notnull' => -1,),
 		'phone_mobile' => array('type' => 'varchar(30)', 'label' => 'PhoneMobile', 'visible' => 1, 'enabled' => 1, 'position' => 90, 'notnull' => -1,),
 		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'visible' => -2, 'enabled' => 1, 'position' => 500, 'notnull' => 1,),
@@ -239,24 +239,18 @@ class ImmoRenter extends CommonObject
 		}*/
 
 		// Unset fields that are disabled
-		foreach ($this->fields as $key => $val)
-		{
-			if (isset($val['enabled']) && empty($val['enabled']))
-			{
+		foreach ($this->fields as $key => $val) {
+			if (isset($val['enabled']) && empty($val['enabled'])) {
 				unset($this->fields[$key]);
 			}
 		}
 
 		// Translate some data of arrayofkeyval
-		if (is_object($langs))
-		{
-			foreach($this->fields as $key => $val)
-			{
-				if (is_array($val['arrayofkeyval']))
-				{
-					foreach($val['arrayofkeyval'] as $key2 => $val2)
-					{
-						$this->fields[$key]['arrayofkeyval'][$key2]=$langs->trans($val2);
+		if (is_object($langs)) {
+			foreach ($this->fields as $key => $val) {
+				if (is_array($val['arrayofkeyval'])) {
+					foreach ($val['arrayofkeyval'] as $key2 => $val2) {
+						$this->fields[$key]['arrayofkeyval'][$key2] = $langs->trans($val2);
 					}
 				}
 			}
@@ -327,7 +321,7 @@ class ImmoRenter extends CommonObject
 			$res = $this->db->query($sql);
 			if ($res === false) {
 				$error++;
-				$this->errors[] = $this->db->lasterror();
+				$this->errors[] = "Error ".$this->db->lasterror();
 			}
 		}
 
@@ -344,7 +338,7 @@ class ImmoRenter extends CommonObject
 
 				if ($resqlupdate === false) {
 					$error++;
-					$this->errors[] = $this->db->lasterror();
+					$this->error = "Error ".$this->db->lasterror();
 				} else {
 					$this->ref = '(PROV' . $this->id . ')';
 				}
@@ -494,13 +488,13 @@ class ImmoRenter extends CommonObject
 			return -1;
 		}
 	}
-
+	
 	/**
 	 * Function to concat keys of fields
 	 *
 	 * @return string
 	 */
-	protected function getFieldList()
+	public function getFieldList($alias='')
 	{
 		$keys = array_keys($this->fields);
 		return implode(',', $keys);
@@ -606,13 +600,13 @@ class ImmoRenter extends CommonObject
 					return 0;
 				}
 			} else {
-				$this->error = $this->db->lasterror();
-				$this->errors[] = $this->error;
+				$this->error = "Error ".$this->db->lasterror();
+	            $this->errors[] = "Error ".$this->db->lasterror();
 				return -1;
 			}
 		} else {
-			$this->error = $this->db->lasterror();
-			$this->errors[] = $this->error;
+			$this->error = "Error ".$this->db->lasterror();
+			$this->errors[] = "Error ".$this->db->lasterror();
 			return -1;
 		}
 	}
@@ -699,7 +693,7 @@ class ImmoRenter extends CommonObject
 			$res = $this->db->query($sql);
 			if ($res === false) {
 				$error++;
-				$this->errors[] = $this->db->lasterror();
+				$this->errors[] = "Error ".$this->db->lasterror();
 			}
 		}
 
@@ -786,7 +780,7 @@ class ImmoRenter extends CommonObject
 			$this->db->commit();
 			return 1;
 		} else {
-			$this->error = $this->db->error();
+			$this->error = "Error " . $this->db->error();
 			$this->db->rollback();
 			return -1;
 		}
@@ -849,7 +843,7 @@ class ImmoRenter extends CommonObject
 			$resql = $this->db->query($sql);
 			if (!$resql) {
 				dol_print_error($this->db);
-				$this->error = $this->db->lasterror();
+				$this->error = "Error ".$this->db->lasterror();
 				$error++;
 			}
 
@@ -872,7 +866,7 @@ class ImmoRenter extends CommonObject
 				$resql = $this->db->query($sql);
 				if (!$resql) {
 					$error++;
-					$this->error = $this->db->lasterror();
+					$this->error = "Error ".$this->db->lasterror();
 				}
 
 				// We rename directory ($this->ref = old ref, $num = new ref) in order not to lose the attachments
@@ -924,8 +918,7 @@ class ImmoRenter extends CommonObject
 	public function setDraft($user, $notrigger = 0)
 	{
 		// Protection
-		if ($this->status <= self::STATUS_DRAFT)
-		{
+		if ($this->status <= self::STATUS_DRAFT) {
 			return 0;
 		}
 
@@ -974,8 +967,7 @@ class ImmoRenter extends CommonObject
 	public function reopen($user, $notrigger = 0)
 	{
 		// Protection
-		if ($this->status != self::STATUS_CANCELED)
-		{
+		if ($this->status != self::STATUS_CANCELED) {
 			return 0;
 		}
 
@@ -990,28 +982,31 @@ class ImmoRenter extends CommonObject
 	}
 
 	/**
-	 *  Return a link to the object card (with optionaly the picto)
+	 *  Return name of contact with link (and eventually picto)
+	 *	Use $this->id, $this->lastname, $this->firstname, this->civility_id
 	 *
-	 *  @param  int     $withpicto                  Include picto in link (0=No picto, 1=Include picto into link, 2=Only picto)
-	 *  @param  string  $option                     On what the link point to ('nolink', ...)
-	 *  @param  int     $notooltip                  1=Disable tooltip
-	 *  @param  string  $morecss                    Add more css on link
-	 *  @param  int     $save_lastsearch_value      -1=Auto, 0=No save of lastsearch_values when clicking, 1=Save lastsearch_values whenclicking
-	 *  @return	string                              String with URL
+	 *	@param		int			$withpicto					Include picto with link
+	 *	@param		string		$option						Where the link point to
+	 *	@param		int			$maxlen						Max length of
+	 *  @param		string		$moreparam					Add more param into URL
+     *  @param      int     	$save_lastsearch_value		-1=Auto, 0=No save of lastsearch_values when clicking, 1=Save lastsearch_values whenclicking
+	 *	@param		int			$notooltip					1=Disable tooltip
+	 *	@return		string									String with URL
 	 */
-	public function getNomUrl($withpicto = 0, $option = '', $notooltip = 0, $morecss = '', $save_lastsearch_value = -1)
+	public function getNomUrl($withpicto = 0, $option = '', $maxlen = 0, $moreparam = '', $save_lastsearch_value = -1, $notooltip = 0)
 	{
 		global $conf, $langs, $hookmanager;
 
 		if (!empty($conf->dol_no_mouse_hover)) $notooltip = 1; // Force disable tooltips
 
-		$result = '';
+		$result = ''; $label = '';
 
 		$label = '<u>' . $langs->trans("ImmoRenter") . '</u>';
 		$label .= '<br>';
 		$label .= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 		$label .= '<br>';
-		$label .= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->lastname;
+		$label .= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->civility .' '.$this->firstname .' '.$this->lastname;
+		$label .= '<br><b>'.$langs->trans("EMail").':</b> '.$this->email;
 		if (isset($this->status)) {
 			$label .= '<br><b>' . $langs->trans("Status") . ":</b> " . $this->getLibStatut(5);
 		}
@@ -1032,16 +1027,16 @@ class ImmoRenter extends CommonObject
 				$linkclose .= ' alt="' . dol_escape_htmltag($label, 1) . '"';
 			}
 			$linkclose .= ' title="' . dol_escape_htmltag($label, 1) . '"';
-			$linkclose .= ' class="classfortooltip' . ($morecss ? ' ' . $morecss : '') . '"';
-		} else $linkclose = ($morecss ? ' class="' . $morecss . '"' : '');
+			$linkclose .= ' class="classfortooltip"';
+		}
 
-		$linkstart = '<a href="' . $url . '"';
-		$linkstart .= $linkclose . '>';
-		$linkend = '</a>';
+			$linkstart = '<a href="' . $url . '"';
+			$linkstart .= $linkclose . '>';
+			$linkend = '</a>';
 
 		$result .= $linkstart;
 		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="' . (($withpicto != 2) ? 'paddingright ' : '') . 'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
-		if ($withpicto != 2) $result .= $this->lastname;
+		if ($withpicto != 2)  $result .= ($maxlen ?dol_trunc($this->getFullName($langs), $maxlen) : $this->getFullName($langs));
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 

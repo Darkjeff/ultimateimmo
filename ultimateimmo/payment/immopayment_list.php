@@ -44,9 +44,10 @@ if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.
 if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
 if (!$res) die("Include of main fails");
 
-require_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
@@ -184,7 +185,7 @@ if (empty($reshook)) {
 	$objectclass = 'ImmoPayment';
 	$objectlabel = 'ImmoPayment';
 	$uploaddir = $conf->ultimateimmo->dir_output;
-	include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_massactions.inc.php';
 }
 
 /*
@@ -233,7 +234,7 @@ foreach ($search as $key => $val) {
 if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
 
 // Add where from extra fields
-include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
+include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_sql.tpl.php';
 // Add where from hooks
 $parameters = array();
 $reshook = $hookmanager->executeHooks('printFieldListWhere', $parameters, $object);    // Note that $action and $object may have been modified by hook
@@ -330,12 +331,13 @@ print '<input type="hidden" name="contextpage" value="' . $contextpage . '">';
 
 $newcardbutton = dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?action=create&backtopage=' . urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
 
-print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, $newcardbutton, '', $limit, 0, 0, 1);
+print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'object_payment', 0, $newcardbutton, '', $limit, 0, 0, 1);
 
 // Add code for pre mass action (confirmation or email presend form)
 $topicmail = "SendImmoPaymentRef";
 $modelmail = "immopayment";
 $objecttmp = new ImmoPayment($db);
+$objecttmp->fetch(0, 0, $bank_id);
 $trackid = 'xxxx' . $object->id;
 include DOL_DOCUMENT_ROOT . '/core/tpl/massactions_pre.tpl.php';
 
@@ -386,7 +388,7 @@ foreach ($object->fields as $key => $val) {
 	}
 }
 // Extra fields
-include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
+include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php';
 
 // Fields from hook
 $parameters = array('arrayfields' => $arrayfields);
@@ -435,8 +437,7 @@ if (is_array($extrafields->attributes[$object->table_element]['computed']) && co
 // --------------------------------------------------------------------
 $i = 0;
 $totalarray = array();
-while ($i < ($limit ? min($num, $limit) : $num))
-{
+while ($i < ($limit ? min($num, $limit) : $num)) {
 	$obj = $db->fetch_object($resql);
 	if (empty($obj)) break;		// Should not happen
 
@@ -445,25 +446,35 @@ while ($i < ($limit ? min($num, $limit) : $num))
 
 	// Show here line of result
 	print '<tr class="oddeven">';
-	foreach ($object->fields as $key => $val)
-	{
+	foreach ($object->fields as $key => $val) {
 		$cssforfield = (empty($val['css']) ? '' : $val['css']);
-	    if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'center';
-	    elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '').'center';
+		if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '') . 'center';
+		elseif ($key == 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 
-	    if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
-	    elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+		if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
+		elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
 
-		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '').'right';
+		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'right';
 
-		if (! empty($arrayfields['t.'.$key]['checked']))
-		{
-			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
+		if (!empty($arrayfields['t.' . $key]['checked'])) {
+			print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
+			if ($key == 'status') print $object->getLibStatut(5);
 
-			if ($val['label'] == 'Owner') {
+			elseif ($val['label'] == 'Owner') {
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);
-				print $staticowner->getNomUrl();
+				if ($staticowner->ref) {
+					$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+				}
+				print $staticowner->ref;
+			} elseif ($val['label'] == 'ImmoRent') {
+				$staticrent = new ImmoRent($db);
+				$staticrent->fetch($object->fk_rent);
+				$staticproperty = new ImmoProperty($db);
+				$staticproperty->fetch($staticrent->fk_property);
+				if ($staticrent->ref) {
+					$staticrent->ref = $staticrent->getNomUrl(0) . ' - ' . $staticproperty->label;
+				}
 			} elseif ($val['label'] == 'TypePayment') {
 				if ($object->fk_mode_reglement) {
 					$tmparray = $object->setPaymentMethods($object->fk_mode_reglement, 'int');
@@ -473,30 +484,38 @@ while ($i < ($limit ? min($num, $limit) : $num))
 				// Payment mode
 				print $form->form_modes_reglement($_SERVER['PHP_SELF'], $object->fk_mode_reglement, 'none');
 			} elseif ($val['label'] == 'BankAccount') {
-				if ($object->fk_bank) {
-					$bankline = new AccountLine($db);
-					$result = $bankline->fetch($object->fk_bank);
+				if ($object->fk_account) {
+					$bankaccount = new Account($db);
+					$result = $bankaccount->fetch($object->fk_account);
+					//$bankaccount->id = $object->bid;
+					//$bankaccount->ref = $object->bref;
+					//$bankaccount->number = $object->bnumber;
+					//var_dump($bankaccount);exit;
 					// Payment bank
-					print $bankline->getNomUrl(1, 0, 'showall');
+					print $bankaccount->getNomUrl(1, 0, 'showall');
 				}
-			} elseif($val['label'] =='Renter') {
+			} elseif ($val['label'] == 'Renter') {
 				if ($object->fk_renter) {
-					$renter = new ImmoRenter($db);
-					$result = $renter->fetch($object->fk_renter);
-					//var_dump($renter);
-					print $renter->getNomUrl(1, 0, 'showall');
+					$staticrenter = new ImmoRenter($db);
+					$staticrenter->fetch($object->fk_renter);
+					if ($staticrenter->ref) {
+						$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs, 0);
+					}
+					print $staticrenter->ref;
 				}
-			}elseif($val['label'] == 'Property') {
+			} elseif ($val['label'] == 'Property') {
 				if ($object->fk_property) {
-					$property = new ImmoProperty($db);
-					$result = $property->fetch($object->fk_property);
-					//var_dump($renter);
-					print $property->getNomUrl(1, 0, 'showall');
+					$staticproperty = new ImmoProperty($db);
+					$result = $staticproperty->fetch($object->fk_property);
+					if ($staticproperty->ref) {
+						$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
+					}
+					print $staticproperty->ref;
 				}
 			} else {
-				if ($key == 'status') print $object->getLibStatut(5);
-				else print $object->showOutputField($val, $key, $obj->$key, '');
+				print $object->showOutputField($val, $key, $obj->$key, '');
 			}
+
 			print '</td>';
 			if (!$i) $totalarray['nbfield']++;
 			if (!empty($val['isameasure'])) {
@@ -560,10 +579,10 @@ $parameters = array('arrayfields' => $arrayfields, 'sql' => $sql);
 $reshook = $hookmanager->executeHooks('printFieldListFooter', $parameters, $object);    // Note that $action and $object may have been modified by hook
 print $hookmanager->resPrint;
 
-print '</table>'."\n";
-print '</div>'."\n";
+print '</table>' . "\n";
+print '</div>' . "\n";
 
-print '</form>'."\n";
+print '</form>' . "\n";
 
 if (in_array('builddoc', $arrayofmassactions) && ($nbtotalofrecords === '' || $nbtotalofrecords)) {
 	$hidegeneratedfilelistifempty = 1;

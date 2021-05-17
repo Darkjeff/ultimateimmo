@@ -20,7 +20,7 @@ CREATE TABLE llx_ultimateimmo_immocost_type(
 	ref varchar(128) NOT NULL, 
 	entity integer DEFAULT 1 NOT NULL,
 	label varchar(255),
-	famille varchar(100) NOT NULL	
+	famille varchar(100) NOT NULL,	
 	date_creation datetime NOT NULL, 
 	tms timestamp NOT NULL, 
 	fk_user_creat integer NOT NULL, 

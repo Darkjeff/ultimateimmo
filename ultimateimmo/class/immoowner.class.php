@@ -98,7 +98,7 @@ class ImmoOwner extends CommonObject
 	 */
 	public $fields = array(
 		'rowid'         => array('type' => 'integer', 'label' => 'TechnicalID', 'enabled' => 1, 'visible' => -2, 'noteditable' => 1, 'notnull' => 1, 'index' => 1, 'position' => 1, 'comment' => 'Id'),
-		'ref'           => array('type' => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1, 'showoncombobox' => 1, 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
+		'ref'           => array('type' => 'varchar(128)', 'label' => 'RefOwner', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1,  'default'=>'(PROV)', 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
 		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
 		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirparty'),
 		'societe' 		=> array('type' => 'varchar(128)', 'label' => 'Societe', 'visible' => 1, 'enabled' => 1, 'position' => 34, 'notnull' => -1,),
@@ -106,8 +106,8 @@ class ImmoOwner extends CommonObject
 		'note_public' 	=> array('type' => 'html', 'label' => 'NotePublic', 'visible' => -1, 'enabled' => 1, 'position' => 40, 'notnull' => -1,),
 		'note_private' 	=> array('type' => 'html', 'label' => 'NotePrivate', 'visible' => -1, 'enabled' => 1, 'position' => 45, 'notnull' => -1,),
 		'civility_id' => array('type' => 'integer', 'label' => 'Civility', 'visible' => -1, 'enabled' => 1, 'position' => 50, 'notnull' => 1,),
-		'firstname' 	=> array('type' => 'varchar(255)', 'label' => 'Firstname', 'visible' => -1, 'enabled' => 1, 'position' => 55, 'notnull' => 1,),
-		'lastname' 		=> array('type' => 'varchar(255)', 'label' => 'Lastname', 'visible' => -1, 'enabled' => 1, 'position' => 60, 'notnull' => 1, 'searchall' => 1,),
+		'firstname' 	=> array('type' => 'varchar(255)', 'label' => 'Firstname', 'visible' => -1, 'enabled' => 1, 'position' => 55, 'notnull' => 1, 'showoncombobox' => 1,),
+		'lastname' 		=> array('type' => 'varchar(255)', 'label' => 'Lastname', 'visible' => -1, 'enabled' => 1, 'position' => 60, 'notnull' => 1, 'searchall' => 1, 'showoncombobox' => 1,),
 		'address' 		=> array('type' => 'varchar(255)', 'label' => 'Address', 'enabled' => 1, 'visible' => 1, 'position' => 61, 'notnull' => -1,),
 		'zip' 			=> array('type' => 'varchar(32)', 'label' => 'Zip', 'enabled' => 1, 'visible' => 1, 'position' => 62, 'notnull' => -1,),
 		'town' 			=> array('type' => 'varchar(64)', 'label' => 'Town', 'enabled' => 1, 'visible' => 1, 'position' => 63, 'notnull' => -1,),
@@ -247,24 +247,18 @@ class ImmoOwner extends CommonObject
 		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
 
 		// Unset fields that are disabled
-		foreach ($this->fields as $key => $val)
-		{
-			if (isset($val['enabled']) && empty($val['enabled']))
-			{
+		foreach ($this->fields as $key => $val) {
+			if (isset($val['enabled']) && empty($val['enabled'])) {
 				unset($this->fields[$key]);
 			}
 		}
 
 		// Translate some data of arrayofkeyval
-		if (is_object($langs))
-		{
-			foreach($this->fields as $key => $val)
-			{
-				if (is_array($val['arrayofkeyval']))
-				{
-					foreach($val['arrayofkeyval'] as $key2 => $val2)
-					{
-						$this->fields[$key]['arrayofkeyval'][$key2]=$langs->trans($val2);
+		if (is_object($langs)) {
+			foreach ($this->fields as $key => $val) {
+				if (is_array($val['arrayofkeyval'])) {
+					foreach ($val['arrayofkeyval'] as $key2 => $val2) {
+						$this->fields[$key]['arrayofkeyval'][$key2] = $langs->trans($val2);
 					}
 				}
 			}
@@ -461,7 +455,7 @@ class ImmoOwner extends CommonObject
 			return -1;
 		}
 	}
-
+	
 	/**
 	 * Function to concat keys of fields
 	 *
@@ -522,40 +516,40 @@ class ImmoOwner extends CommonObject
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), array($array[0]));
 		$array = implode(', t.', $array);
-
+		
 		$sql = 'SELECT ' . $array . ',';
-
+		
 		$sql .= 'country.rowid as country_id, country.code as country_code, country.label as country, civility.rowid as civility_id, civility.code as civility_code, civility.label as civility';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_civility as civility ON t.civility_id = civility.rowid';
-
+		
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
 		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql .= $morewhere;
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
-
+		
 		if ($res) {
 			if ($obj = $this->db->fetch_object($res)) {
 				if ($obj) {
 					$this->id = $obj->rowid;
 					$this->set_vars_by_db($obj);
-
+					
 					$this->date_creation = $this->db->jdate($obj->date_creation);
 					$this->tms = $this->db->jdate($obj->tms);
 
 					$this->birth = $this->db->jdate($obj->birth);
 
 					$this->civility_id    = $obj->civility_id;
-					$this->civility_code  = $obj->civility_code;
+					$this->civility_code  = $obj->civility_code; 
 					if ($langs->trans("Civility" . $obj->civility_code) != "Civility" . $obj->civility_code) {
 						$this->civility = $langs->transnoentitiesnoconv("Civility" .  $obj->civility_code);
 					} else {
 						$this->civility = $obj->civility;
 					}
-
+					
 					$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
 					if ($langs->trans("Country" . $obj->country_code) != "Country" . $obj->country_code) {
@@ -731,7 +725,7 @@ class ImmoOwner extends CommonObject
 		$label .= '<br>';
 		$label .= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 		$label .= '<br>';
-		$label .= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->lastname;
+		$label .= '<b>' . $langs->trans('Lastname') . ':</b> ' . $this->civility .' '.$this->firstname .' '.$this->lastname;
 		if (isset($this->status)) {
 			$label .= '<br><b>' . $langs->trans("Status") . ":</b> " . $this->getLibStatut(5);
 		}
@@ -761,7 +755,7 @@ class ImmoOwner extends CommonObject
 
 		$result .= $linkstart;
 		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="' . (($withpicto != 2) ? 'paddingright ' : '') . 'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
-		if ($withpicto != 2) $result .= $this->lastname.' '.$this->firstname;
+		if ($withpicto != 2) $result .= $this->ref;
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
@@ -927,7 +921,7 @@ class ImmoOwner extends CommonObject
 
 		return 0;
 	}
-
+	
 	/**
 	 *    Return country label, code or id from an id, code or label
 	 *
@@ -1104,6 +1098,22 @@ class ImmoOwner extends CommonObject
 		}
 
 		return $out;
+	}
+
+	/**
+	 *    Return civility label of contact
+	 *
+	 *    @return	string      			Translated name of civility
+	 */
+	public function getPropertyLabel()
+	{
+		global $langs;
+
+		$code = ($this->civility_code ? $this->civility_code : (!empty($this->civility_id) ? $this->civility : (!empty($this->civilite) ? $this->civilite : '')));
+		if (empty($code)) return '';
+
+		$langs->load("dict");
+		return $langs->getLabelFromKey($this->db, "Civility".$code, "c_civility", "code", "label", $code);
 	}
 }
 

@@ -49,6 +49,7 @@ global $db, $langs, $user, $conf;
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
 
 // Translations
 $langs->loadLangs(array("admin", "ultimateimmo@ultimateimmo"));
@@ -66,32 +67,24 @@ if (! $user->rights->ultimateimmo->read) {
 /*
  * Action
  */
-if (preg_match('/set_(.*)/',$action,$reg))
-{
-    $code=$reg[1];
-    if (dolibarr_set_const($db, $code, 1, 'chaine', 0, '', $conf->entity) > 0)
-    {
-        Header("Location: ".$_SERVER["PHP_SELF"]);
-        exit;
-    }
-    else
-    {
-        dol_print_error($db);
-    }
+if (preg_match('/set_(.*)/', $action, $reg)) {
+	$code = $reg[1];
+	if (dolibarr_set_const($db, $code, 1, 'chaine', 0, '', $conf->entity) > 0) {
+		Header("Location: " . $_SERVER["PHP_SELF"]);
+		exit;
+	} else {
+		dol_print_error($db);
+	}
 }
 
-if (preg_match('/del_(.*)/',$action,$reg))
-{
-    $code=$reg[1];
-    if (dolibarr_del_const($db, $code, $conf->entity) > 0)
-    {
-        Header("Location: ".$_SERVER["PHP_SELF"]);
-        exit;
-    }
-    else
-    {
-        dol_print_error($db);
-    }
+if (preg_match('/del_(.*)/', $action, $reg)) {
+	$code = $reg[1];
+	if (dolibarr_del_const($db, $code, $conf->entity) > 0) {
+		Header("Location: " . $_SERVER["PHP_SELF"]);
+		exit;
+	} else {
+		dol_print_error($db);
+	}
 }
 
 
@@ -114,16 +107,21 @@ llxheader('', $langs->trans($page_name), '');
 // Configuration header
 $head = immopropertyPrepareHead($object);
 
-dol_fiche_head($head, 'equipement', $langs->trans("Property"), -1, 'building@ultimateimmo');
+dol_fiche_head($head, 'equipement', $langs->trans("Property"), -1, 'company');
 
 // Subheader
 $linkback = '<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 $morehtmlref = '<div class="refidno">';
-//
+// Ref owner
+$staticImmoowner = new ImmoOwner($db);
+$staticImmoowner->fetch($object->fk_owner);
+$morehtmlref .= $form->editfieldkey("RefOwner", 'ref_owner', $staticImmoowner->ref, $object, $permissiontoadd, 'string', '', 0, 1);
+$morehtmlref .= $form->editfieldval("RefOwner", 'ref_owner', $staticImmoowner->ref . ' - ' . $staticImmoowner->getFullName($langs), $object, $permissiontoadd, 'string', '', null, null, '', 1);
+
 $morehtmlref .= '</div>';
 
-dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref');
+dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
 print '<div class="fichecenter">';
 print '<div class="underbanner clearboth"></div>';

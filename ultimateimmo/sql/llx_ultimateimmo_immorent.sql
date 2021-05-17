@@ -22,7 +22,7 @@ CREATE TABLE llx_ultimateimmo_immorent(
 	entity integer DEFAULT 1 NOT NULL,
 	fk_property integer, 
 	fk_renter integer, 
-	fk_bank integer,
+	fk_account integer,
 	fk_soc integer,
 	country_id integer,	
 	vat varchar(4), 

@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2019  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2021  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ CREATE TABLE llx_ultimateimmo_immopayment(
 	fk_rent integer, 
 	fk_property integer, 
 	fk_renter integer, 
-	fk_bank integer, 
+	fk_account integer, 
 	fk_mode_reglement integer, 
 	fk_owner integer, 
 	fk_soc integer,

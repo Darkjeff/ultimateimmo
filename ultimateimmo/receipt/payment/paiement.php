@@ -42,7 +42,6 @@ if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.i
 if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
 if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
 if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
-if (!$res && file_exists("../../../../main.inc.php")) $res = @include("../../../../main.inc.php");
 if (!$res) die("Include of main fails");
 
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
@@ -174,12 +173,13 @@ if ($action == 'add_payment') {
 
 			$payment->ref          = $receipt->ref;
 			$payment->rowid        = $id;
+       		$payment->fk_receipt   = $receipt->rowid;
 			$payment->fk_rent	   = $receipt->fk_rent;
 			$payment->fk_property  = $receipt->fk_property;
 			$payment->fk_renter	   = $receipt->fk_renter;
 			$payment->fk_payment   = $receipt->fk_payment;
 			$payment->date_payment = $date_payment;
-			$payment->amounts      = $amounts;   // Tableau de montant
+			$payment->amounts      = $amounts;   // Tableau de montant			
 			$payment->fk_mode_reglement  = GETPOST('fk_mode_reglement', 'int');
 			$payment->fk_bank  = GETPOST('fk_bank', 'int');
 			$payment->num_payment  = GETPOST('num_payment', 'int');
@@ -250,7 +250,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		print '<input type="hidden" name="id" value="' . $id . '">';
 		print '<input type="hidden" name="socid" value="' . $renter->fk_soc . '">';
 
-		dol_fiche_head(array(), '');
+		print dol_get_fiche_head(array(), '');
 
 		print '<table class="border centpercent">' . "\n";
 
@@ -263,9 +263,23 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 		// Date payment
 		print '<tr><td>' . $langs->trans("Date") . "</td><td colspan=\"2\">" . dol_print_date($receipt->date_echeance, 'day') . "</td></tr>\n";
-		print '<tr><td>' . $langs->trans("rent") . "</td><td colspan=\"2\">" . $receipt->fk_rent . "</td></tr>\n";
-		print '<tr><td>' . $langs->trans("property") . "</td><td colspan=\"2\">" . $receipt->fk_property . "</td></tr>\n";
-		print '<tr><td>' . $langs->trans("renter") . "</td><td colspan=\"2\">" . $receipt->fk_renter . "</td></tr>\n";
+		$rent = new ImmoRent($db);
+		$rent->fetch($receipt->fk_rent);
+		$staticproperty = new ImmoProperty($db);
+		$staticproperty->fetch($receipt->fk_property);
+		if ($rent->ref) {
+			$rent->ref = $rent->getNomUrl(0) . ' - ' . $staticproperty->label;
+		}
+		
+		print '<tr><td>' . $langs->trans("ImmoRent") . "</td><td colspan=\"2\">" . $rent->ref . "</td></tr>\n";
+		print '<tr><td>' . $langs->trans("Property") . "</td><td colspan=\"2\">" . $staticproperty->address.' '.$staticproperty->zip .' '.$staticproperty->town . "</td></tr>\n";
+		
+		$staticrenter = new ImmoRenter($db);
+		$staticrenter->fetch($receipt->fk_renter);
+		if ($staticrenter->ref) {
+			$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs);
+		}
+		print '<tr><td>' . $langs->trans("Renter") . "</td><td colspan=\"2\">" . $staticrenter->ref . "</td></tr>\n";
 
 		// Total amount
 		print '<tr><td>' . $langs->trans("Amount") . "</td><td colspan=\"2\">" . price($receipt->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td></tr>';
@@ -273,6 +287,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		$sql = "SELECT sum(p.amount) as total";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 		$sql .= " WHERE p.fk_receipt = " . $id;
+		//print_r($sql);exit;
 		$resql = $db->query($sql);
 		if ($resql) {
 			$obj = $db->fetch_object($resql);
@@ -307,7 +322,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 		// Cheque number
 		print '<tr><td>' . $langs->trans('Numero');
-		print '<em>(' . $langs->trans("ChequeOrTransferNumber") . ')</em>';
+		print '(' . $langs->trans("ChequeOrTransferNumber") . ')';
 		print '</td>';
 		print '<td><input name="num_paiement" type="text" value="' . $paymentnum . '"></td></tr>';
 
@@ -318,7 +333,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 		// Bank name
 		print '<tr><td>';
-		print '<em>(' . $langs->trans("ChequeBank") . ')</em>';
+		print '(' . $langs->trans("ChequeBank") . ')';
 		print '</td>';
 		print '<td><input name="chqbank" size="30" type="text" value="' . GETPOST('chqbank', 'alphanohtml') . '"></td></tr>';
 
@@ -329,7 +344,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 		print '</table>';
 
-		dol_fiche_end();
+		print dol_get_fiche_end();
 
 		/*
 		 * Autres charges impayees
@@ -363,17 +378,17 @@ if (GETPOST('action', 'aZ09') == 'create') {
 			$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rcpt";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rcpt.fk_rent = rent.rowid";
 			$sql .= " WHERE pmt.fk_receipt = " . $id;
-			$sql .= " AND rcpt.fk_rent = rent.rowid";
+			$sql .= " AND pmt.fk_rent = rent.rowid";
 			//print_r($sql);exit;
 			$resql = $db->query($sql);
 			if ($resql) {
 				$obj = $db->fetch_object($resql);
 				$contract = $obj->contract;
-
+				//var_dump($obj);exit;
 				$db->free();
 			}
 
-			print '<td class="left">' . $objp->fk_rent . "</td>";
+			print '<td class="left">' . $rent->getNomUrl(0) . "</td>";
 
 			print '<td class="right">' . price($objp->total_amount) . "</td>";
 
