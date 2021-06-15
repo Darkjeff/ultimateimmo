@@ -1,6 +1,0 @@
-attention lors de l'installation du module
-
-table llx_immo_payment
-champs date_payement au lieu de date_payment
-
-check table llx_charge et llx_chargedet
