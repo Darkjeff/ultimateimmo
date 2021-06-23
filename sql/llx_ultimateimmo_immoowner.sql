@@ -37,7 +37,7 @@ CREATE TABLE llx_ultimateimmo_immoowner(
 	address varchar(255),
 	zip varchar(32), 
 	town varchar(64), 
-	fk_pays integer,	
+	country_id integer,	
 	email varchar(255) NOT NULL, 
 	birth date, 
 	phone varchar(30), 
