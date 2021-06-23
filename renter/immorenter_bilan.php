@@ -41,7 +41,9 @@ $ref = GETPOST('ref', 'alpha');
 
 $mesg = '';
 
-$limit = $conf->liste_limit;
+$limit = 500;
+$from_date = dol_mktime(0, 0, 0, GETPOST('frmdtmonth', 'int'), GETPOST('frmdtday', 'int'), GETPOST('frmdtyear', 'int'));
+$to_date = dol_mktime(23, 59, 59, GETPOST('todtmonth', 'int'), GETPOST('todtday', 'int'), GETPOST('todtyear', 'int'));
 
 /*
  * Bilan Renter
@@ -64,10 +66,17 @@ $linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$la
 print '<table class="border centpercent">';
 
 print '<div class="underbanner clearboth"></div>';
+
+print '<tr><td class="left">' . $langs->trans("From") . '</td><td class="left">';
+print $form->selectDate($from_date, 'frmdt', 0, 0, 1, 'stats', 1, 0);
+print '</td></tr>';
+print '<tr><td class="left">' . $langs->trans("To") . '</td><td class="left">';
+print $form->selectDate($to_date, 'todt', 0, 0, 1, 'stats', 1, 0);
+print '</td></tr>';
 	
 $sql = "(SELECT l.date_start as date , l.total_amount as debit, 0 as credit , l.label as des";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as l";
-$sql .= " WHERE l.fk_renter =" . $id;
+$sql .= " WHERE  l.fk_renter =" . $id;
 $sql .= ")";
 $sql .= "UNION (SELECT p.date_payment as date, 0 as debit, p.amount as credit, p.note_public as des";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
