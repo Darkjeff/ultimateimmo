@@ -40,6 +40,12 @@ function immorenterPrepareHead($object)
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
+	
+	$head[$h][0] = dol_buildpath('/ultimateimmo/renter/immorenter_bilan.php', 1) . '?id=' . $object->id;
+	$head[$h][1] = $langs->trans("Bilan");
+	$head[$h][2] = 'bilan';
+	//$hselected = $h;
+	$h ++;
 
 	if (isset($object->fields['note_public']) || isset($object->fields['note_private'])) {
 		$nbNote = 0;

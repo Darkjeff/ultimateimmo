@@ -31,7 +31,7 @@ if (! $res)
 // Class
 dol_include_once ( "/ultimateimmo/class/immorent.class.php" );
 require_once ('../class/immorenter.class.php');
-require_once ('../core/lib/ultimateimmo.lib.php');
+require_once ('../lib/immorenter.lib.php');
 
 // Langs
 $langs->load ( "ultimateimmo@ultimateimmo" );
@@ -53,13 +53,13 @@ llxheader ( '', $langs->trans("Renter").' | '.$langs->trans("Bilan"), '' );
 
 $object->fetch_thirdparty();
 
-$head=renter_prepare_head($object);
+$head=immorenterPrepareHead($object);
 
 dol_fiche_head($head, 'bilan',  $langs->trans("Renter"), 0, 'user');
 
 $linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
-immo_banner_tab($object, 'id', $linkback, 1, 'rowid', 'name');
+//immo_banner_tab($object, 'id', $linkback, 1, 'rowid', 'name');
 
 print '<table class="border centpercent">';
 
