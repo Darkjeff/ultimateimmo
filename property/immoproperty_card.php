@@ -144,14 +144,14 @@ if (empty($reshook))
 		$db->begin();
 
 		$result = $object->fetch($id);
-		$building = $object->label;
-
+		$building = $object->ref;
+		//var_dump($building);exit;
 		// todo debug insert into
 		$sql1 = 'INSERT INTO ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty(';
 		$sql1 .= 'label,';
 		$sql1 .= 'fk_property';
 		$sql1 .= ') VALUES (';
-		$sql1 .= ' ' . (!isset($object->label) ? 'NULL' : "'" . $db->escape($object->label) . "'") . ',';
+		$sql1 .= ' ' . (!isset($object->label) ? 'NULL' : "'" . $db->escape($object->ref) . "'") . ',';
 		$sql1 .= '' . $id;
 		$sql1 .= ')';
 		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );

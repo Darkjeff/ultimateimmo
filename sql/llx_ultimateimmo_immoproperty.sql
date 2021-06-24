@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2019  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2021  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,15 +18,15 @@
 CREATE TABLE llx_ultimateimmo_immoproperty(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL, 
+	ref varchar(128) NOT NULL default (PROV), 
 	label varchar(255),
 	juridique_id integer,	
 	entity integer DEFAULT 1 NOT NULL, 
-	fk_owner integer NOT NULL,
+	fk_owner integer,
 	fk_soc integer,	
 	note_public text, 
 	note_private text, 
-	date_creation datetime NOT NULL, 
+	date_creation datetime NOT NULL default CURRENT_TIMESTAMP, 
 	tms timestamp NOT NULL default CURRENT_TIMESTAMP, 
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
@@ -35,7 +35,7 @@ CREATE TABLE llx_ultimateimmo_immoproperty(
 	address varchar(255), 
 	building varchar(32), 
 	staircase varchar(8), 
-	property_type_id integer NOT NULL,
+	property_type_id integer,
 	fk_property integer,	
 	numfloor varchar(8), 
 	numflat varchar(8), 
