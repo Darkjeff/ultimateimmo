@@ -106,7 +106,7 @@ class ImmoProperty extends CommonObject
 		'label' => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'showoncombobox' => 1, 'searchall' => 1, 'css' => 'minwidth200', 'help' => 'Help text',),
 		'juridique_id'  => array('type' => 'integer', 'label' => 'Juridique', 'enabled' => 1, 'visible' => 1, 'position' => 32, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'MonoPropriete', '2' => 'Copropriete')),
 		'datebuilt'     => array('type' => 'integer', 'label' => 'DateBuilt', 'enabled' => 1, 'visible' => 1, 'position' => 35, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'DateBuilt1', '2' => 'DateBuilt2', '3' => 'DateBuilt3', '4' => 'DateBuilt4', '5' => 'DateBuilt5')),
-		'target'        => array('type' => 'integer', 'label' => 'Target', 'enabled' => 1, 'visible' => 1, 'position' => 40, 'notnull' => -1, 'arrayofkeyval' => array('0' => 'Location', '1' => 'Vente', '-1' => 'Autre'), 'comment' => "Rent or sale"),
+		'target'        => array('type' => 'integer', 'label' => 'Target', 'enabled' => 1, 'visible' => 1, 'position' => 40, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'Location', '2' => 'Vente', '3' => 'Autre'), 'comment' => "Rent or sale"),
 		'fk_owner'      => array('type' => 'integer:ImmoOwner:ultimateimmo/owner/class/immoowner.class.php:1:status=1', 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 45, 'notnull' => 1, 'index' => 1, 'help' => "LinkToOwner"),
 		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 46, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirparty'),
 		'address'       => array('type' => 'varchar(255)', 'label' => 'Address', 'enabled' => 1, 'visible' => 1, 'position' => 60, 'notnull' => -1),
@@ -262,6 +262,7 @@ class ImmoProperty extends CommonObject
 		// Translate some data
 		$this->fields['status']['arrayofkeyval'] = array(1 => $langs->trans('PropertyTypeStatusActive'), 9 => $langs->trans('PropertyTypeStatusCancel'));
 		$this->fields['juridique_id']['arrayofkeyval'] = array(1 => $langs->trans('MonoPropriete'), 2 => $langs->trans('Copropriete'));
+		$this->fields['target']['arrayofkeyval'] = array(1 => $langs->trans('Location'), 2 => $langs->trans('Vente'), 3 => $langs->trans('Autre'));
 		$this->fields['datebuilt']['arrayofkeyval'] = array(1 => $langs->trans('DateBuilt1'), 2 => $langs->trans('DateBuilt2'), 3 => $langs->trans('DateBuilt3'), 4 => $langs->trans('DateBuilt4'), 5 => $langs->trans('DateBuilt5'));
 		$this->fields['property_type_id']['arrayofkeyval'] = array(1 => $langs->trans('APA'), 2 => $langs->trans('HOU'), 3 => $langs->trans('LOC'), 4 => $langs->trans('SHO'), 5 => $langs->trans('GAR'), 6 => $langs->trans('BUL'));
 	}
