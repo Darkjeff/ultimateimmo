@@ -205,6 +205,7 @@ class modUltimateimmo extends DolibarrModules
 				MAIN_DB_PREFIX . "c_ultimateimmo_immorent_type",
 				MAIN_DB_PREFIX . "c_ultimateimmo_immoproperty_type",
 				MAIN_DB_PREFIX . "c_ultimateimmo_juridique",
+				MAIN_DB_PREFIX . "c_ultimateimmo_target",
 				MAIN_DB_PREFIX . "c_ultimateimmo_builtdate"
 			),
 			'tablib' => array(
@@ -212,6 +213,7 @@ class modUltimateimmo extends DolibarrModules
 				"ImmorentType",
 				"ImmoProperty_Type",
 				"Juridique",
+				"Target",
 				"BuiltDate"
 			),
 			'tabsql' => array(
@@ -219,24 +221,26 @@ class modUltimateimmo extends DolibarrModules
 				'SELECT t.rowid as rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immorent_type as t',
 				'SELECT tp.rowid as rowid, tp.code, tp.label, tp.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immoproperty_type as tp',
 				'SELECT t.rowid as rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as t',
+				'SELECT t.rowid as rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_target as t',
 				'SELECT t.rowid as rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_builtdate as t'
 			),
 			'tabsqlsort' => array(
-				"label ASC", "label ASC", "label ASC", "label ASC", "label ASC"
+				"label ASC", "label ASC", "label ASC", "label ASC", "label ASC", "label ASC"
 			),
 			'tabfield' => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label", "code,label", "code,label"
 			),
 			'tabfieldvalue' => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label", "code,label", "code,label"
 			),
 			'tabfieldinsert' => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label"
+				"code,label", "code,label", "code,label", "code,label", "code,label", "code,label"
 			),
 			'tabrowid' => array(
-				"rowid", "rowid", "rowid", "rowid", "rowid"
+				"rowid", "rowid", "rowid", "rowid", "rowid", "rowid"
 			),
 			'tabcond' => array(
+				$conf->ultimateimmo->enabled,
 				$conf->ultimateimmo->enabled,
 				$conf->ultimateimmo->enabled,
 				$conf->ultimateimmo->enabled,
