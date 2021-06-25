@@ -15,7 +15,7 @@
 -- along with this program.  If not, see http://www.gnu.org/licenses/.
 
 
-CREATE TABLE llx_ultimateimmo_immoowner(
+CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoowner(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL, 
