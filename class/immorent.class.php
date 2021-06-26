@@ -214,37 +214,74 @@ class ImmoRent extends CommonObject
 	 * @param  	int 	$fromid     Id of object to clone
 	 * @return 	mixed 				New object created, <0 if KO
 	 */
-	public function createFromClone(User $user, $fromid)
+	public function createFromClone(User $user, $fromid = 0)
 	{
-		global $hookmanager, $langs;
+		global $hookmanager, $langs, $extrafields;
 		$error = 0;
-
+		
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
 		$object = new self($this->db);
-
+		//var_dump($object);exit;
 		$this->db->begin();
 
 		// Load source object
-		$object->fetchCommon($fromid);
+		$result = $object->fetchCommon($fromid);
+		if ($result > 0 && !empty($object->table_element_line)) $object->fetchLines();
+
+		$objsoc = new Societe($this->db);
+
+		// Change socid if needed
+		if (!empty($socid) && $socid != $object->socid) {
+			if ($objsoc->fetch($socid) > 0) {
+				$object->socid = $objsoc->id;
+			}
+		} else {
+			$objsoc->fetch($object->socid);
+		}
+
 		// Reset some properties
 		unset($object->id);
 		unset($object->fk_user_creat);
 		unset($object->import_key);
 
 		// Clear fields
-		$object->ref = "copy_of_" . $object->ref;
-		$object->title = $langs->trans("CopyOf") . " " . $object->title;
+		$object->ref = empty($this->fields['ref']['default']) ? "copy_of_" . $object->ref : $this->fields['ref']['default'];
+		$object->label = empty($this->fields['label']['default']) ? $langs->trans("CopyOf") . " " . $object->label : $this->fields['label']['default'];
+		$object->status = self::STATUS_DRAFT;
 		// ...
+		// Clear extrafields that are unique
+		if (is_array($object->array_options) && count($object->array_options) > 0) {
+			$extrafields->fetch_name_optionals_label($this->table_element);
+			foreach ($object->array_options as $key => $option) {
+				$shortkey = preg_replace('/options_/', '', $key);
+				if (!empty($extrafields->attributes[$this->element]['unique'][$shortkey])) {
+					//var_dump($key); var_dump($clonedObj->array_options[$key]); exit;
+					unset($object->array_options[$key]);
+				}
+			}
+		}
 
 		// Create clone
 		$object->context['createfromclone'] = 'createfromclone';
 		$result = $object->createCommon($user);
 		if ($result < 0) {
-			$error++;
 			$this->error = $object->error;
-			$this->errors = $object->errors;
+			$this->errors = array_merge($this->errors, $object->errors);
+			$error++;
 		}
+
+		if (!$error) {
+			// Hook of thirdparty module
+			if (is_object($hookmanager)) {
+				$parameters = array('objFrom' => $this, 'clonedObj' => $object);
+				$action = '';
+				$reshook = $hookmanager->executeHooks('createFrom', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
+				if ($reshook < 0) $error++;
+			}
+		}
+
+		unset($object->context['createfromclone']);
 
 		// End
 		if (!$error) {

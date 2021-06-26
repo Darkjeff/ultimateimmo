@@ -70,7 +70,7 @@ $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
 // Initialize technical objects
 $object = new ImmoRent($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/' . $user->id;
 $hookmanager->initHooks(array('immorentcard', 'globalcard'));     // Note that conf->hooks_modules contains array
 
 // Fetch optionals attributes and labels
@@ -81,9 +81,8 @@ $search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'se
 // Initialize array of search criterias
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
-foreach ($object->fields as $key => $val)
-{
-    if (GETPOST('search_'.$key,'alpha')) $search[$key] = GETPOST('search_'.$key, 'alpha');
+foreach ($object->fields as $key => $val) {
+	if (GETPOST('search_' . $key, 'alpha')) $search[$key] = GETPOST('search_' . $key, 'alpha');
 }
 
 if (empty($action) && empty($id) && empty($ref)) $action = 'view';
@@ -160,6 +159,23 @@ if (empty($reshook)) {
 
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
+
+	// Action clone object
+	if ($action == 'confirm_clone' && $confirm == 'yes' && $permissiontoadd) {
+		$objectutil = dol_clone($object, 1);   // To avoid to denaturate loaded object when setting some properties for clone. We use native clone to keep this->db valid.
+		$objectutil->date = dol_mktime(12, 0, 0, GETPOST('newdatemonth', 'int'), GETPOST('newdateday', 'int'), GETPOST('newdateyear', 'int'));
+		$objectutil->socid = $socid;
+
+		$result = $objectutil->createFromClone($user, $id);
+		if ($result > 0) {
+			header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $result);
+			exit();
+		} else {
+			$langs->load("errors");
+			if (count($object->errors) > 0) setEventMessages($object->error, $object->errors, 'errors');
+			$action = '';
+		}
+	}
 
 	// Build doc
 	if ($action == 'builddoc' && $permissiontoadd) {
@@ -284,7 +300,6 @@ if (($id || $ref) && $action == 'edit') {
 		print '</tr>';
 	}
 
-
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
 
@@ -304,27 +319,33 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 {
     $res = $object->fetch_optionals();
 
+	$soc = new Societe($db);
+	$soc->fetch($object->socid);
+
+	$object = new ImmoRent($db);
+	$result = $object->fetch($id);
+
 	$head = immorentPrepareHead($object);
 	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoRents"), -1, 'payment');
 
 	$formconfirm = '';
 
 	// Confirmation to delete
-	if ($action == 'delete')
-	{
-	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoRent'), $langs->trans('ConfirmDeleteImmoRent'), 'confirm_delete', '', 0, 1);
+	if ($action == 'delete') {
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoRent'), $langs->trans('ConfirmDeleteImmoRent'), 'confirm_delete', '', 0, 1);
 	}
 	// Confirmation to delete line
-	if ($action == 'deleteline')
-	{
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&lineid='.$lineid, $langs->trans('DeleteLine'), $langs->trans('ConfirmDeleteLine'), 'confirm_deleteline', '', 0, 1);
+	if ($action == 'deleteline') {
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id . '&lineid=' . $lineid, $langs->trans('DeleteLine'), $langs->trans('ConfirmDeleteLine'), 'confirm_deleteline', '', 0, 1);
 	}
 	// Clone confirmation
-	if ($action == 'clone') 
-	{
+	if ($action == 'clone') {
 		// Create an array for form
-		$formquestion = array();
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneImmoRent', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
+		$formquestion = array(
+			array('type' => 'other', 'name' => 'socid', 'label' => $langs->trans("SelectThirdParty"), 'value' => $form->select_company($object->fk_soc, 'socid', '(s.client=1 OR s.client=2 OR s.client=3)', 1)),
+			array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
+		);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneImmoRent', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
 	}
 
 	// Confirmation of action xxxx
@@ -360,6 +381,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$staticImmorenter->fetch($object->fk_renter);
 	$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $staticImmorenter->ref, $object, $permissiontoadd, 'string', '', 0, 1);
 	$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->ref . ' - ' . $staticImmorenter->getFullName($langs), $object, $permissiontoadd, 'string', '', null, null, '', 1);
+	//var_dump($staticImmorenter);exit;
 	// Thirdparty
 	$company = new Societe($db);
 	if ($object->fk_soc) {
@@ -562,43 +584,34 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 
 	// Buttons for actions
-	if ($action != 'presend' && $action != 'editline') 
-	{
-    	print '<div class="tabsAction">'."\n";
-    	$parameters = array();
-    	$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
-    	if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+	if ($action != 'presend' && $action != 'editline') {
+		print '<div class="tabsAction">' . "\n";
+		$parameters = array();
+		$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
+		if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
-    	if (empty($reshook))
-    	{
-    	    // Send
-            print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
+		if (empty($reshook)) {
+			// Send
+			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
+			// Modify
+			if ($permissiontoadd) {
+				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
+			} else {
+				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
+			}
+			
+			// Clone
+			if ($permissiontoadd) {
+				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&amp;fk_renter=' . $object->fk_renter . '&amp;action=clone&amp;object=immorent">' . $langs->trans("ToClone") . '</a></div>' . "\n";
+			}
 
-    		if ($permissiontoadd)
-    		{
-    			print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
-    		}
-    		else
-    		{
-    			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
-    		}
-
-    		// Clone
-    		if ($permissiontoadd)
-    		{
-    			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&socid='.$object->socid.'&action=clone&object=myobject">'.$langs->trans("ToClone").'</a>'."\n";
-    		}
-
-    		if ($permissiontodelete)
-    		{
-    			print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
-    		}
-    		else
-    		{
-    			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Delete').'</a>'."\n";
-    		}
-    	}
-    	print '</div>'."\n";
+			if ($permissiontodelete) {
+				print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=delete">' . $langs->trans('Delete') . '</a>' . "\n";
+			} else {
+				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Delete') . '</a>' . "\n";
+			}
+		}
+		print '</div>' . "\n";
 	}
 
 	// Select mail models is same action as presend
@@ -641,17 +654,16 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    print '</div></div></div>';
 	}
 
-	//Select mail models is same action as presend
-	
+	//Select mail models is same action as presend	
 	if (GETPOST('modelselected')) $action = 'presend';
 
 	// Presend form
 	$modelmail = 'immorent';
 	$defaulttopic = 'InformationMessage';
-	$diroutput = $conf->ultimateimmo->dir_output.'/rent';
-	$trackid = 'immo'.$object->id;
+	$diroutput = $conf->ultimateimmo->dir_output . '/rent';
+	$trackid = 'immo' . $object->id;
 
-	include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
+	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';
 	 
 }
 
