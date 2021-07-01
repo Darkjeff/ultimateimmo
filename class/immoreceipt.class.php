@@ -41,12 +41,12 @@ class ImmoReceipt extends CommonObject
 	 * @var string Name of table without prefix where object is stored
 	 */
 	public $table_element = 'ultimateimmo_immoreceipt';
-	
+
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
 	public $fk_element='fk_receipt';
-	
+
 	/**
 	 * @var ImmoreceiptLine[] Lines
 	 */
@@ -66,17 +66,17 @@ class ImmoReceipt extends CommonObject
 	 * @var string String with name of icon for immoreceipt. Must be the part after the 'object_' into object_immoreceipt.png
 	 */
 	public $picto = 'immoreceipt@ultimateimmo';
-	
+
 	/**
 	 * Draft status
 	 */
 	const STATUS_DRAFT = 0;
-	
+
 	/**
 	 * Validated status
 	 */
 	const STATUS_VALIDATED = 1;
-	
+
 	/**
 	 * Credit note status
 	 */
@@ -138,7 +138,7 @@ class ImmoReceipt extends CommonObject
 		'total_amount'  => array('type' => 'price', 'label' => 'TotalAmount', 'enabled' => 1, 'visible' => 1, 'default' => 'null', 'position' => 75, 'searchall' => 0, 'isameasure' => 1, 'help' => 'Help text for total amount'),
 		'partial_payment' => array('type' => 'price', 'label' => 'PartialPayment', 'enabled' => 1, 'visible' => 1, 'position' => 80, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1', 'help' => "Help text for partial payment"),
 		'balance'       => array('type' => 'price', 'label' => 'Balance', 'enabled' => 1, 'visible' => 1, 'position' => 85, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1', 'help' => "Help text"),
-		'paye'          => array('type' => 'integer', 'label' => 'Paye', 'enabled' => 1, 'visible' => 1, 'position' => 90, 'notnull' => -1, 'arrayofkeyval' => array('0' => 'UnPaidReceipt', '1' => 'PaidReceipt', '2' => 'PartiallyPaidReceipt')),
+		'paye'          => array('type' => 'integer', 'label' => 'Paye', 'enabled' => 1, 'visible' => 1, 'position' => 90, 'notnull' => 1, 'arrayofkeyval' => array('0' => 'UnPaidReceipt', '1' => 'PaidReceipt', '2' => 'PartiallyPaidReceipt')),
 		'vat_amount'    => array('type' => 'price', 'label' => 'VatAmount', 'enabled' => 1, 'visible' => 1, 'position' => 95, 'notnull' => -1,),
 		'vat_tx'        => array('type' => 'integer', 'label' => 'VatTx', 'enabled' => 1, 'visible' => 1, 'position' => 96, 'notnull' => -1),
 		'tms'           => array('type' => 'timestamp', 'label' => 'DateModification', 'enabled' => 1, 'visible' => -2, 'position' => 501, 'notnull' => 1),
@@ -637,7 +637,7 @@ class ImmoReceipt extends CommonObject
 			}
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -817,14 +817,14 @@ class ImmoReceipt extends CommonObject
 			return -1;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param unknown $id
 	 * @param array $filter
 	 */
-	public function fetchByLocalId($id, $filter=array()) 
-	{	
+	public function fetchByLocalId($id, $filter=array())
+	{
 		$sql = "SELECT il.rowid as reference, il.fk_rent , il.fk_property, il.label as nomrenter, il.fk_renter, il.total_amount,";
 		$sql .= " il.rentamount, il.chargesamount, il.date_echeance, il.note_public, il.status, il.paye ,";
 		$sql .= " il.date_start , il.date_end, il.fk_owner, il.partial_payment ";
@@ -833,30 +833,30 @@ class ImmoReceipt extends CommonObject
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON il.fk_renter = lc.rowid";
 		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON il.fk_property = ll.rowid ";
 		$sql .= " WHERE il.fk_property = " . $id;
-	
-		if (count($filter>0)) 
+
+		if (count($filter>0))
 		{
-			foreach($filter as $key=>$value) 
+			foreach($filter as $key=>$value)
 			{
-				if ($key=='insidedaterenter') 
+				if ($key=='insidedaterenter')
 				{
 					$sql .= " AND il.date_start<='".$this->db->idate($value)."' AND il.date_end>='".$this->db->idate($value)."'";
 				}
 			}
 		}
-	
+
 		dol_syslog(get_class($this) . "::fetchByLocalId sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-				
+
 			$this->line = array ();
 			$num = $this->db->num_rows($resql);
 			$this->lines=array();
-				
-			while ($obj = $this->db->fetch_object($resql)) 
+
+			while ($obj = $this->db->fetch_object($resql))
 			{
 				$line = new immoreceiptLine();
-	
+
 				$line->id = $obj->reference;
 				$line->ref = $obj->reference;
 				$line->fk_rent = $obj->fk_rent;
@@ -879,9 +879,9 @@ class ImmoReceipt extends CommonObject
 				$line->paye = $obj->paye;
 				$line->partial_payment = $obj->partial_payment;
 				$line->fk_payment = $obj->fk_payment;
-	
+
 				$this->lines[] = $line;
-	
+
 			}
 			$this->db->free($resql);
 			return $num;
@@ -916,7 +916,7 @@ class ImmoReceipt extends CommonObject
 		return $this->deleteCommon($user, $notrigger);
 		//return $this->deleteCommon($user, $notrigger, 1);
 	}
-	
+
 	/**
 	 *  Returns the reference to the following non used object depending on the active numbering module.
 	 *
@@ -927,11 +927,11 @@ class ImmoReceipt extends CommonObject
 		global $langs, $conf;
 		$langs->load("ultimateimmo@ultimateimmo");
 
-		if (empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)) 
+		if (empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER))
 		{
 			$conf->global->ULTIMATEIMMO_ADDON_NUMBER = 'mod_ultimateimmo_standard';
 		}
-		
+
 		if (!empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER))
 		{
 			$mybool = false;
@@ -975,7 +975,7 @@ class ImmoReceipt extends CommonObject
 			return "";
 		}
 	}
-	
+
 	/**
 	 *	Validate object
 	 *
@@ -1164,7 +1164,7 @@ class ImmoReceipt extends CommonObject
 
 		return $result;
 	}
-	
+
 	/**
 	 *  Create a document onto disk according to template module.
 	 *
@@ -1389,7 +1389,7 @@ class ImmoReceipt extends CommonObject
 	 * @param unknown $user
 	 * @return number
 	 */
-	public function set_paid($user) 
+	public function set_paid($user)
 	{
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element.' SET';
 		$sql .= ' paye=1';
@@ -1401,7 +1401,7 @@ class ImmoReceipt extends CommonObject
 			else
 				return - 1;
 	}
-	
+
 	/**
 	 * 	Return amount of payments already done
 	 *  @param 		int 	$multicurrency 	Return multicurrency_amount instead of amount
@@ -1441,7 +1441,7 @@ class ImmoreceiptLine
 	/**
 	 * @var mixed Sample line property 1
 	 */
-	
+
 	public $fk_rent;
 	public $fk_property;
 	public $label;
