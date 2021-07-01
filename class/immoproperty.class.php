@@ -48,7 +48,7 @@ class ImmoProperty extends CommonObject
 	 * @var ImmopropertyLine[] Lines
 	 */
 	public $lines = array();
-	
+
 	//public $fieldsforcombobox='ref';
 	/**
 	 * @var int  Does immoproperty support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
@@ -102,7 +102,7 @@ class ImmoProperty extends CommonObject
 		'ref'           => array('type' => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1,  'default'=>'(PROV)', 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
 		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
 		'property_type_id' => array('type' => 'integer', 'label' => 'ImmoProperty_Type', 'enabled' => 1, 'visible' => -1, 'position' => 20, 'notnull' => 1, 'arrayofkeyval' => array('1' => 'APA', '2' => 'HOU', '3' => 'LOC', '4' => 'SHO', '5' => 'GAR', '6' => 'BUL')),
-		'fk_property'   => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'PropertyParent', 'enabled' => 1, 'visible' => -1, 'position' => 25, 'notnull' => -1), 
+		'fk_property'   => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'PropertyParent', 'enabled' => 1, 'visible' => -1, 'position' => 25, 'notnull' => -1),
 		'label' => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'showoncombobox' => 1, 'searchall' => 1, 'css' => 'minwidth200', 'help' => 'Help text',),
 		'juridique_id'  => array('type' => 'integer', 'label' => 'Juridique', 'enabled' => 1, 'visible' => 1, 'position' => 32, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'MonoPropriete', '2' => 'Copropriete')),
 		'datebuilt'     => array('type' => 'integer', 'label' => 'DateBuilt', 'enabled' => 1, 'visible' => 1, 'position' => 35, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'DateBuilt1', '2' => 'DateBuilt2', '3' => 'DateBuilt3', '4' => 'DateBuilt4', '5' => 'DateBuilt5')),
@@ -149,7 +149,7 @@ class ImmoProperty extends CommonObject
 	 * @var int Property_type_id
 	 */
 	public $property_type_id;
-	
+
 	/**
 	 * @var int fk_property
 	 */
@@ -159,7 +159,7 @@ class ImmoProperty extends CommonObject
      * @var string label
      */
 	public $label;
-	
+
 	public $juridique_id;
 
 	public $datebuilt;
@@ -265,7 +265,7 @@ class ImmoProperty extends CommonObject
 		$this->fields['datebuilt']['arrayofkeyval'] = array(1 => $langs->trans('DateBuilt1'), 2 => $langs->trans('DateBuilt2'), 3 => $langs->trans('DateBuilt3'), 4 => $langs->trans('DateBuilt4'), 5 => $langs->trans('DateBuilt5'));
 		$this->fields['property_type_id']['arrayofkeyval'] = array(1 => $langs->trans('APA'), 2 => $langs->trans('HOU'), 3 => $langs->trans('LOC'), 4 => $langs->trans('SHO'), 5 => $langs->trans('GAR'), 6 => $langs->trans('BUL'));
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
@@ -370,7 +370,7 @@ class ImmoProperty extends CommonObject
 	    }
 	}
 
-	
+
 	/**
 	 * Function to concat keys of fields
 	 *
@@ -381,7 +381,7 @@ class ImmoProperty extends CommonObject
 	    $keys = array_keys($this->fields);
 	    return implode(',', $keys);
 	}
-	
+
 	/**
 	 * Function to load data into current object this
 	 *
@@ -444,7 +444,7 @@ class ImmoProperty extends CommonObject
 		$array = implode(', t.', $array);
 
 		$sql = 'SELECT ' . $array . ',';
-		
+
 		$sql .= ' country.rowid as country_id, country.code as country_code, country.label as country, j.rowid as juridique_id, j.code as juridique_code, j.label as juridique, tp.rowid as property_type_id, tp.code as type_code, tp.label as type';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immoproperty_type as tp ON t.property_type_id = tp.rowid';
@@ -644,7 +644,7 @@ class ImmoProperty extends CommonObject
 
 		$result .= $linkstart;
 		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
-		if ($withpicto != 2) $result .= $this->ref;
+		if ($withpicto != 2) $result .= $this->label;
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
@@ -750,7 +750,7 @@ class ImmoProperty extends CommonObject
 			dol_print_error($this->db);
 		}
 	}
-	
+
 	/**
 	 *    Return country label, code or id from an id, code or label
 	 *
@@ -815,7 +815,7 @@ class ImmoProperty extends CommonObject
 		else dol_print_error($dbtouse,'');
 		return 'Error';
 	}
-	
+
 	/**
 	 *    Return ImmoProperty_Type label, code or id from an id, code or label
 	 *
@@ -831,7 +831,7 @@ class ImmoProperty extends CommonObject
 	 *    @param      int		$searchlabel    Label of ImmoProperty_Type to search (warning: searching on label is not reliable)
 	 *    @return     mixed       				Integer with ImmoProperty_Type id or String with ImmoProperty_Type code or translated ImmoProperty_Type name or Array('id','code','label') or 'NotDefined'
 	 */
-	 
+
 	/*function getPropertyTypeLabel($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
 	{
 		global $db,$langs;

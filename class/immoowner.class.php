@@ -455,7 +455,7 @@ class ImmoOwner extends CommonObject
 			return -1;
 		}
 	}
-	
+
 	/**
 	 * Function to concat keys of fields
 	 *
@@ -516,40 +516,40 @@ class ImmoOwner extends CommonObject
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), array($array[0]));
 		$array = implode(', t.', $array);
-		
+
 		$sql = 'SELECT ' . $array . ',';
-		
+
 		$sql .= 'country.rowid as country_id, country.code as country_code, country.label as country, civility.rowid as civility_id, civility.code as civility_code, civility.label as civility';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_civility as civility ON t.civility_id = civility.rowid';
-		
+
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
 		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql .= $morewhere;
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
-		
+
 		if ($res) {
 			if ($obj = $this->db->fetch_object($res)) {
 				if ($obj) {
 					$this->id = $obj->rowid;
 					$this->set_vars_by_db($obj);
-					
+
 					$this->date_creation = $this->db->jdate($obj->date_creation);
 					$this->tms = $this->db->jdate($obj->tms);
 
 					$this->birth = $this->db->jdate($obj->birth);
 
 					$this->civility_id    = $obj->civility_id;
-					$this->civility_code  = $obj->civility_code; 
+					$this->civility_code  = $obj->civility_code;
 					if ($langs->trans("Civility" . $obj->civility_code) != "Civility" . $obj->civility_code) {
 						$this->civility = $langs->transnoentitiesnoconv("Civility" .  $obj->civility_code);
 					} else {
 						$this->civility = $obj->civility;
 					}
-					
+
 					$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
 					if ($langs->trans("Country" . $obj->country_code) != "Country" . $obj->country_code) {
@@ -755,7 +755,7 @@ class ImmoOwner extends CommonObject
 
 		$result .= $linkstart;
 		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="' . (($withpicto != 2) ? 'paddingright ' : '') . 'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
-		if ($withpicto != 2) $result .= $this->ref;
+		if ($withpicto != 2) $result .= $this->civility .' '.$this->firstname .' '.$this->lastname;
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
@@ -921,7 +921,7 @@ class ImmoOwner extends CommonObject
 
 		return 0;
 	}
-	
+
 	/**
 	 *    Return country label, code or id from an id, code or label
 	 *
