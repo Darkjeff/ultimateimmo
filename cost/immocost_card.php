@@ -49,6 +49,7 @@ $langs->loadLangs(array("ultimateimmo@ultimateimmo","other"));
 $id			= GETPOST('id', 'int');
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
+$confirm    = GETPOST('confirm', 'alpha');
 $massaction = GETPOST('massaction','alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
@@ -103,8 +104,44 @@ if (empty($reshook))
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$backurlforlist = dol_buildpath('/ultimateimmo/cost/immocost_list.php',1);
 
+	// Action close object
+	if ($action == 'confirm_clone' && $confirm == 'yes' && !empty($permissiontoadd)) {
+		if (1 == 0 && !GETPOST('clone_content') && !GETPOST('clone_receivers')) {
+			setEventMessages($langs->trans("NoCloneOptionsSpecified"), null, 'errors');
+		} else {
+			$objectutil = dol_clone($object, 1); // To avoid to denaturate loaded object when setting some properties for clone or if createFromClone modifies the object. We use native clone to keep this->db valid.
+			//$objectutil->date = dol_mktime(12, 0, 0, GETPOST('newdatemonth', 'int'), GETPOST('newdateday', 'int'), GETPOST('newdateyear', 'int'));
+			// ...
+			$result = $objectutil->createFromClone($user, (($object->id > 0) ? $object->id : $id));
+			if (is_object($result) || $result > 0) {
+				$newid = 0;
+				if (is_object($result)) {
+					$newid = $result->id;
+				} else {
+					$newid = $result;
+				}
+				$key='date_start';
+				$objectutil->date_start=dol_mktime(12, 0, 0, GETPOST($key.'month', 'int'), GETPOST($key.'day', 'int'), GETPOST($key.'year', 'int'));	// for date without hour, we use gmt
+				$key='date_end';
+				$objectutil->date_end=dol_mktime(12, 0, 0, GETPOST($key.'month', 'int'), GETPOST($key.'day', 'int'), GETPOST($key.'year', 'int'));	// for date without hour, we use gmt
+				$result=$objectutil->update($user);
+				if ($result<0) {
+					setEventMessages($objectutil->error,$objectutil->errors,'errors');
+					$action = '';
+				} else {
+					header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $newid); // Open record of new object
+					exit;
+				}
+			} else {
+				setEventMessages($objectutil->error, $objectutil->errors, 'errors');
+				$action = '';
+			}
+		}
+	}
+
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
+
 
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
@@ -181,7 +218,7 @@ if ($action == 'create')
 		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
 		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
 		elseif (in_array($val['type'], array('float', 'double(24,8)'))) $value = GETPOST($key, 'int');
-		elseif ($val['label'] == 'CostType'){ 
+		elseif ($val['label'] == 'CostType'){
 			$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 			$value=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
 			$value.=(count($arrayofmassactions) ? $form->showCheckAddButtons('checkforselect', 1) : '');
@@ -242,7 +279,7 @@ if (($id || $ref) && $action == 'edit')
 		print '<td>';
 		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
 		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key,'none'):$object->$key;
-		elseif ($val['label'] == 'CostType'){ 
+		elseif ($val['label'] == 'CostType'){
 			$varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 			$value=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
 		}
@@ -281,6 +318,17 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if ($action == 'delete')
 	{
 	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoCost'), $langs->trans('ConfirmDeleteImmoCost'), 'confirm_delete', '', 0, 1);
+	}
+
+	// Clone confirmation
+	if ($action == 'clone') {
+		// Create an array for form
+		$formquestion = array(
+			'text' => $langs->trans("ConfirmClone"),
+			array('type' => 'date', 'name' => 'date_start', 'label' => $langs->trans("DateStart")),
+			array('type' => 'date', 'name' => 'date_end', 'label' => $langs->trans("DateEnd")),
+		);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneAsk', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
 	}
 
 	// Confirmation of action xxxx
@@ -401,6 +449,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
     		}
 
+			if ($user->rights->ultimateimmo->write)
+			{
+				print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=clone&token='.newToken().'">'.$langs->trans("ToClone").'</a>'."\n";
+			}
+
     		/*
     		if ($user->rights->ultimateimmo->create)
     		{
@@ -484,3 +537,4 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 // End of page
 llxFooter();
 $db->close();
+
