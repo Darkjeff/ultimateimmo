@@ -120,13 +120,16 @@ if (empty($reshook))
 				} else {
 					$newid = $result;
 				}
+
+				$objectUpd = new ImmoCost($db);
+				$objectUpd->fetch($newid);
 				$key = 'date_start';
-				$objectutil->date_start = dol_mktime(12, 0, 0, GETPOST($key . 'month', 'int'), GETPOST($key . 'day', 'int'), GETPOST($key . 'year', 'int'));	// for date without hour, we use gmt
+				$objectUpd->date_start = dol_mktime(12, 0, 0, GETPOST($key . 'month', 'int'), GETPOST($key . 'day', 'int'), GETPOST($key . 'year', 'int'));	// for date without hour, we use gmt
 				$key = 'date_end';
-				$objectutil->date_end = dol_mktime(12, 0, 0, GETPOST($key . 'month', 'int'), GETPOST($key . 'day', 'int'), GETPOST($key . 'year', 'int'));	// for date without hour, we use gmt
-				$result = $objectutil->update($user);
+				$objectUpd->date_end = dol_mktime(12, 0, 0, GETPOST($key . 'month', 'int'), GETPOST($key . 'day', 'int'), GETPOST($key . 'year', 'int'));	// for date without hour, we use gmt
+				$result = $objectUpd->update($user);
 				if ($result < 0) {
-					setEventMessages($objectutil->error, $objectutil->errors, 'errors');
+					setEventMessages($objectUpd->error, $objectUpd->errors, 'errors');
 					$action = '';
 				} else {
 					header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $newid); // Open record of new object
@@ -151,9 +154,6 @@ if (empty($reshook))
 	$trackid='immocost'.$object->id;
 	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
 }
-
-
-
 
 /*
  * View
