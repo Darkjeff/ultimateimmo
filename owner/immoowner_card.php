@@ -601,7 +601,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		if (empty($reshook)) {
 			// Send
-			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
+			if (empty($user->socid)) {
+				print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=presend&mode=init#formmailbeforetitle">'.$langs->trans('SendMail').'</a>'."\n";
+			}
 
 			if ($permissiontoadd) {
 				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
@@ -669,7 +671,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$modelmail = 'immoowner';
 	$defaulttopic = 'InformationMessage';
 	$diroutput = $conf->ultimateimmo->dir_output . '/owner';
-	$trackid = 'immo' . $object->id;
+	$trackid = 'immoowner' . $object->id;
 
 	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';
 }

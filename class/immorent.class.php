@@ -551,12 +551,14 @@ class ImmoRent extends CommonObject
 
 			if ($this->model_pdf) {
 				$modele = $this->model_pdf;
+			} elseif (!empty($conf->global->ULTIMATEIMMO_ADDON_PDF_RENT)) {
+				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF_RENT;
 			} elseif (!empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) {
 				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
 			}
 		}
 
-		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
+		$modelpath = "ultimateimmo/core/modules/ultimateimmo/doc/";
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref, $moreparams);
 	}

@@ -63,8 +63,19 @@ class ImmoOwner extends CommonObject
 	 */
 	public $picto = 'immoowner@ultimateimmo';
 
+	/**
+	 * Draft status
+	 */
 	const STATUS_DRAFT = 0;
+	
+	/**
+	 * Validated status
+	 */
 	const STATUS_VALIDATED = 1;
+	
+	/**
+	 * Credit note status
+	 */
 	const STATUS_CANCELED = 9;
 
 
@@ -98,7 +109,7 @@ class ImmoOwner extends CommonObject
 	 */
 	public $fields = array(
 		'rowid'         => array('type' => 'integer', 'label' => 'TechnicalID', 'enabled' => 1, 'visible' => -2, 'noteditable' => 1, 'notnull' => 1, 'index' => 1, 'position' => 1, 'comment' => 'Id'),
-		'ref'           => array('type' => 'varchar(128)', 'label' => 'RefOwner', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1,  'default'=>'(PROV)', 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
+		'ref'           => array('type' => 'varchar(128)', 'label' => 'RefOwner', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'notnull' => 1,  'default'=>'(PROV)', 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
 		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
 		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirparty'),
 		'societe' 		=> array('type' => 'varchar(128)', 'label' => 'Societe', 'visible' => 1, 'enabled' => 1, 'position' => 34, 'notnull' => -1,),

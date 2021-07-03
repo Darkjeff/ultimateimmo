@@ -177,6 +177,9 @@ if (empty($reshook)) {
 		}
 	}
 
+	// Action to build doc
+	include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
+
 	// Build doc
 	if ($action == 'builddoc' && $permissiontoadd) {
 		// Save last template used to generate document
@@ -593,12 +596,16 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (empty($reshook)) {
 			// Send
 			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
+			//var_dump($object);exit;
 			// Modify
 			if ($permissiontoadd) {
 				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
 			} else {
 				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
 			}
+
+			// generate pdf
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=builddoc&id=' . $id . '">' . $langs->trans('Bail_vide') . '</a></div>';
 			
 			// Clone
 			if ($permissiontoadd) {
@@ -636,7 +643,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    // Show links to link elements
 	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immorent'));
 	    $somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
-
 
 	    print '</div><div class="fichehalfright"><div class="ficheaddleft">';
 

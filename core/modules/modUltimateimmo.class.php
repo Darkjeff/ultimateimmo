@@ -144,7 +144,14 @@ class modUltimateimmo extends DolibarrModules
 		$this->const[$r][0] = "ULTIMATEIMMO_ADDON_PDF";
 		$this->const[$r][1] = "chaine";
 		$this->const[$r][2] = "quittance";
-		$this->const[$r][3] = 'Name of the ultimateimmo generation manager in PDF format';
+		$this->const[$r][3] = 'Name of PDF model of receipt';
+		$this->const[$r][4] = 0;
+		$r++;
+
+		$this->const[$r][0] = "ULTIMATEIMMO_ADDON_PDF_RENT";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = "bail_vide";
+		$this->const[$r][3] = 'Name of PDF model of rent';
 		$this->const[$r][4] = 0;
 		$r++;
 
