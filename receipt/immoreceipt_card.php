@@ -347,9 +347,9 @@ if (empty($reshook)) {
 	if ($action == 'addall') {
 		$error = 0;
 		$date_echeance = dol_mktime(12, 0, 0, GETPOST('echmonth', 'int'), GETPOST('echday', 'int'), GETPOST('echyear', 'int'));
-		
+
 		$dateperiod = dol_mktime(12, 0, 0, GETPOST('periodmonth', 'int'), GETPOST('periodday', 'int'), GETPOST('periodyear', 'int'));
-		
+
 		$dateperiodend = dol_mktime(12, 0, 0, GETPOST('periodendmonth', 'int'), GETPOST('periodendday', 'int'), GETPOST('periodendyear', 'int'));
 
 		if (empty($date_echeance)) {
@@ -372,9 +372,9 @@ if (empty($reshook)) {
 
 			foreach ($mesLignesCochees as $maLigneCochee) {
 				$receipt = new ImmoReceipt($db);
-				
+
 				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
-				
+
 				$monId = $maLigneCourante[0];
 				$monLocal = $maLigneCourante[1];
 				$monLocataire = $maLigneCourante[2];
@@ -384,13 +384,13 @@ if (empty($reshook)) {
 				$maTVA = $maLigneCourante[6];
 				$monProprio = $maLigneCourante[7];
 				$socProprio = $maLigneCourante[8];
-				
+
 				// main info rent
 				$receipt->label = GETPOST('label', 'alpha');
 				$receipt->date_echeance = $date_echeance;
 				$receipt->date_start = $dateperiod;
 				$receipt->date_end = $dateperiodend;
-				
+
 				// main info contract
 				$receipt->ref = '(PROV)';
 				$receipt->fk_rent = $monId;
@@ -620,7 +620,7 @@ if ($action == 'create') {
 			"date_echeance", 0, 0, 0, "", 1, 1, 1);
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
-			
+
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
 			else $value = GETPOST($key, 'alpha');
 			print $object->showInputField($val, $key, $value, '', '', '', 0);
@@ -795,7 +795,7 @@ if ($action == 'createall') {
 
 		$receipt = new ImmoReceipt($db);
 		$result = $receipt->fetch($id);
-		
+
 		if ($action == 'delete')
 		{
 			// Param url = id de la periode à supprimer - id session
@@ -835,24 +835,24 @@ if ($action == 'createall') {
 			print '</td>';
 			print '<td>';
 
-			if ($val['label'] == 'PartialPayment') 
-			{					
+			if ($val['label'] == 'PartialPayment')
+			{
 				if ($object->getSommePaiement())
 				{
 					$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
 					print '<input name="partial_payment" class="flat" size="8" value="' . $totalpaye . '">';
-				}			
+				}
 			}
-			elseif ($val['label'] == 'Balance') 
+			elseif ($val['label'] == 'Balance')
 			{
 				$balance = $object->total_amount - $object->getSommePaiement();
 				if ($balance>=0)
 				{
 					$balance = price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
 					print '<input name="balance" class="flat" size="8" value="' . $balance . '">';
-				}			
+				}
 			}
-			elseif ($val['label'] == 'Paye') 
+			elseif ($val['label'] == 'Paye')
 			{
 				if ($totalpaye==0)
 				{
@@ -875,7 +875,7 @@ if ($action == 'createall') {
 				if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
 				elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key, 'none'):$object->$key;
 				else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
-				//var_dump($val.' '.$key.' '.$value);		
+				//var_dump($val.' '.$key.' '.$value);
 				if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
 				else print $object->showInputField($val, $key, $value, '', '', '', 0);
 			}
@@ -901,16 +901,16 @@ if ($action == 'createall') {
 	if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
 	{
 		$res = $object->fetch_optionals();
-		
+
 		$soc = new Societe($db);
 		$soc->fetch($object->socid);
-		
+
 		$object = new ImmoReceipt($db);
 		$result = $object->fetch($id);
 
 		$head = immoreceiptPrepareHead($object);
 		print dol_get_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'bill');
-		
+
 		$totalpaye = $object->getSommePaiement();
 
 		$formconfirm = '';
@@ -922,7 +922,7 @@ if ($action == 'createall') {
 		}
 
 		// Clone confirmation
-		if ($action == 'clone') 
+		if ($action == 'clone')
 		{
 			// Create an array for form
 			$formquestion = array(
@@ -937,25 +937,25 @@ if ($action == 'createall') {
 		if ($action == 'validate')
 		{
 			$error = 0;
-			
+
 			// We verifie whether the object is provisionally numbering
 			$ref = substr($object->ref, 1, 4);
-			if ($ref == 'PROV') 
+			if ($ref == 'PROV')
 			{
-				$numref = $object->getNextNumRef($soc);	
-				if (empty($numref)) 
+				$numref = $object->getNextNumRef($soc);
+				if (empty($numref))
 				{
 					$error ++;
 					setEventMessages(null, $object->errors, 'errors');
 				}
-			} 
-			else 
+			}
+			else
 			{
 				$numref = $object->ref;
 			}
 
 			$text = $langs->trans('ConfirmValidateReceipt', $numref);
-			
+
 			if (! empty($conf->notification->enabled))
 			{
 				require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';
@@ -963,11 +963,11 @@ if ($action == 'createall') {
 				$text .= '<br>';
 				$text .= $notify->confirmMessage('ULTIMATEIMMO_VALIDATE', $object->socid, $object);
 			}
-			
+
 			if (! $error)
 				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?recid='.$object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
 		}
-		
+
 		// Call Hook formConfirm
 		$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
 		$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
@@ -1128,7 +1128,7 @@ if ($action == 'createall') {
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
 
-	// Add symbol of currency 
+	// Add symbol of currency
 	$cursymbolbefore = $cursymbolafter = '';
 	if ($object->multicurrency_code) {
 		$currency_symbol = $langs->getCurrencySymbol($object->multicurrency_code);
@@ -1381,6 +1381,7 @@ if ($action == 'createall') {
 		$urlsource = $_SERVER["PHP_SELF"] . "?recid=" . $object->id;
 		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
 		$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
+		$object->model_pdf='quittance';
 		print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
 
 		// Show links to link elements

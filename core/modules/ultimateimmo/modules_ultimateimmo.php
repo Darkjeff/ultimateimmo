@@ -28,10 +28,10 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
 /**
  *	Parent class for ultimateimmo models
  */
-abstract class ModelePDFUltimateimmo extends CommonDocGenerator 
+abstract class ModelePDFUltimateimmo extends CommonDocGenerator
 {
 	public $error = '';
-	
+
 	/**
 	 * Return list of active generation modules
 	 *
@@ -39,7 +39,7 @@ abstract class ModelePDFUltimateimmo extends CommonDocGenerator
 	 * @param string $maxfilenamelength length of value to show
 	 * @return array of templates
 	 */
-	static function liste_modeles($db, $maxfilenamelength = 0) 
+	static function liste_modeles($db, $maxfilenamelength = 0)
 	{
 		global $conf;
 
@@ -63,18 +63,18 @@ abstract class ModelePDFUltimateimmo extends CommonDocGenerator
 function ultimateimmo_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file) {
 	global $conf, $langs;
 	$langs->load ( 'immobilier@immobilier' );
-	
+
 	// Charge le modele
 	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
-	
+
 	if (file_exists ( $nomModele )) {
 		require_once ($nomModele);
-		
+
 		$classname = "pdf_" . $typeModele;
-		
+
 		$obj = new $classname ( $db );
 		$obj->message = $message;
-		
+
 		// We save charset_output to restore it because write_file can change it if needed for
 		// output format that does not support UTF8.
 		$sav_charset_output = $outputlangs->charset_output;
@@ -190,7 +190,7 @@ abstract class ModeleNumRefUltimateimmo
  *  @param  int			$hidedesc       Hide description
  *  @param  int			$hideref        Hide ref
  *  @return int         				0 if KO, 1 if OK
- 
+
 function ultimateimmo_create($db, $object, $modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
 {
     // phpcs:enable
@@ -288,22 +288,22 @@ function ultimateimmo_create($db, $object, $modele, $outputlangs, $hidedetails=0
  * \param		outputlangs		objet lang a utiliser pour traduction
  * \return int <0 if KO, >0 if OK
  */
-function quittance_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file) 
+function quittance_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file)
 {
 	global $conf, $langs;
 	$langs->load ( 'ultimateimmo@ultimateimmo' );
-	
+
 	// Charge le modele
 	$nomModele = dol_buildpath ( '/ultimateimmo/core/modules/ultimateimmo/pdf/pdf_' . $typeModele . '.modules.php' );
-	
+
 	if (file_exists ( $nomModele )) {
 		require_once ($nomModele);
-		
+
 		$classname = "pdf_" . $typeModele;
-		
+
 		$obj = new $classname ( $db );
 		$obj->message = $message;
-		
+
 		// We save charset_output to restore it because write_file can change it if needed for
 		// output format that does not support UTF8.
 		$sav_charset_output = $outputlangs->charset_output;
