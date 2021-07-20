@@ -104,7 +104,6 @@ $permissionnote = $user->rights->ultimateimmo->rent->write; // Used by the inclu
 $permissiondellink = $user->rights->ultimateimmo->rent->write; // Used by the include of actions_dellink.inc.php
 $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1];
 
-
 /*
  * Actions
  *
@@ -151,7 +150,7 @@ if (empty($reshook)) {
 	// Actions cancel, add, update or delete
 	//include DOL_DOCUMENT_ROOT . '/core/actions_addupdatedelete.inc.php';
 	// Action to add record
-	
+
 	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
 
@@ -320,7 +319,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&lineid='.$lineid, $langs->trans('DeleteLine'), $langs->trans('ConfirmDeleteLine'), 'confirm_deleteline', '', 0, 1);
 	}
 	// Clone confirmation
-	if ($action == 'clone') 
+	if ($action == 'clone')
 	{
 		// Create an array for form
 		$formquestion = array();
@@ -434,7 +433,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				$accountstatic->ref = $accountstatic->getNomUrl(1);
 			}
 			print $accountstatic->ref;*/
-			
+
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
@@ -442,7 +441,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '</td>';
 		print '</tr>';
 	}
-	
+
 	print '</table>';
 
 	// We close div and reopen for second column
@@ -544,7 +543,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		print "</form>\n";
 	}
-	
+
 	/*if (is_file($conf->ultimateimmo->dir_output . '/rent/bail_vide' . $id . '.pdf'))
 	{
 		print '&nbsp';
@@ -562,7 +561,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 
 	// Buttons for actions
-	if ($action != 'presend' && $action != 'editline') 
+	if ($action != 'presend' && $action != 'editline')
 	{
     	print '<div class="tabsAction">'."\n";
     	$parameters = array();
@@ -602,7 +601,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	// Select mail models is same action as presend
-	if (GETPOST('modelselected')) 
+	if (GETPOST('modelselected'))
 	{
 	    $action = 'presend';
 	}
@@ -613,7 +612,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    print '<a name="builddoc"></a>'; // ancre
 
 	    // Documents
-	    $relativepath = '/rent/' . dol_sanitizeFileName($object->ref).'/';	
+	    $relativepath = '/rent/' . dol_sanitizeFileName($object->ref).'/';
 	    $filedir = $conf->ultimateimmo->dir_output . $relativepath;
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 	    $genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
@@ -642,7 +641,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	//Select mail models is same action as presend
-	
+
 	if (GETPOST('modelselected')) $action = 'presend';
 
 	// Presend form
@@ -652,7 +651,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$trackid = 'immo'.$object->id;
 
 	include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
-	 
+
 }
 
 // End of page

@@ -452,9 +452,9 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 
 		if (!empty($arrayfields['t.' . $key]['checked'])) {
 			print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
-			if ($key == 'status') print $object->getLibStatut(5);
-
-			elseif ($val['label'] == 'Property') {
+			if ($key == 'status') {
+				print $object->getLibStatut(5);
+			} elseif ($val['label'] == 'Property') {
 				$staticproperty = new ImmoProperty($db);
 				$staticproperty->fetch($object->fk_property);
 				if ($staticproperty->ref) {

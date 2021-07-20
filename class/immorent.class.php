@@ -300,7 +300,7 @@ class ImmoRent extends CommonObject
 		}
 	}
 
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -320,7 +320,7 @@ class ImmoRent extends CommonObject
 		$array = implode(', t.', $array);
 
 		$sql = 'SELECT ' . $array . ',';
-		
+
 		$sql .= ' soc.rowid as socid, soc.nom as name,';
 		$sql .= ' rentr.lastname as nomlocataire,';
 		$sql .= ' rentr.firstname as firstname_renter,';
@@ -371,7 +371,7 @@ class ImmoRent extends CommonObject
 		}
 	}
 
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -481,7 +481,7 @@ class ImmoRent extends CommonObject
 
 		$result .= $linkstart;
 		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="' . (($withpicto != 2) ? 'paddingright ' : '') . 'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
-		if ($withpicto != 2) $result .= $this->ref;
+		if ($withpicto != 2) $result .= ($staticproperty->label) ? $this->ref.' ('.$staticproperty->label.')':$this->ref;
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
@@ -494,7 +494,7 @@ class ImmoRent extends CommonObject
 
 		return $result;
 	}
-	
+
 	/**
 	 *  Create a document onto disk according to template module.
 	 *
