@@ -106,7 +106,7 @@ class ImmoProperty extends CommonObject
 		'label' => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'showoncombobox' => 1, 'searchall' => 1, 'css' => 'minwidth200', 'help' => 'Help text',),
 		'juridique_id'  => array('type' => 'integer', 'label' => 'Juridique', 'enabled' => 1, 'visible' => 1, 'position' => 32, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'MonoPropriete', '2' => 'Copropriete')),
 		'datebuilt'     => array('type' => 'integer', 'label' => 'DateBuilt', 'enabled' => 1, 'visible' => 1, 'position' => 35, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'DateBuilt1', '2' => 'DateBuilt2', '3' => 'DateBuilt3', '4' => 'DateBuilt4', '5' => 'DateBuilt5')),
-		'target'        => array('type' => 'integer', 'label' => 'Target', 'enabled' => 1, 'visible' => 1, 'position' => 40, 'notnull' => -1, 'arrayofkeyval' => array('0' => 'Location', '1' => 'Vente', '-1' => 'Autre'), 'comment' => "Rent or sale"),
+		'target'        => array('type' => 'integer', 'label' => 'Target', 'enabled' => 1, 'visible' => 1, 'position' => 40, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'Location', '2' => 'Vente', '3' => 'Autre'), 'comment' => "Rent or sale"),
 		'fk_owner'      => array('type' => 'integer:ImmoOwner:ultimateimmo/owner/class/immoowner.class.php:1:status=1', 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 45, 'notnull' => 1, 'index' => 1, 'help' => "LinkToOwner"),
 		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 46, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirparty'),
 		'address'       => array('type' => 'varchar(255)', 'label' => 'Address', 'enabled' => 1, 'visible' => 1, 'position' => 60, 'notnull' => -1),
@@ -120,7 +120,7 @@ class ImmoProperty extends CommonObject
 		'numdoor'       => array('type' => 'varchar(8)', 'label' => 'NumDoor', 'enabled' => 1, 'visible' => 1, 'position' => 85, 'notnull' => -1),
 		'area'          => array('type' => 'varchar(8)', 'label' => 'Area', 'enabled' => 1, 'visible' => 1, 'position' => 90, 'notnull' => -1),
 		'numroom'       => array('type' => 'integer', 'label' => 'NumberOfRoom', 'enabled' => 1, 'visible' => 1, 'position' => 92, 'notnull' => -1),
-		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'enabled' => 1, 'visible' => -2, 'position' => 500, 'notnull' => 1),
+		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'enabled' => 1, 'visible' => -2, 'position' => 500, 'notnull' => 1, 'default'=>'CURRENT_TIMESTAMP',),
 		'tms'           => array('type' => 'timestamp', 'label' => 'DateModification', 'enabled' => 1, 'visible' => -2, 'position' => 501, 'notnull' => 1),
 		'fk_user_creat' => array('type' => 'integer', 'label' => 'UserAuthor', 'enabled' => 1, 'visible' => -2, 'position' => 510, 'notnull' => 1),
 		'fk_user_modif' => array('type' => 'integer', 'label' => 'UserModif', 'enabled' => 1, 'visible' => -2, 'position' => 511, 'notnull' => -1),
@@ -262,6 +262,7 @@ class ImmoProperty extends CommonObject
 		// Translate some data
 		$this->fields['status']['arrayofkeyval'] = array(1 => $langs->trans('PropertyTypeStatusActive'), 9 => $langs->trans('PropertyTypeStatusCancel'));
 		$this->fields['juridique_id']['arrayofkeyval'] = array(1 => $langs->trans('MonoPropriete'), 2 => $langs->trans('Copropriete'));
+		$this->fields['target']['arrayofkeyval'] = array(1 => $langs->trans('Location'), 2 => $langs->trans('Vente'), 3 => $langs->trans('Autre'));
 		$this->fields['datebuilt']['arrayofkeyval'] = array(1 => $langs->trans('DateBuilt1'), 2 => $langs->trans('DateBuilt2'), 3 => $langs->trans('DateBuilt3'), 4 => $langs->trans('DateBuilt4'), 5 => $langs->trans('DateBuilt5'));
 		$this->fields['property_type_id']['arrayofkeyval'] = array(1 => $langs->trans('APA'), 2 => $langs->trans('HOU'), 3 => $langs->trans('LOC'), 4 => $langs->trans('SHO'), 5 => $langs->trans('GAR'), 6 => $langs->trans('BUL'));
 	}
@@ -450,6 +451,7 @@ class ImmoProperty extends CommonObject
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immoproperty_type as tp ON t.property_type_id = tp.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as s ON s.rowid = t.fk_soc";
 
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
 		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
@@ -530,7 +532,7 @@ class ImmoProperty extends CommonObject
 			while ($obj = $this->db->fetch_object($resql)) {
 
 				$line = new ImmopropertyLine();
-
+				
 				$line->id = $obj->rowid;
 				$line->fk_property = $obj->fk_property;
 				$line->label = $obj->label;
@@ -644,7 +646,7 @@ class ImmoProperty extends CommonObject
 
 		$result .= $linkstart;
 		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
-		if ($withpicto != 2) $result .= $this->ref;
+		if ($withpicto != 2) $result .= $this->label;
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
@@ -929,6 +931,7 @@ class ImmopropertyLine
 	public $property_type_id;
 	public $fk_property;
 	public $fk_owner;
+	public $fk_soc;
 	public $label;
 	public $address;
 	public $building;

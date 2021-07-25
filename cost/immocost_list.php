@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2019 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND 	    <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,8 +78,8 @@ $extralabels = $extrafields->fetch_name_optionals_label('immocost');
 $search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
 
 // Default sort order (if not yet defined by previous GETPOST)
-if (! $sortfield) $sortfield="t.ref";   // Set here default search field. By default 1st field in definition.
-if (! $sortorder) $sortorder="ASC";
+if (! $sortfield) $sortfield="t.date_start";   // Set here default search field. By default 1st field in definition.
+if (! $sortorder) $sortorder="DESC";
 
 // Security check
 $socid=0;

@@ -137,10 +137,6 @@ if (is_array($extrafields->attributes[$object->table_element]['label']) && count
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
 
-$permissiontoread = $user->rights->ultimateimmo->read;
-$permissiontoadd = $user->rights->ultimateimmo->write;
-$permissiontodelete = $user->rights->ultimateimmo->delete;
-
 /*
  * Actions
  *
@@ -181,6 +177,9 @@ if (empty($reshook)) {
 	// Mass actions
 	$objectclass = 'ImmoProperty';
 	$objectlabel = 'ImmoProperty';
+	$permissiontoread = $user->rights->ultimateimmo->read;
+	$permissiontoadd = $user->rights->ultimateimmo->write;
+	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$uploaddir = $conf->ultimateimmo->dir_output;
 	include DOL_DOCUMENT_ROOT . '/core/actions_massactions.inc.php';
 }
@@ -449,7 +448,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 		if (in_array($val['type'], array('timestamp'))) $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
 		elseif ($key == 'ref') $cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
 
-		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'right';
+		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $key != 'status') $cssforfield .= ($cssforfield ? ' ' : '') . 'left';
 
 		if (!empty($arrayfields['t.' . $key]['checked'])) {
 			print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
@@ -481,19 +480,6 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				print $object->showOutputField($val, $key, $obj->$key, '');
 			}
 			
-			/*
-			if ($val['label'] == 'Juridique') 
-			{ 
-				if ($object->juridique_id)
-				{
-					dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
-					$formImmo = new FormUltimateimmo($db);
-					$tmparray=$formImmo->getJuridique($object->juridique_id, 'all');
-					$object->juridique_code=$tmparray['code'];
-					$object->juridique=$tmparray['label'];
-				}
-				print $object->juridique;
-			}*/
 			print '</td>';
 			if (!$i) $totalarray['nbfield']++;
 			if (!empty($val['isameasure'])) {

@@ -144,14 +144,14 @@ if (empty($reshook))
 		$db->begin();
 
 		$result = $object->fetch($id);
-		$building = $object->label;
-
+		$building = $object->ref;
+		//var_dump($building);exit;
 		// todo debug insert into
 		$sql1 = 'INSERT INTO ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty(';
 		$sql1 .= 'label,';
 		$sql1 .= 'fk_property';
 		$sql1 .= ') VALUES (';
-		$sql1 .= ' ' . (!isset($object->label) ? 'NULL' : "'" . $db->escape($object->label) . "'") . ',';
+		$sql1 .= ' ' . (!isset($object->label) ? 'NULL' : "'" . $db->escape($object->ref) . "'") . ',';
 		$sql1 .= '' . $id;
 		$sql1 .= ')';
 		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
@@ -188,7 +188,7 @@ if ($action == 'create') {
 	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
-	dol_fiche_head(array(), '');
+	print dol_get_fiche_head(array(), '');
 
 	print '<table class="border centpercent tableforfieldcreate">' . "\n";
 
@@ -213,11 +213,9 @@ if ($action == 'create') {
 		print '</td>';
 		print '<td>';
 
-		if ($val['label'] == 'Country'
-		) {
+		if ($val['label'] == 'Country') {
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
-
 			if ($object->country_id) {
 				$tmparray = $object->getCountry($object->country_id, 'all');
 				$object->country_code = $tmparray['code'];
@@ -226,10 +224,12 @@ if ($action == 'create') {
 			// Country
 			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
 		} else {
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
-			else $value = GETPOST($key, 'alpha');
-			print $object->showInputField($val, $key, $value, '', '', '', 0);
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
+			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			//var_dump($val.' '.$key.' '.$value);
+			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
 		print '</td>';
 		print '</tr>';
@@ -240,7 +240,7 @@ if ($action == 'create') {
 
 	print '</table>' . "\n";
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	print '<div class="center">';
 	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
@@ -262,7 +262,7 @@ if (($id || $ref) && $action == 'edit') {
 	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
-	dol_fiche_head();
+	print dol_get_fiche_head();
 
 	print '<table class="border centpercent tableforfieldedit">' . "\n";
 
@@ -313,7 +313,7 @@ if (($id || $ref) && $action == 'edit') {
 
 	print '</table>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	print '<div class="center"><input type="submit" class="button" name="save" value="' . $langs->trans("Save") . '">';
 	print ' &nbsp; <input type="submit" class="button" name="cancel" value="' . $langs->trans("Cancel") . '">';
@@ -327,7 +327,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$res = $object->fetch_optionals();
 
 	$head = immopropertyPrepareHead($object);
-	dol_fiche_head($head, 'card', $langs->trans("ImmoProperty"), -1, 'company');
+	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoProperty"), -1, 'company');
 
 	$formconfirm = '';
 
@@ -402,7 +402,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (in_array($key, array('ref', 'status'))) continue; // Ref and status are already in dol_banner
 
 		$value = $object->$key;
-
+		
 		print '<tr><td';
 		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
@@ -500,7 +500,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	print '<div class="clearboth"></div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	/*
 	 * Lines

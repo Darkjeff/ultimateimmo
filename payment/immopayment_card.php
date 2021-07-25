@@ -375,7 +375,7 @@ if ($action == 'create') {
 	print '<input type="hidden" name="fk_receipt" value="' . $id . '">';
 	print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 
-	dol_fiche_head(array(), '');
+	print dol_get_fiche_head(array(), '');
 
 	print '<table class="border centpercent">' . "\n";
 
@@ -428,7 +428,7 @@ if ($action == 'create') {
 
 	print '</table>' . "\n";
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	print '<div class="center">';
 	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
@@ -449,7 +449,7 @@ if (($id || $ref) && $action == 'edit') {
 	print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 	print '<input type="hidden" name="id" value="' . $object->id . '">';
 
-	dol_fiche_head();
+	print dol_get_fiche_head();
 
 	print '<table class="border centpercent">' . "\n";
 
@@ -500,7 +500,7 @@ if (($id || $ref) && $action == 'edit') {
 
 	print '</table>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	print '<div class="center"><input type="submit" class="button" name="save" value="' . $langs->trans("Save") . '">';
 	print ' &nbsp; <input type="submit" class="button" name="cancel" value="' . $langs->trans("Cancel") . '">';
@@ -515,7 +515,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	$head = immopaymentPrepareHead($object);
 
-	dol_fiche_head($head, 'card', $langs->trans("ImmoPayment"), -1, 'payment');
+	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoPayment"), -1, 'payment');
 
 	$formconfirm = '';
 
@@ -572,7 +572,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">' . "\n";
 
 	// Common attributes
-	//$keyforbreak = 'date_payment';
+	$keyforbreak = 'date_payment';
 
 	//$object->fields = dol_sort_array($object->fields, 'position');
 
@@ -662,7 +662,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
 
-
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '">';
 		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
@@ -672,15 +671,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($val['label'] == 'TypePayment') {
 
 			if ($object->fk_mode_reglement) {
-
 				$tmparray = $object->setPaymentMethods($object->fk_mode_reglement, 'int');
-				$object->mode_code = $tmparray['code'];
-				$object->mode_payment = $tmparray['libelle'];
-				//var_dump($tmparray);exit;
 			}
 			// Payment mode
-			print $object->mode_payment;
-			//$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, '', $object->fk_mode_reglement);
+			$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none', '', -1);
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
@@ -699,7 +693,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	print '<div class="clearboth"></div><br>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	// Buttons for actions
 	if ($action != 'presend' && $action != 'editline') {
@@ -965,7 +959,7 @@ if ($action == 'update') {
 
 	print '</table>';
 	
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	print '<div align="center">';
 	print '<input type="submit" value="' . $langs->trans("AddProperty") . '" name="bouton" class="button" />';

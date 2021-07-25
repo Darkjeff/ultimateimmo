@@ -14,10 +14,10 @@
 -- along with this program.  If not, see http://www.gnu.org/licenses/.
 
 
-CREATE TABLE IF NOT EXISTS llx_ultimateimmo_building(
+CREATE TABLE IF NOT EXISTS llx_ultimateimmo_building (
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	label varchar(255),  
-	fk_property integer, 
+	fk_property integer 
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

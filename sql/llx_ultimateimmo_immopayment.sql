@@ -15,7 +15,7 @@
 -- along with this program.  If not, see http://www.gnu.org/licenses/.
 
 
-CREATE TABLE llx_ultimateimmo_immopayment(
+CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immopayment(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL,			-- payment reference number

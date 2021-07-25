@@ -155,9 +155,9 @@ MonoPropriete = Mono Propriété
 ImmoOwner = Propriétaire
 DateStartRent = Date de prise d'effet du contrat
 TypePayment = Type de Règlement
-NumPayment = <em>Numéro(Chèque/Virement N°)</em>
-CheckTransmitter = <em>Emetteur(Chèque/Virement N°)</em>
-ChequeBank = <em>Banque(Banque du chèque)</em>
+NumPayment = <i>Numéro(Chèque/Virement N°)</i>
+CheckTransmitter = <i>Emetteur(Chèque/Virement N°)</i>
+ChequeBank = <i>Banque(Banque du chèque)</i>
 NewImmoPropertyType = Nouveau type de bien
 ImmoProperty_Type = Type de bien immobilier
 PropertyTypeStatusActive=Bien actif
@@ -230,6 +230,11 @@ OtherReceipts = Autres quittances
 OtherRents = Autres locations
 NumberReceiptByMonth = Nombre de quittances par mois
 CustomerReceiptPayment = Règlement de quittance
+LinkToReceipt = Lien vers la quittance
+LinkToOwner = Lien vers le propriétaire
+LinkToThirpartyRenter = Vous devez sélectionner ici un tiers locataire.
+LinkToProperty = Lien vers le bien loué
+AmountPayed = Montant payé sur la quittance
 
 
 

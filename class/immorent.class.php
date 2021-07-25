@@ -89,8 +89,7 @@ class ImmoRent extends CommonObject
 		'fk_property' => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'Property', 'visible' => 1, 'enabled' => 1, 'position' => 25,  'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immoproperty.rowid', 'searchall' => 1, 'help' => "LinkToProperty", 'showoncombobox' => 1,),
 		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'visible' => 1, 'enabled' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'searchall' => 1,  'foreignkey' => 'ultimateimmo_immoowner.rowid', 'help' => "LinkToOwner",),
 		'fk_renter' => array('type' => 'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label' => 'Renter', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immorenter.rowid', 'searchall' => 1, 'help' => "LinkToRenter",),
-		'fk_account' => array('type' => 'integer:Account:compta/bank/class/account.class.php', 'label' => 'BankAccount', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'bank_account.id', 'searchall' => 1, 'help' => "LinkToAccount",),
-		'fk_soc' => array('type' => 'integer:Societe:societe/class/societe.class.php', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 42, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirparty", 'foreignkey' => 'societe.rowid',),
+		'fk_soc' => array('type' => 'integer:Societe:societe/class/societe.class.php', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 42, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirpartyRenter", 'foreignkey' => 'societe.rowid',),
 		'location_type_id' => array('type' => 'integer', 'label' => 'ImmorentType', 'enabled' => 1, 'visible' => 1, 'position' => 44, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'EmptyHousing', '2' => 'FurnishedApartment')),
 		'vat' => array('type' => 'integer', 'label' => 'VAT', 'visible' => -1, 'enabled' => 1, 'position' => 45, 'notnull' => -1, 'index' => 1, 'arrayofkeyval' => array('0' => 'No', '1' => 'Yes')),
 		'note_public' => array('type' => 'html', 'label' => 'NotePublic', 'visible' => -1, 'enabled' => 1, 'position' => 50, 'notnull' => -1,),
@@ -120,7 +119,6 @@ class ImmoRent extends CommonObject
 	public $fk_property;
 	public $fk_owner;
 	public $fk_renter;
-	public $fk_account;
 	public $fk_soc;
 	public $location_type_id;
 	public $nomlocataire;
@@ -216,37 +214,74 @@ class ImmoRent extends CommonObject
 	 * @param  	int 	$fromid     Id of object to clone
 	 * @return 	mixed 				New object created, <0 if KO
 	 */
-	public function createFromClone(User $user, $fromid)
+	public function createFromClone(User $user, $fromid = 0)
 	{
-		global $hookmanager, $langs;
+		global $hookmanager, $langs, $extrafields;
 		$error = 0;
-
+		
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
 		$object = new self($this->db);
-
+		//var_dump($object);exit;
 		$this->db->begin();
 
 		// Load source object
-		$object->fetchCommon($fromid);
+		$result = $object->fetchCommon($fromid);
+		if ($result > 0 && !empty($object->table_element_line)) $object->fetchLines();
+
+		$objsoc = new Societe($this->db);
+
+		// Change socid if needed
+		if (!empty($socid) && $socid != $object->socid) {
+			if ($objsoc->fetch($socid) > 0) {
+				$object->socid = $objsoc->id;
+			}
+		} else {
+			$objsoc->fetch($object->socid);
+		}
+
 		// Reset some properties
 		unset($object->id);
 		unset($object->fk_user_creat);
 		unset($object->import_key);
 
 		// Clear fields
-		$object->ref = "copy_of_" . $object->ref;
-		$object->title = $langs->trans("CopyOf") . " " . $object->title;
+		$object->ref = empty($this->fields['ref']['default']) ? "copy_of_" . $object->ref : $this->fields['ref']['default'];
+		$object->label = empty($this->fields['label']['default']) ? $langs->trans("CopyOf") . " " . $object->label : $this->fields['label']['default'];
+		$object->status = self::STATUS_DRAFT;
 		// ...
+		// Clear extrafields that are unique
+		if (is_array($object->array_options) && count($object->array_options) > 0) {
+			$extrafields->fetch_name_optionals_label($this->table_element);
+			foreach ($object->array_options as $key => $option) {
+				$shortkey = preg_replace('/options_/', '', $key);
+				if (!empty($extrafields->attributes[$this->element]['unique'][$shortkey])) {
+					//var_dump($key); var_dump($clonedObj->array_options[$key]); exit;
+					unset($object->array_options[$key]);
+				}
+			}
+		}
 
 		// Create clone
 		$object->context['createfromclone'] = 'createfromclone';
 		$result = $object->createCommon($user);
 		if ($result < 0) {
-			$error++;
 			$this->error = $object->error;
-			$this->errors = $object->errors;
+			$this->errors = array_merge($this->errors, $object->errors);
+			$error++;
 		}
+
+		if (!$error) {
+			// Hook of thirdparty module
+			if (is_object($hookmanager)) {
+				$parameters = array('objFrom' => $this, 'clonedObj' => $object);
+				$action = '';
+				$reshook = $hookmanager->executeHooks('createFrom', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
+				if ($reshook < 0) $error++;
+			}
+		}
+
+		unset($object->context['createfromclone']);
 
 		// End
 		if (!$error) {
@@ -330,8 +365,6 @@ class ImmoRent extends CommonObject
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as prop ON t.fk_property = prop.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immorent_type as rent_t ON t.location_type_id = rent_t.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as soc ON t.fk_soc = soc.rowid';
-		//$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."bank as b ON t.fk_account = b.rowid";
-        //$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."bank_account as ba ON b.fk_account = ba.rowid";
 
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
 		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
@@ -518,12 +551,14 @@ class ImmoRent extends CommonObject
 
 			if ($this->model_pdf) {
 				$modele = $this->model_pdf;
+			} elseif (!empty($conf->global->ULTIMATEIMMO_ADDON_PDF_RENT)) {
+				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF_RENT;
 			} elseif (!empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) {
 				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
 			}
 		}
 
-		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
+		$modelpath = "ultimateimmo/core/modules/ultimateimmo/doc/";
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref, $moreparams);
 	}

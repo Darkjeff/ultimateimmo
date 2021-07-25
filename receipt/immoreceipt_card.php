@@ -897,85 +897,76 @@ if ($action == 'createall') {
 		print '</form>';
 	}
 
-	// Part to show record
-	if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
-	{
-		$res = $object->fetch_optionals();
-		
-		$soc = new Societe($db);
-		$soc->fetch($object->socid);
-		
-		$object = new ImmoReceipt($db);
-		$result = $object->fetch($id);
+// Part to show record
+if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create'))) {
+	$res = $object->fetch_optionals();
 
-		$head = immoreceiptPrepareHead($object);
-		print dol_get_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'bill');
-		
-		$totalpaye = $object->getSommePaiement();
+	$soc = new Societe($db);
+	$soc->fetch($object->socid);
 
-		$formconfirm = '';
+	$object = new ImmoReceipt($db);
+	$result = $object->fetch($id);
 
-		// Confirmation to delete
-		if ($action == 'delete')
-		{
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?recid='.$object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
-		}
+	$head = immoreceiptPrepareHead($object);
+	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'bill');
 
-		// Clone confirmation
-		if ($action == 'clone') 
-		{
-			// Create an array for form
-			$formquestion = array(
-				array('type' => 'other','name' => 'socid','label' => $langs->trans("SelectThirdParty"),'value' => $form->select_company($object->fk_soc, 'socid', '(s.client=1 OR s.client=2 OR s.client=3)', 1)),
-				array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
-			);
-			// Ask confirmation to clone
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
-		}
+	$totalpaye = $object->getSommePaiement();
 
-		// Confirmation of validation
-		if ($action == 'validate')
-		{
-			$error = 0;
-			
-			// We verifie whether the object is provisionally numbering
-			$ref = substr($object->ref, 1, 4);
-			if ($ref == 'PROV') 
-			{
-				$numref = $object->getNextNumRef($soc);	
-				if (empty($numref)) 
-				{
-					$error ++;
-					setEventMessages(null, $object->errors, 'errors');
-				}
-			} 
-			else 
-			{
-				$numref = $object->ref;
+	$formconfirm = '';
+
+	// Confirmation to delete
+	if ($action == 'delete') {
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
+	}
+
+	// Clone confirmation
+	if ($action == 'clone') {
+		// Create an array for form
+		$formquestion = array(
+			array('type' => 'other', 'name' => 'socid', 'label' => $langs->trans("SelectThirdParty"), 'value' => $form->select_company($object->fk_soc, 'socid', '(s.client=1 OR s.client=2 OR s.client=3)', 1)),
+			array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
+		);
+		// Ask confirmation to clone
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
+	}
+
+	// Confirmation of validation
+	if ($action == 'validate') {
+		$error = 0;
+
+		// We verifie whether the object is provisionally numbering
+		$ref = substr($object->ref, 1, 4);
+		if ($ref == 'PROV') {
+			$numref = $object->getNextNumRef($soc);
+			if (empty($numref)) {
+				$error++;
+				setEventMessages(null, $object->errors, 'errors');
 			}
-
-			$text = $langs->trans('ConfirmValidateReceipt', $numref);
-			
-			if (! empty($conf->notification->enabled))
-			{
-				require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';
-				$notify = new Notify($db);
-				$text .= '<br>';
-				$text .= $notify->confirmMessage('ULTIMATEIMMO_VALIDATE', $object->socid, $object);
-			}
-			
-			if (! $error)
-				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?recid='.$object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
+		} else {
+			$numref = $object->ref;
 		}
-		
-		// Call Hook formConfirm
-		$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
-		$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-		if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
-		elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
 
-		// Print form confirm
-		print $formconfirm;
+		$text = $langs->trans('ConfirmValidateReceipt', $numref);
+
+		if (!empty($conf->notification->enabled)) {
+			require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';
+			$notify = new Notify($db);
+			$text .= '<br>';
+			$text .= $notify->confirmMessage('ULTIMATEIMMO_VALIDATE', $object->socid, $object);
+		}
+
+		if (!$error)
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
+	}
+
+	// Call Hook formConfirm
+	$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
+	$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+	if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
+	elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
+
+	// Print form confirm
+	print $formconfirm;
 
 
 	// Object card
@@ -1326,7 +1317,7 @@ if ($action == 'createall') {
 			}
 
 			// Send
-			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
+			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
 
 			// Modify
 			if ($permissiontoadd) {
@@ -1335,7 +1326,7 @@ if ($action == 'createall') {
 				print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
 			}
 
-			////// generate pdf
+			// generate pdf
 			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=builddoc&id=' . $id . '">' . $langs->trans('Quittance') . '</a></div>';
 
 			// Create payment
@@ -1348,7 +1339,7 @@ if ($action == 'createall') {
 			}
 
 			// Classify 'paid'
-			if ($receipt->paye == 0 && round($remaintopay) <= 0) {
+			if ($receipt->paye == 1 && round($remaintopay) <= 0) {
 				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&id=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
 			}
 

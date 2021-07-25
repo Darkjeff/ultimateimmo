@@ -1,6 +1,6 @@
 -- ===================================================================
 -- Copyright (C) 2004 Rodolphe Quiedeville <rodolphe@quiedeville.org>
--- Copyright (C) 2019 Philippe GRAND  <philippe.grand@atoo-net.com>
+-- Copyright (C) 2019-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 --
 -- ===================================================================
 
-create table llx_paiement_receipt
+CREATE TABLE IF NOT EXISTS llx_paiement_receipt
 (
   rowid           integer AUTO_INCREMENT PRIMARY KEY,
   fk_payment     integer,
