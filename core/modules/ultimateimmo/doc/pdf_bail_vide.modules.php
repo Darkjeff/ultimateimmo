@@ -212,15 +212,14 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 		if (file_exists($dir))
 		{
 			// Add pdfgeneration hook
-			if (! is_object($hookmanager))
-			{
-				include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
-				$hookmanager=new HookManager($this->db);
+			if (!is_object($hookmanager)) {
+				include_once DOL_DOCUMENT_ROOT . '/core/class/hookmanager.class.php';
+				$hookmanager = new HookManager($this->db);
 			}
 			$hookmanager->initHooks(array('pdfgeneration'));
-			$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
+			$parameters = array('file' => $file, 'object' => $object, 'outputlangs' => $outputlangs);
 			global $action;
-			$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+			$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 
 			// Set nblignes with the new facture lines content after hook
 			//$nblignes = count($object->lines);
@@ -228,13 +227,13 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 			//$nbpayments = count($object->getListOfPayments()); TODO : add method
 
 			// Create pdf instance
-			$pdf=pdf_getInstance($this->format);
+			$pdf = pdf_getInstance($this->format);
 			$default_font_size = pdf_getPDFFontSize($outputlangs);	// Must be after pdf_getInstance
 			$pdf->SetAutoPageBreak(1, 0);
 
-			$heightforinfotot = 50+(4*$nbpayments);	// Height reserved to output the info and total part and payment part
-			$heightforfreetext= (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT)?$conf->global->MAIN_PDF_FREETEXT_HEIGHT:5);	// Height reserved to output the free text on last page
-			$heightforfooter = $this->marge_basse + (empty($conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS)?12:22);	// Height reserved to output the footer (value include bottom margin)
+			$heightforinfotot = 50 + (4 * $nbpayments);	// Height reserved to output the info and total part and payment part
+			$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5);	// Height reserved to output the free text on last page
+			$heightforfooter = $this->marge_basse + (empty($conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS) ? 12 : 22);	// Height reserved to output the footer (value include bottom margin)
 
 			if (class_exists('TCPDF'))
 			{
