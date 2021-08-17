@@ -81,9 +81,7 @@ $extralabels = $extrafields->fetch_name_optionals_label('immocost');
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
-if ($id > 0 || ! empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity] . "/cost/" . dol_sanitizeFileName($object->ref);
-
-
+if ($id > 0 || ! empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$conf->entity] . "/cost/" . dol_sanitizeFileName($object->ref);
 
 /*
  * Actions
