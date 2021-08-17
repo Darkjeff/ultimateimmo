@@ -267,6 +267,7 @@ print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 foreach( $value_array as $key=>$val)
 {
 
+	$total=0;
 	print '<tr class="oddeven"><td>' . $key. '</td>';
 	foreach( $months_list as $month_num => $month_name )
 	{
@@ -435,6 +436,7 @@ print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 foreach( $value_array as $key=>$val)
 {
+	$total=0;
 	print '<tr class="oddeven"><td>' . $key. '</td>';
 	foreach( $months_list as $month_num => $month_name )
 	{
