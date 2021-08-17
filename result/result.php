@@ -272,7 +272,7 @@ foreach( $value_array as $key=>$val)
 	foreach( $months_list as $month_num => $month_name )
 	{
 		print '<td align="right">' . $val [$month_num] . '</td>';
-		$total += $row [$month_num];
+		$total += $val [$month_num];
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
 	print '</tr>';
@@ -441,7 +441,7 @@ foreach( $value_array as $key=>$val)
 	foreach( $months_list as $month_num => $month_name )
 	{
 		print '<td align="right">' . $val [$month_num] . '</td>';
-		$total += $row [$month_num];
+		$total += $val [$month_num];
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
 	print '</tr>';
