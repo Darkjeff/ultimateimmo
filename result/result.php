@@ -93,20 +93,20 @@ foreach( $months_list as $month_name )
 }
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ll.label AS nom_immeuble";
+$sql = "SELECT ib.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
 }
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-//$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid ";
+$sql .= "  AND lp.fk_property = ip.rowid AND ib.fk_property = ip.fk_property";
 
-$sql .= " GROUP BY ll.label";
+$sql .= " GROUP BY ib.label";
 
 $resql = $db->query ( $sql );
 if ($resql)
@@ -159,9 +159,9 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ir.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ir.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND ir.fk_property = ip.rowid AND ip.rowid = ib.fk_property  ";
+$sql .= "  AND ir.fk_property = ip.rowid AND ip.fk_property = ib.fk_property  ";
 
-$sql .= " GROUP BY ib.label";
+$sql .= " GROUP BY ip.fk_property, ib.label";
 
 $resql = $db->query ( $sql );
 if ($resql)
