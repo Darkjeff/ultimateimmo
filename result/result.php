@@ -69,12 +69,12 @@ if ($year == 0) {
 /*
  * View
  */
-llxHeader('', 'Compta - Ventilation');
+llxHeader('', 'Immobilier - Resultat');
 
 $textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/result/result.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
 $textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/result/result.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';
 
-print load_fiche_titre($langs->trans("Encaissement") . " " . $textprevyear . " " . $langs->trans("Year") . " " . $year_start . " " . $textnextyear);
+print load_fiche_titre($langs->trans("Resultat Immo") . " " . $textprevyear . " " . $langs->trans("Year") . " " . $year_start . " " . $textnextyear);
 
 print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
@@ -191,11 +191,11 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ib.fk_property";
+$sql .= "  AND lp.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 $sql .= " GROUP BY ib.label";
 
 $resqlencaissement = $db->query($sql);
@@ -212,7 +212,7 @@ $sql .= " WHERE ir.date_echeance >= '" . $db->idate(dol_get_first_day($y, 1, fal
 $sql .= "  AND ir.date_echeance <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND ir.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 
-$sql .= " GROUP BY ip.fk_property, ib.label";
+$sql .= " GROUP BY ib.label";
 
 $resqlpaiement = $db->query($sql);
 if ($resqlpaiement && $resqlencaissement) {
@@ -284,7 +284,7 @@ $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge déductible' ";
 $sql .= "  AND ic.fk_property = ip.rowid AND ip.fk_property = ib.fk_property ";
 
-$sql .= " GROUP BY ip.fk_property, ib.label";
+$sql .= " GROUP BY ib.label";
 
 $resql = $db->query($sql);
 if ($resql) {
@@ -319,13 +319,13 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ib.fk_property";
+$sql .= "  AND lp.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 
-$sql .= " GROUP BY ll.fk_property, ib.label";
+$sql .= " GROUP BY ib.label";
 
 $resqlencaissement = $db->query($sql);
 
@@ -340,7 +340,7 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ir.date_echeance >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ir.date_echeance <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND ir.fk_property = ip.rowid AND ip.fk_property = ib.fk_property ";
-$sql .= " GROUP BY ip.fk_property, ib.label";
+$sql .= " GROUP BY ib.label";
 
 $resqlpaiement = $db->query($sql);
 
@@ -356,7 +356,7 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-//$sql .= "  AND it.famille = 'Charge déductible' ";
+$sql .= "  AND it.famille = 'Charge déductible' ";
 $sql .= "  AND ic.fk_property = ip.rowid AND ip.fk_property = ib.fk_property ";
 
 $sql .= " GROUP BY ib.label";
@@ -430,7 +430,7 @@ $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.famille != 'Charge non déductible' ";
 $sql .= "  AND ic.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 
-$sql .= " GROUP BY ip.fk_property, ib.label";
+$sql .= " GROUP BY ib.label";
 
 $resql = $db->query($sql);
 if ($resql) {
@@ -465,11 +465,11 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
+$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ib.fk_property";
+$sql .= "  AND lp.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 
 $resqlencaissement = $db->query($sql);
 
@@ -499,7 +499,7 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-//$sql .= "  AND it.famille = 'Charge non déductible' ";
+$sql .= "  AND it.famille = 'Charge non déductible' ";
 $sql .= "  AND ic.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 
 $resqlcharged = $db->query($sql);
