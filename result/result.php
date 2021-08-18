@@ -2,7 +2,7 @@
 /* Copyright (C) 2001-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2018-2019 Philippe GRAND 		<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND 		<philippe.grand@atoo-net.com>
  * Copyright (C) 2020      Thomas OURSEL         <contact@ogest.fr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -71,7 +71,7 @@ llxHeader ( '', 'Compta - Ventilation' );
 $textprevyear = '<a href="'.dol_buildpath('/ultimateimmo/result/result.php', 1).'?year='.($year_current - 1).'">'.img_previous().'</a>';
 $textnextyear = '<a href="'.dol_buildpath('/ultimateimmo/result/result.php', 1).'?year='.($year_current + 1).'">'.img_next().'</a>';
 
-print_fiche_titre ( $langs->trans("Encaissement")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
+print load_fiche_titre($langs->trans("Encaissement") . " " . $textprevyear . " " . $langs->trans("Year") . " " . $year_start . " " . $textnextyear);
 
 print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
@@ -93,7 +93,7 @@ foreach( $months_list as $month_name )
 }
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ib.label AS nom_immeuble";
+$sql = "SELECT ll.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
@@ -101,12 +101,12 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
+//$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lp.fk_property = ll.rowid AND ll.fk_property = ib.fk_property";
+$sql .= "  AND lp.fk_property = ll.rowid ";
 
-$sql .= " GROUP BY ll.fk_property, ib.label";
+$sql .= " GROUP BY ll.label";
 
 $resql = $db->query ( $sql );
 if ($resql)
@@ -159,9 +159,9 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ir.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ir.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND ir.fk_property = ip.rowid AND ip.fk_property = ib.fk_property  ";
+$sql .= "  AND ir.fk_property = ip.rowid AND ip.rowid = ib.fk_property  ";
 
-$sql .= " GROUP BY ip.fk_property, ib.label";
+$sql .= " GROUP BY ib.label";
 
 $resql = $db->query ( $sql );
 if ($resql)
