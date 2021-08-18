@@ -74,7 +74,7 @@ llxHeader('', 'Immobilier - Resultat');
 $textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/result/result.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
 $textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/result/result.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';
 
-print load_fiche_titre($langs->trans("Resultat Immo") . " " . $textprevyear . " " . $langs->trans("Year") . " " . $year_start . " " . $textnextyear);
+print load_fiche_titre($langs->trans("Encaissement") . " " . $textprevyear . " " . $langs->trans("Year") . " " . $year_start . " " . $textnextyear);
 
 print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
@@ -88,7 +88,7 @@ for ($month_num = 1; $month_num <= 12; $month_num++) {
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td></tr>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width="10%">' . $langs->trans("Encaissement") . '</td>';
+print '<tr class="liste_titre"><td width="10%">' . $langs->trans("Resultat Immo") . '</td>';
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
@@ -154,7 +154,7 @@ $sql .= " WHERE ir.date_echeance >= '" . $db->idate(dol_get_first_day($y, 1, fal
 $sql .= "  AND ir.date_echeance <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND ir.fk_property = ip.rowid AND ib.fk_property = ip.fk_property  ";
 
-$sql .= " GROUP BY ip.fk_property, ib.label";
+$sql .= " GROUP BY ib.label";
 
 $resql = $db->query($sql);
 if ($resql) {
@@ -197,6 +197,7 @@ $sql .= " WHERE lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, fals
 $sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND lp.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 $sql .= " GROUP BY ib.label";
+$sql .= " ORDER BY ib.label";
 
 $resqlencaissement = $db->query($sql);
 
@@ -243,7 +244,6 @@ foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
-
 
 foreach ($value_array as $key => $val) {
 	$total = 0;
