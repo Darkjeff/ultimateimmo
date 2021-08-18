@@ -246,10 +246,11 @@ print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 
 foreach ($value_array as $key => $val) {
-
+	$total = 0;
 	print '<tr class="oddeven"><td>' . $key . '</td>';
 	foreach ($months_list as $month_num => $month_name) {
 		print '<td align="right">' . $val[$month_num] . '</td>';
+		$total += $val [$month_num];
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
 	print '</tr>';
@@ -269,22 +270,20 @@ foreach ($months_list as $month_name) {
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
-$sql = "SELECT ib.label AS nom_immeuble";
+$sql = "SELECT ip.label AS nom_immeuble";
 foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON ic.fk_property = ip.rowid";
+//$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge déductible' ";
-$sql .= "  AND ic.fk_property = ip.rowid AND ip.fk_property = ib.fk_property ";
 
-$sql .= " GROUP BY ib.label";
+$sql .= " GROUP BY ip.label";
 
 $resql = $db->query($sql);
 if ($resql) {
@@ -394,9 +393,11 @@ foreach ($months_list as $month_name) {
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 foreach ($value_array as $key => $val) {
+	$total = 0;
 	print '<tr class="oddeven"><td>' . $key . '</td>';
 	foreach ($months_list as $month_num => $month_name) {
 		print '<td align="right">' . $val[$month_num] . '</td>';
+		$total += $val [$month_num];
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
 	print '</tr>';
@@ -415,22 +416,20 @@ foreach ($months_list as $month_name) {
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
-$sql = "SELECT ib.label AS nom_immeuble";
+$sql = "SELECT ip.label AS nom_immeuble";
 foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON ic.fk_property = ip.rowid";
+//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ic.fk_property = ib.fk_property";
 $sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.famille != 'Charge non déductible' ";
-$sql .= "  AND ic.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
+$sql .= "  AND it.famille = 'Charge non déductible' ";
 
-$sql .= " GROUP BY ib.label";
+$sql .= " GROUP BY ip.label";
 
 $resql = $db->query($sql);
 if ($resql) {
