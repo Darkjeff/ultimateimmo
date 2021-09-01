@@ -1218,9 +1218,11 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function LibStatut($status, $mode = 0)
 	{
+		global $langs;
+
 		// phpcs:enable
 		if (empty($this->labelStatus) || empty($this->labelStatusShort)) {
-			global $langs;
+
 			//$langs->load("mymodule");
 			$this->labelStatus[self::STATUS_DRAFT] = $langs->trans('Draft');
 			$this->labelStatus[self::STATUS_VALIDATED] = $langs->trans('Enabled');
@@ -1233,6 +1235,12 @@ class ImmoReceipt extends CommonObject
 		$statusType = 'status' . $status;
 		//if ($status == self::STATUS_VALIDATED) $statusType = 'status1';
 		if ($status == self::STATUS_CANCELED) $statusType = 'status6';
+
+		if ($this->paye==1) {
+			$this->labelStatusShort[$status]=$langs->trans('Paid');
+			$this->labelStatus[$status]=$langs->trans('Paid');
+			$statusType = 'status4';
+		}
 
 		return dolGetStatus($this->labelStatus[$status], $this->labelStatusShort[$status], '', $statusType, $mode);
 	}
@@ -1391,15 +1399,20 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function set_paid($user)
 	{
+		$this->db->begin();
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element.' SET';
 		$sql .= ' paye=1';
 		$sql .= ' WHERE rowid = ' . $this->id;
-		$return = $this->db->query ( $sql );
-		$this->db->commit ();
-		if ($return)
+		$resql = $this->db->query ( $sql );
+		if (!$resql) {
+			$this->errors[]= $this->db->lasterror;
+			$this->error= $this->db->lasterror;
+			$this->db->rollback();
+			return -1;
+		} else {
+			$this->db->commit ();
 			return 1;
-			else
-				return - 1;
+		}
 	}
 
 	/**
@@ -1466,3 +1479,4 @@ class ImmoreceiptLine
 	public $nomlocal;
 	public $property_id;
 }
+

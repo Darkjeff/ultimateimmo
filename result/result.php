@@ -197,36 +197,37 @@ print '</tr>';
 
 $value_array=array();
 
-$sql = "SELECT ib.label AS nom_immeuble";
+$sql = "SELECT ip.label AS nom_property";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
 }
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
+$sql .= ", ip.rowid";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lp.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
-$sql .= " GROUP BY ib.label";
+$sql .= " GROUP BY ib.label, ip.rowid";
 $sql .= " ORDER BY ib.label";
 $resqlencaissement = $db->query ( $sql );
 
-$sql = "SELECT ib.label AS nom_immeuble";
+$sql = "SELECT ip.label AS nom_property";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(ir.date_echeance)='.$month_num.' then ir.chargesamount else 0 end),2) AS month_'.$month_num;
 }
 $sql .= ", ROUND(SUM(ir.chargesamount),2) as Total";
+$sql .= ", ip.rowid";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON ir.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
 $sql .= " WHERE ir.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ir.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND ir.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 
-$sql .= " GROUP BY ib.label";
+$sql .= " GROUP BY ib.label, ip.rowid";
 
 $resqlpaiement = $db->query ( $sql );
 if ($resqlpaiement && $resqlencaissement)
@@ -240,6 +241,7 @@ if ($resqlpaiement && $resqlencaissement)
 		$rowpaiement = $db->fetch_row ( $resqlpaiement );
 
 		$value_array[$rowencaissement [0]][0] =  $rowencaissement [0];
+		$value_array[$rowencaissement [0]]["id"] = $rowencaissement [14];
 		for ($j = 1; $j <= 13; $j++) {
 			$value_array[$rowencaissement [0]][$j] = ($rowencaissement [$j] - $rowpaiement [$j]);
 		}
@@ -266,13 +268,12 @@ print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 foreach( $value_array as $key=>$val)
 {
-
 	$total=0;
 	print '<tr class="oddeven"><td>' . $key. '</td>';
 	foreach( $months_list as $month_num => $month_name )
 	{
 		print '<td align="right">' . $val [$month_num] . '</td>';
-		$value_array_revfisc[$key][$month_num] = $val [$month_num];
+		$value_array_revfisc[$val['id']][$month_num] = $val [$month_num];
 		$total += $val [$month_num];
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
@@ -294,12 +295,13 @@ foreach( $months_list as $month_name )
 }
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
-$sql = "SELECT ip.label AS nom_immeuble";
+$sql = "SELECT ip.label AS nom_property";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
+$sql .= ", ip.rowid";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON ic.fk_property = ip.rowid";
@@ -308,7 +310,7 @@ $sql .= " WHERE ic.date_start >= '" . $db->idate ( dol_get_first_day ( $y, 1, fa
 $sql .= "  AND ic.date_start <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND it.famille = 'Charge déductible' ";
 
-$sql .= " GROUP BY  ip.label";
+$sql .= " GROUP BY  ip.label, ip.rowid";
 
 
 $resql = $db->query ( $sql );
@@ -326,7 +328,7 @@ if ($resql)
 		foreach( $months_list as $month_num => $month_name )
 		{
 			print '<td align="right">' . $row [$month_num] . '</td>';
-			$value_array_revfisc[$row [0]][$month_num] -= $row [$month_num];
+			$value_array_revfisc[$row [14]][$month_num] -= $row [$month_num];
 			$total += $row [$month_num];
 		}
 		print '<td align="right"><b>' . $total . '</b></td>';
