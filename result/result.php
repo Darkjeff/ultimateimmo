@@ -272,6 +272,7 @@ foreach( $value_array as $key=>$val)
 	foreach( $months_list as $month_num => $month_name )
 	{
 		print '<td align="right">' . $val [$month_num] . '</td>';
+		$value_array_revfisc[$key][$month_num] = $val [$month_num];
 		$total += $val [$month_num];
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
@@ -325,6 +326,7 @@ if ($resql)
 		foreach( $months_list as $month_num => $month_name )
 		{
 			print '<td align="right">' . $row [$month_num] . '</td>';
+			$value_array_revfisc[$row [0]][$month_num] -= $row [$month_num];
 			$total += $row [$month_num];
 		}
 		print '<td align="right"><b>' . $total . '</b></td>';
@@ -342,7 +344,7 @@ print "</table>\n";
 
 $value_array=array();
 
-$sql = "SELECT ib.label AS nom_immeuble";
+/*$sql = "SELECT ib.label AS nom_immeuble";
 foreach( $months_list as $month_num => $month_name )
 {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
@@ -421,7 +423,7 @@ if ($resqlpaiement && $resqlencaissement && $resqlcharged )
 else
 {
 	print $db->lasterror (); // affiche la derniere erreur sql
-}
+}*/
 
 
 print "\n<br>\n";
@@ -434,7 +436,7 @@ foreach( $months_list as $month_name )
 print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
 
 
-foreach( $value_array as $key=>$val)
+foreach( $value_array_revfisc as $key=>$val)
 {
 	$total=0;
 	print '<tr class="oddeven"><td>' . $key. '</td>';

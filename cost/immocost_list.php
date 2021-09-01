@@ -42,6 +42,7 @@ require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/class/immocost.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo","other","main"));
@@ -177,6 +178,7 @@ if (empty($reshook))
  */
 
 $form=new Form($db);
+$formfile = new FormFile($db);
 
 $now=dol_now();
 
@@ -458,6 +460,13 @@ while ($i < min($num, $limit))
 			if ($align) print ' class="'.$align.'"';
 			print '>';
 			print $object->showOutputField($val, $key, $obj->$key, '');
+			if ($key=='ref') {
+				$filename = dol_sanitizeFileName($obj->ref);
+				$filedir = $conf->ultimateimmo->multidir_output[$conf->entity] . "/cost/" . dol_sanitizeFileName($obj->ref);
+				$urlsource = $_SERVER['PHP_SELF'] . '?id=' . $obj->rowid;
+				//var_dump($object->element,$filename,$filedir);
+				print $formfile->getDocumentsLink($object->element, $filename, $filedir);
+			}
 			print '</td>';
 			if (! $i) $totalarray['nbfield']++;
 			if (! empty($val['isameasure']))
