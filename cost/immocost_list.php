@@ -38,9 +38,10 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
-require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
-require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+require_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
+require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 dol_include_once('/ultimateimmo/class/immocost.class.php');
 
 // Load traductions files requiredby by page
@@ -160,12 +161,12 @@ if (empty($reshook))
 	}
 
 	// Mass actions
-	$objectclass='ImmoCost';
-	$objectlabel='ImmoCost';
+	$objectclass = 'ImmoCost';
+	$objectlabel = 'ImmoCost';
 	$permtoread = $user->rights->ultimateimmo->read;
 	$permtodelete = $user->rights->ultimateimmo->delete;
 	$uploaddir = $conf->ultimateimmo->dir_output;
-	include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_massactions.inc.php';
 }
 
 
@@ -176,12 +177,13 @@ if (empty($reshook))
  * Put here all code to render page
  */
 
-$form=new Form($db);
+$form = new Form($db);
+$formfile = new FormFile($db);
 
-$now=dol_now();
+$now = dol_now();
 
 //$help_url="EN:Module_ImmoCost|FR:Module_ImmoCost_FR|ES:Módulo_ImmoCost";
-$help_url='';
+$help_url = '';
 $title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoCosts"));
 
 
@@ -446,24 +448,28 @@ while ($i < min($num, $limit))
 
 	// Show here line of result
 	print '<tr class="oddeven">';
-	foreach($object->fields as $key => $val)
-	{
-		$align='';
-		if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
-		if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
-		if ($key == 'status') $align.=($align?' ':'').'center';
-		if (! empty($arrayfields['t.'.$key]['checked']))
-		{
+	foreach ($object->fields as $key => $val) {
+		$align = '';
+		if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $align .= ($align ? ' ' : '') . 'center';
+		if (in_array($val['type'], array('timestamp'))) $align .= ($align ? ' ' : '') . 'nowrap';
+		if ($key == 'status') $align .= ($align ? ' ' : '') . 'center';
+		if (!empty($arrayfields['t.' . $key]['checked'])) {
 			print '<td';
-			if ($align) print ' class="'.$align.'"';
+			if ($align) print ' class="' . $align . '"';
 			print '>';
 			print $object->showOutputField($val, $key, $obj->$key, '');
+			if ($key == 'ref') {
+				$filename = dol_sanitizeFileName($obj->ref);
+				$filedir = $conf->ultimateimmo->multidir_output[$conf->entity] . "/cost/" . dol_sanitizeFileName($obj->ref);
+				$urlsource = $_SERVER['PHP_SELF'] . '?id=' . $obj->rowid;
+				//var_dump($object->element,$filename,$filedir);
+				print $formfile->getDocumentsLink($object->element, $filename, $filedir);
+			}
 			print '</td>';
-			if (! $i) $totalarray['nbfield']++;
-			if (! empty($val['isameasure']))
-			{
-				if (! $i) $totalarray['pos'][$totalarray['nbfield']]='t.'.$key;
-				$totalarray['val']['t.'.$key] += $obj->$key;
+			if (!$i) $totalarray['nbfield']++;
+			if (!empty($val['isameasure'])) {
+				if (!$i) $totalarray['pos'][$totalarray['nbfield']] = 't.' . $key;
+				$totalarray['val']['t.' . $key] += $obj->$key;
 			}
 		}
 	}
