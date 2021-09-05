@@ -1234,6 +1234,12 @@ class ImmoReceipt extends CommonObject
 		//if ($status == self::STATUS_VALIDATED) $statusType = 'status1';
 		if ($status == self::STATUS_CANCELED) $statusType = 'status6';
 
+		if ($this->paye == 1) {
+			$this->labelStatusShort[$status] = $langs->trans('Paid');
+			$this->labelStatus[$status] = $langs->trans('Paid');
+			$statusType = 'status4';
+		}
+
 		return dolGetStatus($this->labelStatus[$status], $this->labelStatusShort[$status], '', $statusType, $mode);
 	}
 
@@ -1389,17 +1395,22 @@ class ImmoReceipt extends CommonObject
 	 * @param unknown $user
 	 * @return number
 	 */
-	public function set_paid($user) 
+	public function set_paid($user)
 	{
-		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element.' SET';
+		$this->db->begin();
+		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element . ' SET';
 		$sql .= ' paye=1';
 		$sql .= ' WHERE rowid = ' . $this->id;
-		$return = $this->db->query ( $sql );
-		$this->db->commit ();
-		if ($return)
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			$this->errors[] = $this->db->lasterror;
+			$this->error = $this->db->lasterror;
+			$this->db->rollback();
+			return -1;
+		} else {
+			$this->db->commit();
 			return 1;
-			else
-				return - 1;
+		}
 	}
 	
 	/**
