@@ -245,7 +245,6 @@ foreach ($months_list as $month_name) {
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 foreach ($value_array as $key => $val) {
-
 	$total = 0;
 	print '<tr class="oddeven"><td>' . $key . '</td>';
 	foreach ($months_list as $month_num => $month_name) {
@@ -379,34 +378,28 @@ if ($resqlpaiement && $resqlencaissement && $resqlcharged) {
 	$db->free($resqlencaissement);
 	$db->free($resqlpaiement);
 	$db->free($resqlcharged);
-}
-else
-{
-	print $db->lasterror (); // affiche la derniere erreur sql
+} else {
+	print $db->lasterror(); // affiche la derniere erreur sql
 }
 
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width="10%">'.$langs->trans("Revenu Fiscal").'</td>';
-foreach( $months_list as $month_name )
-{
-	print '<td align="right">'.$langs->trans($month_name).'</td>';
+print '<tr class="liste_titre"><td width="10%">' . $langs->trans("Revenu Fiscal") . '</td>';
+foreach ($months_list as $month_name) {
+	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
-print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
-
-foreach( $value_array as $key=>$val)
-{
-	$total=0;
-	print '<tr class="oddeven"><td>' . $key. '</td>';
-	foreach( $months_list as $month_num => $month_name )
-	{
-		print '<td align="right">' . $val [$month_num] . '</td>';
-		$total += $val [$month_num];
+foreach ($value_array as $key => $val) {
+	$total = 0;
+	print '<tr class="oddeven"><td>' . $key . '</td>';
+	foreach ($months_list as $month_num => $month_name) {
+		print '<td align="right">' . $val[$month_num] . '</td>';
+		$total += $val[$month_num];
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
 	print '</tr>';
-	$i ++;
+	$i++;
 }
 print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
