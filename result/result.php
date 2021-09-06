@@ -406,15 +406,15 @@ print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr>';
 
-
+//Charges non Déductibles
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre"><td width="10%">'.$langs->trans("Charges non Déductibles").'</td>';
-foreach( $months_list as $month_name )
-{
-	print '<td align="right">'.$langs->trans($month_name).'</td>';
+
+foreach ($months_list as $month_name) {
+	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
-print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 $sql = "SELECT ip.label AS nom_immeuble";
 foreach ($months_list as $month_num => $month_name) {
@@ -430,56 +430,46 @@ $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false))
 $sql .= "  AND it.famille = 'Charge non déductible' ";
 $sql .= " GROUP BY  ip.label";
 
-
-$resql = $db->query ( $sql );
-if ($resql)
-{
+$resql = $db->query($sql);
+if ($resql) {
 	$i = 0;
-	$num = $db->num_rows ( $resql );
+	$num = $db->num_rows($resql);
 
-	while ( $i < $num )
-	{
-		$row = $db->fetch_row ( $resql );
+	while ($i < $num) {
+		$row = $db->fetch_row($resql);
 		$total = 0;
 
-		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
-		foreach( $months_list as $month_num => $month_name )
-		{
-			print '<td align="right">' . $row [$month_num] . '</td>';
-			$total += $row [$month_num];
+		print '<tr class="oddeven"><td>' . $row[0] . '</td>';
+		foreach ($months_list as $month_num => $month_name) {
+			print '<td align="right">' . $row[$month_num] . '</td>';
+			$total += $row[$month_num];
 		}
 		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
-		$i ++;
+		$i++;
 	}
-	$db->free ( $resql );
-}
-else
-{
-	print $db->lasterror (); // affiche la derniere erreur sql
+	$db->free($resql);
+} else {
+	print $db->lasterror(); // affiche la derniere erreur sql
 }
 
 print "</table>\n";
 
-
-$value_array=array();
+$value_array = array();
 
 $sql = "SELECT 'Total' AS Total";
-foreach( $months_list as $month_num => $month_name )
-{
-	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)='.$month_num.' then lp.amount else 0 end),2) AS month_'.$month_num;
+foreach ($months_list as $month_num => $month_name) {
+	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)=' . $month_num . ' then lp.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
-$sql .= " WHERE lp.date_payment >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND lp.date_payment <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= " WHERE lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
+$sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND lp.fk_property = ip.rowid AND ip.fk_property = ib.fk_property";
 
-
-
-$resqlencaissement = $db->query ( $sql );
+$resqlencaissement = $db->query($sql);
 
 $sql = "SELECT 'Total' AS Total";
 foreach( $months_list as $month_num => $month_name )
@@ -494,9 +484,7 @@ $sql .= " WHERE ir.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND ir.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ir.fk_property = ip.rowid AND ip.fk_property = ib.fk_property ";
 
-
 $resqlpaiement = $db->query ( $sql );
-
 
 $sql = "SELECT 'Total' AS Total";
 foreach( $months_list as $month_num => $month_name )
