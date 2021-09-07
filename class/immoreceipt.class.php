@@ -41,12 +41,12 @@ class ImmoReceipt extends CommonObject
 	 * @var string Name of table without prefix where object is stored
 	 */
 	public $table_element = 'ultimateimmo_immoreceipt';
-	
+
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
 	public $fk_element='fk_receipt';
-	
+
 	/**
 	 * @var ImmoreceiptLine[] Lines
 	 */
@@ -66,17 +66,17 @@ class ImmoReceipt extends CommonObject
 	 * @var string String with name of icon for immoreceipt. Must be the part after the 'object_' into object_immoreceipt.png
 	 */
 	public $picto = 'immoreceipt@ultimateimmo';
-	
+
 	/**
 	 * Draft status
 	 */
 	const STATUS_DRAFT = 0;
-	
+
 	/**
 	 * Validated status
 	 */
 	const STATUS_VALIDATED = 1;
-	
+
 	/**
 	 * Credit note status
 	 */
@@ -149,7 +149,7 @@ class ImmoReceipt extends CommonObject
 		'import_key'    => array('type' => 'varchar(14)', 'label' => 'ImportId', 'enabled' => 1, 'visible' => -2, 'position' => 1000, 'notnull' => -1),
 		'model_pdf'     => array('type' => 'varchar(128)', 'label' => 'ModelPdf', 'enabled' => 1, 'visible' => -2, 'position' => 1010, 'notnull' => -1, 'index' => 1, 'searchall' => 1),
 		'last_main_doc' => array('type' => 'varchar(255)', 'label' => 'LastMainDoc', 'enabled' => 1, 'visible' => -2, 'position' => 1020, 'notnull' => -1),
-		'status' => array('type' => 'integer', 'label' => 'Status', 'enabled' => 1, 'visible' => 1, 'position' => 1000, 'notnull' => -1, 'default' => '0', 'index' => 1, 'arrayofkeyval' => array('0' => 'Draft', '1' => 'Validated', '2' => 'CreditNote', '9' => 'Canceled')),
+		'status' => array('type' => 'integer', 'label' => 'Status', 'enabled' => 1, 'visible' => 1, 'position' => 1000, 'notnull' => -1, 'default' => '0', 'index' => 1, 'arrayofkeyval' => array('0' => 'Draft', '1' => 'Active', '-1' => 'Cancel')),
 	);
 
 	/**
@@ -637,7 +637,7 @@ class ImmoReceipt extends CommonObject
 			}
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -680,7 +680,7 @@ class ImmoReceipt extends CommonObject
 					$this->set_vars_by_db($obj);
 
 					if ($obj->status == self::STATUS_DRAFT) {
-						$this->brouillon = 0;
+						$this->brouillon = 1;
 					}
 
 					$this->fk_mode_reglement  = $obj->fk_mode_reglement;
@@ -817,14 +817,14 @@ class ImmoReceipt extends CommonObject
 			return -1;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param unknown $id
 	 * @param array $filter
 	 */
-	public function fetchByLocalId($id, $filter=array()) 
-	{	
+	public function fetchByLocalId($id, $filter=array())
+	{
 		$sql = "SELECT il.rowid as reference, il.fk_rent , il.fk_property, il.label as nomrenter, il.fk_renter, il.total_amount,";
 		$sql .= " il.rentamount, il.chargesamount, il.date_echeance, il.note_public, il.status, il.paye ,";
 		$sql .= " il.date_start , il.date_end, il.fk_owner, il.partial_payment ";
@@ -833,30 +833,30 @@ class ImmoReceipt extends CommonObject
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON il.fk_renter = lc.rowid";
 		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON il.fk_property = ll.rowid ";
 		$sql .= " WHERE il.fk_property = " . $id;
-	
-		if (count($filter>0)) 
+
+		if (count($filter>0))
 		{
-			foreach($filter as $key=>$value) 
+			foreach($filter as $key=>$value)
 			{
-				if ($key=='insidedaterenter') 
+				if ($key=='insidedaterenter')
 				{
 					$sql .= " AND il.date_start<='".$this->db->idate($value)."' AND il.date_end>='".$this->db->idate($value)."'";
 				}
 			}
 		}
-	
+
 		dol_syslog(get_class($this) . "::fetchByLocalId sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-				
+
 			$this->line = array ();
 			$num = $this->db->num_rows($resql);
 			$this->lines=array();
-				
-			while ($obj = $this->db->fetch_object($resql)) 
+
+			while ($obj = $this->db->fetch_object($resql))
 			{
 				$line = new immoreceiptLine();
-	
+
 				$line->id = $obj->reference;
 				$line->ref = $obj->reference;
 				$line->fk_rent = $obj->fk_rent;
@@ -879,9 +879,9 @@ class ImmoReceipt extends CommonObject
 				$line->paye = $obj->paye;
 				$line->partial_payment = $obj->partial_payment;
 				$line->fk_payment = $obj->fk_payment;
-	
+
 				$this->lines[] = $line;
-	
+
 			}
 			$this->db->free($resql);
 			return $num;
@@ -916,7 +916,7 @@ class ImmoReceipt extends CommonObject
 		return $this->deleteCommon($user, $notrigger);
 		//return $this->deleteCommon($user, $notrigger, 1);
 	}
-	
+
 	/**
 	 *  Returns the reference to the following non used object depending on the active numbering module.
 	 *
@@ -927,11 +927,11 @@ class ImmoReceipt extends CommonObject
 		global $langs, $conf;
 		$langs->load("ultimateimmo@ultimateimmo");
 
-		if (empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER)) 
+		if (empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER))
 		{
 			$conf->global->ULTIMATEIMMO_ADDON_NUMBER = 'mod_ultimateimmo_standard';
 		}
-		
+
 		if (!empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER))
 		{
 			$mybool = false;
@@ -975,7 +975,7 @@ class ImmoReceipt extends CommonObject
 			return "";
 		}
 	}
-	
+
 	/**
 	 *	Validate object
 	 *
@@ -1164,7 +1164,7 @@ class ImmoReceipt extends CommonObject
 
 		return $result;
 	}
-	
+
 	/**
 	 *  Create a document onto disk according to template module.
 	 *
@@ -1218,9 +1218,11 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function LibStatut($status, $mode = 0)
 	{
+		global $langs;
+
 		// phpcs:enable
 		if (empty($this->labelStatus) || empty($this->labelStatusShort)) {
-			global $langs;
+
 			//$langs->load("mymodule");
 			$this->labelStatus[self::STATUS_DRAFT] = $langs->trans('Draft');
 			$this->labelStatus[self::STATUS_VALIDATED] = $langs->trans('Enabled');
@@ -1234,9 +1236,9 @@ class ImmoReceipt extends CommonObject
 		//if ($status == self::STATUS_VALIDATED) $statusType = 'status1';
 		if ($status == self::STATUS_CANCELED) $statusType = 'status6';
 
-		if ($this->paye == 1) {
-			$this->labelStatusShort[$status] = $langs->trans('Paid');
-			$this->labelStatus[$status] = $langs->trans('Paid');
+		if ($this->paye==1) {
+			$this->labelStatusShort[$status]=$langs->trans('Paid');
+			$this->labelStatus[$status]=$langs->trans('Paid');
 			$statusType = 'status4';
 		}
 
@@ -1398,21 +1400,21 @@ class ImmoReceipt extends CommonObject
 	public function set_paid($user)
 	{
 		$this->db->begin();
-		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element . ' SET';
+		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element.' SET';
 		$sql .= ' paye=1';
 		$sql .= ' WHERE rowid = ' . $this->id;
-		$resql = $this->db->query($sql);
+		$resql = $this->db->query ( $sql );
 		if (!$resql) {
-			$this->errors[] = $this->db->lasterror;
-			$this->error = $this->db->lasterror;
+			$this->errors[]= $this->db->lasterror;
+			$this->error= $this->db->lasterror;
 			$this->db->rollback();
 			return -1;
 		} else {
-			$this->db->commit();
+			$this->db->commit ();
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * 	Return amount of payments already done
 	 *  @param 		int 	$multicurrency 	Return multicurrency_amount instead of amount
@@ -1452,7 +1454,7 @@ class ImmoreceiptLine
 	/**
 	 * @var mixed Sample line property 1
 	 */
-	
+
 	public $fk_rent;
 	public $fk_property;
 	public $label;
@@ -1477,3 +1479,4 @@ class ImmoreceiptLine
 	public $nomlocal;
 	public $property_id;
 }
+
