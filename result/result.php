@@ -71,15 +71,14 @@ llxHeader ( '', 'Immobilier - Resultat' );
 $textprevyear = '<a href="'.dol_buildpath('/ultimateimmo/result/result.php', 1).'?year='.($year_current - 1).'">'.img_previous().'</a>';
 $textnextyear = '<a href="'.dol_buildpath('/ultimateimmo/result/result.php', 1).'?year='.($year_current + 1).'">'.img_next().'</a>';
 
-print_fiche_titre ( $langs->trans("Encaissement")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
+print load_fiche_titre($langs->trans("Encaissement")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear, '', 'title_accountancy');
 
 print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
 
 $y = $year_current;
 $months_list = [];
-for($month_num = 1; $month_num <= 12 ; $month_num++)
-{
+for ($month_num = 1; $month_num <= 12; $month_num++) {
 	$months_list[$month_num] = date('F', mktime(0, 0, 0, $month_num, 10));
 }
 
@@ -557,8 +556,8 @@ foreach ($value_array as $key => $val) {
 	$total = 0;
 	print '<tr class="oddeven"><td>' . $key . '</td>';
 	foreach ($months_list as $month_num => $month_name) {
-		print '<td align="right">' . $val[$month_num] . '</td>';
-		$total += $val[$month_num];
+		print '<td align="right">' . price($val[$month_num], 0, '', 1, -1, 2) . '</td>';
+		$total += price($val[$month_num], 0, '', 1, -1, 2);
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
 	print '</tr>';
