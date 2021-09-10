@@ -108,7 +108,7 @@ $sql .= ' WHERE lo.date_echeance >= \'' . $db->idate ( dol_get_first_day ( $y, 1
 $sql .= '  AND lo.date_echeance <= \'' . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . '\'';
 $sql .= '  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property  ';
 //$sql .= '  AND lo.paye = 1 ';
-$sql .= ' GROUP BY ll.fk_property, ii.label';
+$sql .= ' GROUP BY ii.label';
 
 $resql = $db->query ( $sql );
 if ($resql)
@@ -167,7 +167,7 @@ $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, 
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge récupérable/locative' ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
-$sql .= " GROUP BY ll.fk_property, ii.label";
+$sql .= " GROUP BY  ii.label";
 
 
 $resql = $db->query ( $sql );
@@ -218,7 +218,7 @@ $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 //$sql .= "  AND lo.paye = 1 ";
-$sql .= " GROUP BY lo.fk_property, ii.label";
+$sql .= " GROUP BY  ii.label";
 
 $resqlencaissement = $db->query ( $sql );
 
@@ -234,9 +234,9 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.famille = 'Charge récupérable/locative' ";
+$sql .= "  AND it.rowid   = 	12 ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
-$sql .= " GROUP BY ic.fk_property, ii.label";
+$sql .= " GROUP BY  ii.label";
 
 $resqlpaiement = $db->query ( $sql );
 if ($resqlpaiement && $resqlencaissement)
