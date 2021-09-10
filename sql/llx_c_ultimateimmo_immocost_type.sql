@@ -1,5 +1,5 @@
--- ========================================================================
--- Copyright (C) 2018-2019  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2013		Olivier Geffroy  <jeff@jeffinfo.com>
+-- Copyright (C) 2018-2019 	Philippe GRAND 	 <philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -14,9 +14,17 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-CREATE TABLE IF NOT EXISTS llx_c_ultimateimmo_immoreceipt_status (
-  rowid           integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
-  code            varchar(20) NOT NULL,
-  label           varchar(30),
-  active          tinyint DEFAULT 1  NOT NULL
-) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS  llx_c_ultimateimmo_immocost_type  (
+   rowid integer NOT NULL  AUTO_INCREMENT PRIMARY KEY,
+   ref varchar(50) NOT NULL,
+   label varchar(200) NOT NULL DEFAULT '',
+   famille	varchar(50) NOT NULL,
+   entity integer DEFAULT 1 NOT NULL,
+   date_creation datetime NOT NULL,
+   tms timestamp NOT NULL,
+   fk_user_creat integer NOT NULL,
+   fk_user_modif integer,
+   import_key varchar(14),
+   status integer NOT NULL
+)ENGINE=InnoDB;
+

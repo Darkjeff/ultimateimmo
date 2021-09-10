@@ -17,7 +17,7 @@
 -- ========================================================================
 CREATE TABLE IF NOT EXISTS  llx_c_ultimateimmo_builtdate  (
    rowid integer NOT NULL  AUTO_INCREMENT PRIMARY KEY,
-   code	varchar(8) NOT NULL, 
+   code	varchar(50) NOT NULL,
    entity integer DEFAULT 1 NOT NULL,
    label varchar(200) NOT NULL DEFAULT '',
    active tinyint(4) DEFAULT 1 NOT NULL
