@@ -43,21 +43,18 @@ if (! $res) die("Include of main fails");
 
 
 // Class
-require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
+require_once(DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo","other","bills"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "bills"));
 
 // Filter
-$year = $_GET ["year"];
-if ($year == 0)
-{
-	$year_current = strftime ( "%Y", time () );
+$year = $_GET["year"];
+if ($year == 0) {
+	$year_current = strftime("%Y", time());
 	$year_start = $year_current;
-}
-else
-{
+} else {
 	$year_current = $year;
 	$year_start = $year;
 }
@@ -65,20 +62,19 @@ else
 /*
  * View
  */
-llxHeader ( '', 'Compta - Ventilation' );
+llxHeader('', 'Compta - Ventilation');
 
-$textprevyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/cost_renter.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
-$textnextyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/cost_renter.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
+$textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/cost_renter.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
+$textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/cost_renter.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';
 
-print_fiche_titre ( $langs->trans("RenterCost")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
+print load_fiche_titre($langs->trans("RenterCost") . " " . $textprevyear . " " . $langs->trans("Year") . " " . $year_start . " " . $textnextyear);
 
 print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
 
 $y = $year_current;
 $months_list = [];
-for($month_num = 1; $month_num <= 12 ; $month_num++)
-{
+for ($month_num = 1; $month_num <= 12; $month_num++) {
 	$months_list[$month_num] = date('F', mktime(0, 0, 0, $month_num, 10));
 }
 
@@ -88,54 +84,47 @@ print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr><tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Paiement Charge locataire").'</td>';
-foreach( $months_list as $month_name )
-{
-	print '<td align="right">'.$langs->trans($month_name).'</td>';
+print '<tr class="liste_titre"><td width=10%>' . $langs->trans("Paiement Charge locataire") . '</td>';
+foreach ($months_list as $month_name) {
+	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
 
-print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 $sql = 'SELECT ii.label AS nom_immeuble';
-foreach( $months_list as $month_num => $month_name )
-{
-	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)='.$month_num.' then lo.chargesamount else 0 end),2) AS month_'.$month_num;
+foreach ($months_list as $month_num => $month_name) {
+	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)=' . $month_num . ' then lo.chargesamount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= ' FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as lo';
 $sql .= ' , ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as ll';
 $sql .= ' , ' . MAIN_DB_PREFIX . 'ultimateimmo_building as ii';
-$sql .= ' WHERE lo.date_echeance >= \'' . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . '\'';
-$sql .= '  AND lo.date_echeance <= \'' . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . '\'';
+$sql .= ' WHERE lo.date_echeance >= \'' . $db->idate(dol_get_first_day($y, 1, false)) . '\'';
+$sql .= '  AND lo.date_echeance <= \'' . $db->idate(dol_get_last_day($y, 12, false)) . '\'';
 $sql .= '  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property  ';
 //$sql .= '  AND lo.paye = 1 ';
 $sql .= ' GROUP BY ii.label';
 
-$resql = $db->query ( $sql );
-if ($resql)
-{
+$resql = $db->query($sql);
+if ($resql) {
 	$i = 0;
-	$num = $db->num_rows ( $resql );
+	$num = $db->num_rows($resql);
 
-	while ( $i < $num )
-	{
-		$row = $db->fetch_row ( $resql );
+	while ($i < $num) {
+		$row = $db->fetch_row($resql);
 		$total = 0;
 
-		print '<tr><td>' . $row [0] . '</td>';
-		foreach( $months_list as $month_num => $month_name )
-		{
-			print '<td align="right">' . $row [$month_num] . '</td>';
-			$total += $row [$month_num];
+		print '<tr><td>' . $row[0] . '</td>';
+		foreach ($months_list as $month_num => $month_name) {
+			print '<td align="right">' . $row[$month_num] . '</td>';
+			$total += $row[$month_num];
 		}
 		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
-		$i ++;
+		$i++;
 	}
-	$db->free ( $resql );
-}
-else
-{
-	print $db->lasterror (); // affiche la derniere erreur sql
+	$db->free($resql);
+} else {
+	print $db->lasterror(); // affiche la derniere erreur sql
 }
 print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
@@ -145,57 +134,49 @@ print '</tr>';
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Charges Réel Locataire").'</td>';
-foreach( $months_list as $month_name )
-{
-	print '<td align="right">'.$langs->trans($month_name).'</td>';
+print '<tr class="liste_titre"><td width=10%>' . $langs->trans("Charges Réel Locataire") . '</td>';
+foreach ($months_list as $month_name) {
+	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
-print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 
 $sql = "SELECT ii.label AS nom_immeuble";
-foreach( $months_list as $month_num => $month_name )
-{
-	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
+foreach ($months_list as $month_num => $month_name) {
+	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= " WHERE ic.date_creation >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
+$sql .= "  AND ic.date_creation <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.famille = 'Charge récupérable/locative' ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 $sql .= " GROUP BY ii.label";
 
-
-$resql = $db->query ( $sql );
-if ($resql)
-{
+$resql = $db->query($sql);
+if ($resql) {
 	$i = 0;
-	$num = $db->num_rows ( $resql );
+	$num = $db->num_rows($resql);
 
-	while ( $i < $num )
-	{
-		$row = $db->fetch_row ( $resql );
+	while ($i < $num) {
+		$row = $db->fetch_row($resql);
 		$total = 0;
 
-		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
-		foreach( $months_list as $month_num => $month_name )
-		{
-			print '<td align="right">' . $row [$month_num] . '</td>';
-			$total += $row [$month_num];
+		print '<tr class="oddeven"><td>' . $row[0] . '</td>';
+		foreach ($months_list as $month_num => $month_name) {
+			print '<td align="right">' . $row[$month_num] . '</td>';
+			$total += $row[$month_num];
 		}
 		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
-		$i ++;
+		$i++;
 	}
-	$db->free ( $resql );
-}
-else
-{
-	print $db->lasterror (); // affiche la derniere erreur sql
+	$db->free($resql);
+} else {
+	print $db->lasterror(); // affiche la derniere erreur sql
 }
 
 
@@ -204,95 +185,83 @@ print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr>';
 
-$value_array=array();
+$value_array = array();
 
 $sql = "SELECT ii.label AS nom_immeuble";
-foreach( $months_list as $month_num => $month_name )
-{
-	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)='.$month_num.' then lo.chargesamount else 0 end),2) AS month_'.$month_num;
+foreach ($months_list as $month_num => $month_name) {
+	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)=' . $month_num . ' then lo.chargesamount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= " WHERE lo.date_echeance >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
+$sql .= "  AND lo.date_echeance <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 //$sql .= "  AND lo.paye = 1 ";
 $sql .= " GROUP BY ii.label";
 
-$resqlencaissement = $db->query ( $sql );
+$resqlencaissement = $db->query($sql);
 
 $sql = "SELECT ii.label AS nom_immeuble";
-foreach( $months_list as $month_num => $month_name )
-{
-	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
+foreach ($months_list as $month_num => $month_name) {
+	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE ic.date_creation >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND ic.date_creation <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= " WHERE ic.date_creation >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
+$sql .= "  AND ic.date_creation <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.rowid = 12 ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 $sql .= " GROUP BY ii.label";
 
-$resqlpaiement = $db->query ( $sql );
-if ($resqlpaiement && $resqlencaissement)
-{
+$resqlpaiement = $db->query($sql);
+if ($resqlpaiement && $resqlencaissement) {
 	$i = 0;
-	$num = max($db->num_rows ( $resqlencaissement ), $db->num_rows ( $resqlpaiement ));
+	$num = max($db->num_rows($resqlencaissement), $db->num_rows($resqlpaiement));
 
-	while ( $i < $num )
-	{
-		$rowencaissement = $db->fetch_row ( $resqlencaissement );
-		$rowpaiement = $db->fetch_row ( $resqlpaiement );
+	while ($i < $num) {
+		$rowencaissement = $db->fetch_row($resqlencaissement);
+		$rowpaiement = $db->fetch_row($resqlpaiement);
 
-		$value_array[$rowencaissement [0]][0] =  $rowencaissement [0];
-		$value_array[$rowencaissement [0]][13] =  0;
-		for ($j = 1; $j <= 12; $j++)
-		{
-			$value_array[$rowencaissement [0]][$j] = ($rowencaissement [$j] - $rowpaiement [$j]);
+		$value_array[$rowencaissement[0]][0] =  $rowencaissement[0];
+		$value_array[$rowencaissement[0]][13] =  0;
+		for ($j = 1; $j <= 12; $j++) {
+			$value_array[$rowencaissement[0]][$j] = ($rowencaissement[$j] - $rowpaiement[$j]);
 		}
-		$i ++;
+		$i++;
 	}
-	$db->free ( $resqlencaissement );
-	$db->free ( $resqlpaiement );
-}
-else
-{
-	print $db->lasterror (); // affiche la derniere erreur sql
+	$db->free($resqlencaissement);
+	$db->free($resqlpaiement);
+} else {
+	print $db->lasterror(); // affiche la derniere erreur sql
 }
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Differentiel Charge").'</td>';
-foreach( $months_list as $month_name )
-{
-	print '<td align="right">'.$langs->trans($month_name).'</td>';
+print '<tr class="liste_titre"><td width=10%>' . $langs->trans("Differentiel Charge") . '</td>';
+foreach ($months_list as $month_name) {
+	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
-print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
+print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 
-foreach( $value_array as $key=>$val )
-{
-	print '<tr class="oddeven"><td>' . $key. '</td>';
-	foreach( $months_list as $month_num => $month_name )
-	{
-		print '<td align="right">' . $val [$month_num] . '</td>';
+foreach ($value_array as $key => $val) {
+	print '<tr class="oddeven"><td>' . $key . '</td>';
+	foreach ($months_list as $month_num => $month_name) {
+		print '<td align="right">' . $val[$month_num] . '</td>';
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
 	print '</tr>';
-	$i ++;
+	$i++;
 }
 print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr>';
 
-
 llxFooter('');
 $db->close();
-
 ?>
