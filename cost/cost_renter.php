@@ -143,16 +143,16 @@ print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 $sql = "SELECT ii.label AS nom_immeuble";
 foreach ($months_list as $month_num => $month_name) {
-	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
+	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE ic.date_creation >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
-$sql .= "  AND ic.date_creation <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
+$sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
+$sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.famille = 'Charge récupérable/locative' ";
+$sql .= "  AND it.rowid = 12 ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 $sql .= " GROUP BY ii.label";
 
@@ -204,14 +204,14 @@ $resqlencaissement = $db->query($sql);
 
 $sql = "SELECT ii.label AS nom_immeuble";
 foreach ($months_list as $month_num => $month_name) {
-	$sql .= ', ROUND(SUM(case when MONTH(ic.date_creation)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
+	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE ic.date_creation >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
-$sql .= "  AND ic.date_creation <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
+$sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
+$sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.rowid = 12 ";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
