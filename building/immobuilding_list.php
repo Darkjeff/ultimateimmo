@@ -170,7 +170,11 @@ foreach ($object->fields as $key => $val) {
 	}
 }
 // Extra fields
-include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_array_fields.tpl.php';
+if (file_exists(DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_array_fields.tpl.php')) {
+	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_array_fields.tpl.php';
+} else {
+	dol_include_once('/ultimateimmo/core/tpl/extrafields_list_array_fields.tpl.php');
+}
 
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
@@ -261,7 +265,19 @@ $morecss = array();
 // Build and execute select
 // --------------------------------------------------------------------
 $sql = 'SELECT ';
-$sql .= $object->getFieldList('t');
+
+if (method_exists($object, 'getFieldList'))
+{
+	$reflection = new ReflectionMethod($object, 'getFieldList');
+	if ($reflection->isPublic()) {
+		$sql .= $object->getFieldList('t');
+	} else {
+		foreach($object->fields as $key => $val)
+		{
+			$sql.='t.'.$key.', ';
+		}
+	}
+}
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
 	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
