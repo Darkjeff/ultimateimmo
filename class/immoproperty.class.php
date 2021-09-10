@@ -101,7 +101,7 @@ class ImmoProperty extends CommonObject
 		'rowid'         => array('type' => 'integer', 'label' => 'TechnicalID', 'enabled' => 1, 'visible' => -2, 'noteditable' => 1, 'notnull' => 1, 'index' => 1, 'position' => 1, 'comment' => 'Id'),
 		'ref'           => array('type' => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1,  'default'=>'(PROV)', 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
 		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
-		'property_type_id' => array('type' => 'integer', 'label' => 'ImmoProperty_Type', 'enabled' => 1, 'visible' => -1, 'position' => 20, 'notnull' => 1, 'arrayofkeyval' => array('1' => 'APA', '2' => 'HOU', '3' => 'LOC', '4' => 'SHO', '5' => 'GAR', '6' => 'BUL')),
+		'property_type_id' => array('type' => 'integer:ImmoProperty_Type:ultimateimmo/class/immoproperty_type.class.php', 'label' => 'ImmoProperty_Type', 'enabled' => 1, 'visible' => -1, 'position' => 20, 'notnull' => 1),
 		'fk_property'   => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'PropertyParent', 'enabled' => 1, 'visible' => -1, 'position' => 25, 'notnull' => -1), 
 		'label' => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'showoncombobox' => 1, 'searchall' => 1, 'css' => 'minwidth200', 'help' => 'Help text',),
 		'juridique_id'  => array('type' => 'integer', 'label' => 'Juridique', 'enabled' => 1, 'visible' => 1, 'position' => 32, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'MonoPropriete', '2' => 'Copropriete')),

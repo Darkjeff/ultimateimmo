@@ -48,6 +48,7 @@ if (!$res) die("Include of main fails");
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immobuilding.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
@@ -143,26 +144,29 @@ if (empty($reshook))
 
 		$db->begin();
 
-		$result = $object->fetch($id);
-		$building = $object->ref;
-		//var_dump($building);exit;
-		// todo debug insert into
-		$sql1 = 'INSERT INTO ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty(';
-		$sql1 .= 'label,';
-		$sql1 .= 'fk_property';
-		$sql1 .= ') VALUES (';
-		$sql1 .= ' ' . (!isset($object->label) ? 'NULL' : "'" . $db->escape($object->ref) . "'") . ',';
-		$sql1 .= '' . $id;
-		$sql1 .= ')';
-		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
-		$resql1 = $db->query($sql1);
-		if (!$resql1) {
-			$error++;
-			setEventMessages($db->lasterror(), null, 'errors');
+		$immobuild = new ImmoBuilding($db);
+		$immobuild->label = $object->label;
+		$immobuild->fk_property = $object->id;
+
+		$resultCreate = $immobuild->create($user);
+		if ($resultCreate < 0) {
+			setEventMessages($immobuild->error,$immobuild->errors,'errors');
+			$error ++;
 		} else {
-			$db->commit();
-			setEventMessages($db->lasterror(), null, 'errors');
+			$object->fk_property=$object->rowid;
+			$resultUpdate = $object->update($user);
+			if ($resultUpdate < 0) {
+				setEventMessages($object->error,$object->errors,'errors');
+				$error ++;
+			}
 		}
+
+		if (empty($error)) {
+			$db->commit();
+		} else {
+			$db->rollback();
+		}
+
 	}
 }
 
