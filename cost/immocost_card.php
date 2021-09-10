@@ -125,8 +125,11 @@ if (empty($reshook))
 				$objectUpd->fetch($newid);
 				$key = 'date_start';
 				$objectUpd->date_start = dol_mktime(12, 0, 0, GETPOST($key . 'month', 'int'), GETPOST($key . 'day', 'int'), GETPOST($key . 'year', 'int'));	// for date without hour, we use gmt
-				$key = 'date_end';
-				$objectUpd->date_end = dol_mktime(12, 0, 0, GETPOST($key . 'month', 'int'), GETPOST($key . 'day', 'int'), GETPOST($key . 'year', 'int'));	// for date without hour, we use gmt
+				//$key = 'date_end';
+				//$objectUpd->date_end = dol_mktime(12, 0, 0, GETPOST($key . 'month', 'int'), GETPOST($key . 'day', 'int'), GETPOST($key . 'year', 'int'));	// for date without hour, we use gmt
+				$objectUpd->date_end = $objectUpd->date_start;
+				$objectUpd->label = GETPOST('label', 'alpha');
+				$objectUpd->ref = GETPOST('label', 'alpha');
 				$objectUpd->amount = price2num(GETPOST('amount', 'int'));
 				$result = $objectUpd->update($user);
 				if ($result < 0) {
@@ -324,7 +327,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$formquestion = array(
 			'text' => $langs->trans("ConfirmClone"),
 			array('type' => 'date', 'name' => 'date_start', 'label' => $langs->trans("DateStart")),
-			array('type' => 'date', 'name' => 'date_end', 'label' => $langs->trans("DateEnd")),
+			array('type' => 'text', 'name' => 'label', 'label' => $langs->trans("label"), 'value'=>$object->label),
 			array('type' => 'text', 'name' => 'amount', 'label' => $langs->trans("Amount"), 'value' => $object->amount),
 		);
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneAsk', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
