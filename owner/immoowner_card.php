@@ -584,7 +584,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$result = $object->getLinesArray();
 
 		print '	<form name="addproduct" id="addproduct" action="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . (($action != 'editline') ? '#addline' : '#line_' . GETPOST('lineid', 'int')) . '" method="POST">
-    	<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">
+    	<input type="hidden" name="token" value="' . newToken() . '">
     	<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline') . '">
     	<input type="hidden" name="mode" value="">
     	<input type="hidden" name="id" value="' . $object->id . '">
@@ -604,13 +604,15 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		}
 
 		// Form to add new line
-		if ($object->status == 0 && $permissiontoadd && $action != 'selectlines') {
+		if ($object->status == 0 && $permissiontoadd && $action != 'selectlines'
+		) {
 			if ($action != 'editline') {
 				// Add products/services form
-				$object->formAddObjectLine(1, $mysoc, $soc);
-
 				$parameters = array();
 				$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+				if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+				if (empty($reshook))
+				$object->formAddObjectLine(1, $mysoc, $soc);
 			}
 		}
 
@@ -627,7 +629,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<div class="tabsAction">' . "\n";
 		$parameters = array();
 		$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
-		if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		if ($reshook < 0) {
+			setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		}
 
 		if (empty($reshook)) {
 			// Send
@@ -665,13 +669,17 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<div class="fichecenter"><div class="fichehalfleft">';
 		print '<a name="builddoc"></a>'; // ancre
 
+		$includedocgeneration = 0;
+
 		// Documents
-		$relativepath = '/owner/' . dol_sanitizeFileName($object->ref) . '/';
-		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
-		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
-		$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
-		print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
+		if ($includedocgeneration) {
+			$relativepath = '/owner/' . dol_sanitizeFileName($object->ref) . '/';
+			$filedir = $conf->ultimateimmo->dir_output . $relativepath;
+			$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
+			$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
+			$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
+			print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
+		}
 
 		// Show links to link elements
 		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoowner'));
@@ -694,8 +702,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	//Select mail models is same action as presend
-
-	if (GETPOST('modelselected')) $action = 'presend';
+	if (GETPOST('modelselected')) {
+		$action = 'presend';
+	}
 
 	// Presend form
 	$modelmail = 'immoowner';
