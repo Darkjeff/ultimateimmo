@@ -112,6 +112,12 @@ foreach ($object->fields as $key => $val) {
 	if ($val['searchall']) $fieldstosearchall['t.' . $key] = $val['label'];
 }
 
+if (count($search) > 0) {
+	$_SESSION['last_restore'] = 1;
+} else {
+	unset($_SESSION['last_restore']);
+}  
+
 // Definition of fields for list
 $arrayfields = array();
 foreach ($object->fields as $key => $val) {
