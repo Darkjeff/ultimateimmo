@@ -404,18 +404,17 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// ------------------------------------------------------------
 	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1) . '?restore_lastsearch_values=' . (!empty($_SESSION['last_restore']) ? 1 : 0) . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
-	$soc = new Societe($db);
+	/*$soc = new Societe($db);
 	if ($socid > 0)
-		$res = $soc->fetch($socid);
+		$res = $soc->fetch($socid);*/
 
 	$morehtmlref = '<div class="refidno">';
-	
+	//var_dump($object);exit;
 	// Thirdparty
-	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . is_object($object->thirdparty) ? $object->thirdparty->getNomUrl(1) : '';
-	//var_dump($morehtmlref);exit;
-	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?socid=' . $object->thirdparty->id . '&search_fk_soc=' . urlencode($object->thirdparty->id) . '">' . $langs->trans("OtherProperties") . '</a>)';
+	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . is_object($object->fk_soc) ? $object->getNomUrl(0) : '';
+	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?socid=' . $object->id . '&search_fk_soc=' . urlencode($object->id) . '">' . $langs->trans("OtherProperties") . '</a>)';
 	// Project
-	if (!empty($conf->projet->enabled)) {
+	/*if (!empty($conf->projet->enabled)) {
 		$langs->load("projects");
 		$morehtmlref .= '<br>' . $langs->trans('Project') . ' ';
 		if ($user->rights->ultimateimmo->creer) {
@@ -444,7 +443,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				$morehtmlref .= '';
 			}
 		}
-	}
+	}*/
 	
 	$morehtmlref .= '</div>';
 
@@ -537,7 +536,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (in_array($key, array('ref', 'status'))) continue;	// Ref and status are already in dol_banner
 
 		$value = $object->$key;
-
+		
 		print '<tr><td';
 		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output

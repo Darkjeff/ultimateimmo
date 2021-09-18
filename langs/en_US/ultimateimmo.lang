@@ -238,6 +238,7 @@ LinkToOwner = Link to owner
 LinkToThirpartyRenter = You must choose here a renter thirdparty
 LinkToProperty = Link to property
 AmountPayed = Amount payed
+SetLinkToThirparty = Set link to a thirdparty
 
 #
 # Sample page

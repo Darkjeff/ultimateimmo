@@ -232,9 +232,11 @@ NumberReceiptByMonth = Nombre de quittances par mois
 CustomerReceiptPayment = Règlement de quittance
 LinkToReceipt = Lien vers la quittance
 LinkToOwner = Lien vers le propriétaire
+LinkToOwnerType = Sélectionnez le type de propriétaire
 LinkToThirpartyRenter = Vous devez sélectionner ici un tiers locataire.
 LinkToProperty = Lien vers le bien loué
 AmountPayed = Montant payé sur la quittance
+SetLinkToThirparty = Sélectionnez le lien vers un Tiers
 
 
 

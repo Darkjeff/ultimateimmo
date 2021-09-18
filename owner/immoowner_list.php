@@ -282,7 +282,7 @@ foreach ($search as $key => $val) {
 			$mode_search = 2;
 		}
 		if ($search[$key] != '') {
-			$sql .= natural_search($key, $search[$key], (($key == 'status') ? 2 : $mode_search));
+			$sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 		}
 	} else {
 		if (preg_match('/(_dtstart|_dtend)$/', $key) && $search[$key] != '') {

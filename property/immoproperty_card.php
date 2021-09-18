@@ -27,23 +27,33 @@
 // Load Dolibarr environment
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
-// Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
-$tmp2 = realpath(__FILE__);
-$i = strlen($tmp) - 1;
-$j = strlen($tmp2) - 1;
-while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
-	$i--;
-	$j--;
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
 }
-if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
-if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
+// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--; $j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1))."/main.inc.php";
+}
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
+}
 // Try main.inc.php using relative path
-if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
-if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
-if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
-if (!$res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) {
+	$res = @include "../main.inc.php";
+}
+if (!$res && file_exists("../../main.inc.php")) {
+	$res = @include "../../main.inc.php";
+}
+if (!$res && file_exists("../../../main.inc.php")) {
+	$res = @include "../../../main.inc.php";
+}
+if (!$res) {
+	die("Include of main fails");
+}
 
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
@@ -81,10 +91,14 @@ $search_array_options = $extrafields->getOptionalsFromPost($object->table_elemen
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
 foreach ($object->fields as $key => $val) {
-	if (GETPOST('search_' . $key, 'alpha')) $search[$key] = GETPOST('search_' . $key, 'alpha');
+	if (GETPOST('search_'.$key, 'alpha')) {
+		$search[$key] = GETPOST('search_'.$key, 'alpha');
+	}
 }
 
-if (empty($action) && empty($id) && empty($ref)) $action = 'view';
+if (empty($action) && empty($id) && empty($ref)) {
+	$action = 'view';
+}
 
 // Load object
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  
@@ -109,26 +123,33 @@ $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $obj
 
 $parameters = array();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
-if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+if ($reshook < 0) {
+	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+}
 
-if (empty($reshook))
-{
-	$error=0;
+if (empty($reshook)) {
+	$error = 0;
 
 	$permissiontoadd = $user->rights->ultimateimmo->write;
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
-	$backurlforlist = dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1);
-	
+	$backurlforlist = dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1);
+
 	if (empty($backtopage) || ($cancel && empty($id))) {
-    	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
-    		if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
-    		else $backtopage = dol_buildpath('/ultimateimmo/property/immoproperty_card.php', 1).'?id='.($id > 0 ? $id : '__ID__');
-    	}
-    }
+		if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
+			if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) {
+				$backtopage = $backurlforlist;
+			} else {
+				$backtopage = dol_buildpath('/ultimateimmo/owner/immoowner_card.php', 1) . '?id=' . ((!empty($id) && $id > 0) ? $id : '__ID__');
+			}
+		}
+	}
 	$triggermodname = 'ULTIMATEIMMO_IMMOPROPERTY_MODIFY'; // Name of trigger action code to execute when we modify record
 
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT . '/core/actions_addupdatedelete.inc.php';
+
+	// Actions when linking object each other
+	include DOL_DOCUMENT_ROOT . '/core/actions_dellink.inc.php';
 
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
@@ -150,14 +171,14 @@ if (empty($reshook))
 
 		$resultCreate = $immobuild->create($user);
 		if ($resultCreate < 0) {
-			setEventMessages($immobuild->error,$immobuild->errors,'errors');
-			$error ++;
+			setEventMessages($immobuild->error, $immobuild->errors, 'errors');
+			$error++;
 		} else {
-			$object->fk_property=$object->rowid;
+			$object->fk_property = $object->rowid;
 			$resultUpdate = $object->update($user);
 			if ($resultUpdate < 0) {
-				setEventMessages($object->error,$object->errors,'errors');
-				$error ++;
+				setEventMessages($object->error, $object->errors, 'errors');
+				$error++;
 			}
 		}
 
@@ -166,7 +187,6 @@ if (empty($reshook))
 		} else {
 			$db->rollback();
 		}
-
 	}
 }
 
@@ -184,13 +204,17 @@ llxHeader('', $langs->trans('ImmoProperty'), '');
 
 // Part to create
 if ($action == 'create') {
-	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoProperty")));
+	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoProperty")), '', 'object_' . $object->picto);
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="add">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
+	if ($backtopage) {
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	}
+	if ($backtopageforcancel) {
+		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	}
 
 	print dol_get_fiche_head(array(), '');
 
@@ -257,14 +281,18 @@ if ($action == 'create') {
 
 // Part to edit record
 if (($id || $ref) && $action == 'edit') {
-	print load_fiche_titre($langs->trans("ImmoProperty"));
+	print load_fiche_titre($langs->trans("ImmoProperty"), '', 'object_' . $object->picto);
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="update">';
 	print '<input type="hidden" name="id" value="' . $object->id . '">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
+	if ($backtopage) {
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	}
+	if ($backtopageforcancel) {
+		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	}
 
 	print dol_get_fiche_head();
 
@@ -366,8 +394,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Call Hook formConfirm
 	$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
 	$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
-	elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
+	if (empty($reshook)) {
+		$formconfirm .= $hookmanager->resPrint;
+	} elseif ($reshook > 0) {
+		$formconfirm = $hookmanager->resPrint;
+	}
 
 	// Print form confirm
 	print $formconfirm;

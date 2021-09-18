@@ -25,23 +25,33 @@
 // Load Dolibarr environment
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
-// Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
-$tmp2 = realpath(__FILE__);
-$i = strlen($tmp) - 1;
-$j = strlen($tmp2) - 1;
-while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
-	$i--;
-	$j--;
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
 }
-if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
-if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
+// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--; $j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1))."/main.inc.php";
+}
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
+}
 // Try main.inc.php using relative path
-if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
-if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
-if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
-if (!$res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) {
+	$res = @include "../main.inc.php";
+}
+if (!$res && file_exists("../../main.inc.php")) {
+	$res = @include "../../main.inc.php";
+}
+if (!$res && file_exists("../../../main.inc.php")) {
+	$res = @include "../../../main.inc.php";
+}
+if (!$res) {
+	die("Include of main fails");
+}
 
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
@@ -117,7 +127,7 @@ if ($object->id) {
 	if (!empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immoownerPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoOwner"), -1, 'user');
+	print dol_get_fiche_head($head, 'document', $langs->trans("ImmoOwner"), -1, 'user');
 
 	// Build file list
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '(\.meta|_preview.*\.png)$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
@@ -128,19 +138,19 @@ if ($object->id) {
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1) . '?restore_lastsearch_values=' . (!empty($_SESSION['last_restore']) ? 1 : 0) . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
-	$soc = new Societe($db);
+	/*$soc = new Societe($db);
 	if ($socid > 0)
-		$res = $soc->fetch($socid);
+		$res = $soc->fetch($socid);*/
 
 	$morehtmlref = '<div class="refidno">';
 	
 	// Thirdparty
-	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . (is_object($object->thirdparty) ? $object->thirdparty->getNomUrl(1) : '');
-	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?socid=' . $object->thirdparty->id . '&search_fk_soc=' . urlencode($object->thirdparty->id) . '">' . $langs->trans("OtherProperties") . '</a>)';
+	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . is_object($object->fk_soc) ? $object->getNomUrl(0) : '';
+	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?socid=' . $object->id . '&search_fk_soc=' . urlencode($object->id) . '">' . $langs->trans("OtherProperties") . '</a>)';
 	// Project
-	if (! empty($conf->projet->enabled))
+	/*if (! empty($conf->projet->enabled))
 	{
 	    $langs->load("projects");
 	    $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
@@ -172,7 +182,7 @@ if ($object->id) {
 	            $morehtmlref.='';
 	        }
 	    }
-	}
+	}*/
 	
 	$morehtmlref .= '</div>';
 
@@ -193,7 +203,7 @@ if ($object->id) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	$modulepart = 'ultimateimmo';
 	//$permission = $user->rights->ultimateimmo->owner->write;

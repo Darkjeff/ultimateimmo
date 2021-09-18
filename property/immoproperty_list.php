@@ -27,23 +27,33 @@
 // Load Dolibarr environment
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
-// Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
-$tmp2 = realpath(__FILE__);
-$i = strlen($tmp) - 1;
-$j = strlen($tmp2) - 1;
-while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
-	$i--;
-	$j--;
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
 }
-if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
-if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
+// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--; $j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1))."/main.inc.php";
+}
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
+}
 // Try main.inc.php using relative path
-if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
-if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
-if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
-if (!$res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) {
+	$res = @include "../main.inc.php";
+}
+if (!$res && file_exists("../../main.inc.php")) {
+	$res = @include "../../main.inc.php";
+}
+if (!$res && file_exists("../../../main.inc.php")) {
+	$res = @include "../../../main.inc.php";
+}
+if (!$res) {
+	die("Include of main fails");
+}
 
 require_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
@@ -71,9 +81,9 @@ $limit = GETPOST('limit', 'int') ? GETPOST('limit', 'int') : $conf->liste_limit;
 $sortfield = GETPOST('sortfield', 'alpha');
 $sortorder = GETPOST('sortorder', 'alpha');
 $page = GETPOST('page', 'int');
-if (empty($page) || $page == -1 || GETPOST('button_search', 'alpha') || GETPOST('button_removefilter', 'alpha') || (empty($toselect) && $massaction === '0')) {
+if (empty($page) || $page == -1) {
 	$page = 0;
-}     // If $page is not defined, or '' or -1 or if we click on clear filters or if we select empty mass action
+}     // If $page is not defined, or '' or -1
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -90,52 +100,85 @@ $extrafields->fetch_name_optionals_label($object->table_element);
 $search_array_options = $extrafields->getOptionalsFromPost($object->table_element, '', 'search_');
 
 // Default sort order (if not yet defined by previous GETPOST)
-if (!$sortfield) $sortfield = "t." . key($object->fields);   // Set here default search field. By default 1st field in definition.
-if (!$sortorder) $sortorder = "ASC";
-
-// Protection if external user
-if (empty($conf->ultimateimmo->enabled)) accessforbidden('Module not enabled');
-$socid = 0;
-if ($user->societe_id > 0) {
-	//$socid = $user->societe_id;
-	accessforbidden();
+if (!$sortfield) {
+	reset($object->fields);					// Reset is required to avoid key() to return null.
+	$sortfield = "t.".key($object->fields); // Set here default search field. By default 1st field in definition.
 }
-//$result = restrictedArea($user, 'ultimateimmo', $id,'');
+if (!$sortorder) {
+	$sortorder = "ASC";
+}
 
 // Initialize array of search criterias
-$search_all = trim(GETPOST("search_all", 'alpha'));
+$search_all = GETPOST('search_all', 'alphanohtml') ? GETPOST('search_all', 'alphanohtml') : GETPOST('sall', 'alphanohtml');
 $search = array();
 foreach ($object->fields as $key => $val) {
-	if (GETPOST('search_' . $key, 'alpha') !== '') $search[$key] = GETPOST('search_' . $key, 'alpha');
+	if (GETPOST('search_'.$key, 'alpha') !== '') {
+		$search[$key] = GETPOST('search_'.$key, 'alpha');
+	}
+	if (preg_match('/^(date|timestamp|datetime)/', $val['type'])) {
+		$search[$key.'_dtstart'] = dol_mktime(0, 0, 0, GETPOST('search_'.$key.'_dtstartmonth', 'int'), GETPOST('search_'.$key.'_dtstartday', 'int'), GETPOST('search_'.$key.'_dtstartyear', 'int'));
+		$search[$key.'_dtend'] = dol_mktime(23, 59, 59, GETPOST('search_'.$key.'_dtendmonth', 'int'), GETPOST('search_'.$key.'_dtendday', 'int'), GETPOST('search_'.$key.'_dtendyear', 'int'));
+	}
 }
 
 // List of fields to search into when doing a "search in all"
 $fieldstosearchall = array();
 foreach ($object->fields as $key => $val) {
-	if ($val['searchall']) $fieldstosearchall['t.' . $key] = $val['label'];
+	if (!empty($val['searchall'])) {
+		$fieldstosearchall['t.'.$key] = $val['label'];
+	}
 }
+
+if (count($search) > 0) {
+	$_SESSION['last_restore'] = 1;
+} else {
+	unset($_SESSION['last_restore']);
+}  
 
 // Definition of fields for list
 $arrayfields = array();
 foreach ($object->fields as $key => $val) {
 	// If $val['visible']==0, then we never show the field
-	if (!empty($val['visible'])) $arrayfields['t.' . $key] = array('label' => $val['label'], 'checked' => (($val['visible'] < 0) ? 0 : 1), 'enabled' => ($val['enabled'] && ($val['visible'] != 3)), 'position' => $val['position']);
+	if (!empty($val['visible'])) {
+		$visible = (int) dol_eval($val['visible'], 1);
+		$arrayfields['t.'.$key] = array(
+			'label'=>$val['label'],
+			'checked'=>(($visible < 0) ? 0 : 1),
+			'enabled'=>($visible != 3 && dol_eval($val['enabled'], 1)),
+			'position'=>$val['position'],
+			'help'=> isset($val['help']) ? $val['help'] : ''
+		);
+	}
 }
 // Extra fields
-if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label']) > 0) {
-	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
+if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label']) > 0)
+{
+	foreach($extrafields->attributes[$object->table_element]['label'] as $key => $val)
+	{
 		if (!empty($extrafields->attributes[$object->table_element]['list'][$key])) {
-			$arrayfields["ef." . $key] = array(
-				'label' => $extrafields->attributes[$object->table_element]['label'][$key],
-				'checked' => (($extrafields->attributes[$object->table_element]['list'][$key] < 0) ? 0 : 1),
-				'position' => $extrafields->attributes[$object->table_element]['pos'][$key],
-				'enabled' => (abs($extrafields->attributes[$object->table_element]['list'][$key]) != 3 && $extrafields->attributes[$object->table_element]['perms'][$key])
+			$arrayfields["ef.".$key] = array(
+				'label'=>$extrafields->attributes[$object->table_element]['label'][$key],
+				'checked'=>(($extrafields->attributes[$object->table_element]['list'][$key]<0)?0:1),
+				'position'=>$extrafields->attributes[$object->table_element]['pos'][$key],
+				'enabled'=>(abs($extrafields->attributes[$object->table_element]['list'][$key])!=3 && $extrafields->attributes[$object->table_element]['perms'][$key])
 			);
 		}
 	}
 }
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
+
+$permissiontoread = $user->rights->ultimateimmo->read;
+$permissiontoadd = $user->rights->ultimateimmo->write;
+$permissiontodelete = $user->rights->ultimateimmo->delete;
+
+// Security check
+if (empty($conf->ultimateimmo->enabled)) {
+	accessforbidden('Module not enabled');
+}
+
+// Security check (enable the most restrictive one)
+if ($user->socid > 0) accessforbidden();
 
 /*
  * Actions
@@ -152,34 +195,34 @@ if (!GETPOST('confirmmassaction', 'alpha') && $massaction != 'presend' && $massa
 
 $parameters = array();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
-if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+if ($reshook < 0) {
+	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+}
 
 if (empty($reshook)) {
 	// Selection of new fields
 	include DOL_DOCUMENT_ROOT . '/core/actions_changeselectedfields.inc.php';
 
 	// Purge search criteria
-	if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')) // All tests are required to be compatible with all browsers
-	{
+	if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')) { // All tests are required to be compatible with all browsers
 		foreach ($object->fields as $key => $val) {
 			$search[$key] = '';
+			if (preg_match('/^(date|timestamp|datetime)/', $val['type'])) {
+				$search[$key.'_dtstart'] = '';
+				$search[$key.'_dtend'] = '';
+			}
 		}
-		$toselect = '';
+		$toselect = array();
 		$search_array_options = array();
 	}
-	if (
-		GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')
-		|| GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha')
-	) {
-		$massaction = '';     // Protection to avoid mass action if we force a new search during a mass action confirmation
+	if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')
+		|| GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha')) {
+		$massaction = ''; // Protection to avoid mass action if we force a new search during a mass action confirmation
 	}
 
 	// Mass actions
 	$objectclass = 'ImmoProperty';
 	$objectlabel = 'ImmoProperty';
-	$permissiontoread = $user->rights->ultimateimmo->read;
-	$permissiontoadd = $user->rights->ultimateimmo->write;
-	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$uploaddir = $conf->ultimateimmo->dir_output;
 	include DOL_DOCUMENT_ROOT . '/core/actions_massactions.inc.php';
 }
@@ -196,7 +239,8 @@ $now = dol_now();
 //$help_url="EN:Module_ImmoProperty|FR:Module_ImmoProperty_FR|ES:Módulo_ImmoProperty";
 $help_url = '';
 $title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoProperties"));
-
+$morejs = array();
+$morecss = array();
 
 // Build and execute select
 // --------------------------------------------------------------------
@@ -208,7 +252,9 @@ foreach ($object->fields as $key => $val) {
 $sql .= ' country.label as country, b.label as building_name, soc.nom as owner';
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
-	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef." . $key . ' as options_' . $key . ', ' : '');
+	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
+		$sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef." . $key . ' as options_' . $key . ', ' : '');
+	}
 }
 // Add fields from hooks
 $parameters = array();
@@ -221,20 +267,55 @@ $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as b ON b.fk_pro
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = t.fk_owner";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_country as country ON country.rowid = t.country_id";
 $sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
-if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . $object->table_element . "_extrafields as ef on (t.rowid = ef.fk_object)";
+if (isset($extrafields->attributes[$object->table_element]['label']) && is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) {
+	$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
+}
 /*if ($action == 'makebuilding') {
 	$sql .= " WHERE tp.label = 'Immeuble'";
 } else {
 	$sql .= " WHERE tp.label <> 'Immeuble'";
 }*/
-if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (" . getEntity($object->element) . ")";
-//else $sql.=" WHERE 1 = 1";
-foreach ($search as $key => $val)
-{
-	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key]))?1:0);
-	if ($search[$key] != '') $sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
+// Add table from hooks
+$parameters = array();
+$reshook = $hookmanager->executeHooks('printFieldListFrom', $parameters, $object); // Note that $action and $object may have been modified by hook
+$sql .= $hookmanager->resPrint;
+if ($object->ismultientitymanaged == 1) {
+	$sql .= " WHERE t.entity IN (".getEntity($object->element).")";
+} else {
+	$sql .= " WHERE 1 = 1";
 }
-if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
+foreach ($search as $key => $val) {
+	if (array_key_exists($key, $object->fields)) {
+		if ($key == 'status' && $search[$key] == -1) {
+			continue;
+		}
+		$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key])) ? 1 : 0);
+		if ((strpos($object->fields[$key]['type'], 'integer:') === 0) || (strpos($object->fields[$key]['type'], 'sellist:') === 0) || !empty($object->fields[$key]['arrayofkeyval'])) {
+			if ($search[$key] == '-1' || ($search[$key] === '0' && (empty($object->fields[$key]['arrayofkeyval']) || !array_key_exists('0', $object->fields[$key]['arrayofkeyval'])))) {
+				$search[$key] = '';
+			}
+			$mode_search = 2;
+		}
+		if ($search[$key] != '') {
+			$sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
+		}
+	} else {
+		if (preg_match('/(_dtstart|_dtend)$/', $key) && $search[$key] != '') {
+			$columnName = preg_replace('/(_dtstart|_dtend)$/', '', $key);
+			if (preg_match('/^(date|timestamp|datetime)/', $object->fields[$columnName]['type'])) {
+				if (preg_match('/_dtstart$/', $key)) {
+					$sql .= " AND t.".$columnName." >= '".$db->idate($search[$key])."'";
+				}
+				if (preg_match('/_dtend$/', $key)) {
+					$sql .= " AND t." . $columnName . " <= '" . $db->idate($search[$key]) . "'";
+				}
+			}
+		}
+	}
+}
+if ($search_all) {
+	$sql .= natural_search(array_keys($fieldstosearchall), $search_all);
+}
 
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
@@ -244,46 +325,66 @@ $reshook = $hookmanager->executeHooks('printFieldListWhere', $parameters, $objec
 $sql .= $hookmanager->resPrint;
 
 /* If a group by is required
-$sql.= " GROUP BY "
-foreach($object->fields as $key => $val)
-{
-    $sql.='t.'.$key.', ';
+$sql .= " GROUP BY ";
+foreach($object->fields as $key => $val) {
+	$sql .= "t.".$key.", ";
 }
 // Add fields from extrafields
-foreach ($extrafields->attribute_label as $key => $val) $sql.=($extrafields->attribute_type[$key] != 'separate' ? ",ef.".$key : '');
+if (!empty($extrafields->attributes[$object->table_element]['label'])) {
+	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
+		$sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? "ef.".$key.', ' : '');
+	}
+}
 // Add where from hooks
-$parameters=array();
-$reshook=$hookmanager->executeHooks('printFieldListGroupBy',$parameters);    // Note that $action and $object may have been modified by hook
-$sql.=$hookmanager->resPrint;
+$parameters = array();
+$reshook = $hookmanager->executeHooks('printFieldListGroupBy', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$sql .= $hookmanager->resPrint;
+$sql = preg_replace('/,\s*$/', '', $sql);
 */
 
-$sql .= $db->order($sortfield, $sortorder);
+// Add HAVING from hooks
+/*
+$parameters = array();
+$reshook = $hookmanager->executeHooks('printFieldListHaving', $parameters, $object); // Note that $action and $object may have been modified by hook
+$sql .= !empty($hookmanager->resPrint) ? (" HAVING 1=1 " . $hookmanager->resPrint) : "";
+*/
 
 // Count total nb of records
 $nbtotalofrecords = '';
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
+	/* This old and fast method to get and count full list returns all record so use a high amount of memory.
 	$resql = $db->query($sql);
 	$nbtotalofrecords = $db->num_rows($resql);
-	if (($page * $limit) > $nbtotalofrecords)	// if total of record found is smaller than page * limit, goto and load page 0
-	{
+	*/
+	/* The slow method does not consume memory on mysql (not tested on pgsql) */
+	/*$resql = $db->query($sql, 0, 'auto', 1);
+	while ($db->fetch_object($resql)) {
+		$nbtotalofrecords++;
+	}*/
+	/* The fast and low memory method to get and count full list converts the sql into a sql count */
+	$sqlforcount = preg_replace('/^SELECT[a-z0-9\._\s\(\),]+FROM/i', 'SELECT COUNT(*) as nbtotalofrecords FROM', $sql);
+	$resql = $db->query($sqlforcount);
+	$objforcount = $db->fetch_object($resql);
+	$nbtotalofrecords = $objforcount->nbtotalofrecords;
+	if (($page * $limit) > $nbtotalofrecords) {	// if total of record found is smaller than page * limit, goto and load page 0
 		$page = 0;
 		$offset = 0;
 	}
+	$db->free($resql);
 }
 // if total of record found is smaller than limit, no need to do paging and to restart another select with limits set.
-if (is_numeric($nbtotalofrecords) && ($limit > $nbtotalofrecords || empty($limit))) {
-	$num = $nbtotalofrecords;
-} else {
-	if ($limit) $sql .= $db->plimit($limit + 1, $offset);
-
-	$resql = $db->query($sql);
-	if (!$resql) {
-		dol_print_error($db);
-		exit;
-	}
-
-	$num = $db->num_rows($resql);
+$sql .= $db->order($sortfield, $sortorder);
+if ($limit) {
+	$sql .= $db->plimit($limit + 1, $offset);
 }
+
+$resql = $db->query($sql);
+if (!$resql) {
+	dol_print_error($db);
+	exit;
+}
+
+$num = $db->num_rows($resql);
 
 // Direct jump if only one record found
 if ($num == 1 && !empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $search_all  && !$page) {
@@ -297,18 +398,29 @@ if ($num == 1 && !empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $
 // Output page
 // --------------------------------------------------------------------
 
-llxHeader('', $title, $help_url);
+llxHeader('', $title, $help_url, '', 0, 0, $morejs, $morecss, '', '');
 
 $arrayofselected = is_array($toselect) ? $toselect : array();
 
 $param = '';
-if (!empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param .= '&contextpage=' . urlencode($contextpage);
-if ($limit > 0 && $limit != $conf->liste_limit) $param .= '&limit=' . urlencode($limit);
-foreach ($search as $key => $val) {
-	if (is_array($search[$key]) && count($search[$key])) foreach ($search[$key] as $skey) $param .= '&search_' . $key . '[]=' . urlencode($skey);
-	else $param .= '&search_' . $key . '=' . urlencode($search[$key]);
+if (!empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) {
+	$param .= '&contextpage='.urlencode($contextpage);
 }
-if ($optioncss != '')     $param .= '&optioncss=' . urlencode($optioncss);
+if ($limit > 0 && $limit != $conf->liste_limit) {
+	$param .= '&limit='.urlencode($limit);
+}
+foreach ($search as $key => $val) {
+	if (is_array($search[$key]) && count($search[$key])) {
+		foreach ($search[$key] as $skey) {
+			$param .= '&search_'.$key.'[]='.urlencode($skey);
+		}
+	} else {
+		$param .= '&search_'.$key.'='.urlencode($search[$key]);
+	}
+}
+if ($optioncss != '') {
+	$param .= '&optioncss='.urlencode($optioncss);
+}
 // Add $param from extra fields
 include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_param.tpl.php';
 
@@ -319,8 +431,12 @@ $arrayofmassactions =  array(
 	//'builddoc'=>$langs->trans("PDFMerge"),
 	//'presend'=>$langs->trans("SendByMail"),
 );
-if ($permissiontodelete) $arrayofmassactions['predelete'] = '<span class="fa fa-trash paddingrightonly"></span>' . $langs->trans("Delete");
-if (GETPOST('nomassaction', 'int') || in_array($massaction, array('presend', 'predelete'))) $arrayofmassactions = array();
+if ($permissiontodelete) {
+	$arrayofmassactions['predelete'] = img_picto('', 'delete', 'class="pictofixedwidth"').$langs->trans("Delete");
+}
+if (GETPOST('nomassaction', 'int') || in_array($massaction, array('presend', 'predelete'))) {
+	$arrayofmassactions = array();
+}
 $massactionbutton = $form->selectMassAction('', $arrayofmassactions);
 
 print '<form method="POST" id="searchFormList" action="' . $_SERVER["PHP_SELF"] . '">' . "\n";
@@ -335,7 +451,7 @@ print '<input type="hidden" name="contextpage" value="' . $contextpage . '">';
 
 $newcardbutton = dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/property/immoproperty_card.php', 1) . '?action=create&backtopage=' . urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
 
-print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, $newcardbutton, '', $limit);
+print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, $newcardbutton, '', $limit, 0, 0, 1);
 
 // Add code for pre mass action (confirmation or email presend form)
 $topicmail = "SendImmoPropertyRef";
@@ -345,7 +461,9 @@ $trackid = 'xxxx' . $object->id;
 include DOL_DOCUMENT_ROOT . '/core/tpl/massactions_pre.tpl.php';
 
 if ($search_all) {
-	foreach ($fieldstosearchall as $key => $val) $fieldstosearchall[$key] = $langs->trans($val);
+	foreach ($fieldstosearchall as $key => $val) {
+		$fieldstosearchall[$key] = $langs->trans($val);
+	}
 	print '<div class="divsearchfieldfilter">' . $langs->trans("FilterOnInto", $search_all) . join(', ', $fieldstosearchall) . '</div>';
 }
 
@@ -356,8 +474,11 @@ $moreforfilter.= '</div>';*/
 
 $parameters = array();
 $reshook = $hookmanager->executeHooks('printFieldPreListTitle', $parameters, $object);    // Note that $action and $object may have been modified by hook
-if (empty($reshook)) $moreforfilter .= $hookmanager->resPrint;
-else $moreforfilter = $hookmanager->resPrint;
+if (empty($reshook)) {
+	$moreforfilter .= $hookmanager->resPrint;
+} else {
+	$moreforfilter = $hookmanager->resPrint;
+}
 
 if (!empty($moreforfilter)) {
 	print '<div class="liste_titre liste_titre_bydiv centpercent">';
@@ -377,11 +498,38 @@ print '<table class="tagtable liste' . ($moreforfilter ? " listwithfilterbefore"
 // --------------------------------------------------------------------
 print '<tr class="liste_titre">';
 foreach ($object->fields as $key => $val) {
-	$align = '';
-	if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $align .= ($align ? ' ' : '') . 'center';
-	if (in_array($val['type'], array('timestamp'))) $align .= ($align ? ' ' : '') . 'nowrap';
-	if ($key == 'status') $align .= ($align ? ' ' : '') . 'center';
-	if (!empty($arrayfields['t.' . $key]['checked'])) print '<td class="liste_titre' . ($align ? ' ' . $align : '') . '"><input type="text" class="flat maxwidth75" name="search_' . $key . '" value="' . dol_escape_htmltag($search[$key]) . '"></td>';
+	$cssforfield = (empty($val['csslist']) ? (empty($val['css']) ? '' : $val['css']) : $val['csslist']);
+	if ($key == 'status') {
+		$cssforfield .= ($cssforfield ? ' ' : '').'center';
+	} elseif (in_array($val['type'], array('date', 'datetime', 'timestamp'))) {
+		$cssforfield .= ($cssforfield ? ' ' : '').'center';
+	} elseif (in_array($val['type'], array('timestamp'))) {
+		$cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+	} elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $val['label'] != 'TechnicalID' && empty($val['arrayofkeyval'])) {
+		$cssforfield .= ($cssforfield ? ' ' : '').'right';
+	}
+	if (!empty($arrayfields['t.'.$key]['checked'])) {
+		print '<td class="liste_titre'.($cssforfield ? ' '.$cssforfield : '').'">';
+		if (!empty($val['arrayofkeyval']) && is_array($val['arrayofkeyval'])) {
+			print $form->selectarray('search_'.$key, $val['arrayofkeyval'], (isset($search[$key]) ? $search[$key] : ''), $val['notnull'], 0, 0, '', 1, 0, 0, '', 'maxwidth100', 1);
+		} elseif ((strpos($val['type'], 'integer:') === 0) || (strpos($val['type'], 'sellist:') === 0)) {
+			print $object->showInputField($val, $key, (isset($search[$key]) ? $search[$key] : ''), '', '', 'search_', 'maxwidth125', 1);
+		} elseif (preg_match('/^(date|timestamp|datetime)/', $val['type'])) {
+			print '<div class="nowrap">';
+			print $form->selectDate($search[$key.'_dtstart'] ? $search[$key.'_dtstart'] : '', "search_".$key."_dtstart", 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('From'));
+			print '</div>';
+			print '<div class="nowrap">';
+			print $form->selectDate($search[$key.'_dtend'] ? $search[$key.'_dtend'] : '', "search_".$key."_dtend", 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('to'));
+			print '</div>';
+		} elseif ($key == 'lang') {
+			require_once DOL_DOCUMENT_ROOT.'/core/class/html.formadmin.class.php';
+			$formadmin = new FormAdmin($db);
+			print $formadmin->select_language($search[$key], 'search_lang', 0, null, 1, 0, 0, 'minwidth150 maxwidth200', 2);
+		} else {
+			print '<input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag(isset($search[$key]) ? $search[$key] : '').'">';
+		}
+		print '</td>';
+	}
 }
 // Extra fields
 include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php';
@@ -402,11 +550,19 @@ print '</tr>' . "\n";
 // --------------------------------------------------------------------
 print '<tr class="liste_titre">';
 foreach ($object->fields as $key => $val) {
-	$align = '';
-	if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) $align .= ($align ? ' ' : '') . 'center';
-	if (in_array($val['type'], array('timestamp'))) $align .= ($align ? ' ' : '') . 'nowrap';
-	if ($key == 'status') $align .= ($align ? ' ' : '') . 'center';
-	if (!empty($arrayfields['t.' . $key]['checked'])) print getTitleFieldOfList($arrayfields['t.' . $key]['label'], 0, $_SERVER['PHP_SELF'], 't.' . $key, '', $param, ($align ? 'class="' . $align . '"' : ''), $sortfield, $sortorder, $align . ' ') . "\n";
+	$cssforfield = (empty($val['csslist']) ? (empty($val['css']) ? '' : $val['css']) : $val['csslist']);
+	if ($key == 'status') {
+		$cssforfield .= ($cssforfield ? ' ' : '').'center';
+	} elseif (in_array($val['type'], array('date', 'datetime', 'timestamp'))) {
+		$cssforfield .= ($cssforfield ? ' ' : '').'center';
+	} elseif (in_array($val['type'], array('timestamp'))) {
+		$cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+	} elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $val['label'] != 'TechnicalID' && empty($val['arrayofkeyval'])) {
+		$cssforfield .= ($cssforfield ? ' ' : '').'right';
+	}
+	if (!empty($arrayfields['t.'.$key]['checked'])) {
+		print getTitleFieldOfList($arrayfields['t.'.$key]['label'], 0, $_SERVER['PHP_SELF'], 't.'.$key, '', $param, ($cssforfield ? 'class="'.$cssforfield.'"' : ''), $sortfield, $sortorder, ($cssforfield ? $cssforfield.' ' : ''))."\n";
+	}
 }
 // Extra fields
 include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_title.tpl.php';
@@ -421,9 +577,11 @@ print '</tr>' . "\n";
 
 // Detect if we need a fetch on each output line
 $needToFetchEachLine = 0;
-if (is_array($extrafields->attributes[$object->table_element]['computed']) && count($extrafields->attributes[$object->table_element]['computed']) > 0) {
+if (isset($extrafields->attributes[$object->table_element]['computed']) && is_array($extrafields->attributes[$object->table_element]['computed']) && count($extrafields->attributes[$object->table_element]['computed']) > 0) {
 	foreach ($extrafields->attributes[$object->table_element]['computed'] as $key => $val) {
-		if (preg_match('/\$object/', $val)) $needToFetchEachLine++; // There is at least one compute field that use $object
+		if (preg_match('/\$object/', $val)) {
+			$needToFetchEachLine++; // There is at least one compute field that use $object
+		}
 	}
 }
 
