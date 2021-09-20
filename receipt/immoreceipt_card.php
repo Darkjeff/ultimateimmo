@@ -25,23 +25,33 @@
 // Load Dolibarr environment
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php";
-// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
-$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
-$tmp2 = realpath(__FILE__);
-$i = strlen($tmp) - 1;
-$j = strlen($tmp2) - 1;
-while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
-	$i--;
-	$j--;
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
 }
-if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include substr($tmp, 0, ($i + 1)) . "/main.inc.php";
-if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php";
+// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--; $j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1))."/main.inc.php";
+}
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
+}
 // Try main.inc.php using relative path
-if (!$res && file_exists("../main.inc.php")) $res = @include "../main.inc.php";
-if (!$res && file_exists("../../main.inc.php")) $res = @include "../../main.inc.php";
-if (!$res && file_exists("../../../main.inc.php")) $res = @include "../../../main.inc.php";
-if (!$res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) {
+	$res = @include "../main.inc.php";
+}
+if (!$res && file_exists("../../main.inc.php")) {
+	$res = @include "../../main.inc.php";
+}
+if (!$res && file_exists("../../../main.inc.php")) {
+	$res = @include "../../../main.inc.php";
+}
+if (!$res) {
+	die("Include of main fails");
+}
 
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
@@ -103,10 +113,14 @@ $search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'se
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
 foreach ($object->fields as $key => $val) {
-	if (GETPOST('search_' . $key, 'alpha')) $search[$key] = GETPOST('search_' . $key, 'alpha');
+	if (GETPOST('search_'.$key, 'alpha')) {
+		$search[$key] = GETPOST('search_'.$key, 'alpha');
+	}
 }
 
-if (empty($action) && empty($id) && empty($ref)) $action = 'view';
+if (empty($action) && empty($id) && empty($ref)) {
+	$action = 'view';
+}
 
 // Load object
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
@@ -126,7 +140,9 @@ $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $obj
 
 $parameters = array();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
-if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+if ($reshook < 0) {
+	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+}
 
 if (empty($reshook)) {
 	/**
@@ -246,8 +262,11 @@ if (empty($reshook)) {
 
 	if (empty($backtopage) || ($cancel && empty($id))) {
 		if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
-			if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
-			else $backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . ($id > 0 ? $id : '__ID__');
+			if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) {
+				$backtopage = $backurlforlist;
+			} else {
+				$backtopage = dol_buildpath('/ultimateimmo/owner/immoowner_card.php', 1) . '?id=' . ((!empty($id) && $id > 0) ? $id : '__ID__');
+			}
 		}
 	}
 	$triggermodname = 'ULTIMATEIMMO_IMMORECEIPT_MODIFY';	// Name of trigger action code to execute when we modify record
@@ -794,7 +813,7 @@ if ($action == 'createall') {
 	// Part to edit record
 	if (($id || $ref) && $action == 'edit')
 	{
-		print load_fiche_titre($langs->trans("MenuNewImmoReceipt", $langs->transnoentitiesnoconv("ImmoReceipt")));
+		print load_fiche_titre($langs->trans("MenuNewImmoReceipt", $langs->transnoentitiesnoconv("ImmoReceipt")), '', 'object_' . $object->picto);
 
 		$receipt = new ImmoReceipt($db);
 		$result = $receipt->fetch($id);
@@ -808,11 +827,15 @@ if ($action == 'createall') {
 		}
 
 		print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
-		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+		print '<input type="hidden" name="token" value="' . newToken() . '">';
 		print '<input type="hidden" name="action" value="update">';
 		print '<input type="hidden" name="id" value="'.$object->id.'">';
-		if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-		if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+		if ($backtopage) {
+			print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+		}
+		if ($backtopageforcancel) {
+			print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+		}
 
 		print dol_get_fiche_head();
 
@@ -974,7 +997,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($_SESSION['last_restore']) ? 1 : 0) . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$object->fetch_thirdparty();
 
@@ -1250,7 +1273,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$result = $object->getLinesArray();
 
 		print '	<form name="addproduct" id="addproduct" action="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . (($action != 'editline') ? '#addline' : '#line_' . GETPOST('lineid', 'int')) . '" method="POST">
-			<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">
+			<input type="hidden" name="token" value="' . newToken() . '">
 			<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline') . '">
 			<input type="hidden" name="mode" value="">
 			<input type="hidden" name="id" value="' . $object->id . '">

@@ -123,7 +123,7 @@ class ImmoReceipt extends CommonObject
 		'fk_property'   => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'Property', 'visible' => 1, 'enabled' => 1, 'position' => 35, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immoproperty.rowid', 'searchall' => 1, 'help' => "LinkToProperty"),
 		'fk_renter'     => array('type' => 'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label' => 'Renter', 'enabled' => 1, 'visible' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'foreignkey' => 'ultimateimmo_immorenter.rowid', 'help' => "LinkToRenter"),
 		'fk_owner'      => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'visible' => 1, 'enabled' => 1, 'position' => 45, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToOwner"),
-		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 46, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirparty'),
+		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'picto'=>'company', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 46, 'notnull' => -1, 'index' => 1, 'help' => 'SetLinkToThirparty'),
 		/*'fk_payment' => array('type'=>'integer:ImmoPayment:ultimateimmo/class/immopayment.class.php', 'label'=>'ImmoPayment', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToPayment",),*/
 		'note_public'   => array('type' => 'html', 'label' => 'NotePublic', 'enabled' => 1, 'visible' => 0, 'position' => 50),
 		'note_private'  => array('type' => 'html', 'label' => 'NotePrivate', 'enabled' => 1, 'visible' => 0, 'position' => 55),
@@ -143,9 +143,9 @@ class ImmoReceipt extends CommonObject
 		'vat_tx'        => array('type' => 'integer', 'label' => 'VatTx', 'enabled' => 1, 'visible' => 1, 'position' => 96, 'notnull' => -1),
 		'tms'           => array('type' => 'timestamp', 'label' => 'DateModification', 'enabled' => 1, 'visible' => -2, 'position' => 501, 'notnull' => 1),
 		//'fk_statut' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>-2, 'position'=>509, 'notnull'=>-1,),
-		'fk_user_creat' => array('type' => 'integer', 'label' => 'UserAuthor', 'enabled' => 1, 'visible' => -2, 'position' => 510, 'notnull' => 1, 'foreignkey' => 'llx_user.rowid'),
-		'fk_user_modif' => array('type' => 'integer', 'label' => 'UserModif', 'enabled' => 1, 'visible' => -2, 'position' => 511, 'notnull' => -1),
-		'fk_user_valid' => array('type' => 'integer', 'label' => 'UserValid', 'enabled' => 1, 'visible' => -2, 'position' => 512, 'notnull' => -1),
+		'fk_user_creat' => array('type' => 'integer', 'label' => 'UserAuthor', 'picto'=>'user', 'enabled' => 1, 'visible' => -2, 'position' => 510, 'notnull' => 1, 'foreignkey' => 'llx_user.rowid'),
+		'fk_user_modif' => array('type' => 'integer', 'label' => 'UserModif', 'picto'=>'user', 'enabled' => 1, 'visible' => -2, 'position' => 511, 'notnull' => -1),
+		'fk_user_valid' => array('type' => 'integer', 'label' => 'UserValid', 'picto'=>'user', 'enabled' => 1, 'visible' => -2, 'position' => 512, 'notnull' => -1),
 		'import_key'    => array('type' => 'varchar(14)', 'label' => 'ImportId', 'enabled' => 1, 'visible' => -2, 'position' => 1000, 'notnull' => -1),
 		'model_pdf'     => array('type' => 'varchar(128)', 'label' => 'ModelPdf', 'enabled' => 1, 'visible' => -2, 'position' => 1010, 'notnull' => -1, 'index' => 1, 'searchall' => 1),
 		'last_main_doc' => array('type' => 'varchar(255)', 'label' => 'LastMainDoc', 'enabled' => 1, 'visible' => -2, 'position' => 1020, 'notnull' => -1),
@@ -312,8 +312,12 @@ class ImmoReceipt extends CommonObject
 
 		$this->db = $db;
 
-		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible'] = 0;
-		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
+		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) {
+			$this->fields['rowid']['visible'] = 0;
+		}
+		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) {
+			$this->fields['entity']['enabled'] = 0;
+		}
 
 		// Unset fields that are disabled
 		foreach ($this->fields as $key => $val) {
@@ -323,19 +327,22 @@ class ImmoReceipt extends CommonObject
 		}
 
 		// Translate some data of arrayofkeyval
-		foreach ($this->fields as $key => $val) {
-			if (is_array($this->fields['status']['arrayofkeyval'])) {
-				foreach ($this->fields['status']['arrayofkeyval'] as $key2 => $val2) {
-					$this->fields['status']['arrayofkeyval'][$key2] = $langs->trans($val2);
+		if (is_object($langs)) {
+			foreach ($this->fields as $key => $val) {
+				if (!empty($val['arrayofkeyval']) && is_array($val['arrayofkeyval'])) {
+					foreach ($val['arrayofkeyval'] as $key2 => $val2) {
+						$this->fields[$key]['arrayofkeyval'][$key2] = $langs->trans($val2);
+					}
 				}
-			}
-			if (is_array($this->fields['paye']['arrayofkeyval'])) {
-				foreach ($this->fields['paye']['arrayofkeyval'] as $key3 => $val3) {
-					$this->fields['paye']['arrayofkeyval'][$key3] = $langs->trans($val3);
+				if (is_array($this->fields['paye']['arrayofkeyval'])) {
+					foreach ($this->fields['paye']['arrayofkeyval'] as $key3 => $val3) {
+						$this->fields['paye']['arrayofkeyval'][$key3] = $langs->trans($val3);
+					}
 				}
 			}
 		}
 	}
+			
 
 	/**
 	 * Create object into database
@@ -515,7 +522,9 @@ class ImmoReceipt extends CommonObject
 
 		// Load source object
 		$result = $object->fetchCommon($fromid);
-		if ($result > 0 && !empty($object->table_element_line)) $object->fetchLines();
+		if ($result > 0 && !empty($object->table_element_line)) {
+			$object->fetchLines();
+		}
 
 		$objsoc = new Societe($this->db);
 
@@ -534,9 +543,21 @@ class ImmoReceipt extends CommonObject
 		unset($object->import_key);
 
 		// Clear fields
-		$object->ref = empty($this->fields['ref']['default']) ? "copy_of_" . $object->ref : $this->fields['ref']['default'];
-		$object->label = empty($this->fields['label']['default']) ? $langs->trans("CopyOf") . " " . $object->label : $this->fields['label']['default'];
-		$object->status = self::STATUS_DRAFT;
+		if (property_exists($object, 'ref')) {
+			$object->ref = empty($this->fields['ref']['default']) ? "Copy_Of_".$object->ref : $this->fields['ref']['default'];
+		}
+		if (property_exists($object, 'label')) {
+			$object->label = empty($this->fields['label']['default']) ? $langs->trans("CopyOf")." ".$object->label : $this->fields['label']['default'];
+		}
+		if (property_exists($object, 'status')) {
+			$object->status = self::STATUS_DRAFT;
+		}
+		if (property_exists($object, 'date_creation')) {
+			$object->date_creation = dol_now();
+		}
+		if (property_exists($object, 'date_modification')) {
+			$object->date_modification = null;
+		}
 		// ...
 		// Clear extrafields that are unique
 		if (is_array($object->array_options) && count($object->array_options) > 0) {
@@ -643,7 +664,7 @@ class ImmoReceipt extends CommonObject
 	 *
 	 * @param	int    $id				Id object
 	 * @param	string $ref				Ref
-	 * @param	string	$morewhere		More SQL filters (' AND ...')
+	 * @param	string $morewhere		More SQL filters (' AND ...')
 	 * @return 	int         			<0 if KO, 0 if not found, >0 if OK
 	 */
 	public function fetchCommon($id, $ref = null, $morewhere = '')
@@ -721,7 +742,9 @@ class ImmoReceipt extends CommonObject
 	public function fetch($id, $ref = null)
 	{
 		$result = $this->fetchCommon($id, $ref);
-		//if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
+		if ($result > 0 && !empty($this->table_element_line)) {
+			$this->fetchLines();
+		}
 		return $result;
 	}
 
@@ -730,14 +753,32 @@ class ImmoReceipt extends CommonObject
 	 *
 	 * @return int         <0 if KO, 0 if not found, >0 if OK
 	 */
-	/*public function fetchLines()
+	public function fetchLines()
 	{
 		$this->lines=array();
 
 		// Load lines with object ImmoReceiptLine
+		$result = $this->fetchLinesCommon();
+		return $result;
+	}
 
-		return count($this->lines)?1:0;
-	}*/
+	/**
+	 *  Delete a line of object in database
+	 *
+	 *	@param  User	$user       User that delete
+	 *  @param	int		$idline		Id of line to delete
+	 *  @param 	bool 	$notrigger  false=launch triggers after, true=disable triggers
+	 *  @return int         		>0 if OK, <0 if KO
+	 */
+	public function deleteLine(User $user, $idline, $notrigger = false)
+	{
+		if ($this->status < 0) {
+			$this->error = 'ErrorDeleteLineNotAllowedByObjectStatus';
+			return -2;
+		}
+
+		return $this->deleteLineCommon($user, $idline, $notrigger);
+	}
 
 	/**
 	 * Load list of objects in memory from the database.
@@ -761,8 +802,11 @@ class ImmoReceipt extends CommonObject
 		$sql = 'SELECT';
 		$sql .= $this->getFieldList();
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element. ' as t';
-		if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql .= ' WHERE t.entity IN ('.getEntity($this->table_element).')';
-		else $sql .= ' WHERE 1 = 1';
+		if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) {
+			$sql .= ' WHERE t.entity IN ('.getEntity($this->table_element).')';
+		} else {
+			$sql .= ' WHERE 1 = 1';
+		}
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {
@@ -823,24 +867,21 @@ class ImmoReceipt extends CommonObject
 	 * @param unknown $id
 	 * @param array $filter
 	 */
-	public function fetchByLocalId($id, $filter=array())
+	public function fetchByLocalId($id, $filter = array())
 	{
 		$sql = "SELECT il.rowid as reference, il.fk_rent , il.fk_property, il.label as nomrenter, il.fk_renter, il.total_amount,";
 		$sql .= " il.rentamount, il.chargesamount, il.date_echeance, il.note_public, il.status, il.paye ,";
 		$sql .= " il.date_start , il.date_end, il.fk_owner, il.partial_payment ";
 		$sql .= " , lc.firstname as nomlocataire , ll.label as nomlocal ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element." as il ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element . " as il ";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON il.fk_renter = lc.rowid";
 		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON il.fk_property = ll.rowid ";
 		$sql .= " WHERE il.fk_property = " . $id;
 
-		if (count($filter>0))
-		{
-			foreach($filter as $key=>$value)
-			{
-				if ($key=='insidedaterenter')
-				{
-					$sql .= " AND il.date_start<='".$this->db->idate($value)."' AND il.date_end>='".$this->db->idate($value)."'";
+		if (count($filter > 0)) {
+			foreach ($filter as $key => $value) {
+				if ($key == 'insidedaterenter') {
+					$sql .= " AND il.date_start<='" . $this->db->idate($value) . "' AND il.date_end>='" . $this->db->idate($value) . "'";
 				}
 			}
 		}
@@ -849,12 +890,11 @@ class ImmoReceipt extends CommonObject
 		$resql = $this->db->query($sql);
 		if ($resql) {
 
-			$this->line = array ();
+			$this->line = array();
 			$num = $this->db->num_rows($resql);
-			$this->lines=array();
+			$this->lines = array();
 
-			while ($obj = $this->db->fetch_object($resql))
-			{
+			while ($obj = $this->db->fetch_object($resql)) {
 				$line = new immoreceiptLine();
 
 				$line->id = $obj->reference;
@@ -868,11 +908,11 @@ class ImmoReceipt extends CommonObject
 				$line->total_amount = $obj->total_amount;
 				$line->rentamount = $obj->rentamount;
 				$line->chargesamount = $obj->chargesamount;
-				$line->date_echeance = $this->db->jdate ( $obj->date_echeance );
+				$line->date_echeance = $this->db->jdate($obj->date_echeance);
 				$line->note_public = $obj->note_public;
 				$line->status = $obj->status;
-				$line->date_start = $this->db->jdate ( $obj->date_start );
-				$line->date_end = $this->db->jdate ( $obj->date_end );
+				$line->date_start = $this->db->jdate($obj->date_start);
+				$line->date_end = $this->db->jdate($obj->date_end);
 				$line->encours = $obj->encours;
 				$line->regul = $obj->regul;
 				$line->fk_owner = $obj->fk_owner;
@@ -881,14 +921,13 @@ class ImmoReceipt extends CommonObject
 				$line->fk_payment = $obj->fk_payment;
 
 				$this->lines[] = $line;
-
 			}
 			$this->db->free($resql);
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetchByLocalId " . $this->error, LOG_ERR);
-			return - 1;
+			return -1;
 		}
 	}
 
@@ -1096,6 +1135,8 @@ class ImmoReceipt extends CommonObject
 			return -1;
 		}
 	}
+
+	
 	/**
      *  Return a link to the object card (with optionaly the picto)
      *
@@ -1113,11 +1154,13 @@ class ImmoReceipt extends CommonObject
 		// global $dolibarr_main_authentication, $dolibarr_main_demo;
 		// global $menumanager;
 
-		if (!empty($conf->dol_no_mouse_hover)) $notooltip = 1;   // Force disable tooltips
+		if (!empty($conf->dol_no_mouse_hover)) {
+			$notooltip = 1; // Force disable tooltips
+		}
 
 		$result = '';
 
-		$label = '<u>' . $langs->trans("ImmoReceipt") . '</u>';
+		$label = img_picto('', $this->picto) . '<u>' . $langs->trans("ImmoReceipt") . '</u>';
 		$label .= '<br>';
 		$label .= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 		$label .= '<br>';
@@ -1131,27 +1174,73 @@ class ImmoReceipt extends CommonObject
 		if ($option != 'nolink') {
 			// Add param to save lastsearch_values or not
 			$add_save_lastsearch_values = ($save_lastsearch_value == 1 ? 1 : 0);
-			if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) $add_save_lastsearch_values = 1;
-			if ($add_save_lastsearch_values) $url .= '&save_lastsearch_values=1';
+			if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) {
+				$add_save_lastsearch_values = 1;
+			}
+			if ($add_save_lastsearch_values) {
+				$url .= '&save_lastsearch_values=1';
+			}
 		}
 
 		$linkclose = '';
 		if (empty($notooltip)) {
 			if (!empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER)) {
-				$label = $langs->trans("ShowImmoReceipt");
+				$label = $langs->trans("ShowImmoOwner");
 				$linkclose .= ' alt="' . dol_escape_htmltag($label, 1) . '"';
 			}
 			$linkclose .= ' title="' . dol_escape_htmltag($label, 1) . '"';
 			$linkclose .= ' class="classfortooltip' . ($morecss ? ' ' . $morecss : '') . '"';
-		} else $linkclose = ($morecss ? ' class="' . $morecss . '"' : '');
+		} else {
+			$linkclose = ($morecss ? ' class="'.$morecss.'"' : '');
+		}
 
-		$linkstart = '<a href="' . $url . '"';
-		$linkstart .= $linkclose . '>';
-		$linkend = '</a>';
+		if ($option == 'nolink') {
+			$linkstart = '<span';
+		} else {
+			$linkstart = '<a href="'.$url.'"';
+		}
+		$linkstart .= $linkclose.'>';
+		if ($option == 'nolink') {
+			$linkend = '</span>';
+		} else {
+			$linkend = '</a>';
+		}
 
 		$result .= $linkstart;
-		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="' . (($withpicto != 2) ? 'paddingright ' : '') . 'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
-		if ($withpicto != 2) $result .= $this->ref;
+
+		if (empty($this->showphoto_on_popup)) {
+			if ($withpicto) {
+				$result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
+			}
+		} else {
+			if ($withpicto) {
+				require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+
+				list($class, $module) = explode('@', $this->picto);
+				$upload_dir = $conf->$module->multidir_output[$conf->entity]."/$class/".dol_sanitizeFileName($this->ref);
+				$filearray = dol_dir_list($upload_dir, "files");
+				$filename = $filearray[0]['name'];
+				if (!empty($filename)) {
+					$pospoint = strpos($filearray[0]['name'], '.');
+
+					$pathtophoto = $class.'/'.$this->ref.'/thumbs/'.substr($filename, 0, $pospoint).'_mini'.substr($filename, $pospoint);
+					if (empty($conf->global->{strtoupper($module.'_'.$class).'_FORMATLISTPHOTOSASUSERS'})) {
+						$result .= '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref"><img class="photo'.$module.'" alt="No photo" border="0" src="'.DOL_URL_ROOT.'/viewimage.php?modulepart='.$module.'&entity='.$conf->entity.'&file='.urlencode($pathtophoto).'"></div></div>';
+					} else {
+						$result .= '<div class="floatleft inline-block valignmiddle divphotoref"><img class="photouserphoto userphoto" alt="No photo" border="0" src="'.DOL_URL_ROOT.'/viewimage.php?modulepart='.$module.'&entity='.$conf->entity.'&file='.urlencode($pathtophoto).'"></div>';
+					}
+
+					$result .= '</div>';
+				} else {
+					$result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
+				}
+			}
+		}
+
+		if ($withpicto != 2) {
+			$result .= $this->ref;
+		}
+
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
@@ -1159,8 +1248,11 @@ class ImmoReceipt extends CommonObject
 		$hookmanager->initHooks(array('immoreceiptdao'));
 		$parameters = array('id' => $this->id, 'getnomurl' => $result);
 		$reshook = $hookmanager->executeHooks('getNomUrl', $parameters, $this, $action);    // Note that $action and $object may have been modified by some hooks
-		if ($reshook > 0) $result = $hookmanager->resPrint;
-		else $result .= $hookmanager->resPrint;
+		if ($reshook > 0) {
+			$result = $hookmanager->resPrint;
+		} else {
+			$result .= $hookmanager->resPrint;
+		}
 
 		return $result;
 	}
@@ -1218,11 +1310,10 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function LibStatut($status, $mode = 0)
 	{
-		global $langs;
-
 		// phpcs:enable
-		if (empty($this->labelStatus) || empty($this->labelStatusShort)) {
-
+		if (empty($this->labelStatus) || empty($this->labelStatusShort))
+		{
+			global $langs;
 			//$langs->load("mymodule");
 			$this->labelStatus[self::STATUS_DRAFT] = $langs->trans('Draft');
 			$this->labelStatus[self::STATUS_VALIDATED] = $langs->trans('Enabled');
@@ -1232,15 +1323,9 @@ class ImmoReceipt extends CommonObject
 			$this->labelStatusShort[self::STATUS_CANCELED] = $langs->trans('Disabled');
 		}
 
-		$statusType = 'status' . $status;
-		//if ($status == self::STATUS_VALIDATED) $statusType = 'status1';
+		$statusType = 'status'.$status;
+		if ($status == self::STATUS_VALIDATED) $statusType = 'status1';
 		if ($status == self::STATUS_CANCELED) $statusType = 'status6';
-
-		if ($this->paye==1) {
-			$this->labelStatusShort[$status]=$langs->trans('Paid');
-			$this->labelStatus[$status]=$langs->trans('Paid');
-			$statusType = 'status4';
-		}
 
 		return dolGetStatus($this->labelStatus[$status], $this->labelStatusShort[$status], '', $statusType, $mode);
 	}
@@ -1336,7 +1421,7 @@ class ImmoReceipt extends CommonObject
 		$xnbp = 0;
 		while ($xnbp < $nbp) {
 
-			$line = new immoreceiptLine();
+			$line = new immoreceiptLine($this->db);
 
 			$line->nomlocal = 'nomlocal';
 			$line->label = 'nomrenter';
@@ -1359,6 +1444,29 @@ class ImmoReceipt extends CommonObject
 
 			$this->lines[$xnbp] = $line;
 			$xnbp++;
+		}
+	}
+
+	/**
+	 * 	Create an array of owner lines
+	 *
+	 * 	@return int		>0 if OK, <0 if KO
+	 */
+	public function getLinesArray()
+	{
+		$this->lines = array();
+
+		$objectline = new ImmoReceiptLine($this->db);
+		$result = $objectline->fetchAll('ASC', 'position', 0, 0, array('customsql'=>'fk_immoreceipt = '.$this->id));
+
+		if (is_numeric($result))
+		{
+			$this->error = $this->error;
+			$this->errors = $this->errors;
+			return $result;
+		} else {
+			$this->lines = $result;
+			return $this->lines;
 		}
 	}
 
@@ -1445,38 +1553,24 @@ class ImmoReceipt extends CommonObject
 /**
  * Class ImmoreceiptLine
  */
-class ImmoreceiptLine
+class ImmoreceiptLine extends CommonObjectLine
 {
-	/**
-	 * @var int ID
-	 */
-	public $id;
-	/**
-	 * @var mixed Sample line property 1
-	 */
+	// To complete with content of an object MyObjectLine
+	// We should have a field rowid, fk_myobject and position
 
-	public $fk_rent;
-	public $fk_property;
-	public $label;
-	public $fk_renter;
-	public $total_amount;
-	public $rentamount;
-	public $balance;
-	public $partial_payment;
-	public $fk_payment;
-	public $chargesamount;
-	public $vat_amount;
-	public $date_echeance = '';
-	public $note_public;
-	public $status;
-	public $date_rent = '';
-	public $date_start = '';
-	public $date_end = '';
-	public $fk_owner;
-	public $paye;
-	public $renter_id;
-	public $nomlocataire;
-	public $nomlocal;
-	public $property_id;
+	/**
+	 * @var int  Does object support extrafields ? 0=No, 1=Yes
+	 */
+	public $isextrafieldmanaged = 0;
+
+	/**
+	 * Constructor
+	 *
+	 * @param DoliDb $db Database handler
+	 */
+	public function __construct(DoliDB $db)
+	{
+		$this->db = $db;
+	}
 }
 

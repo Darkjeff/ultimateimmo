@@ -710,7 +710,7 @@ class ImmoOwner extends CommonObject
 		return $this->deleteLineCommon($user, $idline, $notrigger);
 	}
 
-		/**
+	/**
 	 * Load list of objects in memory from the database.
 	 *
 	 * @param  string      $sortorder    Sort Order

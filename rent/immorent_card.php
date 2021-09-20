@@ -25,23 +25,33 @@
 // Load Dolibarr environment
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
-// Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
-$tmp2 = realpath(__FILE__);
-$i = strlen($tmp) - 1;
-$j = strlen($tmp2) - 1;
-while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
-	$i--;
-	$j--;
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
 }
-if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
-if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
+// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--; $j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1))."/main.inc.php";
+}
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
+}
 // Try main.inc.php using relative path
-if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
-if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
-if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
-if (!$res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) {
+	$res = @include "../main.inc.php";
+}
+if (!$res && file_exists("../../main.inc.php")) {
+	$res = @include "../../main.inc.php";
+}
+if (!$res && file_exists("../../../main.inc.php")) {
+	$res = @include "../../../main.inc.php";
+}
+if (!$res) {
+	die("Include of main fails");
+}
 
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
@@ -82,10 +92,14 @@ $search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'se
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
 foreach ($object->fields as $key => $val) {
-	if (GETPOST('search_' . $key, 'alpha')) $search[$key] = GETPOST('search_' . $key, 'alpha');
+	if (GETPOST('search_'.$key, 'alpha')) {
+		$search[$key] = GETPOST('search_'.$key, 'alpha');
+	}
 }
 
-if (empty($action) && empty($id) && empty($ref)) $action = 'view';
+if (empty($action) && empty($id) && empty($ref)) {
+	$action = 'view';
+}
 
 // Load object
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Include fetch and fetch_thirdparty but not fetch_optionals
@@ -137,12 +151,16 @@ if (empty($reshook)) {
 
 	$permissiontoadd = $user->rights->ultimateimmo->write;
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
+
 	$backurlforlist = dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1);
 
 	if (empty($backtopage) || ($cancel && empty($id))) {
 		if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
-			if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
-			else $backtopage = dol_buildpath('/ultimateimmo/rent/immorent_card.php', 1) . '?id=' . ($id > 0 ? $id : '__ID__');
+			if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) {
+				$backtopage = $backurlforlist;
+			} else {
+				$backtopage = dol_buildpath('/ultimateimmo/rent/immorent_card.php', 1) . '?id=' . ((!empty($id) && $id > 0) ? $id : '__ID__');
+			}
 		}
 	}
 	$triggermodname = 'ULTIMATEIMMO_IMMORENT_MODIFY'; // Name of trigger action code to execute when we modify record
@@ -217,13 +235,17 @@ llxHeader('', $langs->trans("ImmoRents"), '');
 
 // Part to create
 if ($action == 'create') {
-	print load_fiche_titre($langs->transnoentitiesnoconv("MenuNewImmoRent"));
+	print load_fiche_titre($langs->transnoentitiesnoconv("MenuNewImmoRent"), '', 'object_' . $object->picto);
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="add">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
+	if ($backtopage) {
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	}
+	if ($backtopageforcancel) {
+		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	}
 
 	print dol_get_fiche_head(array(), '');
 
@@ -256,52 +278,19 @@ if (($id || $ref) && $action == 'edit') {
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="update">';
 	print '<input type="hidden" name="id" value="' . $object->id . '">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
+	if ($backtopage) {
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	}
+	if ($backtopageforcancel) {
+		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	}
 
 	print dol_get_fiche_head();
 
 	print '<table class="border centpercent tableforfieldedit">' . "\n";
 
 	// Common attributes
-	//include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_edit.tpl.php';
-
-	$object->fields = dol_sort_array($object->fields, 'position');
-
-	foreach ($object->fields as $key => $val) {
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4
-		) continue;
-
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue; // We don't want this field
-
-		print '<tr><td';
-		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0
-		) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '">';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
-		print '</td>';
-		print '<td>';
-
-		/*if ($val['label'] == 'BankAccount') {
-			$accountstatic = new Account($db);
-			$result = $accountstatic->fetch($object->fk_account);
-			print $form->select_comptes(GETPOSTISSET('accountid', 'int') ? GETPOST('accountid', 'int') : $accountstatic->fk_account, "accountid", 0, '', 1);  // Show open bank account list
-		} else {*/
-		if (in_array($val['type'], array('int', 'integer'
-		))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
-		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
-		else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
-		//var_dump($val.' '.$key.' '.$value);
-		if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-		else print $object->showInputField($val, $key, $value, '', '', '', 0);
-		//}
-		print '</td>';
-		print '</tr>';
-	}
+	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_edit.tpl.php';
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
@@ -402,6 +391,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<table class="border centpercent">' . "\n";
 
 	// Common attributes
+	$object->fields = dol_sort_array($object->fields, 'position');
+	
 	$keyforbreak = 'rentamount';
 	//include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
 

@@ -676,7 +676,7 @@ class ImmoProperty extends CommonObject
 
 			while ($obj = $this->db->fetch_object($resql)) {
 
-				$line = new ImmopropertyLine();
+				$line = new ImmopropertyLine($this->db);
 				
 				$line->id = $obj->rowid;
 				$line->fk_property = $obj->fk_property;
