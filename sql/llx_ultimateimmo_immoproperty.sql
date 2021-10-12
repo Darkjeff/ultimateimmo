@@ -18,7 +18,7 @@
 CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoproperty(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL default (PROV), 
+	ref varchar(128) NOT NULL, 
 	label varchar(255),
 	juridique_id integer,	
 	entity integer DEFAULT 1 NOT NULL, 
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoproperty(
 	town varchar(64), 
 	country_id integer, 
 	datep date,
-	datebuilt varchar(32) 	
+	datebuilt varchar(32), 	
 	target integer
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;
