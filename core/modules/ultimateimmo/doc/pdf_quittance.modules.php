@@ -473,7 +473,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<='" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
 				$sql .= " GROUP BY fk_property,fk_renter";
-
+				
 				// print $sql;
 				dol_syslog(get_class($this) . ':: total somme due', LOG_DEBUG);
 				$resql = $this->db->query($sql);
@@ -483,7 +483,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					if ($num > 0) {
 
 						$objp = $this->db->fetch_object($resql);
-
+						
 						$posX = $this->marge_gauche;
 						$posY = $pdf->getY();
 						$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;

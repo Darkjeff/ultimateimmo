@@ -507,11 +507,11 @@ if (empty($reshook)) {
 	}
 
 	// Action to build doc
-	//include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
+	include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
 	//Warning: array_push() expects parameter 1 to be array, null given in /home/httpd/vhosts/aflac.fr/domains/compta.aflac.fr/httpdocs/includes/tecnickcom/tcpdf/tcpdf.php on line 18257
 	
 	// Build doc
-	/*if ($action == 'builddoc' && $permissiontoadd) {
+	if ($action == 'builddoc' && $permissiontoadd) {
 		// Save last template used to generate document
 		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model', 'alpha'));
 
@@ -525,7 +525,7 @@ if (empty($reshook)) {
 			setEventMessages($object->error, $object->errors, 'errors');
 			$action = '';
 		}
-	}*/
+	}
 
 	if ($action == 'set_thirdparty' && $permissiontoadd) {
 		$object->setValueFrom('fk_soc', GETPOST('fk_soc', 'int'), '', '', 'date', '', $user, 'IMMORECEIPT_MODIFY');
