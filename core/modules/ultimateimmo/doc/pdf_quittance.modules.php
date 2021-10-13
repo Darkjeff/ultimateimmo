@@ -175,11 +175,11 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
 
-		/*if (! is_object($object)) {
+		if (! is_object($object)) {
 			$id = $object;
 			$object = new Immoreceipt($this->db);
 			$ret = $object->fetch($id);
-		}*/
+		}
 
 		// dol_syslog ( "pdf_quittance::debug loyer=" . var_export ( $object, true ) );
 
