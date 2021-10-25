@@ -130,7 +130,7 @@ $permissiontoadd = $user->rights->ultimateimmo->write; // Used by the include of
 $permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
 $permissionnote = $user->rights->ultimateimmo->write; // Used by the include of actions_setnotes.inc.php
 $permissiondellink = $user->rights->ultimateimmo->write; // Used by the include of actions_dellink.inc.php
-$upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1] . '/receipt';
+$upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1];
 
 
 /**
@@ -507,11 +507,11 @@ if (empty($reshook)) {
 	}
 
 	// Action to build doc
-	//include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
+	include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
 	//Warning: array_push() expects parameter 1 to be array, null given in /home/httpd/vhosts/aflac.fr/domains/compta.aflac.fr/httpdocs/includes/tecnickcom/tcpdf/tcpdf.php on line 18257
 	
 	// Build doc
-	/*if ($action == 'builddoc' && $permissiontoadd) {
+	if ($action == 'builddoc' && $permissiontoadd) {
 		// Save last template used to generate document
 		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model', 'alpha'));
 
@@ -525,7 +525,7 @@ if (empty($reshook)) {
 			setEventMessages($object->error, $object->errors, 'errors');
 			$action = '';
 		}
-	}*/
+	}
 
 	if ($action == 'set_thirdparty' && $permissiontoadd) {
 		$object->setValueFrom('fk_soc', GETPOST('fk_soc', 'int'), '', '', 'date', '', $user, 'IMMORECEIPT_MODIFY');
@@ -1316,6 +1316,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '&nbsp';
 		print '<table class="border" width="100%">';
 		print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("LinkedDocuments") . '</td></tr>';
+		var_dump($object);exit;
 		// afficher
 		$legende = $langs->trans("Ouvrir");
 		print '<tr><td width="200" class="center">' . $langs->trans("Quittance") . '</td><td> ';
@@ -1399,7 +1400,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
 		$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
-
+		
 		print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
 
 		// Show links to link elements
@@ -1428,9 +1429,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Presend form
 	$modelmail = 'immoreceipt';
 	$defaulttopic = 'InformationMessage';
-	$diroutput = $conf->ultimateimmo->dir_output . '/receipt';
+	$diroutput = $conf->ultimateimmo->dir_output . '/receipt/';
 	$trackid = 'immo' . $object->id;
-
+	
 	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';
 }
 

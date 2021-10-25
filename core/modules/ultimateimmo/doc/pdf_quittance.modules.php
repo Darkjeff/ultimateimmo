@@ -175,11 +175,11 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
 
-		/*if (! is_object($object)) {
+		if (! is_object($object)) {
 			$id = $object;
 			$object = new Immoreceipt($this->db);
 			$ret = $object->fetch($id);
-		}*/
+		}
 
 		// dol_syslog ( "pdf_quittance::debug loyer=" . var_export ( $object, true ) );
 
@@ -324,7 +324,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$dtpaiement = $paiement->date_payment;
 
 				if (empty($dtpaiement)) {
-					$dtpaiement = $object->echeance;
+					$dtpaiement = $object->date_echeance;
 				}
 				$text .= 'le ' . dol_print_date($dtpaiement, 'day') . ' pour loyer et accessoires des locaux sis au : ' . $property->address . ' ' . $property->zip . ' ' . $property->town . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
 
@@ -406,7 +406,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
 				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<'" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
-				$sql .= " ORDER BY echeance ASC";
+				$sql .= " ORDER BY date_echeance ASC";
 
 				dol_syslog(get_class($this) . ':: loyerAnterieur sql=' . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
@@ -473,7 +473,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<='" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
 				$sql .= " GROUP BY fk_property,fk_renter";
-
+				
 				// print $sql;
 				dol_syslog(get_class($this) . ':: total somme due', LOG_DEBUG);
 				$resql = $this->db->query($sql);
@@ -483,7 +483,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					if ($num > 0) {
 
 						$objp = $this->db->fetch_object($resql);
-
+						
 						$posX = $this->marge_gauche;
 						$posY = $pdf->getY();
 						$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;

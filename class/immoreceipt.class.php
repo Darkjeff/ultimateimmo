@@ -878,7 +878,7 @@ class ImmoReceipt extends CommonObject
 		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON il.fk_property = ll.rowid ";
 		$sql .= " WHERE il.fk_property = " . $id;
 
-		if (count($filter > 0)) {
+		if (count($filter) > 0) {
 			foreach ($filter as $key => $value) {
 				if ($key == 'insidedaterenter') {
 					$sql .= " AND il.date_start<='" . $this->db->idate($value) . "' AND il.date_end>='" . $this->db->idate($value) . "'";
@@ -895,7 +895,7 @@ class ImmoReceipt extends CommonObject
 			$this->lines = array();
 
 			while ($obj = $this->db->fetch_object($resql)) {
-				$line = new immoreceiptLine();
+				$line = new immoreceiptLine($this->db);
 
 				$line->id = $obj->reference;
 				$line->ref = $obj->reference;
