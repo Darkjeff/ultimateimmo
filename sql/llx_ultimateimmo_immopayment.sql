@@ -18,7 +18,7 @@
 CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immopayment(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL,			-- payment reference number
+	ref varchar(128) NULL,			-- payment reference number
 	entity integer DEFAULT 1 NOT NULL,	-- Multi company id
 	amount double(24,8) DEFAULT NULL, 	-- amount paid in Dolibarr currency
 	fk_rent integer, 
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immopayment(
 	fk_owner integer, 
 	fk_soc integer,
 	fk_receipt integer,
-	fk_payment integer NOT NULL,		-- type of payment in llx_c_paiement
+	fk_payment integer,		-- type of payment in llx_c_paiement
 	num_payment varchar(50) DEFAULT NULL, 
 	check_transmitter varchar(50) DEFAULT NULL, 
 	chequebank varchar(50) DEFAULT NULL, 
@@ -40,6 +40,6 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immopayment(
 	fk_user_creat integer NOT NULL, 	-- utilisateur qui a cree l'info
 	fk_user_modif integer, 				-- utilisateur qui a modifie l'info
 	import_key varchar(14), 
-	status integer NOT NULL
+	status integer
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;
