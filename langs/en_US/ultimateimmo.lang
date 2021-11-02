@@ -35,19 +35,19 @@ PublicSite=Public site
 EnablePublicSite = Enable the publicly accessible site
 PublicSiteDesc = Dolibarr can offer a public page URL to display a site to list real estate listings for external visitors.
 ULTIMATEIMMO_USE_GOOGLE = Use google with UltimateImmo module
-GoogleZoomLevel = Niveau de zoom par défaut (1 à 10)
-GOOGLE_API_SERVERKEY=Clé API (de type "Server key")
-ParametersForGoogleAPIv3Usage=Pour Google API %s V3
-KeepEmptyYoUsePublicQuotaOfAPI=Laisser vide pour utiliser le quota publique de cette API (sinon la clé peut être créée depuis la page https://code.google.com/apis/console/, "API Access" pour créer une "Server key" et "Services" pour activer l'API "%s")
-AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google, vous devez créer une clé depuis la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "Indentification" . Cliquer sur "Créer une clé" et choisir "Clé serveur" puis "Créer". Vous obtiendrez votre clé serveur.
-EnableAPI=Vous devez aussi activer les API pour votre compte Google. Pour cela, aller sur la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "API". Cliquer sur activer API pour "%s".
-UltimateimmoEnablePublicInterface = A public interface requiring no identification is available at the following url
+GoogleZoomLevel = Default zoom level (1 to 10)
+GOOGLE_API_SERVERKEY=API key ("Server key" type)
+ParametersForGoogleAPIv3Usage=For Google API %s V3
+KeepEmptyYoUsePublicQuotaOfAPI=Leave empty to use the public quota of this API (otherwise the key can be created from the page https://code.google.com/apis/console/, "API Access" to create a "Server key" and "Services" to activate the API "%s")
+AllowGoogleToLoginWithKey=To use the quotas of your own Google account, you must create a key from the page <a href="%s" target="_blank">%s </a>, menu "API & Authentication" -> "Identification" . Click on "Create a key" and choose "Server key" then "Create". You will get your server key.
+EnableAPI=You must also enable APIs for your Google account. To do this, go to the <a href="%s" target="_blank">%s </a> page, menu "API & Authentication" -> "API". Click on activate API for "%s".
+UltimateimmoEnablePublicInterface = A public interface requiring no identification is available at the following url:
 UltimateimmoPublicAccess = Enable public interface
 UltimateimmoEmailMustExist = Require an existing email address to create a ticket
 UltimateimmoEmailMustExistHelp = In the public interface, the email address should already be filled in the database to create a new ticket.
 UltimateimmoShowCompanyLogo = Display the logo of the company in the public interface
 UltimateimmoShowCompanyLogoHelp = Enable this option to hide the logo of the main company in the pages of the public interface
-UltimateimmoPublicInterfaceForbidden = L'interface publique pour les tickets n'a pas été activée
+UltimateimmoPublicInterfaceForbidden = The public interface for tickets has not been activated
 ExtraFieldsProperty = extrafields (Property)
 ExtraFieldsRenter = extrafields (Renters)
 ExtraFieldsOwner = extrafields (Owners)
