@@ -14,26 +14,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-# Générique
+# Generic
 #
 
 # Module label 'ModuleUltimateimmoName'
 ModuleUltimateimmoName = Ultimateimmo
 # Module description 'ModuleUltimateimmoDesc'
-ModuleUltimateimmoDesc = Solution pour les professionnels de l'immobilier
+ModuleUltimateimmoDesc = Solution for real estate professionals
 
 #
-# Page d'administration
+# Admin page
 #
 UltimateimmoSetup = Configuration du module Ultimateimmo
 Settings = Réglages
 UltimateimmoSetupPage = Page de configuration du module Ultimateimmo
-UltimateimmoNumberingModeles = Modèles de numérotation des quittances
+UltimateimmoNumberingModeles = Numbering model for receipt.
 TemplatePDFUltimateimmo = Modèles de document des quittances et baux
 WatermarkOnDraftImmoCards = Filigrane sur les brouillons de quittances (aucun si vide)
-PublicSite = Site public
+PublicSite=Site public
 EnablePublicSite = Activer le site accessible au public
-PublicSiteDesc = Dolibarr peut offrir une URL de page publique permettant d'afficher un site pour répertorier les annonces immobilières pour les visiteurs externes.
+PublicSiteDesc = Dolibarr can offer a public page URL to display a site to list real estate listings for external visitors.
 ULTIMATEIMMO_USE_GOOGLE = Utiliser google avec le module Ultimateimmo
 GoogleZoomLevel = Niveau de zoom par défaut (1 à 10)
 GOOGLE_API_SERVERKEY=Clé API (de type "Server key")
@@ -41,12 +41,12 @@ ParametersForGoogleAPIv3Usage=Pour Google API %s V3
 KeepEmptyYoUsePublicQuotaOfAPI=Laisser vide pour utiliser le quota publique de cette API (sinon la clé peut être créée depuis la page https://code.google.com/apis/console/, "API Access" pour créer une "Server key" et "Services" pour activer l'API "%s")
 AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google, vous devez créer une clé depuis la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "Indentification" . Cliquer sur "Créer une clé" et choisir "Clé serveur" puis "Créer". Vous obtiendrez votre clé serveur.
 EnableAPI=Vous devez aussi activer les API pour votre compte Google. Pour cela, aller sur la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "API". Cliquer sur activer API pour "%s".
-UltimateimmoEnablePublicInterface = Une interface publique ne nécessitant pas d'identification est disponible à l'url suivante :
+UltimateimmoEnablePublicInterface = A public interface requiring no identification is available at the following url
 UltimateimmoPublicAccess = Activer l'interface publique
 UltimateimmoEmailMustExist = Une adresse e-mail existante est requise pour créer un ticket
 UltimateimmoEmailMustExistHelp = Pour accéder à l'interface publique et créer un nouveau ticket, votre compte doit déjà être existant.
 UltimateimmoShowCompanyLogo = Afficher le logo de la société dans l'interface publique
-UltimateimmoShowCompanyLogoHelp = Activez cette option pour masquer le logo de la société dans les pages de l'interface publique
+UltimateimmoShowCompanyLogoHelp = Enable this option to hide the logo of the main company in the pages of the public interface
 UltimateimmoPublicInterfaceForbidden = L'interface publique pour les tickets n'a pas été activée
 ExtraFieldsProperty = Attributs supplémentaires (Propriétés)
 ExtraFieldsRenter = Attributs supplémentaires (Locataires)
@@ -58,14 +58,14 @@ EnumerationOfPartsAndCommonEquipment=Énumération des parties et équipements c
 UltimateImmoEquipementGardiennage=Gardiennage
 UltimateImmoEquipementInterphone=lnterphone
 UltimateImmoEquipementAscenseur=Ascenseur
-UltimateImmoEquipementVideOrdures=Vide-ordures
+UltimateImmoEquipementVideOrdures=Garbage Disposal
 UltimateImmoEquipementAntenneTVcollective=Antenne TV collective
 UltimateImmoEquipementEspacesverts=Espace(s) vert(s)
 UltimateImmoEquipementChauffageCollectif=Chauffage Collectif
-UltimateImmoEquipementEauChaudeCollective=Eau chaude collective
+UltimateImmoEquipementEauChaudeCollective=Collective hot water
 
 #
-# Page À propos
+# About page
 #
 About = À propos
 UltimateimmoAbout = À propos de Ultimateimmo
@@ -104,7 +104,7 @@ MenuAllReceiptperContract = Générer les quittances
 MenuValidateReceipt = Valider les paiements
 MenuListImmoReceiptStats = Statistiques de loyer
 MenuListImmoCost = Charges locatives
-MenuNewImmoCost = Nouvelle charge 
+MenuNewImmoCost = Nouvelle charge
 MenuRenterCost = Coût Locataire
 MenuStatisticsCost = Coût : statistiques
 MenuStatisticsResult = Résultats : statistiques
@@ -112,7 +112,7 @@ MenuListImmoCostType = Types de coût
 MenuNewImmoCostType = Nouveau type de coût
 
 #
-# Autres
+# Miscellaneous
 #
 BienPrincipal = Bien principal
 BirthDay = Date de Naissance
@@ -120,7 +120,7 @@ BirthCountry = Lieu de naissance
 ImmoProperty = Bien immobilier
 Property = Bien immobilier
 Properties = Biens
-ImmoProperties = Biens immobiliers
+ImmoProperties = Biens
 ImmoRents = Locations
 ImmoRent = Location
 ImmoRenters = Locataires
@@ -149,7 +149,7 @@ LOC = Locaux commerciaux
 SHO = Boutique
 GAR = Garage
 BUL = Immeuble
-EmptyHousing = Logement vide 
+EmptyHousing = Logement vide
 Copropriete = Copropriété
 MonoPropriete = Mono Propriété
 ImmoOwner = Propriétaire
@@ -173,7 +173,7 @@ PropertyParent = Bien Parent
 BuiltDate = Date de construction
 Target = Cible
 Civility = Titre
-Deposit = Dépôt de garantie
+Deposit = Deposit
 ListOfRents = Liste des locations
 ImmoRenter = Locataire
 Renter = Locataire
@@ -193,12 +193,12 @@ ImmoPaid = Payée
 PartialPayment = Paiement partiel
 NomLoyer = Dénomination de la Quittance
 OtherProperties = Autres biens
-DeleteImmoReceipt = Suppression de Quittance
-ConfirmDeleteImmoReceipt = Etes vous sûr de vouloir supprimer cette quittance ?
-CloneImmoReceipt = Cloner cette quittance 
+DeleteImmoReceipt = Delete receipt
+ConfirmDeleteImmoReceipt = Are you sure you want to delete this receipt ?
+CloneImmoReceipt = Cloner cette quittance
 ConfirmCloneImmoReceipt = Etes vous sûr de vouloir cloner cette quittance ?
-DeleteImmoPayment = Suppression de règlement
-ConfirmDeleteImmoPayment = Etes vous sûr de vouloir supprimer ce règlement ?
+DeleteImmoPayment = Delete payment
+ConfirmDeleteImmoPayment = Are you sure you want to delete this payment ?
 DeleteImmoProperty = Delete property
 ConfirmDeleteImmoProperty = Are you sure you want to delete this property ?
 ConfirmCloneImmoProperty = Are you sure you want to clone this property ?
@@ -212,33 +212,33 @@ ConfirmDeleteImmoOwner = Are you sure you want to delete this owner ?
 ConfirmCloneImmoOwner = Are you sure you want to clone this owner ?
 OwnerName = Nom du propriétaire
 RenterName = Nom du locataire
-SendImmoReceiptRef = Envoi de la quittance %s
 RefOwner = Référence propriétaire
+SendImmoReceiptRef = Envoi de la quittance %s
 ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
 TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
 ObligationsOfTheSeller = Obligations du vendeur
 ObligationsOfTheLessor = Obligations du bailleur
 UltimateImmoDiagnosticElectricityInstallation = l’état de l’installation intérieure d’électricité
 UltimateImmoDiagnosticGasInstallation = l’état de l’installation intérieure de gaz « naturel »
-UltimateImmoDiagnosticLeadExposure = le constat de risque d’exposition au plomb (CREP)
-UltimateImmoDiagnosticContainingAsbestos = l’état mentionnant la présence ou l’absence de matériaux ou produits contenant de l’amiante 
+UltimateImmoDiagnosticLeadExposure = The risk of exposure to lead (CREP)
+UltimateImmoDiagnosticContainingAsbestos = l’état mentionnant la présence ou l’absence de matériaux ou produits contenant de l’amiante
 UltimateImmoDiagnosticContainingTermites = l’état relatif à la présence de termites dans le bâtiment
 UltimateImmoDiagnosticNaturalTechnologicalRisks = l’état des risques naturels et technologiques
 UltimateImmoDiagnosticNonCollectiveSanitationFacilities = l’état des installations d’assainissement non collectif
 UltimateImmoDiagnosticEnergyPerformanceDiagnosis = le diagnostic de performance énergétique du bâtiment (DPE)
-ReceiptPaymentsAdded = Règlement de quittances ajouté
-Echeance = Échéance
-Periode_du = Période du
-Periode_au = Période au
+ReceiptPaymentsAdded = Receipt payments added
+Echeance = Deadline
+Periode_du = Period from
+Periode_au = Period to
 Nomlocal = Nom du bien
 Paye = Quittance réglée
 ValidateReceipt = Validation de la quittance
-ShowMandataireDetails = Afficher les détails du mandataire
-ShowColocataireDetails = Afficher les détails des colocataires
+ShowMandataireDetails = View agent details
+ShowColocataireDetails = View roommate details
 Quittances&Baux = Quittances et Baux
 OtherReceipts = Autres quittances
 OtherRents = Autres locations
-NumberReceiptByMonth = Nombre de quittances par mois
+NumberReceiptByMonth  = Nombre de quittances par mois
 CustomerReceiptPayment = Règlement de quittance
 LinkToReceipt = Lien vers la quittance
 LinkToOwner = Lien vers le propriétaire
@@ -247,10 +247,4 @@ LinkToThirpartyRenter = Vous devez sélectionner ici un tiers locataire.
 LinkToProperty = Lien vers le bien loué
 AmountPayed = Montant payé sur la quittance
 SetLinkToThirparty = Sélectionnez le lien vers un Tiers
-
-
-
-
-
-
 

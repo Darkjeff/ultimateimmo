@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+
+[ultimateimmo.ultimateimmolang]
+file_filter = langs/<lang>/ultimateimmo.lang
+source_file = langs/en_US/ultimateimmo.lang
+source_lang = en_US
+type = MOZILLAPROPERTIES
+
