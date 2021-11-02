@@ -40,6 +40,7 @@ GOOGLE_API_SERVERKEY=Clé API (de type "Server key")
 ParametersForGoogleAPIv3Usage=Pour Google API %s V3
 KeepEmptyYoUsePublicQuotaOfAPI=Laisser vide pour utiliser le quota publique de cette API (sinon la clé peut être créée depuis la page https://code.google.com/apis/console/, "API Access" pour créer une "Server key" et "Services" pour activer l'API "%s")
 AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google, vous devez créer une clé depuis la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "Indentification" . Cliquer sur "Créer une clé" et choisir "Clé serveur" puis "Créer". Vous obtiendrez votre clé serveur.
+EnableAPI=Vous devez aussi activer les API pour votre compte Google. Pour cela, aller sur la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "API". Cliquer sur activer API pour "%s".
 UltimateimmoEnablePublicInterface = A public interface requiring no identification is available at the following url
 UltimateimmoPublicAccess = Enable public interface
 UltimateimmoEmailMustExist = Require an existing email address to create a ticket
@@ -47,6 +48,12 @@ UltimateimmoEmailMustExistHelp = In the public interface, the email address shou
 UltimateimmoShowCompanyLogo = Display the logo of the company in the public interface
 UltimateimmoShowCompanyLogoHelp = Enable this option to hide the logo of the main company in the pages of the public interface
 UltimateimmoPublicInterfaceForbidden = L'interface publique pour les tickets n'a pas été activée
+ExtraFieldsProperty = extrafields (Property)
+ExtraFieldsRenter = extrafields (Renters)
+ExtraFieldsOwner = extrafields (Owners)
+ExtraFieldsPayment =  = extrafields (Payments)
+ExtraFieldsReceipt = extrafields (Receipts)
+ExtraFieldsRent =  = extrafields (Rents)
 EnumerationOfPartsAndCommonEquipment=Enumeration of parts and common equipment.
 UltimateImmoEquipementGardiennage=guarding
 UltimateImmoEquipementInterphone=lnterphone
@@ -56,6 +63,13 @@ UltimateImmoEquipementAntenneTVcollective=Collective TV antenna
 UltimateImmoEquipementEspacesverts=Green spaces
 UltimateImmoEquipementChauffageCollectif=Communal heating
 UltimateImmoEquipementEauChaudeCollective=Collective hot water
+
+#
+# About page
+#
+About = About
+UltimateimmoAbout = About Ultimateimmo
+UltimateimmoAboutPage = About Ultimateimmo page
 
 #
 # Menu
@@ -98,13 +112,6 @@ MenuListImmoCostType = Cost type
 MenuNewImmoCostType = New cost type 
 
 #
-# About page
-#
-About = About
-UltimateimmoAbout = About Ultimateimmo
-UltimateimmoAboutPage = Ultimateimmo about page
-
-#
 # Miscellaneous
 #
 BienPrincipal = principal property
@@ -129,7 +136,6 @@ PaidReceipt = Paid receipt
 PartiallyPaidReceipt = Partially paid receipt
 ImmorentType = Immorent Type
 FurnishedApartment = Furnished Apartment
-EmptyHousing = Empty Housing
 Juridique = Régime juridique de l'immeuble
 DateBuilt = Période de construction
 DateBuilt1 = avant 1949
@@ -143,8 +149,10 @@ LOC = Business premises
 SHO = Shop
 GAR = Garage
 BUL = Building
+EmptyHousing = Empty Housing
 Copropriete = Copropriete
 MonoPropriete = MonoPropriete
+ImmoOwner = Owner
 DateStartRent = Date Start Rent
 TypePayment = Payment type
 NumPayment = <i>Numéro(Chèque/Virement N°)</i>
@@ -152,7 +160,6 @@ CheckTransmitter = <i>Emetteur(Chèque/Virement N°)</i>
 ChequeBank = <i>Banque(Banque du chèque)</i>
 NewImmoPropertyType = Nouveau type de bien
 ImmoProperty_Type = Type de bien immobilier
-ImmoOwner = Owner
 PropertyTypeStatusActive=Active
 PropertyTypeStatusCancel=Cancel
 Building = Immeuble
@@ -165,7 +172,6 @@ NumberOfRoom = Nombre de pièces principales
 PropertyParent = Bien Parent
 BuiltDate = Date de construction
 Target = Cible
-ImmoOwner = Propriétaire
 Civility = Titre
 Deposit = Dépôt de garantie
 ListOfRents = Liste des locations
@@ -180,6 +186,7 @@ date_end = Date end
 DateNextRent = Date next rent
 DateLastRegul = Date last regul
 VatAmount = VAT amount
+HtAmount = Amount witout taxes
 VatTx = VAT rate
 ImmoUnpaid = Unpaid
 ImmoPaid = Paid
@@ -235,18 +242,9 @@ NumberReceiptByMonth  = Number receipts by month
 CustomerReceiptPayment = Customer receipt payment
 LinkToReceipt = Link to receipt
 LinkToOwner = Link to owner
+LinkToOwnerType = Select the owner type
 LinkToThirpartyRenter = You must choose here a renter thirdparty
 LinkToProperty = Link to property
 AmountPayed = Amount payed
 SetLinkToThirparty = Set link to a thirdparty
 
-#
-# Sample page
-#
-MyPageName = My page name
-
-#
-# Sample widget
-#
-MyWidget = My widget
-MyWidgetDescription = My widget description
