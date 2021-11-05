@@ -45,7 +45,6 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoproperty(
 	zip varchar(32), 
 	town varchar(64), 
 	country_id integer, 
-	datep date,
 	datebuilt varchar(32), 	
 	target integer
 	-- END MODULEBUILDER FIELDS
