@@ -280,7 +280,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 
 				$text .= "\n";
-				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";
+				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date($object->date_creation, 'daytext') . "\n";
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
 				$pdf->SetXY($posX, $posY - 12);
 				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
