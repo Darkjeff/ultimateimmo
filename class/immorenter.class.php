@@ -149,9 +149,22 @@ class ImmoRenter extends CommonObject
 
 	public $fk_owner;
 
-	public $fk_soc;
-
+	/**
+	 * @var string company name
+	 * @deprecated
+	 */
 	public $societe;
+
+	/**
+	 * @var string company name
+	 */
+	public $company;
+
+	/**
+	 * @var int Thirdparty ID
+	 */
+	public $fk_soc;
+	public $socid;
 
 	public $note_public;
 
