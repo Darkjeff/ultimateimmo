@@ -145,8 +145,14 @@ class ImmoRenter extends CommonObject
 	 */
 	public $entity;
 
+	/**
+	 * @var int Rent
+	 */
 	public $fk_rent;
 
+	/**
+	 * @var int Owner
+	 */
 	public $fk_owner;
 
 	/**
@@ -178,14 +184,26 @@ class ImmoRenter extends CommonObject
 
 	public $lastname;
 
+	/**
+	 * @var string email
+	 */
 	public $email;
 
+	/**
+	 * @var string birth
+	 */
 	public $birth;
 
 	public $country_id;
 
+	/**
+	 * @var string Phone number
+	 */
 	public $phone;
 
+	/**
+	 * @var string Mobile phone number
+	 */
 	public $phone_mobile;
 
 	/**
@@ -1213,6 +1231,8 @@ class ImmoRenter extends CommonObject
 		$sql .= ' fk_user_creat, fk_user_modif';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' WHERE t.rowid = ' . $id;
+
+		dol_syslog(get_class($this)."::info", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			if ($this->db->num_rows($result)) {
