@@ -48,8 +48,8 @@ dol_include_once("/ultimateimmo/class/immorent.class.php");
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/lib/immorenter.lib.php');
 
-// Langs
-$langs->load ( "ultimateimmo@ultimateimmo" );
+// Load translation files required by the page
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
 
 $id = GETPOST ( 'id', 'int' );
 $ref = GETPOST('ref', 'alpha');
@@ -71,7 +71,7 @@ $object->fetch_thirdparty();
 if (!empty($conf->notification->enabled)) $langs->load("mails");
 $head = immorenterPrepareHead($object);
 
-dol_fiche_head($head, 'bilan',  $langs->trans("Renter"), 0, 'user');
+print dol_get_fiche_head($head, 'bilan',  $langs->trans("Renter"), 0, 'user');
 
 // Object card
 // ------------------------------------------------------------
