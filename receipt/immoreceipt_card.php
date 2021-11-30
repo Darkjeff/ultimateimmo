@@ -599,7 +599,59 @@ if ($action == 'create') {
 	print '<table class="border centpercent tableforfieldcreate">' . "\n";
 
 	// Common attributes
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_add.tpl.php';
+	$object->fields = dol_sort_array($object->fields, 'position');
+
+	foreach ($object->fields as $key => $val) {
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
+
+		print '<tr id="field_' . $key . '">';
+		print '<td';
+		print ' class="titlefieldcreate';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '"';
+		print '>';
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '</td>';
+		print '<td>';
+
+		if ($val['label'] == 'Ref'
+		) {
+			// Reference
+			if (!empty($modCodeReceipt->code_auto)) {
+				$tmpcode = "(PROV)";
+			} else {
+				$tmpcode = '<input name="ref" class="maxwidth100" maxlength="128" value="' . dol_escape_htmltag(GETPOST('ref') ? GETPOST('ref') : $tmpcode) . '">';
+			}
+			print $tmpcode;
+		} elseif ($val['label'] == 'DateCreation') {
+			// DateCreation
+			print $form->selectDate(($object->date_creation ? $object->date_creation : -1), "date_creation", 0, 0, 0, "", 1, 1, 1);
+		} elseif ($val['label'] == 'DateStart') {
+			// date_start
+			print $form->selectDate(($object->date_start ? $object->date_start : -1), "date_start", 0, 0, 0, "", 1, 1, 1);
+		} elseif ($val['label'] == 'DateEnd') {
+			// date_end
+			print $form->selectDate(($object->date_end ? $object->date_end : -1), "date_end", 0, 0, 0, "", 1, 1, 1);
+		} elseif ($val['label'] == 'Echeance') {
+			// Echeance
+			print $form->selectDate(($object->date_echeance ? $object->date_echeance : -1),
+			"date_echeance", 0, 0, 0, "", 1, 1, 1);
+		} else {
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
+			
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
+			else $value = GETPOST($key, 'alpha');
+			print $object->showInputField($val, $key, $value, '', '', '', 0);
+		}
+
+		print '</td>';
+		print '</tr>';
+	}
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
@@ -665,12 +717,12 @@ if ($action == 'createall') {
 	/*
 	 * List of contracts
 	 */
-	$sql = "SELECT rent.rowid as contractid, rent.ref as contract, loc.lastname as rentername, own.lastname as ownername, prop.ref as localref, prop.address, prop.label as local, rent.totalamount as total, rent.rentamount , rent.chargesamount, rent.fk_renter as reflocataire, rent.fk_property as reflocal, rent.vat, prop.fk_owner, own.rowid, own.fk_soc, prop.fk_owner";
+	$sql = "SELECT rent.rowid as contractid, rent.ref as contract, loc.lastname as rentername, own.lastname as ownername, prop.ref as localref, prop.address, prop.label as local, rent.totalamount as total, rent.rentamount , rent.chargesamount, rent.fk_renter as reflocataire, rent.fk_property as reflocal, rent.preavis as preavis, rent.vat, prop.fk_owner, own.rowid, own.fk_soc, prop.fk_owner";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as own";
-	$sql .= " WHERE loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property AND own.rowid = prop.fk_owner ";
+	$sql .= " WHERE preavis = 1 AND loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property AND own.rowid = prop.fk_owner ";
 	//print_r($sql);exit;
 	$sql .= $db->order($sortfield, $sortorder);
 	// Count total nb of records
