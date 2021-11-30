@@ -36,7 +36,6 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immorent(
 	deposit integer,
 	encours	integer,		
 	periode varchar(128),
-	preavis	integer,
 	date_start date NOT NULL, 
 	date_end date NOT NULL, 
 	date_next_rent date NOT NULL, 

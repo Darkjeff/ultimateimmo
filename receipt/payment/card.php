@@ -334,12 +334,12 @@ if ($action == 'createall')
 	/*
 	 * List receipt
 	 */
-	$sql = "SELECT rec.rowid as reference, rec.ref as receiptname, loc.lastname as nom, l.address  , l.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance ,  rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract , c.preavis";
+	$sql = "SELECT rec.rowid as reference, rec.ref as receiptname, loc.lastname as nom, l.address  , l.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance ,  rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt rec";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as l";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
-	$sql .= " WHERE rec.paye = 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND  c.rowid = rec.fk_rent and c.preavis =0 ";
+	$sql .= " WHERE rec.paye = 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND  c.rowid = rec.fk_rent ";
 	$resql = $db->query($sql);
 	if ($resql) 
 	{
