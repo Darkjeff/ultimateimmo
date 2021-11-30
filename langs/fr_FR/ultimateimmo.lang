@@ -247,4 +247,6 @@ LinkToThirpartyRenter = Vous devez sélectionner ici un tiers locataire.
 LinkToProperty = Lien vers le bien loué
 AmountPayed = Montant payé sur la quittance
 SetLinkToThirparty = Sélectionnez le lien vers un Tiers
+ContractRent=Contrat/Location
+LinkToRent =Lien vers Contrat/Location
 

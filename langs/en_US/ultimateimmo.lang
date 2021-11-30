@@ -247,4 +247,6 @@ LinkToThirpartyRenter = You must choose here a Tenant thirdparty
 LinkToProperty = Link to property
 AmountPayed = Amount payed
 SetLinkToThirparty = Set link to a thirdparty
+ContractRent=Contract/Rental
+LinkToRent =Link to Contract/Rental
 
