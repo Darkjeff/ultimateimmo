@@ -64,7 +64,7 @@ $limit = $conf->liste_limit;
 $object = new ImmoRenter($db);
 $object->fetch($id, $ref);
 
-llxheader ( '', $langs->trans("Renter").' | '.$langs->trans("Bilan"), '' );
+llxheader( '', $langs->trans("Renter").' | '.$langs->trans("Bilan"), '' );
 
 $object->fetch_thirdparty();
 

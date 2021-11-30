@@ -551,7 +551,7 @@ $formfile = new FormFile($db);
 $paymentstatic = new ImmoPayment($db);
 $bankaccountstatic = new Account($db);
 
-llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
+llxHeader('', $langs->trans("Renter").' | '.$langs->trans("MenuNewImmoReceipt"), '');
 
 // Load object modReceipt
 $module = (!empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER) ? $conf->global->ULTIMATEIMMO_ADDON_NUMBER : 'mod_ultimateimmo_standard');
