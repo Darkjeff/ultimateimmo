@@ -888,9 +888,9 @@ if ($action == 'createall') {
 		print '<td>' . $langs->trans('NomLoyer') . '</td>';
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
-		print '<td class="left">' . $langs->trans('montant_tot') . '</td>';
-		print '<td class="left">' . $langs->trans('payed') . '</td>';
-		print '<td class="left">' . $langs->trans('due') . '</td>';
+		print '<td class="left">' . $langs->trans('TotalAmount') . '</td>';
+		print '<td class="left">' . $langs->trans('PartialPayment') . '</td>';
+		print '<td class="left">' . $langs->trans('Balance') . '</td>';
 		print '<td align="right">' . $langs->trans('income') . '</td>';
 		print '<td>';
 		print $form->showCheckAddButtons('checkforselect', 1);
