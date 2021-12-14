@@ -142,6 +142,7 @@ class ImmoPayment extends CommonObject
 	// END MODULEBUILDER PROPERTIES
 
 
+	public $sqlquerymassgen = '';
 
 	// If this object has a subtable with lines
 
@@ -211,11 +212,11 @@ class ImmoPayment extends CommonObject
 	/*public function createCommon(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
 	{
 		global $langs, $object, $form;
-		
+
 		$error = 0;
 
 		$now=dol_now();
-		
+
 		$fieldvalues = $this->setSaveQuery();
 		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation']=$this->db->idate($now);
 		if (array_key_exists('date_payment', $fieldvalues) && empty($fieldvalues['date_payment'])) $fieldvalues['date_payment']=$this->db->jdate($object->date_payment);
@@ -592,8 +593,8 @@ class ImmoPayment extends CommonObject
 				if ($obj) {
 					$this->id = $obj->rowid;
 					$this->set_vars_by_db($obj);
-					
-					
+
+
 					$this->ref = $obj->rowid;
 
 					$this->date_creation = $this->db->jdate($obj->date_creation);
@@ -609,7 +610,7 @@ class ImmoPayment extends CommonObject
 					$this->fk_user_modif	= $obj->fk_user_modif;
 					$this->bank_account		= $obj->fk_account;
 					$this->bank_line		= $obj->fk_account;
-				
+
 					$this->date_payment = $this->db->jdate($obj->date_payment);
 
 					$this->setVarsFromFetchObj($obj);
@@ -934,7 +935,7 @@ class ImmoPayment extends CommonObject
 			dol_print_error($this->db);
 		}
 	}
-	
+
 	 /**
      *      Add record into bank for payment with links between this bank record and invoices of payment.
      *      All payment properties must have been set first like after a call to create().
@@ -1007,7 +1008,7 @@ class ImmoPayment extends CommonObject
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  Update link between the quittance payment and the generated line in llx_bank
 	 *
@@ -1029,7 +1030,7 @@ class ImmoPayment extends CommonObject
 			return 0;
 		}
 	}
-	
+
 	/**
 	 *  Change the payments methods
 	 *
@@ -1156,6 +1157,33 @@ class ImmoPayment extends CommonObject
 		$this->db->commit();
 
 		return $error;
+	}
+
+	/**
+	 *  Create an intervention document on disk using template defined into PROJECT_ADDON_PDF
+	 *
+	 *  @param	string		$modele			Force template to use ('' by default)
+	 *  @param	Translate	$outputlangs	Objet lang to use for translation
+	 *  @param  int			$hidedetails    Hide details of lines
+	 *  @param  int			$hidedesc       Hide description
+	 *  @param  int			$hideref        Hide ref
+	 *  @return int         				0 if KO, 1 if OK
+	 */
+	public function generateDocument($modele, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
+	{
+		global $conf,$langs;
+
+		$langs->load("ultimateimmo@ultimateimmo");
+
+		if (empty($modele)) {
+			$this->error='PDFModelMissing';
+			$this->errors[]='PDFModelMissing';
+			return -1;
+		}
+
+		$modelpath = "/ultimateimmo/core/modules/ultimateimmo/doc/";
+
+		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
 	}
 }
 
