@@ -72,6 +72,14 @@ $accountid	= GETPOST('accountid', 'int');
 $fk_mode_reglement	= GETPOST("fk_mode_reglement");
 $receipt_id = GETPOST('receipt', 'int');
 
+$search_loyer = GETPOST('search_loyer', 'alpha');
+$search_local = GETPOST('search_local', 'alpha');
+$search_renter = GETPOST('search_renter', 'alpha');
+
+$button_search_x = GETPOST('button_search_x', 'alpha');
+
+$toselect   = GETPOST('toselect', 'array');												// Array of ids of elements selected into a list
+
 // Initialize technical objects
 $object = new ImmoPayment($db);
 
@@ -102,6 +110,10 @@ $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
 // Load object
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
+
+if (!empty($button_search_x)) {
+	$action='createall';
+}
 
 /*
  * Actions
@@ -195,7 +207,7 @@ if (empty($reshook)) {
 			$payment->fk_mode_reglement = GETPOST("fk_mode_reglement");
 			$payment->num_payment		= GETPOST("num_payment");
 			$payment->fk_owner			= $user->id;
-			
+
 			$id = $payment->create($user);
 			header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $payment->fk_receipt);
 			if ($id > 0) {
@@ -226,7 +238,7 @@ if (empty($reshook)) {
 		header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $receipt_id);
 	}
 
-	// Update 
+	// Update
 	if ($action == 'maj') {
 		$date_payment = @dol_mktime(0, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
 		if ($date_payment == '') {
@@ -246,7 +258,7 @@ if (empty($reshook)) {
 		}
 	}
 
-	if ($action == 'addall') {
+	if ($action == 'addall' && empty($button_search_x)) {
 		$date_payment = dol_mktime(12, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
 
 		if ($date_payment == '') {
@@ -279,14 +291,14 @@ if (empty($reshook)) {
 							$payment->fk_owner			= $user->id;
 
 							$result = $payment->create($user);
-							
+
 							if ($result < 0) {
 								setEventMessages(null, $payment->errors, 'errors');
 							} else {
 								$label = '(CustomerReceiptPayment)';
 								if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
 								$result = $payment->addPaymentToBank($user, 'immopayment', $label, $payment->fk_account, '', '');
-								
+
 								if ($result <= 0) {
 									setEventMessages(null, $payment->errors, 'errors');
 									$error++;
@@ -357,6 +369,8 @@ if ($result < 0) {
 
 llxHeader('', $langs->trans("ImmoPayment"), '');
 
+$arrayofselected = is_array($toselect) ? $toselect : array();
+
 // Part to create
 if ($action == 'create') {
 	$receipt = new Immoreceipt($db);
@@ -381,7 +395,7 @@ if ($action == 'create') {
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
-	
+
 	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1) continue;
@@ -538,7 +552,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	if (!$formconfirm) {
-		$parameters = array('lineid' => $lineid);
+		$parameters = array('lineid' => '');
 		$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 		if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
 		elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
@@ -747,40 +761,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$action = 'presend';
 	}
 
-	/*if ($action != 'presend')
-	{
-	    print '<div class="fichecenter"><div class="fichehalfleft">';
-	    print '<a name="builddoc"></a>'; // ancre
-
-	    // Documents
-	    $relativepath = '/payment/' . dol_sanitizeFileName($object->ref).'/';
-	    $filedir = $conf->ultimateimmo->dir_output . $relativepath;
-	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-	    $genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
-	    $delallowed = $user->rights->ultimateimmo->write;	// If you can create/edit, you can remove a file on card
-	    print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
-
-	    // Show links to link elements
-	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immopayment'));
-	    $somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
-
-
-	    print '</div><div class="fichehalfright"><div class="ficheaddleft">';
-
-	    $MAXEVENT = 10;
-
-	    $morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/payment/immopayment_info.php', 1).'?id='.$object->id.'">';
-	    $morehtmlright.= $langs->trans("SeeAll");
-	    $morehtmlright.= '</a>';
-
-	    // List of actions on element
-	    include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
-	    $formactions = new FormActions($db);
-	    $somethingshown = $formactions->showactions($object, 'immopayment', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
-
-	    print '</div></div></div>';
-	}*/
-
 	//Select mail models is same action as presend
 	if (GETPOST('modelselected')) $action = 'presend';
 
@@ -801,6 +781,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 /* *************************************************************************** */
 
 if ($action == 'createall') {
+
+	/*$varpage = empty($contextpage) ? $_SERVER["PHP_SELF"] : $contextpage;
+	$selectedfields = $form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
+	$selectedfields .= (count($arrayofmassactions) ? $form->showCheckAddButtons('checkforselect', 1) : '');*/
 
 	print '<form name="fiche_payment" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
@@ -827,7 +811,7 @@ if ($action == 'createall') {
 	$payment = new ImmoPayment($db);
 	$result = $payment->fetch($id);
 
-	// Due date	
+	// Due date
 	print '<td class="center">';
 	print $form->selectDate(!empty($date_payment) ? $date_payment : '-1', 'payment', 0, 0, 0, 'addall', 1);
 	print '</td>';
@@ -842,7 +826,7 @@ if ($action == 'createall') {
 
 	// AccountToCredit
 	print '<td class="left">';
-	print $form->select_comptes(GETPOSTISSET('accountid', 'int') ? GETPOST('accountid', 'int') : $payment->fk_bank, "accountid", 0, '', 1);  // Show open bank account list
+	$form->select_comptes(GETPOSTISSET('accountid', 'int') ? GETPOST('accountid', 'int') : $payment->fk_bank, "accountid", 0, '', 1);  // Show open bank account list
 	print '</td>';
 	//var_dump($payment->fk_bank);exit;
 	// num_payment
@@ -861,23 +845,56 @@ if ($action == 'createall') {
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent";
 	$sql .= " WHERE rec.paye <> 1 AND rent.preavis = 1 ";
 	//print_r($sql);exit;
+
+	if (!empty($search_loyer)) {
+		$sql .=  natural_search('rec.label', $search_loyer);
+	}
+	if (!empty($search_local)) {
+		$sql .=  natural_search('prop.label', $search_local);
+	}
+	if (!empty($search_renter)) {
+		$sql .=  natural_search('loc.lastname', $search_renter);
+	}
+
 	$resql = $db->query($sql);
 
 	if ($resql) {
 		$num = $db->num_rows($resql);
 
 		$i = 0;
-		$total = 0;
+		$total = $total_montant_tot = $total_payed = $total_due = 0;
+
 
 		print '<br><table class="noborder" width="100%">';
+
+
+		print '<tr class="liste_titre">';
+		print '<td><input type="text" name="search_loyer" id="search_loyer" value="'.$search_loyer.'"></td>';
+		print '<td><input type="text" name="search_local" id="search_local" value="'.$search_local.'"></td>';
+		print '<td><input type="text" name="search_renter" id="search_renter" value="'.$search_renter.'"></td>';
+		print '<td></td>';
+		print '<td></td>';
+		print '<td></td>';
+		print '<td></td>';
+		// Action column
+		print '<td class="liste_titre maxwidthsearch">';
+		$searchpicto = $form->showFilterButtons();
+		print $searchpicto;
+		print '</td>';
+		print "</tr>\n";
+
+
 		print '<tr class="liste_titre">';
 		print '<td>' . $langs->trans('NomLoyer') . '</td>';
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
-		print '<td align="right">' . $langs->trans('montant_tot') . '</td>';
-		print '<td align="right">' . $langs->trans('payed') . '</td>';
-		print '<td align="right">' . $langs->trans('due') . '</td>';
+		print '<td class="left">' . $langs->trans('montant_tot') . '</td>';
+		print '<td class="left">' . $langs->trans('payed') . '</td>';
+		print '<td class="left">' . $langs->trans('due') . '</td>';
 		print '<td align="right">' . $langs->trans('income') . '</td>';
+		print '<td>';
+		print $form->showCheckAddButtons('checkforselect', 1);
+		print '</td>';
 		print "</tr>\n";
 
 		if ($num > 0) {
@@ -889,9 +906,9 @@ if ($action == 'createall') {
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->nom . '</td>';
 
-				print '<td align="right">' . price($objp->total) . '</td>';
-				print '<td align="right">' . price($objp->partial_payment) . '</td>';
-				print '<td align="right">' . price($objp->balance) . '</td>';
+				print '<td class="left">' . price($objp->total) . '</td>';
+				print '<td class="left">' . price($objp->partial_payment) . '</td>';
+				print '<td class="left">' . price($objp->balance) . '</td>';
 
 				print '<input type="hidden" name="fk_rent_' . $objp->reference . '" size="10" value="' . $objp->refcontract . '">';
 				print '<input type="hidden" name="fk_property_' . $objp->reference . '" size="10" value="' . $objp->reflocal . '">';
@@ -903,12 +920,36 @@ if ($action == 'createall') {
 				print '<input type="text" name="incomeprice_' . $objp->reference . '" id="incomeprice_' . $objp->reference . '" size="6" value="" class="flat">';
 				print '</td>';
 				//var_dump($objp);
+
+
+				// Action column
+				print '<td class="nowrap center">';
+				if (in_array($objp->reference, $arrayofselected)) $selected = 1;
+				print '<input id="cb' . $objp->reference . '" class="flat checkforselect" type="checkbox" name="toselect[]" value="' . $objp->reference . '"' . ($selected ? ' checked="checked"' : '') . '>';
+				print '</td>';
+
 				print '</tr>';
 
 				$i++;
+
+				$total_montant_tot += $objp->total;
+				$total_payed += $objp->partial_payment;
+				$total_due += $objp->balance;
 			}
 		}
 		//exit;
+
+		// Show total line
+		print '<tr class="liste_total">';
+		print '<td class="left">' . $langs->trans("Total") . '</td>';
+		print '<td colspan="2"></td>';
+		print '<td class="left">'.price($total_montant_tot).'</td>';
+		print '<td class="left">'.price($total_payed).'</td>';
+		print '<td class="left">'.price($total_due).'</td>';
+		print '<td class="left"></td>';
+		print '<td class="left"></td>';
+		print '</tr>';
+
 		print "</table>\n";
 		$db->free($resql);
 	} else {
@@ -964,7 +1005,7 @@ if ($action == 'update') {
 	print '</td>';
 
 	print '</table>';
-	
+
 	dol_fiche_end();
 
 	print '<div align="center">';
