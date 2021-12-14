@@ -521,37 +521,6 @@ class modUltimateimmo extends DolibarrModules
 		);								// 0=Menu for internal users, 1=external users, 2=both
 
 		$this->menu[$r++] = array(
-			'fk_menu' => 'fk_mainmenu=properties',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-			'type' => 'left',							// This is a Left menu entry
-			'titre' => 'MenuImmoPropertyMain',
-			'mainmenu' => 'properties',
-			'leftmenu' => 'ultimateimmo_immoproperty_main',
-			'url' => '/ultimateimmo/building/immobuilding_list.php',
-			'langs' => 'ultimateimmo@ultimateimmo',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position' => 1100 + $r,
-			'enabled' => '$conf->ultimateimmo->enabled',  // Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-			'perms' => '1',							// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
-			'target' => '',
-			'user' => 2
-		);								// 0=Menu for internal users, 1=external users, 2=both
-								// 0=Menu for internal users, 1=external users, 2=both
-		$this->menu[$r++] = array(
-			'fk_menu' => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immoproperty_main',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-			'type' => 'left',							// This is a Left menu entry
-			'titre' => 'MenuListImmoProperty',
-			'mainmenu' => 'properties',
-			'leftmenu' => 'ultimateimmo_immoproperty_main_list',
-			'url' => '/ultimateimmo/building/immobuilding_list.php',
-			'langs' => 'ultimateimmo@ultimateimmo',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position' => 1100 + $r,
-			'enabled' => '$conf->ultimateimmo->enabled',  // Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-			'perms' => '1',							// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
-			'target' => '',
-			'user' => 2
-		);
-
-		//Owner
-		$this->menu[$r++] = array(
 			'fk_menu' => '',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 			'type' => 'top',							// This is a Left menu entry
 			'titre' => 'MenuImmoOwner',
@@ -1048,10 +1017,7 @@ class modUltimateimmo extends DolibarrModules
 	public function init($options = '')
 	{
 		global $langs;
-		$result = $this->_load_tables('/ultimateimmo/sql/');
-		if ($result < 0) {
-			return -1; // Do not activate module if error 'not allowed' returned when loading module SQL queries (the _load_table run sql with run_sql with the error allowed parameter set to 'default')
-		}
+		$this->_load_tables('/ultimateimmo/sql/');
 
 		// Create extrafields
 		include_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
@@ -1063,22 +1029,23 @@ class modUltimateimmo extends DolibarrModules
 		//$result4=$extrafields->addExtraField('myattr4', "New Attr 4 label", 'select',  1,  3, 'thirdparty',   0, 1, '', array('options'=>array('code1'=>'Val1','code2'=>'Val2','code3'=>'Val3')), 1 '', 0, 0, '', '', 'ultimateimmo@ultimateimmo', '$conf->ultimateimmo->enabled');
 		//$result5=$extrafields->addExtraField('myattr5', "New Attr 5 label", 'text',    1, 10, 'user',         0, 0, '', '', 1, '', 0, 0, '', '', 'ultimateimmo@ultimateimmo', '$conf->ultimateimmo->enabled');
 
-		// Permissions
-		$this->remove($options);
-
-		$sql = array();
+		$sql = array(
+			"INSERT IGNORE INTO " . MAIN_DB_PREFIX . "c_ultimateimmo_immoreceipt_status (rowid, code, label, active) VALUES
+					(0, 'STATUS_DRAFT', '" . $langs->trans("Draft") . "', 1),
+					(1, 'STATUS_VALIDATED', '" . $langs->trans("Validate") . "', 1);"
+		);
 
 		// Document templates
 		$moduledir = 'ultimateimmo';
 		$myTmpObjects = array();
-		$myTmpObjects['ImmoBuilding'] = array('includerefgeneration' => 0, 'includedocgeneration' => 0);
+		$myTmpObjects['MyObject'] = array('includerefgeneration' => 0, 'includedocgeneration' => 0);
 
 		foreach ($myTmpObjects as $myTmpObjectKey => $myTmpObjectArray) {
-			if ($myTmpObjectKey == 'ImmoBuilding') continue;
+			if ($myTmpObjectKey == 'MyObject') continue;
 			if ($myTmpObjectArray['includerefgeneration']) {
-				$src = DOL_DOCUMENT_ROOT . '/install/doctemplates/ultimateimmo/template_immobuildings.odt';
+				$src = DOL_DOCUMENT_ROOT . '/install/doctemplates/ultimateimmo/template_myobjects.odt';
 				$dirodt = DOL_DATA_ROOT . '/doctemplates/ultimateimmo';
-				$dest = $dirodt . '/template_immobuildings.odt';
+				$dest = $dirodt . '/template_myobjects.odt';
 
 				if (file_exists($src) && !file_exists($dest)) {
 					require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';

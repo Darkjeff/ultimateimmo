@@ -48,7 +48,6 @@ if (!$res) die("Include of main fails");
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
-dol_include_once('/ultimateimmo/class/immobuilding.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
@@ -87,7 +86,7 @@ foreach ($object->fields as $key => $val) {
 if (empty($action) && empty($id) && empty($ref)) $action = 'view';
 
 // Load object
-include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once
+include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  
 
 // Security check - Protection if external user
 //if ($user->socid > 0) accessforbidden();
@@ -118,7 +117,7 @@ if (empty($reshook))
 	$permissiontoadd = $user->rights->ultimateimmo->write;
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$backurlforlist = dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1);
-
+	
 	if (empty($backtopage) || ($cancel && empty($id))) {
     	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
     		if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
@@ -127,6 +126,7 @@ if (empty($reshook))
     }
 	$triggermodname = 'ULTIMATEIMMO_IMMOPROPERTY_MODIFY'; // Name of trigger action code to execute when we modify record
 
+	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT . '/core/actions_addupdatedelete.inc.php';
 
 	// Actions when printing a doc from card
@@ -143,29 +143,26 @@ if (empty($reshook))
 
 		$db->begin();
 
-		$immobuild = new ImmoBuilding($db);
-		$immobuild->label = $object->label;
-		$immobuild->fk_property = $object->id;
+		$result = $object->fetch($id);
+		$building = $object->label;
 
-		$resultCreate = $immobuild->create($user);
-		if ($resultCreate < 0) {
-			setEventMessages($immobuild->error,$immobuild->errors,'errors');
-			$error ++;
+		// todo debug insert into
+		$sql1 = 'INSERT INTO ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty(';
+		$sql1 .= 'label,';
+		$sql1 .= 'fk_property';
+		$sql1 .= ') VALUES (';
+		$sql1 .= ' ' . (!isset($object->label) ? 'NULL' : "'" . $db->escape($object->label) . "'") . ',';
+		$sql1 .= '' . $id;
+		$sql1 .= ')';
+		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
+		$resql1 = $db->query($sql1);
+		if (!$resql1) {
+			$error++;
+			setEventMessages($db->lasterror(), null, 'errors');
 		} else {
-			$object->fk_property=$object->rowid;
-			$resultUpdate = $object->update($user);
-			if ($resultUpdate < 0) {
-				setEventMessages($object->error,$object->errors,'errors');
-				$error ++;
-			}
-		}
-
-		if (empty($error)) {
 			$db->commit();
-		} else {
-			$db->rollback();
+			setEventMessages($db->lasterror(), null, 'errors');
 		}
-
 	}
 }
 
@@ -653,11 +650,11 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 			$urlforjsmap='https://maps.googleapis.com/maps/api/js';
 			if (empty($conf->global->GOOGLE_API_SERVERKEY)) $urlforjsmap.="?sensor=true";
 			else $urlforjsmap.="?key=".$conf->global->GOOGLE_API_SERVERKEY;
-
+			
 		?>
 		<!--gmaps.php: Include Google javascript map -->
 		<script type="text/javascript" src="<?php echo $urlforjsmap; ?>"></script>
-
+		
 		<script type="text/javascript">
 		  var geocoder;
 		  var map;
@@ -716,7 +713,7 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 		<div class="center">
 		<div id="map" class="divmap" style="width: 90%; height: 500px;" ></div>
 		</div>
-		<?php
+		<?php	
 		}
 	}
 }

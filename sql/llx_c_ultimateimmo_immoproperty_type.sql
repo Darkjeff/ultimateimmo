@@ -18,7 +18,7 @@
 CREATE TABLE llx_c_ultimateimmo_immoproperty_type(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	code varchar(50) NOT NULL,
+	code varchar(12) NOT NULL, 
 	entity integer DEFAULT 1 NOT NULL,
 	label varchar(255),   
 	active  tinyint DEFAULT 1  NOT NULL,
