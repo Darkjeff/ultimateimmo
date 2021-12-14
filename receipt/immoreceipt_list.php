@@ -186,7 +186,7 @@ if ($action == 'validaterent') {
 
 		if (!$error) {
 			$sql1 = "UPDATE " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt ";
-			$sql1 .= " SET balance = total_amount-partial_payment";
+			$sql1 .= " SET balance = total_amount-IFNULL(partial_payment,0)";
 
 			// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 			$resql1 = $db->query($sql1);
@@ -591,9 +591,13 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				}
 			} elseif ($val['label'] == 'Balance') {
 				$balance = $object->total_amount - $object->getSommePaiement();
-				//$object->balance = $balance;
+
 				if ($balance >= 0) {
+
 					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
+
+					//For total
+					$obj->balance = $balance;
 				}
 			} elseif ($val['label'] == 'Paye') {
 				if ($totalpaye == 0) {
