@@ -137,7 +137,7 @@ class ImmoPayment extends CommonObject
 	public $fk_renter;
 	public $note_public;
 	public $amount;			    // Total amount of payment
-	public $amounts=array();    // Array of amounts
+	public $amounts = array();    // Array of amounts
 	public $fk_mode_reglement;
 	public $fk_account;
 	public $fk_payment;
@@ -156,7 +156,7 @@ class ImmoPayment extends CommonObject
 	public $nomloyer;
 	// END MODULEBUILDER PROPERTIES
 
-
+	public $sqlquerymassgen = '';
 
 	// If this object has a subtable with lines
 
@@ -1161,6 +1161,34 @@ class ImmoPayment extends CommonObject
 			return -2;
 		}
 	}
+
+	/**
+	 *  Create an intervention document on disk using template defined into PROJECT_ADDON_PDF
+	 *
+	 *  @param	string		$modele			Force template to use ('' by default)
+	 *  @param	Translate	$outputlangs	Objet lang to use for translation
+	 *  @param  int			$hidedetails    Hide details of lines
+	 *  @param  int			$hidedesc       Hide description
+	 *  @param  int			$hideref        Hide ref
+	 *  @return int         				0 if KO, 1 if OK
+	 */
+	public function generateDocument($modele, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
+	{
+		global $conf,$langs;
+
+		$langs->load("ultimateimmo@ultimateimmo");
+
+		if (empty($modele)) {
+			$this->error='PDFModelMissing';
+			$this->errors[]='PDFModelMissing';
+			return -1;
+		}
+
+		$modelpath = "/ultimateimmo/core/modules/ultimateimmo/doc/";
+
+		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
+	}
+
 
 
 	/**
