@@ -250,4 +250,4 @@ AmountPayed = Montant payé sur la quittance
 SetLinkToThirparty = Sélectionnez le lien vers un Tiers
 ContractRent=Contrat/Location
 LinkToRent =Lien vers Contrat/Location
-
+MorPhy = Nature du locataire

@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other","users" ));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "members"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -244,8 +244,13 @@ if ($action == 'create') {
 		else print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
-
-		if ($val['label'] == 'Civility') {
+		if ($val['label'] == 'MorPhy') {
+			$morphys["phy"] = $langs->trans("Physical");
+			$morphys["mor"] = $langs->trans("Moral");
+			print $form->selectarray("morphy", $morphys, (GETPOST('morphy', 'alpha') ?GETPOST('morphy', 'alpha') : $object->morphy), 1, 0, 0, '', 0, 0, 0, '', '', 1);
+			//print $object->getmorphylib();
+		}
+		elseif ($val['label'] == 'Civility') {
 			// We set civility_id, civility_code and civility for the selected civility
 			$object->civility_id	= GETPOST("civility_id", 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
 
@@ -333,7 +338,12 @@ if (($id || $ref) && $action == 'edit')
 		print '</td>';
 		print '<td>';
 
-		if ($val['label'] == 'Civility') {
+		if ($val['label'] == 'MorPhy') {
+			$morphys["phy"] = $langs->trans("Physical");
+			$morphys["mor"] = $langs->trans("Moral");
+			print $form->selectarray("morphy", $morphys, (GETPOSTISSET("morphy") ? GETPOST("morphy", 'alpha') : $object->morphy), 0, 0, 0, '', 0, 0, 0, '', '', 1);
+		}
+		elseif ($val['label'] == 'Civility') {
 			// We set civility_id, civility_code and civility for the selected civility
 			$object->civility_id = GETPOST('civility_id', 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
 			if ($object->civility_id) {
@@ -504,7 +514,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '">';
 		print '<td>';
 
-		if ($val['label'] == 'Owner') {
+		if ($val['label'] == 'MorPhy') {
+			print $object->getmorphylib();
+		}
+		elseif ($val['label'] == 'Owner') {
 			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);
 			if ($staticowner->ref) {
