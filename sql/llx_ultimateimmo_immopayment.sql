@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immopayment(
 	check_transmitter varchar(50) DEFAULT NULL, 
 	chequebank varchar(50) DEFAULT NULL, 
 	note_public text,  
-	date_payment datetime NOT NULL, 	-- payment date
+	date_payment datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, 	-- payment date
 	date_creation datetime NOT NULL, 	-- date de creation
 	tms timestamp NOT NULL, 
 	fk_user_creat integer NOT NULL, 	-- utilisateur qui a cree l'info
