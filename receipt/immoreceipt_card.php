@@ -151,11 +151,20 @@ if (empty($reshook)) {
 	if ($action == 'paid') {
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
-		$result = $receipt->set_paid($user);
-		if ($result < 0) {
-			setEventMessage($receipt->error, 'errors');
+		$result = $receipt->setPaid($user);
+	}
+
+	if ($action == 'reopen') {
+		$result = $receipt->fetch($id);
+		if ($receipt->paye) {
+			$result = $receipt->setUnpaid($user);
+			if ($result > 0) {
+				header('Location: '.$_SERVER["PHP_SELF"].'?id='.$id);
+				exit();
+			} else {
+				setEventMessages($receipt->error, $receipt->errors, 'errors');
+			}
 		}
-		Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 	}
 
 	/**
@@ -1334,8 +1343,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 
 			// Classify 'paid'
-			if ($object->paye == 0 && round($remaintopay) <= 0) {
-				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&id=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
+			if ($object->paye == 0 && round($remaintopay) <= 0 && $permissiontoadd) {
+				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&recid=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
+			}
+
+			// Reopen
+			if ($object->paye == 0) {
+				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=reopen&recid=' . $id . '">' . $langs->trans('ReOpen') . '</a></div>';
 			}
 
 			// Clone

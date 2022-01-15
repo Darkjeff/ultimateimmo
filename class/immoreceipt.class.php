@@ -1502,24 +1502,40 @@ class ImmoReceipt extends CommonObject
 	}
 
 	/**
-	 * @param unknown $user
-	 * @return number
+	 * Make tag Receipt as paid completely
+	 * @param 	User    $user       Object user making change
+	 * @return 	int					<0 if KO, >0 if OK
 	 */
-	public function set_paid($user)
+	public function setPaid($user)
 	{
 		$this->db->begin();
-		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element.' SET';
-		$sql .= ' paye=1';
-		$sql .= ' WHERE rowid = ' . $this->id;
-		$resql = $this->db->query ( $sql );
-		if (!$resql) {
-			$this->errors[]= $this->db->lasterror;
-			$this->error= $this->db->lasterror;
-			$this->db->rollback();
-			return -1;
-		} else {
-			$this->db->commit ();
+		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element . ' SET';
+		$sql .= " paye = 1";
+		$sql .= " WHERE rowid = " . ((int) $this->id);
+		$return = $this->db->query($sql);
+		if ($return) {
 			return 1;
+		} else {
+			return -1;
+		}
+	}
+
+	/**
+	 *    Remove tag paid on Receipt
+	 *
+	 *    @param	User	$user       Object user making change
+	 *    @return	int					<0 if KO, >0 if OK
+	 */
+	public function setUnpaid($user)
+	{
+		$sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element . ' SET';
+		$sql .= " paye = 0";
+		$sql .= " WHERE rowid = " . ((int) $this->id);
+		$return = $this->db->query($sql);
+		if ($return) {
+			return 1;
+		} else {
+			return -1;
 		}
 	}
 
