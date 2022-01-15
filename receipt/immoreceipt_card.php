@@ -224,7 +224,7 @@ if (empty($reshook)) {
 		$outputlangs = $langs;
 
 		$file = 'quittance_' . $id . '.pdf';
-		
+
 		$result = ultimateimmo_pdf_create($db, $id, '', 'quittance', $outputlangs, $file);
 
 		//$result = generateDocument( 'quittance', $outputlangs,0,0,0,null);
@@ -288,7 +288,7 @@ if (empty($reshook)) {
 
 		$result = $objectutil->createFromClone($user, $id);
 		if ($result > 0) {
-			header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $result);
+			header("Location: " . $_SERVER['PHP_SELF'] . '?recid=' . $result);
 			exit();
 		} else {
 			$langs->load("errors");
@@ -369,9 +369,9 @@ if (empty($reshook)) {
 	if ($action == 'addall') {
 		$error = 0;
 		$date_echeance = dol_mktime(12, 0, 0, GETPOST('echmonth', 'int'), GETPOST('echday', 'int'), GETPOST('echyear', 'int'));
-		
+
 		$dateperiod = dol_mktime(12, 0, 0, GETPOST('periodmonth', 'int'), GETPOST('periodday', 'int'), GETPOST('periodyear', 'int'));
-		
+
 		$dateperiodend = dol_mktime(12, 0, 0, GETPOST('periodendmonth', 'int'), GETPOST('periodendday', 'int'), GETPOST('periodendyear', 'int'));
 
 		if (empty($date_echeance)) {
@@ -394,9 +394,9 @@ if (empty($reshook)) {
 
 			foreach ($mesLignesCochees as $maLigneCochee) {
 				$receipt = new ImmoReceipt($db);
-				
+
 				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
-				
+
 				$monId = $maLigneCourante[0];
 				$monLocal = $maLigneCourante[1];
 				$monLocataire = $maLigneCourante[2];
@@ -406,13 +406,13 @@ if (empty($reshook)) {
 				$maTVA = $maLigneCourante[6];
 				$monProprio = $maLigneCourante[7];
 				$socProprio = $maLigneCourante[8];
-				
+
 				// main info rent
 				$receipt->label = GETPOST('label', 'alpha');
 				$receipt->date_echeance = $date_echeance;
 				$receipt->date_start = $dateperiod;
 				$receipt->date_end = $dateperiodend;
-				
+
 				// main info contract
 				$receipt->ref = '(PROV)';
 				$receipt->fk_rent = $monId;
@@ -643,7 +643,7 @@ if ($action == 'create') {
 			"date_echeance", 0, 0, 0, "", 1, 1, 1);
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
-			
+
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
 			else $value = GETPOST($key, 'alpha');
 			print $object->showInputField($val, $key, $value, '', '', '', 0);
@@ -822,7 +822,7 @@ if ($action == 'createall') {
 		if ($action == 'delete')
 		{
 			// Param url = id de la periode à supprimer - id session
-			$ret = $form->formconfirm($_SERVER['PHP_SELF'].'?id='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+			$ret = $form->formconfirm($_SERVER['PHP_SELF'].'?recid='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
 			if ($ret == 'html')
 			print '<br>';
 		}
@@ -902,7 +902,7 @@ if ($action == 'createall') {
 				if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
 				elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key, 'none'):$object->$key;
 				else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
-				//var_dump($val.' '.$key.' '.$value);		
+				//var_dump($val.' '.$key.' '.$value);
 				if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
 				else print $object->showInputField($val, $key, $value, '', '', '', 0);
 			}
@@ -943,7 +943,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Confirmation to delete
 	if ($action == 'delete') {
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
 	}
 
 	// Clone confirmation
@@ -983,7 +983,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		}
 
 		if (!$error)
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
 	}
 
 	// Call Hook formConfirm
@@ -1146,7 +1146,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
 
-	// Add symbol of currency 
+	// Add symbol of currency
 	$cursymbolbefore = $cursymbolafter = '';
 	if ($object->multicurrency_code) {
 		$currency_symbol = $langs->getCurrencySymbol($object->multicurrency_code);
@@ -1316,7 +1316,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '&nbsp';
 		print '<table class="border" width="100%">';
 		print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("LinkedDocuments") . '</td></tr>';
-		var_dump($object);exit;
+		
 		// afficher
 		$legende = $langs->trans("Ouvrir");
 		print '<tr><td width="200" class="center">' . $langs->trans("Quittance") . '</td><td> ';
@@ -1338,18 +1338,18 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			// Validate
 			if ($object->status == ImmoReceipt::STATUS_DRAFT) {
 				if ($permissiontoadd) {
-					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
+					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
 				} else {
 					print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('Validate') . '</a></div>';
 				}
 			}
 
 			// Send
-			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
+			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
 
 			// Modify
 			if ($permissiontoadd) {
-				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
+				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
 			} else {
 				print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
 			}
@@ -1397,10 +1397,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		// Documents generes
 		$relativepath = '/receipt/' . dol_sanitizeFileName($object->ref);
 		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
-		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
+		$urlsource = $_SERVER["PHP_SELF"] . "?recid=" . $object->id;
 		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
 		$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
-		
+		$object->model_pdf = 'quittance';
 		print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
 
 		// Show links to link elements
@@ -1411,7 +1411,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		$MAXEVENT = 10;
 
-		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1) . '?id=' . $object->id . '">';
+		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1) . '?recid=' . $object->id . '">';
 		$morehtmlright .= $langs->trans("SeeAll");
 		$morehtmlright .= '</a>';
 
