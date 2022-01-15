@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -639,8 +639,8 @@ class ImmoPayment extends CommonObject
 				if ($obj) {
 					$this->id = $obj->rowid;
 					$this->set_vars_by_db($obj);
-					
-					
+
+
 					$this->ref = $obj->rowid;
 
 					$this->date_creation = $this->db->jdate($obj->date_creation);
@@ -650,7 +650,7 @@ class ImmoPayment extends CommonObject
 					$this->num_payment		= $obj->num_payment;
 					$this->mode_code 		= $obj->mode_code;
 					$this->mode_payment		= $obj->mode_payment;
-					$this->fk_account			= $obj->fk_account;
+					$this->fk_account		= $obj->fk_account;
 					$this->fk_owner 		= $obj->fk_owner;
 					$this->fk_user_creat	= $obj->fk_user_creat;
 					$this->fk_user_modif	= $obj->fk_user_modif;
@@ -726,20 +726,26 @@ class ImmoPayment extends CommonObject
 	 */
 	public function fetchAll($sortorder = '', $sortfield = '', $limit = 0, $offset = 0, array $filter = array(), $filtermode = 'AND')
 	{
-		global $conf;
-
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
-		$records = array();
+		$sql = 'SELECT';
+		$sql .= ' t.rowid,';
 
-		$sql = 'SELECT ';
-		$sql .= $this->getFieldList();
-		$sql .= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) {
-			$sql .= ' WHERE t.entity IN ('.getEntity($this->table_element).')';
-		} else {
-			$sql .= ' WHERE 1 = 1';
-		}
+		$sql .= " t.fk_rent,";
+		$sql .= " t.fk_property,";
+		$sql .= " t.fk_renter,";
+		$sql .= " t.amount,";
+		$sql .= " t.comment,";
+		$sql .= " t.date_payment,";
+		$sql .= " t.fk_owner,";
+		$sql .= " t.fk_receipt";
+		$sql .= " , lc.lastname as nomlocataire , ll.label as nomlocal , lo.label as nomloyer ";
+
+		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid ";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo ON t.fk_receipt = lo.rowid";
+
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {
@@ -767,25 +773,33 @@ class ImmoPayment extends CommonObject
 		if (!empty($limit)) {
 			$sql .= ' '.$this->db->plimit($limit, $offset);
 		}
-
+		$this->lines = array();
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
-			$i = 0;
-			while ($i < min($limit, $num))
-			{
-				$obj = $this->db->fetch_object($resql);
+			while ($obj = $this->db->fetch_object($resql)) {
+				$line = new ImmoPaymentLine($this->db);
 
-				$record = new self($this->db);
-				$record->setVarsFromFetchObj($obj);
+				$line->rowid = $obj->rowid;
 
-				$records[$record->id] = $record;
+				$line->fk_rent = $obj->fk_rent;
+				$line->fk_property = $obj->fk_property;
+				$line->fk_renter = $obj->fk_renter;
+				$line->amount = $obj->amount;
+				$line->fk_mode_reglement = $obj->fk_mode_reglement;
+				$line->note_public = $obj->note_public;
+				$line->date_payment = $this->db->jdate($obj->date_payment);
+				$line->fk_owner = $obj->fk_owner;
+				$line->fk_receipt = $obj->fk_receipt;
+				$line->nomlocataire = $obj->nomlocataire;
+				$line->nomlocal = $obj->nomlocal;
+				$line->nomloyer = $obj->nomloyer;
 
-				$i++;
+				$this->lines[] = $line;
 			}
 			$this->db->free($resql);
 
-			return $records;
+			return $num;
 		} else {
 			$this->errors[] = 'Error '.$this->db->lasterror();
 			dol_syslog(__METHOD__.' '.join(',', $this->errors), LOG_ERR);
@@ -1024,7 +1038,7 @@ class ImmoPayment extends CommonObject
 			dol_print_error($this->db);
 		}
 	}
-	
+
 	 /**
      *      Add record into bank for payment with links between this bank record and invoices of payment.
      *      All payment properties must have been set first like after a call to create().
@@ -1097,7 +1111,7 @@ class ImmoPayment extends CommonObject
 			return -1;
 		}
 	}
-	
+
 	/**
 	 *  Update link between the quittance payment and the generated line in llx_bank
 	 *
@@ -1160,33 +1174,6 @@ class ImmoPayment extends CommonObject
 			$this->error='Status of the object is incompatible '.$this->statut;
 			return -2;
 		}
-	}
-
-	/**
-	 *  Create an intervention document on disk using template defined into PROJECT_ADDON_PDF
-	 *
-	 *  @param	string		$modele			Force template to use ('' by default)
-	 *  @param	Translate	$outputlangs	Objet lang to use for translation
-	 *  @param  int			$hidedetails    Hide details of lines
-	 *  @param  int			$hidedesc       Hide description
-	 *  @param  int			$hideref        Hide ref
-	 *  @return int         				0 if KO, 1 if OK
-	 */
-	public function generateDocument($modele, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
-	{
-		global $conf,$langs;
-
-		$langs->load("ultimateimmo@ultimateimmo");
-
-		if (empty($modele)) {
-			$this->error='PDFModelMissing';
-			$this->errors[]='PDFModelMissing';
-			return -1;
-		}
-
-		$modelpath = "/ultimateimmo/core/modules/ultimateimmo/doc/";
-
-		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
 	}
 
 
@@ -1298,31 +1285,81 @@ class ImmoPayment extends CommonObject
 
 		return $error;
 	}
-}
 
 	/**
-	 * Load object lines in memory from the database
+	 *  Create an intervention document on disk using template defined into PROJECT_ADDON_PDF
 	 *
-	 * @return int         <0 if KO, 0 if not found, >0 if OK
+	 *  @param	string		$modele			Force template to use ('' by default)
+	 *  @param	Translate	$outputlangs	Objet lang to use for translation
+	 *  @param  int			$hidedetails    Hide details of lines
+	 *  @param  int			$hidedesc       Hide description
+	 *  @param  int			$hideref        Hide ref
+	 *  @return int         				0 if KO, 1 if OK
 	 */
-
-	class ImmoPaymentLine extends CommonObjectLine
+	public function generateDocument($modele, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
-		// To complete with content of an object MyObjectLine
-		// We should have a field rowid, fk_myobject and position
-	
-		/**
-		 * @var int  Does object support extrafields ? 0=No, 1=Yes
-		 */
-		public $isextrafieldmanaged = 0;
-	
-		/**
-		 * Constructor
-		 *
-		 * @param DoliDb $db Database handler
-		 */
-		public function __construct(DoliDB $db)
-		{
-			$this->db = $db;
+		global $conf,$langs;
+
+		$langs->load("ultimateimmo@ultimateimmo");
+
+		if (empty($modele)) {
+			$this->error='PDFModelMissing';
+			$this->errors[]='PDFModelMissing';
+			return -1;
 		}
+
+		$modelpath = "/ultimateimmo/core/modules/ultimateimmo/doc/";
+
+		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
 	}
+}
+
+/**
+ * Load object lines in memory from the database
+ *
+ * @return int         <0 if KO, 0 if not found, >0 if OK
+ */
+
+class ImmoPaymentLine
+{
+	/**
+	 * @var int rowID
+	 */
+	public $rowid;
+	/**
+	 * @var int fk_rent
+	 */
+	public $fk_rent;
+	/**
+	 * @var int fk_property
+	 */
+	public $fk_property;
+	/**
+	 * @var int fk_renter
+	 */
+	public $fk_renter;
+	/**
+	 * @var int amount
+	 */
+	public $amount;
+	/**
+	 * @var int fk_mode_reglement
+	 */
+	public $fk_mode_reglement;
+	/**
+	 * @var int note_public
+	 */
+	public $note_public;
+	/**
+	 * @var int date_payment
+	 */
+	public $date_payment = '';
+	/**
+	 * @var int fk_owner
+	 */
+	public $fk_owner;
+	/**
+	 * @var int fk_receipt
+	 */
+	public $fk_receipt;
+}

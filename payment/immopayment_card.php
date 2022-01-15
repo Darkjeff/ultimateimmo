@@ -506,9 +506,11 @@ if (($id || $ref) && $action == 'edit') {
 
 	print dol_get_fiche_head();
 
-	print '<table class="border centpercent">' . "\n";
+	print '<table class="border centpercent tableforfieldedit">'."\n";
 
 	// Common attributes
+	$object->fields = dol_sort_array($object->fields, 'position');
+
 	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 4) continue;
@@ -525,9 +527,7 @@ if (($id || $ref) && $action == 'edit') {
 		print '</td>';
 		print '<td>';
 
-		if (
-			$val['label'] == 'BankAccount'
-		) {
+		if ($val['label'] == 'BankAccount') {
 			if ($object->fk_bank) {
 				$bankaccount = new Account($db);
 				$result = $bankaccount->fetch($object->fk_bank);
