@@ -152,8 +152,8 @@ if (empty($reshook)) {
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
 		$result = $receipt->set_paid($user);
-		if ($result<0) {
-			setEventMessage($receipt->error,'errors');
+		if ($result < 0) {
+			setEventMessage($receipt->error, 'errors');
 		}
 		Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 	}
@@ -304,7 +304,7 @@ if (empty($reshook)) {
 		$error = 0;
 
 		$date_echeance = dol_mktime(12, 0, 0, GETPOST("date_echeancemonth"), GETPOST("date_echeanceday"), GETPOST("date_echeanceyear"));
-		$date_start = dol_mktime(12, 0, 0, GETPOST("date_startmonth"), GETPOST("date_startday"), GETPOST("date_startyear"));
+		$date_start = dol_mktime(0, 0, 0, GETPOST("date_startmonth"), GETPOST("date_startday"), GETPOST("date_startyear"));
 		$date_end = dol_mktime(12, 0, 0, GETPOST("date_endmonth"), GETPOST("date_endday"), GETPOST("date_endyear"));
 
 		$object->ref = '(PROV)';
@@ -326,7 +326,7 @@ if (empty($reshook)) {
 		$object->chargesamount = GETPOST("chargesamount");
 		$object->total_amount = GETPOST("total_amount");
 		$object->balance = GETPOST("balance");
-		//$object->partial_payment = GETPOST("partial_payment");
+		$object->partial_payment = GETPOST("partial_payment");
 		$object->fk_payment = GETPOST("fk_payment");
 		$object->paye = GETPOST("paye");
 		$object->vat_amount = GETPOST("vat_amount");
@@ -628,19 +628,15 @@ if ($action == 'create') {
 				$tmpcode = '<input name="ref" class="maxwidth100" maxlength="128" value="' . dol_escape_htmltag(GETPOST('ref') ? GETPOST('ref') : $tmpcode) . '">';
 			}
 			print $tmpcode;
-		} elseif ($val['label'] == 'DateCreation') {
-			// DateCreation
-			print $form->selectDate(($object->date_creation ? $object->date_creation : -1), "date_creation", 0, 0, 0, "", 1, 1, 1);
 		} elseif ($val['label'] == 'DateStart') {
 			// date_start
-			print $form->selectDate(($object->date_start ? $object->date_start : -1), "date_start", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate($object->date_start === '' ? -1 : $object->date_start, 'date_start', 0, 0, 0, '', 1, 1, 0, '', '', '', '', 1, '', '', 'tzuserrel');
 		} elseif ($val['label'] == 'DateEnd') {
 			// date_end
-			print $form->selectDate(($object->date_end ? $object->date_end : -1), "date_end", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate(($object->date_end ? $object->date_end : -1), "date_end", 0, 0, 0, '', 1, 1, 0, '', '', '', '', 1, '', '', 'tzuserrel');
 		} elseif ($val['label'] == 'Echeance') {
 			// Echeance
-			print $form->selectDate(($object->date_echeance ? $object->date_echeance : -1),
-			"date_echeance", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate(($object->date_echeance ? $object->date_echeance : -1), "date_echeance", 0, 0, 0, '', 1, 1, 0, '', '', '', '', 1, '', '', 'tzuserrel');
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
 
@@ -845,70 +841,55 @@ if ($action == 'createall') {
 		// Common attributes
 		$object->fields = dol_sort_array($object->fields, 'position');
 
-		foreach ($object->fields as $key => $val)
-		{
-			// Discard if extrafield is a hidden field on form
-			if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
+	foreach ($object->fields as $key => $val) {
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
 
-			if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
 
-			print '<tr><td';
-			print ' class="titlefieldcreate';
-			if ($val['notnull'] > 0) print ' fieldrequired';
-			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-			print '">';
-			if (! empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-			else print $langs->trans($val['label']);
-			print '</td>';
-			print '<td>';
+		print '<tr><td';
+		print ' class="titlefieldcreate';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '">';
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '</td>';
+		print '<td>';
 
-			/*if ($val['label'] == 'PartialPayment') 
-			{					
-				if ($object->getSommePaiement())
-				{
-					$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
-					print '<input name="partial_payment" class="flat" size="8" value="' . $totalpaye . '">';
-				}			
+		if ($val['label'] == 'PartialPayment') {
+			if ($object->getSommePaiement()) {
+				$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+				print '<input name="partial_payment" class="flat" size="8" value="' . $totalpaye . '">';
 			}
-			else*/if ($val['label'] == 'Balance') 
-			{
-				$balance = $object->total_amount - $object->getSommePaiement();
-				if ($balance>=0)
-				{
-					$balance = price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
-					print '<input name="balance" class="flat" size="8" value="' . $balance . '">';
-				}			
+		} elseif ($val['label'] == 'Balance') {
+			$balance = $object->total_amount - $object->getSommePaiement();
+			if ($balance >= 0) {
+				$balance = price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
+				print '<input name="balance" class="flat" size="8" value="' . $balance . '">';
 			}
-			elseif ($val['label'] == 'Paye') 
-			{
-				if ($totalpaye==0)
-				{
-					$object->paye=$langs->trans('UnPaidReceipt');
-					print '<input name="unpaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
-				}
-				elseif ($balance==0)
-				{
-					$object->paye=$langs->trans('PaidReceipt');
-					print '<input name="paidreceipt" class="flat" size="25" value="' . $object->paye . '">';
-				}
-				else
-				{
-					$object->paye=$langs->trans('PartiallyPaidReceipt');
-					print '<input name="partiallypaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
-				}
+		} elseif ($val['label'] == 'Paye') {
+			if ($totalpaye == 0) {
+				$object->paye = $langs->trans('UnPaidReceipt');
+				print '<input name="unpaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
+			} elseif ($balance == 0) {
+				$object->paye = $langs->trans('PaidReceipt');
+				print '<input name="paidreceipt" class="flat" size="25" value="' . $object->paye . '">';
+			} else {
+				$object->paye = $langs->trans('PartiallyPaidReceipt');
+				print '<input name="partiallypaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
 			}
-			else
-			{
-				if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
-				elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key, 'none'):$object->$key;
-				else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
-				//var_dump($val.' '.$key.' '.$value);
-				if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-				else print $object->showInputField($val, $key, $value, '', '', '', 0);
-			}
-			print '</td>';
-			print '</tr>';
+		} else {
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
+			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			//var_dump($val.' '.$key.' '.$value);
+			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
+		print '</td>';
+		print '</tr>';
+	}
 
 		// Other attributes
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
@@ -1161,7 +1142,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	// List of payments
-	$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, ";
+	$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, r.partial_payment, ";
 	$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
 	$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
@@ -1367,7 +1348,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 
 			// Classify 'paid'
-			if ($receipt->paye == 1 && round($remaintopay) <= 0) {
+			if ($receipt->paye == 0 && round($remaintopay) <= 0) {
 				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&id=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
 			}
 
