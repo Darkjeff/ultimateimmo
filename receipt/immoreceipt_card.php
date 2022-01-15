@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -326,7 +326,7 @@ if (empty($reshook)) {
 		$object->chargesamount = GETPOST("chargesamount");
 		$object->total_amount = GETPOST("total_amount");
 		$object->balance = GETPOST("balance");
-		$object->partial_payment = GETPOST("partial_payment");
+		//$object->partial_payment = GETPOST("partial_payment");
 		$object->fk_payment = GETPOST("fk_payment");
 		$object->paye = GETPOST("paye");
 		$object->vat_amount = GETPOST("vat_amount");
@@ -862,7 +862,7 @@ if ($action == 'createall') {
 			print '</td>';
 			print '<td>';
 
-			if ($val['label'] == 'PartialPayment') 
+			/*if ($val['label'] == 'PartialPayment') 
 			{					
 				if ($object->getSommePaiement())
 				{
@@ -870,7 +870,7 @@ if ($action == 'createall') {
 					print '<input name="partial_payment" class="flat" size="8" value="' . $totalpaye . '">';
 				}			
 			}
-			elseif ($val['label'] == 'Balance') 
+			else*/if ($val['label'] == 'Balance') 
 			{
 				$balance = $object->total_amount - $object->getSommePaiement();
 				if ($balance>=0)
@@ -1161,7 +1161,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	// List of payments
-	$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, r.partial_payment, ";
+	$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, ";
 	$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
 	$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";

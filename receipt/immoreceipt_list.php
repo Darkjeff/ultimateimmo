@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
 if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
-	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php";
 }
 // Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
 $tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
@@ -260,7 +260,7 @@ if ($massaction == 'validate') {
 	foreach ($toselect as $key => $val) {
 		$immoreceipt = new ImmoReceipt($db);
 		$result = $immoreceipt->fetch($val);
-		
+
 		if ($result >= 0 && $object->status == ImmoReceipt::STATUS_DRAFT) {
 			$resultvalid = $immoreceipt->validate($user);
 
@@ -332,7 +332,6 @@ if (empty($reshook)) {
 }
 
 
-
 /*
  * View
  *
@@ -345,8 +344,7 @@ $now = dol_now();
 //$help_url="EN:Module_ImmoReceipt|FR:Module_ImmoReceipt_FR|ES:Módulo_ImmoReceipt";
 $help_url = '';
 $title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoReceipts"));
-$morejs = array();
-$morecss = array();
+
 
 // Build and execute select
 // --------------------------------------------------------------------
@@ -378,7 +376,7 @@ $parameters = array();
 $reshook = $hookmanager->executeHooks('printFieldListFrom', $parameters, $object); // Note that $action and $object may have been modified by hook
 $sql .= $hookmanager->resPrint;
 if ($object->ismultientitymanaged == 1) {
-	$sql .= " WHERE t.entity IN (".getEntity($object->element).")";
+	$sql .= " WHERE t.entity IN (" . getEntity($object->element) . ")";
 } else {
 	$sql .= " WHERE 1 = 1";
 }
@@ -729,10 +727,23 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
 				}
 				print $staticproperty->ref;
+			} elseif ($val['label'] == 'RentAmount') {
+				if ($object->rentamount) {
+					$rentamount = price($object->rentamount, 0, $outputlangs, 1, -1, -1, $conf->currency);
+					print $rentamount;
+				}
+			} 
+			elseif ($val['label'] == 'TotalAmount') {
+				if ($object->total_amount) {
+					$total_amount = price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency);
+					print $total_amount;
+				}
 			} elseif ($val['label'] == 'PartialPayment') {
 				if ($object->getSommePaiement()) {
 					$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
 					print $totalpaye;
+					//For total
+					$obj->partial_payment = $totalpaye;
 				}
 			} elseif ($val['label'] == 'Balance') {
 				$balance = $object->total_amount - $object->getSommePaiement();
@@ -753,22 +764,12 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					print $object->showOutputField($val, $key, $obj->$key, '');
 				}
 				print '</td>';
-				if (!$i) {
-					$totalarray['nbfield']++;
-				}
-				if (!empty($val['isameasure'])) {
-					if (!$i) {
-						$totalarray['pos'][$totalarray['nbfield']] = 't.'.$key;
-					}
-					if (!isset($totalarray['val'])) {
-						$totalarray['val'] = array();
-					}
-					if (!isset($totalarray['val']['t.'.$key])) {
-						$totalarray['val']['t.'.$key] = 0;
-					}
-					$totalarray['val']['t.'.$key] += $object->$key;
-				}
+			if (!$i) $totalarray['nbfield']++;
+			if (!empty($val['isameasure'])) {
+				if (!$i) $totalarray['pos'][$totalarray['nbfield']] = 't.' . $key;
+				$totalarray['val']['t.' . $key] += $obj->$key;
 			}
+		}
 		}
 	// Extra fields
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_print_fields.tpl.php';
@@ -797,7 +798,42 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 }
 
 // Show total line
-include DOL_DOCUMENT_ROOT . '/core/tpl/list_print_total.tpl.php';
+//include DOL_DOCUMENT_ROOT . '/core/tpl/list_print_total.tpl.php';
+// Move fields of totalizable into the common array pos and val
+if (!empty($totalarray['totalizable']) && is_array($totalarray['totalizable'])) {
+	foreach ($totalarray['totalizable'] as $keytotalizable => $valtotalizable) {
+		$totalarray['pos'][$valtotalizable['pos']] = $keytotalizable;
+		$totalarray['val'][$keytotalizable] = $valtotalizable['total'];
+	}
+}
+// Show total line
+if (isset($totalarray['pos'])) {
+	print '<tr class="liste_total">';
+	$i = 0;
+	while ($i < $totalarray['nbfield']) {
+		$i++;
+		if (!empty($totalarray['pos'][$i])) {
+			print '<td class="right">'.price(!empty($totalarray['val'][$totalarray['pos'][$i]])?$totalarray['val'][$totalarray['pos'][$i]]:0, 0, $outputlangs, 1, -1, -1, $conf->currency).'</td>';
+		} else {
+			if ($i == 1) {
+				if (is_null($limit) || $num < $limit) {
+					print '<td>'.$langs->trans("Total").'</td>';
+				} else {
+					print '<td>';
+					if (is_object($form)) {
+						print $form->textwithpicto($langs->trans("Total"), $langs->transnoentitiesnoconv("Totalforthispage"));
+					} else {
+						print $langs->trans("Totalforthispage");
+					}
+					print '</td>';
+				}
+			} else {
+				print '<td></td>';
+			}
+		}
+	}
+	print '</tr>';
+}
 
 // If no record found
 if ($num == 0) {
