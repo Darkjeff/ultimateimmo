@@ -1127,20 +1127,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
 
-	// Add symbol of currency
-	$cursymbolbefore = $cursymbolafter = '';
-	if ($object->multicurrency_code) {
-		$currency_symbol = $langs->getCurrencySymbol($object->multicurrency_code);
-		$listofcurrenciesbefore = array('$', '£', 'S/.', '¥');
-		if (in_array($currency_symbol, $listofcurrenciesbefore)) $cursymbolbefore .= $currency_symbol;
-		else {
-			$tmpcur = $currency_symbol;
-			$cursymbolafter .= ($tmpcur == $currency_symbol ? ' ' . $tmpcur : $tmpcur);
-		}
-	} else {
-		$cursymbolafter = $langs->getCurrencySymbol($conf->currency);
-	}
-
 	// List of payments
 	$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, r.partial_payment, ";
 	$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
@@ -1208,7 +1194,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 					print $bankaccountstatic->getNomUrl(1, 'transactions');
 				print '</td>';
 			}
-			print '<td class="right">' . $cursymbolbefore . price($objp->amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td>\n";
+			print '<td class="right">' .  price($objp->amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td>\n";
 
 			print '<td class="right">';
 			if ($user->admin) {
@@ -1224,13 +1210,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		}
 
 		if ($object->paye == 0) {
-			print '<tr><td colspan="4" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs) . ' ' . $cursymbolafter . '</b>' . "</td><td>&nbsp;</td></tr>\n";
-			print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
+			print '<tr><td colspan="4" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . price($totalpaye, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</b>' . "</td><td>&nbsp;</td></tr>\n";
+			print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
 
 			$remaintopay = $object->total_amount - $object->getSommePaiement();
 
 			print '<tr><td colspan="4" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
-			print '<td class="right"' . ($remaintopay ? ' class="amountremaintopay"' : '') . '>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
+			print '<td class="right"' . ($remaintopay ? ' class="amountremaintopay"' : '') . '>' . price($remaintopay, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td><td>&nbsp;</td></tr>\n";
 		}
 		print '</table>';
 		$db->free($resql);
@@ -1339,7 +1325,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=builddoc&id=' . $id . '">' . $langs->trans('Quittance') . '</a></div>';
 
 			// Create payment
-			if ($receipt->paye == 0 && $permissiontoadd) {
+			if ($object->paye == 0 && $permissiontoadd) {
 				if ($remaintopay == 0) {
 					print '<div class="inline-block divButAction"><span class="butActionRefused" title="' . $langs->trans("DisabledBecauseRemainderToPayIsZero") . '">' . $langs->trans('DoPayment') . '</span></div>';
 				} else {
@@ -1348,7 +1334,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 
 			// Classify 'paid'
-			if ($receipt->paye == 0 && round($remaintopay) <= 0) {
+			if ($object->paye == 0 && round($remaintopay) <= 0) {
 				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&id=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
 			}
 

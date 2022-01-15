@@ -518,7 +518,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$posY = $pdf->getY();
 
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-						$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1);
+						//$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1);
 					}
 				}
 
