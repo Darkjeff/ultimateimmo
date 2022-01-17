@@ -85,13 +85,17 @@ $search_loyer = GETPOST('search_loyer', 'alpha');
 $search_local = GETPOST('search_local', 'alpha');
 $search_renter = GETPOST('search_renter', 'alpha');
 
+$paymentmonth = GETPOST("paymentmonth", 'int');
+$paymentday = GETPOST("paymentday", 'int');
+$paymentyear = GETPOST("paymentyear", 'int');
+
 $button_search_x = GETPOST('button_search_x', 'alpha');
 $button_createpdf = GETPOST('button_createpdf', 'alpha');
 
 $createpdf='';
 
 // Array of ids of elements selected into a list
-$toselect   = GETPOST('toselect', 'array');	
+$toselect   = GETPOST('toselect', 'array');
 
 // Initialize technical objects
 $object = new ImmoPayment($db);
@@ -225,7 +229,8 @@ if (empty($reshook)) {
 			exit;
 		}
 
-		$date_payment = @dol_mktime(0, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
+		$date_payment = dol_mktime(0, 0, 0, $paymentmonth, $paymentday, $paymentyear);
+		var_dump($date_payment);exit;
 		if ($date_payment == '') {
 			setEventMessages($langs->trans('ErrorFieldRequired', $langs->transnoentities('Datepaie')), null, 'errors');
 			$action = 'create';
@@ -730,9 +735,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			if ($object->fk_mode_reglement) {
 				$tmparray = $object->setPaymentMethods($object->fk_mode_reglement, 'int');
+				$object->mode_code = $tmparray['code'];
+				$object->mode_payment = $tmparray['libelle'];
 			}
 			// Payment mode
-			$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none', '', -1);
+			print $object->mode_payment;
+			//$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none', '', -1);
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
@@ -1099,7 +1107,7 @@ if ($action == 'createall') {
 /* Mode fiche                                                                  */
 /*                                                                             */
 /* *************************************************************************** */
-/*if ($action == 'update') {
+if ($action == 'update') {
 	$receipt = new ImmoReceipt($db);
 	$result = $receipt->fetch($receipt_id);
 
@@ -1147,7 +1155,7 @@ if ($action == 'createall') {
 	print '</div>';
 
 	print '</form>';
-}*/
+}
 
 // End of page
 llxFooter();
