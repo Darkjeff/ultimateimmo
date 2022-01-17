@@ -78,6 +78,11 @@ class ImmoReceipt extends CommonObject
 	const STATUS_VALIDATED = 1;
 
 	/**
+	 * Credit note invoice
+	 */
+	const TYPE_CREDIT_NOTE = 2;
+
+	/**
 	 * Credit note status
 	 */
 	const STATUS_CANCELED = 9;
@@ -1305,6 +1310,7 @@ class ImmoReceipt extends CommonObject
 	 *
 	 *  @param	int		$status        Id status
 	 *  @param  int		$mode          0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto, 6=Long label + Picto
+	 *  @param  double	$alreadypaid	0=No payment already done, >0=Some payments were already done (we recommand to put here amount paid if you have it, 1 otherwise)
 	 *  @return string 			       Label of status
 	 */
 	public function LibStatut($status, $mode = 0, $alreadypaid = -1)
