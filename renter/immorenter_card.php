@@ -45,6 +45,7 @@ dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immorenter.lib.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immorentersoc.class.php');
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "members", "users"));
@@ -153,6 +154,56 @@ if (empty($reshook))
 			}
 		}
 	}*/
+
+	// Create third party from a renter
+	if ($action == 'confirm_create_thirdparty' && $confirm == 'yes' && $user->rights->societe->creer) {
+		if ($result > 0) {
+			// Thirdparty creation
+			$company = new RenterSoc($db);
+			$result = $company->create_from_renter($object, GETPOST('companyname', 'alpha'), GETPOST('companyalias', 'alpha'));
+
+			if ($result < 0) {
+				$langs->load("errors");
+				setEventMessages($langs->trans($company->error), null, 'errors');
+				setEventMessages($company->error, $company->errors, 'errors');
+			}
+		} else {
+			setEventMessages($object->error, $object->errors, 'errors');
+		}
+	}
+
+	// Auto-create thirdparty on renter creation
+	if (!empty($conf->global->RENTER_DEFAULT_CREATE_THIRDPARTY)) {
+		if ($result > 0) {
+			// User creation
+			$company = new RenterSoc($db);
+
+			$companyalias = '';
+			$fullname = $object->getFullName($langs);
+
+			if ($object->morphy == 'mor') {
+				$companyname = $object->company;
+				if (!empty($fullname)) {
+					$companyalias = $fullname;
+				}
+			} else {
+				$companyname = $fullname;
+				if (!empty($object->company)) {
+					$companyalias = $object->company;
+				}
+			}
+
+			$result = $company->create_from_renter($object, $companyname, $companyalias);
+
+			if ($result < 0) {
+				$langs->load("errors");
+				setEventMessages($langs->trans($company->error), null, 'errors');
+				setEventMessages($company->error, $company->errors, 'errors');
+			}
+		} else {
+			setEventMessages($object->error, $object->errors, 'errors');
+		}
+	}
 
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
@@ -415,16 +466,27 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	// Confirmation of action xxxx
-	if ($action == 'xxx') {
-		$formquestion = array();
-		/*
-	        $formquestion = array(
-	            // 'text' => $langs->trans("ConfirmClone"),
-	            // array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
-	            // array('type' => 'checkbox', 'name' => 'update_prices', 'label' => $langs->trans("PuttingPricesUpToDate"), 'value' => 1),
-	            // array('type' => 'other',    'name' => 'idwarehouse',   'label' => $langs->trans("SelectWarehouseForStockDecrease"), 'value' => $formproduct->selectWarehouses(GETPOST('idwarehouse')?GETPOST('idwarehouse'):'ifone', 'idwarehouse', '', 1)));
-	    }*/
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('XXX'), $text, 'confirm_xxx', $formquestion, 0, 1, 220);
+	if ($action == 'create_thirdparty') {
+		$companyalias = '';
+		$fullname = $object->getFullName($langs);
+
+		if ($object->morphy == 'mor') {
+			$companyname = $object->company;
+			if (!empty($fullname)) {
+				$companyalias = $fullname;
+			}
+		} else {
+			$companyname = $fullname;
+			if (!empty($object->company)) {
+				$companyalias = $object->company;
+			}
+		}
+		// Create a form array
+		$formquestion = array(
+			array('label' => $langs->trans("NameToCreate"), 'type' => 'text', 'name' => 'companyname', 'value' => $companyname, 'morecss' => 'minwidth300', 'moreattr' => 'maxlength="128"'),
+			array('label' => $langs->trans("AliasNames"), 'type' => 'text', 'name' => 'companyalias', 'value' => $companyalias, 'morecss' => 'minwidth300', 'moreattr' => 'maxlength="128"')
+		);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . "?id=" . $object->id, $langs->trans("CreateDolibarrThirdParty"), $langs->trans("ConfirmCreateThirdParty"), "confirm_create_thirdparty", $formquestion, 'yes');
 	}
 
 	// Call Hook formConfirm
@@ -515,15 +577,33 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<td>';
 
 		if ($val['label'] == 'LinkedToDolibarrThirdParty') {
-			if ($object->socid) {
-				$company = new Societe($db);
-				$result = $company->fetch($object->socid);
-				print $company->getNomUrl(1);
-			} else {
-				print $langs->trans("NoThirdPartyAssociatedToRenter");
+			// Third party Dolibarr
+			if (!empty($conf->societe->enabled)) {
+				print $form->editfieldkey('', 'thirdparty', '', $object, $permissiontoadd);
+				if ($action == 'editthirdparty') {
+					$htmlname = 'socid';
+					print '<form method="POST" action="' . $_SERVER['PHP_SELF'] . '" name="form' . $htmlname . '">';
+					print '<input type="hidden" name="id" value="' . $object->id . '">';
+					print '<input type="hidden" name="action" value="set' . $htmlname . '">';
+					print '<input type="hidden" name="token" value="' . newToken() . '">';
+					print '<table class="nobordernopadding">';
+					print '<tr><td>';
+					print $form->select_company($object->socid, 'socid', '', 1);
+					print '</td>';
+					print '<td class="left"><input type="submit" class="button button-edit" value="' . $langs->trans("Modify") . '"></td>';
+					print '</tr></table></form>';
+				} else {
+					if ($object->socid) {
+						$company = new Societe($db);
+						$result = $company->fetch($object->socid);
+						print $company->getNomUrl(1);
+					} else {
+						print '<span class="opacitymedium">' . $langs->trans("NoThirdPartyAssociatedToRenter") . '</span>';
+					}
+				}
 			}
 		}
-		if ($val['label'] == 'MorPhy') {
+		elseif ($val['label'] == 'MorPhy') {
 			print $object->getmorphylib();
 		}
 		elseif ($val['label'] == 'Owner') {
@@ -699,6 +779,19 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		{
     			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
     		}
+
+			// Create third party
+			if (!empty($conf->societe->enabled) && !$object->socid) {
+				if ($user->rights->societe->creer) {
+					if (ImmoRenter::STATUS_DRAFT != $object->status) {
+						print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=create_thirdparty" title="' . dol_escape_htmltag($langs->trans("CreateDolibarrThirdPartyDesc")) . '">' . $langs->trans("CreateDolibarrThirdParty") . '</a>' . "\n";
+					} else {
+						print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("ValidateBefore")) . '">' . $langs->trans("CreateDolibarrThirdParty") . '</a>' . "\n";
+					}
+				} else {
+					print '<span class="butActionRefused classfortooltip" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans("CreateDolibarrThirdParty") . '</span>' . "\n";
+				}
+			}
 
 			// Clone
     		if ($permissiontoadd)
