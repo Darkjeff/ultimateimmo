@@ -582,23 +582,32 @@ if (($id || $ref) && $action == 'edit') {
 
 	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 4) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) {
+			continue;
+		}
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) {
+			continue; // We don't want this field
+		}
 
-		print '<tr><td';
+		print '<tr class="field_' . $key . '"><td';
 		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		if (isset($val['notnull']) && $val['notnull'] > 0) {
+			print ' fieldrequired';
+		}
+		if (preg_match('/^(text|html)/', $val['type'])) {
+			print ' tdtop';
+		}
 		print '">';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
+		if (!empty($val['help'])) {
+			print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		} else {
+			print $langs->trans($val['label']);
+		}
 		print '</td>';
-		print '<td>';
+		print '<td class="valuefieldcreate">';
 
-		if ($val['label'] == 'DatePayment') {
-			print $form->selectDate((empty($date_payment) ?-1 : $date_payment), "date_payment", '', '', '', 'add', 1, 1);
-		} elseif ($val['label'] == 'BankAccount') {
+		if ($val['label'] == 'BankAccount') {
 			//BankAccount
 			if (!empty($conf->banque->enabled)) {
 				$form->select_comptes($accountid, 'accountid', 0, '', 2);
@@ -609,15 +618,42 @@ if (($id || $ref) && $action == 'edit') {
 			else $selected = '';
 			$form->select_types_paiements($selected, 'fk_mode_reglement', 'CRDT', 0, 1);
 		} else {
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
-			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			if (!empty($val['picto'])) {
+				print img_picto('', $val['picto'], '', false, 0, 0, '', 'pictofixedwidth');
+			}
+			if (in_array($val['type'], array('int', 'integer'))) {
+				$value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
+			} elseif ($val['type'] == 'double') {
+				$value = GETPOSTISSET($key) ? price2num(GETPOST($key, 'alphanohtml')) : $object->$key;
+			} elseif (preg_match('/^(text|html)/', $val['type'])) {
+				$tmparray = explode(':', $val['type']);
+				if (!empty($tmparray[1])) {
+					$check = $tmparray[1];
+				} else {
+					$check = 'restricthtml';
+				}
+				$value = GETPOSTISSET($key) ? GETPOST($key, $check) : $object->$key;
+			} elseif ($val['type'] == 'price') {
+				$value = GETPOSTISSET($key) ? price2num(GETPOST($key)) : price2num($object->$key);
+			} elseif ($key == 'lang') {
+				$value = GETPOSTISSET($key) ? GETPOST($key, 'aZ09') : $object->lang;
+			} else {
+				$value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			}
 			//var_dump($val.' '.$key.' '.$value);
-			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-			else print $object->showInputField($val, $key, $value, '', '', '', 0);
+			if (!empty($val['noteditable'])) {
+				print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			} else {
+				if ($key == 'lang') {
+					print img_picto('', 'language', 'class="pictofixedwidth"');
+					print $formadmin->select_language($value, $key, 0, null, 1, 0, 0, 'minwidth300', 2);
+				} else {
+					print $object->showInputField($val, $key, $value, '', '', '', 0);
+				}
+			}
+			print '</td>';
+			print '</tr>';
 		}
-		print '</td>';
-		print '</tr>';
 	}
 
 	// Other attributes
@@ -934,13 +970,13 @@ if ($action == 'createall') {
 	/*
 	 * List receipt
 	 */
-	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract, rent.preavis";
+	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
 	//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent";
-	$sql .= " WHERE rec.paye <> 1 AND rent.preavis = 1 ";
+	$sql .= " WHERE rec.paye <> 1 ";
 	//print_r($sql);exit;
 
 	if (!empty($search_loyer)) {
@@ -1030,7 +1066,7 @@ if ($action == 'createall') {
 
 	print '<tr class="oddeven" valign="top">';
 	$payment = new ImmoPayment($db);
-	$result = $payment->fetch($id);
+	$result = $payment->fetch($id,$ref);
 
 	// Due date	
 	print '<td class="center">';
@@ -1096,7 +1132,7 @@ if ($action == 'createall') {
 			while ($i < $num) {
 				$objp = $db->fetch_object($resql);
 				print '<tr class="oddeven">';
-
+	//var_dump($objp);
 				print '<td>' . $objp->receiptname . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->nom . '</td>';

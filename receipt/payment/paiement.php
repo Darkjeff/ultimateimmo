@@ -122,7 +122,6 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 $form = new Form($db);
 if ($action == 'add_payment') {
 	$error = 0;
-//var_dump($id);exit;
 	if (GETPOST('cancel')) {
 		$loc = dol_buildpath("/ultimateimmo/receipt/immoreceipt_card.php", 1) . '?id=' . $id;
 		header("Location: " . $loc);
@@ -156,7 +155,7 @@ if ($action == 'add_payment') {
 				$amounts[$other_id] = price2num($_POST[$key]);
 			}
 		}
-
+		
 		if (count($amounts) <= 0) {
 			$error++;
 			$errmsg = 'ErrorNoPaymentDefined';
@@ -193,7 +192,7 @@ if ($action == 'add_payment') {
 					$error++;
 				}
 			}
-
+			
 			if (!$error) {
 				$label = '(CustomerReceiptPayment)';
 				if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
@@ -207,18 +206,18 @@ if ($action == 'add_payment') {
 
 			if (!$error) {
 				$db->commit();
-				$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $id;
-				header('Location: ' . $loc);
+				$urltogo = dol_buildpath('/ultimateimmo/receipt/payment/paiement.php.php', 1);
+				header('Location: ' . $urltogo);
 				exit;
 			} else {
 				$db->rollback();
-				$errmsg = $payment->errors;
-				setEventMessages(null, $errmsg, 'errors');
+				setEventMessages($object->error, $object->errors, 'errors');
+				$action = "create";
 			}
 		}
 	}
 
-	$_GET["action"] = 'create';
+	$action = 'create';
 }
 
 
@@ -245,7 +244,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		print load_fiche_titre($title);
 
 		print '<form id="payment_form" name="add_payment" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
-		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+		print '<input type="hidden" name="token" value="' . newToken() . '">';
 		print '<input type="hidden" name="action" value="add_payment">';
 		print '<input type="hidden" name="id" value="' . $id . '">';
 		print '<input type="hidden" name="socid" value="' . $renter->fk_soc . '">';
@@ -256,6 +255,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 		$paymentstatic = new ImmoPayment($db);
 		$paymentstatic->fetch($receipt->fk_payment);
+		//var_dump($payment->amounts);exit;
 
 		// Reference
 		$tmpref = GETPOST('ref', 'alpha') ? GETPOST('ref', 'alpha') : $receipt->id;
@@ -270,8 +270,9 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		if ($rent->ref) {
 			$rent->ref = $rent->getNomUrl(0) . ' - ' . $staticproperty->label;
 		}
-		
+		// Location
 		print '<tr><td>' . $langs->trans("ImmoRent") . "</td><td colspan=\"2\">" . $rent->ref . "</td></tr>\n";
+		// Bien immobilier
 		print '<tr><td>' . $langs->trans("Property") . "</td><td colspan=\"2\">" . $staticproperty->address.' '.$staticproperty->zip .' '.$staticproperty->town . "</td></tr>\n";
 		
 		$staticrenter = new ImmoRenter($db);
@@ -279,6 +280,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		if ($staticrenter->ref) {
 			$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs);
 		}
+		// Locataire
 		print '<tr><td>' . $langs->trans("Renter") . "</td><td colspan=\"2\">" . $staticrenter->ref . "</td></tr>\n";
 
 		// Total amount
@@ -291,12 +293,16 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		$resql = $db->query($sql);
 		if ($resql) {
 			$obj = $db->fetch_object($resql);
-			$sumpaid = $obj->total;
+			$sumpaid = $payment->amounts;
 			$db->free();
 		}
-
+		//var_dump($amounts);exit;
+		$payment->amounts = $amounts;
+		$sumpaid = array_sum($payment->amounts);
+		$remainsum = $receipt->total_amount - $sumpaid;
+		
 		print '<tr><td>' . $langs->trans("AlreadyPaid") . '</td><td colspan="2">' . price($sumpaid, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td></tr>';
-		print '<tr><td class="tdtop">' . $langs->trans("RemainderToPay") . '</td><td colspan="2">' . price($receipt->total_amount - $sumpaid, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td></tr>';
+		print '<tr><td class="tdtop">' . $langs->trans("RemainderToPay") . '</td><td colspan="2">' . price($remainsum, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td></tr>';
 
 		print '<tr class="liste_titre">';
 		print "<td colspan=\"3\">" . $langs->trans("Payment") . '</td>';
@@ -391,14 +397,15 @@ if (GETPOST('action', 'aZ09') == 'create') {
 			print '<td class="left">' . $rent->getNomUrl(0) . "</td>";
 
 			print '<td class="right">' . price($objp->total_amount) . "</td>";
-
+			$sumpaid = array_sum($payment->amounts);
 			print '<td class="right">' . price($sumpaid) . "</td>";
 
-			print '<td class="right">' . price($objp->total_amount - $sumpaid) . "</td>";
+			print '<td class="right">' . price($remainsum) . "</td>";
 
 			print '<td class="center">';
 			if ($sumpaid < $objp->total_amount) {
 				$namef = "amount_" . $objp->id;
+				//var_dump($namef);exit;
 				print '<input type="text" size="8" name="' . $namef . '" required="required">';
 			} else {
 				$errmsg = $langs->trans("AlreadyPaid");

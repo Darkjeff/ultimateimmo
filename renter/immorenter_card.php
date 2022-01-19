@@ -47,7 +47,7 @@ dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "members"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "members", "users"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -514,6 +514,15 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '">';
 		print '<td>';
 
+		if ($val['label'] == 'LinkedToDolibarrThirdParty') {
+			if ($object->socid) {
+				$company = new Societe($db);
+				$result = $company->fetch($object->socid);
+				print $company->getNomUrl(1);
+			} else {
+				print $langs->trans("NoThirdPartyAssociatedToRenter");
+			}
+		}
 		if ($val['label'] == 'MorPhy') {
 			print $object->getmorphylib();
 		}
