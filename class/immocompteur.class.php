@@ -95,7 +95,7 @@ class ImmoCompteur extends CommonObject
 	 */
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>'1', 'position'=>1, 'notnull'=>1, 'visible'=>0, 'noteditable'=>'1', 'index'=>1, 'comment'=>"Id"),
-		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>'1', 'position'=>10, 'notnull'=>1, 'visible'=>0, 'index'=>1, 'searchall'=>1, 'showoncombobox'=>'1', 'comment'=>"Reference of object"),
+		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>'1', 'position'=>10, 'notnull'=>1, 'visible'=>2, 'index'=>1, 'searchall'=>1, 'showoncombobox'=>'1', 'comment'=>"Reference of object"),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>'1', 'position'=>30, 'notnull'=>0, 'visible'=>0, 'searchall'=>1, 'css'=>'minwidth200', 'help'=>"Help text", 'showoncombobox'=>'1',),
 		'date_relever' => array('type'=>'date', 'label'=>'DateRelever', 'enabled'=>'1', 'position'=>45, 'notnull'=>1, 'visible'=>1,),
 		'qty' => array('type'=>'real', 'label'=>'Relever', 'enabled'=>'1', 'position'=>45, 'notnull'=>0, 'visible'=>1, 'default'=>'0', 'isameasure'=>'1', 'css'=>'maxwidth75imp', 'help'=>"Help text for quantity",),
@@ -109,7 +109,6 @@ class ImmoCompteur extends CommonObject
 		'fk_user_modif' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserModif', 'enabled'=>'1', 'position'=>511, 'notnull'=>-1, 'visible'=>-2,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>'1', 'position'=>1000, 'notnull'=>-1, 'visible'=>-2,),
 		'model_pdf' => array('type'=>'varchar(255)', 'label'=>'Model pdf', 'enabled'=>'1', 'position'=>1010, 'notnull'=>-1, 'visible'=>0,),
-		'status' => array('type'=>'smallint', 'label'=>'Status', 'enabled'=>'1', 'position'=>1000, 'notnull'=>1, 'visible'=>0, 'default'=>'1', 'index'=>1, 'arrayofkeyval'=>array('0'=>'Brouillon', '1'=>'Valid&eacute;', '9'=>'Annul&eacute;'),),
 	);
 	public $rowid;
 	public $ref;
@@ -126,7 +125,6 @@ class ImmoCompteur extends CommonObject
 	public $fk_user_modif;
 	public $import_key;
 	public $model_pdf;
-	public $status;
 	// END MODULEBUILDER PROPERTIES
 
 
@@ -220,7 +218,18 @@ class ImmoCompteur extends CommonObject
 	 */
 	public function create(User $user, $notrigger = false)
 	{
-		return $this->createCommon($user, $notrigger);
+		$this->date_creation=dol_now();
+		$result = $this->createCommon($user, $notrigger);
+		if ($result>0) {
+			$this->fetch($this->id);
+			$this->ref = $this->id;
+			$result=$this->update($user);
+			return $result;
+		} else {
+			return $result;
+		}
+
+
 	}
 
 	/**
@@ -699,7 +708,7 @@ class ImmoCompteur extends CommonObject
 			$label .= '<br><b>'.$langs->trans("Status").":</b> ".$this->getLibStatut(5);
 		}
 
-		$url = dol_buildpath('/ultimateimmo/immocompteur_card.php', 1).'?id='.$this->id;
+		$url = dol_buildpath('/ultimateimmo/compteur/immocompteur_card.php', 1).'?id='.$this->id;
 
 		if ($option != 'nolink')
 		{

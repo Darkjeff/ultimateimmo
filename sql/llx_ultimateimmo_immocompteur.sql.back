@@ -19,7 +19,7 @@ CREATE TABLE llx_ultimateimmo_immocompteur(
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL, 
 	label varchar(255), 
-	date_relever date DEFAULT NULL NOT NULL, 
+	date_relever date NOT NULL, 
 	qty real, 
 	fk_immoproperty integer, 
 	description text, 

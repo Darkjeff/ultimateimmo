@@ -18,7 +18,6 @@
 ALTER TABLE llx_ultimateimmo_immocompteur ADD INDEX idx_ultimateimmo_immocompteur_rowid (rowid);
 ALTER TABLE llx_ultimateimmo_immocompteur ADD INDEX idx_ultimateimmo_immocompteur_ref (ref);
 ALTER TABLE llx_ultimateimmo_immocompteur ADD CONSTRAINT llx_ultimateimmo_immocompteur_fk_user_creat FOREIGN KEY (fk_user_creat) REFERENCES llx_user(rowid);
-ALTER TABLE llx_ultimateimmo_immocompteur ADD INDEX idx_ultimateimmo_immocompteur_status (status);
 -- END MODULEBUILDER INDEXES
 
 --ALTER TABLE llx_ultimateimmo_immocompteur ADD UNIQUE INDEX uk_ultimateimmo_immocompteur_fieldxy(fieldx, fieldy);

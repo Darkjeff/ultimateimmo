@@ -461,21 +461,21 @@ class modUltimateimmo extends DolibarrModules
 		$this->rights[$r][0] = $this->numero + $r;	// Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read compteur';	// Permission label
 		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'compteur';				// In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'immocompteur';				// In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
 		$this->rights[$r][5] = 'read';				    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;	// Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update compteur';	// Permission label
 		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'compteur';				// In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'immocompteur';				// In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
 		$this->rights[$r][5] = 'write';				    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;	// Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete compteur';	// Permission label
 		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'compteur';				// In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'immocompteur';				// In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
 		$this->rights[$r][5] = 'delete';
 
 

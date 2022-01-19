@@ -30,7 +30,6 @@ CREATE TABLE llx_ultimateimmo_immocompteur(
 	fk_user_creat integer NOT NULL, 
 	fk_user_modif integer, 
 	import_key varchar(14), 
-	model_pdf varchar(255), 
-	status smallint DEFAULT 1 NOT NULL
+	model_pdf varchar(255)
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;
