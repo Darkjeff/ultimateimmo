@@ -56,7 +56,10 @@ INSERT INTO llx_ultimateimmo_immocost_type(rowid, ref, label, famille, fk_user_c
 INSERT INTO llx_ultimateimmo_immocost_type(rowid, ref, label, famille, fk_user_creat, status, date_creation) VALUES (16, 'COSTTYPE016', 'Arrêté des comptes : Charges récupérables/locatives', 'Syndic de copropriété', 1, 1, NOW());
 INSERT INTO llx_ultimateimmo_immocost_type(rowid, ref, label, famille, fk_user_creat, status, date_creation) VALUES (17, 'COSTTYPE017', 'Arrêté des comptes : Charges déductibles', 'Syndic de copropriété', 1, 1, NOW());
 INSERT INTO llx_ultimateimmo_immocost_type(rowid, ref, label, famille, fk_user_creat, status, date_creation) VALUES (18, 'COSTTYPE018', 'Arrêté des comptes : Charges non déductibles', 'Syndic de copropriété', 1, 1, NOW());
-ALTER TABLE llx_ultimateimmo_immopayment ALTER COLUMN date_payment  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP; 
+ALTER TABLE llx_ultimateimmo_immopayment ALTER COLUMN date_payment  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+ALTER TABLE llx_ultimateimmo_immorenter ADD COLUMN address VARCHAR(255) AFTER birth;
+ALTER TABLE llx_ultimateimmo_immorenter ADD COLUMN zip VARCHAR(32) AFTER address;
+ALTER TABLE llx_ultimateimmo_immorenter ADD COLUMN town VARCHAR(64) AFTER zip;
 
 
 

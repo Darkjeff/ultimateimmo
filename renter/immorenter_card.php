@@ -120,40 +120,36 @@ if (empty($reshook))
     }
 	$triggermodname = 'ULTIMATEIMMO_IMMORENTER_MODIFY';
 
-	/*if ($action == 'setsocid')
-	{
-		$error=0;
-		if (! $error)
-		{
+	if ($action == 'setsocid') {
+		$error = 0;
+		if (!$error) {
 			if ($socid != $object->fk_soc)	// If link differs from currently in database
 			{
-				$sql ="SELECT rowid FROM ".MAIN_DB_PREFIX."ultimateimmo_immorenter";
-				$sql.=" WHERE fk_soc = '".$socid."'";
-				$sql.=" AND entity = ".$conf->entity;
+				$sql = "SELECT rowid FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter";
+				$sql .= " WHERE fk_soc = '" . $object->fk_soc . "'";
+				$sql .= " AND entity = " . $conf->entity;
 				$resql = $db->query($sql);
-				if ($resql)
-				{
+				if ($resql) {
 					$obj = $db->fetch_object($resql);
-					if ($obj && $obj->rowid > 0)
-					{
-						$otherrenter=new ImmoRenter($db);
+					if ($obj && $obj->rowid > 0) {
+						$otherrenter = new ImmoRenter($db);
 						$otherrenter->fetch($obj->rowid);
-						$thirdparty=new Societe($db);
-						$thirdparty->fetch($socid);
+						$thirdparty = new Societe($db);
+						$thirdparty->fetch($object->fk_soc);
 						$error++;
-						setEventMessages($langs->trans("ErrorRenterIsAlreadyLinkedToThisThirdParty",$otherrenter->getFullName($langs),$otherrenter->login,$thirdparty->name), null, 'errors');
+						
+						setEventMessages($langs->trans("ErrorRenterIsAlreadyLinkedToThisThirdParty", $otherrenter->getFullName($langs), $otherrenter->login, $thirdparty->name), null, 'errors');
 					}
 				}
-
-				if (! $error)
-				{
-					$result=$object->setThirdPartyId($socid);
-					if ($result < 0) dol_print_error($object->db,$object->error);
-					$action='';
+				
+				if (!$error) {
+					$result = $object->setThirdPartyId($thirdparty->id);
+					if ($result < 0) dol_print_error($object->db, $object->error);
+					$action = '';
 				}
 			}
 		}
-	}*/
+	}
 
 	// Create third party from a renter
 	if ($action == 'confirm_create_thirdparty' && $confirm == 'yes' && $user->rights->societe->creer) {
@@ -161,7 +157,6 @@ if (empty($reshook))
 			// Thirdparty creation
 			$company = new RenterSoc($db);
 			$result = $company->create_from_renter($object, GETPOST('companyname', 'alpha'), GETPOST('companyalias', 'alpha'));
-
 			if ($result < 0) {
 				$langs->load("errors");
 				setEventMessages($langs->trans($company->error), null, 'errors');
@@ -576,34 +571,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '">';
 		print '<td>';
 
-		if ($val['label'] == 'LinkedToDolibarrThirdParty') {
-			// Third party Dolibarr
-			if (!empty($conf->societe->enabled)) {
-				print $form->editfieldkey('', 'thirdparty', '', $object, $permissiontoadd);
-				if ($action == 'editthirdparty') {
-					$htmlname = 'socid';
-					print '<form method="POST" action="' . $_SERVER['PHP_SELF'] . '" name="form' . $htmlname . '">';
-					print '<input type="hidden" name="id" value="' . $object->id . '">';
-					print '<input type="hidden" name="action" value="set' . $htmlname . '">';
-					print '<input type="hidden" name="token" value="' . newToken() . '">';
-					print '<table class="nobordernopadding">';
-					print '<tr><td>';
-					print $form->select_company($object->socid, 'socid', '', 1);
-					print '</td>';
-					print '<td class="left"><input type="submit" class="button button-edit" value="' . $langs->trans("Modify") . '"></td>';
-					print '</tr></table></form>';
-				} else {
-					if ($object->socid) {
-						$company = new Societe($db);
-						$result = $company->fetch($object->socid);
-						print $company->getNomUrl(1);
-					} else {
-						print '<span class="opacitymedium">' . $langs->trans("NoThirdPartyAssociatedToRenter") . '</span>';
-					}
-				}
-			}
-		}
-		elseif ($val['label'] == 'MorPhy') {
+		if ($val['label'] == 'MorPhy') {
 			print $object->getmorphylib();
 		}
 		elseif ($val['label'] == 'Owner') {
@@ -781,7 +749,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
 
 			// Create third party
-			if (!empty($conf->societe->enabled) && !$object->socid) {
+			if (!empty($conf->societe->enabled) && !$object->fk_soc) {
 				if ($user->rights->societe->creer) {
 					if (ImmoRenter::STATUS_DRAFT != $object->status) {
 						print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=create_thirdparty" title="' . dol_escape_htmltag($langs->trans("CreateDolibarrThirdPartyDesc")) . '">' . $langs->trans("CreateDolibarrThirdParty") . '</a>' . "\n";
