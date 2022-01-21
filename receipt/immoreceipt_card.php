@@ -1334,13 +1334,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=builddoc&id=' . $id . '">' . $langs->trans('Quittance') . '</a></div>';
 
 			// Create payment
-			if ($object->paye == 0 && $permissiontoadd) {
+			/*if ($object->paye == 0 && $permissiontoadd) {
 				if ($remaintopay == 0) {
 					print '<div class="inline-block divButAction"><span class="butActionRefused" title="' . $langs->trans("DisabledBecauseRemainderToPayIsZero") . '">' . $langs->trans('DoPayment') . '</span></div>';
 				} else {
 					print '<div class="inline-block divButAction"><a class="butAction" href="' . dol_buildpath('/ultimateimmo/receipt/payment/paiement.php', 1) . '?id=' . $id . '&amp;action=create">' . $langs->trans('DoPayment') . '</a></div>';
 				}
-			}
+			}*/
 
 			// Classify 'paid'
 			if ($object->paye == 0 && round($remaintopay) <= 0 && $permissiontoadd) {

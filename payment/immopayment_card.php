@@ -1187,7 +1187,7 @@ if ($action == 'createall') {
 		dol_print_error($db);
 	}
 	print '<div class="tabsAction">' . "\n";
-	print '<div class="inline-block divButAction"><input type="submit"  name="button_addallpayment" id="button_addallpayment" class="butAction" value="' . $langs->trans("Payed") . '" /></div>';
+	print '<div class="inline-block divButAction"><input type="submit"  name="button_addallpayment" id="button_addallpayment" class="butAction" value="' . $langs->trans("ValidatePayment") . '" /></div>';
 	print '<div class="inline-block divButAction"><input type="submit"  name="button_createpdf" id="button_createpdf" class="butAction" value="' . $langs->trans("CreatePDF") . '" /></div>';
 	print '</div>';
 	print '</form>';

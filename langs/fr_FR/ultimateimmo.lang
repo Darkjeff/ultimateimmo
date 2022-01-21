@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2022 Philippe GRAND <philippe.grand@atoo-net.com>
+# Copyright (C) 2018-2021 Philippe GRAND <philippe.grand@atoo-net.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -240,7 +240,6 @@ OtherReceipts = Autres quittances
 OtherRents = Autres locations
 NumberReceiptByMonth  = Nombre de quittances par mois
 CustomerReceiptPayment = Règlement de quittance
-CreatePDF = Créer un PDF
 LinkToReceipt = Lien vers la quittance
 LinkToOwner = Lien vers le propriétaire
 LinkToOwnerType = Sélectionnez le type de propriétaire
@@ -253,3 +252,5 @@ LinkToRent =Lien vers Contrat/Location
 MorPhy = Nature du locataire
 NoThirdPartyAssociatedToRenter = Pas de tiers associé à ce locataire
 ConfirmCreateThirdParty=Êtes-vous sûr de vouloir créer un tiers pour ce locataire ?
+ValidatePayment = Valider les paiements 
+

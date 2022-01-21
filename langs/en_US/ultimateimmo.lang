@@ -252,4 +252,5 @@ LinkToRent =Link to Contract/Rental
 MorPhy = Nature of renter
 NoThirdPartyAssociatedToRenter = No thirdparty associated to this renter
 ConfirmCreateThirdParty=Are you sure you want to create a third party for this renter?
+ValidatePayment = Validate payments
 
