@@ -206,7 +206,7 @@ if ($action == 'add_payment') {
 
 			if (!$error) {
 				$db->commit();
-				$urltogo = dol_buildpath('/ultimateimmo/receipt/payment/paiement.php.php', 1);
+				$urltogo = dol_buildpath('/ultimateimmo/receipt/payment/paiement.php', 1);
 				header('Location: ' . $urltogo);
 				exit;
 			} else {
@@ -233,7 +233,7 @@ llxHeader('', $langs->trans("Payment"));
 if (GETPOST('action', 'aZ09') == 'create') {
 	$receipt = new ImmoReceipt($db);
 	$result = $receipt->fetch($id);
-
+	
 	$total = $receipt->total_amount;
 
 	if ($result >= 0) {
@@ -255,7 +255,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 		$paymentstatic = new ImmoPayment($db);
 		$paymentstatic->fetch($receipt->fk_payment);
-		//var_dump($payment->amounts);exit;
+		//var_dump($receipt);exit;
 
 		// Reference
 		$tmpref = GETPOST('ref', 'alpha') ? GETPOST('ref', 'alpha') : $receipt->id;
@@ -293,12 +293,12 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		$resql = $db->query($sql);
 		if ($resql) {
 			$obj = $db->fetch_object($resql);
-			$sumpaid = $payment->amounts;
+			$sumpaid = $obj->total;
 			$db->free();
 		}
-		//var_dump($amounts);exit;
-		$payment->amounts = $amounts;
-		$sumpaid = array_sum($payment->amounts);
+		
+		$paymentstatic->amounts = $amounts;
+		$sumpaid = array_sum($paymentstatic->amounts);
 		$remainsum = $receipt->total_amount - $sumpaid;
 		
 		print '<tr><td>' . $langs->trans("AlreadyPaid") . '</td><td colspan="2">' . price($sumpaid, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td></tr>';
@@ -397,7 +397,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 			print '<td class="left">' . $rent->getNomUrl(0) . "</td>";
 
 			print '<td class="right">' . price($objp->total_amount) . "</td>";
-			$sumpaid = array_sum($payment->amounts);
+			$sumpaid = array_sum($paymentstatic->amounts);
 			print '<td class="right">' . price($sumpaid) . "</td>";
 
 			print '<td class="right">' . price($remainsum) . "</td>";
