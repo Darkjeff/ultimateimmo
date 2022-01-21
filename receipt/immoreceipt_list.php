@@ -256,38 +256,6 @@ if ($action == 'validaterent') {
 	}
 }
 
-if ($massaction == 'validate') {
-	foreach ($toselect as $key => $val) {
-		$immoreceipt = new ImmoReceipt($db);
-		$result = $immoreceipt->fetch($val);
-
-		if ($result >= 0 && $object->status == ImmoReceipt::STATUS_DRAFT) {
-			$resultvalid = $immoreceipt->validate($user);
-
-			if ($resultvalid >= 0) {
-				if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE)) {
-					// Define output language
-					$outputlangs = $langs;
-					$newlang = '';
-					if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id', 'aZ09')) $newlang = GETPOST('lang_id', 'aZ09');
-					if ($conf->global->MAIN_MULTILANGS && empty($newlang))	$newlang = $immoreceipt->thirdparty->default_lang;
-					if (!empty($newlang)) {
-						$outputlangs = new Translate("", $conf);
-						$outputlangs->setDefaultLang($newlang);
-					}
-					$model = $immoreceipt->model_pdf;
-					$ret = $immoreceipt->fetch($val); // Reload to get new records
-					$immoreceipt->generateDocument($model, $outputlangs, $hidedetails, $hidedesc, $hideref);
-				}
-			} else {
-				$langs->load("errors");
-				if (count($immoreceipt->errors) > 0) setEventMessages($immoreceipt->error, $immoreceipt->errors, 'errors');
-				else setEventMessages($langs->trans($immoreceipt->error), null, 'errors');
-			}
-		}
-	}
-}
-
 if (GETPOST('cancel', 'alpha')) {
 	$action = 'list';
 	$massaction = '';

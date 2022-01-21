@@ -970,7 +970,7 @@ if ($action == 'createall') {
 	/*
 	 * List receipt
 	 */
-	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract";
+	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, prop.address, prop.label as local, prop.fk_owner as proprio, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
 	//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
@@ -1085,7 +1085,7 @@ if ($action == 'createall') {
 	print '<td class="left">';
 	print $form->select_comptes(GETPOSTISSET('accountid', 'int') ? GETPOST('accountid', 'int') : $payment->fk_bank, "accountid", 0, '', 1);  // Show open bank account list
 	print '</td>';
-	//var_dump($payment->fk_bank);exit;
+	
 	// num_payment
 	print '<td><input name="num_payment" size="30" value="' . GETPOST('num_payment') . '"</td>';
 
@@ -1119,6 +1119,7 @@ if ($action == 'createall') {
 		print '<td>' . $langs->trans('NomLoyer') . '</td>';
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
+		print '<td>' . $langs->trans('Owner') . '</td>';
 		print '<td class="left">' . $langs->trans('TotalAmount') . '</td>';
 		print '<td class="left">' . $langs->trans('PartialPayment') . '</td>';
 		print '<td class="left">' . $langs->trans('Balance') . '</td>';
@@ -1132,10 +1133,11 @@ if ($action == 'createall') {
 			while ($i < $num) {
 				$objp = $db->fetch_object($resql);
 				print '<tr class="oddeven">';
-	//var_dump($objp);
+	
 				print '<td>' . $objp->receiptname . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->nom . '</td>';
+				print '<td>' . $objp->proprio . '</td>';
 
 				print '<td class="left">' . price($objp->total) . '</td>';
 				print '<td class="left">' . price($objp->partial_payment) . '</td>';
@@ -1144,13 +1146,14 @@ if ($action == 'createall') {
 				print '<input type="hidden" name="fk_rent_' . $objp->reference . '" size="10" value="' . $objp->refcontract . '">';
 				print '<input type="hidden" name="fk_property_' . $objp->reference . '" size="10" value="' . $objp->reflocal . '">';
 				print '<input type="hidden" name="fk_renter_' . $objp->reference . '" size="10" value="' . $objp->reflocataire . '">';
+				print '<input type="hidden" name="fk_owner_' . $objp->reference . '" size="10" value="' . $objp->proprio . '">';
 				print '<input type="hidden" name="receipt_' . $objp->reference . '" size="10" value="' . $objp->reference . '">';
 
 				// Colonne imput income
 				print '<td class="right">';
 				print '<input type="text" name="incomeprice_' . $objp->reference . '" id="incomeprice_' . $objp->reference . '" size="6" value="" class="flat">';
 				print '</td>';
-				//var_dump($objp);
+				
 				// Action column
 				print '<td class="nowrap center">';
 				if (in_array($objp->reference, $arrayofselected)) $selected = 1;
@@ -1166,7 +1169,6 @@ if ($action == 'createall') {
 				$total_due += $objp->balance;
 			}
 		}
-		//exit;
 
 		// Show total line
 		print '<tr class="liste_total">';

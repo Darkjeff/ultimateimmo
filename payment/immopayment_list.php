@@ -585,15 +585,15 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				print $object->getLibStatut(5);
 			} elseif ($key == 'rowid') {
 				print $object->showOutputField($val, $key, $object->id, '');
-			}
-
-			elseif ($val['label'] == 'Owner') {
-				$staticowner = new ImmoOwner($db);
-				$staticowner->fetch($object->fk_owner);
-				if ($staticowner->ref) {
-					$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+			} elseif ($val['label'] == 'Owner') {
+				if ($object->fk_owner) {
+					$staticowner = new ImmoOwner($db);
+					$staticowner->fetch($object->fk_owner);
+					if ($staticowner->ref) {
+						$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+					}
+					print $staticowner->ref;
 				}
-				print $staticowner->ref;
 			} elseif ($val['label'] == 'ImmoRent') {
 				$staticrent = new ImmoRent($db);
 				$staticrent->fetch($object->fk_rent);
