@@ -965,6 +965,127 @@ class ImmoPayment extends CommonObject
 	}
 
 	/**
+	 *	Validate object
+	 *
+	 *	@param		User	$user     		User making status change
+	 *  @param		int		$notrigger		1=Does not execute triggers, 0= execute triggers
+	 *	@return  	int						<=0 if OK, 0=Nothing done, >0 if KO
+	 */
+	public function validate($user, $notrigger = 0)
+	{
+		global $conf, $langs;
+
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+
+		$error = 0;
+
+		// Protection
+		if ($this->status == self::STATUS_VALIDATED) {
+			dol_syslog(get_class($this) . "::validate action abandonned: already validated", LOG_WARNING);
+			return 0;
+		}
+
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->write))))
+		{
+			$this->error='ErrorPermissionDenied';
+			dol_syslog(get_class($this)."::valid ".$this->error, LOG_ERR);
+			return -1;
+		}*/
+
+		$now = dol_now();
+
+		$this->db->begin();
+
+		// Define new ref
+		if (!$error && (preg_match('/^[\(]?PROV/i', $this->ref) || empty($this->ref))) // empty should not happened, but when it occurs, the test save life
+		{
+			//$num = $this->getNextNumRef();
+		} else {
+			$num = $this->ref;
+		}
+		$this->newref = $num;
+
+		// Validate
+		$sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element;
+		$sql .= " SET ref = '" . $this->db->escape($num) . "',";
+		$sql .= " status = " . self::STATUS_VALIDATED . ",";
+		$sql .= " date_payment = '" . $this->db->idate($now) . "',";
+		$sql .= " fk_user_modif = " . $user->id;
+		$sql .= " WHERE rowid = " . $this->id;
+
+		dol_syslog(get_class($this) . "::validate()", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+
+		if (!$resql) {
+			dol_print_error($this->db);
+			$this->error = $this->db->lasterror();
+			$error++;
+		}
+
+		// Trigger calls
+		if (!$error && !$notrigger) {
+			// Call trigger
+			//$result = $this->call_trigger('IMMORECEIPT_VALIDATE', $user);
+			if ($result < 0) {
+				$error++;
+			}
+			// End call triggers
+		}
+
+		if (!$error) {
+			$this->oldref = $this->ref;
+
+			// Rename directory if dir was a temporary ref
+			if (preg_match('/^[\(]?PROV/i', $this->ref)) {
+				// Now we rename also files into index
+				$sql = 'UPDATE ' . MAIN_DB_PREFIX . "ecm_files set filename = CONCAT('" . $this->db->escape($this->newref) . "', SUBSTR(filename, " . (strlen($this->ref) + 1) . ")), filepath = 'immopayment/" . $this->db->escape($this->newref) . "'";
+				$sql .= " WHERE filename LIKE '" . $this->db->escape($this->ref) . "%' AND filepath = 'immopayment/" . $this->db->escape($this->ref) . "' and entity = " . $conf->entity;
+				$resql = $this->db->query($sql);
+				if (!$resql) {
+					$error++;
+					$this->error = $this->db->lasterror();
+				}
+				// We rename directory ($this->ref = old ref, $num = new ref) in order not to lose the attachments
+				$oldref = dol_sanitizeFileName($this->ref);
+				$newref = dol_sanitizeFileName($num);
+				$dirsource = $conf->ultimateimmo->dir_output . '/immopayment/' . $oldref;
+				$dirdest = $conf->ultimateimmo->dir_output . '/immopayment/' . $newref;
+
+				if (!$error && file_exists($dirsource)) {
+					dol_syslog(get_class($this) . "::validate() rename dir " . $dirsource . " into " . $dirdest);
+
+					if (@rename($dirsource, $dirdest)) {
+						dol_syslog("Rename ok");
+						// Rename docs starting with $oldref with $newref
+						$listoffiles = dol_dir_list($conf->ultimateimmo->dir_output . '/immopayment/' . $newref, 'files', 1, '^' . preg_quote($oldref, '/'));
+						foreach ($listoffiles as $fileentry) {
+							$dirsource = $fileentry['name'];
+							$dirdest = preg_replace('/^' . preg_quote($oldref, '/') . '/', $newref, $dirsource);
+							$dirsource = $fileentry['path'] . '/' . $dirsource;
+							$dirdest = $fileentry['path'] . '/' . $dirdest;
+							@rename($dirsource, $dirdest);
+						}
+					}
+				}
+			}
+		}
+
+		// Set new ref and current status
+		if (!$error) {
+			$this->ref = $num;
+			$this->status = self::STATUS_VALIDATED;
+		}
+
+		if (!$error) {
+			$this->db->commit();
+			return 1;
+		} else {
+			$this->db->rollback();
+			return -1;
+		}
+	}
+
+	/**
 	 *	Charge les informations d'ordre info dans l'objet commande
 	 *
 	 *	@param  int		$id       Id of order
