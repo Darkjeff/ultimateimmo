@@ -608,20 +608,14 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					$tmparray = $object->setPaymentMethods($object->fk_mode_reglement, 'int');
 					$object->mode_code = $tmparray['code'];
 					$object->mode_payment = $tmparray['libelle'];
+					// Payment mode
+					print $form->form_modes_reglement($_SERVER['PHP_SELF'], $object->fk_mode_reglement, 'none');
+				}			
+			} elseif ($val['label'] == 'Amount') {
+				if ($object->amount) {
+					$amount = price($object->amount, 0, $outputlangs, 1, -1, -1, $conf->currency);
+					print $amount;
 				}
-				// Payment mode
-				print $form->form_modes_reglement($_SERVER['PHP_SELF'], $object->fk_mode_reglement, 'none');
-			/*} elseif ($val['label'] == 'BankAccount') {
-				if ($object->fk_account) {
-					$bankaccount = new Account($db);
-					$result = $bankaccount->fetch($object->fk_bank);
-					//$bankaccount->id = $object->bid;
-					//$bankaccount->ref = $object->bref;
-					//$bankaccount->number = $object->bnumber;
-					//var_dump($object->fk_account);exit;
-					// Payment bank
-					print $bankaccount->getNomUrl(1, 0, 'showall');
-				}*/
 			} elseif ($val['label'] == 'Renter') {
 				if ($object->fk_renter) {
 					$staticrenter = new ImmoRenter($db);
@@ -694,7 +688,7 @@ if (isset($totalarray['pos'])) {
 	$i = 0;
 	while ($i < $totalarray['nbfield']) {
 		$i++;
-		if (!empty($totalarray['pos'][$i]))  print '<td class="left">' . price($totalarray['val'][$totalarray['pos'][$i]]) . '</td>';
+		if (!empty($totalarray['pos'][$i]))  print '<td class="right">' . price($totalarray['val'][$totalarray['pos'][$i]], 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td>';
 		else {
 			if ($i == 1) {
 				if ($num < $limit) print '<td class="left">' . $langs->trans("Total") . '</td>';
