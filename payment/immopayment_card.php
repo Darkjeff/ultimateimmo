@@ -992,10 +992,9 @@ if ($action == 'createall') {
 		$param .= '&search_renter='.$search_renter;
 	}
 
-	if ($createpdf=='createpdf') {
+	if ($createpdf == 'createpdf') {
 
-		if (empty($diroutputmassaction))
-		{
+		if (empty($diroutputmassaction)) {
 			dol_print_error(null, 'include of actions_massactions.inc.php is done but var $diroutputmassaction was not defined');
 			exit;
 		}
@@ -1034,13 +1033,11 @@ if ($action == 'createall') {
 
 		$object->sqlquerymassgen = $sql;
 
-		$result = $object->generateDocument('etatpaiement:etatpaiement_'.dol_sanitizeFileName(dol_print_date(dol_now())), $outputlangs);
-		if ($result <= 0)
-		{
+		$result = $object->generateDocument('etatpaiement:etatpaiement_' . dol_sanitizeFileName(dol_print_date(dol_now())), $outputlangs);
+		if ($result <= 0) {
 			setEventMessages($object->error, $object->errors, 'errors');
 		}
 		$action = 'createall';
-
 	}
 
 	print '<form name="fiche_payment" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
@@ -1066,10 +1063,10 @@ if ($action == 'createall') {
 
 	print '<tr class="oddeven" valign="top">';
 	$payment = new ImmoPayment($db);
-	$result = $payment->fetch($id,$ref);
+	$result = $payment->fetch($id, $ref);
 
 	// Due date	
-	print '<td class="center">';
+	print '<td class="left">';
 	print $form->selectDate(!empty($date_payment) ? $date_payment : '-1', 'payment', 0, 0, 0, 'addall', 1);
 	print '</td>';
 
@@ -1077,7 +1074,7 @@ if ($action == 'createall') {
 	print '<td><input name="note_public" size="30" value="' . GETPOST('note_public') . '"</td>';
 
 	// Payment mode
-	print '<td class="center">';
+	print '<td class="left">';
 	print $form->select_types_paiements(GETPOST('fk_mode_reglement', 'int') ? GETPOST('fk_mode_reglement', 'int') : $payment->fk_mode_reglement, "fk_mode_reglement");
 	print '</td>';
 
@@ -1120,9 +1117,9 @@ if ($action == 'createall') {
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
 		print '<td>' . $langs->trans('Owner') . '</td>';
-		print '<td class="left">' . $langs->trans('TotalAmount') . '</td>';
-		print '<td class="left">' . $langs->trans('PartialPayment') . '</td>';
-		print '<td class="left">' . $langs->trans('Balance') . '</td>';
+		print '<td class="right">' . $langs->trans('TotalAmount') . '</td>';
+		print '<td class="right">' . $langs->trans('PartialPayment') . '</td>';
+		print '<td class="right">' . $langs->trans('Balance') . '</td>';
 		print '<td class="right">' . $langs->trans('income') . '</td>';
 		print '<td>';
 		print $form->showCheckAddButtons('checkforselect', 1);
@@ -1139,9 +1136,9 @@ if ($action == 'createall') {
 				print '<td>' . $objp->nom . '</td>';
 				print '<td>' . $objp->proprio . '</td>';
 
-				print '<td class="left">' . price($objp->total) . '</td>';
-				print '<td class="left">' . price($objp->partial_payment) . '</td>';
-				print '<td class="left">' . price($objp->balance) . '</td>';
+				print '<td class="right">' .  price($objp->total, 0, '', 1, -1, -1, $conf->currency) . '</td>';
+				print '<td class="right">' . price($objp->partial_payment, 0, '', 1, -1, -1, $conf->currency) . '</td>';
+				print '<td class="right">' .price($objp->balance, 0, '', 1, -1, -1, $conf->currency)  . '</td>';
 
 				print '<input type="hidden" name="fk_rent_' . $objp->reference . '" size="10" value="' . $objp->refcontract . '">';
 				print '<input type="hidden" name="fk_property_' . $objp->reference . '" size="10" value="' . $objp->reflocal . '">';
@@ -1173,10 +1170,10 @@ if ($action == 'createall') {
 		// Show total line
 		print '<tr class="liste_total">';
 		print '<td class="left">' . $langs->trans("Total") . '</td>';
-		print '<td colspan="2"></td>';
-		print '<td class="left">' . price($total_montant_tot, 0, '', 1, -1, -1, $conf->currency) . '</td>';
-		print '<td class="left">'.price($total_payed, 0, '', 1, -1, -1, $conf->currency).'</td>';
-		print '<td class="left">'.price($total_due, 0, '', 1, -1, -1, $conf->currency).'</td>';
+		print '<td colspan="3"></td>';
+		print '<td class="right">' . price($total_montant_tot, 0, '', 1, -1, -1, $conf->currency) . '</td>';
+		print '<td class="right">'.price($total_payed, 0, '', 1, -1, -1, $conf->currency).'</td>';
+		print '<td class="right">'.price($total_due, 0, '', 1, -1, -1, $conf->currency).'</td>';
 		print '<td class="left"></td>';
 		print '<td class="left"></td>';
 		print '</tr>';
@@ -1192,6 +1189,11 @@ if ($action == 'createall') {
 	print '</div>';
 	print '</form>';
 
+	$hidegeneratedfilelistifempty = 1;
+	if ($massaction == 'builddoc' || $action == 'remove_file' || $show_files) {
+		$hidegeneratedfilelistifempty = 0;
+	}
+
 	// Show list of available documents
 	$urlsource = $_SERVER['PHP_SELF'].'&action=createall';
 
@@ -1200,9 +1202,7 @@ if ($action == 'createall') {
 	$delallowed = $user->rights->ultimateimmo->delete;
 	$title = '';
 
-
-
-	print $formfile->showdocuments('ultimateimmo', 'rentmassgen', $filedir, $urlsource, 0, $delallowed, '', 1, 1, 0, 48, 1, $param, $title, '', '', '', null, $hidegeneratedfilelistifempty);
+	print $formfile->showdocuments('ultimateimmo', 'rentmassgen', $filedir, $urlsource, 0, $delallowed, '', 1, 1, 0, 48, 1, $param, $title, '', '', '', null, $hidegeneratedfilelistifempty, 'remove_file');
 }
 
 /* *************************************************************************** */
