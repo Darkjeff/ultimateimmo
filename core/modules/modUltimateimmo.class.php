@@ -163,6 +163,13 @@ class modUltimateimmo extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$r++;
 
+		$this->const[$r][0] = "ULTIMATEIMMO_ADDON_PAYMENT";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = "mod_ultimateimmo_payment";
+		$this->const[$r][3] = 'Name for numbering manager for ultimateimmo';
+		$this->const[$r][4] = 0;
+		$r++;
+
 		$this->const[$r][0] = "ULTIMATEIMMO_ADDON_PDF_ODT_PATH";
 		$this->const[$r][1] = "chaine";
 		$this->const[$r][2] = "DOL_DATA_ROOT/doctemplates/ultimateimmo";

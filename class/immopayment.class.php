@@ -965,6 +965,65 @@ class ImmoPayment extends CommonObject
 	}
 
 	/**
+	 *  Returns the reference to the following non used object depending on the active numbering module.
+	 *
+	 *  @return string      		Object free reference
+	 */
+	public function getNextNumRef()
+	{
+		global $langs, $conf;
+		$langs->load("ultimateimmo@ultimateimmo");
+
+		if (empty($conf->global->ULTIMATEIMMO_ADDON_PAYMENT))
+		{
+			$conf->global->ULTIMATEIMMO_ADDON_PAYMENT = 'mod_ultimateimmo_payment';
+		}
+
+		if (!empty($conf->global->ULTIMATEIMMO_ADDON_PAYMENT))
+		{
+			$mybool = false;
+
+			$file = $conf->global->ULTIMATEIMMO_ADDON_PAYMENT.".php";
+			$classname = $conf->global->ULTIMATEIMMO_ADDON_PAYMENT;
+
+			// Include file with class
+			$dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);
+			foreach ($dirmodels as $reldir)
+			{
+				$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/");
+
+				// Load file with numbering class (if found)
+				$mybool |= @include_once $dir.$file;
+			}
+
+			if ($mybool === false)
+			{
+				dol_print_error('', "Failed to include file ".$file);
+				return '';
+			}
+
+			$obj = new $classname();
+			$numref = $obj->getNextValue($this);
+
+			if ($numref != "")
+			{
+				return $numref;
+			}
+			else
+			{
+				$this->error = $obj->error;
+				//dol_print_error($this->db,get_class($this)."::getNextNumRef ".$obj->error);
+				return "";
+			}
+		}
+		else
+		{
+			print $langs->trans("Error")." ".$langs->trans("Error_ULTIMATEIMMO_ADDON_PAYMENT_NotDefined");
+			return "";
+		}
+	}
+
+	/**
 	 *	Validate object
 	 *
 	 *	@param		User	$user     		User making status change
@@ -999,7 +1058,7 @@ class ImmoPayment extends CommonObject
 		// Define new ref
 		if (!$error && (preg_match('/^[\(]?PROV/i', $this->ref) || empty($this->ref))) // empty should not happened, but when it occurs, the test save life
 		{
-			//$num = $this->getNextNumRef();
+			$num = $this->getNextNumRef();
 		} else {
 			$num = $this->ref;
 		}
@@ -1395,8 +1454,6 @@ class ImmoPayment extends CommonObject
 		$langs->load("ultimateimmo@ultimateimmo");
 
 		if (empty($modele)) {
-			$this->error='PDFModelMissing';
-			$this->errors[]='PDFModelMissing';
 			return -1;
 		}
 

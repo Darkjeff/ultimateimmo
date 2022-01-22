@@ -190,7 +190,7 @@ abstract class ModeleNumRefUltimateimmo
  *  @param  int			$hidedesc       Hide description
  *  @param  int			$hideref        Hide ref
  *  @return int         				0 if KO, 1 if OK
- 
+ */
 function ultimateimmo_create($db, $object, $modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
 {
     // phpcs:enable
@@ -279,7 +279,7 @@ function ultimateimmo_create($db, $object, $modele, $outputlangs, $hidedetails=0
 		print $langs->trans("Error")." ".$langs->trans("ErrorFileDoesNotExists",$file);
 		return 0;
 	}
-}*/
+}
 
 /**
  * \brief Crée un document PDF
