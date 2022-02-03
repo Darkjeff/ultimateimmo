@@ -29,97 +29,100 @@ dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
+require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 
+/**
+ * PDF Class
+ */
 class pdf_quittance extends ModelePDFUltimateimmo
 {
 	 /**
-     * @var DoliDb Database handler
-     */
-    public $db;
+	 * @var DoliDb Database handler
+	 */
+	public $db;
 
 	/**
-     * @var string model name
-     */
-    public $name;
+	 * @var string model name
+	 */
+	public $name;
 
 	/**
-     * @var string model description (short text)
-     */
-    public $description;
-
-    /**
-     * @var int 	Save the name of generated file as the main doc when generating a doc with this template
-     */
-    public $update_main_doc_field;
+	 * @var string model description (short text)
+	 */
+	public $description;
 
 	/**
-     * @var string document type
-     */
-    public $type;
+	 * @var int 	Save the name of generated file as the main doc when generating a doc with this template
+	 */
+	public $update_main_doc_field;
 
 	/**
-     * @var array() Minimum version of PHP required by module.
+	 * @var string document type
+	 */
+	public $type;
+
+	/**
+	 * @var array() Minimum version of PHP required by module.
 	 * e.g.: PHP ≥ 5.6 = array(5, 6)
-     */
+	 */
 	public $phpmin = array(5, 6);
 
 	/**
-     * Dolibarr version of the loaded document
-     * @public string
-     */
+	 * Dolibarr version of the loaded document
+	 * @public string
+	 */
 	public $version = 'dolibarr';
 
 	/**
-     * @var int page_largeur
-     */
-    public $page_largeur;
+	 * @var int page_largeur
+	 */
+	public $page_largeur;
 
 	/**
-     * @var int page_hauteur
-     */
-    public $page_hauteur;
+	 * @var int page_hauteur
+	 */
+	public $page_hauteur;
 
 	/**
-     * @var array format
-     */
-    public $format;
+	 * @var array format
+	 */
+	public $format;
 
 	/**
-     * @var int marge_gauche
-     */
+	 * @var int marge_gauche
+	 */
 	public $marge_gauche;
 
 	/**
-     * @var int marge_droite
-     */
+	 * @var int marge_droite
+	 */
 	public $marge_droite;
 
 	/**
-     * @var int marge_haute
-     */
+	 * @var int marge_haute
+	 */
 	public $marge_haute;
 
 	/**
-     * @var int marge_basse
-     */
+	 * @var int marge_basse
+	 */
 	public $marge_basse;
 
 	/**
 	 * Issuer
 	 * @var Societe
 	 */
-    public $emetteur;	// Objet societe qui emet
+	public $emetteur;	// Objet societe qui emet
 
 	/**
 	 *	Constructor
 	 *
 	 *  @param		DoliDB		$db      Database handler
 	 */
-	function __construct($db)
+	public function __construct($db)
 	{
 		global $conf, $langs, $mysoc;
 
@@ -155,17 +158,20 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		// Get source company
 		$this->emetteur = $mysoc;
 		if (! $this->emetteur->country_code)
-			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
+			$this->emetteur->country_code = substr($langs->defaultlang, - 2);
 	}
 
+	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 	/**
-	 * \brief Fonction generant le document sur le disque
-	 * \param agf Objet document a generer (ou id si ancienne methode)
-	 * outputlangs Lang object for output language
-	 * file Name of file to generate
-	 * \return int 1=ok, 0=ko
+	 * @param $object object
+	 * @param $outputlangs outputlangs
+	 * @param $file file
+	 * @param $socid socid
+	 * @param $courrier courrier
+	 * @return int
+	 * @throws Exception
 	 */
-	function write_file($object, $outputlangs, $file = '', $socid = null, $courrier = null)
+	public function write_file($object, $outputlangs, $file = '', $socid = null, $courrier = null)
 	{
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
@@ -328,7 +334,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					}
 					$text .= 'le ' . dol_print_date($dtpaiement, 'day') . ' pour loyer et accessoires des locaux sis au : ' . $property->address . ' ' . $property->zip . ' ' . $property->town . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
 
-				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 1, 'L');
+					$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 1, 'L');
 				}
 				$posY = $pdf->getY();
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
@@ -418,7 +424,6 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					$num = $this->db->num_rows($resql);
 
 					if ($num > 0) {
-
 						// $pdf->addPage();
 						$posY = $pdf->getY();
 						$pdf->SetXY($posX, $posY);
@@ -601,8 +606,6 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1);
 					}
 				}*/
-
-
 			}
 
 
@@ -613,10 +616,8 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
 			return 1; // Pas d'erreur
-		}
-		else
-		{
-			$this->error=$outputlangs->transnoentities("ErrorCanNotCreateDir",$dir);
+		} else {
+			$this->error=$outputlangs->transnoentities("ErrorCanNotCreateDir", $dir);
 			return 0;
 		}
 	}
@@ -698,7 +699,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		$pdf->SetFont('', '', $default_font_size - 2);
 		$renter = new ImmoRenter($this->db);
 		$renter->fetch($object->fk_renter);
-//var_dump($renter);exit;
+		//var_dump($renter);exit;
 		if ($renter->ref) {
 			$posy += 4;
 			$pdf->SetXY($posx, $posy);
@@ -821,7 +822,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 	/**
 	 *   	Show footer of page. Need this->emetteur object
-     *
+	 *
 	 *   	@param	PDF			$pdf     			PDF
 	 * 		@param	Object		$object				Object to show
 	 *      @param	Translate	$outputlangs		Object lang for output
@@ -840,198 +841,190 @@ class pdf_quittance extends ModelePDFUltimateimmo
 	 *
 	 *  @param	object			$object    		common object
 	 *  @param	outputlangs		$outputlangs    langs
-     *  @param	int			   $hidedetails		Do not show line details
-     *  @param	int			   $hidedesc		Do not show desc
-     *  @param	int			   $hideref			Do not show ref
-     *  @return	null
-     */
-    public function defineColumnField($object, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
-    {
-	    global $conf, $hookmanager;
+	 *  @param	int			   $hidedetails		Do not show line details
+	 *  @param	int			   $hidedesc		Do not show desc
+	 *  @param	int			   $hideref			Do not show ref
+	 *  @return	null
+	 */
+	public function defineColumnField($object, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
+	{
+		global $conf, $hookmanager;
 
-	    // Default field style for content
-	    $this->defaultContentsFieldsStyle = array(
-	        'align' => 'R', // R,C,L
-	        'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-	    );
+		// Default field style for content
+		$this->defaultContentsFieldsStyle = array(
+			'align' => 'R', // R,C,L
+			'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+		);
 
-	    // Default field style for content
-	    $this->defaultTitlesFieldsStyle = array(
-	        'align' => 'C', // R,C,L
-	        'padding' => array(0.5,0,0.5,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-	    );
+		// Default field style for content
+		$this->defaultTitlesFieldsStyle = array(
+			'align' => 'C', // R,C,L
+			'padding' => array(0.5,0,0.5,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+		);
 
-	    /*
-	     * For exemple
-	    $this->cols['theColKey'] = array(
-	        'rank' => $rank, // int : use for ordering columns
-	        'width' => 20, // the column width in mm
-	        'title' => array(
-	            'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
-	            'label' => ' ', // the final label : used fore final generated text
-	            'align' => 'L', // text alignement :  R,C,L
-	            'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-	        ),
-	        'content' => array(
-	            'align' => 'L', // text alignement :  R,C,L
-	            'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-	        ),
-	    );
-	    */
+		/*
+		 * For exemple
+		$this->cols['theColKey'] = array(
+			'rank' => $rank, // int : use for ordering columns
+			'width' => 20, // the column width in mm
+			'title' => array(
+				'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				'label' => ' ', // the final label : used fore final generated text
+				'align' => 'L', // text alignement :  R,C,L
+				'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L', // text alignement :  R,C,L
+				'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+		);
+		*/
 
-	    $rank=0; // do not use negative rank
-	    $this->cols['desc'] = array(
-	        'rank' => $rank,
-	        'width' => false, // only for desc
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'Designation', // use lang key is usefull in somme case with module
-	            'align' => 'L',
-	            // 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
-	            // 'label' => ' ', // the final label
-	            'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-	        ),
-	        'content' => array(
-	            'align' => 'L',
-	        ),
-	    );
+		$rank=0; // do not use negative rank
+		$this->cols['desc'] = array(
+			'rank' => $rank,
+			'width' => false, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Designation', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
 
-	    // PHOTO
-        $rank = $rank + 10;
-        $this->cols['photo'] = array(
-            'rank' => $rank,
-            'width' => (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH)?20:$conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH), // in mm
-            'status' => false,
-            'title' => array(
-                'textkey' => 'Photo',
-                'label' => ' '
-            ),
-            'content' => array(
-                'padding' => array(0,0,0,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-            ),
-            'border-left' => false, // remove left line separator
-        );
+		// PHOTO
+		$rank = $rank + 10;
+		$this->cols['photo'] = array(
+			'rank' => $rank,
+			'width' => (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH)?20:$conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH), // in mm
+			'status' => false,
+			'title' => array(
+				'textkey' => 'Photo',
+				'label' => ' '
+			),
+			'content' => array(
+				'padding' => array(0,0,0,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'border-left' => false, // remove left line separator
+		);
 
-	    if (! empty($conf->global->MAIN_GENERATE_INVOICES_WITH_PICTURE) && !empty($this->atleastonephoto))
-	    {
-	        $this->cols['photo']['status'] = true;
-	    }
-
-
-	    $rank = $rank + 10;
-	    $this->cols['vat'] = array(
-	        'rank' => $rank,
-	        'status' => false,
-	        'width' => 16, // in mm
-	        'title' => array(
-	            'textkey' => 'VAT'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    if (empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT) && empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT_COLUMN))
-	    {
-	        $this->cols['vat']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['subprice'] = array(
-	        'rank' => $rank,
-	        'width' => 19, // in mm
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'PriceUHT'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    $rank = $rank + 10;
-	    $this->cols['qty'] = array(
-	        'rank' => $rank,
-	        'width' => 16, // in mm
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'Qty'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    $rank = $rank + 10;
-	    $this->cols['progress'] = array(
-	        'rank' => $rank,
-	        'width' => 19, // in mm
-	        'status' => false,
-	        'title' => array(
-	            'textkey' => 'Progress'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    if($this->situationinvoice)
-	    {
-	        $this->cols['progress']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['unit'] = array(
-	        'rank' => $rank,
-	        'width' => 11, // in mm
-	        'status' => false,
-	        'title' => array(
-	            'textkey' => 'Unit'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-	    if($conf->global->PRODUCT_USE_UNITS){
-	        $this->cols['unit']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['discount'] = array(
-	        'rank' => $rank,
-	        'width' => 13, // in mm
-	        'status' => false,
-	        'title' => array(
-	            'textkey' => 'ReductionShort'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-	    if ($this->atleastonediscount){
-	        $this->cols['discount']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['totalexcltax'] = array(
-	        'rank' => $rank,
-	        'width' => 26, // in mm
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'TotalHT'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
+		if (! empty($conf->global->MAIN_GENERATE_INVOICES_WITH_PICTURE) && !empty($this->atleastonephoto)) {
+			$this->cols['photo']['status'] = true;
+		}
 
 
-	    $parameters=array(
-	        'object' => $object,
-	        'outputlangs' => $outputlangs,
-	        'hidedetails' => $hidedetails,
-	        'hidedesc' => $hidedesc,
-	        'hideref' => $hideref
-	    );
+		$rank = $rank + 10;
+		$this->cols['vat'] = array(
+			'rank' => $rank,
+			'status' => false,
+			'width' => 16, // in mm
+			'title' => array(
+				'textkey' => 'VAT'
+			),
+			'border-left' => true, // add left line separator
+		);
 
-	    $reshook=$hookmanager->executeHooks('defineColumnField', $parameters, $this);    // Note that $object may have been modified by hook
-	    if ($reshook < 0)
-	    {
-	        setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
-	    }
-	    elseif (empty($reshook))
-	    {
-	        $this->cols = array_replace($this->cols, $hookmanager->resArray); // array_replace is used to preserve keys
-	    }
-	    else
-	    {
-	        $this->cols = $hookmanager->resArray;
-	    }
+		if (empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT) && empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT_COLUMN)) {
+			$this->cols['vat']['status'] = true;
+		}
+
+		$rank = $rank + 10;
+		$this->cols['subprice'] = array(
+			'rank' => $rank,
+			'width' => 19, // in mm
+			'status' => true,
+			'title' => array(
+				'textkey' => 'PriceUHT'
+			),
+			'border-left' => true, // add left line separator
+		);
+
+		$rank = $rank + 10;
+		$this->cols['qty'] = array(
+			'rank' => $rank,
+			'width' => 16, // in mm
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Qty'
+			),
+			'border-left' => true, // add left line separator
+		);
+
+		$rank = $rank + 10;
+		$this->cols['progress'] = array(
+			'rank' => $rank,
+			'width' => 19, // in mm
+			'status' => false,
+			'title' => array(
+				'textkey' => 'Progress'
+			),
+			'border-left' => true, // add left line separator
+		);
+
+		if ($this->situationinvoice) {
+			$this->cols['progress']['status'] = true;
+		}
+
+		$rank = $rank + 10;
+		$this->cols['unit'] = array(
+			'rank' => $rank,
+			'width' => 11, // in mm
+			'status' => false,
+			'title' => array(
+				'textkey' => 'Unit'
+			),
+			'border-left' => true, // add left line separator
+		);
+		if ($conf->global->PRODUCT_USE_UNITS) {
+			$this->cols['unit']['status'] = true;
+		}
+
+		$rank = $rank + 10;
+		$this->cols['discount'] = array(
+			'rank' => $rank,
+			'width' => 13, // in mm
+			'status' => false,
+			'title' => array(
+				'textkey' => 'ReductionShort'
+			),
+			'border-left' => true, // add left line separator
+		);
+		if ($this->atleastonediscount) {
+			$this->cols['discount']['status'] = true;
+		}
+
+		$rank = $rank + 10;
+		$this->cols['totalexcltax'] = array(
+			'rank' => $rank,
+			'width' => 26, // in mm
+			'status' => true,
+			'title' => array(
+				'textkey' => 'TotalHT'
+			),
+			'border-left' => true, // add left line separator
+		);
+
+
+		$parameters=array(
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'hidedetails' => $hidedetails,
+			'hidedesc' => $hidedesc,
+			'hideref' => $hideref
+		);
+
+		$reshook=$hookmanager->executeHooks('defineColumnField', $parameters, $this);    // Note that $object may have been modified by hook
+		if ($reshook < 0) {
+			setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		} elseif (empty($reshook)) {
+			$this->cols = array_replace($this->cols, $hookmanager->resArray); // array_replace is used to preserve keys
+		} else {
+			$this->cols = $hookmanager->resArray;
+		}
 	}
 }
