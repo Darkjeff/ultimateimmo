@@ -42,6 +42,7 @@ if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.i
 if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
 if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
 if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
+if (!$res && file_exists("../../../../main.inc.php")) $res = @include("../../../../main.inc.php");
 if (!$res) die("Include of main fails");
 
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
@@ -179,7 +180,7 @@ if ($action == 'add_payment') {
 			$payment->fk_renter	   = $receipt->fk_renter;
 			$payment->fk_payment   = $receipt->fk_payment;
 			$payment->date_payment = $date_payment;
-			$payment->amounts      = $amounts;   // Tableau de montant			
+			$payment->amounts      = $amounts;   // Tableau de montant
 			$payment->fk_mode_reglement  = GETPOST('fk_mode_reglement', 'int');
 			$payment->fk_bank  = GETPOST('fk_bank', 'int');
 			$payment->num_payment  = GETPOST('num_payment', 'int');
@@ -270,10 +271,10 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		if ($rent->ref) {
 			$rent->ref = $rent->getNomUrl(0) . ' - ' . $staticproperty->label;
 		}
-		
+
 		print '<tr><td>' . $langs->trans("ImmoRent") . "</td><td colspan=\"2\">" . $rent->ref . "</td></tr>\n";
 		print '<tr><td>' . $langs->trans("Property") . "</td><td colspan=\"2\">" . $staticproperty->address.' '.$staticproperty->zip .' '.$staticproperty->town . "</td></tr>\n";
-		
+
 		$staticrenter = new ImmoRenter($db);
 		$staticrenter->fetch($receipt->fk_renter);
 		if ($staticrenter->ref) {
@@ -327,18 +328,18 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		print '<td><input name="num_paiement" type="text" value="' . $paymentnum . '"></td></tr>';
 
 		// Check transmitter
-		print '<tr><td class="' . (GETPOST('fk_mode_reglement') == 'CHQ' ? 'fieldrequired ' : '') . 'fieldrequireddyn">' . $langs->trans('CheckTransmitter');
+		print '<tr><td class="' . (GETPOST('fk_mode_reglement') == 'CHQ' ? 'fieldrequired ' : '') . 'fieldrequireddyn">' . $langs->transnoentities('CheckTransmitter');
 		print '</td>';
 		print '<td><input id="fieldchqemetteur" name="chqemetteur" size="30" type="text" value="' . GETPOST('chqemetteur', 'alphanohtml') . '"></td></tr>';
 
 		// Bank name
 		print '<tr><td>';
-		print '(' . $langs->trans("ChequeBank") . ')';
+		print '(' . $langs->transnoentities("ChequeBank") . ')';
 		print '</td>';
 		print '<td><input name="chqbank" size="30" type="text" value="' . GETPOST('chqbank', 'alphanohtml') . '"></td></tr>';
 
 		// Comments
-		print '<tr><td>' . $langs->trans('Comments') . '</td>';
+		print '<tr><td>' . $langs->transnoentities('Comments') . '</td>';
 		print '<td class="tdtop">';
 		print '<textarea name="note_public" wrap="soft" class="quatrevingtpercent" rows="' . ROWS_3 . '">' . GETPOST('note_public', 'none') . '</textarea></td></tr>';
 
