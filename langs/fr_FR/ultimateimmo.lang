@@ -231,6 +231,9 @@ OtherRents = Autres locations
 NumberReceiptByMonth = Nombre de quittances par mois
 CustomerReceiptPayment = Règlement de quittance
 CreatePDF = Créer un PDF
+MenuImmoCompteur=Compteur
+MenuNewImmoCompteur= Nouveau compteur
+MenuImmoCompteurList= Liste compteur
 
 
 
