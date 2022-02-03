@@ -318,18 +318,18 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				if ($object->getSommePaiement()) {
 					$amountalreadypaid = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
 				}
+				if ($amountalreadypaid  > 0) {
+					$text = 'Reçu de ' . $renter->civilite . '' . $renter->firstname . ' ' . $renter->lastname . ' la somme de ' . $amountalreadypaid . "\n";;
 
-				$text = 'Reçu de ' . $renter->civilite . '' . $renter->firstname . ' ' . $renter->lastname . ' la somme de ' . $amountalreadypaid . "\n";;
+					$dtpaiement = $paiement->date_payment;
 
-				$dtpaiement = $paiement->date_payment;
-
-				if (empty($dtpaiement)) {
-					$dtpaiement = $object->echeance;
-				}
-				$text .= 'le ' . dol_print_date($dtpaiement, 'day') . ' pour loyer et accessoires des locaux sis au : ' . $property->address . ' ' . $property->zip . ' ' . $property->town . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
+					if (empty($dtpaiement)) {
+						$dtpaiement = $object->echeance;
+					}
+					$text .= 'le ' . dol_print_date($dtpaiement, 'day') . ' pour loyer et accessoires des locaux sis au : ' . $property->address . ' ' . $property->zip . ' ' . $property->town . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
 
 				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 1, 'L');
-
+				}
 				$posY = $pdf->getY();
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetXY($posX, $posY);
@@ -407,7 +407,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				// Tableau Loyer et solde
 				$sql = "SELECT il.label, il.balance";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
-				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<'" . $this->db->idate($object->date_start) . "'";
+				$sql .= " WHERE il.balance<>0 AND paye=0 "; //AND date_start<'" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
 				$sql .= " ORDER BY echeance ASC";
 
