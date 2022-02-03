@@ -468,11 +468,10 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				// Bloc total somme due
 
 				// Tableau total somme due
-				$sql = "SELECT SUM(il.balance) as total";
+				$sql = "SELECT label, balance";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
 				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<='" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
-				$sql .= " GROUP BY fk_property,fk_renter";
 
 				// print $sql;
 				dol_syslog(get_class($this) . ':: total somme due', LOG_DEBUG);
@@ -481,9 +480,14 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					$num = $this->db->num_rows($resql);
 
 					if ($num > 0) {
+						$totaldue=0;
+						$textdetail='';
+						while ($objp = $this->db->fetch_object($resql)) {
+							$textdetail .= "<tr><td>" . $objp->label . "</td><td  align=\"right\">" . price($objp->balance, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
+							$totaldue+=$objp->balance;
+						}
 
-						$objp = $this->db->fetch_object($resql);
-
+						//total
 						$posX = $this->marge_gauche;
 						$posY = $pdf->getY();
 						$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
@@ -491,7 +495,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 						$pdf->SetXY($posX, $posY);
 
-						if ($objp->total > 0) {
+						if ($totaldue > 0) {
 							$title = 'Total somme due';
 						} else {
 							$title = 'Total somme à rembourser';
@@ -505,11 +509,9 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						);
 
 						$text = '<table>';
+						$text.=$textdetail;
 
-						$i = 0;
-						$total = 0;
-
-						$text .= "<tr><td align=\"right\">" . price($objp->total, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
+						$text .= "<tr><td><B>TOTAL</B></td><td align=\"right\"><b>" . price($totaldue, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</b></td></tr>";
 
 						$text .= "</table>";
 
