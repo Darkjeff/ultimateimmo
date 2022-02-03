@@ -365,11 +365,14 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					$num = $this->db->num_rows($resql);
 					$i = 0;
 					$total = 0;
-					$text .= '<tr>';
-					$text .= '<td align="left">' . $langs->trans("DatePayment") . '</td>';
-					//$text .= '<td align="left">' . $langs->trans("Commentaire") . '</td>';
-					$text .= '<td align="right">' . $langs->trans("Amount") . '</td>';
-					$text .= "</tr>";
+
+					if ($num > 0) {
+						$text .= '<tr>';
+						$text .= '<td align="left">' . $langs->trans("DatePayment") . '</td>';
+						//$text .= '<td align="left">' . $langs->trans("Commentaire") . '</td>';
+						$text .= '<td align="right">' . $langs->trans("Amount") . '</td>';
+						$text .= "</tr>";
+					}
 
 					while ($i < $num) {
 						$objp = $this->db->fetch_object($resql);
