@@ -511,7 +511,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$text = '<table>';
 						$text.=$textdetail;
 
-						$text .= "<tr><td><B>TOTAL</B></td><td align=\"right\"><b>" . price($totaldue, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</b></td></tr>";
+						$text .= "<tr><td><b>TOTAL</b></td><td align=\"right\"><b>" . price($totaldue, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</b></td></tr>";
 
 						$text .= "</table>";
 
