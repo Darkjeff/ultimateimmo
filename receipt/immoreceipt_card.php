@@ -396,7 +396,6 @@ if (empty($reshook)) {
 				$receipt->fk_rent = $monId;
 				$receipt->fk_property = $monLocal;
 				$receipt->fk_renter = $monLocataire;
-				$receipt->fk_owner = $user->id;
 
 				if ($maTVA == 'Oui') {
 					$receipt->total_amount = $monMontant * 1.2;
@@ -1376,13 +1375,13 @@ if ($action == 'createall') {
 		print '<a name="builddoc"></a>'; // ancre
 
 		// Documents generes
-		$relativepath = '/receipt/' . dol_sanitizeFileName($object->ref) . '/';
-		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
-		$urlsource = $_SERVER["PHP_SELF"] . "?recid=" . $object->id;
-		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
-		$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
-		$object->model_pdf='quittance';
-		print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
+		$objref = dol_sanitizeFileName($object->ref);
+		$relativepath = $objref.'/'.$objref.'.pdf';
+		$filedir = $conf->ultimateimmo->dir_output.'/'.'receipt'.'/'.$objref;
+		$urlsource = $_SERVER["PHP_SELF"]."?id=".$object->id;
+		$genallowed = $permissiontoread; // If you can read, you can build the PDF to read content
+		$delallowed = $permissiontodelete; // If you can create/edit, you can remove a file on card
+		print $formfile->showdocuments('ultimateimmo', 'receipt/'.$objref, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $langs->defaultlang);
 
 		// Show links to link elements
 		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));

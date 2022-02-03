@@ -145,6 +145,23 @@ if (empty($reshook)) {
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
 
+	// Remove a file from massaction area
+	if ($action == 'remove_file') {
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+
+		$langs->load("other");
+		$upload_dir = $conf->ultimateimmo->dir_output;
+		$file = $upload_dir.'/'.GETPOST('file');
+		$ret = dol_delete_file($file);
+		if ($ret) {
+			setEventMessages($langs->trans("FileWasRemoved", GETPOST('file')), null, 'mesgs');
+		} else {
+			setEventMessages($langs->trans("ErrorFailToDeleteFile", GETPOST('file')), null, 'errors');
+		}
+		$action = '';
+	}
+
+
 	// payments conditions
 	if ($action == 'setconditions' && $permissiontoadd) {
 		$object->fetch($id);
@@ -263,11 +280,13 @@ if (empty($reshook)) {
 	}
 
 	if ($action == 'addall' && empty($button_search_x) && empty($button_createpdf)) {
+		$error=0;
 		$date_payment = dol_mktime(12, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
 
 		if ($date_payment == '') {
 			setEventMessages($langs->trans('ErrorFieldRequired', $langs->transnoentities('Datepaie')), null, 'errors');
 			$action = 'createall';
+			$error++;
 		} else {
 			$datapost = $_POST;
 			foreach ($datapost as $key => $value) {
@@ -284,6 +303,7 @@ if (empty($reshook)) {
 							$payment->fk_rent			= GETPOST('fk_rent_' . $reference);
 							$payment->fk_property		= GETPOST('fk_property_' . $reference);
 							$payment->fk_renter			= GETPOST('fk_renter_' . $reference);
+							$payment->fk_owner			= GETPOST('fk_owner_' . $reference);
 							$payment->amount			= price2num($amount);
 							$payment->amounts			= array($payment->amount);
 							$payment->note_public		= GETPOST('note_public');
@@ -292,12 +312,12 @@ if (empty($reshook)) {
 							$payment->fk_account		= GETPOST("accountid");
 							$payment->fk_mode_reglement	= GETPOST("fk_mode_reglement");
 							$payment->num_payment		= GETPOST("num_payment");
-							$payment->fk_owner			= $user->id;
 
 							$result = $payment->create($user);
 
 							if ($result < 0) {
 								setEventMessages(null, $payment->errors, 'errors');
+								$error++;
 							} else {
 								$label = '(CustomerReceiptPayment)';
 								if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
@@ -313,7 +333,9 @@ if (empty($reshook)) {
 				}
 			}
 		}
-		header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1));
+		if (empty($error)) {
+			header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1));
+		}
 	}
 
 	if ($action == 'update') {
@@ -798,7 +820,10 @@ if ($action == 'createall') {
 	/*
 	 * List receipt
 	 */
-	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract, rent.preavis";
+	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, ";
+	$sql .= " prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, ";
+	$sql .= " rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_owner,";
+	$sql .= " rec.fk_rent as refcontract, rent.preavis";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
 	//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
@@ -977,6 +1002,7 @@ if ($action == 'createall') {
 				print '<input type="hidden" name="fk_property_' . $objp->reference . '" size="10" value="' . $objp->reflocal . '">';
 				print '<input type="hidden" name="fk_renter_' . $objp->reference . '" size="10" value="' . $objp->reflocataire . '">';
 				print '<input type="hidden" name="receipt_' . $objp->reference . '" size="10" value="' . $objp->reference . '">';
+				print '<input type="hidden" name="fk_owner_' . $objp->reference . '" size="10" value="' . $objp->fk_owner . '">';
 
 				// Colonne imput income
 				print '<td align="right">';
