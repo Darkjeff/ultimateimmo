@@ -65,6 +65,7 @@ $langs->loadLangs(array("ultimateimmo@ultimateimmo","other", "contracts", "bills
 $id			= GETPOST('id', 'int');
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
+$actionlist		= GETPOST('actionlist', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 $socid 		= GETPOST('socid', 'int');
@@ -787,6 +788,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 /* Mode add all payments                                                       */
 /*                                                                             */
 /* *************************************************************************** */
+if ($actionlist == 'createall') {
+	$action='createall';
+}
 if ($action == 'createall') {
 
 	$param = '';
@@ -1021,9 +1025,9 @@ if ($action == 'createall') {
 	print '</form>';
 
 	// Show list of available documents
-	$urlsource = $_SERVER['PHP_SELF'].'&action=createall';
+	$urlsource = $_SERVER['PHP_SELF'].'?actionlist=createall';
 
-	$filedir = $conf->ultimateimmo->dir_output . '/rentmassgen/';
+	$filedir = $conf->ultimateimmo->dir_output . '/rentmassgen';
 	$genallowed = $user->rights->ultimateimmo->write;
 	$delallowed = $user->rights->ultimateimmo->delete;
 	$title = '';
