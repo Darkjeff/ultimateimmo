@@ -110,6 +110,9 @@ MenuStatisticsCost = Cost: Statistics
 MenuStatisticsResult = Results: Statistics
 MenuListImmoCostType = Cost type
 MenuNewImmoCostType = New cost type 
+MenuImmoCompteur = water meter
+MenuNewImmoCompteur = New water meter
+MenuImmoCompteurList = Water meter list
 
 #
 # Miscellaneous

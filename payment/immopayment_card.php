@@ -75,6 +75,7 @@ $langs->loadLangs(array("ultimateimmo@ultimateimmo","other", "contracts", "bills
 $id			= GETPOST('id', 'int');
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
+$actionlist = GETPOST('actionlist', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 $socid 		= GETPOST('socid', 'int');
@@ -485,6 +486,13 @@ if ($action == 'create') {
 			';
 
 		print '	});'."\n";
+
+		//Add js for AutoFill
+		print ' $(document).ready(function () {';
+			print ' 	$(".AutoFillAmout").on(\'click touchstart\', function(){
+						$("input[name="+$(this).data(\'rowname\')+"]").val($(this).data("value")).trigger("change");
+					});';
+			print '	});'."\n";
 
 		print '	</script>'."\n";
 	}
@@ -963,6 +971,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 /*                                                                             */
 /* *************************************************************************** */
 
+if ($actionlist == 'createall') {
+	$action='createall';
+}
 if ($action == 'createall') {
 
 	$param = '';
@@ -1195,7 +1206,7 @@ if ($action == 'createall') {
 	}
 
 	// Show list of available documents
-	$urlsource = $_SERVER['PHP_SELF'].'&action=createall';
+	$urlsource = $_SERVER['PHP_SELF'].'&actionlist=createall';
 
 	$filedir = $conf->ultimateimmo->dir_output . '/rentmassgen/';
 	$genallowed = $user->rights->ultimateimmo->write;

@@ -110,6 +110,9 @@ MenuStatisticsCost = Coût : statistiques
 MenuStatisticsResult = Résultats : statistiques
 MenuListImmoCostType = Types de coût
 MenuNewImmoCostType = Nouveau type de coût
+MenuImmoCompteur = Compteur
+MenuNewImmoCompteur = Nouveau compteur
+MenuImmoCompteurList = Liste compteur
 
 #
 # Miscellaneous
