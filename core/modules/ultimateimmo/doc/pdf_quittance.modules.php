@@ -1,7 +1,7 @@
 <?php
 /**
  * Copyright (C) 2012-2013 Florian Henry  <florian.henry@open-concept.pro>
- * Copyright (C) 2018-2021 Philippe GRAND <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +29,14 @@ dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
+require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 
+/**
+ * PDF Class
+ */
 class pdf_quittance extends ModelePDFUltimateimmo
 {
 	 /**
@@ -119,7 +122,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 	 *
 	 *  @param		DoliDB		$db      Database handler
 	 */
-	function __construct($db)
+	public function __construct($db)
 	{
 		global $conf, $langs, $mysoc;
 
@@ -158,14 +161,17 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
 	}
 
+	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 	/**
-	 * \brief Fonction generant le document sur le disque
-	 * \param agf Objet document a generer (ou id si ancienne methode)
-	 * outputlangs Lang object for output language
-	 * file Name of file to generate
-	 * \return int 1=ok, 0=ko
+	 * @param $object object
+	 * @param $outputlangs outputlangs
+	 * @param $file file
+	 * @param $socid socid
+	 * @param $courrier courrier
+	 * @return int
+	 * @throws Exception
 	 */
-	function write_file($object, $outputlangs, $file = '', $socid = null, $courrier = null)
+	public function write_file($object, $outputlangs, $file = '', $socid = null, $courrier = null)
 	{
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
@@ -175,11 +181,11 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
 
-		if (! is_object($object)) {
+		/*if (! is_object($object)) {
 			$id = $object;
 			$object = new Immoreceipt($this->db);
 			$ret = $object->fetch($id);
-		}
+		}*/
 
 		// dol_syslog ( "pdf_quittance::debug loyer=" . var_export ( $object, true ) );
 
@@ -280,7 +286,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 
 				$text .= "\n";
-				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date($object->date_creation, 'daytext') . "\n";
+				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
 				$pdf->SetXY($posX, $posY - 12);
 				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
@@ -318,17 +324,18 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				if ($object->getSommePaiement()) {
 					$amountalreadypaid = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
 				}
+				if ($amountalreadypaid  > 0) {
+					$text = 'Reçu de ' . $renter->civilite . '' . $renter->firstname . ' ' . $renter->lastname . ' la somme de ' . $amountalreadypaid . "\n";
 
-				$text = 'Reçu de ' . $renter->civilite . '' . $renter->firstname . ' ' . $renter->lastname . ' la somme de ' . $amountalreadypaid . "\n";;
+					$dtpaiement = $paiement->date_payment;
 
-				$dtpaiement = $paiement->date_payment;
+					if (empty($dtpaiement)) {
+						$dtpaiement = $object->date_echeance;
+					}
+					$text .= 'le ' . dol_print_date($dtpaiement, 'day') . ' pour loyer et accessoires des locaux sis au : ' . $property->address . ' ' . $property->zip . ' ' . $property->town . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
 
-				if (empty($dtpaiement)) {
-					$dtpaiement = $object->date_echeance;
+					$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 1, 'L');
 				}
-				$text .= 'le ' . dol_print_date($dtpaiement, 'day') . ' pour loyer et accessoires des locaux sis au : ' . $property->address . ' ' . $property->zip . ' ' . $property->town . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
-
-				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 1, 'L');
 
 				$posY = $pdf->getY();
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
@@ -365,11 +372,14 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					$num = $this->db->num_rows($resql);
 					$i = 0;
 					$total = 0;
-					$text .= '<tr>';
-					$text .= '<td align="left">' . $langs->trans("DatePayment") . '</td>';
-					//$text .= '<td align="left">' . $langs->trans("Commentaire") . '</td>';
-					$text .= '<td align="right">' . $langs->trans("Amount") . '</td>';
-					$text .= "</tr>";
+
+					if ($num > 0) {
+						$text .= '<tr>';
+						$text .= '<td align="left">' . $langs->trans("DatePayment") . '</td>';
+						//$text .= '<td align="left">' . $langs->trans("Commentaire") . '</td>';
+						$text .= '<td align="right">' . $langs->trans("Amount") . '</td>';
+						$text .= "</tr>";
+					}
 
 					while ($i < $num) {
 						$objp = $this->db->fetch_object($resql);
@@ -404,7 +414,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				// Tableau Loyer et solde
 				$sql = "SELECT il.label, il.balance";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
-				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<'" . $this->db->idate($object->date_start) . "'";
+				$sql .= " WHERE il.balance<>0 AND paye=0 "; //AND date_start<'" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
 				$sql .= " ORDER BY date_echeance ASC";
 
@@ -428,12 +438,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 						$pdf->SetXY($posX, $posY);
-						$pdf->MultiCell($widthbox,
-							3,
-							$outputlangs->convToOutputCharset('Rappel Solde Anterieur'),
-							1,
-							'C'
-						);
+						$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Rappel Solde Anterieur'), 1, 'C');
 
 						$text = '<table>';
 
@@ -481,9 +486,14 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					$num = $this->db->num_rows($resql);
 
 					if ($num > 0) {
+						$totaldue=0;
+						$textdetail='';
+						while ($objp = $this->db->fetch_object($resql)) {
+							$textdetail .= "<tr><td>" . $objp->label . "</td><td  align=\"right\">" . price($objp->balance, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
+							$totaldue+=$objp->balance;
+						}
 
-						$objp = $this->db->fetch_object($resql);
-						
+						//total
 						$posX = $this->marge_gauche;
 						$posY = $pdf->getY();
 						$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
@@ -491,35 +501,28 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 						$pdf->SetXY($posX, $posY);
 
-						if ($objp->total > 0) {
+						if ($totaldue > 0) {
 							$title = 'Total somme due';
 						} else {
 							$title = 'Total somme à rembourser';
 						}
 
-						$pdf->MultiCell($widthbox,
-							3,
-							$outputlangs->convToOutputCharset($title),
-							1,
-							'C'
-						);
+						$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($title), 1, 'C');
 
 						$text = '<table>';
+						$text .= $textdetail;
 
-						$i = 0;
-						$total = 0;
-
-						$text .= "<td align=\"right\">" . price($objp->total, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td>";
-
-						$this->db->free($resql);
+						$text .= "<tr><td><b>TOTAL</b></td><td align=\"right\"><b>" . price($totaldue, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</b></td></tr>";
 
 						$text .= "</table>";
 
 						$posY = $pdf->getY();
 
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
-						//$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1);
+						$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1, 0);
 					}
+
+					$this->db->free($resql);
 				}
 
 				// Bloc total Charge
@@ -597,7 +600,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					}
 				}*/
 			}
-			$this->db->free($resql);
+
 
 			$pdf->Close();
 
@@ -606,10 +609,8 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
 			return 1; // Pas d'erreur
-		}
-		else
-		{
-			$this->error=$outputlangs->transnoentities("ErrorCanNotCreateDir",$dir);
+		} else {
+			$this->error = $outputlangs->transnoentities("ErrorCanNotCreateDir", $dir);
 			return 0;
 		}
 	}
@@ -833,28 +834,28 @@ class pdf_quittance extends ModelePDFUltimateimmo
 	 *
 	 *  @param	object			$object    		common object
 	 *  @param	outputlangs		$outputlangs    langs
-     *  @param	int			   $hidedetails		Do not show line details
-     *  @param	int			   $hidedesc		Do not show desc
-     *  @param	int			   $hideref			Do not show ref
-     *  @return	null
-     */
-    public function defineColumnField($object, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
-    {
-	    global $conf, $hookmanager;
+	 *  @param	int			   $hidedetails		Do not show line details
+	 *  @param	int			   $hidedesc		Do not show desc
+	 *  @param	int			   $hideref			Do not show ref
+	 *  @return	null
+	 */
+	public function defineColumnField($object, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
+	{
+		global $conf, $hookmanager;
 
-	    // Default field style for content
-	    $this->defaultContentsFieldsStyle = array(
-	        'align' => 'R', // R,C,L
-	        'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-	    );
+		// Default field style for content
+		$this->defaultContentsFieldsStyle = array(
+			'align' => 'R', // R,C,L
+			'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+		);
 
-	    // Default field style for content
-	    $this->defaultTitlesFieldsStyle = array(
-	        'align' => 'C', // R,C,L
-	        'padding' => array(0.5,0,0.5,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-	    );
+		// Default field style for content
+		$this->defaultTitlesFieldsStyle = array(
+			'align' => 'C', // R,C,L
+			'padding' => array(0.5, 0, 0.5, 0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+		);
 
-	    /*
+		/*
 	     * For exemple
 	    $this->cols['theColKey'] = array(
 	        'rank' => $rank, // int : use for ordering columns
@@ -872,159 +873,151 @@ class pdf_quittance extends ModelePDFUltimateimmo
 	    );
 	    */
 
-	    $rank=0; // do not use negative rank
-	    $this->cols['desc'] = array(
-	        'rank' => $rank,
-	        'width' => false, // only for desc
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'Designation', // use lang key is usefull in somme case with module
-	            'align' => 'L',
-	            // 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
-	            // 'label' => ' ', // the final label
-	            'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-	        ),
-	        'content' => array(
-	            'align' => 'L',
-	        ),
-	    );
+		$rank = 0; // do not use negative rank
+		$this->cols['desc'] = array(
+			'rank' => $rank,
+			'width' => false, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Designation', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
 
-	    // PHOTO
-        $rank = $rank + 10;
-        $this->cols['photo'] = array(
-            'rank' => $rank,
-            'width' => (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH)?20:$conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH), // in mm
-            'status' => false,
-            'title' => array(
-                'textkey' => 'Photo',
-                'label' => ' '
-            ),
-            'content' => array(
-                'padding' => array(0,0,0,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-            ),
-            'border-left' => false, // remove left line separator
-        );
+		// PHOTO
+		$rank = $rank + 10;
+		$this->cols['photo'] = array(
+			'rank' => $rank,
+			'width' => (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH) ? 20 : $conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH), // in mm
+			'status' => false,
+			'title' => array(
+				'textkey' => 'Photo',
+				'label' => ' '
+			),
+			'content' => array(
+				'padding' => array(0, 0, 0, 0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'border-left' => false, // remove left line separator
+		);
 
-	    if (! empty($conf->global->MAIN_GENERATE_INVOICES_WITH_PICTURE) && !empty($this->atleastonephoto))
-	    {
-	        $this->cols['photo']['status'] = true;
-	    }
-
-
-	    $rank = $rank + 10;
-	    $this->cols['vat'] = array(
-	        'rank' => $rank,
-	        'status' => false,
-	        'width' => 16, // in mm
-	        'title' => array(
-	            'textkey' => 'VAT'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    if (empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT) && empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT_COLUMN))
-	    {
-	        $this->cols['vat']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['subprice'] = array(
-	        'rank' => $rank,
-	        'width' => 19, // in mm
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'PriceUHT'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    $rank = $rank + 10;
-	    $this->cols['qty'] = array(
-	        'rank' => $rank,
-	        'width' => 16, // in mm
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'Qty'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    $rank = $rank + 10;
-	    $this->cols['progress'] = array(
-	        'rank' => $rank,
-	        'width' => 19, // in mm
-	        'status' => false,
-	        'title' => array(
-	            'textkey' => 'Progress'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-
-	    if($this->situationinvoice)
-	    {
-	        $this->cols['progress']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['unit'] = array(
-	        'rank' => $rank,
-	        'width' => 11, // in mm
-	        'status' => false,
-	        'title' => array(
-	            'textkey' => 'Unit'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-	    if($conf->global->PRODUCT_USE_UNITS){
-	        $this->cols['unit']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['discount'] = array(
-	        'rank' => $rank,
-	        'width' => 13, // in mm
-	        'status' => false,
-	        'title' => array(
-	            'textkey' => 'ReductionShort'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
-	    if ($this->atleastonediscount){
-	        $this->cols['discount']['status'] = true;
-	    }
-
-	    $rank = $rank + 10;
-	    $this->cols['totalexcltax'] = array(
-	        'rank' => $rank,
-	        'width' => 26, // in mm
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'TotalHT'
-	        ),
-	        'border-left' => true, // add left line separator
-	    );
+		if (!empty($conf->global->MAIN_GENERATE_INVOICES_WITH_PICTURE) && !empty($this->atleastonephoto)) {
+			$this->cols['photo']['status'] = true;
+		}
 
 
-	    $parameters=array(
-	        'object' => $object,
-	        'outputlangs' => $outputlangs,
-	        'hidedetails' => $hidedetails,
-	        'hidedesc' => $hidedesc,
-	        'hideref' => $hideref
-	    );
+		$rank = $rank + 10;
+		$this->cols['vat'] = array(
+			'rank' => $rank,
+			'status' => false,
+			'width' => 16, // in mm
+			'title' => array(
+				'textkey' => 'VAT'
+			),
+			'border-left' => true, // add left line separator
+		);
 
-	    $reshook=$hookmanager->executeHooks('defineColumnField', $parameters, $this);    // Note that $object may have been modified by hook
-	    if ($reshook < 0)
-	    {
-	        setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
-	    }
-	    elseif (empty($reshook))
-	    {
-	        $this->cols = array_replace($this->cols, $hookmanager->resArray); // array_replace is used to preserve keys
-	    }
-	    else
-	    {
-	        $this->cols = $hookmanager->resArray;
-	    }
+		if (empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT) && empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT_COLUMN)) {
+			$this->cols['vat']['status'] = true;
+		}
+
+		$rank = $rank + 10;
+		$this->cols['subprice'] = array(
+			'rank' => $rank,
+			'width' => 19, // in mm
+			'status' => true,
+			'title' => array(
+				'textkey' => 'PriceUHT'
+			),
+			'border-left' => true, // add left line separator
+		);
+
+		$rank = $rank + 10;
+		$this->cols['qty'] = array(
+			'rank' => $rank,
+			'width' => 16, // in mm
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Qty'
+			),
+			'border-left' => true, // add left line separator
+		);
+
+		$rank = $rank + 10;
+		$this->cols['progress'] = array(
+			'rank' => $rank,
+			'width' => 19, // in mm
+			'status' => false,
+			'title' => array(
+				'textkey' => 'Progress'
+			),
+			'border-left' => true, // add left line separator
+		);
+
+		if ($this->situationinvoice) {
+			$this->cols['progress']['status'] = true;
+		}
+
+		$rank = $rank + 10;
+		$this->cols['unit'] = array(
+			'rank' => $rank,
+			'width' => 11, // in mm
+			'status' => false,
+			'title' => array(
+				'textkey' => 'Unit'
+			),
+			'border-left' => true, // add left line separator
+		);
+		if ($conf->global->PRODUCT_USE_UNITS) {
+			$this->cols['unit']['status'] = true;
+		}
+
+		$rank = $rank + 10;
+		$this->cols['discount'] = array(
+			'rank' => $rank,
+			'width' => 13, // in mm
+			'status' => false,
+			'title' => array(
+				'textkey' => 'ReductionShort'
+			),
+			'border-left' => true, // add left line separator
+		);
+		if ($this->atleastonediscount) {
+			$this->cols['discount']['status'] = true;
+		}
+
+		$rank = $rank + 10;
+		$this->cols['totalexcltax'] = array(
+			'rank' => $rank,
+			'width' => 26, // in mm
+			'status' => true,
+			'title' => array(
+				'textkey' => 'TotalHT'
+			),
+			'border-left' => true, // add left line separator
+		);
+
+
+		$parameters = array(
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'hidedetails' => $hidedetails,
+			'hidedesc' => $hidedesc,
+			'hideref' => $hideref
+		);
+
+		$reshook = $hookmanager->executeHooks('defineColumnField', $parameters, $this);    // Note that $object may have been modified by hook
+		if ($reshook < 0) {
+			setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		} elseif (empty($reshook)) {
+			$this->cols = array_replace($this->cols, $hookmanager->resArray); // array_replace is used to preserve keys
+		} else {
+			$this->cols = $hookmanager->resArray;
+		}
 	}
 }

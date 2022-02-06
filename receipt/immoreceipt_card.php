@@ -26,18 +26,22 @@
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
 if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
-	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php";
 }
 // Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
-$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
 while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
-	$i--; $j--;
+	$i--;
+	$j--;
 }
-if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) {
-	$res = @include substr($tmp, 0, ($i + 1))."/main.inc.php";
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1)) . "/main.inc.php";
 }
-if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) {
-	$res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php";
 }
 // Try main.inc.php using relative path
 if (!$res && file_exists("../main.inc.php")) {
@@ -113,8 +117,8 @@ $search_array_options = $extrafields->getOptionalsFromPost($object->table_elemen
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
 foreach ($object->fields as $key => $val) {
-	if (GETPOST('search_'.$key, 'alpha')) {
-		$search[$key] = GETPOST('search_'.$key, 'alpha');
+	if (GETPOST('search_' . $key, 'alpha')) {
+		$search[$key] = GETPOST('search_' . $key, 'alpha');
 	}
 }
 
@@ -159,7 +163,7 @@ if (empty($reshook)) {
 		if ($receipt->paye) {
 			$result = $receipt->setUnpaid($user);
 			if ($result > 0) {
-				header('Location: '.$_SERVER["PHP_SELF"].'?id='.$id);
+				header('Location: ' . $_SERVER["PHP_SELF"] . '?id=' . $id);
 				exit();
 			} else {
 				setEventMessages($receipt->error, $receipt->errors, 'errors');
@@ -313,7 +317,7 @@ if (empty($reshook)) {
 		$error = 0;
 
 		$date_echeance = dol_mktime(12, 0, 0, GETPOST("date_echeancemonth"), GETPOST("date_echeanceday"), GETPOST("date_echeanceyear"));
-		$date_start = dol_mktime(0, 0, 0, GETPOST("date_startmonth"), GETPOST("date_startday"), GETPOST("date_startyear"));
+		$date_start = dol_mktime(12, 0, 0, GETPOST("date_startmonth"), GETPOST("date_startday"), GETPOST("date_startyear"));
 		$date_end = dol_mktime(12, 0, 0, GETPOST("date_endmonth"), GETPOST("date_endday"), GETPOST("date_endyear"));
 
 		$object->ref = '(PROV)';
@@ -427,7 +431,6 @@ if (empty($reshook)) {
 				$receipt->fk_rent = $monId;
 				$receipt->fk_property = $monLocal;
 				$receipt->fk_renter = $monLocataire;
-				$receipt->fk_owner = $user->id;
 
 				if ($maTVA == 'Oui') {
 					$receipt->total_amount = $monMontant * 1.2;
@@ -637,6 +640,9 @@ if ($action == 'create') {
 				$tmpcode = '<input name="ref" class="maxwidth100" maxlength="128" value="' . dol_escape_htmltag(GETPOST('ref') ? GETPOST('ref') : $tmpcode) . '">';
 			}
 			print $tmpcode;
+		} elseif ($val['label'] == 'DateCreation') {
+			// DateCreation
+			print $form->selectDate(($object->date_creation ? $object->date_creation : -1), "date_creation", 0, 0, 0, "", 1, 1, 1);
 		} elseif ($val['label'] == 'DateStart') {
 			// date_start
 			print $form->selectDate($object->date_start === '' ? -1 : $object->date_start, 'date_start', 0, 0, 0, '', 1, 1, 0, '', '', '', '', 1, '', '', 'tzuserrel');
@@ -722,7 +728,7 @@ if ($action == 'createall') {
 	/*
 	 * List of contracts
 	 */
-	$sql = "SELECT rent.rowid as contractid, rent.ref as contract, loc.lastname as rentername, own.lastname as ownername, prop.address, prop.label as local, rent.fk_property as localid, rent.totalamount as total, rent.rentamount , rent.chargesamount, rent.fk_renter as reflocataire, rent.fk_property as reflocal, rent.preavis as preavis, rent.vat, prop.fk_owner, own.rowid, own.fk_soc, prop.fk_owner";
+	$sql = "SELECT rent.rowid as contractid, rent.ref as contract, loc.lastname as rentername, own.lastname as ownername, prop.ref as localref, prop.address, prop.label as local, rent.totalamount as total, rent.rentamount , rent.chargesamount, rent.fk_renter as reflocataire, rent.fk_property as reflocal, rent.preavis as preavis, rent.vat, prop.fk_owner, own.rowid, own.fk_soc, prop.fk_owner";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop";
@@ -782,7 +788,7 @@ if ($action == 'createall') {
 				}
 
 				print '<td>' . $objp->contract . '</td>';
-				print '<td>' . $objp->localid . '</td>';
+				print '<td>' . $objp->localref . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->reflocataire . '</td>';
 				print '<td>' . $objp->rentername . '</td>';
@@ -798,7 +804,7 @@ if ($action == 'createall') {
 				// Colonne choix contrat
 				print '<td class="center">';
 
-				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localid . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner .  '_' . $objp->fk_soc . '"' . ($objp->localid ? ' checked="checked"' : "") . '/>';
+				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localref . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner .  '_' . $objp->fk_soc . '"' . ($objp->localref ? ' checked="checked"' : "") . '/>';
 				print '</td>';
 				print '</tr>'."\n";
 
@@ -1376,13 +1382,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<a name="builddoc"></a>'; // ancre
 
 		// Documents generes
-		$relativepath = '/receipt/' . dol_sanitizeFileName($object->ref);
-		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
-		$urlsource = $_SERVER["PHP_SELF"] . "?recid=" . $object->id;
+		$objref = dol_sanitizeFileName($object->ref);
+		$relativepath = $objref.'/'.$objref.'.pdf';
+		$filedir = $conf->ultimateimmo->dir_output.'/'.'receipt'.'/'.$objref;
+		$urlsource = $_SERVER["PHP_SELF"]."?id=".$object->id;
 		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
 		$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
-		$object->model_pdf = 'quittance';
-		print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang, 0, $object);
+		//$object->model_pdf = 'quittance';
+		print $formfile->showdocuments('ultimateimmo', 'receipt/'.$objref, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $langs->defaultlang, 0, $object);
 
 		// Show links to link elements
 		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));

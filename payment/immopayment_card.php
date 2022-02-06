@@ -26,18 +26,22 @@
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
 if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
-	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php";
 }
 // Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
-$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
 while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
-	$i--; $j--;
+	$i--;
+	$j--;
 }
-if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) {
-	$res = @include substr($tmp, 0, ($i + 1))."/main.inc.php";
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1)) . "/main.inc.php";
 }
-if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) {
-	$res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php";
 }
 // Try main.inc.php using relative path
 if (!$res && file_exists("../main.inc.php")) {
@@ -176,6 +180,23 @@ if (empty($reshook)) {
 
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
+
+	// Remove a file from massaction area
+	if ($action == 'remove_file') {
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+
+		$langs->load("other");
+		$upload_dir = $conf->ultimateimmo->dir_output;
+		$file = $upload_dir.'/'.GETPOST('file');
+		$ret = dol_delete_file($file);
+		if ($ret) {
+			setEventMessages($langs->trans("FileWasRemoved", GETPOST('file')), null, 'mesgs');
+		} else {
+			setEventMessages($langs->trans("ErrorFailToDeleteFile", GETPOST('file')), null, 'errors');
+		}
+		$action = '';
+	}
+
 
 	// payments conditions
 	if ($action == 'setconditions' && $usercancreate) {
@@ -1101,7 +1122,7 @@ if ($action == 'createall') {
 		print '<td>' . $langs->trans('NomLoyer') . '</td>';
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
-		print '<td>' . $langs->trans('Owner') . '</td>';
+		//print '<td>' . $langs->trans('Owner') . '</td>';
 		print '<td class="right">' . $langs->trans('TotalAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('PartialPayment') . '</td>';
 		print '<td class="right">' . $langs->trans('Balance') . '</td>';
@@ -1115,11 +1136,11 @@ if ($action == 'createall') {
 			while ($i < $num) {
 				$objp = $db->fetch_object($resql);
 				print '<tr class="oddeven">';
-	
+	//var_dump($objp);exit;
 				print '<td>' . $objp->receiptname . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->nom . '</td>';
-				print '<td>' . $objp->proprio . '</td>';
+				//print '<td>' . $objp->fk_owner_ . '</td>';
 
 				print '<td class="right">' .  price($objp->total, 0, '', 1, -1, -1, $conf->currency) . '</td>';
 				print '<td class="right">' . price($objp->partial_payment, 0, '', 1, -1, -1, $conf->currency) . '</td>';
@@ -1128,7 +1149,7 @@ if ($action == 'createall') {
 				print '<input type="hidden" name="fk_rent_' . $objp->reference . '" size="10" value="' . $objp->refcontract . '">';
 				print '<input type="hidden" name="fk_property_' . $objp->reference . '" size="10" value="' . $objp->reflocal . '">';
 				print '<input type="hidden" name="fk_renter_' . $objp->reference . '" size="10" value="' . $objp->reflocataire . '">';
-				print '<input type="hidden" name="fk_owner_' . $objp->reference . '" size="10" value="' . $objp->proprio . '">';
+				print '<input type="hidden" name="fk_owner_' . $objp->reference . '" size="10" value="' . $objp->fk_owner_ . '">';
 				print '<input type="hidden" name="receipt_' . $objp->reference . '" size="10" value="' . $objp->reference . '">';
 
 				// Colonne imput income

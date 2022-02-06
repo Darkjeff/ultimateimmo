@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	    <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -341,7 +341,7 @@ $reshook=$hookmanager->executeHooks('printFieldListGroupBy',$parameters);    // 
 $sql.=$hookmanager->resPrint;
 */
 
-//$sql .= $db->order($sortfield, $sortorder);
+$sql .= $db->order($sortfield, $sortorder);
 //$sql .= " ORDER BY t.date_payment DESC";
 
 // Count total nb of records
@@ -424,7 +424,7 @@ $arrayofmassactions =  array(
 	//'builddoc'=>$langs->trans("PDFMerge"),
 );
 if ($permissiontodelete) {
-	$arrayofmassactions['predelete'] = img_picto('', 'delete', 'class="pictofixedwidth"').$langs->trans("Delete");
+	$arrayofmassactions['predelete'] = img_picto('', 'delete', 'class="pictofixedwidth"') . $langs->trans("Delete");
 }
 if (GETPOST('nomassaction', 'int') || in_array($massaction, array('presend', 'predelete'))) {
 	$arrayofmassactions = array();
@@ -486,7 +486,7 @@ $selectedfields = $form->multiSelectArrayWithCheckbox('selectedfields', $arrayfi
 $selectedfields .= (count($arrayofmassactions) ? $form->showCheckAddButtons('checkforselect', 1) : '');
 
 print '<div class="div-table-responsive">';		// You can use div-table-responsive-no-min if you dont need reserved height for your table
-print '<table class="tagtable liste' . ($moreforfilter ? " listwithfilterbefore" : "") . '">' . "\n";
+print '<table class="tagtable nobottomiftotal liste' . ($moreforfilter ? " listwithfilterbefore" : "") . '">' . "\n";
 
 // Fields title search
 // --------------------------------------------------------------------
@@ -692,8 +692,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 	print $hookmanager->resPrint;
 	// Action column
 	print '<td class="nowrap center">';
-	if ($massactionbutton || $massaction)   // If we are in select mode (massactionbutton defined) or if we have already selected and sent an action ($massaction) defined
-	{
+	if ($massactionbutton || $massaction) { // If we are in select mode (massactionbutton defined) or if we have already selected and sent an action ($massaction) defined
 		$selected = 0;
 		if (in_array($object->id, $arrayofselected)) {
 			$selected = 1;
@@ -711,7 +710,33 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 }
 
 // Show total line
-include DOL_DOCUMENT_ROOT . '/core/tpl/list_print_total.tpl.php';
+if (isset($totalarray['pos'])) {
+	print '<tr class="liste_total">';
+	$i = 0;
+	while ($i < $totalarray['nbfield']) {
+		$i++;
+		if (!empty($totalarray['pos'][$i])) {
+			print '<td class="right">'.price(!empty($totalarray['val'][$totalarray['pos'][$i]])?$totalarray['val'][$totalarray['pos'][$i]]:0, 0, $outputlangs, 1, -1, -1, $conf->currency).'</td>';
+		} else {
+			if ($i == 1) {
+				if (is_null($limit) || $num < $limit) {
+					print '<td>'.$langs->trans("Total").'</td>';
+				} else {
+					print '<td>';
+					if (is_object($form)) {
+						print $form->textwithpicto($langs->trans("Total"), $langs->transnoentitiesnoconv("Totalforthispage"));
+					} else {
+						print $langs->trans("Totalforthispage");
+					}
+					print '</td>';
+				}
+			} else {
+				print '<td></td>';
+			}
+		}
+	}
+	print '</tr>';
+}
 
 // If no record found
 if ($num == 0) {
