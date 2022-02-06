@@ -744,7 +744,6 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 
 		if (!empty($arrayfields['t.' . $key]['checked'])) {
 			print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
-			if ($key == 'status') print $object->getLibStatut(5);
 			if ($key == 'status') {
 				print $object->getLibStatut(5);
 			} elseif ($key == 'rowid') {
@@ -776,8 +775,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					$rentamount = price($object->rentamount, 0, $outputlangs, 1, -1, -1, $conf->currency);
 					print $rentamount;
 				}
-			} 
-			elseif ($val['label'] == 'TotalAmount') {
+			} elseif ($val['label'] == 'TotalAmount') {
 				if ($object->total_amount) {
 					$total_amount = price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency);
 					print $total_amount;

@@ -228,7 +228,6 @@ class ImmoPayment extends CommonObject
 	public function create(User $user, $notrigger = false)
 	{
 		$resultcreate = $this->createCommon($user, $notrigger);
-
 		return $resultcreate;
 	}
 

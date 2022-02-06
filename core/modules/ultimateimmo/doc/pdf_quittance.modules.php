@@ -158,7 +158,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		// Get source company
 		$this->emetteur = $mysoc;
 		if (! $this->emetteur->country_code)
-			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
+			$this->emetteur->country_code = substr($langs->defaultlang, - 2); 
 	}
 
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
@@ -178,7 +178,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		// Translations
 		$outputlangs->loadLangs(array("main", "ultimateimmo@ultimateimmo", "companies"));
 
-		if (! is_object($outputlangs))
+		if (!is_object($outputlangs))
 			$outputlangs = $langs;
 
 		/*if (! is_object($object)) {
@@ -274,9 +274,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pagenb++;
 				$this->_pagehead($pdf, $object, 1, $outputlangs);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-				$pdf->MultiCell(0, 3, '', 0,
-					'J'
-				);
+				$pdf->MultiCell(0, 3, '', 0, 'J');
 				$pdf->SetTextColor(0, 0, 0);
 
 				$hautcadre = !empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 38 : 40;
@@ -353,6 +351,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				if ($object->vat > 0) {
 					$text .= ' - TVA : ' . price($object->vat, 0, $outputlangs, 1, -1, -1, $conf->currency) . "<BR>";
 				}
+				//var_dump($object);exit;
 				$text .= ' - Charges / Provisions de Charges : ' . price($object->chargesamount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "<BR>";
 				$text .= ' - Montant total du terme : ' . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "<BR>";
 				$text .= '</td>';
@@ -394,7 +393,8 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$i++;
 					}
 
-					if ($object->status == 0
+					if (
+						$object->status == 0
 					) {
 						$text .= "<br><tr><td align=\"left\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\">" . price($totalpaye, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
 						$text .= "<tr><td align=\"left\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
@@ -473,12 +473,11 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				// Bloc total somme due
 
 				// Tableau total somme due
-				$sql = "SELECT SUM(il.balance) as total";
+				$sql = "SELECT label, balance";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
 				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<='" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
-				$sql .= " GROUP BY fk_property,fk_renter";
-				
+
 				// print $sql;
 				dol_syslog(get_class($this) . ':: total somme due', LOG_DEBUG);
 				$resql = $this->db->query($sql);
@@ -486,11 +485,11 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					$num = $this->db->num_rows($resql);
 
 					if ($num > 0) {
-						$totaldue=0;
-						$textdetail='';
+						$totaldue = 0;
+						$textdetail = '';
 						while ($objp = $this->db->fetch_object($resql)) {
 							$textdetail .= "<tr><td>" . $objp->label . "</td><td  align=\"right\">" . price($objp->balance, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
-							$totaldue+=$objp->balance;
+							$totaldue += $objp->balance;
 						}
 
 						//total
@@ -605,7 +604,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$pdf->Close();
 
 			$pdf->Output($file, 'F');
-			if (! empty($conf->global->MAIN_UMASK))
+			if (!empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
 			return 1; // Pas d'erreur
@@ -692,7 +691,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		$pdf->SetFont('', '', $default_font_size - 2);
 		$renter = new ImmoRenter($this->db);
 		$renter->fetch($object->fk_renter);
-//var_dump($renter);exit;
+
 		if ($renter->ref) {
 			$posy += 4;
 			$pdf->SetXY($posx, $posy);
