@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immorenter(
 	fk_rent integer,
 	fk_owner integer,
 	fk_soc integer,
+	morphy varchar(3) NOT NULL,
 	societe varchar(128),	
 	note_public text, 
 	note_private text, 
