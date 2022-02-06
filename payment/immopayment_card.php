@@ -112,8 +112,8 @@ $search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'se
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
 foreach ($object->fields as $key => $val) {
-	if (GETPOST('search_'.$key, 'alpha')) {
-		$search[$key] = GETPOST('search_'.$key, 'alpha');
+	if (GETPOST('search_' . $key, 'alpha')) {
+		$search[$key] = GETPOST('search_' . $key, 'alpha');
 	}
 }
 
@@ -223,59 +223,48 @@ if (empty($reshook)) {
 	}
 
 	// Actions Create
-	/*if ($action == 'add') {
-		if ($cancel) {
-			$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $receipt->id;
-			header("Location: " . $loc);
-			exit;
-		}
+	elseif ($action == 'add') {
 
-		$date_payment = dol_mktime(0, 0, 0, $paymentmonth, $paymentday, $paymentyear);
-		
-		/*if ($date_payment == '') {
+		$date_payment = @dol_mktime(0, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
+		if ($date_payment == '') {
 			setEventMessages($langs->trans('ErrorFieldRequired', $langs->transnoentities('Datepaie')), null, 'errors');
 			$action = 'create';
 		} else {
-			//$payment = new ImmoPayment($db);
-			$object->ref = ''; // TODO
-			$object->fk_rent			= GETPOST("fk_rent");
-			$object->fk_property		= GETPOST("fk_property");
-			$object->fk_renter			= GETPOST("fk_renter");
-			$object->amount			= GETPOST("amount");
-			$object->note_public		= GETPOST("note_public");
-			$object->date_payment		= $date_payment;
-			$object->fk_receipt		= GETPOST("fk_receipt");
-			$object->fk_account		= GETPOST("accountid");
-			$object->fk_mode_reglement = GETPOST("fk_mode_reglement");
-			$object->num_payment		= GETPOST("num_payment");
-			$object->fk_owner			= $user->id;
+			$payment = new ImmoPayment($db);
 
-			//var_dump($object);exit;
-			if ($date_payment == '') {
-				setEventMessages($langs->trans('ErrorFieldRequired', $langs->transnoentities('Datepaie')), null, 'errors');
-				$action = 'create';
-			}
-			$id = $object->create($user);
-			header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $object->fk_receipt);
+			$payment->fk_rent			= GETPOST("fk_rent");
+			$payment->fk_property		= GETPOST("fk_property");
+			$payment->fk_renter			= GETPOST("fk_renter");
+			$payment->amount			= GETPOST("amount");
+			$payment->note_public		= GETPOST("note_public");
+			$payment->date_payment		= $date_payment;
+			$payment->fk_receipt		= GETPOST("fk_receipt");
+			$payment->fk_account		= GETPOST("accountid");
+			$payment->fk_mode_reglement = GETPOST("fk_mode_reglement");
+			$payment->num_payment		= GETPOST("num_payment");
+			$payment->fk_owner			= $user->id;
+
+			$id = $payment->create($user);
+			header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $payment->fk_receipt);
 			if ($id > 0) {
 				$label = '(CustomerReceiptPayment)';
 				if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
-				$result = $object->addPaymentToBank($user, 'immopayment', $label, $object->fk_bank, '', '');
+				$result = $payment->addPaymentToBank($user, 'immopayment', $label, $payment->fk_bank, '', '');
 				if ($result <= 0) {
-					$errmsg = $object->errors;
+					$errmsg = $payment->errors;
 					setEventMessages(null, $errmsg, 'errors');
 					$error++;
 				}
 			} else {
-				setEventMessages(null, $object->errors, 'errors');
+				setEventMessages(null, $payment->errors, 'errors');
 			}
-		//}
-	}*/
+		}
+	}
 
 	/*
  	 *	Delete paiement
  	 */
-	/*if ($action == 'delete' && $usercandelete) {
+	if ($action == 'delete' && $usercandelete) {
 		if ($id) {
 			$payment = new ImmoPayment($db);
 			$payment->id = $id;
@@ -283,10 +272,10 @@ if (empty($reshook)) {
 			//var_dump($payment);exit;
 		}
 		header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $receipt_id);
-	}*/
+	}
 
 	// Update 
-	/*if ($action == 'maj') {
+	if ($action == 'maj') {
 		$date_payment = @dol_mktime(0, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
 		if ($date_payment == '') {
 			setEventMessages($langs->trans('ErrorFieldRequired', $langs->transnoentities('Datepaie')), null, 'errors');
@@ -303,14 +292,16 @@ if (empty($reshook)) {
 			$result = $payment->update($user);
 			header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $receipt_id);
 		}
-	}*/
+	}
 
 	if ($action == 'addall' && empty($button_search_x) && empty($button_createpdf)) {
+		$error = 0;
 		$date_payment = dol_mktime(12, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
 
 		if ($date_payment == '') {
 			setEventMessages($langs->trans('ErrorFieldRequired', $langs->transnoentities('Datepaie')), null, 'errors');
 			$action = 'createall';
+			$error++;
 		} else {
 			$datapost = $_POST;
 			foreach ($datapost as $key => $value) {
@@ -327,6 +318,7 @@ if (empty($reshook)) {
 							$payment->fk_rent			= GETPOST('fk_rent_' . $reference);
 							$payment->fk_property		= GETPOST('fk_property_' . $reference);
 							$payment->fk_renter			= GETPOST('fk_renter_' . $reference);
+							$payment->fk_owner			= GETPOST('fk_owner_' . $reference);
 							$payment->amount			= price2num($amount);
 							$payment->amounts			= array($payment->amount);
 							$payment->note_public		= GETPOST('note_public');
@@ -335,17 +327,17 @@ if (empty($reshook)) {
 							$payment->fk_account		= GETPOST("accountid");
 							$payment->fk_mode_reglement	= GETPOST("fk_mode_reglement");
 							$payment->num_payment		= GETPOST("num_payment");
-							$payment->fk_owner			= $user->id;
 
 							$result = $payment->create($user);
-							//var_dump($payment);exit;
+
 							if ($result < 0) {
 								setEventMessages(null, $payment->errors, 'errors');
+								$error++;
 							} else {
 								$label = '(CustomerReceiptPayment)';
 								if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
 								$result = $payment->addPaymentToBank($user, 'immopayment', $label, $payment->fk_account, '', '');
-								
+
 								if ($result <= 0) {
 									setEventMessages(null, $payment->errors, 'errors');
 									$error++;
@@ -356,10 +348,12 @@ if (empty($reshook)) {
 				}
 			}
 		}
-		header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1));
+		if (empty($error)) {
+			header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1));
+		}
 	}
 
-	/*if ($action == 'update') {
+	if ($action == 'update') {
 		$date_payment = dol_mktime(12, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
 
 		$payment = new ImmoPayment($db);
@@ -388,27 +382,12 @@ if (empty($reshook)) {
 		} else {
 			header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?id=' . $payment->id);
 		}
-	}*/
+	}
 
 	if ($action == 'createpdf') {
 		$action = 'createall';
 		$createpdf = 'createpdf';
 	}
-
-	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
-	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
-
-	// Actions when linking object each other
-	include DOL_DOCUMENT_ROOT.'/core/actions_dellink.inc.php';
-
-	// Actions when printing a doc from card
-	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
-
-	// Action to move up and down lines of object
-	//include DOL_DOCUMENT_ROOT.'/core/actions_lineupdown.inc.php';
-
-	// Action to build doc
-	include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
 
 	// Actions to send emails
 	$trigger_name = 'IMMOPAYMENT_SENTBYMAIL';
@@ -428,18 +407,10 @@ $formfile = new FormFile($db);
 $thirdpartystatic = new Societe($db);
 $bankaccountstatic = new Account($db);
 
-//$result = $object->fetch($id, $ref);
-/*if ($result < 0) {
+$result = $object->fetch($id, $ref);
+if ($result < 0) {
 	dol_print_error($db, 'Payement ' . $id . ' not found in database');
 	exit;
-}*/
-if ($id) {
-	$object = new ImmoPayment($db);
-	$result = $object->fetch($id);
-	if ($result <= 0) {
-		dol_print_error($db);
-		exit;
-	}
 }
 
 llxHeader('', $langs->trans("ImmoPayment"), '');
@@ -981,7 +952,10 @@ if ($action == 'createall') {
 	/*
 	 * List receipt
 	 */
-	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, prop.address, prop.label as local, prop.fk_owner as proprio, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract";
+	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, ";
+	$sql .= " prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, ";
+	$sql .= " rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_owner,";
+	$sql .= " rec.fk_rent as refcontract";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
 	//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
