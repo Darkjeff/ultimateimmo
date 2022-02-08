@@ -86,7 +86,11 @@ $search_local = GETPOST('search_local', 'alpha');
 $search_renter = GETPOST('search_renter', 'alpha');
 
 $button_search_x = GETPOST('button_search_x', 'alpha');
+$button_createpdf = GETPOST('button_createpdf', 'alpha');
 
+$createpdf = '';
+
+// Array of ids of elements selected into a list
 $toselect   = GETPOST('toselect', 'array');	
 
 // Initialize technical objects
@@ -126,6 +130,11 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be inclu
 if (!empty($button_search_x)) {
 	$action = 'createall';
 }
+$hidegeneratedfilelistifempty = 1;
+if (!empty($button_createpdf)) {
+	$action = 'createpdf';
+	$hidegeneratedfilelistifempty = 0;
+}
 
 /*
  * Actions
@@ -162,6 +171,22 @@ if (empty($reshook)) {
 
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
+
+	// Remove a file from massaction area
+	if ($action == 'remove_file') {
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+
+		$langs->load("other");
+		$upload_dir = $conf->ultimateimmo->dir_output;
+		$file = $upload_dir.'/'.GETPOST('file');
+		$ret = dol_delete_file($file);
+		if ($ret) {
+			setEventMessages($langs->trans("FileWasRemoved", GETPOST('file')), null, 'mesgs');
+		} else {
+			setEventMessages($langs->trans("ErrorFailToDeleteFile", GETPOST('file')), null, 'errors');
+		}
+		$action = '';
+	}
 
 	// payments conditions
 	if ($action == 'setconditions' && $usercancreate) {
@@ -285,7 +310,7 @@ if (empty($reshook)) {
 		}
 	}
 
-	if ($action == 'addall' && empty($button_search_x)) {
+	if ($action == 'addall' && empty($button_search_x) && empty($button_createpdf)) {
 		$date_payment = dol_mktime(12, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
 
 		if ($date_payment == '') {
@@ -368,6 +393,11 @@ if (empty($reshook)) {
 		} else {
 			header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?id=' . $payment->id);
 		}
+	}
+
+	if ($action == 'createpdf') {
+		$action = 'createall';
+		$createpdf = 'createpdf';
 	}
 
 	// Actions to send emails
@@ -842,6 +872,80 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 if ($action == 'createall') {
 
+	$param = '';
+
+	/*
+	 * List receipt
+	 */
+	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract";
+	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
+	//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent";
+	$sql .= " WHERE rec.paye <> 1";
+	//print_r($sql);exit;
+
+	if (!empty($search_loyer)) {
+		$sql .=  natural_search('rec.label', $search_loyer);
+		$param .= '&search_loyer='.$search_loyer;
+	}
+	if (!empty($search_local)) {
+		$sql .=  natural_search('prop.label', $search_local);
+		$param .= '&search_local='.$search_local;
+	}
+	if (!empty($search_renter)) {
+		$sql .=  natural_search('loc.lastname', $search_renter);
+		$param .= '&search_renter='.$search_renter;
+	}
+
+	if ($createpdf == 'createpdf') {
+
+		if (empty($diroutputmassaction)) {
+			dol_print_error(null, 'include of actions_massactions.inc.php is done but var $diroutputmassaction was not defined');
+			exit;
+		}
+
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
+
+		// Create empty PDF
+		$formatarray = pdf_getFormat();
+		$page_largeur = $formatarray['width'];
+		$page_hauteur = $formatarray['height'];
+		$format = array($page_largeur, $page_hauteur);
+
+		$pdf = pdf_getInstance($format);
+
+		if (class_exists('TCPDF')) {
+			$pdf->setPrintHeader(false);
+			$pdf->setPrintFooter(false);
+		}
+		$outputlangs = $langs;
+		$newlang = '';
+		if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id', 'aZ09')) $newlang = GETPOST('lang_id', 'aZ09');
+		//if ($conf->global->MAIN_MULTILANGS && empty($newlang)) $newlang = $objecttmp->thirdparty->default_lang;
+		if (!empty($newlang)) {
+			$outputlangs = new Translate("", $conf);
+			$outputlangs->setDefaultLang($newlang);
+		}
+		$pdf->SetFont(pdf_getPDFFont($outputlangs));
+
+		if (!empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) $pdf->SetCompression(false);
+
+		// Create output dir if not exists
+		dol_mkdir($diroutputmassaction);
+
+		$object->sqlquerymassgen = $sql;
+
+		$result = $object->generateDocument('etatpaiement:etatpaiement_' . dol_sanitizeFileName(dol_print_date(dol_now())), $outputlangs);
+		if ($result <= 0) {
+			setEventMessages($object->error, $object->errors, 'errors');
+		}
+		$action = 'createall';
+	}
+
 	print '<form name="fiche_payment" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="addall">';
@@ -889,28 +993,6 @@ if ($action == 'createall') {
 	print '<td><input name="num_payment" size="30" value="' . GETPOST('num_payment') . '"</td>';
 
 	print "</tr>\n";
-
-	/*
-	 * List receipt
-	 */
-	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract";
-	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
-	//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
-	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
-	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
-	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent";
-	$sql .= " WHERE rec.paye <> 1";
-	//print_r($sql);exit;
-
-	if (!empty($search_loyer)) {
-		$sql .=  natural_search('rec.label', $search_loyer);
-	}
-	if (!empty($search_local)) {
-		$sql .=  natural_search('prop.label', $search_local);
-	}
-	if (!empty($search_renter)) {
-		$sql .=  natural_search('loc.lastname', $search_renter);
-	}
 
 	$resql = $db->query($sql);
 
@@ -1005,8 +1087,19 @@ if ($action == 'createall') {
 	}
 	print '<div class="tabsAction">' . "\n";
 	print '<div class="inline-block divButAction"><input type="submit"  name="button_addallpayment" id="button_addallpayment" class="butAction" value="' . $langs->trans("Payed") . '" /></div>';
+	print '<div class="inline-block divButAction"><input type="submit" name="button_createpdf" id="button_createpdf" class="butAction" value="' . $langs->trans("CreatePDF") . '" /></div>';
 	print '</div>';
 	print '</form>';
+
+	// Show list of available documents
+	$urlsource = $_SERVER['PHP_SELF'].'&action=createall';
+
+	$filedir = $conf->ultimateimmo->dir_output . '/rentmassgen/';
+	$genallowed = $user->rights->ultimateimmo->write;
+	$delallowed = $user->rights->ultimateimmo->delete;
+	$title = '';
+
+	print $formfile->showdocuments('ultimateimmo', 'rentmassgen', $filedir, $urlsource, 0, $delallowed, '', 1, 1, 0, 48, 1, $param, $title, '', '', '', null, $hidegeneratedfilelistifempty);
 }
 
 /* *************************************************************************** */
