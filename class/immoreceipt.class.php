@@ -73,19 +73,22 @@ class ImmoReceipt extends CommonObject
 	const STATUS_DRAFT = 0;
 
 	/**
-	 * Validated status
+	 * Validated status (need to be paid)
 	 */
 	const STATUS_VALIDATED = 1;
+
+	/**
+	 * Credit note invoice
+	 */
+	const TYPE_CREDIT_NOTE = 2;
 
 	/**
 	 * Credit note status
 	 */
 	const STATUS_CANCELED = 9;
 
-	/**
-     * Credit note invoice
-     */
-    const TYPE_CREDIT_NOTE = 2;
+	const STATUS_UNPAID = 0;
+	const STATUS_PAID = 1;
 
 	/**
 	 *  'type' if the field format ('integer', 'integer:ObjectClass:PathToClass[:AddCreateButtonOrNot[:Filter]]', 'varchar(x)', 'double(24,8)', 'real', 'price', 'text', 'html', 'date', 'datetime', 'timestamp', 'duration', 'mail', 'phone', 'url', 'password')
@@ -1291,14 +1294,15 @@ class ImmoReceipt extends CommonObject
 
 
 	/**
-	 *  Return label of the status
+	 *  Retourne le libelle du statut d'une charge (impaye, payee)
 	 *
-	 *  @param  int		$mode          0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto, 6=Long label + Picto
-	 *  @return	string 			       Label of status
+	 *  @param	int		$mode       	0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=short label + picto, 6=Long label + picto
+	 *  @param  double	$alreadypaid	0=No payment already done, >0=Some payments were already done (we recommand to put here amount paid if you have it, 1 otherwise)
+	 *  @return	string        			Label
 	 */
-	public function getLibStatut($mode = 0)
+	public function getLibStatut($mode = 0, $alreadypaid = -1)
 	{
-		return $this->LibStatut($this->status, $mode);
+		return $this->LibStatut($this->paye, $mode, $alreadypaid);
 	}
 
     /**
@@ -1306,26 +1310,43 @@ class ImmoReceipt extends CommonObject
 	 *
 	 *  @param	int		$status        Id status
 	 *  @param  int		$mode          0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto, 6=Long label + Picto
+	 *  @param  double	$alreadypaid	0=No payment already done, >0=Some payments were already done (we recommand to put here amount paid if you have it, 1 otherwise)
 	 *  @return string 			       Label of status
 	 */
-	public function LibStatut($status, $mode = 0)
+	public function LibStatut($status, $mode = 0, $alreadypaid = -1)
 	{
 		// phpcs:enable
-		if (empty($this->labelStatus) || empty($this->labelStatusShort))
-		{
+		global $langs;
+
+		// Load translation files required by the page
+		$langs->loadLangs(array("customers", "bills"));
+
+		// We reinit status array to force to redefine them because label may change according to properties values.
+		$this->labelStatus = array();
+		$this->labelStatusShort = array();
+
+		if (empty($this->labelStatus) || empty($this->labelStatusShort)) {
 			global $langs;
 			//$langs->load("mymodule");
-			$this->labelStatus[self::STATUS_DRAFT] = $langs->trans('Draft');
-			$this->labelStatus[self::STATUS_VALIDATED] = $langs->trans('Enabled');
-			$this->labelStatus[self::STATUS_CANCELED] = $langs->trans('Disabled');
-			$this->labelStatusShort[self::STATUS_DRAFT] = $langs->trans('Draft');
-			$this->labelStatusShort[self::STATUS_VALIDATED] = $langs->trans('Enabled');
-			$this->labelStatusShort[self::STATUS_CANCELED] = $langs->trans('Disabled');
+			$this->labelStatus[self::STATUS_UNPAID] = $langs->transnoentitiesnoconv('Unpaid');
+			$this->labelStatus[self::STATUS_PAID] = $langs->transnoentitiesnoconv('Paid');
+			if ($status == self::STATUS_UNPAID && $alreadypaid > 0) {
+				$this->labelStatus[self::STATUS_UNPAID] = $langs->transnoentitiesnoconv("BillStatusStarted");
+			}
+			$this->labelStatusShort[self::STATUS_UNPAID] = $langs->transnoentitiesnoconv('Unpaid');
+			$this->labelStatusShort[self::STATUS_PAID] = $langs->transnoentitiesnoconv('Paid');
+			if ($status == self::STATUS_UNPAID && $alreadypaid > 0) {
+				$this->labelStatusShort[self::STATUS_UNPAID] = $langs->transnoentitiesnoconv("BillStatusStarted");
+			}
 		}
 
-		$statusType = 'status'.$status;
-		if ($status == self::STATUS_VALIDATED) $statusType = 'status1';
-		if ($status == self::STATUS_CANCELED) $statusType = 'status6';
+		$statusType = 'status1';
+		if ($status == 0 && $alreadypaid > 0) {
+			$statusType = 'status3';
+		}
+		if ($status == 1) {
+			$statusType = 'status6';
+		}
 
 		return dolGetStatus($this->labelStatus[$status], $this->labelStatusShort[$status], '', $statusType, $mode);
 	}
@@ -1502,24 +1523,40 @@ class ImmoReceipt extends CommonObject
 	}
 
 	/**
-	 * @param unknown $user
-	 * @return number
+	 * Make tag Receipt as paid completely
+	 * @param 	User    $user       Object user making change
+	 * @return 	int					<0 if KO, >0 if OK
 	 */
-	public function set_paid($user)
+	public function setPaid($user)
 	{
 		$this->db->begin();
-		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element.' SET';
-		$sql .= ' paye=1';
-		$sql .= ' WHERE rowid = ' . $this->id;
-		$resql = $this->db->query ( $sql );
-		if (!$resql) {
-			$this->errors[]= $this->db->lasterror;
-			$this->error= $this->db->lasterror;
-			$this->db->rollback();
-			return -1;
-		} else {
-			$this->db->commit ();
+		$sql = 'UPDATE ' . MAIN_DB_PREFIX . $this->table_element . ' SET';
+		$sql .= " paye = 1";
+		$sql .= " WHERE rowid = " . ((int) $this->id);
+		$return = $this->db->query($sql);
+		if ($return) {
 			return 1;
+		} else {
+			return -1;
+		}
+	}
+
+	/**
+	 *    Remove tag paid on Receipt
+	 *
+	 *    @param	User	$user       Object user making change
+	 *    @return	int					<0 if KO, >0 if OK
+	 */
+	public function setUnpaid($user)
+	{
+		$sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element . ' SET';
+		$sql .= " paye = 0";
+		$sql .= " WHERE rowid = " . ((int) $this->id);
+		$return = $this->db->query($sql);
+		if ($return) {
+			return 1;
+		} else {
+			return -1;
 		}
 	}
 

@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,18 +26,22 @@
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
 if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
-	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php";
 }
 // Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
-$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
 while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
-	$i--; $j--;
+	$i--;
+	$j--;
 }
-if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) {
-	$res = @include substr($tmp, 0, ($i + 1))."/main.inc.php";
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1)) . "/main.inc.php";
 }
-if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) {
-	$res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php";
 }
 // Try main.inc.php using relative path
 if (!$res && file_exists("../main.inc.php")) {
@@ -75,6 +79,7 @@ $langs->loadLangs(array("ultimateimmo@ultimateimmo","other", "contracts", "bills
 $id			= GETPOST('id', 'int');
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
+$actionlist = GETPOST('actionlist', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 $socid 		= GETPOST('socid', 'int');
@@ -85,13 +90,17 @@ $search_loyer = GETPOST('search_loyer', 'alpha');
 $search_local = GETPOST('search_local', 'alpha');
 $search_renter = GETPOST('search_renter', 'alpha');
 
+$paymentmonth = GETPOST("paymentmonth", 'int');
+$paymentday = GETPOST("paymentday", 'int');
+$paymentyear = GETPOST("paymentyear", 'int');
+
 $button_search_x = GETPOST('button_search_x', 'alpha');
 $button_createpdf = GETPOST('button_createpdf', 'alpha');
 
-$createpdf = '';
+$createpdf='';
 
 // Array of ids of elements selected into a list
-$toselect   = GETPOST('toselect', 'array');	
+$toselect   = GETPOST('toselect', 'array');
 
 // Initialize technical objects
 $object = new ImmoPayment($db);
@@ -107,8 +116,8 @@ $search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'se
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
 foreach ($object->fields as $key => $val) {
-	if (GETPOST('search_'.$key, 'alpha')) {
-		$search[$key] = GETPOST('search_'.$key, 'alpha');
+	if (GETPOST('search_' . $key, 'alpha')) {
+		$search[$key] = GETPOST('search_' . $key, 'alpha');
 	}
 }
 
@@ -235,11 +244,6 @@ if (empty($reshook)) {
 
 	// Actions Create
 	elseif ($action == 'add') {
-		if ($cancel) {
-			$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $receipt->id;
-			header("Location: " . $loc);
-			exit;
-		}
 
 		$date_payment = @dol_mktime(0, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
 		if ($date_payment == '') {
@@ -259,7 +263,7 @@ if (empty($reshook)) {
 			$payment->fk_mode_reglement = GETPOST("fk_mode_reglement");
 			$payment->num_payment		= GETPOST("num_payment");
 			$payment->fk_owner			= $user->id;
-			
+
 			$id = $payment->create($user);
 			header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $payment->fk_receipt);
 			if ($id > 0) {
@@ -311,11 +315,13 @@ if (empty($reshook)) {
 	}
 
 	if ($action == 'addall' && empty($button_search_x) && empty($button_createpdf)) {
+		$error = 0;
 		$date_payment = dol_mktime(12, 0, 0, GETPOST("paymentmonth"), GETPOST("paymentday"), GETPOST("paymentyear"));
 
 		if ($date_payment == '') {
 			setEventMessages($langs->trans('ErrorFieldRequired', $langs->transnoentities('Datepaie')), null, 'errors');
 			$action = 'createall';
+			$error++;
 		} else {
 			$datapost = $_POST;
 			foreach ($datapost as $key => $value) {
@@ -332,6 +338,7 @@ if (empty($reshook)) {
 							$payment->fk_rent			= GETPOST('fk_rent_' . $reference);
 							$payment->fk_property		= GETPOST('fk_property_' . $reference);
 							$payment->fk_renter			= GETPOST('fk_renter_' . $reference);
+							$payment->fk_owner			= GETPOST('fk_owner_' . $reference);
 							$payment->amount			= price2num($amount);
 							$payment->amounts			= array($payment->amount);
 							$payment->note_public		= GETPOST('note_public');
@@ -340,17 +347,17 @@ if (empty($reshook)) {
 							$payment->fk_account		= GETPOST("accountid");
 							$payment->fk_mode_reglement	= GETPOST("fk_mode_reglement");
 							$payment->num_payment		= GETPOST("num_payment");
-							$payment->fk_owner			= $user->id;
 
 							$result = $payment->create($user);
-							
+
 							if ($result < 0) {
 								setEventMessages(null, $payment->errors, 'errors');
+								$error++;
 							} else {
 								$label = '(CustomerReceiptPayment)';
 								if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
 								$result = $payment->addPaymentToBank($user, 'immopayment', $label, $payment->fk_account, '', '');
-								
+
 								if ($result <= 0) {
 									setEventMessages(null, $payment->errors, 'errors');
 									$error++;
@@ -361,7 +368,9 @@ if (empty($reshook)) {
 				}
 			}
 		}
-		header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1));
+		if (empty($error)) {
+			header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1));
+		}
 	}
 
 	if ($action == 'update') {
@@ -435,7 +444,49 @@ if ($action == 'create') {
 
 	$total = $receipt->total_amount;
 
-	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoPayment")), '', 'object_' . $object->picto);
+	// Update fields properties in realtime
+	if (!empty($conf->use_javascript_ajax)) {
+		print "\n".'<script type="text/javascript">';
+		print '$(document).ready(function () {
+            			setPaymentType();
+            			$("#selectpaymenttype").change(function() {
+            				setPaymentType();
+            			});
+            			function setPaymentType()
+            			{
+							console.log("setPaymentType");
+            				var code = $("#selectpaymenttype option:selected").val();
+                            if (code == \'CHQ\' || code == \'VIR\')
+            				{
+            					if (code == \'CHQ\')
+			                    {
+			                        $(\'.fieldrequireddyn\').addClass(\'fieldrequired\');
+			                    }
+            					if ($(\'#fieldchqemetteur\').val() == \'\')
+            					{
+            						var emetteur = jQuery(\'#thirdpartylabel\').val();
+            						$(\'#fieldchqemetteur\').val(emetteur);
+            					}
+            				}
+            				else
+            				{
+            					$(\'.fieldrequireddyn\').removeClass(\'fieldrequired\');
+            					$(\'#fieldchqemetteur\').val(\'\');
+            				}
+            			}
+			';
+
+		print '	});'."\n";
+
+		//Add js for AutoFill
+		print ' $(document).ready(function () {';
+			print ' 	$(".AutoFillAmout").on(\'click touchstart\', function(){
+						$("input[name="+$(this).data(\'rowname\')+"]").val($(this).data("value")).trigger("change");
+					});';
+			print '	});'."\n";
+
+		print '	</script>'."\n";
+	}
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
@@ -445,6 +496,8 @@ if ($action == 'create') {
 	print '<input type="hidden" name="fk_renter" value="' . $receipt->fk_renter . '">';
 	print '<input type="hidden" name="fk_receipt" value="' . $id . '">';
 	print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
+
+	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoPayment")), '', 'object_' . $object->picto);
 
 	print dol_get_fiche_head(array(), '');
 
@@ -471,11 +524,14 @@ if ($action == 'create') {
 		print '</td>';
 
 		print '<td>';
-		if ($val['label'] == 'TypePayment') {
+		
+		if ($val['label'] == 'DatePayment') {
+			print $form->selectDate((empty($date_payment) ?-1 : $date_payment), "date_payment", '', '', '', 'add', 1, 1);
+		} elseif ($val['label'] == 'TypePayment') {
 			// Payment mode
 			if ($object->fk_mode_reglement) $selected = $object->fk_mode_reglement;
 			else $selected = '';
-			$form->select_types_paiements($selected, 'fk_mode_reglement', 'CRDT', 0, 1);
+			$form->select_types_paiements($selected, 'paiementtype', 'CRDT', 0, 1);
 		} elseif ($val['label'] == 'BankAccount') {
 			//BankAccount
 			if (!empty($conf->banque->enabled)) {
@@ -501,11 +557,7 @@ if ($action == 'create') {
 
 	print dol_get_fiche_end();
 
-	print '<div class="center">';
-	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
-	print '&nbsp; ';
-	print '<input type="' . ($backtopage ? "submit" : "button") . '" class="button" name="cancel" value="' . dol_escape_htmltag($langs->trans("Cancel")) . '"' . ($backtopage ? '' : ' onclick="javascript:history.go(-1)"') . '>';	// Cancel for create does not post form if we don't know the backtopage
-	print '</div>';
+	print $form->buttonsSaveCancel("Create");
 
 	print '</form>';
 }
@@ -522,32 +574,42 @@ if (($id || $ref) && $action == 'edit') {
 
 	print dol_get_fiche_head();
 
-	print '<table class="border centpercent">' . "\n";
+	print '<table class="border centpercent tableforfieldedit">'."\n";
 
 	// Common attributes
+	$object->fields = dol_sort_array($object->fields, 'position');
+
 	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 4) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) {
+			continue;
+		}
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) {
+			continue; // We don't want this field
+		}
 
-		print '<tr><td';
+		print '<tr class="field_' . $key . '"><td';
 		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		if (isset($val['notnull']) && $val['notnull'] > 0) {
+			print ' fieldrequired';
+		}
+		if (preg_match('/^(text|html)/', $val['type'])) {
+			print ' tdtop';
+		}
 		print '">';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
+		if (!empty($val['help'])) {
+			print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		} else {
+			print $langs->trans($val['label']);
+		}
 		print '</td>';
-		print '<td>';
+		print '<td class="valuefieldcreate">';
 
-		if (
-			$val['label'] == 'BankAccount'
-		) {
-			if ($object->fk_bank) {
-				$bankaccount = new Account($db);
-				$result = $bankaccount->fetch($object->fk_bank);
-				$form->select_comptes($object->fk_bank, 'fk_bank', 0, '', 1);
+		if ($val['label'] == 'BankAccount') {
+			//BankAccount
+			if (!empty($conf->banque->enabled)) {
+				$form->select_comptes($accountid, 'accountid', 0, '', 2);
 			}
 		} elseif ($val['label'] == 'TypePayment') {
 			// Payment mode
@@ -555,15 +617,42 @@ if (($id || $ref) && $action == 'edit') {
 			else $selected = '';
 			$form->select_types_paiements($selected, 'fk_mode_reglement', 'CRDT', 0, 1);
 		} else {
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
-			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			if (!empty($val['picto'])) {
+				print img_picto('', $val['picto'], '', false, 0, 0, '', 'pictofixedwidth');
+			}
+			if (in_array($val['type'], array('int', 'integer'))) {
+				$value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
+			} elseif ($val['type'] == 'double') {
+				$value = GETPOSTISSET($key) ? price2num(GETPOST($key, 'alphanohtml')) : $object->$key;
+			} elseif (preg_match('/^(text|html)/', $val['type'])) {
+				$tmparray = explode(':', $val['type']);
+				if (!empty($tmparray[1])) {
+					$check = $tmparray[1];
+				} else {
+					$check = 'restricthtml';
+				}
+				$value = GETPOSTISSET($key) ? GETPOST($key, $check) : $object->$key;
+			} elseif ($val['type'] == 'price') {
+				$value = GETPOSTISSET($key) ? price2num(GETPOST($key)) : price2num($object->$key);
+			} elseif ($key == 'lang') {
+				$value = GETPOSTISSET($key) ? GETPOST($key, 'aZ09') : $object->lang;
+			} else {
+				$value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			}
 			//var_dump($val.' '.$key.' '.$value);
-			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-			else print $object->showInputField($val, $key, $value, '', '', '', 0);
+			if (!empty($val['noteditable'])) {
+				print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			} else {
+				if ($key == 'lang') {
+					print img_picto('', 'language', 'class="pictofixedwidth"');
+					print $formadmin->select_language($value, $key, 0, null, 1, 0, 0, 'minwidth300', 2);
+				} else {
+					print $object->showInputField($val, $key, $value, '', '', '', 0);
+				}
+			}
+			print '</td>';
+			print '</tr>';
 		}
-		print '</td>';
-		print '</tr>';
 	}
 
 	// Other attributes
@@ -746,9 +835,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			if ($object->fk_mode_reglement) {
 				$tmparray = $object->setPaymentMethods($object->fk_mode_reglement, 'int');
+				$object->mode_code = $tmparray['code'];
+				$object->mode_payment = $tmparray['libelle'];
 			}
 			// Payment mode
-			$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none', '', -1);
+			print $object->mode_payment;
+			//$form->form_modes_reglement($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_mode_reglement, 'none', '', -1);
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
@@ -870,6 +962,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 /*                                                                             */
 /* *************************************************************************** */
 
+if ($actionlist == 'createall') {
+	$action='createall';
+}
 if ($action == 'createall') {
 
 	$param = '';
@@ -877,13 +972,16 @@ if ($action == 'createall') {
 	/*
 	 * List receipt
 	 */
-	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_rent as refcontract";
+	$sql = "SELECT rec.rowid as reference, rec.label as receiptname, loc.lastname as nom, ";
+	$sql .= " prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, ";
+	$sql .= " rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_owner,";
+	$sql .= " rec.fk_rent as refcontract";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
 	//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent";
-	$sql .= " WHERE rec.paye <> 1";
+	$sql .= " WHERE rec.paye <> 1 ";
 	//print_r($sql);exit;
 
 	if (!empty($search_loyer)) {
@@ -906,9 +1004,9 @@ if ($action == 'createall') {
 			exit;
 		}
 
-		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
-		require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
-		require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 
 		// Create empty PDF
 		$formatarray = pdf_getFormat();
@@ -918,7 +1016,8 @@ if ($action == 'createall') {
 
 		$pdf = pdf_getInstance($format);
 
-		if (class_exists('TCPDF')) {
+		if (class_exists('TCPDF'))
+		{
 			$pdf->setPrintHeader(false);
 			$pdf->setPrintFooter(false);
 		}
@@ -969,10 +1068,10 @@ if ($action == 'createall') {
 
 	print '<tr class="oddeven" valign="top">';
 	$payment = new ImmoPayment($db);
-	$result = $payment->fetch($id);
+	$result = $payment->fetch($id, $ref);
 
 	// Due date	
-	print '<td class="center">';
+	print '<td class="left">';
 	print $form->selectDate(!empty($date_payment) ? $date_payment : '-1', 'payment', 0, 0, 0, 'addall', 1);
 	print '</td>';
 
@@ -980,7 +1079,7 @@ if ($action == 'createall') {
 	print '<td><input name="note_public" size="30" value="' . GETPOST('note_public') . '"</td>';
 
 	// Payment mode
-	print '<td class="center">';
+	print '<td class="left">';
 	print $form->select_types_paiements(GETPOST('fk_mode_reglement', 'int') ? GETPOST('fk_mode_reglement', 'int') : $payment->fk_mode_reglement, "fk_mode_reglement");
 	print '</td>';
 
@@ -988,7 +1087,7 @@ if ($action == 'createall') {
 	print '<td class="left">';
 	print $form->select_comptes(GETPOSTISSET('accountid', 'int') ? GETPOST('accountid', 'int') : $payment->fk_bank, "accountid", 0, '', 1);  // Show open bank account list
 	print '</td>';
-	//var_dump($payment->fk_bank);exit;
+	
 	// num_payment
 	print '<td><input name="num_payment" size="30" value="' . GETPOST('num_payment') . '"</td>';
 
@@ -1003,7 +1102,6 @@ if ($action == 'createall') {
 		$total = $total_montant_tot = $total_payed = $total_due = 0;
 
 		print '<br><table class="noborder" width="100%">';
-
 		print '<tr class="liste_titre">';
 		print '<td><input type="text" name="search_loyer" id="search_loyer" value="'.$search_loyer.'"></td>';
 		print '<td><input type="text" name="search_local" id="search_local" value="'.$search_local.'"></td>';
@@ -1023,35 +1121,41 @@ if ($action == 'createall') {
 		print '<td>' . $langs->trans('NomLoyer') . '</td>';
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
-		print '<td class="left">' . $langs->trans('TotalAmount') . '</td>';
-		print '<td class="left">' . $langs->trans('PartialPayment') . '</td>';
-		print '<td class="left">' . $langs->trans('Balance') . '</td>';
-		print '<td class="left">' . $langs->trans('income') . '</td>';
+		//print '<td>' . $langs->trans('Owner') . '</td>';
+		print '<td class="right">' . $langs->trans('TotalAmount') . '</td>';
+		print '<td class="right">' . $langs->trans('PartialPayment') . '</td>';
+		print '<td class="right">' . $langs->trans('Balance') . '</td>';
+		print '<td class="right">' . $langs->trans('income') . '</td>';
+		print '<td>';
+		print $form->showCheckAddButtons('checkforselect', 1);
+		print '</td>';
 		print "</tr>\n";
 
 		if ($num > 0) {
 			while ($i < $num) {
 				$objp = $db->fetch_object($resql);
 				print '<tr class="oddeven">';
-
+	//var_dump($objp);exit;
 				print '<td>' . $objp->receiptname . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->nom . '</td>';
+				//print '<td>' . $objp->fk_owner_ . '</td>';
 
-				print '<td class="left">' . price($objp->total) . '</td>';
-				print '<td class="left">' . price($objp->partial_payment) . '</td>';
-				print '<td class="left">' . price($objp->balance) . '</td>';
+				print '<td class="right">' .  price($objp->total, 0, '', 1, -1, -1, $conf->currency) . '</td>';
+				print '<td class="right">' . price($objp->partial_payment, 0, '', 1, -1, -1, $conf->currency) . '</td>';
+				print '<td class="right">' .price($objp->balance, 0, '', 1, -1, -1, $conf->currency)  . '</td>';
 
 				print '<input type="hidden" name="fk_rent_' . $objp->reference . '" size="10" value="' . $objp->refcontract . '">';
 				print '<input type="hidden" name="fk_property_' . $objp->reference . '" size="10" value="' . $objp->reflocal . '">';
 				print '<input type="hidden" name="fk_renter_' . $objp->reference . '" size="10" value="' . $objp->reflocataire . '">';
+				print '<input type="hidden" name="fk_owner_' . $objp->reference . '" size="10" value="' . $objp->fk_owner_ . '">';
 				print '<input type="hidden" name="receipt_' . $objp->reference . '" size="10" value="' . $objp->reference . '">';
 
 				// Colonne imput income
-				print '<td class="left">';
+				print '<td class="right">';
 				print '<input type="text" name="incomeprice_' . $objp->reference . '" id="incomeprice_' . $objp->reference . '" size="6" value="" class="flat">';
 				print '</td>';
-				//var_dump($objp);
+				
 				// Action column
 				print '<td class="nowrap center">';
 				if (in_array($objp->reference, $arrayofselected)) $selected = 1;
@@ -1067,15 +1171,14 @@ if ($action == 'createall') {
 				$total_due += $objp->balance;
 			}
 		}
-		//exit;
 
 		// Show total line
 		print '<tr class="liste_total">';
 		print '<td class="left">' . $langs->trans("Total") . '</td>';
-		print '<td colspan="2"></td>';
-		print '<td class="left">'.price($total_montant_tot).'</td>';
-		print '<td class="left">'.price($total_payed).'</td>';
-		print '<td class="left">'.price($total_due).'</td>';
+		print '<td colspan="3"></td>';
+		print '<td class="right">' . price($total_montant_tot, 0, '', 1, -1, -1, $conf->currency) . '</td>';
+		print '<td class="right">'.price($total_payed, 0, '', 1, -1, -1, $conf->currency).'</td>';
+		print '<td class="right">'.price($total_due, 0, '', 1, -1, -1, $conf->currency).'</td>';
 		print '<td class="left"></td>';
 		print '<td class="left"></td>';
 		print '</tr>';
@@ -1086,20 +1189,25 @@ if ($action == 'createall') {
 		dol_print_error($db);
 	}
 	print '<div class="tabsAction">' . "\n";
-	print '<div class="inline-block divButAction"><input type="submit"  name="button_addallpayment" id="button_addallpayment" class="butAction" value="' . $langs->trans("Payed") . '" /></div>';
-	print '<div class="inline-block divButAction"><input type="submit" name="button_createpdf" id="button_createpdf" class="butAction" value="' . $langs->trans("CreatePDF") . '" /></div>';
+	print '<div class="inline-block divButAction"><input type="submit"  name="button_addallpayment" id="button_addallpayment" class="butAction" value="' . $langs->trans("ValidatePayment") . '" /></div>';
+	print '<div class="inline-block divButAction"><input type="submit"  name="button_createpdf" id="button_createpdf" class="butAction" value="' . $langs->trans("CreatePDF") . '" /></div>';
 	print '</div>';
 	print '</form>';
 
+	$hidegeneratedfilelistifempty = 1;
+	if ($massaction == 'builddoc' || $action == 'remove_file' || $show_files) {
+		$hidegeneratedfilelistifempty = 0;
+	}
+
 	// Show list of available documents
-	$urlsource = $_SERVER['PHP_SELF'].'&action=createall';
+	$urlsource = $_SERVER['PHP_SELF'].'&actionlist=createall';
 
 	$filedir = $conf->ultimateimmo->dir_output . '/rentmassgen/';
 	$genallowed = $user->rights->ultimateimmo->write;
 	$delallowed = $user->rights->ultimateimmo->delete;
 	$title = '';
 
-	print $formfile->showdocuments('ultimateimmo', 'rentmassgen', $filedir, $urlsource, 0, $delallowed, '', 1, 1, 0, 48, 1, $param, $title, '', '', '', null, $hidegeneratedfilelistifempty);
+	print $formfile->showdocuments('ultimateimmo', 'rentmassgen', $filedir, $urlsource, 0, $delallowed, '', 1, 1, 0, 48, 1, $param, $title, '', '', '', null, $hidegeneratedfilelistifempty, 'remove_file');
 }
 
 /* *************************************************************************** */
@@ -1156,7 +1264,6 @@ if ($action == 'update') {
 
 	print '</form>';
 }
-
 
 // End of page
 llxFooter();

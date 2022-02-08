@@ -110,6 +110,9 @@ MenuStatisticsCost = Coût : statistiques
 MenuStatisticsResult = Résultats : statistiques
 MenuListImmoCostType = Types de coût
 MenuNewImmoCostType = Nouveau type de coût
+MenuImmoCompteur = Compteur
+MenuNewImmoCompteur = Nouveau compteur
+MenuImmoCompteurList = Liste compteur
 
 #
 # Miscellaneous
@@ -240,7 +243,6 @@ OtherReceipts = Autres quittances
 OtherRents = Autres locations
 NumberReceiptByMonth  = Nombre de quittances par mois
 CustomerReceiptPayment = Règlement de quittance
-CreatePDF = Créer un PDF
 LinkToReceipt = Lien vers la quittance
 LinkToOwner = Lien vers le propriétaire
 LinkToOwnerType = Sélectionnez le type de propriétaire
@@ -250,4 +252,8 @@ AmountPayed = Montant payé sur la quittance
 SetLinkToThirparty = Sélectionnez le lien vers un Tiers
 ContractRent=Contrat/Location
 LinkToRent =Lien vers Contrat/Location
+MorPhy = Nature du locataire
+NoThirdPartyAssociatedToRenter = Pas de tiers associé à ce locataire
+ConfirmCreateThirdParty=Êtes-vous sûr de vouloir créer un tiers pour ce locataire ?
+ValidatePayment = Valider les paiements 
 

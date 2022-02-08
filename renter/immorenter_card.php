@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +45,10 @@ dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immorenter.lib.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
+dol_include_once('/ultimateimmo/class/immorentersoc.class.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other","users" ));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "members", "users"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -119,40 +120,85 @@ if (empty($reshook))
     }
 	$triggermodname = 'ULTIMATEIMMO_IMMORENTER_MODIFY';
 
-	/*if ($action == 'setsocid')
-	{
-		$error=0;
-		if (! $error)
-		{
+	if ($action == 'setsocid') {
+		$error = 0;
+		if (!$error) {
 			if ($socid != $object->fk_soc)	// If link differs from currently in database
 			{
-				$sql ="SELECT rowid FROM ".MAIN_DB_PREFIX."ultimateimmo_immorenter";
-				$sql.=" WHERE fk_soc = '".$socid."'";
-				$sql.=" AND entity = ".$conf->entity;
+				$sql = "SELECT rowid FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter";
+				$sql .= " WHERE fk_soc = '" . $object->fk_soc . "'";
+				$sql .= " AND entity = " . $conf->entity;
 				$resql = $db->query($sql);
-				if ($resql)
-				{
+				if ($resql) {
 					$obj = $db->fetch_object($resql);
-					if ($obj && $obj->rowid > 0)
-					{
-						$otherrenter=new ImmoRenter($db);
+					if ($obj && $obj->rowid > 0) {
+						$otherrenter = new ImmoRenter($db);
 						$otherrenter->fetch($obj->rowid);
-						$thirdparty=new Societe($db);
-						$thirdparty->fetch($socid);
+						$thirdparty = new Societe($db);
+						$thirdparty->fetch($object->fk_soc);
 						$error++;
-						setEventMessages($langs->trans("ErrorRenterIsAlreadyLinkedToThisThirdParty",$otherrenter->getFullName($langs),$otherrenter->login,$thirdparty->name), null, 'errors');
+						
+						setEventMessages($langs->trans("ErrorRenterIsAlreadyLinkedToThisThirdParty", $otherrenter->getFullName($langs), $otherrenter->login, $thirdparty->name), null, 'errors');
 					}
 				}
-
-				if (! $error)
-				{
-					$result=$object->setThirdPartyId($socid);
-					if ($result < 0) dol_print_error($object->db,$object->error);
-					$action='';
+				
+				if (!$error) {
+					$result = $object->setThirdPartyId($thirdparty->id);
+					if ($result < 0) dol_print_error($object->db, $object->error);
+					$action = '';
 				}
 			}
 		}
-	}*/
+	}
+
+	// Create third party from a renter
+	if ($action == 'confirm_create_thirdparty' && $confirm == 'yes' && $user->rights->societe->creer) {
+		if ($result > 0) {
+			// Thirdparty creation
+			$company = new RenterSoc($db);
+			$result = $company->create_from_renter($object, GETPOST('companyname', 'alpha'), GETPOST('companyalias', 'alpha'));
+			if ($result < 0) {
+				$langs->load("errors");
+				setEventMessages($langs->trans($company->error), null, 'errors');
+				setEventMessages($company->error, $company->errors, 'errors');
+			}
+		} else {
+			setEventMessages($object->error, $object->errors, 'errors');
+		}
+	}
+
+	// Auto-create thirdparty on renter creation
+	if (!empty($conf->global->RENTER_DEFAULT_CREATE_THIRDPARTY)) {
+		if ($result > 0) {
+			// User creation
+			$company = new RenterSoc($db);
+
+			$companyalias = '';
+			$fullname = $object->getFullName($langs);
+
+			if ($object->morphy == 'mor') {
+				$companyname = $object->company;
+				if (!empty($fullname)) {
+					$companyalias = $fullname;
+				}
+			} else {
+				$companyname = $fullname;
+				if (!empty($object->company)) {
+					$companyalias = $object->company;
+				}
+			}
+
+			$result = $company->create_from_renter($object, $companyname, $companyalias);
+
+			if ($result < 0) {
+				$langs->load("errors");
+				setEventMessages($langs->trans($company->error), null, 'errors');
+				setEventMessages($company->error, $company->errors, 'errors');
+			}
+		} else {
+			setEventMessages($object->error, $object->errors, 'errors');
+		}
+	}
 
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
@@ -200,9 +246,24 @@ llxHeader('', $langs->trans('ImmoRenter'), '');
 if ($conf->use_javascript_ajax) {
 	print "\n".'<script type="text/javascript" language="javascript">';
 	print 'jQuery(document).ready(function () {
-				jQuery("#selectcountry_id").change(function() {
+				jQuery("#country_id").change(function() {
 					document.formsoc.action.value="create";
 					document.formsoc.submit();
+				});
+				function initfieldrequired() {
+					jQuery("#tdcompany").removeClass("fieldrequired");
+					jQuery("#tdlastname").removeClass("fieldrequired");
+					jQuery("#tdfirstname").removeClass("fieldrequired");
+					if (jQuery("#morphy").val() == \'mor\') {
+						jQuery("#tdcompany").addClass("fieldrequired");
+					}
+					if (jQuery("#morphy").val() == \'phy\') {
+						jQuery("#tdlastname").addClass("fieldrequired");
+						jQuery("#tdfirstname").addClass("fieldrequired");
+					}
+				}
+				jQuery("#morphy").change(function() {
+					initfieldrequired();
 				});
 				
 				initfieldrequired();
@@ -229,23 +290,39 @@ if ($action == 'create') {
 
 	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) {
+			continue;
+		}
+	
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) {
+			continue; // We don't want this field
+		}
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue;	// We don't want this field
-
-		print '<tr id="field_' . $key . '">';
+		print '<tr class="field_' . $key . '">';
 		print '<td';
 		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		if (isset($val['notnull']) && $val['notnull'] > 0) {
+			print ' fieldrequired';
+		}
+		if ($val['type'] == 'text' || $val['type'] == 'html') {
+			print ' tdtop';
+		}
 		print '"';
 		print '>';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
+		if (!empty($val['help'])) {
+			print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		} else {
+			print $langs->trans($val['label']);
+		}
 		print '</td>';
-		print '<td>';
-
-		if ($val['label'] == 'Civility') {
+		print '<td class="valuefieldcreate">';
+		if ($val['label'] == 'MorPhy') {
+			$morphys["phy"] = $langs->trans("Physical");
+			$morphys["mor"] = $langs->trans("Moral");
+			print $form->selectarray("morphy", $morphys, (GETPOST('morphy', 'alpha') ?GETPOST('morphy', 'alpha') : $object->morphy), 1, 0, 0, '', 0, 0, 0, '', '', 1);
+			//print $object->getmorphylib();
+		}
+		elseif ($val['label'] == 'Civility') {
 			// We set civility_id, civility_code and civility for the selected civility
 			$object->civility_id	= GETPOST("civility_id", 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
 
@@ -271,11 +348,38 @@ if ($action == 'create') {
 			print $form->select_country(GETPOSTISSET('country_id') ? GETPOST('country_id', 'alpha') : $object->country_id, 'country_id');
 			if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 		} else {
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
-
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
-			else $value = GETPOST($key, 'alpha');
-			print $object->showInputField($val, $key, $value, '', '', '', 0);
+			if (!empty($val['picto'])) {
+				print img_picto('', $val['picto'], '', false, 0, 0, '', 'pictofixedwidth');
+			}
+			if (in_array($val['type'], array('int', 'integer'))) {
+				$value = GETPOST($key, 'int');
+			} elseif ($val['type'] == 'double') {
+				$value = price2num(GETPOST($key, 'alphanohtml'));
+			} elseif ($val['type'] == 'text' || $val['type'] == 'html') {
+				$value = GETPOST($key, 'restricthtml');
+			} elseif ($val['type'] == 'date') {
+				$value = dol_mktime(12, 0, 0, GETPOST($key.'month', 'int'), GETPOST($key.'day', 'int'), GETPOST($key.'year', 'int'));
+			} elseif ($val['type'] == 'datetime') {
+				$value = dol_mktime(GETPOST($key.'hour', 'int'), GETPOST($key.'min', 'int'), 0, GETPOST($key.'month', 'int'), GETPOST($key.'day', 'int'), GETPOST($key.'year', 'int'));
+			} elseif ($val['type'] == 'boolean') {
+				$value = (GETPOST($key) == 'on' ? 1 : 0);
+			} elseif ($val['type'] == 'price') {
+				$value = price2num(GETPOST($key));
+			} elseif ($key == 'lang') {
+				$value = GETPOST($key, 'aZ09');
+			} else {
+				$value = GETPOST($key, 'alphanohtml');
+			}
+			if (!empty($val['noteditable'])) {
+				print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			} else {
+				if ($key == 'lang') {
+					print img_picto('', 'language', 'class="pictofixedwidth"');
+					print $formadmin->select_language($value, $key, 0, null, 1, 0, 0, 'minwidth300', 2);
+				} else {
+					print $object->showInputField($val, $key, $value, '', '', '', 0);
+				}
+			}
 		}
 		print '</td>';
 		print '</tr>';
@@ -302,6 +406,33 @@ if (($id || $ref) && $action == 'edit')
 {
 	print load_fiche_titre($langs->trans("ImmoRenter"), '', 'object_'.$object->picto);
 
+	if ($conf->use_javascript_ajax) {
+		print "\n".'<script type="text/javascript">';
+		print 'jQuery(document).ready(function () {
+			jQuery("#country_id").change(function() {
+				document.formsoc.action.value="edit";
+				document.formsoc.submit();
+			});
+			function initfieldrequired() {
+				jQuery("#tdcompany").removeClass("fieldrequired");
+				jQuery("#tdlastname").removeClass("fieldrequired");
+				jQuery("#tdfirstname").removeClass("fieldrequired");
+				if (jQuery("#morphy").val() == \'mor\') {
+					jQuery("#tdcompany").addClass("fieldrequired");
+				}
+				if (jQuery("#morphy").val() == \'phy\') {
+					jQuery("#tdlastname").addClass("fieldrequired");
+					jQuery("#tdfirstname").addClass("fieldrequired");
+				}
+			}
+			jQuery("#morphy").change(function() {
+				initfieldrequired();
+			});
+			initfieldrequired();
+		})';
+		print '</script>'."\n";
+	}
+
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="update">';
@@ -318,22 +449,37 @@ if (($id || $ref) && $action == 'edit')
 
 	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) {
+			continue;
+		}
+	
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) {
+			continue; // We don't want this field
+		}
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
-
-		print '<tr><td';
+		print '<tr class="field_' . $key . '"><td';
 		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '"';
-		print '>';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
+		if (isset($val['notnull']) && $val['notnull'] > 0) {
+			print ' fieldrequired';
+		}
+		if (preg_match('/^(text|html)/', $val['type'])) {
+			print ' tdtop';
+		}
+		print '">';
+		if (!empty($val['help'])) {
+			print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		} else {
+			print $langs->trans($val['label']);
+		}
 		print '</td>';
-		print '<td>';
+		print '<td class="valuefieldcreate">';
 
-		if ($val['label'] == 'Civility') {
+		if ($val['label'] == 'MorPhy') {
+			$morphys["phy"] = $langs->trans("Physical");
+			$morphys["mor"] = $langs->trans("Moral");
+			print $form->selectarray("morphy", $morphys, (GETPOSTISSET("morphy") ? GETPOST("morphy", 'alpha') : $object->morphy), 0, 0, 0, '', 0, 0, 0, '', '', 1);
+		}
+		elseif ($val['label'] == 'Civility') {
 			// We set civility_id, civility_code and civility for the selected civility
 			$object->civility_id = GETPOST('civility_id', 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
 			if ($object->civility_id) {
@@ -355,12 +501,39 @@ if (($id || $ref) && $action == 'edit')
 			// Country
 			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
 		} else {
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
-			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			if (!empty($val['picto'])) {
+				print img_picto('', $val['picto'], '', false, 0, 0, '', 'pictofixedwidth');
+			}
+			if (in_array($val['type'], array('int', 'integer'))) {
+				$value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
+			} elseif ($val['type'] == 'double') {
+				$value = GETPOSTISSET($key) ? price2num(GETPOST($key, 'alphanohtml')) : $object->$key;
+			} elseif (preg_match('/^(text|html)/', $val['type'])) {
+				$tmparray = explode(':', $val['type']);
+				if (!empty($tmparray[1])) {
+					$check = $tmparray[1];
+				} else {
+					$check = 'restricthtml';
+				}
+				$value = GETPOSTISSET($key) ? GETPOST($key, $check) : $object->$key;
+			} elseif ($val['type'] == 'price') {
+				$value = GETPOSTISSET($key) ? price2num(GETPOST($key)) : price2num($object->$key);
+			} elseif ($key == 'lang') {
+				$value = GETPOSTISSET($key) ? GETPOST($key, 'aZ09') : $object->lang;
+			} else {
+				$value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			}
 			//var_dump($val.' '.$key.' '.$value);
-			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-			else print $object->showInputField($val, $key, $value, '', '', '', 0);
+			if (!empty($val['noteditable'])) {
+				print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			} else {
+				if ($key == 'lang') {
+					print img_picto('', 'language', 'class="pictofixedwidth"');
+					print $formadmin->select_language($value, $key, 0, null, 1, 0, 0, 'minwidth300', 2);
+				} else {
+					print $object->showInputField($val, $key, $value, '', '', '', 0);
+				}
+			}
 		}
 		print '</td>';
 		print '</tr>';
@@ -405,16 +578,27 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	// Confirmation of action xxxx
-	if ($action == 'xxx') {
-		$formquestion = array();
-		/*
-	        $formquestion = array(
-	            // 'text' => $langs->trans("ConfirmClone"),
-	            // array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
-	            // array('type' => 'checkbox', 'name' => 'update_prices', 'label' => $langs->trans("PuttingPricesUpToDate"), 'value' => 1),
-	            // array('type' => 'other',    'name' => 'idwarehouse',   'label' => $langs->trans("SelectWarehouseForStockDecrease"), 'value' => $formproduct->selectWarehouses(GETPOST('idwarehouse')?GETPOST('idwarehouse'):'ifone', 'idwarehouse', '', 1)));
-	    }*/
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('XXX'), $text, 'confirm_xxx', $formquestion, 0, 1, 220);
+	if ($action == 'create_thirdparty') {
+		$companyalias = '';
+		$fullname = $object->getFullName($langs);
+
+		if ($object->morphy == 'mor') {
+			$companyname = $object->company;
+			if (!empty($fullname)) {
+				$companyalias = $fullname;
+			}
+		} else {
+			$companyname = $fullname;
+			if (!empty($object->company)) {
+				$companyalias = $object->company;
+			}
+		}
+		// Create a form array
+		$formquestion = array(
+			array('label' => $langs->trans("NameToCreate"), 'type' => 'text', 'name' => 'companyname', 'value' => $companyname, 'morecss' => 'minwidth300', 'moreattr' => 'maxlength="128"'),
+			array('label' => $langs->trans("AliasNames"), 'type' => 'text', 'name' => 'companyalias', 'value' => $companyalias, 'morecss' => 'minwidth300', 'moreattr' => 'maxlength="128"')
+		);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . "?id=" . $object->id, $langs->trans("CreateDolibarrThirdParty"), $langs->trans("ConfirmCreateThirdParty"), "confirm_create_thirdparty", $formquestion, 'yes');
 	}
 
 	// Call Hook formConfirm
@@ -504,7 +688,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '">';
 		print '<td>';
 
-		if ($val['label'] == 'Owner') {
+		if ($val['label'] == 'MorPhy') {
+			print $object->getmorphylib();
+		}
+		elseif ($val['label'] == 'Owner') {
 			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);
 			if ($staticowner->ref) {
@@ -677,6 +864,19 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		{
     			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
     		}
+
+			// Create third party
+			if (!empty($conf->societe->enabled) && !$object->fk_soc) {
+				if ($user->rights->societe->creer) {
+					if (ImmoRenter::STATUS_DRAFT != $object->status) {
+						print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=create_thirdparty" title="' . dol_escape_htmltag($langs->trans("CreateDolibarrThirdPartyDesc")) . '">' . $langs->trans("CreateDolibarrThirdParty") . '</a>' . "\n";
+					} else {
+						print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("ValidateBefore")) . '">' . $langs->trans("CreateDolibarrThirdParty") . '</a>' . "\n";
+					}
+				} else {
+					print '<span class="butActionRefused classfortooltip" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans("CreateDolibarrThirdParty") . '</span>' . "\n";
+				}
+			}
 
 			// Clone
     		if ($permissiontoadd)

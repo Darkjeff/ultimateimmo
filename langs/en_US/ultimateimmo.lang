@@ -110,6 +110,9 @@ MenuStatisticsCost = Cost: Statistics
 MenuStatisticsResult = Results: Statistics
 MenuListImmoCostType = Cost type
 MenuNewImmoCostType = New cost type 
+MenuImmoCompteur = water meter
+MenuNewImmoCompteur = New water meter
+MenuImmoCompteurList = Water meter list
 
 #
 # Miscellaneous
@@ -249,4 +252,8 @@ AmountPayed = Amount payed
 SetLinkToThirparty = Set link to a thirdparty
 ContractRent=Contract/Rental
 LinkToRent =Link to Contract/Rental
+MorPhy = Nature of renter
+NoThirdPartyAssociatedToRenter = No thirdparty associated to this renter
+ConfirmCreateThirdParty=Are you sure you want to create a third party for this renter?
+ValidatePayment = Validate payments
 
