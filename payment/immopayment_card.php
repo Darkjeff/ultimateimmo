@@ -1208,7 +1208,6 @@ if ($action == 'createall') {
 	}
 
 	// Show list of available documents
-
 	$urlsource = $_SERVER['PHP_SELF'];
 	$filedir = $conf->ultimateimmo->dir_output . '/rentmassgen/';
 	$genallowed = $user->rights->ultimateimmo->write;
