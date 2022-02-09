@@ -183,18 +183,26 @@ if (empty($reshook)) {
 
 	// Remove a file from massaction area
 	if ($action == 'remove_file') {
-		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 
 		$langs->load("other");
 		$upload_dir = $conf->ultimateimmo->dir_output;
-		$file = $upload_dir.'/'.GETPOST('file');
+
+		$file = $upload_dir . '/' . GETPOST('file');
+
 		$ret = dol_delete_file($file);
+
 		if ($ret) {
 			setEventMessages($langs->trans("FileWasRemoved", GETPOST('file')), null, 'mesgs');
 		} else {
 			setEventMessages($langs->trans("ErrorFailToDeleteFile", GETPOST('file')), null, 'errors');
 		}
 		$action = '';
+		// Make a redirect to avoid to keep the remove_file into the url that create side effects
+		$urltoredirect = dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 2) . '?action=createall';
+
+		header('Location: ' . $urltoredirect);
+		exit;
 	}
 
 	// payments conditions
@@ -1200,8 +1208,8 @@ if ($action == 'createall') {
 	}
 
 	// Show list of available documents
-	$urlsource = $_SERVER['PHP_SELF'].'&actionlist=createall';
 
+	$urlsource = $_SERVER['PHP_SELF'];
 	$filedir = $conf->ultimateimmo->dir_output . '/rentmassgen/';
 	$genallowed = $user->rights->ultimateimmo->write;
 	$delallowed = $user->rights->ultimateimmo->delete;
