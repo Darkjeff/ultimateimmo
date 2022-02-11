@@ -1313,7 +1313,7 @@ class ImmoReceipt extends CommonObject
 	 *  @param  double	$alreadypaid	0=No payment already done, >0=Some payments were already done (we recommand to put here amount paid if you have it, 1 otherwise)
 	 *  @return string 			       Label of status
 	 */
-	public function LibStatut($status, $mode = 0, $alreadypaid = -1)
+	public function LibStatut($status, $mode = 0, $alreadypaid = 1)
 	{
 		// phpcs:enable
 		global $langs;
@@ -1324,6 +1324,7 @@ class ImmoReceipt extends CommonObject
 		// We reinit status array to force to redefine them because label may change according to properties values.
 		$this->labelStatus = array();
 		$this->labelStatusShort = array();
+		$alreadypaid = $this->getSommePaiement();
 
 		if (empty($this->labelStatus) || empty($this->labelStatusShort)) {
 			global $langs;

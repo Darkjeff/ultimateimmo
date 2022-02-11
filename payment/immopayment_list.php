@@ -736,6 +736,8 @@ if (isset($totalarray['pos'])) {
 		}
 	}
 	print '</tr>';
+	//Validate Payments
+	print dolGetButtonTitle($langs->trans("ValidatePayments"), $langs->trans("MenuValidateReceipt"), 'fa fa-plus-circle', '../receipt/immoreceipt_list.php?action=validaterent');
 }
 
 // If no record found

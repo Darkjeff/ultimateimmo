@@ -179,7 +179,7 @@ if (empty($reshook)) {
 		$receipt->fetch($id);
 		$result = $receipt->delete($user);
 		if ($result > 0) {
-			header("Location:" . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1));
+			header("Location:" . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 2));
 			exit();
 		} else {
 			$langs->load("errors");
@@ -833,7 +833,7 @@ if ($action == 'createall') {
 		if ($action == 'delete')
 		{
 			// Param url = id de la periode à supprimer - id session
-			$ret = $form->formconfirm($_SERVER['PHP_SELF'].'?recid='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+			$ret = $form->formconfirm($_SERVER['PHP_SELF'].'?id='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
 			if ($ret == 'html')
 			print '<br>';
 		}
@@ -939,7 +939,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Confirmation to delete
 	if ($action == 'delete') {
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
 	}
 
 	// Clone confirmation
@@ -979,7 +979,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		}
 
 		if (!$error)
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
 	}
 
 	// Call Hook formConfirm
@@ -1106,7 +1106,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<tr><td';
 		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
-
+		
 		if ($val['label'] == 'PartialPayment') {
 			if ($object->getSommePaiement()) {
 				$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
@@ -1123,7 +1123,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			} elseif ($balance == 0) {
 				print $object->paye = $langs->trans('PaidReceipt');
 			} else {
-				print $object->paye = $langs->trans('PartiallyPaidReceipt');
+				print $object->paye = $langs->trans('PartiallyPaidReceipt');			
 			}
 		} else {
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
@@ -1213,7 +1213,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			print '<td class="right">';
 			if ($user->admin) {
-				print '<a href="' . dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?id=' . $objp->rowid . "&amp;action=delete&amp;receipt=" . $id . '">';
+				print '<a href="' . dol_buildpath('/ultimateimmo/receipt/payment/card.php', 1) . '?id=' . $objp->rowid . "&amp;action=delete&amp;receipt=" . $id . '">';
 				print img_delete();
 				print '</a>';
 			}
@@ -1320,18 +1320,18 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			// Validate
 			if ($object->status == ImmoReceipt::STATUS_DRAFT) {
 				if ($permissiontoadd) {
-					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
+					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
 				} else {
 					print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('Validate') . '</a></div>';
 				}
 			}
 
 			// Send
-			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
+			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
 
 			// Modify
 			if ($permissiontoadd) {
-				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
+				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
 			} else {
 				print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
 			}
@@ -1350,12 +1350,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			// Classify 'paid'
 			if ($object->paye == 0 && round($remaintopay) <= 0 && $permissiontoadd) {
-				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&recid=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
+				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&id=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
 			}
 
 			// Reopen
 			if ($object->paye == 0) {
-				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=reopen&recid=' . $id . '">' . $langs->trans('ReOpen') . '</a></div>';
+				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=reopen&id=' . $id . '">' . $langs->trans('ReOpen') . '</a></div>';
 			}
 
 			// Clone
@@ -1399,7 +1399,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		$MAXEVENT = 10;
 
-		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1) . '?recid=' . $object->id . '">';
+		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1) . '?id=' . $object->id . '">';
 		$morehtmlright .= $langs->trans("SeeAll");
 		$morehtmlright .= '</a>';
 
