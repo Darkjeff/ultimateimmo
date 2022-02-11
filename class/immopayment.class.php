@@ -1249,7 +1249,7 @@ class ImmoPayment extends CommonObject
 	 *  Create an intervention document on disk using template defined into PROJECT_ADDON_PDF
 	 *
 	 *  @param	string		$modele			Force template to use ('' by default)
-	 *  @param	Translate	$outputlangs	Objet lang to use for translation
+	 *  @param	Translate	$outputlangs	Object lang to use for translation
 	 *  @param  int			$hidedetails    Hide details of lines
 	 *  @param  int			$hidedesc       Hide description
 	 *  @param  int			$hideref        Hide ref
@@ -1261,10 +1261,14 @@ class ImmoPayment extends CommonObject
 
 		$langs->load("ultimateimmo@ultimateimmo");
 
-		if (empty($modele)) {
-			$this->error='PDFModelMissing';
-			$this->errors[]='PDFModelMissing';
-			return -1;
+		if (!dol_strlen($modele)) {
+			$modele = 'quittance';
+
+			if ($this->model_pdf) {
+				$modele = $this->model_pdf;
+			} elseif (!empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) {
+				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
+			}
 		}
 
 		$modelpath = "/ultimateimmo/core/modules/ultimateimmo/doc/";

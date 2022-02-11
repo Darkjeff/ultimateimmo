@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2015       Alexandre Spangaro      <aspangaro@open-dsi.fr>
- * Copyright (C) 2018-2020  Philippe GRAND  		<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022  Philippe GRAND  		<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ if ($action == 'confirm_delete' && $confirm == 'yes' && $usercandelete)
 	if ($result > 0)
 	{
         $db->commit();
-        header("Location: ".dol_buildpath('/ultimateimmo/payment/immopayment_card.php',1));
+		header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1));
         exit;
 	}
 	else
@@ -103,7 +103,7 @@ if ($action == 'confirm_delete' && $confirm == 'yes' && $usercandelete)
 if ($action == 'confirm_valide' && $confirm == 'yes' && $usercancreate)
 {
 	$db->begin();
-
+//var_dump($object);exit;
 	$result=$object->valide();
 
 	if ($result > 0)

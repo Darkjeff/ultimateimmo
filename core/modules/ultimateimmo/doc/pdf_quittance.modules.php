@@ -255,6 +255,9 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 
+			$receipt = new ImmoReceipt($this->db);
+			$receipt->fetch($object->fk_receipt);
+
 			// On recupere les infos societe
 			$renter = new ImmoRenter($this->db);
 			$result = $renter->fetch($object->fk_renter);
@@ -319,8 +322,8 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->SetXY($posX, $posY);
 
 				$amountalreadypaid = 0;
-				if ($object->getSommePaiement()) {
-					$amountalreadypaid = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+				if ($receipt->getSommePaiement()) {
+					$amountalreadypaid = price($receipt->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
 				}
 				if ($amountalreadypaid  > 0) {
 					$text = 'Reçu de ' . $renter->civilite . '' . $renter->firstname . ' ' . $renter->lastname . ' la somme de ' . $amountalreadypaid . "\n";
