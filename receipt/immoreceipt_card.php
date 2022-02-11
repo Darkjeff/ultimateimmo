@@ -194,7 +194,8 @@ if (empty($reshook)) {
 			$result = $paiement->fetch(GETPOST('paiement_id'));
 			if ($result > 0) {
 				$result = $paiement->delete($user); // If fetch ok and found
-				header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
+				header("Location:" . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 2));
+			exit();
 			}
 			if ($result < 0) {
 				setEventMessages(null, $paiement->errors, 'errors');
@@ -1213,7 +1214,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			print '<td class="right">';
 			if ($user->admin) {
-				print '<a href="' . dol_buildpath('/ultimateimmo/receipt/payment/card.php', 1) . '?id=' . $objp->rowid . "&amp;action=delete&amp;receipt=" . $id . '">';
+				print '<a href="' . dol_buildpath('/ultimateimmo/receipt/payment/card.php', 1) . '?id=' . $objp->rowid . "&amp;action=delete" . '">';
 				print img_delete();
 				print '</a>';
 			}
