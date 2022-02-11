@@ -736,8 +736,9 @@ if (isset($totalarray['pos'])) {
 		}
 	}
 	print '</tr>';
+
 	//Validate Payments
-	print dolGetButtonTitle($langs->trans("ValidatePayments"), $langs->trans("MenuValidateReceipt"), 'fa fa-plus-circle', '../receipt/immoreceipt_list.php?action=validaterent');
+	print '<div class="inline-block divButAction"><a class="butAction" href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1) . '?action=validaterent">' . $langs->trans('MenuValidateReceipt') . '</a></div>';
 }
 
 // If no record found

@@ -894,7 +894,7 @@ class modUltimateimmo extends DolibarrModules
 			'user' => 2
 		);								// 0=Menu for internal users, 1=external users, 2=both 
 
-		$this->menu[$r++] = array(
+		/*$this->menu[$r++] = array(
 			'fk_menu' => 'fk_mainmenu=immoreceipts,fk_leftmenu=ultimateimmo_immoreceipt',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 			'type' => 'left',							// This is a Left menu entry
 			'titre' => 'MenuValidateReceipt',
@@ -907,7 +907,7 @@ class modUltimateimmo extends DolibarrModules
 			'perms' => '1',							// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
-		);								// 0=Menu for internal users, 1=external users, 2=both 
+		);								// 0=Menu for internal users, 1=external users, 2=both */
 
 		$this->menu[$r++] = array(
 			'fk_menu' => 'fk_mainmenu=immoreceipts,fk_leftmenu=ultimateimmo_immoreceipt',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
