@@ -23,19 +23,39 @@
  */
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
-// Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php";
+}
+// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1)) . "/main.inc.php";
+}
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php";
+}
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) {
+	$res = @include "../main.inc.php";
+}
+if (!$res && file_exists("../../main.inc.php")) {
+	$res = @include "../../main.inc.php";
+}
+if (!$res && file_exists("../../../main.inc.php")) {
+	$res = @include "../../../main.inc.php";
+}
+if (!$res) {
+	die("Include of main fails");
+}
 
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
@@ -45,30 +65,29 @@ dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
 //require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
-require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
-require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
+require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
+require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 
 // Load translation files required by the page
-$langs->loadLangs(array("bills","banks","companies"));
+$langs->loadLangs(array("bills", "banks", "companies"));
 
 // Security check
-$id=GETPOST('rowid')?GETPOST('rowid', 'int'):GETPOST('id', 'int');
-$action=GETPOST('action', 'aZ09');
-$confirm=GETPOST('confirm');
-if ($user->societe_id) $socid=$user->societe_id;
+$id = GETPOST('rowid') ? GETPOST('rowid', 'int') : GETPOST('id', 'int');
+$action = GETPOST('action', 'aZ09');
+$confirm = GETPOST('confirm');
+if ($user->societe_id) $socid = $user->societe_id;
 // TODO Add rule to restrict access payment
 //$result = restrictedArea($user, 'facture', $id,'');
 
-$receipt=new ImmoReceipt($db);
+$receipt = new ImmoReceipt($db);
 $receipt->fetch($id);
 
 $object = new ImmoPayment($db);
 $object->fetch($receipt->fk_payment);
 
-if ($id > 0)
-{
-	$result=$object->fetch($id);
-	if (! $result) dol_print_error($db, 'Failed to get payment id '.$id);
+if ($id > 0) {
+	$result = $object->fetch($id);
+	if (!$result) dol_print_error($db, 'Failed to get payment id ' . $id);
 }
 
 $usercanread = $user->rights->ultimateimmo->read;
@@ -81,44 +100,36 @@ $usercandelete = $user->rights->ultimateimmo->delete || ($usercancreate && $obje
  */
 
 // Delete payment
-if ($action == 'confirm_delete' && $confirm == 'yes' && $usercandelete)
-{
+if ($action == 'confirm_delete' && $confirm == 'yes' && $usercandelete) {
 	$db->begin();
 
 	$result = $object->delete($user);
-	if ($result > 0)
-	{
-        $db->commit();
+	if ($result > 0) {
+		$db->commit();
 		header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1));
-        exit;
-	}
-	else
-	{
+		exit;
+	} else {
 		setEventMessages($object->error, $object->errors, 'errors');
-        $db->rollback();
+		$db->rollback();
 	}
 }
 
 // Create payment
-if ($action == 'confirm_valide' && $confirm == 'yes' && $usercancreate)
-{
+if ($action == 'confirm_valide' && $confirm == 'yes' && $usercancreate) {
 	$db->begin();
-//var_dump($object);exit;
-	$result=$object->valide();
+	//var_dump($object);exit;
+	$result = $receipt->validate($user);
 
-	if ($result > 0)
-	{
+	if ($result > 0) {
 		$db->commit();
 
-		$receipts=array();	// TODO Get all id of receipts linked to this payment
-		foreach($receipts as $id)
-		{
+		$receipts = array();	// TODO Get all id of receipts linked to this payment
+		foreach ($receipts as $id) {
 			$rec = new ImmoReceipt($db);
 			$rec->fetch($id);
 
 			$outputlangs = $langs;
-			if (! empty($_REQUEST['lang_id']))
-			{
+			if (!empty($_REQUEST['lang_id'])) {
 				$outputlangs = new Translate("", $conf);
 				$outputlangs->setDefaultLang($_REQUEST['lang_id']);
 			}
@@ -127,11 +138,9 @@ if ($action == 'confirm_valide' && $confirm == 'yes' && $usercancreate)
 			}
 		}
 
-		header('Location: card.php?id='.$object->id);
+		header('Location: card.php?id=' . $object->id);
 		exit;
-	}
-	else
-	{
+	} else {
 		setEventMessages($object->error, $object->errors, 'errors');
 		$db->rollback();
 	}
@@ -253,25 +262,62 @@ print '<tr><td>'.$langs->trans('Mode').'</td><td>'.$fk_mode_reglement.'</td></tr
 // Amount
 print '<tr><td>'.$langs->trans('Amount').'</td><td>'.price($object->amount, 0, $outputlangs, 1, -1, -1, $conf->currency).'</td></tr>';
 
+// Bank account
+if (!empty($conf->banque->enabled)) {
+	$bankline = new AccountLine($db);
+
+	if ($object->fk_account > 0) {
+		$bankline->fetch($object->bank_line);
+		if ($bankline->rappro) {
+			$disable_delete = 1;
+			$title_button = dol_escape_htmltag($langs->transnoentitiesnoconv("CantRemoveConciliatedPayment"));
+		}
+
+		print '<tr>';
+		print '<td>'.$langs->trans('BankAccount').'</td>';
+		print '<td>';
+		$accountstatic = new Account($db);
+		$accountstatic->fetch($object->fk_account);
+		print $accountstatic->getNomUrl(1);
+		print '</td>';
+		print '</tr>';
+	}
+}
+
+// Bank transaction
+if (!empty($conf->banque->enabled)) {
+	if ($object->fk_account > 0) {
+		if ($object->type_code == 'CHQ' && $bankline->fk_bordereau > 0) {
+			include_once DOL_DOCUMENT_ROOT.'/compta/paiement/cheque/class/remisecheque.class.php';
+			$bordereau = new RemiseCheque($db);
+			$bordereau->fetch($bankline->fk_bordereau);
+
+			print '<tr>';
+			print '<td>'.$langs->trans('CheckReceipt').'</td>';
+			print '<td>';
+			print $bordereau->getNomUrl(1);
+			print '</td>';
+			print '</tr>';
+		}
+	}
+
+	print '<tr>';
+	print '<td>'.$langs->trans('BankTransactionLine').'</td>';
+	print '<td>';
+	if ($object->fk_account > 0) {
+		$bankline->fetch($object->bank_line);
+		//var_dump($object->bank_line);exit;
+		print $bankline->getNomUrl(1, 0, 'showconciliatedandaccounted');
+	} else {
+		$langs->load("admin");
+		print '<span class="opacitymedium">'.$langs->trans("NoRecordFoundIBankcAccount", $langs->transnoentitiesnoconv("Module85Name")).'</span>';
+	}
+	print '</td>';
+	print '</tr>';
+}
+
 // Note
 print '<tr><td>'.$langs->trans('Note').'</td><td>'.nl2br($object->note_public).'</td></tr>';
-
-// Bank account
-if (! empty($conf->banque->enabled))
-{
-    if ($object->bank_account)
-    {
-    	$bankline=new AccountLine($db);
-    	$bankline->fetch($object->bank_line);
-
-    	print '<tr>';
-    	print '<td>'.$langs->trans('BankTransactionLine').'</td>';
-		print '<td>';
-		print $bankline->getNomUrl(1, 0, 'showall');
-    	print '</td>';
-    	print '</tr>';
-    }
-}
 
 print '</table>';
 
