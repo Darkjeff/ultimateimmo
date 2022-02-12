@@ -149,6 +149,7 @@ if ($reshook < 0) {
 }
 
 if (empty($reshook)) {
+
 	/**
 	 * 	Classify paid
 	 */
@@ -1333,7 +1334,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			// Modify
 			if ($permissiontoadd) {
-				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
+				print '<a class="butAction' . ($conf->use_javascript_ajax ? ' reposition' : '') . '" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
 			} else {
 				print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
 			}
@@ -1358,7 +1359,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			// Reopen
 			if ($object->paye == 0) {
-				print '<div class="inline-block divButAction"><a class="butAction'.($conf->use_javascript_ajax ? ' reposition' : '').'" href="' . $_SERVER['PHP_SELF'] . '?action=reopen&id=' . $id . '">' . $langs->trans('ReOpen') . '</a></div>';
+				print '<div class="inline-block divButAction"><a class="butAction' . ($conf->use_javascript_ajax ? ' reposition' : '') . '" href="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&amp;action=reopen">' . $langs->trans('ReOpen') . '</a></div>';
 			}
 
 			// Clone
@@ -1386,13 +1387,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		// Documents generes
 		$objref = dol_sanitizeFileName($object->ref);
-		$relativepath = $objref.'/'.$objref.'.pdf';
-		$filedir = $conf->ultimateimmo->dir_output.'/'.'receipt'.'/'.$objref;
-		$urlsource = $_SERVER["PHP_SELF"]."?id=".$object->id;
+		$relativepath = $objref . '/' . $objref . '.pdf';
+		$filedir = $conf->ultimateimmo->dir_output . '/' . 'receipt' . '/' . $objref;
+		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
 		$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
 		//$object->model_pdf = 'quittance';
-		print $formfile->showdocuments('ultimateimmo', 'receipt/'.$objref, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $langs->defaultlang, 0, $object);
+		print $formfile->showdocuments('ultimateimmo', 'receipt/' . $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $langs->defaultlang, 0, $object);
 
 		// Show links to link elements
 		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));
