@@ -159,6 +159,7 @@ if (empty($reshook)) {
 	}
 
 	if ($action == 'reopen') {
+		$receipt = new ImmoReceipt($db);
 		$result = $receipt->fetch($id);
 		if ($receipt->paye) {
 			$result = $receipt->setUnpaid($user);
@@ -1350,18 +1351,19 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}*/
 
 			// Classify 'paid'
-			if ($object->paye == 0 && round($remaintopay) <= 0 && $permissiontoadd) {
-				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=paid&id=' . $id . '">' . $langs->trans('ClassifyPaid') . '</a></div>';
+			if ($object->paye == 0 && round($remaintopay) <= 0 && $permissiontoadd
+			) {
+				print '<div class="inline-block divButAction"><a class="butAction'.($conf->use_javascript_ajax ? ' reposition' : '').'" href="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&amp;action=paid">' . $langs->trans('ClassifyPaid') . '</a></div>';
 			}
 
 			// Reopen
 			if ($object->paye == 0) {
-				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=reopen&id=' . $id . '">' . $langs->trans('ReOpen') . '</a></div>';
+				print '<div class="inline-block divButAction"><a class="butAction'.($conf->use_javascript_ajax ? ' reposition' : '').'" href="' . $_SERVER['PHP_SELF'] . '?action=reopen&id=' . $id . '">' . $langs->trans('ReOpen') . '</a></div>';
 			}
 
 			// Clone
 			if ($permissiontoadd) {
-				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=immoreceipt">' . $langs->trans("ToClone") . '</a></div>';
+				print '<div class="inline-block divButAction"><a class="butAction'.($conf->use_javascript_ajax ? ' reposition' : '').'" href="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=immoreceipt">' . $langs->trans("ToClone") . '</a></div>';
 			}
 
 			if ($permissiontodelete) {
