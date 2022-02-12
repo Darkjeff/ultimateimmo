@@ -409,23 +409,18 @@ foreach ($search as $key => $val) {
 			$mode_search = 2;
 		}
 		if ($key == 'ref') {
-			$key = 't.ref';
 			$search[$key] = $search['ref'];
 		}
 		if ($key == 'label') {
-			$key = 't.label';
 			$search[$key] = $search['label'];
 		}
 		if ($key == 'fk_property') {
-			$key = 't.fk_property';
 			$search[$key] = $search['fk_property'];
 		}
 		if ($key == 'fk_owner') {
-			$key = 't.fk_owner';
 			$search[$key] = $search['fk_owner'];
 		}
 		if ($key == 'fk_soc') {
-			$key = 't.fk_soc';
 			$search[$key] = $search['fk_soc'];
 		}
 		if ($search[$key] != '') {
