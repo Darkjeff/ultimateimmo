@@ -1183,12 +1183,11 @@ if ($action == 'createall') {
 		// Show total line
 		print '<tr class="liste_total">';
 		print '<td class="left">' . $langs->trans("Total") . '</td>';
-		print '<td colspan="3"></td>';
+		print '<td colspan="2"></td>';
 		print '<td class="right">' . price($total_montant_tot, 0, '', 1, -1, -1, $conf->currency) . '</td>';
 		print '<td class="right">'.price($total_payed, 0, '', 1, -1, -1, $conf->currency).'</td>';
 		print '<td class="right">'.price($total_due, 0, '', 1, -1, -1, $conf->currency).'</td>';
-		print '<td class="left"></td>';
-		print '<td class="left"></td>';
+		print '<td colspan="3"></td>';
 		print '</tr>';
 
 		print "</table>\n";
