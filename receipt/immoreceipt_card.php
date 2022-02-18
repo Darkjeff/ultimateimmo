@@ -135,7 +135,7 @@ if (empty($reshook)) {
 	if ($action == 'paid') {
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
-		$result = $receipt->set_paid($user);
+		$result = $receipt->setPaid($user);
 		Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 	}
 
@@ -1320,7 +1320,7 @@ if ($action == 'createall') {
 				print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
 			}
 
-			////// generate pdf
+			// generate pdf
 			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=builddoc&id=' . $id . '">' . $langs->trans('Quittance') . '</a></div>';
 
 			// Create payment
