@@ -182,7 +182,7 @@ if ($action == 'add_payment') {
 			$payment->date_payment = $date_payment;
 			$payment->amounts      = $amounts;   // Tableau de montant
 			$payment->fk_mode_reglement  = GETPOST('fk_mode_reglement', 'int');
-			$payment->fk_bank  = GETPOST('fk_bank', 'int');
+			$payment->fk_account  = GETPOST('fk_bank', 'int');
 			$payment->num_payment  = GETPOST('num_payment', 'int');
 			$payment->note_public  = GETPOST('note_public', 'string');
 
