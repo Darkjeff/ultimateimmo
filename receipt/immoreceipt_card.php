@@ -698,7 +698,7 @@ if ($action == 'createall') {
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as own";
-	$sql .= " WHERE preavis = 1 AND loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property AND own.rowid = prop.fk_owner ";
+	$sql .= " WHERE loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property ";
 	//print_r($sql);exit;
 	$sql .= $db->order($sortfield, $sortorder);
 	// Count total nb of records
@@ -733,7 +733,7 @@ if ($action == 'createall') {
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
 		print '<td>' . $langs->trans('RenterName') . '</td>';
-		print '<td>' . $langs->trans('Owner') . '</td>';
+		//print '<td>' . $langs->trans('Owner') . '</td>';
 		print '<td>' . $langs->trans('OwnerName') . '</td>';
 		print '<td class="right">' . $langs->trans('RentAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('ChargesAmount') . '</td>';
@@ -757,7 +757,7 @@ if ($action == 'createall') {
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->reflocataire . '</td>';
 				print '<td>' . $objp->rentername . '</td>';
-				print '<td>' . $objp->fk_owner . '</td>';
+				//print '<td>' . $objp->fk_owner . '</td>';
 				print '<td>' . $objp->ownername . '</td>';
 
 				print '<td class="right">' . price($objp->rentamount) . '</td>';
@@ -769,7 +769,7 @@ if ($action == 'createall') {
 				// Colonne choix contrat
 				print '<td class="center">';
 
-				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localref . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner .  '_' . $objp->fk_soc . '"' . ($objp->localref ? ' checked="checked"' : "") . '/>';
+				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localref . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_soc . '"' . ($objp->localref ? ' checked="checked"' : "") . '/>';
 				print '</td>';
 				print '</tr>'."\n";
 
