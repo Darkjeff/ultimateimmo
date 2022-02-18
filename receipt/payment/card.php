@@ -234,17 +234,34 @@ print '<table class="border" width="100%">';
 print '<tr><td class="titlefield">' . $langs->trans('Date') . '</td><td>' . dol_print_date($object->date_payment, 'day') . '</td></tr>';
 
 // Mode reglement
-$sql = "SELECT p.rowid, p.date_payment as dp, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label";
+$sql = "SELECT p.rowid, p.date_payment as dp, p.fk_mode_reglement, p.fk_account, c.code as type_code, c.libelle as mode_reglement_label";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as c ON p.fk_mode_reglement = c.id";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_account = b.rowid";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
 $sql .= " WHERE p.rowid = " . $id;
 $sql .= " AND p.entity IN (" . getEntity($object->element) . ")";
 $sql .= ' ORDER BY dp';
+
 $resql = $db->query($sql);
 if ($resql) {
-	$obj = $db->fetch_object($resql);
-	$fk_mode_reglement = $obj->mode_reglement_label;
-	$db->free();
+	$num = $db->num_rows($resql);
+
+	$i = 0;
+
+	require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
+	$accountstatic = new Account($db);
+
+	while ($i < $num) {
+		$objp = $db->fetch_object($resql);
+
+		$accountstatic->id = $objp->fk_account;
+		$accountstatic->fetch($objp->fk_account);
+		
+		$fk_mode_reglement = $objp->mode_reglement_label;
+
+		$i++;
+	}
 }
 print '<tr><td>' . $langs->trans('Mode') . '</td><td>' . $fk_mode_reglement . '</td></tr>';
 
@@ -254,7 +271,7 @@ print '<tr><td>' . $langs->trans('Amount') . '</td><td>' . price($object->amount
 // Bank account
 if (!empty($conf->banque->enabled)) {
 	$bankline = new AccountLine($db);
-
+	$bankaccount = new Account($db);
 	if ($object->fk_account > 0) {
 		$bankline->fetch($object->bank_line);
 		if ($bankline->rappro) {
@@ -265,9 +282,9 @@ if (!empty($conf->banque->enabled)) {
 		print '<tr>';
 		print '<td>' . $langs->trans('BankAccount') . '</td>';
 		print '<td>';
-		$accountstatic = new Account($db);
-		$accountstatic->fetch($object->fk_account);
-		print $accountstatic->getNomUrl(1);
+
+		$bankaccount->fetch($object->fk_account);
+		print $bankaccount->getNomUrl(1);
 		print '</td>';
 		print '</tr>';
 	}
@@ -293,14 +310,7 @@ if (!empty($conf->banque->enabled)) {
 	print '<tr>';
 	print '<td>' . $langs->trans('BankTransactionLine') . '</td>';
 	print '<td>';
-	if ($object->fk_account > 0) {
-		$bankline->fetch($object->bank_line);
-		//var_dump($object->bank_line);exit;
-		print $bankline->getNomUrl(1, 0, 'showconciliatedandaccounted');
-	} else {
-		$langs->load("admin");
-		print '<span class="opacitymedium">' . $langs->trans("NoRecordFoundIBankcAccount", $langs->transnoentitiesnoconv("Module85Name")) . '</span>';
-	}
+	print '<a href="' . DOL_URL_ROOT.'/compta/bank/line.php?rowid=' . $accountstatic->id .'">' . img_object($langs->trans("Payment"), "payment") . ' ' . $accountstatic->id . '</a></td>';
 	print '</td>';
 	print '</tr>';
 }

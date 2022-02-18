@@ -1080,7 +1080,7 @@ if ($action == 'createall') {
 
 	// Due date	
 	print '<td class="left">';
-	print $form->selectDate(!empty($date_payment) ? $date_payment : '-1', 'payment', 0, 0, 0, 'addall', 1);
+	print $form->selectDate(!empty($date_payment) ? $date_payment : '-1', 'payment', 0, 0, 0, 'addall', 1, 1);
 	print '</td>';
 
 	// note_public
@@ -1093,7 +1093,7 @@ if ($action == 'createall') {
 
 	// AccountToCredit
 	print '<td class="left">';
-	print $form->select_comptes(GETPOSTISSET('accountid', 'int') ? GETPOST('accountid', 'int') : $payment->fk_bank, "accountid", 0, '', 1);  // Show open bank account list
+	print $form->select_comptes(GETPOSTISSET('accountid', 'int') ? GETPOST('accountid', 'int') : $payment->fk_account, "accountid", 0, '', 1);  // Show open bank account list
 	print '</td>';
 	
 	// num_payment
@@ -1118,6 +1118,7 @@ if ($action == 'createall') {
 		print '<td></td>';
 		print '<td></td>';
 		print '<td></td>';
+		print '<td></td>';
 		// Action column
 		print '<td class="liste_titre maxwidthsearch">';
 		$searchpicto = $form->showFilterButtons();
@@ -1129,11 +1130,11 @@ if ($action == 'createall') {
 		print '<td>' . $langs->trans('NomLoyer') . '</td>';
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
-		//print '<td>' . $langs->trans('Owner') . '</td>';
 		print '<td class="right">' . $langs->trans('TotalAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('PartialPayment') . '</td>';
 		print '<td class="right">' . $langs->trans('Balance') . '</td>';
 		print '<td class="right">' . $langs->trans('income') . '</td>';
+		print '<td></td>';
 		print '<td>';
 		print $form->showCheckAddButtons('checkforselect', 1);
 		print '</td>';
@@ -1143,11 +1144,9 @@ if ($action == 'createall') {
 			while ($i < $num) {
 				$objp = $db->fetch_object($resql);
 				print '<tr class="oddeven">';
-	//var_dump($objp);exit;
 				print '<td>' . $objp->receiptname . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->nom . '</td>';
-				//print '<td>' . $objp->fk_owner_ . '</td>';
 
 				print '<td class="right">' .  price($objp->total, 0, '', 1, -1, -1, $conf->currency) . '</td>';
 				print '<td class="right">' . price($objp->partial_payment, 0, '', 1, -1, -1, $conf->currency) . '</td>';
@@ -1163,6 +1162,7 @@ if ($action == 'createall') {
 				print '<td class="right">';
 				print '<input type="text" name="incomeprice_' . $objp->reference . '" id="incomeprice_' . $objp->reference . '" size="6" value="" class="flat">';
 				print '</td>';
+				print '<td></td>';
 				
 				// Action column
 				print '<td class="nowrap center">';

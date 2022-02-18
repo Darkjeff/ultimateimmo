@@ -255,5 +255,6 @@ LinkToRent =Lien vers Contrat/Location
 MorPhy = Nature du locataire
 NoThirdPartyAssociatedToRenter = Pas de tiers associé à ce locataire
 ConfirmCreateThirdParty=Êtes-vous sûr de vouloir créer un tiers pour ce locataire ?
-ValidatePayment = Valider les paiements 
+ValidatePayment = Valider les paiements
+CreatePDF = Générez le PDF
 
