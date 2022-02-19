@@ -366,7 +366,8 @@ $morecss = array();
 // --------------------------------------------------------------------
 $sql = 'SELECT ';
 $sql .= $object->getFieldList('t');
-$sql .= ',lc.lastname as nomlocataire, lc.firstname as prenomlocataire, ll.label as nomlocal, ll.rowid as property_id, soc.rowid as soc_id, soc.nom as owner_name';
+$sql .= ',lc.lastname as nomlocataire, lc.firstname as prenomlocataire, soc.rowid as soc_id, soc.nom as owner_name';
+$sql .= ',ll.label as nomlocal, ll.rowid as property_id';
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
 	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
@@ -379,9 +380,9 @@ $reshook = $hookmanager->executeHooks('printFieldListSelect', $parameters, $obje
 $sql .= preg_replace('/^,/', '', $hookmanager->resPrint);
 $sql = preg_replace('/,\s*$/', '', $sql);
 $sql .= " FROM " . MAIN_DB_PREFIX . $object->table_element . " as t";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = t.fk_soc";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = t.fk_soc";
 if (isset($extrafields->attributes[$object->table_element]['label']) && is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) {
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . $object->table_element . "_extrafields as ef on (t.rowid = ef.fk_object)";
 }
@@ -394,7 +395,7 @@ if ($object->ismultientitymanaged == 1) {
 } else {
 	$sql .= " WHERE 1 = 1";
 }
-
+//print_r($sql);exit;
 foreach ($search as $key => $val) {
 	if (array_key_exists($key, $object->fields)) {
 		if ($key == 'status' && $search[$key] == -1) {

@@ -135,7 +135,7 @@ if (empty($reshook)) {
 	if ($action == 'paid') {
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
-		$result = $receipt->setPaid($user);
+		$result = $receipt->set_paid($user);
 		Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 	}
 
@@ -698,7 +698,7 @@ if ($action == 'createall') {
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as own";
-	$sql .= " WHERE loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property ";
+	$sql .= " WHERE preavis = 1 AND loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property AND own.rowid = prop.fk_owner ";
 	//print_r($sql);exit;
 	$sql .= $db->order($sortfield, $sortorder);
 	// Count total nb of records
@@ -733,7 +733,7 @@ if ($action == 'createall') {
 		print '<td>' . $langs->trans('Nomlocal') . '</td>';
 		print '<td>' . $langs->trans('Renter') . '</td>';
 		print '<td>' . $langs->trans('RenterName') . '</td>';
-		//print '<td>' . $langs->trans('Owner') . '</td>';
+		print '<td>' . $langs->trans('Owner') . '</td>';
 		print '<td>' . $langs->trans('OwnerName') . '</td>';
 		print '<td class="right">' . $langs->trans('RentAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('ChargesAmount') . '</td>';
@@ -757,7 +757,7 @@ if ($action == 'createall') {
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->reflocataire . '</td>';
 				print '<td>' . $objp->rentername . '</td>';
-				//print '<td>' . $objp->fk_owner . '</td>';
+				print '<td>' . $objp->fk_owner . '</td>';
 				print '<td>' . $objp->ownername . '</td>';
 
 				print '<td class="right">' . price($objp->rentamount) . '</td>';
@@ -769,7 +769,7 @@ if ($action == 'createall') {
 				// Colonne choix contrat
 				print '<td class="center">';
 
-				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localref . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_soc . '"' . ($objp->localref ? ' checked="checked"' : "") . '/>';
+				print '<input type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localref . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner .  '_' . $objp->fk_soc . '"' . ($objp->localref ? ' checked="checked"' : "") . '/>';
 				print '</td>';
 				print '</tr>'."\n";
 
@@ -1127,6 +1127,20 @@ if ($action == 'createall') {
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
 
+	// Add symbol of currency
+	$cursymbolbefore = $cursymbolafter = '';
+	if ($object->multicurrency_code) {
+		$currency_symbol = $langs->getCurrencySymbol($object->multicurrency_code);
+		$listofcurrenciesbefore = array('$', '£', 'S/.', '¥');
+		if (in_array($currency_symbol, $listofcurrenciesbefore)) $cursymbolbefore .= $currency_symbol;
+		else {
+			$tmpcur = $currency_symbol;
+			$cursymbolafter .= ($tmpcur == $currency_symbol ? ' ' . $tmpcur : $tmpcur);
+		}
+	} else {
+		$cursymbolafter = $langs->getCurrencySymbol($conf->currency);
+	}
+
 	// List of payments
 	$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, r.partial_payment, ";
 	$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
@@ -1194,7 +1208,7 @@ if ($action == 'createall') {
 					print $bankaccountstatic->getNomUrl(1, 'transactions');
 				print '</td>';
 			}
-			print '<td class="right">' . price($objp->amount, 0, $outputlangs, 1, -1, -1, 'auto') . "</td>\n";
+			print '<td class="right">' . $cursymbolbefore . price($objp->amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td>\n";
 
 			print '<td class="right">';
 			if ($user->admin) {
@@ -1210,13 +1224,13 @@ if ($action == 'createall') {
 		}
 
 		if ($object->paye == 0) {
-			print '<tr><td colspan="4" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . price($objp->amount, 0, $outputlangs, 1, -1, -1, 'auto') . '</b>' . "</td><td>&nbsp;</td></tr>\n";
-			print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . price($objp->amount, 0, $outputlangs, 1, -1, -1, 'auto') . "</td><td>&nbsp;</td></tr>\n";
+			print '<tr><td colspan="4" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs) . ' ' . $cursymbolafter . '</b>' . "</td><td>&nbsp;</td></tr>\n";
+			print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
 
 			$remaintopay = $object->total_amount - $object->getSommePaiement();
 
 			print '<tr><td colspan="4" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
-			print '<td class="right"' . ($remaintopay ? ' class="amountremaintopay"' : '') . '>' . price($objp->amount, 0, $outputlangs, 1, -1, -1, 'auto') . "</td><td>&nbsp;</td></tr>\n";
+			print '<td class="right"' . ($remaintopay ? ' class="amountremaintopay"' : '') . '>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
 		}
 		print '</table>';
 		$db->free($resql);
@@ -1320,7 +1334,7 @@ if ($action == 'createall') {
 				print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
 			}
 
-			// generate pdf
+			////// generate pdf
 			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=builddoc&id=' . $id . '">' . $langs->trans('Quittance') . '</a></div>';
 
 			// Create payment
