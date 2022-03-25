@@ -787,35 +787,33 @@ if ($action == 'createall') {
 	print '</form>';
 }
 
-	// Part to edit record
-	if (($id || $ref) && $action == 'edit')
-	{
-		print load_fiche_titre($langs->trans("MenuNewImmoReceipt", $langs->transnoentitiesnoconv("ImmoReceipt")));
+// Part to edit record
+if (($id || $ref) && $action == 'edit') {
+	print load_fiche_titre($langs->trans("MenuNewImmoReceipt", $langs->transnoentitiesnoconv("ImmoReceipt")));
 
-		$receipt = new ImmoReceipt($db);
-		$result = $receipt->fetch($id);
+	$receipt = new ImmoReceipt($db);
+	$result = $receipt->fetch($id);
 
-		if ($action == 'delete')
-		{
-			// Param url = id de la periode à supprimer - id session
-			$ret = $form->formconfirm($_SERVER['PHP_SELF'].'?recid='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
-			if ($ret == 'html')
+	if ($action == 'delete') {
+		// Param url = id de la periode à supprimer - id session
+		$ret = $form->formconfirm($_SERVER['PHP_SELF'] . '?recid=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+		if ($ret == 'html')
 			print '<br>';
-		}
+	}
 
-		print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
-		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
-		print '<input type="hidden" name="action" value="update">';
-		print '<input type="hidden" name="id" value="'.$object->id.'">';
-		if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-		if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
+	print '<input type="hidden" name="action" value="update">';
+	print '<input type="hidden" name="id" value="' . $object->id . '">';
+	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
+	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
-		print dol_get_fiche_head();
+	print dol_get_fiche_head();
 
-		print '<table class="border centpercent tableforfieldedit">'."\n";
+	print '<table class="border centpercent tableforfieldedit">' . "\n";
 
-		// Common attributes
-		$object->fields = dol_sort_array($object->fields, 'position');
+	// Common attributes
+	$object->fields = dol_sort_array($object->fields, 'position');
 
 	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
@@ -844,7 +842,7 @@ if ($action == 'createall') {
 				$balance = price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
 				print '<input name="balance" class="flat" size="8" value="' . $balance . '">';
 			}
-			} elseif ($val['label'] == 'Paye') {
+		} elseif ($val['label'] == 'Paye') {
 			if ($totalpaye == 0) {
 				$object->paye = $langs->trans('UnPaidReceipt');
 				print '<input name="unpaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
@@ -863,9 +861,9 @@ if ($action == 'createall') {
 			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
 			else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
-			print '</td>';
-			print '</tr>';
-		}
+		print '</td>';
+		print '</tr>';
+	}
 
 		// Other attributes
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
