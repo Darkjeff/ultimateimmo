@@ -214,7 +214,7 @@ if ($action == 'validaterent') {
 	$sql1 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 	$sql1 .= " WHERE lo.rowid = p.fk_receipt";
 	$sql1 .= " GROUP BY p.fk_receipt )";
-	//var_dump($sql1);exit;exit;
+	//var_dump($sql1);exit;
 	// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
 	$resql1 = $db->query($sql1);
 	if (!$resql1) {
@@ -274,7 +274,8 @@ if ($massaction == 'validate') {
 	foreach ($toselect as $key => $val) {
 		$immoreceipt = new ImmoReceipt($db);
 		$result = $immoreceipt->fetch($val);
-
+		
+		//var_dump($toselect, $val);
 		if ($result >= 0 && $object->status == ImmoReceipt::STATUS_DRAFT) {
 			$resultvalid = $immoreceipt->validate($user);
 
@@ -301,7 +302,7 @@ if ($massaction == 'validate') {
 		}
 	}
 }
-
+//exit;
 if (GETPOST('cancel', 'alpha')) {
 	$action = 'list';
 	$massaction = '';

@@ -197,6 +197,8 @@ if (empty($reshook)) {
 		}
 	}
 
+	
+
 	/**
 	 * Action generate quittance
 	 */
@@ -372,7 +374,7 @@ if (empty($reshook)) {
 
 			foreach ($mesLignesCochees as $maLigneCochee) {
 				$receipt = new ImmoReceipt($db);
-
+				
 				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
 
 				$monId = $maLigneCourante[0];
@@ -439,7 +441,6 @@ if (empty($reshook)) {
 
 		$receipt = new ImmoReceipt($db);
 		$result = $receipt->fetch($id);
-
 		$receipt->label 		= GETPOST('label');
 		if ($receipt->vat_tx != 0) {
 			$rentamount = price2num(GETPOST("rentamount"));
@@ -853,6 +854,8 @@ if (($id || $ref) && $action == 'edit') {
 				$object->paye = $langs->trans('PartiallyPaidReceipt');
 				print '<input name="partiallypaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
 			}
+		} elseif ($val['label'] == 'VatTx') {
+			print $form->load_tva("vat_tx", $object->default_vat_code ? $object->vat_tx.' ('.$object->default_vat_code.')' : $object->vat_tx, $mysoc, '', $object->id, $object->tva_npr, $object->type, false, 1);			
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
