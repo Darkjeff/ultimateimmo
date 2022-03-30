@@ -255,7 +255,7 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-
+				
 				$pagenb++;
 				$pdf->SetFillColor(224, 224, 224);
 

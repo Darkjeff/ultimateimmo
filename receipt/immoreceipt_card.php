@@ -414,7 +414,7 @@ if (empty($reshook)) {
 				$receipt->status = 0;
 				$receipt->paye = 0;
 				$result = $receipt->create($user);
-
+	//var_dump($receipt);
 				if ($result < 0) {
 					setEventMessages(null, $receipt->errors, 'errors');
 					$action = 'createall';
@@ -422,7 +422,7 @@ if (empty($reshook)) {
 				}
 			}
 		}
-
+		//exit;
 		if (empty($error)) {
 			setEventMessages($langs->trans("ReceiptPaymentsAdded"), null, 'mesgs');
 			Header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1));

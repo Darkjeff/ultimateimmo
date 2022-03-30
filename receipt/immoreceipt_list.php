@@ -276,10 +276,10 @@ if ($massaction == 'validate') {
 		$result = $immoreceipt->fetch($val);
 		
 		//var_dump($toselect, $val);
-		if ($result >= 0 && $object->status == ImmoReceipt::STATUS_DRAFT) {
+		if ($result > 0 && $object->status == ImmoReceipt::STATUS_DRAFT) {
 			$resultvalid = $immoreceipt->validate($user);
 
-			if ($resultvalid >= 0) {
+			if ($resultvalid > 0) {
 				if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE)) {
 					// Define output language
 					$outputlangs = $langs;
@@ -763,7 +763,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				$staticproperty = new ImmoProperty($db);
 				$staticproperty->fetch($object->fk_property);
 				//var_dump($staticproperty);exit;
-				if ($staticproperty->ref) {
+				if ($staticproperty) {
 					$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
 				}
 				print $staticproperty->ref;
@@ -818,6 +818,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 			}
 		}
 	}
+	//exit;
 	// Extra fields
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_print_fields.tpl.php';
 	// Fields from hook
