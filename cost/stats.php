@@ -71,19 +71,18 @@ if ($year == 0) {
 	$year_start = $year;
 }
 
-$type_stats = GETPOST("type_stats", 'int');
+$type_stats = GETPOST("type_stats", 'alpha');
 if (empty($type_stats)) {
 	$type_stats = 'cost_type';
 }
-
 
 /*
  * View
  */
 llxHeader('', 'Immobilier - charge par mois');
 
-$textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
-$textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';
+$textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?type_stats='.$type_stats.'&year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
+$textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?type_stats='.$type_stats.'&year=' . ($year_current + 1) . '">' . img_next() . '</a>';
 
 print load_fiche_titre("Charges $textprevyear " . $langs->trans("Year") . " $year_start $textnextyear");
 
@@ -97,27 +96,40 @@ for ($month_num = 1; $month_num <= 12; $month_num++) {
 }
 
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre oddeven"><td width=10%>' . $langs->trans("Type") . '</td>';
+print '<tr class="liste_titre oddeven"><td width=10%>';
+if ($type_stats=='cost_type') {
+	print $langs->trans("Type");
+} elseif ($type_stats=='fourn_type') {
+	print $langs->trans("Supplier");
+}
+print '</td>';
 print '<td class="left" width=10%>' . $langs->trans("Building") . '</td>';
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
 print '<td class="right">' . $langs->trans("Total") . '</td></tr>';
 
-$sql = "SELECT it.label AS type_charge, ib.label AS nom_immeuble";
+if ($type_stats=='cost_type') {
+	$fields = "it.label";
+} elseif ($type_stats=='fourn_type') {
+	$fields = "soc.nom";
+}
+$sql = 'SELECT '.$fields.' AS label , ib.label AS nom_immeuble';
 foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ib";
+if ($type_stats=='cost_type') {
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
+} elseif ($type_stats=='fourn_type') {
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as soc ON ic.fk_soc=soc.rowid";
+}
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON ic.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.rowid = ib.fk_property";
 $sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= "  AND ic.fk_cost_type = it.rowid";
-$sql .= "  AND ic.fk_property = ip.rowid AND ip.rowid = ib.fk_property";
-$sql .= " GROUP BY  it.label, ib.label";
+$sql .= ' GROUP BY  '.$fields.', ib.label';
 
 $resql = $db->query($sql);
 if ($resql) {
@@ -160,10 +172,13 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
+if ($type_stats=='cost_type') {
+	$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
+} elseif ($type_stats=='fourn_type') {
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as soc ON ic.fk_soc=soc.rowid";
+}
 $sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= "  AND ic.fk_cost_type = it.rowid";
 
 
 $resql = $db->query($sql);
