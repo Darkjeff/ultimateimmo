@@ -111,6 +111,7 @@ MenuStatisticsCostFourn = Coût : stats. par fourn.
 MenuStatisticsResult = Résultats : statistiques
 MenuListImmoCostType = Types de coût
 MenuNewImmoCostType = Nouveau type de coût
+MenuImmoCompteurStats=Statistique Conso
 
 #
 # Autres
