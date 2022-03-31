@@ -22,29 +22,49 @@
  */
 
 /**
- * \file htdocs/compta/ventilation/index.php
+ * \file ultimateimmo/result/result.php
  * \ingroup compta
  * \brief Page accueil ventilation
  */
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
-// Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php";
+}
+// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1)) . "/main.inc.php";
+}
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php";
+}
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) {
+	$res = @include "../main.inc.php";
+}
+if (!$res && file_exists("../../main.inc.php")) {
+	$res = @include "../../main.inc.php";
+}
+if (!$res && file_exists("../../../main.inc.php")) {
+	$res = @include "../../../main.inc.php";
+}
+if (!$res) {
+	die("Include of main fails");
+}
 
 
 // Class
-require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
+require_once DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php";
 
 
 // Load traductions files requiredby by page
@@ -52,13 +72,10 @@ $langs->loadLangs(array("ultimateimmo@ultimateimmo", "bills", "other"));
 
 // Filter
 $year = $_GET ["year"];
-if ($year == 0)
-{
-	$year_current = strftime ( "%Y", time () );
+if ($year == 0) {
+	$year_current = strftime("%Y", time());
 	$year_start = $year_current;
-}
-else
-{
+} else {
 	$year_current = $year;
 	$year_start = $year;
 }
@@ -66,12 +83,12 @@ else
 /*
  * View
  */
-llxHeader ( '', 'Immobilier - Resultat' );
+llxHeader('', 'Immobilier - Resultat');
 
-$textprevyear = '<a href="'.dol_buildpath('/ultimateimmo/result/result.php', 1).'?year='.($year_current - 1).'">'.img_previous().'</a>';
-$textnextyear = '<a href="'.dol_buildpath('/ultimateimmo/result/result.php', 1).'?year='.($year_current + 1).'">'.img_next().'</a>';
+$textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/result/result.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
+$textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/result/result.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';
 
-print load_fiche_titre($langs->trans("Encaissement")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear, '', 'title_accountancy');
+print load_fiche_titre($langs->trans("Encaissement") . " " . $textprevyear . " " . $langs->trans("Year") . " " . $year_start . " " . $textnextyear, '', 'title_accountancy');
 
 print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
@@ -106,10 +123,10 @@ $sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false
 $sql .= " GROUP BY  ib.label";
 
 $resql = $db->query($sql);
+$total_month=array();
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows($resql);
-
 	while ($i < $num) {
 		$row = $db->fetch_row($resql);
 		$total = 0;
@@ -118,6 +135,7 @@ if ($resql) {
 		foreach ($months_list as $month_num => $month_name) {
 			print '<td align="right">' . $row[$month_num] . '</td>';
 			$total += $row[$month_num];
+			$total_month[$month_num] += (float) $row[$month_num];
 		}
 		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
@@ -127,7 +145,14 @@ if ($resql) {
 } else {
 	print $db->lasterror(); // affiche la derniere erreur sql
 }
-
+//Total Ligne
+print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
+foreach ($months_list as $month_num => $month_name) {
+	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
+	$total += $row[$month_num];
+}
+print '<td align="right"><b>' . $total . '</b></td>';
+print '</tr>';
 print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td></tr>';
@@ -156,10 +181,10 @@ $sql .= "  AND ir.date_echeance <= '" . $db->idate(dol_get_last_day($y, 12, fals
 $sql .= " GROUP BY  ib.label";
 
 $resql = $db->query($sql);
+$total_month=array();
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows($resql);
-
 	while ($i < $num) {
 		$row = $db->fetch_row($resql);
 		$total = 0;
@@ -168,6 +193,7 @@ if ($resql) {
 		foreach ($months_list as $month_num => $month_name) {
 			print '<td align="right">' . $row[$month_num] . '</td>';
 			$total += $row[$month_num];
+			$total_month[$month_num] += (float) $row[$month_num];
 		}
 		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
@@ -177,6 +203,14 @@ if ($resql) {
 } else {
 	print $db->lasterror(); // affiche la derniere erreur sql
 }
+//Total Ligne
+print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
+foreach ($months_list as $month_num => $month_name) {
+	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
+	$total += $row[$month_num];
+}
+print '<td align="right"><b>' . $total . '</b></td>';
+print '</tr>';
 print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
@@ -222,7 +256,7 @@ if ($resqlpaiement && $resqlencaissement) {
 	while ($i < $num) {
 		$rowencaissement = $db->fetch_row($resqlencaissement);
 		$rowpaiement = $db->fetch_row($resqlpaiement);
-		$value_array[$rowencaissement[0]][0] =  $rowencaissement[0];
+		$value_array[$rowencaissement[0]][0] = $rowencaissement[0];
 		for ($j = 1; $j <= 13; $j++) {
 			$value_array[$rowencaissement[0]][$j] = ($rowencaissement[$j] - $rowpaiement[$j]);
 		}
@@ -242,18 +276,27 @@ foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
-
+$total_month=array();
 foreach ($value_array as $key => $val) {
 	$total = 0;
 	print '<tr class="oddeven"><td>' . $key . '</td>';
 	foreach ($months_list as $month_num => $month_name) {
 		print '<td align="right">' . $val[$month_num] . '</td>';
 		$total += $val[$month_num];
+		$total_month[$month_num] += (float) $val[$month_num];
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
 	print '</tr>';
 	$i++;
 }
+//Total Ligne
+print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
+foreach ($months_list as $month_num => $month_name) {
+	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
+	$total += $row[$month_num];
+}
+print '<td align="right"><b>' . $total . '</b></td>';
+print '</tr>';
 print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
@@ -286,6 +329,7 @@ $sql .= "  AND it.famille = 'Charge déductible' ";
 $sql .= " GROUP BY  ib.label";
 
 $resql = $db->query($sql);
+$total_month=array();
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows($resql);
@@ -298,6 +342,7 @@ if ($resql) {
 		foreach ($months_list as $month_num => $month_name) {
 			print '<td align="right">' . $row[$month_num] . '</td>';
 			$total += $row[$month_num];
+			$total_month[$month_num] += (float) $row[$month_num];
 		}
 		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
@@ -307,7 +352,14 @@ if ($resql) {
 } else {
 	print $db->lasterror(); // affiche la derniere erreur sql
 }
-
+//Total Ligne
+print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
+foreach ($months_list as $month_num => $month_name) {
+	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
+	$total += $row[$month_num];
+}
+print '<td align="right"><b>' . $total . '</b></td>';
+print '</tr>';
 print "</table>\n";
 
 // Revenu fiscal
@@ -369,7 +421,7 @@ if ($resqlpaiement && $resqlencaissement && $resqlcharged) {
 		$rowpaiement = $db->fetch_row($resqlpaiement);
 		$rowcharged = $db->fetch_row($resqlcharged);
 
-		$value_array[$rowencaissement[0]][0] =  $rowencaissement[0];
+		$value_array[$rowencaissement[0]][0] = $rowencaissement[0];
 		for ($j = 1; $j <= 13; $j++) {
 			$value_array[$rowencaissement[0]][$j] = ($rowencaissement[$j] - $rowpaiement[$j] - $rowcharged[$j]);
 		}
@@ -389,18 +441,27 @@ foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
-
+$total_month=array();
 foreach ($value_array as $key => $val) {
 	$total = 0;
 	print '<tr class="oddeven"><td>' . $key . '</td>';
 	foreach ($months_list as $month_num => $month_name) {
 		print '<td align="right">' . $val[$month_num] . '</td>';
 		$total += $val[$month_num];
+		$total_month[$month_num] += (float) $val[$month_num];
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
 	print '</tr>';
 	$i++;
 }
+//Total Ligne
+print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
+foreach ($months_list as $month_num => $month_name) {
+	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
+	$total += $row[$month_num];
+}
+print '<td align="right"><b>' . $total . '</b></td>';
+print '</tr>';
 print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
@@ -409,7 +470,7 @@ print '</tr>';
 //Charges non Déductibles
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width="10%">'.$langs->trans("Charges non Déductibles").'</td>';
+print '<tr class="liste_titre"><td width="10%">' . $langs->trans("Charges non Déductibles") . '</td>';
 
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
@@ -431,6 +492,7 @@ $sql .= "  AND it.famille = 'Charge non déductible' ";
 $sql .= " GROUP BY  ib.label";
 
 $resql = $db->query($sql);
+$total_month=array();
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows($resql);
@@ -443,6 +505,7 @@ if ($resql) {
 		foreach ($months_list as $month_num => $month_name) {
 			print '<td align="right">' . $row[$month_num] . '</td>';
 			$total += $row[$month_num];
+			$total_month[$month_num] += (float) $row[$month_num];
 		}
 		print '<td align="right"><b>' . $total . '</b></td>';
 		print '</tr>';
@@ -452,7 +515,14 @@ if ($resql) {
 } else {
 	print $db->lasterror(); // affiche la derniere erreur sql
 }
-
+//Total Ligne
+print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
+foreach ($months_list as $month_num => $month_name) {
+	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
+	$total += $row[$month_num];
+}
+print '<td align="right"><b>' . $total . '</b></td>';
+print '</tr>';
 print "</table>\n";
 
 //Revenu Net
@@ -485,7 +555,7 @@ $sql .= "  AND ir.date_echeance <= '" . $db->idate(dol_get_last_day($y, 12, fals
 
 $sql .= " GROUP BY ib.label";
 
-$resqlpaiement = $db->query ( $sql );
+$resqlpaiement = $db->query($sql);
 
 $sql = "SELECT ib.label AS nom_immeuble";
 foreach ($months_list as $month_num => $month_name) {
@@ -502,7 +572,7 @@ $sql .= "  AND it.famille = 'Charge déductible' ";
 
 $sql .= " GROUP BY  ib.label";
 
-$resqlcharged = $db->query ( $sql );
+$resqlcharged = $db->query($sql);
 
 $sql = "SELECT ib.label AS nom_immeuble";
 foreach ($months_list as $month_num => $month_name) {
@@ -519,7 +589,7 @@ $sql .= "  AND it.famille = 'Charge non déductible' ";
 
 $sql .= " GROUP BY  ib.label";
 
-$resqlchargend = $db->query ( $sql );
+$resqlchargend = $db->query($sql);
 
 if ($resqlpaiement && $resqlencaissement && $resqlcharged && $resqlchargend) {
 	$i = 0;
@@ -531,7 +601,7 @@ if ($resqlpaiement && $resqlencaissement && $resqlcharged && $resqlchargend) {
 		$rowcharged = $db->fetch_row($resqlcharged);
 		$rowchargend = $db->fetch_row($resqlchargend);
 
-		$value_array[$rowencaissement[0]][0] =  $rowencaissement[0];
+		$value_array[$rowencaissement[0]][0] = $rowencaissement[0];
 		for ($j = 1; $j <= 13; $j++) {
 			$value_array[$rowencaissement[0]][$j] = ($rowencaissement[$j] - $rowpaiement[$j] - $rowcharged[$j] - $rowchargend[$j]);
 		}
@@ -551,18 +621,27 @@ foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
-
+$total_month=array();
 foreach ($value_array as $key => $val) {
 	$total = 0;
 	print '<tr class="oddeven"><td>' . $key . '</td>';
 	foreach ($months_list as $month_num => $month_name) {
 		print '<td align="right">' . price($val[$month_num], 0, '', 1, -1, 2) . '</td>';
 		$total += price($val[$month_num], 0, '', 1, -1, 2);
+		$total_month[$month_num] += (float) $val[$month_num];
 	}
 	print '<td align="right"><b>' . $total . '</b></td>';
 	print '</tr>';
 	$i++;
 }
+//Total Ligne
+print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
+foreach ($months_list as $month_num => $month_name) {
+	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
+	$total += $row[$month_num];
+}
+print '<td align="right"><b>' . $total . '</b></td>';
+print '</tr>';
 print "</table>\n";
 print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
@@ -573,5 +652,3 @@ print '</td></tr></table>';
 // End of page
 llxFooter();
 $db->close();
-
-?>
