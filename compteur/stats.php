@@ -65,21 +65,43 @@ $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "bills"));
 
 $object = new ImmoCompteur($db);
 $properties = new ImmoProperty($db);
+$form = new Form($db);
+
+$optioncss  = GETPOST('optioncss', 'aZ'); // Option for the css output (always '' except when 'print')
+
+$search=array();
+if (GETPOSTISSET('search_fk_immoproperty') && GETPOST('search_fk_immoproperty', 'int') != -1) {
+	$search['fk_immoproperty'] = GETPOST('search_fk_immoproperty', 'int');
+} else {
+	$search['fk_immoproperty']=0;
+}
 
 /*
  * View
  */
 llxHeader('', $langs->trans('MenuImmoCompteurList') . ' ' .$langs->trans('MenuImmoCompteurStats'));
 
-
 print '<div class="div-table-responsive">'; // You can use div-table-responsive-no-min if you dont need reserved height for your table
+
+
+print '<form method="POST" id="searchFormList" action="'.$_SERVER["PHP_SELF"].'">'."\n";
+if ($optioncss != '') print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
+print '<input type="hidden" name="token" value="'.newToken().'">';
+print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
+print '<input type="hidden" name="action" value="list">';
+
+
 print '<table class="tagtable nobottomiftotal liste">'."\n";
 
 
 $sql = 'SELECT ';
 $sql .= $object->getFieldList('t');
 $sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
+if (!empty($search['fk_immoproperty'])) {
+	$sql .=" WHERE fk_immoproperty=".(int) $search['fk_immoproperty'];
+}
 $sql .= $db->order('t.fk_immoproperty,date_relever');
+
 //$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON t.fk_immoproperty = ip.rowid";
 $result_data=array();
 
@@ -98,8 +120,19 @@ if ($resql) {
 }
 
 
-
-
+// Fields title search
+// --------------------------------------------------------------------
+print '<tr class="liste_titre">';
+print '<td class="left">';
+print $object->showInputField($object->fields['fk_immoproperty'], 'fk_immoproperty', $search['fk_immoproperty'], '', '', 'search_', 'maxwidth150', 1);
+print '</td>';
+print '<td colspan="7"></td>';
+// Action column
+print '<td class="liste_titre maxwidthsearch">';
+$searchpicto = $form->showFilterButtons();
+print $searchpicto;
+print '</td>';
+print '</tr>';
 // Fields title
 // --------------------------------------------------------------------
 print '<tr class="liste_titre">';
@@ -173,6 +206,7 @@ foreach ($result_data as $obj) {
 	$i++;
 }
 print "</table>\n";
+print "</form>\n";
 
 llxFooter();
 
