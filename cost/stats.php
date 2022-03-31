@@ -144,10 +144,10 @@ if ($resql) {
 		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
 		print '<td class="left">' . $row [1] . '</td>';
 		foreach ($months_list as $month_num => $month_name) {
-			print '<td align="right">' . $row [$month_num + 1] . '</td>';
+			print '<td align="right">' . price($row [$month_num + 1]) . '</td>';
 			$total += $row [$month_num + 1];
 		}
-		print '<td align="right"><b>' . $total . '</b></td>';
+		print '<td align="right"><b>' . price($total) . '</b></td>';
 		print '</tr>';
 		$i++;
 	}
@@ -194,10 +194,10 @@ if ($resql) {
 		print '<tr class="oddeven"><td width=10%>' . $row[0] . '</td>';
 		print '<td class="left" width=10%>';
 		foreach ($months_list as $month_num => $month_name) {
-			print '<td align="right">' . $row [$month_num] . '</td>';
+			print '<td align="right">' . price($row [$month_num]) . '</td>';
 			$total += $row [$month_num];
 		}
-		print '<td align="right"><b>' . $total . '</b></td>';
+		print '<td align="right"><b>' . price($total) . '</b></td>';
 		print '</tr>';
 		$i++;
 	}
