@@ -130,6 +130,7 @@ $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.row
 $sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= ' GROUP BY  '.$fields.', ib.label';
+$sql .= $db->order('ib.label');
 
 $resql = $db->query($sql);
 if ($resql) {
@@ -204,7 +205,14 @@ if ($resql) {
 } else {
 	print $db->lasterror(); // affiche la derniere erreur sql
 }
-
+//Total Ligne
+print '<tr class="oddeven"><td>' . $langs->trans('Moyenne') . '</td>';
+print '<td align="right"></td>';
+foreach ($months_list as $month_num => $month_name) {
+	print '<td align="right"></td>';
+}
+print '<td align="right"><b>'.price($total/12).'</b></td>';
+print '</tr>';
 print "</table>\n";
 
 print '</td></tr></table>';
