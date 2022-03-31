@@ -239,8 +239,6 @@ class ImmoRent extends CommonObject
 		$this->fields['vat']['arrayofkeyval'] = array(1 => $langs->trans('No'), 2 => $langs->trans('Yes'));
 		$this->fields['location_type_id']['arrayofkeyval'] = array(1 => $langs->trans('EmptyHousing'),
 																   2 => $langs->trans('FurnishedApartment'));
-		$this->fields['status']['arrayofkeyval'] = array(0  => $langs->trans('Draft'), 1 => $langs->trans('Active'),
-														 -1 => $langs->trans('Cancel'));
 	}
 
 	/**
