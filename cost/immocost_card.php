@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,21 +53,21 @@ if (!$res) {
 	die("Include of main fails");
 }
 
-include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
-include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
+include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
+include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/class/immocost.class.php');
 dol_include_once('/ultimateimmo/lib/immocost.lib.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo","other"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
 
 // Get parameters
-$id			= GETPOST('id', 'int');
-$ref        = GETPOST('ref', 'alpha');
-$action		= GETPOST('action', 'alpha');
-$confirm 	= GETPOST('confirm', 'alpha');
-$massaction = GETPOST('massaction','alpha');
-$cancel     = GETPOST('cancel', 'aZ09');
+$id	= GETPOST('id', 'int');
+$ref = GETPOST('ref', 'alpha');
+$action	= GETPOST('action', 'alpha');
+$confirm = GETPOST('confirm', 'alpha');
+$massaction = GETPOST('massaction', 'alpha');
+$cancel = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 
 // Initialize technical objects
@@ -77,7 +77,7 @@ $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'
 $hookmanager->initHooks(array('immocostcard'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immocost');
-$search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
+$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
 
 // Initialize array of search criterias
 $search_all = trim(GETPOST("search_all", 'alpha'));
@@ -99,7 +99,7 @@ if (empty($action) && empty($id) && empty($ref)) {
 $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
 
 // Load object
-include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
+include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
 $arrayfields = array();
 
@@ -176,16 +176,16 @@ if (empty($reshook))
 	}
 
 	// Actions cancel, add, update or delete
-	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_addupdatedelete.inc.php';
 
 	// Actions when printing a doc from card
-	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
 
 	// Actions to send emails
-	$trigger_name='IMMOCOST_SENTBYMAIL';
-	$autocopy='MAIN_MAIL_AUTOCOPY_IMMOCOST_TO';
-	$trackid='immocost'.$object->id;
-	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
+	$trigger_name = 'IMMOCOST_SENTBYMAIL';
+	$autocopy = 'MAIN_MAIL_AUTOCOPY_IMMOCOST_TO';
+	$trackid = 'immocost' . $object->id;
+	include DOL_DOCUMENT_ROOT . '/core/actions_sendmails.inc.php';
 }
 
 /*
@@ -199,15 +199,14 @@ $formfile = new FormFile($db);
 llxHeader('','ImmoCost','');
 
 // Part to create
-if ($action == 'create')
-{
+if ($action == 'create') {
 	print load_fiche_titre($langs->transnoentitiesnoconv("MenuNewImmoCost"), '', 'object_' . $object->picto);
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="add">';
 	if ($backtopage) {
-		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+		print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 	}
 
 	print dol_get_fiche_head(array(), '');
@@ -253,14 +252,14 @@ if ($action == 'create')
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
 
-	print '</table>'."\n";
+	print '</table>' . "\n";
 
 	print dol_get_fiche_end();
 
 	print '<div class="center">';
-	print '<input type="submit" class="button" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'">';
+	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
 	print '&nbsp; ';
-	print '<input type="'.($backtopage?"submit":"button").'" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"'.($backtopage?'':' onclick="javascript:history.go(-1)"').'>';	// Cancel for create does not post form if we don't know the backtopage
+	print '<input type="' . ($backtopage ? "submit" : "button") . '" class="button" name="cancel" value="' . dol_escape_htmltag($langs->trans("Cancel")) . '"' . ($backtopage ? '' : ' onclick="javascript:history.go(-1)"') . '>';	// Cancel for create does not post form if we don't know the backtopage
 	print '</div>';
 
 	print '</form>';
@@ -321,8 +320,8 @@ if (($id || $ref) && $action == 'edit')
 
 	print dol_get_fiche_end();
 
-	print '<div class="center"><input type="submit" class="button" name="save" value="'.$langs->trans("Save").'">';
-	print ' &nbsp; <input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
+	print '<div class="center"><input type="submit" class="button" name="save" value="' . $langs->trans("Save") . '">';
+	print ' &nbsp; <input type="submit" class="button" name="cancel" value="' . $langs->trans("Cancel") . '">';
 	print '</div>';
 
 	print '</form>';
@@ -349,7 +348,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$formquestion = array(
 			'text' => $langs->trans("ConfirmClone"),
 			array('type' => 'date', 'name' => 'date_start', 'label' => $langs->trans("DateStart")),
-			array('type' => 'text', 'name' => 'label', 'label' => $langs->trans("label"), 'value'=>$object->label),
+			array('type' => 'text', 'name' => 'label', 'label' => $langs->trans("label"), 'value' => $object->label),
 			array('type' => 'text', 'name' => 'amount', 'label' => $langs->trans("Amount"), 'value' => $object->amount),
 		);
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneAsk', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
@@ -387,7 +386,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// ------------------------------------------------------------
 	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/cost/immocost_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($_SESSION['last_restore']) ? 1 : 0) . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
-	$morehtmlref='<div class="refidno">';
+	$morehtmlref = '<div class="refidno">';
 	/*
 	// Ref bis
 	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', 0, 1);
@@ -427,7 +426,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    }
 	}
 	*/
-	$morehtmlref.='</div>';
+	$morehtmlref .= '</div>';
 
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
@@ -436,10 +435,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<div class="fichecenter">';
 	print '<div class="fichehalfleft">';
 	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border centpercent">'."\n";
+	print '<table class="border centpercent">' . "\n";
 
 	// Common attributes
-	$keyforbreak='note_private';
+	$keyforbreak = 'note_private';
 	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
 
 	// Other attributes
@@ -505,10 +504,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    $action = 'presend';
 	}
 
-	if ($action != 'presend')
-	{
-	    print '<div class="fichecenter"><div class="fichehalfleft">';
-	    print '<a name="builddoc"></a>'; // ancre
+	if ($action != 'presend') {
+		print '<div class="fichecenter"><div class="fichehalfleft">';
+		print '<a name="builddoc"></a>'; // ancre
 
 	    // Documents
 	    $relativepath = '/cost/' . dol_sanitizeFileName($object->ref).'/';
@@ -527,9 +525,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	    $MAXEVENT = 10;
 
-	    $morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/cost/immocost_info.php', 1).'?id='.$object->id.'">';
-	    $morehtmlright.= $langs->trans("SeeAll");
-	    $morehtmlright.= '</a>';
+		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/cost/immocost_info.php', 1) . '?id=' . $object->id . '">';
+		$morehtmlright .= $langs->trans("SeeAll");
+		$morehtmlright .= '</a>';
 
 	    // List of actions on element
 	    include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
@@ -542,13 +540,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	//Select mail models is same action as presend
 	 if (GETPOST('modelselected')) $action = 'presend';
 
-	 // Presend form
-	 $modelmail='immocost';
-	 $defaulttopic='InformationMessage';
-	 $diroutput = $conf->product->dir_output.'/cost';
-	 $trackid = 'immo'.$object->id;
+	// Presend form
+	$modelmail = 'immocost';
+	$defaulttopic = 'InformationMessage';
+	$diroutput = $conf->product->dir_output . '/cost';
+	$trackid = 'immo' . $object->id;
 
-	 include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
+	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';
 
 }
 
