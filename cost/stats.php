@@ -2,7 +2,7 @@
 /* Copyright (C) 2001-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2018-2019 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	    <philippe.grand@atoo-net.com>
  * Copyright (C) 2020      Thomas OURSEL         <contact@ogest.fr>
  *
  * This program is free software; you can redistribute it and/or modify
