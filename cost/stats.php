@@ -20,7 +20,7 @@
  */
 
 /**
- * \file htdocs/compta/ventilation/index.php
+ * \file ultimateimmo/cost/stats.php
  * \ingroup compta
  * \brief Page accueil ventilation
  */
