@@ -113,6 +113,8 @@ MenuNewImmoCostType = New cost type
 MenuImmoCompteur = water meter
 MenuNewImmoCompteur = New water meter
 MenuImmoCompteurList = Water meter list
+MenuStatisticsCostFourn = Coût : stats. par fourn.
+MenuImmoCompteurStats=Statistique Conso
 
 #
 # Miscellaneous

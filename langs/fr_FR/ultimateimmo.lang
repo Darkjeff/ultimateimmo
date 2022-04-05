@@ -113,6 +113,8 @@ MenuNewImmoCostType = Nouveau type de coût
 MenuImmoCompteur = Compteur
 MenuNewImmoCompteur = Nouveau compteur
 MenuImmoCompteurList = Liste compteur
+MenuStatisticsCostFourn = Coût : stats. par fourn.
+MenuImmoCompteurStats=Statistique Conso
 
 #
 # Miscellaneous
