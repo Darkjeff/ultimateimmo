@@ -260,4 +260,6 @@ ConfirmCreateThirdParty=Êtes-vous sûr de vouloir créer un tiers pour ce locat
 ValidatePayment = Valider les paiements
 CreatePDF = Générez le PDF
 PaymentMode = Méthode de paiement
+DateRelever = Date de relevé
+MeterReading = Relevé des compteurs
 
