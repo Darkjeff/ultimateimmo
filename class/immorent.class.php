@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -203,15 +203,11 @@ class ImmoRent extends CommonObject
 		}
 
 		// Translate some data of arrayofkeyval
-		if (is_object($langs)) {
-			foreach ($this->fields as $key => $val) {
-				if (!empty($val['arrayofkeyval']) && is_array($val['arrayofkeyval'])) {
-					foreach ($val['arrayofkeyval'] as $key2 => $val2) {
-						$this->fields[$key]['arrayofkeyval'][$key2] = $langs->trans($val2);
-					}
-				}
-			}
-		}
+		$this->fields['vat']['arrayofkeyval'] = array(1 => $langs->trans('No'), 2 => $langs->trans('Yes'));
+		$this->fields['location_type_id']['arrayofkeyval'] = array(
+			1 => $langs->trans('EmptyHousing'),
+			2 => $langs->trans('FurnishedApartment')
+		);
 	}
 
 	/**
@@ -461,7 +457,7 @@ class ImmoRent extends CommonObject
 	 */
 	public function fetchLines()
 	{
-		$this->lines=array();
+		$this->lines = array();
 
 		// Load lines with object ImmoRentLine
 		$result = $this->fetchLinesCommon();
