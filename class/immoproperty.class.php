@@ -102,7 +102,7 @@ class ImmoProperty extends CommonObject
 		'ref'           => array('type' => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1,  'default'=>'(PROV)', 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
 		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
 		'property_type_id' => array('type' => 'integer:ImmoProperty_Type:ultimateimmo/class/immoproperty_type.class.php', 'label' => 'ImmoProperty_Type', 'enabled' => 1, 'visible' => -1, 'position' => 20, 'notnull' => 1),
-		'fk_property'   => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'Property', 'enabled' => 1, 'visible' => -1, 'position' => 25, 'notnull' => -1), 
+		'fk_property'   => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'PropertyParent', 'enabled' => 1, 'visible' => -1, 'position' => 25, 'notnull' => -1), 
 		'label' => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'showoncombobox' => 1, 'searchall' => 1, 'css' => 'minwidth200', 'help' => 'Help text',),
 		'juridique_id'  => array('type' => 'integer', 'label' => 'Juridique', 'enabled' => 1, 'visible' => 1, 'position' => 32, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'MonoPropriete', '2' => 'Copropriete')),
 		'datebuilt'     => array('type' => 'integer', 'label' => 'DateBuilt', 'enabled' => 1, 'visible' => 1, 'position' => 35, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'DateBuilt1', '2' => 'DateBuilt2', '3' => 'DateBuilt3', '4' => 'DateBuilt4', '5' => 'DateBuilt5')),
@@ -710,8 +710,8 @@ class ImmoProperty extends CommonObject
 		$this->lines = array();
 
 		// Load lines with object ImmoPropertyLine
-		$result = $this->fetchLinesCommon();
-		return $result;
+
+		return count($this->lines) ? 1 : 0;
 	}
 
 	/**
@@ -1172,6 +1172,31 @@ class ImmopropertyLine extends CommonObjectLine
 	 * @var int  Does object support extrafields ? 0=No, 1=Yes
 	 */
 	public $isextrafieldmanaged = 0;
+
+	public $id;
+
+	public $entity;
+	public $property_type_id;
+	public $fk_property;
+	public $fk_owner;
+	public $label;
+	public $address;
+	public $building;
+	public $staircase;
+	public $numfloor;
+	public $numdoor;
+	public $area;
+	public $numroom;
+	public $zip;
+	public $town;
+	public $country_id;
+	public $status;
+	public $note_private;
+	public $note_public;
+	public $date_creation = '';
+	public $tms = '';
+	public $fk_user_creat;
+	public $fk_user_modif;
 
 	/**
 	 * Constructor

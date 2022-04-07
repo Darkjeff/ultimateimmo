@@ -584,7 +584,7 @@ class modUltimateimmo extends DolibarrModules
 			'langs' => 'ultimateimmo@ultimateimmo',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 			'position' => 1100 + $r,
 			'enabled' => '$conf->ultimateimmo->enabled',  // Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-			'perms' => '$user->rights->ultimateimmo->immocompteur->write',		
+			'perms' => '$user->rights->ultimateimmo->immocompteur->write',
 			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
