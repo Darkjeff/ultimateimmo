@@ -494,6 +494,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 	$keyforbreak = 'address';
+	// We change column just before this field
+	//unset($object->fields['fk_project']);				// Hide field already shown in banner
+	//unset($object->fields['fk_soc']);					// Hide field already shown in banner
 	foreach ($object->fields as $key => $val) {
 		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
 
@@ -522,14 +525,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);
 			if ($staticowner->ref) {
-				$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+				$staticowner->ref = $staticowner->getNomUrl(0) /*. ' - ' . $staticowner->getFullName($langs, 0)*/;
 			}
 			print $staticowner->ref;
 		} elseif ($val['label'] == 'PropertyParent') {
 			$staticproperty = new ImmoProperty($db);
 			$staticproperty->fetch($object->fk_property);
 			if ($staticproperty->ref) {
-				$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
+				$staticproperty->ref = $staticproperty->getNomUrl(0) /*. ' - ' . $staticproperty->label*/;
 			}
 			print $staticproperty->ref;
 		} else {
