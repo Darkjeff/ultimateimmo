@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -640,7 +640,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				$staticproperty = new ImmoProperty($db);
 				$staticproperty->fetch($staticrent->fk_property);
 				if ($staticrent->ref) {
-					$staticrent->ref = $staticrent->getNomUrl(0) . ' - ' . $staticproperty->label;
+					$staticrent->ref = $staticrent->getNomUrl(0)/* . ' - ' . $staticproperty->label*/;
 				}
 				print $staticrent->ref;
 			} elseif ($val['label'] == 'BirthCountry') {
@@ -655,7 +655,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);
 				if ($staticowner->ref) {
-					$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+					$staticowner->ref = $staticowner->getNomUrl(0)/* . ' - ' . $staticowner->getFullName($langs, 0)*/;
 				}
 				print $staticowner->ref;
 			} else {

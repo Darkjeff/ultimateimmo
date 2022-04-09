@@ -263,4 +263,5 @@ PaymentMode = Méthode de paiement
 DateRelever = Date de relevé
 MeterReading = Relevé des compteurs
 UltimateLocation = Location
+LinkedToDolibarrThirdParty = Lien du Tiers 
 
