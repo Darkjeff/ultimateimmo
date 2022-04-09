@@ -81,6 +81,7 @@ $toselect   = GETPOST('toselect', 'array');												// Array of ids of elemen
 $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'immopaymentlist';   // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');											// Go back to a dedicated page
 $optioncss  = GETPOST('optioncss', 'aZ');												// Option for the css output (always '' except when 'print')
+$mode       = GETPOST('mode', 'aZ');
 
 $id			= GETPOST('id', 'int');
 
@@ -389,6 +390,9 @@ llxHeader('', $title, $help_url, '', 0, 0, $morejs, $morecss, '', '');
 $arrayofselected = is_array($toselect) ? $toselect : array();
 
 $param = '';
+if (!empty($mode)) {
+	$param .= '&mode='.urlencode($mode);
+}
 if (!empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) {
 	$param .= '&contextpage=' . urlencode($contextpage);
 }
@@ -442,8 +446,13 @@ print '<input type="hidden" name="sortfield" value="' . $sortfield . '">';
 print '<input type="hidden" name="sortorder" value="' . $sortorder . '">';
 print '<input type="hidden" name="page" value="' . $page . '">';
 print '<input type="hidden" name="contextpage" value="' . $contextpage . '">';
+print '<input type="hidden" name="mode" value="'.$mode.'">';
 
-$newcardbutton = dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?action=create&backtopage=' . urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
+$newcardbutton = '';
+$newcardbutton .= dolGetButtonTitle($langs->trans('ViewKanban'), '', 'fa fa-th-list imgforviewmode', $_SERVER["PHP_SELF"].'?mode=kanban'.preg_replace('/^&mode=[^&]+/', '', $param), '', ($mode == 'kanban' ? 2 : 1), array('morecss'=>'reposition'));
+$newcardbutton .= dolGetButtonTitle($langs->trans('ViewList'), '', 'fa fa-list-alt imgforviewmode', $_SERVER["PHP_SELF"].'?mode=common'.preg_replace('/^&mode=[^&]+/', '', $param), '', ((empty($mode) || $mode == 'common') ? 2 : 1), array('morecss'=>'reposition'));
+$newcardbutton .= dolGetButtonTitleSeparator();
+$newcardbutton .= dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1).'?action=create&backtopage='.urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
 
 print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'object_payment', 0, $newcardbutton, '', $limit, 0, 0, 1);
 
@@ -560,8 +569,9 @@ $parameters = array('arrayfields' => $arrayfields, 'param' => $param, 'sortfield
 $reshook = $hookmanager->executeHooks('printFieldListTitle', $parameters, $object); // Note that $action and $object may have been modified by hook
 print $hookmanager->resPrint;
 // Action column
-print getTitleFieldOfList($selectedfields, 0, $_SERVER["PHP_SELF"], '', '', '', '', $sortfield, $sortorder, 'center maxwidthsearch ') . "\n";
-print '</tr>' . "\n";
+print getTitleFieldOfList(($mode != 'kanban' ? $selectedfields : ''), 0, $_SERVER["PHP_SELF"], '', '', '', '', $sortfield, $sortorder, 'center maxwidthsearch ')."\n";
+$totalarray['nbfield']++;
+print '</tr>'."\n";
 
 
 // Detect if we need a fetch on each output line
@@ -577,9 +587,10 @@ if (isset($extrafields->attributes[$object->table_element]['computed']) && is_ar
 // Loop on record
 // --------------------------------------------------------------------
 $i = 0;
-$totalarray = array();
+$savnbfield = $totalarray['nbfield'];
 $totalarray['nbfield'] = 0;
-while ($i < ($limit ? min($num, $limit) : $num)) {
+$imaxinloop = ($limit ? min($num, $limit) : $num);
+while ($i < $imaxinloop) {
 	$obj = $db->fetch_object($resql);
 	if (empty($obj)) {
 		break; // Should not happen
@@ -588,123 +599,137 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 	// Store properties in $object
 	$object->setVarsFromFetchObj($obj);
 
-	// Show here line of result
-	print '<tr class="oddeven">';
-	foreach ($object->fields as $key => $val) {
-		$cssforfield = (empty($val['csslist']) ? (empty($val['css']) ? '' : $val['css']) : $val['csslist']);
-		if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) {
-			$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
-		} elseif ($key == 'status') {
-			$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
+	if ($mode == 'kanban') {
+		if ($i == 0) {
+			print '<tr><td colspan="' . $savnbfield . '">';
+			print '<div class="box-flex-container">';
 		}
-
-		if (in_array($val['type'], array('timestamp'))) {
-			$cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
-		} elseif ($key == 'ref') {
-			$cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
+		// Output Kanban
+		print $object->getKanbanView('');
+		if ($i == ($imaxinloop - 1)) {
+			print '</div>';
+			print '</td></tr>';
 		}
+	} else {
+		// Show here line of result
+		$j = 0;
+		print '<tr class="oddeven">';
+		foreach ($object->fields as $key => $val) {
+			$cssforfield = (empty($val['csslist']) ? (empty($val['css']) ? '' : $val['css']) : $val['csslist']);
+			if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) {
+				$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
+			} elseif ($key == 'status') {
+				$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
+			}
 
-		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && !in_array($key, array('rowid', 'status')) && empty($val['arrayofkeyval'])) {
-			$cssforfield .= ($cssforfield ? ' ' : '') . 'right';
-		}
+			if (in_array($val['type'], array('timestamp'))) {
+				$cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
+			} elseif ($key == 'ref') {
+				$cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
+			}
 
-		if (!empty($arrayfields['t.' . $key]['checked'])) {
-			print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
-			if ($key == 'status') {
-				print $object->getLibStatut(5);
-			} elseif ($key == 'rowid') {
-				print $object->showOutputField($val, $key, $object->id, '');
-			} elseif ($val['label'] == 'Owner') {
-				if ($object->fk_owner) {
-					$staticowner = new ImmoOwner($db);
-					$staticowner->fetch($object->fk_owner);
-					if ($staticowner->ref) {
-						$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+			if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && !in_array($key, array('rowid', 'status')) && empty($val['arrayofkeyval'])) {
+				$cssforfield .= ($cssforfield ? ' ' : '') . 'right';
+			}
+
+			if (!empty($arrayfields['t.' . $key]['checked'])) {
+				print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
+				if ($key == 'status') {
+					print $object->getLibStatut(5);
+				} elseif ($key == 'rowid') {
+					print $object->showOutputField($val, $key, $object->id, '');
+				} elseif ($val['label'] == 'Owner') {
+					if ($object->fk_owner) {
+						$staticowner = new ImmoOwner($db);
+						$staticowner->fetch($object->fk_owner);
+						if ($staticowner->ref) {
+							$staticowner->ref = $staticowner->getNomUrl(0) /*. ' - ' . $staticowner->getFullName($langs, 0)*/;
+						}
+						print $staticowner->ref;
 					}
-					print $staticowner->ref;
-				}
-			} elseif ($val['label'] == 'ImmoRent') {
-				$staticrent = new ImmoRent($db);
-				$staticrent->fetch($object->fk_rent);
-				$staticproperty = new ImmoProperty($db);
-				$staticproperty->fetch($staticrent->fk_property);
-				if ($staticrent->ref) {
-					$staticrent->ref = $staticrent->getNomUrl(0) . ' - ' . $staticproperty->label;
-				}
-			} elseif ($val['label'] == 'TypePayment') {
-				if ($object->fk_mode_reglement) {
-					$tmparray = $object->setPaymentMethods($object->fk_mode_reglement, 'int');
-					$object->mode_code = $tmparray['code'];
-					$object->mode_payment = $tmparray['libelle'];
-					// Payment mode
-					print $form->form_modes_reglement($_SERVER['PHP_SELF'], $object->fk_mode_reglement, 'none');
-				}			
-			} elseif ($val['label'] == 'Amount') {
-				if ($object->amount) {
-					$amount = price($object->amount, 0, $outputlangs, 1, -1, -1, $conf->currency);
-					print $amount;
-				}
-			} elseif ($val['label'] == 'Renter') {
-				if ($object->fk_renter) {
-					$staticrenter = new ImmoRenter($db);
-					$staticrenter->fetch($object->fk_renter);
-					if ($staticrenter->ref) {
-						$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs, 0);
-					}
-					print $staticrenter->ref;
-				}
-			} elseif ($val['label'] == 'Property') {
-				if ($object->fk_property) {
+				} elseif ($val['label'] == 'ImmoRent') {
+					$staticrent = new ImmoRent($db);
+					$staticrent->fetch($object->fk_rent);
 					$staticproperty = new ImmoProperty($db);
-					$result = $staticproperty->fetch($object->fk_property);
-					if ($staticproperty->ref) {
-						$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
+					$staticproperty->fetch($staticrent->fk_property);
+					if ($staticrent->ref) {
+						$staticrent->ref = $staticrent->getNomUrl(0) /*. ' - ' . $staticproperty->label*/;
 					}
-					print $staticproperty->ref;
+				} elseif ($val['label'] == 'TypePayment') {
+					if ($object->fk_mode_reglement) {
+						$tmparray = $object->setPaymentMethods($object->fk_mode_reglement, 'int');
+						$object->mode_code = $tmparray['code'];
+						$object->mode_payment = $tmparray['libelle'];
+						// Payment mode
+						print $form->form_modes_reglement($_SERVER['PHP_SELF'], $object->fk_mode_reglement, 'none');
+					}
+				} elseif ($val['label'] == 'Amount') {
+					if ($object->amount) {
+						$amount = price($object->amount, 0, $outputlangs, 1, -1, -1, $conf->currency);
+						print $amount;
+					}
+				} elseif ($val['label'] == 'Renter') {
+					if ($object->fk_renter) {
+						$staticrenter = new ImmoRenter($db);
+						$staticrenter->fetch($object->fk_renter);
+						if ($staticrenter->ref) {
+							$staticrenter->ref = $staticrenter->getNomUrl(0) /*. ' - ' . $staticrenter->getFullName($langs, 0)*/;
+						}
+						print $staticrenter->ref;
+					}
+				} elseif ($val['label'] == 'Property') {
+					if ($object->fk_property) {
+						$staticproperty = new ImmoProperty($db);
+						$result = $staticproperty->fetch($object->fk_property);
+						if ($staticproperty->ref) {
+							$staticproperty->ref = $staticproperty->getNomUrl(0) /*. ' - ' . $staticproperty->label*/;
+						}
+						print $staticproperty->ref;
+					}
+				} else {
+					print $object->showOutputField($val, $key, $object->$key, '');
 				}
-			} else {
-				print $object->showOutputField($val, $key, $object->$key, '');
-			}
 
-			print '</td>';
-			if (!$i) {
-				$totalarray['nbfield']++;
-			}
-			if (!empty($val['isameasure'])) {
+				print '</td>';
 				if (!$i) {
-					$totalarray['pos'][$totalarray['nbfield']] = 't.' . $key;
+					$totalarray['nbfield']++;
 				}
-				if (!isset($totalarray['val'])) {
-					$totalarray['val'] = array();
+				if (!empty($val['isameasure'])) {
+					if (!$i) {
+						$totalarray['pos'][$totalarray['nbfield']] = 't.' . $key;
+					}
+					if (!isset($totalarray['val'])) {
+						$totalarray['val'] = array();
+					}
+					if (!isset($totalarray['val']['t.' . $key])) {
+						$totalarray['val']['t.' . $key] = 0;
+					}
+					$totalarray['val']['t.' . $key] += $object->$key;
 				}
-				if (!isset($totalarray['val']['t.' . $key])) {
-					$totalarray['val']['t.' . $key] = 0;
-				}
-				$totalarray['val']['t.' . $key] += $object->$key;
 			}
 		}
-	}
-	// Extra fields
-	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_print_fields.tpl.php';
-	// Fields from hook
-	$parameters = array('arrayfields' => $arrayfields, 'object' => $object, 'obj' => $obj, 'i' => $i, 'totalarray'  => &$totalarray);
-	$reshook = $hookmanager->executeHooks('printFieldListValue', $parameters, $object);    // Note that $action and $object may have been modified by hook
-	print $hookmanager->resPrint;
-	// Action column
-	print '<td class="nowrap center">';
-	if ($massactionbutton || $massaction) { // If we are in select mode (massactionbutton defined) or if we have already selected and sent an action ($massaction) defined
-		$selected = 0;
-		if (in_array($object->id, $arrayofselected)) {
-			$selected = 1;
+		// Extra fields
+		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_print_fields.tpl.php';
+		// Fields from hook
+		$parameters = array('arrayfields' => $arrayfields, 'object' => $object, 'obj' => $obj, 'i' => $i, 'totalarray'  => &$totalarray);
+		$reshook = $hookmanager->executeHooks('printFieldListValue', $parameters, $object);    // Note that $action and $object may have been modified by hook
+		print $hookmanager->resPrint;
+		// Action column
+		print '<td class="nowrap center">';
+		if ($massactionbutton || $massaction) { // If we are in select mode (massactionbutton defined) or if we have already selected and sent an action ($massaction) defined
+			$selected = 0;
+			if (in_array($object->id, $arrayofselected)) {
+				$selected = 1;
+			}
+			print '<input id="cb' . $object->id . '" class="flat checkforselect" type="checkbox" name="toselect[]" value="' . $object->id . '"' . ($selected ? ' checked="checked"' : '') . '>';
 		}
-		print '<input id="cb' . $object->id . '" class="flat checkforselect" type="checkbox" name="toselect[]" value="' . $object->id . '"' . ($selected ? ' checked="checked"' : '') . '>';
-	}
-	print '</td>';
-	if (!$i) {
-		$totalarray['nbfield']++;
-	}
+		print '</td>';
+		if (!$i) {
+			$totalarray['nbfield']++;
+		}
 
-	print '</tr>' . "\n";
+		print '</tr>' . "\n";
+	}
 
 	$i++;
 }

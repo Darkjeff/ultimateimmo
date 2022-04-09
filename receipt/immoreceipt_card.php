@@ -324,7 +324,7 @@ if (empty($reshook)) {
 			$action = "create";
 			$error++;
 		}
-
+		
 		if (!$error) {
 			$db->begin();
 
@@ -398,7 +398,7 @@ if (empty($reshook)) {
 				$receipt->fk_rent = $monId;
 				$receipt->fk_property = $monLocal;
 				$receipt->fk_renter = $monLocataire;
-
+				
 				if ($maTVA == 'Oui') {
 					$receipt->total_amount = $monMontant * 1.2;
 					$receipt->vat_amount = $monMontant * 0.2;
@@ -414,7 +414,7 @@ if (empty($reshook)) {
 				$receipt->status = 0;
 				$receipt->paye = 0;
 				$result = $receipt->create($user);
-	//var_dump($receipt);
+	
 				if ($result < 0) {
 					setEventMessages(null, $receipt->errors, 'errors');
 					$action = 'createall';
@@ -694,7 +694,7 @@ if ($action == 'createall') {
 	/*
 	 * List of contracts
 	 */
-	$sql = "SELECT rent.rowid as contractid, rent.ref as contract, loc.lastname as rentername, own.lastname as ownername, prop.ref as localref, prop.address, prop.label as local, rent.totalamount as total, rent.rentamount , rent.chargesamount, rent.fk_renter as reflocataire, rent.fk_property as reflocal, rent.preavis as preavis, rent.vat, prop.fk_owner, own.rowid, own.fk_soc, prop.fk_owner";
+	$sql = "SELECT rent.rowid as contractid, rent.ref as contract, loc.lastname as rentername, own.lastname as ownername, prop.fk_property as localref, prop.address, prop.label as local, rent.totalamount as total, rent.rentamount , rent.chargesamount, rent.fk_renter as reflocataire, rent.fk_property as reflocal, rent.preavis as preavis, rent.vat, prop.fk_owner, own.rowid, own.fk_soc, prop.fk_owner";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop";

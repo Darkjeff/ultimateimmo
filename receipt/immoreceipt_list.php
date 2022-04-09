@@ -268,7 +268,7 @@ if ($massaction == 'validate') {
 		$result = $immoreceipt->fetch($val);
 		
 		//var_dump($toselect, $val);
-		if ($result > 0 && $object->status == ImmoReceipt::STATUS_DRAFT) {
+		if (/*$result > 0 && */$object->status == ImmoReceipt::STATUS_DRAFT) {
 			$resultvalid = $immoreceipt->validate($user);
 
 			if ($resultvalid > 0) {
