@@ -16,5 +16,11 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ALTER TABLE llx_ultimateimmo_immoowner MODIFY COLUMN fk_pays country_id integer;
-ALTER TABLE llx_c_ultimateimmo_juridique MODIFY COLUMN varchar(20) NOT NULL;
+ALTER TABLE llx_c_ultimateimmo_juridique MODIFY COLUMN code varchar(20) NOT NULL;
 ALTER TABLE llx_ultimateimmo_immorenter ADD COLUMN town varchar(255) AFTER country_id;
+
+ALTER TABLE llx_ultimateimmo_immorent MODIFY COLUMN date_start date;
+ALTER TABLE llx_ultimateimmo_immorent MODIFY COLUMN date_end date;
+ALTER TABLE llx_ultimateimmo_immorent MODIFY COLUMN date_next_rent date;
+ALTER TABLE llx_ultimateimmo_immorent MODIFY COLUMN date_last_regul date;
+
