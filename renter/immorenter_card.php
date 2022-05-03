@@ -199,14 +199,14 @@ llxHeader('', $langs->trans('ImmoRenter'), '');
 
 if ($conf->use_javascript_ajax) {
 	print "\n".'<script type="text/javascript" language="javascript">';
-	print 'jQuery(document).ready(function () {
+	/*print 'jQuery(document).ready(function () {
 				jQuery("#selectcountry_id").change(function() {
 					document.formsoc.action.value="create";
 					document.formsoc.submit();
 				});
-				
+
 				initfieldrequired();
-			})';
+			})';*/
 	print '</script>'."\n";
 }
 
@@ -341,10 +341,10 @@ if (($id || $ref) && $action == 'edit')
 				$object->civility_code = $tmparray['code'];
 				$object->civility = $tmparray['label'];
 			}
-			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id);	
+			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id);
 		} elseif ($val['label'] == 'BirthDay') {
 			print $form->selectDate(($object->birth ? $object->birth : -1), 'birth', '', '', 1, 'formsoc');
-		} elseif ($val['label'] == 'BirthCountry') {
+		} elseif ($val['label'] == 'ImmoBirthCountry') {
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
 			if ($object->country_id) {
@@ -523,7 +523,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
-	
+
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
@@ -560,7 +560,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
 		if ($val['label'] == 'Civility') {
-			// We set civility_id, civility_code and civility for the selected civility	
+			// We set civility_id, civility_code and civility for the selected civility
 			if ($object->civility_id) {
 				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
 				$object->civility_code = $tmparray['code'];
@@ -568,7 +568,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 			print '<tr><td width="25%">' . $langs->trans('Civility') . '</td><td>';
 			print $object->civility;
-		} elseif ($val['label'] == 'BirthCountry') {
+		} elseif ($val['label'] == 'ImmoBirthCountry') {
 			if ($object->country_id) {
 				include_once(DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 				$tmparray = getCountry($object->country_id, 'all');
@@ -618,7 +618,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     	<input type="hidden" name="id" value="' . $object->id.'">
     	';
 
-		if (!empty($conf->use_javascript_ajax) && $object->status == 0) 
+		if (!empty($conf->use_javascript_ajax) && $object->status == 0)
 		{
     	    include DOL_DOCUMENT_ROOT.'/core/tpl/ajaxrow.tpl.php';
     	}
@@ -657,7 +657,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	// Buttons for actions
-	if ($action != 'presend' && $action != 'editline') 
+	if ($action != 'presend' && $action != 'editline')
 	{
     	print '<div class="tabsAction">'."\n";
     	$parameters = array();
@@ -698,7 +698,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 
 	// Select mail models is same action as presend
-	if (GETPOST('modelselected')) 
+	if (GETPOST('modelselected'))
 	{
 	    $action = 'presend';
 	}

@@ -17,3 +17,4 @@
 
 ALTER TABLE llx_ultimateimmo_immoowner MODIFY COLUMN fk_pays country_id integer;
 ALTER TABLE llx_c_ultimateimmo_juridique MODIFY COLUMN varchar(20) NOT NULL;
+ALTER TABLE llx_ultimateimmo_immorenter ADD COLUMN town varchar(255) AFTER country_id;
