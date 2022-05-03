@@ -16,3 +16,4 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ALTER TABLE llx_ultimateimmo_immoowner MODIFY COLUMN fk_pays country_id integer;
+ALTER TABLE llx_c_ultimateimmo_juridique MODIFY COLUMN varchar(20) NOT NULL;
