@@ -403,6 +403,10 @@ foreach ($search as $key => $val) {
 			$key='t.fk_soc';
 			$search[$key]=$search['fk_soc'];
 		}
+		if ($key=='status') {
+			$key='t.status';
+			$search[$key]=$search['status'];
+		}
 		if ($search[$key] != '') {
 			$sql .= natural_search($key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 		}
