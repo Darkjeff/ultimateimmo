@@ -408,10 +408,9 @@ class ImmoPayment extends CommonObject
 				$this->db->escape($this->fk_renter) . "','" . $this->db->escape($this->fk_rent) . "',  '" .
 				$this->db->escape($this->num_payment) . "', '" . $this->db->escape($this->note_public) . "', " . $user->id . ",";
 			$sql .= " 0,";
-        	$sql .= $this->fk_owner.")";
-			//$sql .= isset($this->fk_owner)?(int)$this->fk_owner:'null'.")";
-			//$sql .= ")";
-        
+			$sql .= isset($this->fk_owner)?(int)$this->fk_owner:'null';
+			$sql .= ")";
+
 			dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if ($resql) {
