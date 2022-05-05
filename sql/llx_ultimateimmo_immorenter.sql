@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immorenter(
 	birth date,
 	address varchar(255),
 	zip varchar(32), 
-	town varchar(64),
+	town varchar(255),
 	country_id integer,	
 	phone varchar(30), 
 	phone_mobile varchar(30),  	

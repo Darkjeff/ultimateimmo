@@ -336,7 +336,7 @@ if ($action == 'create') {
 			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');
 		} elseif ($val['label'] == 'BirthDay') {
 			print $form->selectDate(($object->birth ? $object->birth : -1), 'birth', '', '', 1, 'formsoc');
-		} elseif ($val['label'] == 'BirthCountry') {
+		} elseif ($val['label'] == 'ImmoBirthCountry') {
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
 			if ($object->country_id) {
@@ -490,7 +490,7 @@ if (($id || $ref) && $action == 'edit')
 			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id);	
 		} elseif ($val['label'] == 'BirthDay') {
 			print $form->selectDate(($object->birth ? $object->birth : -1), 'birth', '', '', 1, 'formsoc');
-		} elseif ($val['label'] == 'BirthCountry') {
+		} elseif ($val['label'] == 'ImmoBirthCountry') {
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
 			if ($object->country_id) {
@@ -755,7 +755,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 			print '<tr><td width="25%">' . $langs->trans('Civility') . '</td><td>';
 			print $object->civility;
-		} elseif ($val['label'] == 'BirthCountry') {
+		} elseif ($val['label'] == 'ImmoBirthCountry') {
 			if ($object->country_id) {
 				include_once(DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 				$tmparray = getCountry($object->country_id, 'all');

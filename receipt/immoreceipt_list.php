@@ -425,7 +425,7 @@ foreach ($search as $key => $val) {
 			$search[$key] = $search['fk_soc'];
 		}
 		if ($search[$key] != '') {
-			$sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search)); //TODO : verify for 't.'
+			$sql .= natural_search($key, $search[$key], (($key == 'status') ? 2 : $mode_search)); //TODO : verify for 't.'
 		}
 	} else {
 		if (preg_match('/(_dtstart|_dtend)$/', $key) && $search[$key] != '') {
