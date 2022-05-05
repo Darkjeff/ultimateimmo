@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	    <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,14 +73,17 @@ $contextpage= GETPOST('contextpage','aZ')?GETPOST('contextpage','aZ'):'immocostl
 $backtopage = GETPOST('backtopage','alpha');											// Go back to a dedicated page
 $optioncss  = GETPOST('optioncss','aZ');												// Option for the css output (always '' except when 'print')
 
-$id			= GETPOST('id','int');
+$id = GETPOST('id', 'int');
 
 // Load variable for pagination
-$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
-$sortfield = GETPOST('sortfield','alpha');
-$sortorder = GETPOST('sortorder','alpha');
-$page = GETPOST('page','int');
-if (empty($page) || $page == -1) { $page = 0; }     // If $page is not defined, or '' or -1
+$limit = GETPOST('limit', 'int') ? GETPOST('limit', 'int') : $conf->liste_limit;
+$sortfield = GETPOST('sortfield', 'aZ09comma');
+$sortorder = GETPOST('sortorder', 'aZ09comma');
+$page = GETPOSTISSET('pageplusone') ? (GETPOST('pageplusone') - 1) : GETPOST("page", 'int');
+if (empty($page) || $page < 0 || GETPOST('button_search', 'alpha') || GETPOST('button_removefilter', 'alpha')) {
+	// If $page is not defined, or '' or -1 or if we click on clear filters
+	$page = 0;
+}
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -97,7 +100,7 @@ $search_array_options = $extrafields->getOptionalsFromPost($object->table_elemen
 // Default sort order (if not yet defined by previous GETPOST)
 if (!$sortfield) {
 	reset($object->fields);					// Reset is required to avoid key() to return null.
-	$sortfield = "t.".key($object->fields); // Set here default search field. By default 1st field in definition.
+	$sortfield = "t." . key($object->fields); // Set here default search field. By default 1st field in definition.
 }
 if (!$sortorder) {
 	$sortorder = "ASC";
@@ -107,12 +110,12 @@ if (!$sortorder) {
 $search_all = GETPOST('search_all', 'alphanohtml') ? GETPOST('search_all', 'alphanohtml') : GETPOST('sall', 'alphanohtml');
 $search = array();
 foreach ($object->fields as $key => $val) {
-	if (GETPOST('search_'.$key, 'alpha') !== '') {
-		$search[$key] = GETPOST('search_'.$key, 'alpha');
+	if (GETPOST('search_' . $key, 'alpha') !== '') {
+		$search[$key] = GETPOST('search_' . $key, 'alpha');
 	}
 	if (preg_match('/^(date|timestamp|datetime)/', $val['type'])) {
-		$search[$key.'_dtstart'] = dol_mktime(0, 0, 0, GETPOST('search_'.$key.'_dtstartmonth', 'int'), GETPOST('search_'.$key.'_dtstartday', 'int'), GETPOST('search_'.$key.'_dtstartyear', 'int'));
-		$search[$key.'_dtend'] = dol_mktime(23, 59, 59, GETPOST('search_'.$key.'_dtendmonth', 'int'), GETPOST('search_'.$key.'_dtendday', 'int'), GETPOST('search_'.$key.'_dtendyear', 'int'));
+		$search[$key . '_dtstart'] = dol_mktime(0, 0, 0, GETPOST('search_' . $key . '_dtstartmonth', 'int'), GETPOST('search_' . $key . '_dtstartday', 'int'), GETPOST('search_' . $key . '_dtstartyear', 'int'));
+		$search[$key . '_dtend'] = dol_mktime(23, 59, 59, GETPOST('search_' . $key . '_dtendmonth', 'int'), GETPOST('search_' . $key . '_dtendday', 'int'), GETPOST('search_' . $key . '_dtendyear', 'int'));
 	}
 }
 
@@ -120,7 +123,7 @@ foreach ($object->fields as $key => $val) {
 $fieldstosearchall = array();
 foreach ($object->fields as $key => $val) {
 	if (!empty($val['searchall'])) {
-		$fieldstosearchall['t.'.$key] = $val['label'];
+		$fieldstosearchall['t.' . $key] = $val['label'];
 	}
 }
 
@@ -130,51 +133,48 @@ if (count($search) > 0) {
 	unset($_SESSION['last_restore']);
 }
 
-// Definition of fields for list
+// Definition of array of fields for columns
 $arrayfields = array();
 foreach ($object->fields as $key => $val) {
 	// If $val['visible']==0, then we never show the field
 	if (!empty($val['visible'])) {
 		$visible = (int) dol_eval($val['visible'], 1);
-		$arrayfields['t.'.$key] = array(
-			'label'=>$val['label'],
-			'checked'=>(($visible < 0) ? 0 : 1),
-			'enabled'=>($visible != 3 && dol_eval($val['enabled'], 1)),
-			'position'=>$val['position'],
-			'help'=> isset($val['help']) ? $val['help'] : ''
+		$arrayfields['t.' . $key] = array(
+			'label' => $val['label'],
+			'checked' => (($visible < 0) ? 0 : 1),
+			'enabled' => ($visible != 3 && dol_eval($val['enabled'], 1)),
+			'position' => $val['position'],
+			'help' => isset($val['help']) ? $val['help'] : ''
 		);
 	}
 }
 // Extra fields
-if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label']) > 0)
-{
-	foreach($extrafields->attributes[$object->table_element]['label'] as $key => $val)
-	{
-		if (!empty($extrafields->attributes[$object->table_element]['list'][$key])) {
-			$arrayfields["ef.".$key] = array(
-				'label'=>$extrafields->attributes[$object->table_element]['label'][$key],
-				'checked'=>(($extrafields->attributes[$object->table_element]['list'][$key]<0)?0:1),
-				'position'=>$extrafields->attributes[$object->table_element]['pos'][$key],
-				'enabled'=>(abs($extrafields->attributes[$object->table_element]['list'][$key])!=3 && $extrafields->attributes[$object->table_element]['perms'][$key])
-			);
-		}
-	}
-}
+include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_array_fields.tpl.php';
+
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
 
-$permissiontoread = $user->rights->ultimateimmo->read;
-$permissiontoadd = $user->rights->ultimateimmo->write;
-$permissiontodelete = $user->rights->ultimateimmo->delete;
-
-// Security check
-if (empty($conf->ultimateimmo->enabled)) {
-	accessforbidden('Module not enabled');
+// There is several ways to check permission.
+// Set $enablepermissioncheck to 1 to enable a minimum low level of checks
+$enablepermissioncheck = 0;
+if ($enablepermissioncheck) {
+	$permissiontoread = $user->rights->ultimateimmo->read;
+	$permissiontoadd = $user->rights->ultimateimmo->write;
+	$permissiontodelete = $user->rights->ultimateimmo->delete;
+} else {
+	$permissiontoread = 1;
+	$permissiontoadd = 1;
+	$permissiontodelete = 1;
 }
 
 // Security check (enable the most restrictive one)
 if ($user->socid > 0) accessforbidden();
-
+//if ($user->socid > 0) accessforbidden();
+//$socid = 0; if ($user->socid > 0) $socid = $user->socid;
+//$isdraft = (($object->status == $object::STATUS_DRAFT) ? 1 : 0);
+//restrictedArea($user, $object->element, 0, $object->table_element, '', 'fk_soc', 'rowid', $isdraft);
+if (empty($conf->ultimateimmo->enabled)) accessforbidden('Module not enabled');
+if (!$permissiontoread) accessforbidden();
 
 
 /*
@@ -196,26 +196,27 @@ if ($reshook < 0) {
 	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 }
 
-if (empty($reshook))
-{
+if (empty($reshook)) {
 	// Selection of new fields
-	include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_changeselectedfields.inc.php';
 
 	// Purge search criteria
 	if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')) { // All tests are required to be compatible with all browsers
 		foreach ($object->fields as $key => $val) {
 			$search[$key] = '';
 			if (preg_match('/^(date|timestamp|datetime)/', $val['type'])) {
-				$search[$key.'_dtstart'] = '';
-				$search[$key.'_dtend'] = '';
+				$search[$key . '_dtstart'] = '';
+				$search[$key . '_dtend'] = '';
 			}
 		}
 		$toselect = array();
 		$search_array_options = array();
 	}
-	if (GETPOST('button_removefilter_x','alpha') || GETPOST('button_removefilter.x','alpha') || GETPOST('button_removefilter','alpha')
-		|| GETPOST('button_search_x','alpha') || GETPOST('button_search.x','alpha') || GETPOST('button_search','alpha')) {
-		$massaction='';     // Protection to avoid mass action if we force a new search during a mass action confirmation
+	if (
+		GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')
+		|| GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha')
+	) {
+		$massaction = '';     // Protection to avoid mass action if we force a new search during a mass action confirmation
 	}
 
 	// Mass actions
@@ -224,7 +225,6 @@ if (empty($reshook))
 	$uploaddir = $conf->ultimateimmo->dir_output . '/cost/';
 	include DOL_DOCUMENT_ROOT . '/core/actions_massactions.inc.php';
 }
-
 
 
 /*

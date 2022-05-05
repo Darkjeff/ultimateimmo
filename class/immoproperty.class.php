@@ -101,7 +101,7 @@ class ImmoProperty extends CommonObject
 		'rowid'         => array('type' => 'integer', 'label' => 'TechnicalID', 'enabled' => 1, 'visible' => -2, 'noteditable' => 1, 'notnull' => 1, 'index' => 1, 'position' => 1, 'comment' => 'Id'),
 		'ref'           => array('type' => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1, 'noteditable' => 0, 'default' => '', 'notnull' => 1,  'default'=>'(PROV)', 'index' => 1, 'position' => 10, 'searchall' => 1, 'comment' => 'Reference of object'),
 		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
-		'property_type_id' => array('type' => 'integer:ImmoProperty_Type:ultimateimmo/class/immoproperty_type.class.php', 'label' => 'ImmoProperty_Type', 'enabled' => 1, 'visible' => -1, 'position' => 20, 'notnull' => 1),
+		'property_type_id' => array('type' => 'integer', 'label' => 'ImmoProperty_Type', 'enabled' => 1, 'visible' => -1, 'position' => 20, 'notnull' => 1),
 		'fk_property'   => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'PropertyParent', 'enabled' => 1, 'visible' => -1, 'position' => 25, 'notnull' => -1), 
 		'label' => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'showoncombobox' => 1, 'searchall' => 1, 'css' => 'minwidth200', 'help' => 'Help text',),
 		'juridique_id'  => array('type' => 'integer', 'label' => 'Juridique', 'enabled' => 1, 'visible' => 1, 'position' => 32, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'MonoPropriete', '2' => 'Copropriete')),
@@ -266,7 +266,7 @@ class ImmoProperty extends CommonObject
 		// Translate some data
 		$this->fields['status']['arrayofkeyval'] = array(1 => $langs->trans('PropertyTypeStatusActive'), 9 => $langs->trans('PropertyTypeStatusCancel'));
 		$this->fields['juridique_id']['arrayofkeyval'] = array(1 => $langs->trans('MonoPropriete'), 2 => $langs->trans('Copropriete'));
-		$this->fields['target']['arrayofkeyval'] = array(1 => $langs->trans('Location'), 2 => $langs->trans('Vente'), 3 => $langs->trans('Autre'));
+		$this->fields['target']['arrayofkeyval'] = array(1 => $langs->trans('UltimateLocation'), 2 => $langs->trans('Vente'), 3 => $langs->trans('Autre'));
 		$this->fields['datebuilt']['arrayofkeyval'] = array(1 => $langs->trans('DateBuilt1'), 2 => $langs->trans('DateBuilt2'), 3 => $langs->trans('DateBuilt3'), 4 => $langs->trans('DateBuilt4'), 5 => $langs->trans('DateBuilt5'));
 		$this->fields['property_type_id']['arrayofkeyval'] = array(1 => $langs->trans('APA'), 2 => $langs->trans('HOU'), 3 => $langs->trans('LOC'), 4 => $langs->trans('SHO'), 5 => $langs->trans('GAR'), 6 => $langs->trans('BUL'));
 	}
@@ -594,12 +594,12 @@ class ImmoProperty extends CommonObject
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immoproperty_type as tp ON t.property_type_id = tp.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as s ON s.rowid = t.fk_soc";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as s ON s.rowid = t.fk_soc";
 
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
 		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql .= $morewhere;
-
+		//print_r($sql);exit;
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$res = $this->db->query($sql);
 		if ($res) {
@@ -607,37 +607,40 @@ class ImmoProperty extends CommonObject
 				if ($obj) {
 					$this->id = $id;
 					$this->set_vars_by_db($obj);
-
+					
 					$this->date_creation = $this->db->jdate($obj->date_creation);
 					$this->tms = $this->db->jdate($obj->tms);
 
 					/*$this->juridique_id	= $obj->juridique_id;
 					$this->juridique_code = $obj->juridique_code;
 					$this->juridique=$obj->juridique;*/
-
+					
+					//var_dump($obj);exit;
 					$this->property_type_id	= $obj->property_type_id;
 					$this->type_code = $obj->type_code;
 					$this->type = $obj->type;
 
 					$this->country_id	= $obj->country_id;
 					$this->country_code	= $obj->country_code;
-					if ($langs->trans("Country" . $obj->country_code) != "Country" . $obj->country_code)
+					if ($langs->trans("Country" . $obj->country_code) != "Country" . $obj->country_code) {
 						$this->country = $langs->transnoentitiesnoconv("Country" . $obj->country_code);
-					else
+					} else {
 						$this->country = $obj->country;
+					}
 					$this->setVarsFromFetchObj($obj);
+					
 					return $this->id;
 				} else {
 					return 0;
 				}
 			} else {
-				$this->error = $this->db->lasterror();
-				$this->errors[] = $this->error;
+				$this->error = "Error ".$this->db->lasterror();
+	            $this->errors[] = "Error ".$this->db->lasterror();
 				return -1;
 			}
 		} else {
-			$this->error = $this->db->lasterror();
-			$this->errors[] = $this->error;
+			$this->error = "Error ".$this->db->lasterror();
+			$this->errors[] = "Error ".$this->db->lasterror();
 			return -1;
 		}
 	}
@@ -707,8 +710,8 @@ class ImmoProperty extends CommonObject
 		$this->lines = array();
 
 		// Load lines with object ImmoPropertyLine
-		$result = $this->fetchLinesCommon();
-		return $result;
+
+		return count($this->lines) ? 1 : 0;
 	}
 
 	/**
@@ -1169,6 +1172,31 @@ class ImmopropertyLine extends CommonObjectLine
 	 * @var int  Does object support extrafields ? 0=No, 1=Yes
 	 */
 	public $isextrafieldmanaged = 0;
+
+	public $id;
+
+	public $entity;
+	public $property_type_id;
+	public $fk_property;
+	public $fk_owner;
+	public $label;
+	public $address;
+	public $building;
+	public $staircase;
+	public $numfloor;
+	public $numdoor;
+	public $area;
+	public $numroom;
+	public $zip;
+	public $town;
+	public $country_id;
+	public $status;
+	public $note_private;
+	public $note_public;
+	public $date_creation = '';
+	public $tms = '';
+	public $fk_user_creat;
+	public $fk_user_modif;
 
 	/**
 	 * Constructor

@@ -686,9 +686,9 @@ class ImmoReceipt extends CommonObject
 		$sql .= ' lc.email as emaillocataire,';
 		$sql .= ' cp.libelle as payment_label, cp.code as payment_code';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
-		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
-		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
-		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorent as ic ON t.fk_rent = ic.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorent as ic ON t.fk_rent = ic.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immopayment as pm ON t.fk_payment = pm.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_paiement as cp ON pm.fk_mode_reglement = cp.id';
 

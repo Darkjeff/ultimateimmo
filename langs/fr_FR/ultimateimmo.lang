@@ -113,6 +113,8 @@ MenuNewImmoCostType = Nouveau type de coût
 MenuImmoCompteur = Compteur
 MenuNewImmoCompteur = Nouveau compteur
 MenuImmoCompteurList = Liste compteur
+MenuStatisticsCostFourn = Coût : stats. par fourn.
+MenuImmoCompteurStats=Statistique Conso
 
 #
 # Miscellaneous
@@ -258,4 +260,9 @@ ConfirmCreateThirdParty=Êtes-vous sûr de vouloir créer un tiers pour ce locat
 ValidatePayment = Valider les paiements
 CreatePDF = Générez le PDF
 ImmoBirthCountry=Pays de naissance
+PaymentMode = Méthode de paiement
+DateRelever = Date de relevé
+MeterReading = Relevé des compteurs
+UltimateLocation = Location
+LinkedToDolibarrThirdParty = Lien du Tiers 
 

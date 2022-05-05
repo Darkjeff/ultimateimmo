@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2018-2021 Philippe GRAND 	<philippe.grand@atoo-net.com>
+/* Copyright (C) 2018-2022 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ function immorenterPrepareHead($object)
 	$head[$h][2] = 'card';
 	$h++;
 
-	$head[$h][0] = dol_buildpath("/ultimateimmo/renter/immoreceipt_card.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/receipt/immoreceipt_card.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("ImmoReceipt");
 	$head[$h][2] = 'receipt';
 	$h++;

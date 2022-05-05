@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) ---Put here your own copyright and developer email---
+/* Copyright (C) 2022 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,19 +36,18 @@ function immocompteurPrepareHead($object)
 	$h = 0;
 	$head = array();
 
-	$head[$h][0] = dol_buildpath("/ultimateimmo/immocompteur_card.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/compteur/immocompteur_card.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h++;
 
-	if (isset($object->fields['note_public']) || isset($object->fields['note_private']))
-	{
+	if (isset($object->fields['note_public']) || isset($object->fields['note_private'])) {
 		$nbNote = 0;
 		if (!empty($object->note_private)) $nbNote++;
 		if (!empty($object->note_public)) $nbNote++;
-		$head[$h][0] = dol_buildpath('/ultimateimmo/immocompteur_note.php', 1).'?id='.$object->id;
+		$head[$h][0] = dol_buildpath('/ultimateimmo/compteur/immocompteur_note.php', 1) . '?id=' . $object->id;
 		$head[$h][1] = $langs->trans('Notes');
-		if ($nbNote > 0) $head[$h][1] .= (empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER) ? '<span class="badge marginleftonlyshort">'.$nbNote.'</span>' : '');
+		if ($nbNote > 0) $head[$h][1] .= (empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER) ? '<span class="badge marginleftonlyshort">' . $nbNote . '</span>' : '');
 		$head[$h][2] = 'note';
 		$h++;
 	}
@@ -58,13 +57,13 @@ function immocompteurPrepareHead($object)
 	$upload_dir = $conf->ultimateimmo->dir_output."/immocompteur/".dol_sanitizeFileName($object->ref);
 	$nbFiles = count(dol_dir_list($upload_dir, 'files', 0, '', '(\.meta|_preview.*\.png)$'));
 	$nbLinks = Link::count($db, $object->element, $object->id);
-	$head[$h][0] = dol_buildpath("/ultimateimmo/immocompteur_document.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/compteur/immocompteur_document.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans('Documents');
 	if (($nbFiles + $nbLinks) > 0) $head[$h][1] .= '<span class="badge marginleftonlyshort">'.($nbFiles + $nbLinks).'</span>';
 	$head[$h][2] = 'document';
 	$h++;
 
-	$head[$h][0] = dol_buildpath("/ultimateimmo/immocompteur_agenda.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/compteur/immocompteur_agenda.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Events");
 	$head[$h][2] = 'agenda';
 	$h++;

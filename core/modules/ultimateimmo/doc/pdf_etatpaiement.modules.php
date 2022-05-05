@@ -255,7 +255,7 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-
+				
 				$pagenb++;
 				$pdf->SetFillColor(224, 224, 224);
 
@@ -549,12 +549,97 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 		);
 
 		$rank = $rank + 10; // do not use negative rank
-		$this->cols['desc'] = array(
+		$this->cols['receipt'] = array(
 			'rank' => $rank,
-			'width' => false, // only for desc
+			'width' => 25, // only for desc
 			'status' => true,
 			'title' => array(
-				'textkey' => 'Designation', // use lang key is usefull in somme case with module
+				'textkey' => 'Loyer', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
+
+		$rank = $rank + 10; // do not use negative rank
+		$this->cols['local'] = array(
+			'rank' => $rank,
+			'width' => 25, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Local', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
+
+		$rank = $rank + 10; // do not use negative rank
+		$this->cols['renter'] = array(
+			'rank' => $rank,
+			'width' => 25, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Renter', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
+
+		$rank = $rank + 10; // do not use negative rank
+		$this->cols['amount'] = array(
+			'rank' => $rank,
+			'width' => 25, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Amount', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
+
+		$rank = $rank + 10; // do not use negative rank
+		$this->cols['paid'] = array(
+			'rank' => $rank,
+			'width' => 25, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Paid', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
+
+		$rank = $rank + 10; // do not use negative rank
+		$this->cols['resteapayer'] = array(
+			'rank' => $rank,
+			'width' => 25, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'RemainderToPay', // use lang key is usefull in somme case with module
 				'align' => 'L',
 				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
 				// 'label' => ' ', // the final label
