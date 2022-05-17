@@ -87,8 +87,8 @@ class ImmoReceipt extends CommonObject
 	 */
 	const STATUS_CANCELED = 9;
 
-	const STATUS_UNPAID = 0;
-	const STATUS_PAID = 1;
+	const STATUS_UNPAID = 10;
+	const STATUS_PAID = 11;
 
 	/**
 	 *  'type' if the field format ('integer', 'integer:ObjectClass:PathToClass[:AddCreateButtonOrNot[:Filter]]', 'varchar(x)', 'double(24,8)', 'real', 'price', 'text', 'html', 'date', 'datetime', 'timestamp', 'duration', 'mail', 'phone', 'url', 'password')
