@@ -118,7 +118,7 @@ $hookmanager->initHooks(array('paiementcard', 'globalcard'));
 
 $parameters = array('socid' => $socid);
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
-if ($reshook < 0) //setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 $form = new Form($db);
 if ($action == 'add_payment') {
