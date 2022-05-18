@@ -60,6 +60,7 @@ ALTER TABLE llx_ultimateimmo_immopayment ALTER COLUMN date_payment  TIMESTAMP NO
 ALTER TABLE llx_ultimateimmo_immorenter ADD COLUMN address VARCHAR(255) AFTER birth;
 ALTER TABLE llx_ultimateimmo_immorenter ADD COLUMN zip VARCHAR(32) AFTER address;
 ALTER TABLE llx_ultimateimmo_immorenter ADD COLUMN town VARCHAR(64) AFTER zip;
+ALTER TABLE llx_ultimateimmo_immorent ADD COLUMN preavis INT(11) AFTER periode;
 
 
 
