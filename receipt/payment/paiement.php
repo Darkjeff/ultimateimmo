@@ -72,7 +72,6 @@ $sortfield	= GETPOST('sortfield', 'alpha');
 $sortorder	= GETPOST('sortorder', 'alpha');
 $page		= GETPOST('page', 'int');
 
-$amounts = array();
 $amountsresttopay = array();
 $addwarning = 0;
 
@@ -123,7 +122,7 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 $form = new Form($db);
 if ($action == 'add_payment') {
 	$error = 0;
-//var_dump($id);exit;
+
 	if (GETPOST('cancel')) {
 		$loc = dol_buildpath("/ultimateimmo/receipt/immoreceipt_card.php", 1) . '?id=' . $id;
 		header("Location: " . $loc);
@@ -150,20 +149,6 @@ if ($action == 'add_payment') {
 		$date_payment = dol_mktime(12, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
 		$paymentid = 0;
 
-		// Read possible payments
-		foreach ($_POST as $key => $value) {
-			if (substr($key, 0, 7) == 'amount_') {
-				$other_id = substr($key, 7);
-				$amounts[$other_id] = price2num($_POST[$key]);
-			}
-		}
-
-		if (count($amounts) <= 0) {
-			$error++;
-			$errmsg = 'ErrorNoPaymentDefined';
-			setEventMessages($errmsg, null, 'errors');
-		}
-
 		if (!$error) {
 			$db->begin();
 
@@ -180,7 +165,7 @@ if ($action == 'add_payment') {
 			$payment->fk_renter	   = $receipt->fk_renter;
 			$payment->fk_payment   = $receipt->fk_payment;
 			$payment->date_payment = $date_payment;
-			$payment->amounts      = $amounts;   // Tableau de montant
+			$payment->amount      = GETPOST("amount");
 			$payment->fk_mode_reglement  = GETPOST('fk_mode_reglement', 'int');
 			$payment->fk_account  = GETPOST('fk_bank', 'int');
 			$payment->num_payment  = GETPOST('num_payment', 'int');
@@ -399,7 +384,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 			print '<td class="center">';
 			if ($sumpaid < $objp->total_amount) {
-				$namef = "amount_" . $objp->id;
+				$namef = "amount";
 				print '<input type="text" size="8" name="' . $namef . '" required="required">';
 			} else {
 				$errmsg = $langs->trans("AlreadyPaid");
