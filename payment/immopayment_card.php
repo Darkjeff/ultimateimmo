@@ -189,7 +189,7 @@ if (empty($reshook)) {
 		$upload_dir = $conf->ultimateimmo->dir_output;
 
 		$file = $upload_dir . '/' . GETPOST('file');
-		var_dump($file);exit;
+
 		$ret = dol_delete_file($file);
 
 		if ($ret) {
