@@ -41,11 +41,6 @@ function immorenterPrepareHead($object)
 	$head[$h][2] = 'card';
 	$h++;
 
-	$head[$h][0] = dol_buildpath("/ultimateimmo/receipt/immoreceipt_card.php", 1).'?id='.$object->id;
-	$head[$h][1] = $langs->trans("ImmoReceipt");
-	$head[$h][2] = 'receipt';
-	$h++;
-
 	$head[$h][0] = dol_buildpath('/ultimateimmo/renter/immorenter_bilan.php', 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("Bilan");
 	$head[$h][2] = 'bilan';
