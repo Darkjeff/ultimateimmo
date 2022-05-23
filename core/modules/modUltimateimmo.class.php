@@ -70,7 +70,7 @@ class modUltimateimmo extends DolibarrModules
 		// Module description, used if translation string 'ModuleUltimateimmoDesc' not found (MyModue is name of module).
 		$this->description = "ModuleUltimateimmoDesc";
 		// Used only if file README.md and README-LL.md not found.
-		$this->descriptionlong = "Solution logicielle très puissante pour toutes les agences immobilières et autres professionnels de l'immobilier";
+		$this->descriptionlong = "Solution logicielle très puissante pour tout les propriétaires et multipropriétaires ainsi que les professionnels de l'immobilier";
 		$editors = array('ATOO.NET', 'Jeffinfo SARL');
 		$this->editor_name = implode(',', $editors);
 		$editor_url = array('https://www.atoo-net.com', 'https://www.jeffinfo.com/');
