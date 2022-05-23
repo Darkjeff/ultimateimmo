@@ -1,12 +1,12 @@
-# ULTIMATEIMMO VERSION 14
+# ULTIMATEIMMO VERSION 15
 
-[![GitHub release](https://img.shields.io/badge/Ultimateimmo-v14.0-red?logo=gitlab)](https://atoo-net.com/en/home/90-ultimateimmo-140.html)
-[![Version Dolibarr](https://img.shields.io/badge/Dolibarr-v14.0+-blue?logo=github)](https://github.com/Dolibarr/dolibarr)
+[![GitHub release](https://img.shields.io/badge/Ultimateimmo-v15.0-red?logo=gitlab)](https://atoo-net.com/en/home/90-ultimateimmo-140.html)
+[![Version Dolibarr](https://img.shields.io/badge/Dolibarr-v15.0+-blue?logo=github)](https://github.com/Dolibarr/dolibarr)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg?style=flat-square)](https://php.net/)
 
 Ultimateimmo is a real estate management module
 
-This module requires a version of *Dolibarr> = 14.0.0*
+This module requires a version of *Dolibarr >= 15.0.0*
 
 Thank you for your contribution
 
