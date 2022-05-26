@@ -294,8 +294,7 @@ if ($action == 'create') {
 			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
 		} elseif ($val['label'] == 'DateBuilt') {
 			// DateBuilt
-			//$object->datebuilt = GETPOST('datebuilt', 'alpha') ? GETPOST('datebuilt', 'alpha') : $object->datebuilt;
-			print $formImmo->selectBuiltDate( '', 'builtdate', 'code', 0, '', 1, 0);
+			print $formImmo->selectBuiltDate( '', 'datebuilt', 'code', 0, '', 1, 0);
 		} else {
 			if (!empty($val['picto'])) {
 				print img_picto('', $val['picto'], '', false, 0, 0, '', 'pictofixedwidth');
@@ -399,6 +398,9 @@ if (($id || $ref) && $action == 'edit') {
 			}
 			// Country
 			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
+		} elseif ($val['label'] == 'DateBuilt') {
+			// DateBuilt
+			print $formImmo->selectBuiltDate( '', 'datebuilt', 'code', 0, '', 1, 0);
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
@@ -539,6 +541,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				$staticproperty->ref = $staticproperty->getNomUrl(0) /*. ' - ' . $staticproperty->label*/;
 			}
 			print $staticproperty->ref;
+		} elseif ($val['label'] == 'DateBuilt') {
+			// DateBuilt
+			$staticproperty = new ImmoProperty($db);
+			$staticproperty->fetch($object->fk_property);
+			print $staticproperty->datebuilt;
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}

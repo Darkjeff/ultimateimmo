@@ -371,7 +371,7 @@ class FormUltimateimmo extends Form
 	 *  @param	int			$forcehidetooltip	Force hide tooltip for admin
 	 *  @return	string|void						Depending on $output param, return the HTML select list (recommended method) or nothing
 	 */
-	public function selectBuiltDate($selected = '', $htmlname = 'builtdate', $sortorder = 'code', $showempty = 0, $morecss = '', $output = 1, $forcehidetooltip = 1)
+	public function selectBuiltDate($selected = '', $htmlname = 'datebuilt', $sortorder = 'code', $showempty = 0, $morecss = '', $output = 1, $forcehidetooltip = 1)
 	{
 		global $user, $langs;
 		
@@ -408,6 +408,53 @@ class FormUltimateimmo extends Form
 			return $out;
 		} else {
 			print $out;
+		}
+	}
+
+	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
+	/**
+	 *      Return array with list of possible values for property type
+	 *
+	 *      @param	string	$order		Sort order by : 'code', 'rowid'...
+	 *      @param  int		$activeonly 0=all status of property type, 1=only the active
+	 *		@param	string	$code		code of property type
+	 *      @return array       		Array list of property type (id->label if option=0, code->label if option=1)
+	 */
+	public function propertyType($order = '', $activeonly = 0, $code = '')
+	{
+		if (empty($order)) {
+			$order = 'code';
+		}
+
+		$tab = array();
+		$sql = "SELECT DISTINCT tc.rowid, tc.code, tc.label";
+		$sql .= " FROM " . $this->db->prefix() . "c_ultimateimmo_immoproperty_type as tc";
+		$sql .= " WHERE tc.active > 0";
+		$sql .= $this->db->order($order, 'ASC');		
+		//print "sql=".$sql;
+		
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			while ($i < $num) {
+				$obj = $this->db->fetch_object($resql);
+				
+				if (!$order) {
+					$key = $obj->rowid;
+				} else {
+					$key = $obj->code;
+				}
+
+				$tab[$key] = $obj->label != '' ? $obj->label : '';
+
+				$i++;
+			}
+			return $tab;
+		} else {
+			$this->error = $this->db->lasterror();
+			
+			return null;
 		}
 	}
 }

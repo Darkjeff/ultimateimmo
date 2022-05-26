@@ -613,7 +613,7 @@ class ImmoProperty extends CommonObject
 					/*$this->juridique_id	= $obj->juridique_id;
 					$this->juridique_code = $obj->juridique_code;
 					$this->juridique=$obj->juridique;*/
-					
+					$this->datebuilt = $obj->datebuilt;
 					//var_dump($obj);exit;
 					$this->property_type_id	= $obj->property_type_id;
 					$this->type_code = $obj->type_code;
