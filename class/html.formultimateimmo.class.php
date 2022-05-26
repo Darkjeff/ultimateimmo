@@ -289,30 +289,121 @@ class FormUltimateimmo extends Form
 	 */
 	function getLabelBuiltDate($rowid)
 	{
-		global $db,$langs;
+		global $db, $langs;
 
-		if (! $rowid) return '';
+		if (!$rowid) return '';
 
-		$sql = "SELECT label FROM ".MAIN_DB_PREFIX."c_ultimateimmo_builtdate";
-		$sql.= " WHERE rowid='$rowid'";
+		$sql = "SELECT label FROM " . MAIN_DB_PREFIX . "c_ultimateimmo_builtdate";
+		$sql .= " WHERE rowid='$rowid'";
 
 		dol_syslog("html.formultimateimmo.class::getLabelBuiltDate", LOG_DEBUG);
-		$resql=$db->query($sql);
-		if ($resql)
-		{
+		$resql = $db->query($sql);
+		if ($resql) {
 			$num = $db->num_rows($resql);
 
-			if ($num)
-			{
+			if ($num) {
 				$obj = $db->fetch_object($resql);
-				$label=($obj->label!='-' ? $obj->label : '');
+				$label = ($obj->label != '-' ? $obj->label : '');
 				return $label;
-			}
-			else
-			{
+			} else {
 				return $langs->trans("NotDefined");
 			}
 		}
 	}
 
+	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
+	/**
+	 *      Return array with list of possible values for built date
+	 *
+	 *      @param	string	$order		Sort order by : 'code', 'rowid'...
+	 *      @param  int		$activeonly 0=all status of buit date, 1=only the active
+	 *		@param	string	$code		code of built date
+	 *      @return array       		Array list of built date (id->label if option=0, code->label if option=1)
+	 */
+	public function builtDateList($order = '', $activeonly = 0, $code = '')
+	{
+		if (empty($order)) {
+			$order = 'code';
+		}
+
+		$tab = array();
+		$sql = "SELECT DISTINCT tc.rowid, tc.code, tc.label";
+		$sql .= " FROM " . $this->db->prefix() . "c_ultimateimmo_builtdate as tc";
+		$sql .= " WHERE tc.active > 0";
+		$sql .= $this->db->order($order, 'ASC');		
+		//print "sql=".$sql;
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			while ($i < $num) {
+				$obj = $this->db->fetch_object($resql);
+				
+				if (!$order) {
+					$key = $obj->rowid;
+				} else {
+					$key = $obj->code;
+				}
+
+				$tab[$key] = $obj->label != '' ? $obj->label : '';
+
+				$i++;
+			}
+			return $tab;
+		} else {
+			$this->error = $this->db->lasterror();
+			
+			return null;
+		}
+	}
+
+	/**
+	 *  Return a select list with built dates
+	 *
+	 *  @param	object		$object         	Object to use to find date of building
+	 *  @param  string		$selected       	Default selected value
+	 *  @param  string		$htmlname			HTML select name
+	 *  @param  string		$sortorder			Sort criteria ('code', ...)
+	 *  @param  int			$showempty      	1=Add en empty line
+	 *  @param  string      $morecss        	Add more css to select component
+	 *  @param  int      	$output         	0=return HTML, 1= direct print
+	 *  @param	int			$forcehidetooltip	Force hide tooltip for admin
+	 *  @return	string|void						Depending on $output param, return the HTML select list (recommended method) or nothing
+	 */
+	public function selectBuiltDate($selected = '', $htmlname = 'builtdate', $sortorder = 'code', $showempty = 0, $morecss = '', $output = 1, $forcehidetooltip = 0)
+	{
+		global $user, $langs, $object;
+
+		$out = '';
+		if (is_object($object) && method_exists($object, 'builtDateList')) {
+			$lesDates = $this->builtDateList();
+
+			$out .= '<select id="' . $htmlname . '" class="flat valignmiddle' . ($morecss ? ' ' . $morecss : '') . '" name="' . $htmlname . '">';
+
+			if ($showempty) {
+				$out .= '<option value="0">&nbsp;</option>';
+			}
+			foreach ($lesDates as $key => $value) {
+				$out .= '<option value="' . $key . '"';
+				if ($key == $selected) {
+					$out .= ' selected';
+				}
+				$out .= '>' . $value . '</option>';
+			}
+			$out .= "</select>";
+
+			if ($user->admin && ($forcehidetooltip > 0)) {
+				$out .= ' ' . info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
+			}
+
+			$out .= ajax_combobox($htmlname);
+
+			$out .= "\n";
+		}
+		if (empty($output)) {
+			return $out;
+		} else {
+			print $out;
+		}
+	}
 }

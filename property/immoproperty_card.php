@@ -292,6 +292,10 @@ if ($action == 'create') {
 			}
 			// Country
 			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
+		} elseif ($val['label'] == 'DateBuilt') {
+			// DateBuilt
+			$object->datebuilt = GETPOST('datebuilt', 'alpha') ? GETPOST('datebuilt', 'alpha') : $object->datebuilt;
+			print $formImmo->selectBuiltDate(($object->datebuilt ? $object->datebuilt : -1), '', 'builtdate', 'code', 0, "", 1, 0);
 		} else {
 			if (!empty($val['picto'])) {
 				print img_picto('', $val['picto'], '', false, 0, 0, '', 'pictofixedwidth');
