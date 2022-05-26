@@ -267,7 +267,6 @@ class ImmoProperty extends CommonObject
 		$this->fields['status']['arrayofkeyval'] = array(1 => $langs->trans('PropertyTypeStatusActive'), 9 => $langs->trans('PropertyTypeStatusCancel'));
 		$this->fields['juridique_id']['arrayofkeyval'] = array(1 => $langs->trans('MonoPropriete'), 2 => $langs->trans('Copropriete'));
 		$this->fields['target']['arrayofkeyval'] = array(1 => $langs->trans('UltimateLocation'), 2 => $langs->trans('Vente'), 3 => $langs->trans('Autre'));
-		/*$this->fields['datebuilt']['arrayofkeyval'] = array(1 => $langs->trans('DateBuilt1'), 2 => $langs->trans('DateBuilt2'), 3 => $langs->trans('DateBuilt3'), 4 => $langs->trans('DateBuilt4'), 5 => $langs->trans('DateBuilt5'));*/
 		$this->fields['property_type_id']['arrayofkeyval'] = array(1 => $langs->trans('APA'), 2 => $langs->trans('HOU'), 3 => $langs->trans('LOC'), 4 => $langs->trans('SHO'), 5 => $langs->trans('GAR'), 6 => $langs->trans('BUL'));
 	}
 
@@ -1029,110 +1028,6 @@ class ImmoProperty extends CommonObject
 		}
 		else dol_print_error($dbtouse,'');
 		return 'Error';
-	}
-
-	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
-	/**
-	 *      Return array with list of possible values for built date
-	 *
-	 *      @param	string	$order		Sort order by : 'position', 'code', 'rowid'...
-	 *      @param  int		$option     0=Return array id->label, 1=Return array code->label
-	 *      @param  int		$activeonly 0=all status of buit date, 1=only the active
-	 *		@param	string	$code		code of built date
-	 *      @return array       		Array list of built date (id->label if option=0, code->label if option=1)
-	 */
-	public function builtDateList($order = 'code', $option = 0, $activeonly = 0, $code = '')
-	{
-		// phpcs:enable
-		global $langs;
-
-		if (empty($order)) {
-			$order = 'code';
-		}
-
-		$tab = array();
-		$sql = "SELECT DISTINCT tc.rowid, tc.code, tc.label";
-		$sql .= " FROM " . $this->db->prefix() . "c_ultimateimmo_builtdate as tc";
-		$sql .= " WHERE tc.element='" . $this->db->escape($this->element) . "'";
-		if ($activeonly == 1) {
-			$sql .= " AND tc.active=1"; // only the active dates
-		}
-		if (!empty($code)) {
-			$sql .= " AND tc.code='" . $this->db->escape($code) . "'";
-		}
-		$sql .= $this->db->order($order, 'ASC');
-
-		//print "sql=".$sql;
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			$num = $this->db->num_rows($resql);
-			$i = 0;
-			while ($i < $num) {
-				$obj = $this->db->fetch_object($resql);
-
-				$transkey = "BuiltDate_" . $this->element . $obj->code;
-				$builtDateLabel = ($langs->trans($transkey) != $transkey ? $langs->trans($transkey) : $obj->label);
-				if (empty($option)) {
-					$tab[$obj->rowid] = $builtDateLabel;
-				} else {
-					$tab[$obj->code] = $builtDateLabel;
-				}
-				$i++;
-			}
-			return $tab;
-		} else {
-			$this->error = $this->db->lasterror();
-			//dol_print_error($this->db);
-			return null;
-		}
-	}
-
-	/**
-	 *  Return a select list with built dates
-	 *
-	 *  @param	object		$object         	Object to use to find date of building
-	 *  @param  string		$selected       	Default selected value
-	 *  @param  string		$htmlname			HTML select name
-	 *  @param  string		$sortorder			Sort criteria ('position', 'code', ...)
-	 *  @param  int			$showempty      	1=Add en empty line
-	 *  @param  string      $morecss        	Add more css to select component
-	 *  @param  int      	$output         	0=return HTML, 1= direct print
-	 *  @param	int			$forcehidetooltip	Force hide tooltip for admin
-	 *  @return	string|void						Depending on $output param, return the HTML select list (recommended method) or nothing
-	 */
-	public function selectBuiltDate($object, $selected = '', $htmlname = 'builtdate', $sortorder = 'code', $showempty = 0, $morecss = '', $output = 1, $forcehidetooltip = 0)
-	{
-		global $user, $langs;
-
-		$out = '';
-		if (is_object($object) && method_exists($object, 'builtDateList')) {
-			$lesDates = $object->builtDateList($sortorder, 0, 1);
-			//var_dump($lesDates);exit;
-			$out .= '<select class="flat valignmiddle' . ($morecss ? ' ' . $morecss : '') . '" name="' . $htmlname . '" id="' . $htmlname . '">';
-			if ($showempty) {
-				$out .= '<option value="0">&nbsp;</option>';
-			}
-			foreach ($lesDates as $key => $value) {
-				$out .= '<option value="' . $key . '"';
-				if ($key == $selected) {
-					$out .= ' selected';
-				}
-				$out .= '>' . $value . '</option>';
-			}
-			$out .= "</select>";
-			if ($user->admin && empty($forcehidetooltip)) {
-				$out .= ' ' . info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
-			}
-
-			$out .= ajax_combobox($htmlname);
-
-			$out .= "\n";
-		}
-		if (empty($output)) {
-			return $out;
-		} else {
-			print $out;
-		}
 	}
 	
 	/**
