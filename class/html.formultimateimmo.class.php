@@ -316,7 +316,7 @@ class FormUltimateimmo extends Form
 	 *      Return array with list of possible values for built date
 	 *
 	 *      @param	string	$order		Sort order by : 'code', 'rowid'...
-	 *      @param  int		$activeonly 0=all status of buit date, 1=only the active
+	 *      @param  int		$activeonly 0=all status of built date, 1=only the active
 	 *		@param	string	$code		code of built date
 	 *      @return array       		Array list of built date (id->label if option=0, code->label if option=1)
 	 */
@@ -332,6 +332,7 @@ class FormUltimateimmo extends Form
 		$sql .= " WHERE tc.active > 0";
 		$sql .= $this->db->order($order, 'ASC');		
 		//print "sql=".$sql;
+		
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -370,16 +371,18 @@ class FormUltimateimmo extends Form
 	 *  @param	int			$forcehidetooltip	Force hide tooltip for admin
 	 *  @return	string|void						Depending on $output param, return the HTML select list (recommended method) or nothing
 	 */
-	public function selectBuiltDate($selected = '', $htmlname = 'builtdate', $sortorder = 'code', $showempty = 0, $morecss = '', $output = 1, $forcehidetooltip = 0)
+	public function selectBuiltDate($selected = '', $htmlname = 'builtdate', $sortorder = 'code', $showempty = 0, $morecss = '', $output = 1, $forcehidetooltip = 1)
 	{
-		global $user, $langs, $object;
-
+		global $user, $langs;
+		
 		$out = '';
-		if (is_object($object) && method_exists($object, 'builtDateList')) {
+		if (is_object($this) && method_exists($this, 'builtDateList')) {
 			$lesDates = $this->builtDateList();
+			
+			dol_syslog(__METHOD__ . " selected=" . $selected . ", htmlname=" . $htmlname, LOG_DEBUG);
 
 			$out .= '<select id="' . $htmlname . '" class="flat valignmiddle' . ($morecss ? ' ' . $morecss : '') . '" name="' . $htmlname . '">';
-
+			$showempty = 1;
 			if ($showempty) {
 				$out .= '<option value="0">&nbsp;</option>';
 			}
@@ -390,9 +393,10 @@ class FormUltimateimmo extends Form
 				}
 				$out .= '>' . $value . '</option>';
 			}
+			
 			$out .= "</select>";
-
-			if ($user->admin && ($forcehidetooltip > 0)) {
+			$forcehidetooltip = 1;
+			if ($user->admin && $forcehidetooltip == 1) {
 				$out .= ' ' . info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 			}
 
