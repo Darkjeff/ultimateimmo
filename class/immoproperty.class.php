@@ -107,7 +107,7 @@ class ImmoProperty extends CommonObject
 		'juridique_id'  => array('type' => 'integer', 'label' => 'Juridique', 'enabled' => 1, 'visible' => 1, 'position' => 32, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'MonoPropriete', '2' => 'Copropriete')),
 		'datebuilt'     => array('type' => 'integer', 'label' => 'DateBuilt', 'enabled' => 1, 'visible' => 1, 'position' => 35, 'notnull' => -1,),
 		'target'        => array('type' => 'integer', 'label' => 'Target', 'enabled' => 1, 'visible' => 1, 'position' => 40, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'Location', '2' => 'Vente', '3' => 'Autre'), 'comment' => "Rent or sale"),
-		'fk_owner'      => array('type' => 'integer:ImmoOwner:ultimateimmo/owner/class/immoowner.class.php:1:status=1', 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 45, 'notnull' => 1, 'index' => 1, 'help' => "LinkToOwner"),
+		'fk_owner'      => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php:1:status=1', 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 45, 'notnull' => 1, 'index' => 1, 'help' => "LinkToOwner"),
 		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'picto'=>'company', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 46, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirparty'),
 		'address'       => array('type' => 'varchar(255)', 'label' => 'Address', 'enabled' => 1, 'visible' => 1, 'position' => 60, 'notnull' => -1),
 		'zip'           => array('type' => 'varchar(32)', 'label' => 'Zip', 'enabled' => 1, 'visible' => 1, 'position' => 95, 'notnull' => -1),
@@ -163,6 +163,8 @@ class ImmoProperty extends CommonObject
 	public $juridique_id;
 
 	public $datebuilt;
+	public $datebuilt_code;
+	public $datebuilt_label;
 
 	public $target;
 
@@ -588,13 +590,15 @@ class ImmoProperty extends CommonObject
 
 		$sql = 'SELECT ' . $array . ',';
 		
-		$sql .= ' country.rowid as country_id, country.code as country_code, country.label as country, j.rowid as juridique_id, j.code as juridique_code, j.label as juridique, tp.rowid as property_type_id, tp.code as type_code, tp.label as type';
+		//$sql .= ' country.rowid as country_id, country.code as country_code, country.label as country, j.rowid as juridique_id, j.code as juridique_code, j.label as juridique, tp.rowid as property_type_id, tp.code as type_code, tp.label as type';
+		$sql .= ' country.rowid as country_id, country.code as country_code, country.label as country, j.rowid as juridique_id, j.code as juridique_code, j.label as juridique, tp.rowid as property_type_id, tp.code as type_code, tp.label as type, bu.rowid as datebuilt, bu.code as datebuilt_code, bu.label as datebuilt_label';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immoproperty_type as tp ON t.property_type_id = tp.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_builtdate as bu ON t.datebuilt = bu.rowid';
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as s ON s.rowid = t.fk_soc";
-
+		
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
 		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
 		if ($morewhere) $sql .= $morewhere;
@@ -610,10 +614,18 @@ class ImmoProperty extends CommonObject
 					$this->date_creation = $this->db->jdate($obj->date_creation);
 					$this->tms = $this->db->jdate($obj->tms);
 
-					/*$this->juridique_id	= $obj->juridique_id;
+					/*$this->juridique_id	= $obj->juridique_id; 
 					$this->juridique_code = $obj->juridique_code;
 					$this->juridique=$obj->juridique;*/
+
 					$this->datebuilt = $obj->datebuilt;
+					$this->datebuilt_code = $obj->datebuilt_code;
+					if ($langs->trans("DateBuilt" . $obj->datebuilt_code) != "DateBuilt" . $obj->datebuilt_code) {						
+						$this->datebuilt_label = $langs->transnoentitiesnoconv("DateBuilt" .  $obj->datebuilt_code);
+					} else {
+						$this->datebuilt_label = $obj->datebuilt_label;
+					}
+
 					//var_dump($obj);exit;
 					$this->property_type_id	= $obj->property_type_id;
 					$this->type_code = $obj->type_code;
@@ -1029,6 +1041,83 @@ class ImmoProperty extends CommonObject
 		else dol_print_error($dbtouse,'');
 		return 'Error';
 	}
+
+	/**
+	 *    Return civility label of contact
+	 *
+	 *    @return	string      			Translated name of civility
+	 */
+	/*public function getDatebuiltLabel()
+	{
+		global $langs;
+
+		$code = ($this->datebuilt_code ? $this->datebuilt_code : (!empty($this->datebuilt) ? $this->datebuilt_label : (!empty($this->datebuilt_label) ? $this->datebuilt_label : '')));
+		if (empty($code)) {
+			return '';
+		}
+
+		$langs->load("dict");
+		return $langs->getLabelFromKey($this->db, "DateBuilt".$code, "c_ultimateimmo_builtdate", "code", "label", $code);
+	}*/
+
+
+	/**
+	 *     Return datebuilt label, code or id from an id, code or label
+	 *
+	 *    @param      int		$searchkey      Id or code of datebuilt to search
+	 *    @param      string	$withcode   	'0'=Return label,
+	 *    										'1'=Return code + label,
+	 *    										'2'=Return code from id,
+	 *    										'3'=Return id from code,
+	 * 	   										'all'=Return array('id'=>,'code'=>,'label'=>)
+	 *    @param      DoliDB	$dbtouse       	Database handler (using in global way may fail because of conflicts with some autoload features)
+	 *    @param      Translate	$outputlangs	Langs object for output translation
+	 *    @param      int		$entconv       	0=Return value without entities and not converted to output charset, 1=Ready for html output
+	 *    @param      int		$searchlabel    Label of datebuilt to search (warning: searching on label is not reliable)
+	 *    @return     mixed       				String with datebuilt code or translated datebuilt name or Array('id','code','label')
+	 */
+	public function getDatebuiltLabel($searchkey, $withcode = 0, $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
+	{
+		global $db, $langs;
+
+		$result = '';
+
+		// Check parameters
+		if (empty($searchkey) && empty($searchlabel)) {
+			if ($withcode === 'all') return array('id' => '', 'code' => '', 'label' => '');
+			else return '';
+		}
+		if (!is_object($dbtouse)) $dbtouse = $db;
+		if (!is_object($outputlangs)) $outputlangs = $langs;
+
+		$sql = "SELECT rowid, code, label FROM " . MAIN_DB_PREFIX . "c_ultimateimmo_builtdate";
+		if (is_numeric($searchkey)) $sql .= " WHERE rowid=" . $searchkey;
+		elseif (!empty($searchkey)) $sql .= " WHERE code='" . $db->escape($searchkey) . "'";
+		else $sql .= " WHERE label='" . $db->escape($searchlabel) . "'";
+
+		$resql = $dbtouse->query($sql);
+		if ($resql) {
+			$obj = $dbtouse->fetch_object($resql);
+			if ($obj) {
+				$label = ((!empty($obj->label) && $obj->label != '-') ? $obj->label : '');
+				if (is_object($outputlangs)) {
+					$outputlangs->load("dict");
+					if ($entconv) $label = ($obj->code && ($outputlangs->trans("DateBuilt" . $obj->code) != "DateBuilt" . $obj->code)) ? $outputlangs->trans("DateBuilt" . $obj->code) : $label;
+					else $label = ($obj->code && ($outputlangs->transnoentitiesnoconv("DateBuilt" . $obj->code) != "DateBuilt" . $obj->code)) ? $outputlangs->transnoentitiesnoconv("DateBuilt" . $obj->code) : $label;
+				}
+				if ($withcode == 1) $result = $label ? "$obj->code - $label" : "$obj->code";
+				else if ($withcode == 2) $result = $obj->code;
+				else if ($withcode == 3) $result = $obj->rowid;
+				else if ($withcode === 'all') $result = array('id' => $obj->rowid, 'code' => $obj->code, 'label' => $label);
+				else $result = $label;
+			} else {
+				$result = 'NotDefined';
+			}
+			$dbtouse->free($resql);
+			return $result;
+		} else dol_print_error($dbtouse, '');
+		return 'Error';
+	}
 	
 	/**
 	 *    Return ImmoProperty_Type label, code or id from an id, code or label
@@ -1181,6 +1270,9 @@ class ImmopropertyLine extends CommonObjectLine
 	public $label;
 	public $address;
 	public $building;
+	public $datebuilt;
+	public $datebuilt_code;
+	public $datebuilt_label;
 	public $staircase;
 	public $numfloor;
 	public $numdoor;

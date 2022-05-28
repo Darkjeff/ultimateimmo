@@ -294,7 +294,13 @@ if ($action == 'create') {
 			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
 		} elseif ($val['label'] == 'DateBuilt') {
 			// DateBuilt
-			print $formImmo->selectBuiltDate( '', 'datebuilt', 'code', 0, '', 1, 0);
+			$object->datebuilt = GETPOST("datebuilt", 'int') ? GETPOST('datebuilt', 'int') : $object->datebuilt;
+			if ($object->datebuilt) {
+				$tmparray = $object->getDatebuiltLabel($object->datebuilt, 'all');
+				if (in_array($tmparray['code'], $tmparray)) $object->datebuilt_code = $tmparray['code'];
+				if (in_array($tmparray['label'], $tmparray)) $object->datebuilt_label = $tmparray['label'];
+			}
+			print $formImmo->selectBuiltDate(GETPOSTISSET("datebuilt") != '' ? GETPOST("datebuilt", 'int') : $object->datebuilt, 'datebuilt');
 		} else {
 			if (!empty($val['picto'])) {
 				print img_picto('', $val['picto'], '', false, 0, 0, '', 'pictofixedwidth');
@@ -400,7 +406,13 @@ if (($id || $ref) && $action == 'edit') {
 			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
 		} elseif ($val['label'] == 'DateBuilt') {
 			// DateBuilt
-			print $formImmo->selectBuiltDate( '', 'datebuilt', 'code', 0, '', 1, 0);
+			$object->datebuilt = GETPOST("datebuilt", 'int') ? GETPOST('datebuilt', 'int') : $object->datebuilt;
+			if ($object->datebuilt) {
+				$tmparray = $object->getDatebuiltLabel($object->datebuilt, 'all');
+				if (in_array($tmparray['code'], $tmparray)) $object->datebuilt_code = $tmparray['code'];
+				if (in_array($tmparray['label'], $tmparray)) $object->datebuilt_label = $tmparray['label'];
+			}
+			print $formImmo->selectBuiltDate(GETPOSTISSET("datebuilt") != '' ? GETPOST("datebuilt", 'int') : $object->datebuilt);
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
@@ -542,10 +554,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 			print $staticproperty->ref;
 		} elseif ($val['label'] == 'DateBuilt') {
-			// DateBuilt
-			$staticproperty = new ImmoProperty($db);
-			$staticproperty->fetch($object->fk_property);
-			print $staticproperty->datebuilt;
+			// DateBuilt 
+			if ($object->datebuilt) {
+				$tmparray = $object->getDatebuiltLabel($object->datebuilt, 'all');
+				//var_dump($tmparray);exit;
+				if (in_array($tmparray['code'], $tmparray)) $object->datebuilt_code = $tmparray['code'];
+				if (in_array($tmparray['label'], $tmparray)) $object->datebuilt_label = $tmparray['label'];
+			}
+			print $object->datebuilt_label;
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}

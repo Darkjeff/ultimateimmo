@@ -322,6 +322,9 @@ class FormUltimateimmo extends Form
 	 */
 	public function builtDateList($order = '', $activeonly = 0, $code = '')
 	{
+		// phpcs:enable
+		global $langs;
+
 		if (empty($order)) {
 			$order = 'code';
 		}
@@ -329,33 +332,32 @@ class FormUltimateimmo extends Form
 		$tab = array();
 		$sql = "SELECT DISTINCT tc.rowid, tc.code, tc.label";
 		$sql .= " FROM " . $this->db->prefix() . "c_ultimateimmo_builtdate as tc";
-		$sql .= " WHERE tc.active > 0";
+		$sql .= " WHERE tc.entity IN (".getEntity('builtdate').")";
+		if ($activeonly == 1) {
+			$sql .= " AND tc.active=1"; // only the active types
+		}
+		if (!empty($code)) {
+			$sql .= " AND tc.code='".$this->db->escape($code)."'";
+		}
 		$sql .= $this->db->order($order, 'ASC');		
 		//print "sql=".$sql;
 		
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
-			$i = 0;
-			while ($i < $num) {
-				$obj = $this->db->fetch_object($resql);
-				
-				if (!$order) {
-					$key = $obj->rowid;
-				} else {
-					$key = $obj->code;
+			if ($num) {
+				$i = 0;
+				while ($i < $num) {
+					$obj = $this->db->fetch_object($resql);
+
+					$tab[$obj->rowid] = $langs->trans($obj->label);
+					$i++;
 				}
-
-				$tab[$key] = $obj->label != '' ? $obj->label : '';
-
-				$i++;
 			}
-			return $tab;
 		} else {
-			$this->error = $this->db->lasterror();
-			
-			return null;
+			print $this->db->error();
 		}
+		return $tab;
 	}
 
 	/**

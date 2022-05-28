@@ -675,6 +675,14 @@ while ($i < $imaxinloop) {
 						$staticproperty->ref = $staticproperty->getNomUrl(0)/* . ' - ' . $staticproperty->label*/;
 					}
 					print $staticproperty->ref;
+				} elseif ($val['label'] == 'DateBuilt') {
+					// DateBuilt 
+					if ($object->datebuilt) {
+						$tmparray = $object->getDatebuiltLabel($object->datebuilt, 'all');
+						$object->datebuilt_code = $tmparray['code'];
+						$object->datebuilt_label = $tmparray['label'];
+					}
+					print $object->datebuilt_label;
 				} else {
 					print $object->showOutputField($val, $key, $obj->$key, '');
 				}
