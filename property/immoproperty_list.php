@@ -691,6 +691,14 @@ while ($i < $imaxinloop) {
 						$object->property_type_label = $tmparray['label'];
 					}
 					print $object->property_type_label;
+				} elseif ($val['label'] == 'Juridique') {
+					// Juridique 
+					if ($object->juridique_id) {
+						$tmparray = $object->getJuridiqueLabel($object->juridique_id, 'all');
+						$object->juridique_code = $tmparray['code'];
+						$object->juridique = $tmparray['label'];
+					}
+					print $object->juridique;
 				} else {
 					print $object->showOutputField($val, $key, $obj->$key, '');
 				}

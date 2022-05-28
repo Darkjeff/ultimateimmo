@@ -310,6 +310,15 @@ if ($action == 'create') {
 				if (in_array($tmparray['label'], $tmparray)) $object->property_type_label = $tmparray['label'];
 			}
 			print $formImmo->selectpropertyType(GETPOSTISSET("property_type_id") != '' ? GETPOST("property_type_id", 'int') : $object->property_type_id, 'property_type_id');
+		} elseif ($val['label'] == 'Juridique') {
+			// Juridique 
+			$object->juridique_id = GETPOST("juridique_id", 'int') ? GETPOST('juridique_id', 'int') : $object->juridique_id;
+			if ($object->juridique_id) {
+				$tmparray = $object->getJuridiqueLabel($object->juridique_id, 'all');
+				if (in_array($tmparray['code'], $tmparray)) $object->juridique_code = $tmparray['code'];
+				if (in_array($tmparray['label'], $tmparray)) $object->juridique = $tmparray['label'];
+			}
+			print $formImmo->selectJuridique(GETPOSTISSET("juridique_id") != '' ? GETPOST("juridique_id", 'int') : $object->juridique_id, 'juridique_id');
 		} else {
 			if (!empty($val['picto'])) {
 				print img_picto('', $val['picto'], '', false, 0, 0, '', 'pictofixedwidth');
@@ -431,6 +440,15 @@ if (($id || $ref) && $action == 'edit') {
 				if (in_array($tmparray['label'], $tmparray)) $object->property_type_label = $tmparray['label'];
 			}
 			print $formImmo->selectpropertyType(GETPOSTISSET("property_type_id") != '' ? GETPOST("property_type_id", 'int') : $object->property_type_id, 'property_type_id');
+		} elseif ($val['label'] == 'Juridique') {
+			// Juridique 
+			$object->juridique_id = GETPOST("juridique_id", 'int') ? GETPOST('juridique_id', 'int') : $object->juridique_id;
+			if ($object->juridique_id) {
+				$tmparray = $object->getJuridiqueLabel($object->juridique_id, 'all');
+				if (in_array($tmparray['code'], $tmparray)) $object->juridique_code = $tmparray['code'];
+				if (in_array($tmparray['label'], $tmparray)) $object->juridique = $tmparray['label'];
+			}
+			print $formImmo->selectJuridique(GETPOSTISSET("juridique_id") != '' ? GETPOST("juridique_id", 'int') : $object->juridique_id, 'juridique_id');
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
@@ -588,6 +606,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				if (in_array($tmparray['label'], $tmparray)) $object->property_type_label = $tmparray['label'];
 			}
 			print $object->property_type_label;
+		} elseif ($val['label'] == 'Juridique') {
+			// Juridique 
+			if ($object->juridique) {
+				$tmparray = $object->getJuridiqueLabel($object->juridique_id, 'all');
+				if (in_array($tmparray['code'], $tmparray)) $object->juridique_code = $tmparray['code'];
+				if (in_array($tmparray['label'], $tmparray)) $object->juridique = $tmparray['label'];
+			}
+			print $object->juridique;
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
