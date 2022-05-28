@@ -62,7 +62,7 @@ dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo", "companies", "other"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "companies", "other", "dict"));
 
 $action     = GETPOST('action', 'alpha') ? GETPOST('action', 'alpha') : 'view';				// The action 'add', 'create', 'edit', 'update', 'view', ...
 $massaction = GETPOST('massaction', 'alpha');											// The bulk action (combo box choice into lists)

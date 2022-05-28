@@ -1121,9 +1121,9 @@ class ImmoProperty extends CommonObject
 	}
 
 	/**
-	 *     Return datebuilt label, code or id from an id, code or label
+	 *     Return property type label, code or id from an id, code or label
 	 *
-	 *    @param      int		$searchkey      Id or code of datebuilt to search
+	 *    @param      int		$searchkey      Id or code of property type to search
 	 *    @param      string	$withcode   	'0'=Return label,
 	 *    										'1'=Return code + label,
 	 *    										'2'=Return code from id,
@@ -1132,8 +1132,8 @@ class ImmoProperty extends CommonObject
 	 *    @param      DoliDB	$dbtouse       	Database handler (using in global way may fail because of conflicts with some autoload features)
 	 *    @param      Translate	$outputlangs	Langs object for output translation
 	 *    @param      int		$entconv       	0=Return value without entities and not converted to output charset, 1=Ready for html output
-	 *    @param      int		$searchlabel    Label of datebuilt to search (warning: searching on label is not reliable)
-	 *    @return     mixed       				String with datebuilt code or translated datebuilt name or Array('id','code','label')
+	 *    @param      int		$searchlabel    Label of property type to search (warning: searching on label is not reliable)
+	 *    @return     mixed       				String with property type code or translated property type name or Array('id','code','label')
 	 */
 	public function getPropertyTypeLabel($searchkey, $withcode = 0, $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
 	{
@@ -1177,36 +1177,6 @@ class ImmoProperty extends CommonObject
 		} else dol_print_error($dbtouse, '');
 		return 'Error';
 	}
-	
-	/**
-	 *    Retourne le nom traduit du type de construction
-	 *
-	 *    @param      string	$rowid      rowid du type de construction
-	 *    @return     string     			Nom traduit du type de construction
-	 */
-	/*function getPropertyTypeLabel($rowid)
-	{
-		global $db, $langs;
-
-		if (!$rowid) return '';
-
-		$sql = "SELECT label FROM " . MAIN_DB_PREFIX . "c_ultimateimmo_immoproperty_type";
-		$sql .= " WHERE rowid='$rowid'";
-
-		dol_syslog(get_class($this)."::getPropertyTypeLabel", LOG_DEBUG);
-		$resql = $db->query($sql);
-		if ($resql) {
-			$num = $db->num_rows($resql);
-
-			if ($num) {
-				$obj = $db->fetch_object($resql);
-				$label = ($obj->label != '-' ? $obj->label : '');
-				return $label;
-			} else {
-				return $langs->trans("NotDefined");
-			}
-		}
-	}*/
 
 	/**
 	 * Initialise object with example values

@@ -64,7 +64,7 @@ dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo", "companies", "other"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "companies", "other", "dict"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
