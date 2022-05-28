@@ -280,37 +280,6 @@ class FormUltimateimmo extends Form
 		return 'Error';
 	}
 
-	
-	/**
-	 *    Retourne le nom traduit de la date de construction
-	 *
-	 *    @param      string	$rowid      rowid de la date de construction
-	 *    @return     string     			Nom traduit de la date de construction
-	 */
-	function getLabelBuiltDate($rowid)
-	{
-		global $db, $langs;
-
-		if (!$rowid) return '';
-
-		$sql = "SELECT label FROM " . MAIN_DB_PREFIX . "c_ultimateimmo_builtdate";
-		$sql .= " WHERE rowid='$rowid'";
-
-		dol_syslog("html.formultimateimmo.class::getLabelBuiltDate", LOG_DEBUG);
-		$resql = $db->query($sql);
-		if ($resql) {
-			$num = $db->num_rows($resql);
-
-			if ($num) {
-				$obj = $db->fetch_object($resql);
-				$label = ($obj->label != '-' ? $obj->label : '');
-				return $label;
-			} else {
-				return $langs->trans("NotDefined");
-			}
-		}
-	}
-
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 	/**
 	 *      Return array with list of possible values for built date
@@ -422,8 +391,11 @@ class FormUltimateimmo extends Form
 	 *		@param	string	$code		code of property type
 	 *      @return array       		Array list of property type (id->label if option=0, code->label if option=1)
 	 */
-	public function propertyType($order = '', $activeonly = 0, $code = '')
+	public function propertyTypeList($order = '', $activeonly = 0, $code = '')
 	{
+		// phpcs:enable
+		global $langs;
+
 		if (empty($order)) {
 			$order = 'code';
 		}
@@ -431,32 +403,84 @@ class FormUltimateimmo extends Form
 		$tab = array();
 		$sql = "SELECT DISTINCT tc.rowid, tc.code, tc.label";
 		$sql .= " FROM " . $this->db->prefix() . "c_ultimateimmo_immoproperty_type as tc";
-		$sql .= " WHERE tc.active > 0";
+		$sql .= " WHERE tc.entity IN (".getEntity('property_type_id').")";
+		if ($activeonly == 1) {
+			$sql .= " AND tc.active=1"; // only the active types
+		}
+		if (!empty($code)) {
+			$sql .= " AND tc.code='".$this->db->escape($code)."'";
+		}
 		$sql .= $this->db->order($order, 'ASC');		
 		//print "sql=".$sql;
 		
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
-			$i = 0;
-			while ($i < $num) {
-				$obj = $this->db->fetch_object($resql);
-				
-				if (!$order) {
-					$key = $obj->rowid;
-				} else {
-					$key = $obj->code;
+			if ($num) {
+				$i = 0;
+				while ($i < $num) {
+					$obj = $this->db->fetch_object($resql);
+
+					$tab[$obj->rowid] = $langs->trans($obj->label);
+					$i++;
 				}
-
-				$tab[$key] = $obj->label != '' ? $obj->label : '';
-
-				$i++;
 			}
-			return $tab;
 		} else {
-			$this->error = $this->db->lasterror();
+			print $this->db->error();
+		}
+		return $tab;
+	}
+
+	/**
+	 *  Return a select list with property type
+	 *
+	 *  @param	object		$object         	Object to use to find date of building
+	 *  @param  string		$selected       	Default selected value
+	 *  @param  string		$htmlname			HTML select name
+	 *  @param  string		$sortorder			Sort criteria ('code', ...)
+	 *  @param  int			$showempty      	1=Add en empty line
+	 *  @param  string      $morecss        	Add more css to select component
+	 *  @param  int      	$output         	0=return HTML, 1= direct print
+	 *  @param	int			$forcehidetooltip	Force hide tooltip for admin
+	 *  @return	string|void						Depending on $output param, return the HTML select list (recommended method) or nothing
+	 */
+	public function selectpropertyType($selected = '', $htmlname = 'property_type_id', $sortorder = 'code', $showempty = 0, $morecss = '', $output = 1, $forcehidetooltip = 1)
+	{
+		global $user, $langs;
+		
+		$out = '';
+		if (is_object($this) && method_exists($this, 'propertyTypeList')) {
+			$lesTypes = $this->propertyTypeList();
 			
-			return null;
+			dol_syslog(__METHOD__ . " selected=" . $selected . ", htmlname=" . $htmlname, LOG_DEBUG);
+
+			$out .= '<select id="' . $htmlname . '" class="flat valignmiddle' . ($morecss ? ' ' . $morecss : '') . '" name="' . $htmlname . '">';
+			$showempty = 1;
+			if ($showempty) {
+				$out .= '<option value="0">&nbsp;</option>';
+			}
+			foreach ($lesTypes as $key => $value) {
+				$out .= '<option value="' . $key . '"';
+				if ($key == $selected) {
+					$out .= ' selected';
+				}
+				$out .= '>' . $value . '</option>';
+			}
+			
+			$out .= "</select>";
+			$forcehidetooltip = 1;
+			if ($user->admin && $forcehidetooltip == 1) {
+				$out .= ' ' . info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
+			}
+
+			$out .= ajax_combobox($htmlname);
+
+			$out .= "\n";
+		}
+		if (empty($output)) {
+			return $out;
+		} else {
+			print $out;
 		}
 	}
 }

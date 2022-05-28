@@ -281,7 +281,7 @@ if ($action == 'create') {
 		}
 		print '</td>';
 		print '<td class="valuefieldcreate">';
-
+		//var_dump($object);exit;
 		if ($val['label'] == 'Country') {
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
@@ -301,6 +301,15 @@ if ($action == 'create') {
 				if (in_array($tmparray['label'], $tmparray)) $object->datebuilt_label = $tmparray['label'];
 			}
 			print $formImmo->selectBuiltDate(GETPOSTISSET("datebuilt") != '' ? GETPOST("datebuilt", 'int') : $object->datebuilt, 'datebuilt');
+		} elseif ($val['label'] == 'ImmoProperty_Type') {
+			// ImmoProperty_Type 
+			$object->property_type_id = GETPOST("property_type_id", 'int') ? GETPOST('property_type_id', 'int') : $object->property_type_id;
+			if ($object->property_type_label) {
+				$tmparray = $object->getPropertyTypeLabel($object->property_type_id, 'all');
+				if (in_array($tmparray['code'], $tmparray)) $object->property_type_code = $tmparray['code'];
+				if (in_array($tmparray['label'], $tmparray)) $object->property_type_label = $tmparray['label'];
+			}
+			print $formImmo->selectpropertyType(GETPOSTISSET("property_type_id") != '' ? GETPOST("property_type_id", 'int') : $object->property_type_id, 'property_type_id');
 		} else {
 			if (!empty($val['picto'])) {
 				print img_picto('', $val['picto'], '', false, 0, 0, '', 'pictofixedwidth');
@@ -413,6 +422,15 @@ if (($id || $ref) && $action == 'edit') {
 				if (in_array($tmparray['label'], $tmparray)) $object->datebuilt_label = $tmparray['label'];
 			}
 			print $formImmo->selectBuiltDate(GETPOSTISSET("datebuilt") != '' ? GETPOST("datebuilt", 'int') : $object->datebuilt);
+		} elseif ($val['label'] == 'ImmoProperty_Type') {
+			// ImmoProperty_Type 
+			$object->property_type_id = GETPOST("property_type_id", 'int') ? GETPOST('property_type_id', 'int') : $object->property_type_id;
+			if ($object->property_type_label) {
+				$tmparray = $object->getPropertyTypeLabel($object->property_type_id, 'all');
+				if (in_array($tmparray['code'], $tmparray)) $object->property_type_code = $tmparray['code'];
+				if (in_array($tmparray['label'], $tmparray)) $object->property_type_label = $tmparray['label'];
+			}
+			print $formImmo->selectpropertyType(GETPOSTISSET("property_type_id") != '' ? GETPOST("property_type_id", 'int') : $object->property_type_id, 'property_type_id');
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
@@ -557,11 +575,19 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			// DateBuilt 
 			if ($object->datebuilt) {
 				$tmparray = $object->getDatebuiltLabel($object->datebuilt, 'all');
-				//var_dump($tmparray);exit;
+
 				if (in_array($tmparray['code'], $tmparray)) $object->datebuilt_code = $tmparray['code'];
 				if (in_array($tmparray['label'], $tmparray)) $object->datebuilt_label = $tmparray['label'];
 			}
 			print $object->datebuilt_label;
+		} elseif ($val['label'] == 'ImmoProperty_Type') {
+			// ImmoProperty_Type 
+			if ($object->property_type_label) {
+				$tmparray = $object->getPropertyTypeLabel($object->property_type_id, 'all');
+				if (in_array($tmparray['code'], $tmparray)) $object->property_type_code = $tmparray['code'];
+				if (in_array($tmparray['label'], $tmparray)) $object->property_type_label = $tmparray['label'];
+			}
+			print $object->property_type_label;
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}

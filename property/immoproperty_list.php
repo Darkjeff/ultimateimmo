@@ -683,6 +683,14 @@ while ($i < $imaxinloop) {
 						$object->datebuilt_label = $tmparray['label'];
 					}
 					print $object->datebuilt_label;
+				} elseif ($val['label'] == 'ImmoProperty_Type') {
+					// ImmoProperty_Type 
+					if ($object->property_type_id) {
+						$tmparray = $object->getPropertyTypeLabel($object->property_type_id, 'all');
+						$object->property_type_code = $tmparray['code'];
+						$object->property_type_label = $tmparray['label'];
+					}
+					print $object->property_type_label;
 				} else {
 					print $object->showOutputField($val, $key, $obj->$key, '');
 				}
