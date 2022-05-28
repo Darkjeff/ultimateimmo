@@ -998,53 +998,46 @@ class ImmoProperty extends CommonObject
 	 *    @param      int		$searchlabel    Label of country to search (warning: searching on label is not reliable)
 	 *    @return     mixed       				String with country code or translated country name or Array('id','code','label')
 	 */
-	function getCountry($searchkey, $withcode='', $dbtouse=0, $outputlangs='', $entconv=1, $searchlabel='')
+	function getCountry($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
 	{
-		global $db,$langs;
+		global $db, $langs;
 
-		$result='';
+		$result = '';
 
 		// Check parameters
-		if (empty($searchkey) && empty($searchlabel))
-		{
-			if ($withcode === 'all') return array('id'=>'','code'=>'','label'=>'');
+		if (empty($searchkey) && empty($searchlabel)) {
+			if ($withcode === 'all') return array('id' => '', 'code' => '', 'label' => '');
 			else return '';
 		}
-		if (! is_object($dbtouse)) $dbtouse=$db;
-		if (! is_object($outputlangs)) $outputlangs=$langs;
+		if (!is_object($dbtouse)) $dbtouse = $db;
+		if (!is_object($outputlangs)) $outputlangs = $langs;
 
-		$sql = "SELECT rowid, code, label FROM ".MAIN_DB_PREFIX."c_country";
-		if (is_numeric($searchkey)) $sql.= " WHERE rowid=".$searchkey;
-		elseif (! empty($searchkey)) $sql.= " WHERE code='".$db->escape($searchkey)."'";
-		else $sql.= " WHERE label='".$db->escape($searchlabel)."'";
+		$sql = "SELECT rowid, code, label FROM " . MAIN_DB_PREFIX . "c_country";
+		if (is_numeric($searchkey)) $sql .= " WHERE rowid=" . $searchkey;
+		elseif (!empty($searchkey)) $sql .= " WHERE code='" . $db->escape($searchkey) . "'";
+		else $sql .= " WHERE label='" . $db->escape($searchlabel) . "'";
 
-		$resql=$dbtouse->query($sql);
-		if ($resql)
-		{
+		$resql = $dbtouse->query($sql);
+		if ($resql) {
 			$obj = $dbtouse->fetch_object($resql);
-			if ($obj)
-			{
-				$label=((! empty($obj->label) && $obj->label!='-')?$obj->label:'');
-				if (is_object($outputlangs))
-				{
+			if ($obj) {
+				$label = ((!empty($obj->label) && $obj->label != '-') ? $obj->label : '');
+				if (is_object($outputlangs)) {
 					$outputlangs->load("dict");
-					if ($entconv) $label=($obj->code && ($outputlangs->trans("Country".$obj->code)!="Country".$obj->code))?$outputlangs->trans("Country".$obj->code):$label;
-					else $label=($obj->code && ($outputlangs->transnoentitiesnoconv("Country".$obj->code)!="Country".$obj->code))?$outputlangs->transnoentitiesnoconv("Country".$obj->code):$label;
+					if ($entconv) $label = ($obj->code && ($outputlangs->trans("Country" . $obj->code) != "Country" . $obj->code)) ? $outputlangs->trans("Country" . $obj->code) : $label;
+					else $label = ($obj->code && ($outputlangs->transnoentitiesnoconv("Country" . $obj->code) != "Country" . $obj->code)) ? $outputlangs->transnoentitiesnoconv("Country" . $obj->code) : $label;
 				}
-				if ($withcode == 1) $result=$label?"$obj->code - $label":"$obj->code";
-				else if ($withcode == 2) $result=$obj->code;
-				else if ($withcode == 3) $result=$obj->rowid;
-				else if ($withcode === 'all') $result=array('id'=>$obj->rowid,'code'=>$obj->code,'label'=>$label);
-				else $result=$label;
-			}
-			else
-			{
-				$result='NotDefined';
+				if ($withcode == 1) $result = $label ? "$obj->code - $label" : "$obj->code";
+				else if ($withcode == 2) $result = $obj->code;
+				else if ($withcode == 3) $result = $obj->rowid;
+				else if ($withcode === 'all') $result = array('id' => $obj->rowid, 'code' => $obj->code, 'label' => $label);
+				else $result = $label;
+			} else {
+				$result = 'NotDefined';
 			}
 			$dbtouse->free($resql);
 			return $result;
-		}
-		else dol_print_error($dbtouse,'');
+		} else dol_print_error($dbtouse, '');
 		return 'Error';
 	}
 
