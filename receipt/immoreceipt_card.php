@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,7 +135,7 @@ if (empty($reshook)) {
 	if ($action == 'paid') {
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
-		$result = $receipt->set_paid($user);
+		$result = $receipt->setPaid($user);
 		Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 	}
 
