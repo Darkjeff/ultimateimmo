@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2020  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2022  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -56,14 +56,5 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoreceipt (
    status INT(11) NULL DEFAULT 0
 ) ENGINE=InnoDB;
 
---
--- Index pour les tables exportées
---
-
---
--- Index pour la table llx_ultimateimmo_immoreceipt
---
-ALTER TABLE llx_ultimateimmo_immoreceipt
- ADD PRIMARY KEY (rowid);
 
 

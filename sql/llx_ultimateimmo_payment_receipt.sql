@@ -1,6 +1,6 @@
 -- ===================================================================
 -- Copyright (C) 2004 Rodolphe Quiedeville <rodolphe@quiedeville.org>
--- Copyright (C) 2018-2019 Philippe GRAND  <philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -22,5 +22,5 @@ CREATE TABLE llx_ultimateimmo_payment_receipt
   rowid           integer AUTO_INCREMENT PRIMARY KEY,
   fk_paiement     integer,								-- type of payment in llx_c_paiement
   fk_receipt      integer,
-  amount          double(24,8)     DEFAULT 0,			-- amount paid in Dolibarr currency
+  amount          double(24,8)     DEFAULT 0			-- amount paid in Dolibarr currency
 )ENGINE=innodb;

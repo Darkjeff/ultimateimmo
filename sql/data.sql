@@ -1,5 +1,5 @@
 -- ============================================================================
--- Copyright (C) 2014-2021   Philippe Grand		<philippe.grand@atoo-net.com>
+-- Copyright (C) 2014-2022   Philippe Grand		<philippe.grand@atoo-net.com>
 -- Copyright (C) 2014-2017   Regis Houssin		<regis.houssin@capnetworks.com>
 --
 -- This program is free software: you can redistribute it and/or modify
@@ -15,17 +15,18 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-INSERT INTO llx_c_ultimateimmo_immoreceipt_status(code,label,active) VALUES ( 'STATUS_DRAFT', 'Brouillon', 1),('STATUS_VALIDATED', 'Validée', 1);
+INSERT INTO llx_c_ultimateimmo_immoreceipt_status(rowid,code,label,active) VALUES (0, 'STATUS_DRAFT', 'Brouillon', 1);
+INSERT INTO llx_c_ultimateimmo_immoreceipt_status(rowid,code,label,active) VALUES (1, 'STATUS_VALIDATED', 'Validée', 1);
 
-INSERT INTO llx_c_ultimateimmo_immorent_type(rowid,code,label,active) VALUES (1, 'EMPTY_HOUSING', 'Logement vide', 1);
-INSERT INTO llx_c_ultimateimmo_immorent_type(rowid,code,label,active) VALUES (2, 'FURNISHED_APARTMENT', 'Logement meublé', 1);
+INSERT INTO llx_c_ultimateimmo_immorent_type(rowid,code,label,active) VALUES (0, 'EMPTY_HOUSING', 'Logement vide', 1);
+INSERT INTO llx_c_ultimateimmo_immorent_type(rowid,code,label,active) VALUES (1, 'FURNISHED_APARTMENT', 'Logement meublé', 1);
 
-INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (1, 'APA', 'Apartment', 1);
-INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (2, 'HOU', 'House', 1);
-INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (3, 'LOC', 'Loc', 1);
-INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (4, 'SHO', 'Shop', 1);
-INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (5, 'GAR', 'Garage', 1);
-INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (6, 'BUL', 'Building', 1);
+INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (0, 'APA', 'Apartment', 1);
+INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (1, 'HOU', 'Individual house', 1);
+INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (2, 'LOC', 'Business premises', 1);
+INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (3, 'SHO', 'Shop', 1);
+INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (4, 'GAR', 'Garage', 1);
+INSERT INTO llx_c_ultimateimmo_immoproperty_type(rowid,code,label,active) VALUES (5, 'BUL', 'Building', 1);
 
 INSERT INTO llx_c_ultimateimmo_juridique(rowid,code,label,active) VALUES (0, 'MONOPROP', 'Mono propriété', 1);
 INSERT INTO llx_c_ultimateimmo_juridique(rowid,code,label,active) VALUES (1, 'CO_PROP', 'Copropriété', 1);

@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2019  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2022  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_entity
 ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_vat (vat);
 ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_fk_soc (fk_soc);
 ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_fk_property (fk_property);
-ALTER TABLE llx_ultimateimmo_immorent ADD CONSTRAINT llx_ultimateimmo_immorent_fk_property FOREIGN KEY (fk_property) REFERENCES ultimateimmo_immoproperty(rowid);
+ALTER TABLE llx_ultimateimmo_immorent ADD CONSTRAINT llx_ultimateimmo_immorent_fk_property FOREIGN KEY (fk_property) REFERENCES llx_ultimateimmo_immoproperty(rowid);
 ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_fk_renter (fk_renter);
 ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_status (status);
 -- END MODULEBUILDER INDEXES
