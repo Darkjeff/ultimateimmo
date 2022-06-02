@@ -213,46 +213,22 @@ if ($action == 'create') {
 	print '<input type="hidden" name="action" value="add">';
 	print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 
-	dol_fiche_head(array(), '');
+	print dol_get_fiche_head(array(), '');
 
-	print '<table class="border centpercent">' . "\n";
+	// Set some default values
+	//if (! GETPOSTISSET('fieldname')) $_POST['fieldname'] = 'myvalue';
+
+	print '<table class="border centpercent tableforfieldcreate">'."\n";
 
 	// Common attributes
-	foreach ($object->fields as $key => $val) {
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1) continue;
-
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue;    // We don't want this field
-
-		print '<tr id="field_' . $key . '">';
-		print '<td';
-		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '"';
-		print '>';
-		print $langs->trans($val['label']);
-		print '</td>';
-		print '<td>';
-		if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
-		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
-		elseif (in_array($val['type'], array('float', 'double(24,8)'))) $value = GETPOST($key, 'int');
-		elseif ($val['label'] == 'CostType') {
-			$varpage = empty($contextpage) ? $_SERVER["PHP_SELF"] : $contextpage;
-			$value = $form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);    // This also change content of $arrayfields
-			$value .= (count($arrayofmassactions) ? $form->showCheckAddButtons('checkforselect', 1) : '');
-		} else $value = GETPOST($key, 'alpha');
-		print $object->showInputField($val, $key, $value, '', '', '', 0);
-		print '</td>';
-		print '</tr>';
-	}
+	include DOL_DOCUMENT_ROOT.'/core/tpl/commonfields_add.tpl.php';
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
 
 	print '</table>' . "\n";
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	print '<div class="center">';
 	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
@@ -267,44 +243,21 @@ if ($action == 'create') {
 if (($id || $ref) && $action == 'edit') {
 	print load_fiche_titre($langs->trans("ImmoCost"));
 
-	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
-	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
+	print '<input type="hidden" name="token" value="'.newToken().'">';
 	print '<input type="hidden" name="action" value="update">';
-	print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
-	print '<input type="hidden" name="id" value="' . $object->id . '">';
+	print '<input type="hidden" name="id" value="'.$object->id.'">';
+	if ($backtopage) {
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	}
 
-	dol_fiche_head();
 
-	print '<table class="border centpercent">' . "\n";
+	print dol_get_fiche_head();
+
+	print '<table class="border centpercent tableforfieldedit">'."\n";
 
 	// Common attributes
-	$object->fields = dol_sort_array($object->fields, 'position');
-
-	foreach ($object->fields as $key => $val) {
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1) continue;
-
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue;    // We don't want this field
-
-		print '<tr><td';
-		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '"';
-		print '>' . $langs->trans($val['label']) . '</td>';
-		print '<td>';
-		if (in_array($val['type'], array('int',
-										 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
-		elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
-		elseif ($val['label'] == 'CostType') {
-			$varpage = empty($contextpage) ? $_SERVER["PHP_SELF"] : $contextpage;
-			$value = $form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);    // This also change content of $arrayfields
-		} else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
-		//var_dump($val.' '.$key.' '.$value);
-		print $object->showInputField($val, $key, $value, '', '', '', 0);
-		print '</td>';
-		print '</tr>';
-	}
+	include DOL_DOCUMENT_ROOT.'/core/tpl/commonfields_edit.tpl.php';
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
@@ -427,7 +380,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Common attributes
 	$keyforbreak = 'note_private';
-	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
+	include DOL_DOCUMENT_ROOT.'/core/tpl/commonfields_view.tpl.php';
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';

@@ -106,7 +106,7 @@ class ImmoCost extends CommonObject
 								 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirparty",),
 		'fk_cost_type'  => array('type'    => 'integer:ImmoCost_Type:ultimateimmo/class/immocost_type.class.php',
 								 'label'   => 'ImmoCostType', 'enabled' => 1, 'visible' => 1, 'position' => 50,
-								 'notnull' => -1, 'index' => 1, 'help' => "LinkToProperty",),
+								 'notnull' => -1, 'index' => 1, 'help' => "CostType",),
 		'note_public'   => array('type'     => 'html', 'label' => 'NotePublic', 'enabled' => 1, 'visible' => -1,
 								 'position' => 52, 'notnull' => -1,),
 		'note_private'  => array('type'     => 'html', 'label' => 'NotePrivate', 'enabled' => 1, 'visible' => -1,

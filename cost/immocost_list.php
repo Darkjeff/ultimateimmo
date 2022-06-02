@@ -490,9 +490,14 @@ print '</tr>' . "\n";
 
 // Detect if we need a fetch on each output line
 $needToFetchEachLine = 0;
-foreach ($extrafields->attribute_computed as $key => $val) {
-	if (preg_match('/\$object/', $val)) $needToFetchEachLine++;  // There is at least one compute field that use $object
+if (isset($extrafields->attributes[$object->table_element]['computed']) && is_array($extrafields->attributes[$object->table_element]['computed']) && count($extrafields->attributes[$object->table_element]['computed']) > 0) {
+	foreach ($extrafields->attributes[$object->table_element]['computed'] as $key => $val) {
+		if (preg_match('/\$object/', $val)) {
+			$needToFetchEachLine++; // There is at least one compute field that use $object
+		}
+	}
 }
+
 
 
 // Loop on record
