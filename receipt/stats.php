@@ -98,9 +98,9 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
-if ($user->id != 1) {
-	$sql .= " AND ll.fk_owner=".$user->id;
-}
+//if ($user->id != 1) {
+//	$sql .= " AND ll.fk_owner=".$user->id;
+//}
 
 $sql .= " GROUP BY ll.label";
 
@@ -151,9 +151,9 @@ $sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1,
 $sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid ";
 $sql .= "  AND ll.fk_owner = own.rowid ";
-if ($user->id != 1) {
-	$sql .= " AND ll.fk_owner=".$user->id;
-}
+//if ($user->id != 1) {
+//	$sql .= " AND ll.fk_owner=".$user->id;
+//}
 $sql .= " GROUP BY ll.fk_owner";
 
 $resql = $db->query ( $sql );
