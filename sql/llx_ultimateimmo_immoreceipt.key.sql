@@ -19,11 +19,11 @@
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_rowid (rowid);
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_ref (ref);
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_entity (entity);
-ALTER TABLE llx_ultimateimmo_immoreceipt ADD CONSTRAINT llx_ultimateimmo_immoreceipt_fk_rent FOREIGN KEY (fk_rent) REFERENCES ultimateimmo_immorent(rowid);
+ALTER TABLE llx_ultimateimmo_immoreceipt ADD CONSTRAINT llx_ultimateimmo_immoreceipt_fk_rent FOREIGN KEY (fk_rent) REFERENCES llx_ultimateimmo_immorent(rowid);
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_fk_property (fk_property);
-ALTER TABLE llx_ultimateimmo_immoreceipt ADD CONSTRAINT llx_ultimateimmo_immoreceipt_fk_property FOREIGN KEY (fk_property) REFERENCES ultimateimmo_immoproperty(rowid);
+ALTER TABLE llx_ultimateimmo_immoreceipt ADD CONSTRAINT llx_ultimateimmo_immoreceipt_fk_property FOREIGN KEY (fk_property) REFERENCES llx_ultimateimmo_immoproperty(rowid);
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_fk_renter (fk_renter);
-ALTER TABLE llx_ultimateimmo_immoreceipt ADD CONSTRAINT llx_ultimateimmo_immoreceipt_fk_renter FOREIGN KEY (fk_renter) REFERENCES ultimateimmo_immorenter(rowid);
+ALTER TABLE llx_ultimateimmo_immoreceipt ADD CONSTRAINT llx_ultimateimmo_immoreceipt_fk_renter FOREIGN KEY (fk_renter) REFERENCES llx_ultimateimmo_immorenter(rowid);
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_fk_owner (fk_owner);
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_fk_soc (fk_soc);
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD INDEX idx_ultimateimmo_immoreceipt_paye (paye);

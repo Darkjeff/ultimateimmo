@@ -23,7 +23,7 @@ CREATE TABLE llx_ultimateimmo_immocost_type(
 	famille varchar(100) NOT NULL,	
 	date_creation datetime NOT NULL, 
 	tms timestamp NOT NULL, 
-	fk_user_creat integer NOT NULL, 
+	fk_user_create integer NOT NULL,
 	fk_user_modif integer,  
 	status integer NOT NULL
 	-- END MODULEBUILDER FIELDS

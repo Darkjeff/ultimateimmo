@@ -18,11 +18,8 @@
 -- BEGIN MODULEBUILDER INDEXES
 ALTER TABLE llx_ultimateimmo_immopayment ADD INDEX idx_ultimateimmo_immopayment_rowid (rowid);
 ALTER TABLE llx_ultimateimmo_immopayment ADD INDEX idx_ultimateimmo_immopayment_ref (ref);
-ALTER TABLE llx_ultimateimmo_immopayment ADD INDEX idx_ultimateimmo_immopayment_fk_contract (fk_contract);
 ALTER TABLE llx_ultimateimmo_immopayment ADD INDEX idx_ultimateimmo_immopayment_fk_property (fk_property);
 ALTER TABLE llx_ultimateimmo_immopayment ADD INDEX idx_ultimateimmo_immopayment_fk_renter (fk_renter);
-ALTER TABLE llx_ultimateimmo_immopayment ADD INDEX idx_ultimateimmo_immopayment_fk_bank (fk_bank);
-ALTER TABLE llx_ultimateimmo_immopayment ADD INDEX idx_ultimateimmo_immopayment_fk_typepayment (fk_typepayment);
 ALTER TABLE llx_ultimateimmo_immopayment ADD INDEX idx_ultimateimmo_immopayment_fk_owner (fk_owner);
 ALTER TABLE llx_ultimateimmo_immopayment ADD INDEX idx_ultimateimmo_immopayment_fk_receipt (fk_receipt);
 ALTER TABLE llx_ultimateimmo_immopayment ADD CONSTRAINT llx_ultimateimmo_immopayment_fk_user_creat FOREIGN KEY (fk_user_creat) REFERENCES llx_user(rowid);

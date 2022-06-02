@@ -14,9 +14,9 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-CREATE TABLE IF NOT EXISTS  llx_c_ultimateimmo_immorent_type  (
+CREATE TABLE llx_c_ultimateimmo_immorent_type  (
    rowid integer NOT NULL  AUTO_INCREMENT PRIMARY KEY,
-   code	varchar(8) NOT NULL, 
+   code	varchar(50) NOT NULL,
    entity integer DEFAULT 1 NOT NULL,
    label varchar(200) NOT NULL DEFAULT '',
    active tinyint(4) DEFAULT 1 NOT NULL

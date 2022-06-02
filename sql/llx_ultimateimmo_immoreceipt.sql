@@ -56,14 +56,4 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoreceipt (
    status INT(11) NULL DEFAULT 0
 ) ENGINE=InnoDB;
 
---
--- Index pour les tables exportées
---
-
---
--- Index pour la table llx_ultimateimmo_immoreceipt
---
-ALTER TABLE llx_ultimateimmo_immoreceipt
- ADD PRIMARY KEY (rowid);
-
 

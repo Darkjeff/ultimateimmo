@@ -15,7 +15,7 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --
 -- ========================================================================
-CREATE TABLE IF NOT EXISTS  llx_c_ultimateimmo_target  (
+CREATE TABLE llx_c_ultimateimmo_target  (
    rowid integer NOT NULL  AUTO_INCREMENT PRIMARY KEY,
    code	varchar(50) NOT NULL, 
    entity integer DEFAULT 1 NOT NULL,

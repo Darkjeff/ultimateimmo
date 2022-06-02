@@ -14,7 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-CREATE TABLE IF NOT EXISTS llx_c_ultimateimmo_immoreceipt_status (
+CREATE TABLE llx_c_ultimateimmo_immoreceipt_status (
   rowid           integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
   code            varchar(20) NOT NULL,
   label           varchar(30),
