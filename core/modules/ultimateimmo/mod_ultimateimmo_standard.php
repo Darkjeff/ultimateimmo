@@ -49,7 +49,7 @@ class mod_ultimateimmo_standard extends ModeleNumRefUltimateimmo
 	 * @var string model name
 	 */
 	public $name = 'standard';
-    
+
 	/**
 	 * @var int Automatic numbering
 	 */
@@ -97,7 +97,7 @@ class mod_ultimateimmo_standard extends ModeleNumRefUltimateimmo
         $sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immoreceipt";
 		$sql.= " WHERE ref LIKE '".$db->escape($this->prefix)."____-%'";
         $sql.= " AND entity = ".$conf->entity;
-		
+
         $resql = $db->query($sql);
         if ($resql)
         {
@@ -142,6 +142,7 @@ class mod_ultimateimmo_standard extends ModeleNumRefUltimateimmo
 		else
 		{
 			dol_syslog("mod_ultimateimmo_standard::getNextValue", LOG_DEBUG);
+			$this->errors[]=$this->db->lasterror;
 			return -1;
 		}
 

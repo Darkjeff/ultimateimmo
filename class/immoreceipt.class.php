@@ -965,14 +965,16 @@ class ImmoReceipt extends CommonObject
 			else
 			{
 				$this->error = $obj->error;
+				$this->errors = array_merge($this->errors,$obj->errors);
 				//dol_print_error($this->db,get_class($this)."::getNextNumRef ".$obj->error);
-				return "";
+				return -1;
 			}
 		}
 		else
 		{
-			print $langs->trans("Error")." ".$langs->trans("Error_ULTIMATEIMMO_ADDON_NUMBER_NotDefined");
-			return "";
+			$this->error = $langs->trans("Error")." ".$langs->trans("Error_ULTIMATEIMMO_ADDON_NUMBER_NotDefined");
+			$this->errors[] = $langs->trans("Error")." ".$langs->trans("Error_ULTIMATEIMMO_ADDON_NUMBER_NotDefined");
+			return -1;
 		}
 	}
 
@@ -1012,26 +1014,31 @@ class ImmoReceipt extends CommonObject
 		if (!$error && (preg_match('/^[\(]?PROV/i', $this->ref) || empty($this->ref))) // empty should not happened, but when it occurs, the test save life
 		{
 			$num = $this->getNextNumRef();
+			if ((int)$num<0) {
+				$error++;
+			}
 		} else {
 			$num = $this->ref;
 		}
 		$this->newref = $num;
 
-		// Validate
-		$sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element;
-		$sql .= " SET ref = '" . $this->db->escape($num) . "',";
-		$sql .= " status = " . self::STATUS_VALIDATED . ",";
-		$sql .= " date_validation = '" . $this->db->idate($now) . "',";
-		$sql .= " fk_user_valid = " . $user->id;
-		$sql .= " WHERE rowid = " . $this->id;
+		if (empty($error)) {
+			// Validate
+			$sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element;
+			$sql .= " SET ref = '" . $this->db->escape($num) . "',";
+			$sql .= " status = " . self::STATUS_VALIDATED . ",";
+			$sql .= " date_validation = '" . $this->db->idate($now) . "',";
+			$sql .= " fk_user_valid = " . $user->id;
+			$sql .= " WHERE rowid = " . $this->id;
 
-		dol_syslog(get_class($this) . "::validate()", LOG_DEBUG);
-		$resql = $this->db->query($sql);
+			dol_syslog(get_class($this) . "::validate()", LOG_DEBUG);
+			$resql = $this->db->query($sql);
 
-		if (!$resql) {
-			dol_print_error($this->db);
-			$this->error = $this->db->lasterror();
-			$error++;
+			if (!$resql) {
+				dol_print_error($this->db);
+				$this->error = $this->db->lasterror();
+				$error++;
+			}
 		}
 
 		// Trigger calls

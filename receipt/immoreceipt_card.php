@@ -192,8 +192,7 @@ if (empty($reshook)) {
 			}
 		} else {
 			$langs->load("errors");
-			if (count($object->errors) > 0) setEventMessages(null, $object->errors, 'errors');
-			else setEventMessages($langs->trans(null), null, 'errors');
+			setEventMessages($object->error, $object->errors, 'errors');
 		}
 	}
 
