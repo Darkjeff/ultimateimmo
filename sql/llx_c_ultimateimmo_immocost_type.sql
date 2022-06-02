@@ -22,9 +22,8 @@ CREATE TABLE llx_c_ultimateimmo_immocost_type  (
    entity integer DEFAULT 1 NOT NULL,
    date_creation datetime NOT NULL,
    tms timestamp NOT NULL,
-   fk_user_creat integer NOT NULL,
+   fk_user_create integer NOT NULL,
    fk_user_modif integer,
-   import_key varchar(14),
    status integer NOT NULL
 )ENGINE=InnoDB;
 
