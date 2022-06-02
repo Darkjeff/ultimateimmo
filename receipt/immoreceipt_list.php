@@ -724,7 +724,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				print $staticproperty->ref;
 			} elseif ($val['label'] == 'PartialPayment') {
 				if ($object->getSommePaiement()) {
-					$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+					$totalpaye = price($object->getSommePaiement(), 0, $langs, 1, -1, -1, $conf->currency);
 					print $totalpaye;
 				}
 			} elseif ($val['label'] == 'Balance') {
@@ -732,7 +732,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 
 				if ($balance >= 0) {
 
-					print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
+					print price($balance, 0, $langs, 1, -1, -1, $conf->currency);
 
 					//For total
 					$obj->balance = $balance;

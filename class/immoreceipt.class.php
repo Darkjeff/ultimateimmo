@@ -1419,9 +1419,10 @@ class ImmoReceipt extends CommonObject
 		$table = 'ultimateimmo_immopayment';
 		$field = 'fk_receipt';
 
-		$sql = 'SELECT sum(amount) as amount';
+		$sql = 'SELECT SUM(amount) as amount';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $table;
 		$sql .= ' WHERE ' . $field . ' = ' . $this->id;
+		$sql .= ' GROUP BY ' . $field;
 
 		dol_syslog(get_class($this) . "::getSommePaiement", LOG_DEBUG);
 		$resql = $this->db->query($sql);
