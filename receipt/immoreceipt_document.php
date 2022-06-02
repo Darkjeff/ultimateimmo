@@ -92,7 +92,7 @@ include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be inc
 if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity ? $object->entity : $conf->entity] . "/receipt/" . dol_sanitizeFileName($object->ref);
 
 $permissiontoadd = $user->rights->ultimateimmo->owner->write; // Used by the include of actions_addupdatedelete.inc.php
-
+$permissiontoread =$user->rights->ultimateimmo->owner->read;
 /*
  * Actions
  */

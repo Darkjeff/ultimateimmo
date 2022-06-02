@@ -90,7 +90,8 @@ include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be inc
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
 if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity ? $object->entity : $conf->entity] . "/owner/" . dol_sanitizeFileName($object->ref);
 
-$permissiontoadd = $user->rights->ultimateimmo->owner->write; // Used by the include of actions_addupdatedelete.inc.php
+$permissiontoread = $user->rights->ultimateimmo->owner->read;
+$permissiontoadd = $user->rights->ultimateimmo->cost->write; // Used by the include of actions_addupdatedelete.inc.php and actions_linkedfiles.inc.php
 
 /*
  * Actions
@@ -135,7 +136,7 @@ if ($object->id) {
 		$res = $soc->fetch($socid);
 
 	$morehtmlref = '<div class="refidno">';
-	
+
 	// Thirdparty
 	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . (is_object($object->thirdparty) ? $object->thirdparty->getNomUrl(1) : '');
 	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?socid=' . $object->thirdparty->id . '&search_fk_soc=' . urlencode($object->thirdparty->id) . '">' . $langs->trans("OtherProperties") . '</a>)';
@@ -173,7 +174,7 @@ if ($object->id) {
 	        }
 	    }
 	}
-	
+
 	$morehtmlref .= '</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
