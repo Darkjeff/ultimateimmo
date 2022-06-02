@@ -50,6 +50,7 @@ include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
+dol_include_once('/ultimateimmo/class/immobuilding.class.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
 // Load traductions files requiredby by page
@@ -86,7 +87,7 @@ foreach ($object->fields as $key => $val) {
 if (empty($action) && empty($id) && empty($ref)) $action = 'view';
 
 // Load object
-include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  
+include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once
 
 // Security check - Protection if external user
 //if ($user->socid > 0) accessforbidden();
@@ -117,7 +118,7 @@ if (empty($reshook))
 	$permissiontoadd = $user->rights->ultimateimmo->write;
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
 	$backurlforlist = dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1);
-	
+
 	if (empty($backtopage) || ($cancel && empty($id))) {
     	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
     		if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
@@ -141,27 +142,14 @@ if (empty($reshook))
 	if ($action == 'makebuilding') {
 		$error = 0;
 
-		$db->begin();
-
 		$result = $object->fetch($id);
-		$building = $object->label;
 
-		// todo debug insert into
-		$sql1 = 'INSERT INTO ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty(';
-		$sql1 .= 'label,';
-		$sql1 .= 'fk_property';
-		$sql1 .= ') VALUES (';
-		$sql1 .= ' ' . (!isset($object->label) ? 'NULL' : "'" . $db->escape($object->label) . "'") . ',';
-		$sql1 .= '' . $id;
-		$sql1 .= ')';
-		// dol_syslog ( get_class ( $this ) . ":: loyer.php action=" . $action . " sql1=" . $sql1, LOG_DEBUG );
-		$resql1 = $db->query($sql1);
-		if (!$resql1) {
-			$error++;
-			setEventMessages($db->lasterror(), null, 'errors');
-		} else {
-			$db->commit();
-			setEventMessages($db->lasterror(), null, 'errors');
+		$building = new ImmoBuilding($db);
+		$building->label=$object->label;
+		$building->fk_property =  $object->id;
+		$result = $building->create($user);
+		if ($result<0) {
+			setEventMessages($building->error,$building->errors,'errors');
 		}
 	}
 }
@@ -568,9 +556,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			if ($permissiontoadd) {
 				if ($object->status == 1) {
-					print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=makebuilding&id=' . $id . '">' . $langs->trans("BienPrincipal") . '</a>' . "\n";
+					print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=makebuilding&id=' . $id . '">' . $langs->trans("LotFiscal") . '</a>' . "\n";
 				} else {
-					print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('BienPrincipal') . '</a>' . "\n";
+					print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('LotFiscal') . '</a>' . "\n";
 				}
 			} //What is the use ?
 
@@ -650,11 +638,11 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 			$urlforjsmap='https://maps.googleapis.com/maps/api/js';
 			if (empty($conf->global->GOOGLE_API_SERVERKEY)) $urlforjsmap.="?sensor=true";
 			else $urlforjsmap.="?key=".$conf->global->GOOGLE_API_SERVERKEY;
-			
+
 		?>
 		<!--gmaps.php: Include Google javascript map -->
 		<script type="text/javascript" src="<?php echo $urlforjsmap; ?>"></script>
-		
+
 		<script type="text/javascript">
 		  var geocoder;
 		  var map;
@@ -713,7 +701,7 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 		<div class="center">
 		<div id="map" class="divmap" style="width: 90%; height: 500px;" ></div>
 		</div>
-		<?php	
+		<?php
 		}
 	}
 }

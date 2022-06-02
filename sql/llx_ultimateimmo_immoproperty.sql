@@ -19,7 +19,7 @@ CREATE TABLE llx_ultimateimmo_immoproperty(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL, 
-	label varchar(255),
+	label varchar(255) NOT NULL,
 	juridique_id integer,	
 	entity integer DEFAULT 1 NOT NULL, 
 	fk_owner integer NOT NULL,

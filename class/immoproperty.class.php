@@ -103,7 +103,7 @@ class ImmoProperty extends CommonObject
 		'entity'        => array('type' => 'integer', 'label' => 'Entity', 'enabled' => 1, 'visible' => 0, 'notnull' => 1, 'default' => 1, 'index' => 1, 'position' => 20),
 		'property_type_id' => array('type' => 'integer:ImmoProperty_Type:ultimateimmo/class/immoproperty_type.class.php:1:active=1', 'label' => 'ImmoProperty_Type', 'enabled' => 1, 'visible' => -1, 'position' => 20, 'notnull' => 1),
 		'fk_property'   => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'PropertyParent', 'enabled' => 1, 'visible' => -1, 'position' => 25, 'notnull' => -1),
-		'label' => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'showoncombobox' => 1, 'searchall' => 1, 'css' => 'minwidth200', 'help' => 'Help text',),
+		'label' => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'showoncombobox' => 1, 'searchall' => 1, 'css' => 'minwidth200', 'help' => 'Help text', 'notnull' => 1),
 		'juridique_id'  => array('type' => 'integer', 'label' => 'Juridique', 'enabled' => 1, 'visible' => 1, 'position' => 32, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'MonoPropriete', '2' => 'Copropriete')),
 		'datebuilt'     => array('type' => 'integer', 'label' => 'DateBuilt', 'enabled' => 1, 'visible' => 1, 'position' => 35, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'DateBuilt1', '2' => 'DateBuilt2', '3' => 'DateBuilt3', '4' => 'DateBuilt4', '5' => 'DateBuilt5')),
 		'target'        => array('type' => 'integer', 'label' => 'Target', 'enabled' => 1, 'visible' => 1, 'position' => 40, 'notnull' => -1, 'arrayofkeyval' => array('0' => 'Location', '1' => 'Vente', '-1' => 'Autre'), 'comment' => "Rent or sale"),
@@ -274,7 +274,15 @@ class ImmoProperty extends CommonObject
 	 */
 	public function create(User $user, $notrigger = false)
 	{
-		return $this->createCommon($user, $notrigger);
+		$result = $this->createCommon($user, $notrigger);
+		if ($result<0) {
+			return $result;
+		} else {
+			$this->fetch($this->id);
+			$this->ref = $this->id;
+			$result = $this->update($user);
+		}
+		return $result;
 	}
 
 	/**
@@ -332,6 +340,7 @@ class ImmoProperty extends CommonObject
 	    // Create clone
 		$object->context['createfromclone'] = 'createfromclone';
 	    $result = $object->createCommon($user);
+
 	    if ($result < 0) {
 	        $error++;
 	        $this->error = $object->error;
@@ -341,7 +350,8 @@ class ImmoProperty extends CommonObject
 	    if (!$error)
 	    {
 	    	// copy internal contacts
-	    	if ($this->copy_linked_contact($object, 'internal') < 0)
+			$result= $this->copy_linked_contact($object, 'internal');
+	    	if ($result < 0)
 	    	{
 	    		$error++;
 	    	}

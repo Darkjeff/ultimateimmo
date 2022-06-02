@@ -237,6 +237,10 @@ MenuImmoCompteur=Compteur
 MenuNewImmoCompteur= Nouveau compteur
 MenuImmoCompteurList= Liste compteur
 ImmoBirthCountry=Pays de naissance
+LotFiscal=Lot fiscal
+MenuImmoLotFiscal=Lot fiscaux
+MenuListImmoLotFiscal=Liste
+ImmoBuildings=Lot fiscal
 
 
 

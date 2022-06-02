@@ -15,11 +15,13 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-ALTER TABLE llx_ultimateimmo_immoowner MODIFY COLUMN fk_pays country_id integer;
+ALTER TABLE llx_ultimateimmo_immoowner CHANGE COLUMN fk_pays country_id integer;
 ALTER TABLE llx_c_ultimateimmo_juridique MODIFY COLUMN code varchar(20) NOT NULL;
 ALTER TABLE llx_c_ultimateimmo_immorent_type MODIFY COLUMN code varchar(50) NOT NULL;
 ALTER TABLE llx_ultimateimmo_immorenter ADD COLUMN town varchar(255) AFTER country_id;
 ALTER TABLE llx_c_ultimateimmo_immoproperty_type MODIFY COLUMN code varchar(50) NOT NULL;
+
+ALTER TABLE llx_ultimateimmo_immoproperty MODIFY COLUMN label varchar(255) NOT NULL;
 
 ALTER TABLE llx_ultimateimmo_immorent MODIFY COLUMN date_start date;
 ALTER TABLE llx_ultimateimmo_immorent MODIFY COLUMN date_end date;
