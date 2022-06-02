@@ -102,7 +102,18 @@ if (empty($action) && empty($id) && empty($ref)) {
 }
 
 // Load object
-include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  
+include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once
+
+$canConvertIntoBuilding = 1;
+$building = new ImmoBuilding($db);
+if (!empty($object->id)) {
+	$result = $building->fetchAll('', '', 0, 0, array('t.fk_property' => $object->id));
+	if (!is_array($result) && $result < 0) {
+		setEventMessages($building->error, $building->errors, 'errors');
+	} elseif (count($result) > 0) {
+		$canConvertIntoBuilding = 0;
+	}
+}
 
 // There is several ways to check permission.
 // Set $enablepermissioncheck to 1 to enable a minimum low level of checks
@@ -188,30 +199,22 @@ if (empty($reshook)) {
 	if ($action == 'makebuilding') {
 		$error = 0;
 
-		$db->begin();
-
-		$immobuild = new ImmoBuilding($db);
-		$immobuild->label = $object->label;
-		$immobuild->fk_property = $object->id;
-		
-		$resultCreate = $immobuild->create($user);
-		if ($resultCreate < 0) {
-			setEventMessages($immobuild->error, $immobuild->errors, 'errors');
-			$error++;
+		$result = $object->fetch($id);
+		$object->fk_property = $id;
+		$result = $object->update($user);
+		if ($result<0) {
+			setEventMessages($object->error,$object->errors,'errors');
 		} else {
-			$object->fk_property = $object->rowid;
-			$resultUpdate = $object->update($user);
-			//var_dump($resultUpdate);exit;
-			if ($resultUpdate < 0) {
-				setEventMessages($object->error, $object->errors, 'errors');
-				$error++;
+
+			$building = new ImmoBuilding($db);
+			$building->label = $object->label;
+			$building->fk_property = $object->id;
+			$result = $building->create($user);
+			if ($result < 0) {
+				setEventMessages($building->error, $building->errors, 'errors');
+			} else {
+				header('location:'.dol_buildpath('/ultimateimmo/building/immobuilding_card.php',2).'?id='.$building->id);
 			}
-		}
-
-		if (empty($error)) {
-			$db->commit();
-		} else {
-			$db->rollback();
 		}
 	}
 }
@@ -751,7 +754,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
 			}
 
-			if ($permissiontoadd) {
+			if ($permissiontoadd && $canConvertIntoBuilding) {
 				if ($object->status == 1) {
 					print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=makebuilding&id=' . $id . '">' . $langs->trans("LotFiscal") . '</a>' . "\n";
 				} else {
