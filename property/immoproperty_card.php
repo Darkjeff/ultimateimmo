@@ -89,6 +89,19 @@ if (empty($action) && empty($id) && empty($ref)) $action = 'view';
 // Load object
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once
 
+$canConvertIntoBuilding=1;
+$building = new ImmoBuilding($db);
+if (!empty($object->id)) {
+	$result = $building->fetchAll('','',0,0,array('t.fk_property'=>$object->id));
+	if (!is_array($result) && $result<0) {
+		setEventMessages($building->error,$building->errors,'errors');
+	} elseif (count($result)>0) {
+		$canConvertIntoBuilding = 0;
+	}
+}
+
+
+
 // Security check - Protection if external user
 //if ($user->socid > 0) accessforbidden();
 //if ($user->socid > 0) $socid = $user->socid;
@@ -143,13 +156,21 @@ if (empty($reshook))
 		$error = 0;
 
 		$result = $object->fetch($id);
-
-		$building = new ImmoBuilding($db);
-		$building->label=$object->label;
-		$building->fk_property =  $object->id;
-		$result = $building->create($user);
+		$object->fk_property = $id;
+		$result = $object->update($user);
 		if ($result<0) {
-			setEventMessages($building->error,$building->errors,'errors');
+			setEventMessages($object->error,$object->errors,'errors');
+		} else {
+
+			$building = new ImmoBuilding($db);
+			$building->label = $object->label;
+			$building->fk_property = $object->id;
+			$result = $building->create($user);
+			if ($result < 0) {
+				setEventMessages($building->error, $building->errors, 'errors');
+			} else {
+				header('location:'.dol_buildpath('/ultimateimmo/building/immobuilding_card.php',2).'?id='.$building->id);
+			}
 		}
 	}
 }
@@ -554,7 +575,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
 			}
 
-			if ($permissiontoadd) {
+			if ($permissiontoadd && $canConvertIntoBuilding) {
 				if ($object->status == 1) {
 					print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=makebuilding&id=' . $id . '">' . $langs->trans("LotFiscal") . '</a>' . "\n";
 				} else {
