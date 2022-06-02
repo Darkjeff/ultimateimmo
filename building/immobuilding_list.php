@@ -661,6 +661,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 			if ($key == 'status') {
 				print $object->getLibStatut(5);
 			} elseif ($key == 'rowid') {
+				$key='ref';
 				print $object->showOutputField($val, $key, $object->id, '');
 			} else {
 				print $object->showOutputField($val, $key, $object->$key, '');
