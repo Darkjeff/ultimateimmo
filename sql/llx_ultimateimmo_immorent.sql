@@ -15,7 +15,7 @@
 -- along with this program.  If not, see http://www.gnu.org/licenses/.
 
 
-CREATE TABLE llx_ultimateimmo_immorent(
+CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immorent(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL, 
@@ -36,11 +36,11 @@ CREATE TABLE llx_ultimateimmo_immorent(
 	deposit integer,
 	encours	integer,		
 	periode varchar(128),
-	preavis	integer,
-	date_start date,
-	date_end date,
-	date_next_rent date,
-	date_last_regul date,
+	preavis integer,
+	date_start date, 
+	date_end date, 
+	date_next_rent date, 
+	date_last_regul date, 
 	date_creation datetime NULL, 
 	tms timestamp NOT NULL default CURRENT_TIMESTAMP, 
 	fk_user_creat integer NOT NULL, 

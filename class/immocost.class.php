@@ -61,6 +61,21 @@ class ImmoCost extends CommonObject
 	 */
 	public $picto = 'immocost@ultimateimmo';
 
+	/**
+	 * Draft status
+	 */
+	const STATUS_DRAFT = 0;
+	
+	/**
+	 * Validated status
+	 */
+	const STATUS_VALIDATED = 1;
+	
+	/**
+	 * Credit note status
+	 */
+	const STATUS_CANCELED = 9;
+
 
 	/**
 	 *  'type' if the field format.
@@ -84,61 +99,29 @@ class ImmoCost extends CommonObject
 	/**
 	 * @var array  Array with all fields and their property. Do not use it as a static var. It may be modified by constructor.
 	 */
-	public $fields = array(
-		'rowid'         => array('type'     => 'integer', 'label' => 'TechnicalID', 'enabled' => 1, 'visible' => -1,
-								 'position' => 1, 'notnull' => 1, 'index' => 1, 'comment' => "Id",),
-		'ref'           => array('type'     => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1,
-								 'position' => 10, 'notnull' => 1, 'index' => 1, 'searchall' => 1,
-								 'comment'  => "Reference of object", 'showoncombobox' => '1',),
-		'entity'        => array('type'     => 'integer', 'label' => 'Entity', 'visible' => 0, 'enabled' => 1,
-								 'position' => 20, 'default' => 1, 'notnull' => 1, 'index' => 1,),
-		'label'         => array('type'           => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1,
-								 'position'       => 30, 'notnull' => -1, 'searchall' => 1, 'help' => "Help text",
-								 'showoncombobox' => '1',),
-		'fk_property'   => array('type'    => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php',
-								 'label'   => 'Property', 'enabled' => 1, 'visible' => 1, 'position' => 35,
-								 'notnull' => -1, 'index' => 1, 'help' => "LinkToProperty",),
-		'fk_owner'      => array('type'  => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php',
-								 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 40, 'notnull' => -1,
-								 'index' => 1, 'help' => "LinkToOwner",),
-		'fk_soc'        => array('type'    => 'integer:Societe:societe/class/societe.class.php',
-								 'label'   => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 45,
-								 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirparty",),
-		'fk_cost_type'  => array('type'    => 'integer:ImmoCost_Type:ultimateimmo/class/immocost_type.class.php',
-								 'label'   => 'ImmoCostType', 'enabled' => 1, 'visible' => 1, 'position' => 50,
-								 'notnull' => -1, 'index' => 1, 'help' => "LinkToProperty",),
-		'note_public'   => array('type'     => 'html', 'label' => 'NotePublic', 'enabled' => 1, 'visible' => -1,
-								 'position' => 52, 'notnull' => -1,),
-		'note_private'  => array('type'     => 'html', 'label' => 'NotePrivate', 'enabled' => 1, 'visible' => -1,
-								 'position' => 54, 'notnull' => -1,),
-		'amount'        => array('type'     => 'price', 'label' => 'Amount', 'enabled' => 1, 'visible' => 1,
-								 'position' => 60, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1',
-								 'help'     => "Help text",),
-		'amount_ht'     => array('type'     => 'price', 'label' => 'HtAmount', 'enabled' => 1, 'visible' => 1,
-								 'position' => 65, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1',
-								 'help'     => "Help text",),
-		'amount_vat'    => array('type'     => 'price', 'label' => 'VatAmount', 'enabled' => 1, 'visible' => 1,
-								 'position' => 68, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1',
-								 'help'     => "Help text",),
-		'date_start'    => array('type'     => 'date', 'label' => 'DateStart', 'enabled' => 1, 'visible' => -1,
-								 'position' => 70, 'notnull' => 1,),
-		'date_end'      => array('type'     => 'date', 'label' => 'DateEnd', 'enabled' => 1, 'visible' => -1,
-								 'position' => 72, 'notnull' => 1,),
-		'date_creation' => array('type'     => 'datetime', 'label' => 'DateCreation', 'enabled' => 1, 'visible' => -2,
-								 'position' => 500, 'notnull' => 1,),
-		'tms'           => array('type'     => 'timestamp', 'label' => 'DateModification', 'enabled' => 1,
-								 'visible'  => -2, 'position' => 501, 'notnull' => 1,),
-		'fk_user_creat' => array('type'     => 'integer', 'label' => 'UserAuthor', 'enabled' => 1, 'visible' => -2,
-								 'position' => 510, 'notnull' => 1, 'foreignkey' => 'llx_user.rowid',),
-		'fk_user_modif' => array('type'     => 'integer', 'label' => 'UserModif', 'enabled' => 1, 'visible' => -2,
-								 'position' => 511, 'notnull' => -1,),
-		'import_key'    => array('type'     => 'varchar(14)', 'label' => 'ImportId', 'enabled' => 1, 'visible' => -2,
-								 'position' => 1000, 'notnull' => -1,),
-		'dispatch'      => array('type'     => 'smallint(8)', 'label' => 'Dispatch', 'enabled' => 1, 'visible' => -2,
-								 'position' => 1000, 'notnull' => -1,),
-		'status'        => array('type'          => 'integer', 'label' => 'Status', 'enabled' => 1, 'visible' => 1,
-								 'position'      => 1000, 'notnull' => 1, 'index' => 1,
-								 'arrayofkeyval' => array('0' => 'Draft', '1' => 'Active', '-2' => 'Cancel')),
+	public $fields=array(
+		'rowid' => array('type' => 'integer', 'label' => 'TechnicalID', 'enabled' => 1, 'visible' => -1, 'position' => 1, 'notnull' => 1, 'index' => 1, 'comment' => "Id",),
+		'ref' => array('type' => 'varchar(128)', 'label' => 'Ref', 'enabled' => 1, 'visible' => 1, 'position' => 10, 'notnull' => 1, 'index' => 1, 'searchall' => 1, 'comment' => "Reference of object", 'showoncombobox' => '1',),
+		'entity' => array('type' => 'integer', 'label' => 'Entity', 'visible' => 0, 'enabled' => 1, 'position' => 20, 'default' => 1, 'notnull' => 1, 'index' => 1,),
+		'label' => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'notnull' => -1, 'searchall' => 1, 'help' => "Help text", 'showoncombobox' => '1',),
+		'fk_property' => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'Property', 'enabled' => 1, 'visible' => 1, 'position' => 35, 'notnull' => -1, 'index' => 1, 'help' => "LinkToProperty",),
+		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'help' => "LinkToOwner",),
+		'fk_soc' => array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'picto' => 'company', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 45, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "SetLinkToThirparty",),
+		'fk_cost_type' => array('type' => 'integer:ImmoCost_Type:ultimateimmo/class/immocost_type.class.php', 'label' => 'ImmoCostType', 'enabled' => 1, 'visible' => 1, 'position' => 50, 'notnull' => -1, 'index' => 1, 'help' => "LinkToProperty",),
+		'note_public' => array('type' => 'html', 'label' => 'NotePublic', 'enabled' => 1, 'visible' => -1, 'position' => 52, 'notnull' => -1,),
+		'note_private' => array('type' => 'html', 'label' => 'NotePrivate', 'enabled' => 1, 'visible' => -1, 'position' => 54, 'notnull' => -1,),
+		'amount' => array('type' => 'price', 'label' => 'Amount', 'enabled' => 1, 'visible' => 1, 'position' => 60, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1', 'help' => "Help text",),
+		'amount_ht' => array('type' => 'price', 'label' => 'HtAmount', 'enabled' => 1, 'visible' => 1, 'position' => 65, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1', 'help' => "Help text",),
+		'amount_vat' => array('type' => 'price', 'label' => 'VatAmount', 'enabled' => 1, 'visible' => 1, 'position' => 68, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1', 'help' => "Help text",),
+		'date_start' => array('type' => 'date', 'label' => 'DateStart', 'enabled' => 1, 'visible' => -1, 'position' => 70, 'notnull' => 1,),
+		'date_end' => array('type' => 'date', 'label' => 'DateEnd', 'enabled' => 1, 'visible' => -1, 'position' => 72, 'notnull' => 1,),
+		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'enabled' => 1, 'visible' => -2, 'position' => 500, 'notnull' => 1,),
+		'tms' => array('type' => 'timestamp', 'label' => 'DateModification', 'enabled' => 1, 'visible' => -2, 'position' => 501, 'notnull' => 1,),
+		'fk_user_creat' => array('type' => 'integer', 'label' => 'UserAuthor', 'picto' => 'user', 'enabled' => 1, 'visible' => -2, 'position' => 510, 'notnull' => 1, 'foreignkey' => 'llx_user.rowid',),
+		'fk_user_modif' => array('type' => 'integer', 'label' => 'UserModif', 'picto' => 'user', 'enabled' => 1, 'visible' => -2, 'position' => 511, 'notnull' => -1,),
+		'import_key' => array('type' => 'varchar(14)', 'label' => 'ImportId', 'enabled' => 1, 'visible' => -2, 'position' => 1000, 'notnull' => -1,),
+		'dispatch' => array('type' => 'smallint(8)', 'label' => 'Dispatch', 'enabled' => 1, 'visible' => -2, 'position' => 1000, 'notnull' => -1,),
+		'status' => array('type' => 'integer', 'label' => 'Status', 'enabled' => 1, 'visible' => 1, 'position' => 1000, 'notnull' => 1, 'index' => 1, 'arrayofkeyval' => array('0' => 'Draft', '1' => 'Active', '-1' => 'Cancel')),
 	);
 	public $rowid;
 	public $ref;
@@ -165,6 +148,7 @@ class ImmoCost extends CommonObject
 	// END MODULEBUILDER PROPERTIES
 
 
+
 	// If this object has a subtable with lines
 
 	/**
@@ -189,6 +173,7 @@ class ImmoCost extends CommonObject
 	//public $lines = array();
 
 
+
 	/**
 	 * Constructor
 	 *
@@ -200,8 +185,12 @@ class ImmoCost extends CommonObject
 
 		$this->db = $db;
 
-		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible'] = 0;
-		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
+		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) {
+			$this->fields['rowid']['visible'] = 0;
+		}
+		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) {
+			$this->fields['entity']['enabled'] = 0;
+		}
 
 		// Unset fields that are disabled
 		foreach ($this->fields as $key => $val) {
@@ -213,7 +202,7 @@ class ImmoCost extends CommonObject
 		// Translate some data of arrayofkeyval
 		if (is_object($langs)) {
 			foreach ($this->fields as $key => $val) {
-				if (is_array($val['arrayofkeyval'])) {
+				if (!empty($val['arrayofkeyval']) && is_array($val['arrayofkeyval'])) {
 					foreach ($val['arrayofkeyval'] as $key2 => $val2) {
 						$this->fields[$key]['arrayofkeyval'][$key2] = $langs->trans($val2);
 					}
@@ -225,8 +214,8 @@ class ImmoCost extends CommonObject
 	/**
 	 * Create object into database
 	 *
-	 * @param User $user User that creates
-	 * @param bool $notrigger false=launch triggers after, true=disable triggers
+	 * @param  User $user      User that creates
+	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, Id of created object if OK
 	 */
 	public function create(User $user, $notrigger = false)
@@ -237,63 +226,93 @@ class ImmoCost extends CommonObject
 	/**
 	 * Clone and object into another one
 	 *
-	 * @param User $user User that creates
-	 * @param int $fromid Id of object to clone
-	 * @return    mixed                New object created, <0 if KO
+	 * @param  	User 	$user      	User that creates
+	 * @param  	int 	$fromid     Id of object to clone
+	 * @return 	mixed 				New object created, <0 if KO
 	 */
 	public function createFromClone(User $user, $fromid)
 	{
-		global $hookmanager, $langs;
-		$error = 0;
+		global $extrafields, $langs;
+	    $error = 0;
 
-		dol_syslog(__METHOD__, LOG_DEBUG);
+	    dol_syslog(__METHOD__, LOG_DEBUG);
 
-		$object = new self($this->db);
+	    $object = new self($this->db);
 
-		$this->db->begin();
+	    $this->db->begin();
 
-		// Load source object
-		$object->fetchCommon($fromid);
-		// Reset some properties
-		unset($object->id);
-		unset($object->fk_user_creat);
-		unset($object->import_key);
+	    // Load source object
+	    $result = $object->fetchCommon($fromid);
+		if ($result > 0 && !empty($object->table_element_line)) {
+			$object->fetchLines();
+		}
 
-		// Clear fields
-		$object->ref = "copy_of_" . $object->ref;
-		$object->title = $langs->trans("CopyOf") . " " . $object->title;
-		// ...
+	    // Reset some properties
+	    unset($object->id);
+	    unset($object->fk_user_creat);
+	    unset($object->import_key);
 
-		// Create clone
+	    // Clear fields
+	    if (property_exists($object, 'ref')) {
+			$object->ref = empty($this->fields['ref']['default']) ? "Copy_Of_".$object->ref : $this->fields['ref']['default'];
+		}
+		if (property_exists($object, 'label')) {
+			$object->label = empty($this->fields['label']['default']) ? $langs->trans("CopyOf")." ".$object->label : $this->fields['label']['default'];
+		}
+		if (property_exists($object, 'status')) {
+			$object->status = self::STATUS_DRAFT;
+		}
+		if (property_exists($object, 'date_creation')) {
+			$object->date_creation = dol_now();
+		}
+		if (property_exists($object, 'date_modification')) {
+			$object->date_modification = null;
+		}
+	    // ...
+		// Clear extrafields that are unique
+		if (is_array($object->array_options) && count($object->array_options) > 0) {
+			$extrafields->fetch_name_optionals_label($this->table_element);
+			foreach ($object->array_options as $key => $option) {
+				$shortkey = preg_replace('/options_/', '', $key);
+				if (!empty($extrafields->attributes[$this->table_element]['unique'][$shortkey])) {
+					//var_dump($key); var_dump($clonedObj->array_options[$key]); exit;
+					unset($object->array_options[$key]);
+				}
+			}
+		}
+
+	    // Create clone
 		$object->context['createfromclone'] = 'createfromclone';
-		$result = $object->createCommon($user);
-		if ($result < 0) {
-			$error++;
-			$this->error = $object->error;
-			$this->errors = $object->errors;
-		}
+	    $result = $object->createCommon($user);
+	    if ($result < 0) {
+	        $error++;
+	        $this->error = $object->error;
+	        $this->errors = $object->errors;
+	    }
 
-		// End
-		if (!$error) {
-			$this->db->commit();
-			return $object;
-		} else {
-			$this->db->rollback();
-			return -1;
-		}
+	    // End
+	    if (!$error) {
+	        $this->db->commit();
+	        return $object;
+	    } else {
+	        $this->db->rollback();
+	        return -1;
+	    }
 	}
 
 	/**
 	 * Load object in memory from the database
 	 *
-	 * @param int $id Id object
-	 * @param string $ref Ref
+	 * @param int    $id   Id object
+	 * @param string $ref  Ref
 	 * @return int         <0 if KO, 0 if not found, >0 if OK
 	 */
 	public function fetch($id, $ref = null)
 	{
 		$result = $this->fetchCommon($id, $ref);
-		if ($result > 0 && !empty($this->table_element_line)) $this->fetchLines();
+		if ($result > 0 && !empty($this->table_element_line)) {
+			$this->fetchLines();
+		}
 		return $result;
 	}
 
@@ -302,20 +321,20 @@ class ImmoCost extends CommonObject
 	 *
 	 * @return int         <0 if KO, 0 if not found, >0 if OK
 	 */
-	/*public function fetchLines()
+	public function fetchLines()
 	{
-		$this->lines=array();
+		$this->lines = array();
 
 		// Load lines with object ImmoCostLine
-
-		return count($this->lines)?1:0;
-	}*/
+		$result = $this->fetchLinesCommon();
+		return $result;
+	}
 
 	/**
 	 * Update object into database
 	 *
-	 * @param User $user User that modifies
-	 * @param bool $notrigger false=launch triggers after, true=disable triggers
+	 * @param  User $user      User that modifies
+	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, >0 if OK
 	 */
 	public function update(User $user, $notrigger = false)
@@ -326,8 +345,8 @@ class ImmoCost extends CommonObject
 	/**
 	 * Delete object in database
 	 *
-	 * @param User $user User that deletes
-	 * @param bool $notrigger false=launch triggers after, true=disable triggers
+	 * @param User $user       User that deletes
+	 * @param bool $notrigger  false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, >0 if OK
 	 */
 	public function delete(User $user, $notrigger = false)
@@ -338,25 +357,24 @@ class ImmoCost extends CommonObject
 	/**
 	 *  Return a link to the object card (with optionaly the picto)
 	 *
-	 * @param int $withpicto Include picto in link (0=No picto, 1=Include picto into link, 2=Only picto)
-	 * @param string $option On what the link point to ('nolink', ...)
-	 * @param int $notooltip 1=Disable tooltip
-	 * @param string $morecss Add more css on link
-	 * @param int $save_lastsearch_value -1=Auto, 0=No save of lastsearch_values when clicking, 1=Save lastsearch_values whenclicking
-	 * @return    string                                String with URL
+	 *	@param	int		$withpicto					Include picto in link (0=No picto, 1=Include picto into link, 2=Only picto)
+	 *	@param	string	$option						On what the link point to ('nolink', ...)
+     *  @param	int  	$notooltip					1=Disable tooltip
+     *  @param  string  $morecss            		Add more css on link
+     *  @param  int     $save_lastsearch_value    	-1=Auto, 0=No save of lastsearch_values when clicking, 1=Save lastsearch_values whenclicking
+	 *	@return	string								String with URL
 	 */
-	public function getNomUrl($withpicto = 0, $option = '', $notooltip = 0, $morecss = '', $save_lastsearch_value = -1)
+	function getNomUrl($withpicto = 0, $option = '', $notooltip = 0, $morecss = '', $save_lastsearch_value = -1)
 	{
-		global $db, $conf, $langs;
-		global $dolibarr_main_authentication, $dolibarr_main_demo;
-		global $menumanager;
+		global $conf, $langs, $hookmanager;
 
-		if (!empty($conf->dol_no_mouse_hover)) $notooltip = 1;   // Force disable tooltips
+		if (!empty($conf->dol_no_mouse_hover)) {
+			$notooltip = 1; // Force disable tooltips
+		}
 
 		$result = '';
-		$companylink = '';
 
-		$label = '<u>' . $langs->trans("ImmoCost") . '</u>';
+		$label = img_picto('', $this->picto) . '<u>' . $langs->trans("ImmoCost") . '</u>';
 		$label .= '<br>';
 		$label .= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 
@@ -365,8 +383,12 @@ class ImmoCost extends CommonObject
 		if ($option != 'nolink') {
 			// Add param to save lastsearch_values or not
 			$add_save_lastsearch_values = ($save_lastsearch_value == 1 ? 1 : 0);
-			if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) $add_save_lastsearch_values = 1;
-			if ($add_save_lastsearch_values) $url .= '&save_lastsearch_values=1';
+			if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) {
+				$add_save_lastsearch_values = 1;
+			}
+			if ($add_save_lastsearch_values) {
+				$url .= '&save_lastsearch_values=1';
+			}
 		}
 
 		$linkclose = '';
@@ -377,17 +399,69 @@ class ImmoCost extends CommonObject
 			}
 			$linkclose .= ' title="' . dol_escape_htmltag($label, 1) . '"';
 			$linkclose .= ' class="classfortooltip' . ($morecss ? ' ' . $morecss : '') . '"';
-		} else $linkclose = ($morecss ? ' class="' . $morecss . '"' : '');
+		} else {
+			$linkclose = ($morecss ? ' class="' . $morecss . '"' : '');
+		}
 
-		$linkstart = '<a href="' . $url . '"';
+		if ($option == 'nolink') {
+			$linkstart = '<span';
+		} else {
+			$linkstart = '<a href="' . $url . '"';
+		}
 		$linkstart .= $linkclose . '>';
-		$linkend = '</a>';
+		if ($option == 'nolink') {
+			$linkend = '</span>';
+		} else {
+			$linkend = '</a>';
+		}
 
 		$result .= $linkstart;
-		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="' . (($withpicto != 2) ? 'paddingright ' : '') . 'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
-		if ($withpicto != 2) $result .= $this->ref;
+
+		if (empty($this->showphoto_on_popup)) {
+			if ($withpicto) {
+				$result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
+			}
+		} else {
+			if ($withpicto) {
+				require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+
+				list($class, $module) = explode('@', $this->picto);
+				$upload_dir = $conf->$module->multidir_output[$conf->entity]."/$class/".dol_sanitizeFileName($this->ref);
+				$filearray = dol_dir_list($upload_dir, "files");
+				$filename = $filearray[0]['name'];
+				if (!empty($filename)) {
+					$pospoint = strpos($filearray[0]['name'], '.');
+
+					$pathtophoto = $class.'/'.$this->ref.'/thumbs/'.substr($filename, 0, $pospoint).'_mini'.substr($filename, $pospoint);
+					if (empty($conf->global->{strtoupper($module.'_'.$class).'_FORMATLISTPHOTOSASUSERS'})) {
+						$result .= '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref"><img class="photo'.$module.'" alt="No photo" border="0" src="'.DOL_URL_ROOT.'/viewimage.php?modulepart='.$module.'&entity='.$conf->entity.'&file='.urlencode($pathtophoto).'"></div></div>';
+					} else {
+						$result .= '<div class="floatleft inline-block valignmiddle divphotoref"><img class="photouserphoto userphoto" alt="No photo" border="0" src="'.DOL_URL_ROOT.'/viewimage.php?modulepart='.$module.'&entity='.$conf->entity.'&file='.urlencode($pathtophoto).'"></div>';
+					}
+
+					$result .= '</div>';
+				} else {
+					$result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
+				}
+			}
+		}
+
+		if ($withpicto != 2) {
+			$result .= $this->ref;
+		}
+
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
+
+		global $action, $hookmanager;
+		$hookmanager->initHooks(array('immoownerdao'));
+		$parameters = array('id' => $this->id, 'getnomurl' => $result);
+		$reshook = $hookmanager->executeHooks('getNomUrl', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
+		if ($reshook > 0) {
+			$result = $hookmanager->resPrint;
+		} else {
+			$result .= $hookmanager->resPrint;
+		}
 
 		return $result;
 	}
@@ -395,64 +469,48 @@ class ImmoCost extends CommonObject
 	/**
 	 *  Retourne le libelle du status d'un user (actif, inactif)
 	 *
-	 * @param int $mode 0=libelle long, 1=libelle court, 2=Picto + Libelle court, 3=Picto, 4=Picto + Libelle long, 5=Libelle court + Picto
-	 * @return    string                   Label of status
+	 *  @param	int		$mode          0=libelle long, 1=libelle court, 2=Picto + Libelle court, 3=Picto, 4=Picto + Libelle long, 5=Libelle court + Picto
+	 *  @return	string 			       Label of status
 	 */
 	public function getLibStatut($mode = 0)
 	{
 		return $this->LibStatut($this->status, $mode);
 	}
 
-	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 	/**
 	 *  Return the status
 	 *
-	 * @param int $status Id status
-	 * @param int $mode 0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto, 6=Long label + Picto
-	 * @return string                    Label of status
+	 *  @param	int		$status        	Id status
+	 *  @param  int		$mode          	0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto, 6=Long label + Picto
+	 *  @return string 			       	Label of status
 	 */
-	public static function LibStatut($status, $mode = 0)
+	public function LibStatut($status, $mode = 0)
 	{
 		// phpcs:enable
+		if (empty($this->labelStatus) || empty($this->labelStatusShort))
+		{
+			global $langs;
+			//$langs->load("mymodule");
+			$this->labelStatus[self::STATUS_DRAFT] = $langs->trans('Draft');
+			$this->labelStatus[self::STATUS_VALIDATED] = $langs->trans('Enabled');
+			$this->labelStatus[self::STATUS_CANCELED] = $langs->trans('Disabled');
+			$this->labelStatusShort[self::STATUS_DRAFT] = $langs->trans('Draft');
+			$this->labelStatusShort[self::STATUS_VALIDATED] = $langs->trans('Enabled');
+			$this->labelStatusShort[self::STATUS_CANCELED] = $langs->trans('Disabled');
+		}
 
-		global $langs;
+		$statusType = 'status'.$status;
+		if ($status == self::STATUS_VALIDATED) $statusType = 'status1';
+		if ($status == self::STATUS_CANCELED) $statusType = 'status6';
 
-		if ($mode == 0) {
-			$prefix = '';
-			if ($status == 1) return $langs->trans('Enabled');
-			if ($status == 0) return $langs->trans('Disabled');
-		}
-		if ($mode == 1) {
-			if ($status == 1) return $langs->trans('Enabled');
-			if ($status == 0) return $langs->trans('Disabled');
-		}
-		if ($mode == 2) {
-			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4') . ' ' . $langs->trans('Enabled');
-			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5') . ' ' . $langs->trans('Disabled');
-		}
-		if ($mode == 3) {
-			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4');
-			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5');
-		}
-		if ($mode == 4) {
-			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4') . ' ' . $langs->trans('Enabled');
-			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5') . ' ' . $langs->trans('Disabled');
-		}
-		if ($mode == 5) {
-			if ($status == 1) return $langs->trans('Enabled') . ' ' . img_picto($langs->trans('Enabled'), 'statut4');
-			if ($status == 0) return $langs->trans('Disabled') . ' ' . img_picto($langs->trans('Disabled'), 'statut5');
-		}
-		if ($mode == 6) {
-			if ($status == 1) return $langs->trans('Enabled') . ' ' . img_picto($langs->trans('Enabled'), 'statut4');
-			if ($status == 0) return $langs->trans('Disabled') . ' ' . img_picto($langs->trans('Disabled'), 'statut5');
-		}
+		return dolGetStatus($this->labelStatus[$status], $this->labelStatusShort[$status], '', $statusType, $mode);
 	}
 
 	/**
-	 *    Charge les informations d'ordre info dans l'objet commande
+	 *	Charge les informations d'ordre info dans l'objet commande
 	 *
-	 * @param int $id Id of order
-	 * @return    void
+	 *	@param  int		$id       Id of order
+	 *	@return	void
 	 */
 	public function info($id)
 	{
@@ -510,8 +568,9 @@ class ImmoCost extends CommonObject
 	 * Action executed by scheduler
 	 * CAN BE A CRON TASK. In such a case, paramerts come from the schedule job setup field 'Parameters'
 	 *
-	 * @return    int            0 if OK, <>0 if KO (this function is used also by cron so only 0 is OK)
+	 * @return	int			0 if OK, <>0 if KO (this function is used also by cron so only 0 is OK)
 	 */
+	//public function doScheduledJob($param1, $param2, ...)
 	public function doScheduledJob()
 	{
 		global $conf, $langs;
@@ -539,14 +598,24 @@ class ImmoCost extends CommonObject
 /**
  * Class ImmoCostLine. You can also remove this and generate a CRUD class for lines objects.
  */
-/*
-class ImmoCostLine
+
+class ImmoCostLine extends CommonObjectLine
 {
-	// @var int ID
-	public $id;
-	// @var mixed Sample line property 1
-	public $prop1;
-	// @var mixed Sample line property 2
-	public $prop2;
+	// To complete with content of an object MyObjectLine
+	// We should have a field rowid, fk_myobject and position
+
+	/**
+	 * @var int  Does object support extrafields ? 0=No, 1=Yes
+	 */
+	public $isextrafieldmanaged = 0;
+
+	/**
+	 * Constructor
+	 *
+	 * @param DoliDb $db Database handler
+	 */
+	public function __construct(DoliDB $db)
+	{
+		$this->db = $db;
+	}
 }
-*/

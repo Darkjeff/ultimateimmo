@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2019  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2021  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -15,28 +15,24 @@
 -- along with this program.  If not, see http://www.gnu.org/licenses/.
 
 
-CREATE TABLE llx_ultimateimmo_immoproperty(
+CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoproperty(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL, 
+	ref varchar(128) NOT NULL,
+	entity integer DEFAULT 1 NOT NULL,
+	property_type_id integer,
+	fk_property integer,  
 	label varchar(255),
-	juridique_id integer,	
-	entity integer DEFAULT 1 NOT NULL, 
-	fk_owner integer NOT NULL,
+	juridique_id integer,
+	datebuilt varchar(32), 	
+	target integer,		
+	fk_owner integer,
 	fk_soc integer,	
 	note_public text, 
-	note_private text, 
-	date_creation datetime NOT NULL, 
-	tms timestamp NOT NULL default CURRENT_TIMESTAMP, 
-	fk_user_creat integer NOT NULL, 
-	fk_user_modif integer, 
-	import_key varchar(14), 
-	status integer NOT NULL, 
+	note_private text,
 	address varchar(255), 
 	building varchar(32), 
-	staircase varchar(8), 
-	property_type_id integer NOT NULL,
-	fk_property integer,	
+	staircase varchar(8), 	
 	numfloor varchar(8), 
 	numflat varchar(8), 
 	numdoor varchar(8), 
@@ -45,8 +41,11 @@ CREATE TABLE llx_ultimateimmo_immoproperty(
 	zip varchar(32), 
 	town varchar(64), 
 	country_id integer, 
-	datep date,
-	datebuilt varchar(32), 	
-	target integer
+	date_creation datetime NOT NULL default CURRENT_TIMESTAMP, 
+	tms timestamp NOT NULL default CURRENT_TIMESTAMP, 
+	fk_user_creat integer NOT NULL, 
+	fk_user_modif integer, 
+	import_key varchar(14), 
+	status integer NOT NULL  
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

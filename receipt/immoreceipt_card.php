@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,7 +135,7 @@ if (empty($reshook)) {
 	if ($action == 'paid') {
 		$receipt = new ImmoReceipt($db);
 		$receipt->fetch($id);
-		$result = $receipt->set_paid($user);
+		$result = $receipt->setPaid($user);
 		Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 	}
 
@@ -196,6 +196,8 @@ if (empty($reshook)) {
 			else setEventMessages($langs->trans(null), null, 'errors');
 		}
 	}
+
+	
 
 	/**
 	 * Action generate quittance
@@ -322,7 +324,7 @@ if (empty($reshook)) {
 			$action = "create";
 			$error++;
 		}
-
+		
 		if (!$error) {
 			$db->begin();
 
@@ -372,7 +374,7 @@ if (empty($reshook)) {
 
 			foreach ($mesLignesCochees as $maLigneCochee) {
 				$receipt = new ImmoReceipt($db);
-
+				
 				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
 
 				$monId = $maLigneCourante[0];
@@ -396,7 +398,7 @@ if (empty($reshook)) {
 				$receipt->fk_rent = $monId;
 				$receipt->fk_property = $monLocal;
 				$receipt->fk_renter = $monLocataire;
-
+				
 				if ($maTVA == 'Oui') {
 					$receipt->total_amount = $monMontant * 1.2;
 					$receipt->vat_amount = $monMontant * 0.2;
@@ -412,7 +414,7 @@ if (empty($reshook)) {
 				$receipt->status = 0;
 				$receipt->paye = 0;
 				$result = $receipt->create($user);
-
+	
 				if ($result < 0) {
 					setEventMessages(null, $receipt->errors, 'errors');
 					$action = 'createall';
@@ -420,7 +422,7 @@ if (empty($reshook)) {
 				}
 			}
 		}
-
+		//exit;
 		if (empty($error)) {
 			setEventMessages($langs->trans("ReceiptPaymentsAdded"), null, 'mesgs');
 			Header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1));
@@ -439,7 +441,6 @@ if (empty($reshook)) {
 
 		$receipt = new ImmoReceipt($db);
 		$result = $receipt->fetch($id);
-
 		$receipt->label 		= GETPOST('label');
 		if ($receipt->vat_tx != 0) {
 			$rentamount = price2num(GETPOST("rentamount"));
@@ -693,12 +694,13 @@ if ($action == 'createall') {
 	/*
 	 * List of contracts
 	 */
-	$sql = "SELECT rent.rowid as contractid, rent.ref as contract, loc.lastname as rentername, own.lastname as ownername, prop.ref as localref, prop.address, prop.label as local, rent.totalamount as total, rent.rentamount , rent.chargesamount, rent.fk_renter as reflocataire, rent.fk_property as reflocal, rent.preavis as preavis, rent.vat, prop.fk_owner, own.rowid, own.fk_soc, prop.fk_owner";
+	$sql = "SELECT rent.rowid as contractid, rent.ref as contract, loc.lastname as rentername, own.lastname as ownername, prop.fk_property as localref, prop.address, prop.label as local, rent.totalamount as total, rent.rentamount , rent.chargesamount, rent.fk_renter as reflocataire, rent.fk_property as reflocal, rent.preavis as preavis, rent.vat, prop.fk_owner, own.rowid, own.fk_soc, prop.fk_owner";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as own";
-	$sql .= " WHERE preavis = 1 AND loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property AND own.rowid = prop.fk_owner ";
+	$sql .= " WHERE loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property AND own.rowid = prop.fk_owner ";
+	//$sql .= " WHERE preavis = 1 AND loc.rowid = rent.fk_renter AND prop.rowid = rent.fk_property AND own.rowid = prop.fk_owner "; // La liste des quittances ne s'affiche pas avec le preavis.
 	//print_r($sql);exit;
 	$sql .= $db->order($sortfield, $sortorder);
 	// Count total nb of records
@@ -787,100 +789,85 @@ if ($action == 'createall') {
 	print '</form>';
 }
 
-	// Part to edit record
-	if (($id || $ref) && $action == 'edit')
-	{
-		print load_fiche_titre($langs->trans("MenuNewImmoReceipt", $langs->transnoentitiesnoconv("ImmoReceipt")));
+// Part to edit record
+if (($id || $ref) && $action == 'edit') {
+	print load_fiche_titre($langs->trans("MenuNewImmoReceipt", $langs->transnoentitiesnoconv("ImmoReceipt")));
 
-		$receipt = new ImmoReceipt($db);
-		$result = $receipt->fetch($id);
+	$receipt = new ImmoReceipt($db);
+	$result = $receipt->fetch($id);
 
-		if ($action == 'delete')
-		{
-			// Param url = id de la periode à supprimer - id session
-			$ret = $form->formconfirm($_SERVER['PHP_SELF'].'?recid='.$id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
-			if ($ret == 'html')
+	if ($action == 'delete') {
+		// Param url = id de la periode à supprimer - id session
+		$ret = $form->formconfirm($_SERVER['PHP_SELF'] . '?recid=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+		if ($ret == 'html')
 			print '<br>';
+	}
+
+	print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
+	print '<input type="hidden" name="action" value="update">';
+	print '<input type="hidden" name="id" value="' . $object->id . '">';
+	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
+	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
+
+	print dol_get_fiche_head();
+
+	print '<table class="border centpercent tableforfieldedit">' . "\n";
+
+	// Common attributes
+	$object->fields = dol_sort_array($object->fields, 'position');
+
+	foreach ($object->fields as $key => $val) {
+		// Discard if extrafield is a hidden field on form
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
+
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
+
+		print '<tr><td';
+		print ' class="titlefieldcreate';
+		if ($val['notnull'] > 0) print ' fieldrequired';
+		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		print '">';
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '</td>';
+		print '<td>';
+
+		if ($val['label'] == 'PartialPayment') {
+			if ($object->getSommePaiement()) {
+				$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+				print '<input name="partial_payment" class="flat" size="8" value="' . $totalpaye . '">';
+			}
+		} elseif ($val['label'] == 'Balance') {
+			$balance = $object->total_amount - $object->getSommePaiement();
+			if ($balance >= 0) {
+				$balance = price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
+				print '<input name="balance" class="flat" size="8" value="' . $balance . '">';
+			}
+		} elseif ($val['label'] == 'Paye') {
+			if ($totalpaye == 0) {
+				$object->paye = $langs->trans('UnPaidReceipt');
+				print '<input name="unpaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
+			} elseif ($balance == 0) {
+				$object->paye = $langs->trans('PaidReceipt');
+				print '<input name="paidreceipt" class="flat" size="25" value="' . $object->paye . '">';
+			} else {
+				$object->paye = $langs->trans('PartiallyPaidReceipt');
+				print '<input name="partiallypaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
+			}
+		} elseif ($val['label'] == 'VatTx') {
+			print $form->load_tva("vat_tx", $object->default_vat_code ? $object->vat_tx.' ('.$object->default_vat_code.')' : $object->vat_tx, $mysoc, '', $object->id, $object->tva_npr, $object->type, false, 1);			
+		} else {
+			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
+			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
+			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
+			//var_dump($val.' '.$key.' '.$value);
+			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
-
-		print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
-		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
-		print '<input type="hidden" name="action" value="update">';
-		print '<input type="hidden" name="id" value="'.$object->id.'">';
-		if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-		if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
-
-		print dol_get_fiche_head();
-
-		print '<table class="border centpercent tableforfieldedit">'."\n";
-
-		// Common attributes
-		$object->fields = dol_sort_array($object->fields, 'position');
-
-		foreach ($object->fields as $key => $val)
-		{
-			// Discard if extrafield is a hidden field on form
-			if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
-
-			if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
-
-			print '<tr><td';
-			print ' class="titlefieldcreate';
-			if ($val['notnull'] > 0) print ' fieldrequired';
-			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-			print '">';
-			if (! empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-			else print $langs->trans($val['label']);
-			print '</td>';
-			print '<td>';
-
-			if ($val['label'] == 'PartialPayment')
-			{
-				if ($object->getSommePaiement())
-				{
-					$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
-					print '<input name="partial_payment" class="flat" size="8" value="' . $totalpaye . '">';
-				}
-			}
-			elseif ($val['label'] == 'Balance')
-			{
-				$balance = $object->total_amount - $object->getSommePaiement();
-				if ($balance>=0)
-				{
-					$balance = price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
-					print '<input name="balance" class="flat" size="8" value="' . $balance . '">';
-				}
-			}
-			elseif ($val['label'] == 'Paye')
-			{
-				if ($totalpaye==0)
-				{
-					$object->paye=$langs->trans('UnPaidReceipt');
-					print '<input name="unpaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
-				}
-				elseif ($balance==0)
-				{
-					$object->paye=$langs->trans('PaidReceipt');
-					print '<input name="paidreceipt" class="flat" size="25" value="' . $object->paye . '">';
-				}
-				else
-				{
-					$object->paye=$langs->trans('PartiallyPaidReceipt');
-					print '<input name="partiallypaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
-				}
-			}
-			else
-			{
-				if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key)?GETPOST($key, 'int'):$object->$key;
-				elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key)?GETPOST($key, 'none'):$object->$key;
-				else $value = GETPOSTISSET($key)?GETPOST($key, 'alpha'):$object->$key;
-				//var_dump($val.' '.$key.' '.$value);
-				if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-				else print $object->showInputField($val, $key, $value, '', '', '', 0);
-			}
-			print '</td>';
-			print '</tr>';
-		}
+		print '</td>';
+		print '</tr>';
+	}
 
 		// Other attributes
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
@@ -990,7 +977,7 @@ if ($action == 'createall') {
 	$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $staticImmorenter->ref, $object, $permissiontoadd, 'string', '', 0, 1);
 	$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->ref . ' - ' . $staticImmorenter->getFullName($langs), $object, $permissiontoadd, 'string', '', null, null, '', 1);
 	// Thirdparty
-	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . $object->thirdparty->getNomUrl(1, 'renter');
+	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . (is_object($object->thirdparty) ? $object->thirdparty->getNomUrl(1) : '');
 	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1) . '?socid=' . $object->thirdparty->id . '&search_fk_soc=' . urlencode($object->thirdparty->id) . '">' . $langs->trans("OtherReceipts") . '</a>)';
 	$morehtmlref .= '</div>';
 

@@ -19,7 +19,6 @@
 ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_rowid (rowid);
 ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_ref (ref);
 ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_entity (entity);
-ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_preavis (preavis);
 ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_vat (vat);
 ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_fk_soc (fk_soc);
 ALTER TABLE llx_ultimateimmo_immorent ADD INDEX idx_ultimateimmo_immorent_fk_property (fk_property);

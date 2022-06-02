@@ -1,7 +1,7 @@
 <?php
 /**
  * Copyright (C) 2012-2013 Florian Henry  <florian.henry@open-concept.pro>
- * Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,9 +67,9 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 
 	/**
      * @var array() Minimum version of PHP required by module.
-	 * e.g.: PHP ≥ 5.4 = array(5, 4)
+	 * e.g.: PHP ≥ 5.6 = array(5, 6)
      */
-	public $phpmin = array(5, 4);
+	public $phpmin = array(5, 6);
 
 	/**
      * Dolibarr version of the loaded document
@@ -161,8 +161,10 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 
 		// Get source company
 		$this->emetteur = $mysoc;
-		if (! $this->emetteur->country_code)
-			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
+		if (!$this->emetteur->country_code)
+			$this->emetteur->country_code = substr($langs->defaultlang, -2); // By default, if was not defined
+
+		$this->tabTitleHeight = 5; // default height
 	}
 
 	/**
@@ -172,73 +174,65 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 	 * file Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
-	function write_file($object, $outputlangs, $file='')
+	public function write_file($object, $outputlangs, $file='')
 	{
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
-		if (! is_object($outputlangs))
+		dol_syslog("write_file outputlangs->defaultlang=".(is_object($outputlangs) ? $outputlangs->defaultlang : 'null'));
+
+		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
+		}
 
-
-		// Translations
+		// Load translation files required by the page
 		$outputlangs->loadLangs(array("main", "ultimateimmo@ultimateimmo", "companies"));
 
-
 		// Definition of $dir and $file
-		if ($object->specimen)
-		{
-			$dir = $conf->ultimateimmo->dir_output."/";
+		if ($object->specimen) {
+			$dir = $conf->ultimateimmo->dir_output . "/";
 			$file = $dir . "/SPECIMEN.pdf";
-		}
-		else
-		{
+		} else {
 			$dir = $conf->ultimateimmo->dir_output . "/rentmassgen";
 			$file = $dir . "/" . $file . ".pdf";
 		}
 
-		if (! file_exists($dir))
-		{
-			if (dol_mkdir($dir) < 0)
-			{
+		if (!file_exists($dir)) {
+			if (dol_mkdir($dir) < 0) {
 				$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
 				return 0;
 			}
 		}
 
-		if (file_exists($dir))
-		{
-			// Add pdfgeneration hook
-			if (! is_object($hookmanager))
-			{
-				include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
-				$hookmanager=new HookManager($this->db);
+		if (file_exists($dir)) {
+			// Add pdfgeneration hook	
+			if (!is_object($hookmanager)) {
+				include_once DOL_DOCUMENT_ROOT . '/core/class/hookmanager.class.php';
+				$hookmanager = new HookManager($this->db);
 			}
 			/*$hookmanager->initHooks(array('pdfgeneration'));
 			$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
 			global $action;
 			$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
-*/
+			*/
 			// Set nblignes with the new facture lines content after hook
 			//$nblignes = count($object->lines);
-			$nblignes=0;
+			$nblignes = 0;
 			//$nbpayments = count($object->getListOfPayments()); TODO : add method
 
 			// Create pdf instance
-			$pdf=pdf_getInstance($this->format);
+			$pdf = pdf_getInstance($this->format);
 			$default_font_size = pdf_getPDFFontSize($outputlangs);	// Must be after pdf_getInstance
 			$pdf->SetAutoPageBreak(1, 0);
 
-			if (class_exists('TCPDF'))
-			{
+			if (class_exists('TCPDF')) {
 				$pdf->setPrintHeader(false);
 				$pdf->setPrintFooter(false);
 			}
 			$pdf->SetFont(pdf_getPDFFont($outputlangs));
 
 			// Set path to the background PDF File
-			if (! empty($conf->global->MAIN_ADD_PDF_BACKGROUND))
-			{
-				$pagecount = $pdf->setSourceFile($conf->mycompany->dir_output.'/'.$conf->global->MAIN_ADD_PDF_BACKGROUND);
+			if (!empty($conf->global->MAIN_ADD_PDF_BACKGROUND)) {
+				$pagecount = $pdf->setSourceFile($conf->mycompany->dir_output . '/' . $conf->global->MAIN_ADD_PDF_BACKGROUND);
 				$tplidx = $pdf->importPage(1);
 			}
 
@@ -250,9 +244,9 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 			$pdf->SetTitle($outputlangs->convToOutputCharset($object->label));
 			$pdf->SetSubject($outputlangs->transnoentities("etatpaiement"));
 			$pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (ultimateimmo module)');
-			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->firstname)." ".$outputlangs->convToOutputCharset($user->lastname));
+			$pdf->SetAuthor($outputlangs->convToOutputCharset($user->firstname) . " " . $outputlangs->convToOutputCharset($user->lastname));
 			$pdf->SetKeyWords($outputlangs->convToOutputCharset($object->label) . " " . $outputlangs->transnoentities("Document"));
-			if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) $pdf->SetCompression(false);
+			if (!empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) $pdf->SetCompression(false);
 
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 
@@ -261,7 +255,7 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-
+				
 				$pagenb++;
 				$pdf->SetFillColor(224, 224, 224);
 
@@ -351,7 +345,7 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 		global $conf;
 
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
-
+		
 		//title line
 		$pdf->RoundedRect($this->marge_gauche, $tab_top, $this->page_largeur-$this->marge_gauche-$this->marge_droite, $tab_height, $roundradius, $round_corner = '0110', 'S', $this->border_style, array());
 
@@ -410,27 +404,28 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 		$pdf->SetXY($this->marge_gauche, $posy);
 
 		// Logo
-		if (empty($conf->global->PDF_DISABLE_MYCOMPANY_LOGO))
-		{
-			$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
-			if ($this->emetteur->logo)
-			{
-				if (is_readable($logo))
-				{
-				    $height=pdf_getHeightForLogo($logo);
-					$pdf->Image($logo, $this->marge_gauche, $posy, 0, $height);	// width=0 (auto)
+		if (empty($conf->global->PDF_DISABLE_MYCOMPANY_LOGO)) {
+			if ($this->emetteur->logo) {
+				$logodir = $conf->mycompany->dir_output;
+				if (!empty($conf->mycompany->multidir_output[$object->entity])) {
+					$logodir = $conf->mycompany->multidir_output[$object->entity];
 				}
-				else
-				{
+				if (empty($conf->global->MAIN_PDF_USE_LARGE_LOGO)) {
+					$logo = $logodir.'/logos/thumbs/'.$this->emetteur->logo_small;
+				} else {
+					$logo = $logodir.'/logos/'.$this->emetteur->logo;
+				}
+				if (is_readable($logo)) {
+					$height = pdf_getHeightForLogo($logo);
+					$pdf->Image($logo, $this->marge_gauche, $posy, 0, $height); // width=0 (auto)
+				} else {
 					$pdf->SetTextColor(200, 0, 0);
 					$pdf->SetFont('', 'B', $default_font_size - 2);
 					$pdf->MultiCell($w, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
 					$pdf->MultiCell($w, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
 				}
-			}
-			else
-			{
-				$text=$this->emetteur->name;
+			} else {
+				$text = $this->emetteur->name;
 				$pdf->MultiCell($w, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 			}
 		}
@@ -447,7 +442,7 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 		$pdf->SetFont('', 'B', $default_font_size);
 
 		$pdf->SetXY($this->marge_gauche, $pdf->getY());
-		$curY =  $pdf->getY();
+		$curY =  $pdf->getY() + 20;
 
 		$posX =$this->marge_droite;
 
@@ -462,7 +457,7 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 		$pdf->MultiCell($this->widthrecbox, 3, $outputlangs->convToOutputCharset('Locataire'), 1, 'L',1);
 
 		$pdf->SetXY($posX+($this->widthrecbox*3), $posY);
-		$pdf->MultiCell($this->widthrecboxamount, 3, $outputlangs->convToOutputCharset('Motant'), 1, 'L',1);
+		$pdf->MultiCell($this->widthrecboxamount, 3, $outputlangs->convToOutputCharset('Montant'), 1, 'L',1);
 
 		$pdf->SetXY($posX+($this->widthrecbox*3)+($this->widthrecboxamount), $posY);
 		$pdf->MultiCell($this->widthrecboxamount, 3, $outputlangs->convToOutputCharset('Perçus'), 1, 'L',1);
@@ -502,21 +497,21 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
      *  @param	int			   $hideref			Do not show ref
      *  @return	null
      */
-    public function defineColumnField($object, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
-    {
-	    global $conf, $hookmanager;
+	public function defineColumnField($object, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
+	{
+		global $conf, $hookmanager;
 
-	    // Default field style for content
-	    $this->defaultContentsFieldsStyle = array(
-	        'align' => 'R', // R,C,L
-	        'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-	    );
+		// Default field style for content
+		$this->defaultContentsFieldsStyle = array(
+			'align' => 'R', // R,C,L
+			'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+		);
 
-	    // Default field style for content
-	    $this->defaultTitlesFieldsStyle = array(
-	        'align' => 'C', // R,C,L
-	        'padding' => array(0.5,0,0.5,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-	    );
+		// Default field style for content
+		$this->defaultTitlesFieldsStyle = array(
+			'align' => 'C', // R,C,L
+			'padding' => array(0.5, 0, 0.5, 0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+		);
 
 	    /*
 	     * For exemple
@@ -536,35 +531,142 @@ class pdf_etatpaiement extends ModelePDFUltimateimmo
 	    );
 	    */
 
-	    $rank=0; // do not use negative rank
-	    $this->cols['desc'] = array(
-	        'rank' => $rank,
-	        'width' => false, // only for desc
-	        'status' => true,
-	        'title' => array(
-	            'textkey' => 'Designation', // use lang key is usefull in somme case with module
-	            'align' => 'L',
-	            // 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
-	            // 'label' => ' ', // the final label
-	            'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-	        ),
-	        'content' => array(
-	            'align' => 'L',
-	        ),
-	    );
+		$rank = 0; // do not use negative rank
+		$this->cols['num'] = array(
+			'rank' => $rank,
+			'width' => 10, // in mm 
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Numbering', // use lang key is usefull in somme case with module
+				'align' => 'C',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'C',
+			),
+		);
 
-	    $reshook=$hookmanager->executeHooks('defineColumnField', $parameters, $this);    // Note that $object may have been modified by hook
-	    if ($reshook < 0)
-	    {
-	        setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
-	    }
-	    elseif (empty($reshook))
-	    {
-	        $this->cols = array_replace($this->cols, $hookmanager->resArray); // array_replace is used to preserve keys
-	    }
-	    else
-	    {
-	        $this->cols = $hookmanager->resArray;
-	    }
+		$rank = $rank + 10; // do not use negative rank
+		$this->cols['receipt'] = array(
+			'rank' => $rank,
+			'width' => 25, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Loyer', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
+
+		$rank = $rank + 10; // do not use negative rank
+		$this->cols['local'] = array(
+			'rank' => $rank,
+			'width' => 25, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Local', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
+
+		$rank = $rank + 10; // do not use negative rank
+		$this->cols['renter'] = array(
+			'rank' => $rank,
+			'width' => 25, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Renter', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
+
+		$rank = $rank + 10; // do not use negative rank
+		$this->cols['amount'] = array(
+			'rank' => $rank,
+			'width' => 25, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Amount', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
+
+		$rank = $rank + 10; // do not use negative rank
+		$this->cols['paid'] = array(
+			'rank' => $rank,
+			'width' => 25, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'Paid', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
+
+		$rank = $rank + 10; // do not use negative rank
+		$this->cols['resteapayer'] = array(
+			'rank' => $rank,
+			'width' => 25, // only for desc
+			'status' => true,
+			'title' => array(
+				'textkey' => 'RemainderToPay', // use lang key is usefull in somme case with module
+				'align' => 'L',
+				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+				// 'label' => ' ', // the final label
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			),
+			'content' => array(
+				'align' => 'L',
+			),
+		);
+
+		$parameters = array(
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'hidedetails' => $hidedetails,
+			'hidedesc' => $hidedesc,
+			'hideref' => $hideref
+		);
+
+		$reshook = $hookmanager->executeHooks('defineColumnField', $parameters, $this);    // Note that $object may have been modified by hook
+		if ($reshook < 0) {
+			setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		} elseif (empty($reshook)) {
+			$this->cols = array_replace($this->cols, $hookmanager->resArray); // array_replace is used to preserve keys
+		} else {
+			$this->cols = $hookmanager->resArray;
+		}
 	}
 }
+
+?>

@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-# Générique
+# Generic
 #
 
 # Module label 'ModuleUltimateimmoName'
@@ -23,7 +23,7 @@ ModuleUltimateimmoName = Ultimateimmo
 ModuleUltimateimmoDesc = Solution pour les professionnels de l'immobilier
 
 #
-# Page d'administration
+# Admin page
 #
 UltimateimmoSetup = Configuration du module Ultimateimmo
 Settings = Réglages
@@ -31,7 +31,7 @@ UltimateimmoSetupPage = Page de configuration du module Ultimateimmo
 UltimateimmoNumberingModeles = Modèles de numérotation des quittances
 TemplatePDFUltimateimmo = Modèles de document des quittances et baux
 WatermarkOnDraftImmoCards = Filigrane sur les brouillons de quittances (aucun si vide)
-PublicSite = Site public
+PublicSite=Site public
 EnablePublicSite = Activer le site accessible au public
 PublicSiteDesc = Dolibarr peut offrir une URL de page publique permettant d'afficher un site pour répertorier les annonces immobilières pour les visiteurs externes.
 ULTIMATEIMMO_USE_GOOGLE = Utiliser google avec le module Ultimateimmo
@@ -41,7 +41,7 @@ ParametersForGoogleAPIv3Usage=Pour Google API %s V3
 KeepEmptyYoUsePublicQuotaOfAPI=Laisser vide pour utiliser le quota publique de cette API (sinon la clé peut être créée depuis la page https://code.google.com/apis/console/, "API Access" pour créer une "Server key" et "Services" pour activer l'API "%s")
 AllowGoogleToLoginWithKey=Pour utiliser le quotas de votre propre compte Google, vous devez créer une clé depuis la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "Indentification" . Cliquer sur "Créer une clé" et choisir "Clé serveur" puis "Créer". Vous obtiendrez votre clé serveur.
 EnableAPI=Vous devez aussi activer les API pour votre compte Google. Pour cela, aller sur la page <a href="%s" target="_blank">%s</a>, menu "API & Authentification" -> "API". Cliquer sur activer API pour "%s".
-UltimateimmoEnablePublicInterface = Une interface publique ne nécessitant pas d'identification est disponible à l'url suivante :
+UltimateimmoEnablePublicInterface = Une interface publique ne nécessitant pas d'identification est disponible à l’URL suivante :
 UltimateimmoPublicAccess = Activer l'interface publique
 UltimateimmoEmailMustExist = Une adresse e-mail existante est requise pour créer un ticket
 UltimateimmoEmailMustExistHelp = Pour accéder à l'interface publique et créer un nouveau ticket, votre compte doit déjà être existant.
@@ -65,7 +65,7 @@ UltimateImmoEquipementChauffageCollectif=Chauffage Collectif
 UltimateImmoEquipementEauChaudeCollective=Eau chaude collective
 
 #
-# Page À propos
+# About page
 #
 About = À propos
 UltimateimmoAbout = À propos de Ultimateimmo
@@ -104,17 +104,20 @@ MenuAllReceiptperContract = Générer les quittances
 MenuValidateReceipt = Valider les paiements
 MenuListImmoReceiptStats = Statistiques de loyer
 MenuListImmoCost = Charges locatives
-MenuNewImmoCost = Nouvelle charge 
+MenuNewImmoCost = Nouvelle charge
 MenuRenterCost = Coût Locataire
-MenuStatisticsCost = Coût : stats. par type
-MenuStatisticsCostFourn = Coût : stats. par fourn.
+MenuStatisticsCost = Coût : statistiques
 MenuStatisticsResult = Résultats : statistiques
 MenuListImmoCostType = Types de coût
 MenuNewImmoCostType = Nouveau type de coût
+MenuImmoCompteur = Compteur
+MenuNewImmoCompteur = Nouveau compteur
+MenuImmoCompteurList = Liste compteur
+MenuStatisticsCostFourn = Coût : stats. par fourn.
 MenuImmoCompteurStats=Statistique Conso
 
 #
-# Autres
+# Miscellaneous
 #
 BienPrincipal = Bien principal
 BirthDay = Date de Naissance
@@ -122,7 +125,7 @@ BirthCountry = Lieu de naissance
 ImmoProperty = Bien immobilier
 Property = Bien immobilier
 Properties = Biens
-ImmoProperties = Biens immobiliers
+ImmoProperties = Biens
 ImmoRents = Locations
 ImmoRent = Location
 ImmoRenters = Locataires
@@ -146,20 +149,21 @@ DateBuilt3 = de 1975 à 1989
 DateBuilt4 = de 1989 à 2005
 DateBuilt5 = depuis 2005
 APA = Appartement
+Apartment = Appartement
 HOU = Maison individuelle
 LOC = Locaux commerciaux
 SHO = Boutique
 GAR = Garage
 BUL = Immeuble
-EmptyHousing = Logement vide 
+EmptyHousing = Logement vide
 Copropriete = Copropriété
 MonoPropriete = Mono Propriété
 ImmoOwner = Propriétaire
 DateStartRent = Date de prise d'effet du contrat
 TypePayment = Type de Règlement
-NumPayment = <em>Numéro(Chèque/Virement N°)</em>
-CheckTransmitter = <em>Emetteur(Chèque/Virement N°)</em>
-ChequeBank = <em>Banque(Banque du chèque)</em>
+NumPayment = <i>Numéro(Chèque/Virement N°)</i>
+CheckTransmitter = <i>Emetteur(Chèque/Virement N°)</i>
+ChequeBank = <i>Banque(Banque du chèque)</i>
 NewImmoPropertyType = Nouveau type de bien
 ImmoProperty_Type = Type de bien immobilier
 PropertyTypeStatusActive=Bien actif
@@ -174,9 +178,8 @@ NumberOfRoom = Nombre de pièces principales
 PropertyParent = Bien Parent
 BuiltDate = Date de construction
 Target = Cible
-ImmoOwner = Propriétaire
 Civility = Titre
-Deposit = Dépôt de garantie
+Deposit = Deposit
 ListOfRents = Liste des locations
 ImmoRenter = Locataire
 Renter = Locataire
@@ -196,30 +199,41 @@ ImmoPaid = Payée
 PartialPayment = Paiement partiel
 NomLoyer = Dénomination de la Quittance
 OtherProperties = Autres biens
-DeleteImmoReceipt = Suppression de Quittance
-ConfirmDeleteImmoReceipt = Etes vous sûr de vouloir supprimer cette quittance ?
-CloneImmoReceipt = Cloner cette quittance 
-ConfirmCloneImmoReceipt = Etes vous sûr de vouloir cloner cette quittance ?
-DeleteImmoPayment = Suppression de règlement
-ConfirmDeleteImmoPayment = Etes vous sûr de vouloir supprimer ce règlement ?
+DeleteImmoReceipt = Delete receipt
+ConfirmDeleteImmoReceipt = Êtes vous sûr de vouloir supprimer cette quittance ?
+CloneImmoReceipt = Cloner cette quittance
+ConfirmCloneImmoReceipt = Êtes vous sûr de vouloir cloner cette quittance ?
+DeleteImmoPayment = Supprimer le règlement
+ConfirmDeleteImmoPayment = Êtes vous sûr de vouloir supprimer ce règlement
+DeleteImmoProperty = Suppression du bien
+ConfirmDeleteImmoProperty = Êtes vous sûr de vouloir supprimer ce bien ?
+ConfirmCloneImmoProperty = Êtes vous sûr de vouloir cloner ce bien ?
+ConfirmCloneImmoRenter = Êtes vous sûr de vouloir cloner ce locataire ?
+ConfirmDeleteImmoRenter = Êtes vous sûr de vouloir supprimer ce locataire ?
+DeleteImmoRent = Supprimer la location
+ConfirmDeleteImmoRent = Êtes vous sûr de vouloir supprimer  cette location ?
+ConfirmCloneImmoRent = Êtes vous sûr de vouloir supprimer cette location ?
+DeleteImmoOwner = Supprimer le propriétaire
+ConfirmDeleteImmoOwner = Êtes vous sûr de vouloir supprimer ce propriétaire ?
+ConfirmCloneImmoOwner = Êtes vous sûr de vouloir cloner ce propriétaire ?
 OwnerName = Nom du propriétaire
 RenterName = Nom du locataire
-SendImmoReceiptRef = Envoi de la quittance %s
 RefOwner = Référence propriétaire
+SendImmoReceiptRef = Envoi de la quittance %s
 ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
 TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
 ObligationsOfTheSeller = Obligations du vendeur
 ObligationsOfTheLessor = Obligations du bailleur
 UltimateImmoDiagnosticElectricityInstallation = l’état de l’installation intérieure d’électricité
 UltimateImmoDiagnosticGasInstallation = l’état de l’installation intérieure de gaz « naturel »
-UltimateImmoDiagnosticLeadExposure = le constat de risque d’exposition au plomb (CREP)
-UltimateImmoDiagnosticContainingAsbestos = l’état mentionnant la présence ou l’absence de matériaux ou produits contenant de l’amiante 
+UltimateImmoDiagnosticLeadExposure = Le constat de risque d’exposition au plomb (CREP)
+UltimateImmoDiagnosticContainingAsbestos = l’état mentionnant la présence ou l’absence de matériaux ou produits contenant de l’amiante
 UltimateImmoDiagnosticContainingTermites = l’état relatif à la présence de termites dans le bâtiment
 UltimateImmoDiagnosticNaturalTechnologicalRisks = l’état des risques naturels et technologiques
 UltimateImmoDiagnosticNonCollectiveSanitationFacilities = l’état des installations d’assainissement non collectif
 UltimateImmoDiagnosticEnergyPerformanceDiagnosis = le diagnostic de performance énergétique du bâtiment (DPE)
 ReceiptPaymentsAdded = Règlement de quittances ajouté
-Echeance = Échéance
+Echeance = Date limite
 Periode_du = Période du
 Periode_au = Période au
 Nomlocal = Nom du bien
@@ -230,16 +244,26 @@ ShowColocataireDetails = Afficher les détails des colocataires
 Quittances&Baux = Quittances et Baux
 OtherReceipts = Autres quittances
 OtherRents = Autres locations
-NumberReceiptByMonth = Nombre de quittances par mois
+NumberReceiptByMonth  = Nombre de quittances par mois
 CustomerReceiptPayment = Règlement de quittance
-CreatePDF = Créer un PDF
-MenuImmoCompteur=Compteur
-MenuNewImmoCompteur= Nouveau compteur
-MenuImmoCompteurList= Liste compteur
+LinkToReceipt = Lien vers la quittance
+LinkToOwner = Lien vers le propriétaire
+LinkToOwnerType = Sélectionnez le type de propriétaire
+LinkToThirpartyRenter = Vous devez sélectionner ici un tiers locataire.
+LinkToProperty = Lien vers le bien loué
+AmountPayed = Montant payé sur la quittance
+SetLinkToThirparty = Sélectionnez le lien vers un Tiers
+ContractRent=Contrat/Location
+LinkToRent =Lien vers Contrat/Location
+MorPhy = Nature du locataire
+NoThirdPartyAssociatedToRenter = Pas de tiers associé à ce locataire
+ConfirmCreateThirdParty=Êtes-vous sûr de vouloir créer un tiers pour ce locataire ?
+ValidatePayment = Valider les paiements
+CreatePDF = Générez le PDF
 ImmoBirthCountry=Pays de naissance
-
-
-
-
-
+PaymentMode = Méthode de paiement
+DateRelever = Date de relevé
+MeterReading = Relevé des compteurs
+UltimateLocation = Location
+LinkedToDolibarrThirdParty = Lien du Tiers 
 

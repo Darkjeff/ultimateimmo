@@ -1,7 +1,7 @@
 <?php
 /**
  * Copyright (C) 2012-2013 Florian Henry  <florian.henry@open-concept.pro>
- * Copyright (C) 2018-2021 Philippe GRAND <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,82 +40,82 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 class pdf_quittance extends ModelePDFUltimateimmo
 {
 	 /**
-	 * @var DoliDb Database handler
-	 */
-	public $db;
+     * @var DoliDb Database handler
+     */
+    public $db;
 
 	/**
-	 * @var string model name
-	 */
-	public $name;
+     * @var string model name
+     */
+    public $name;
 
 	/**
-	 * @var string model description (short text)
-	 */
-	public $description;
+     * @var string model description (short text)
+     */
+    public $description;
+
+    /**
+     * @var int 	Save the name of generated file as the main doc when generating a doc with this template
+     */
+    public $update_main_doc_field;
 
 	/**
-	 * @var int 	Save the name of generated file as the main doc when generating a doc with this template
-	 */
-	public $update_main_doc_field;
+     * @var string document type
+     */
+    public $type;
 
 	/**
-	 * @var string document type
-	 */
-	public $type;
-
-	/**
-	 * @var array() Minimum version of PHP required by module.
+     * @var array() Minimum version of PHP required by module.
 	 * e.g.: PHP ≥ 5.6 = array(5, 6)
-	 */
-	public $phpmin = array(5, 6);
+     */
+	public $phpmin = array(5, 6); 
 
 	/**
-	 * Dolibarr version of the loaded document
-	 * @public string
-	 */
+     * Dolibarr version of the loaded document
+     * @public string
+     */
 	public $version = 'dolibarr';
 
 	/**
-	 * @var int page_largeur
-	 */
-	public $page_largeur;
-
+     * @var int page_largeur
+     */
+    public $page_largeur;
+	
 	/**
-	 * @var int page_hauteur
-	 */
-	public $page_hauteur;
-
+     * @var int page_hauteur
+     */
+    public $page_hauteur;
+	
 	/**
-	 * @var array format
-	 */
-	public $format;
-
+     * @var array format
+     */
+    public $format;
+	
 	/**
-	 * @var int marge_gauche
-	 */
+     * @var int marge_gauche
+     */
 	public $marge_gauche;
-
+	
 	/**
-	 * @var int marge_droite
-	 */
+     * @var int marge_droite
+     */
 	public $marge_droite;
-
+	
 	/**
-	 * @var int marge_haute
-	 */
+     * @var int marge_haute
+     */
 	public $marge_haute;
-
+	
 	/**
-	 * @var int marge_basse
-	 */
+     * @var int marge_basse
+     */
 	public $marge_basse;
 
 	/**
 	 * Issuer
 	 * @var Societe
 	 */
-	public $emetteur;	// Objet societe qui emet
+    public $emetteur;	// Objet societe qui emet
 
 	/**
 	 *	Constructor
@@ -158,7 +158,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		// Get source company
 		$this->emetteur = $mysoc;
 		if (! $this->emetteur->country_code)
-			$this->emetteur->country_code = substr($langs->defaultlang, - 2);
+			$this->emetteur->country_code = substr($langs->defaultlang, - 2); 
 	}
 
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
@@ -178,7 +178,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		// Translations
 		$outputlangs->loadLangs(array("main", "ultimateimmo@ultimateimmo", "companies"));
 
-		if (! is_object($outputlangs))
+		if (!is_object($outputlangs))
 			$outputlangs = $langs;
 
 		/*if (! is_object($object)) {
@@ -255,6 +255,9 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 
+			$receipt = new ImmoReceipt($this->db);
+			$receipt->fetch($object->fk_receipt);
+
 			// On recupere les infos societe
 			$renter = new ImmoRenter($this->db);
 			$result = $renter->fetch($object->fk_renter);
@@ -274,9 +277,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pagenb++;
 				$this->_pagehead($pdf, $object, 1, $outputlangs);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-				$pdf->MultiCell(0, 3, '', 0,
-					'J'
-				);
+				$pdf->MultiCell(0, 3, '', 0, 'J');
 				$pdf->SetTextColor(0, 0, 0);
 
 				$hautcadre = !empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 38 : 40;
@@ -321,21 +322,22 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->SetXY($posX, $posY);
 
 				$amountalreadypaid = 0;
-				if ($object->getSommePaiement()) {
-					$amountalreadypaid = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+				if ($receipt->getSommePaiement()) {
+					$amountalreadypaid = price($receipt->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
 				}
 				if ($amountalreadypaid  > 0) {
-					$text = 'Reçu de ' . $renter->civilite . '' . $renter->firstname . ' ' . $renter->lastname . ' la somme de ' . $amountalreadypaid . "\n";;
+					$text = 'Reçu de ' . $renter->civilite . '' . $renter->firstname . ' ' . $renter->lastname . ' la somme de ' . $amountalreadypaid . "\n";
 
 					$dtpaiement = $paiement->date_payment;
 
 					if (empty($dtpaiement)) {
-						$dtpaiement = $object->echeance;
+						$dtpaiement = $object->date_echeance;
 					}
 					$text .= 'le ' . dol_print_date($dtpaiement, 'day') . ' pour loyer et accessoires des locaux sis au : ' . $property->address . ' ' . $property->zip . ' ' . $property->town . ' en paiement du terme du ' . dol_print_date($object->date_start, 'daytext') . ' au ' . dol_print_date($object->date_end, 'daytext') . "\n";
 
 					$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 1, 'L');
 				}
+
 				$posY = $pdf->getY();
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetXY($posX, $posY);
@@ -352,6 +354,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				if ($object->vat > 0) {
 					$text .= ' - TVA : ' . price($object->vat, 0, $outputlangs, 1, -1, -1, $conf->currency) . "<BR>";
 				}
+				//var_dump($object);exit;
 				$text .= ' - Charges / Provisions de Charges : ' . price($object->chargesamount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "<BR>";
 				$text .= ' - Montant total du terme : ' . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "<BR>";
 				$text .= '</td>';
@@ -393,7 +396,8 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$i++;
 					}
 
-					if ($object->status == 0
+					if (
+						$object->status == 0
 					) {
 						$text .= "<br><tr><td align=\"left\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\">" . price($totalpaye, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
 						$text .= "<tr><td align=\"left\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
@@ -415,7 +419,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
 				$sql .= " WHERE il.balance<>0 AND paye=0 "; //AND date_start<'" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
-				$sql .= " ORDER BY echeance ASC";
+				$sql .= " ORDER BY date_echeance ASC";
 
 				dol_syslog(get_class($this) . ':: loyerAnterieur sql=' . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
@@ -424,6 +428,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					$num = $this->db->num_rows($resql);
 
 					if ($num > 0) {
+
 						// $pdf->addPage();
 						$posY = $pdf->getY();
 						$pdf->SetXY($posX, $posY);
@@ -436,12 +441,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 						$pdf->SetXY($posX, $posY);
-						$pdf->MultiCell($widthbox,
-							3,
-							$outputlangs->convToOutputCharset('Rappel Solde Anterieur'),
-							1,
-							'C'
-						);
+						$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Rappel Solde Anterieur'), 1, 'C');
 
 						$text = '<table>';
 
@@ -488,11 +488,11 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					$num = $this->db->num_rows($resql);
 
 					if ($num > 0) {
-						$totaldue=0;
-						$textdetail='';
+						$totaldue = 0;
+						$textdetail = '';
 						while ($objp = $this->db->fetch_object($resql)) {
 							$textdetail .= "<tr><td>" . $objp->label . "</td><td  align=\"right\">" . price($objp->balance, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
-							$totaldue+=$objp->balance;
+							$totaldue += $objp->balance;
 						}
 
 						//total
@@ -509,15 +509,10 @@ class pdf_quittance extends ModelePDFUltimateimmo
 							$title = 'Total somme à rembourser';
 						}
 
-						$pdf->MultiCell($widthbox,
-							3,
-							$outputlangs->convToOutputCharset($title),
-							1,
-							'C'
-						);
+						$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($title), 1, 'C');
 
 						$text = '<table>';
-						$text.=$textdetail;
+						$text .= $textdetail;
 
 						$text .= "<tr><td><b>TOTAL</b></td><td align=\"right\"><b>" . price($totaldue, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</b></td></tr>";
 
@@ -612,12 +607,12 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$pdf->Close();
 
 			$pdf->Output($file, 'F');
-			if (! empty($conf->global->MAIN_UMASK))
+			if (!empty($conf->global->MAIN_UMASK))
 				@chmod($file, octdec($conf->global->MAIN_UMASK));
 
 			return 1; // Pas d'erreur
 		} else {
-			$this->error=$outputlangs->transnoentities("ErrorCanNotCreateDir", $dir);
+			$this->error = $outputlangs->transnoentities("ErrorCanNotCreateDir", $dir);
 			return 0;
 		}
 	}
@@ -699,7 +694,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		$pdf->SetFont('', '', $default_font_size - 2);
 		$renter = new ImmoRenter($this->db);
 		$renter->fetch($object->fk_renter);
-		//var_dump($renter);exit;
+
 		if ($renter->ref) {
 			$posy += 4;
 			$pdf->SetXY($posx, $posy);
@@ -822,7 +817,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 	/**
 	 *   	Show footer of page. Need this->emetteur object
-	 *
+     *
 	 *   	@param	PDF			$pdf     			PDF
 	 * 		@param	Object		$object				Object to show
 	 *      @param	Translate	$outputlangs		Object lang for output
@@ -853,34 +848,34 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		// Default field style for content
 		$this->defaultContentsFieldsStyle = array(
 			'align' => 'R', // R,C,L
-			'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
 		);
 
 		// Default field style for content
 		$this->defaultTitlesFieldsStyle = array(
 			'align' => 'C', // R,C,L
-			'padding' => array(0.5,0,0.5,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+			'padding' => array(0.5, 0, 0.5, 0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
 		);
 
 		/*
-		 * For exemple
-		$this->cols['theColKey'] = array(
-			'rank' => $rank, // int : use for ordering columns
-			'width' => 20, // the column width in mm
-			'title' => array(
-				'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
-				'label' => ' ', // the final label : used fore final generated text
-				'align' => 'L', // text alignement :  R,C,L
-				'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-			),
-			'content' => array(
-				'align' => 'L', // text alignement :  R,C,L
-				'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
-			),
-		);
-		*/
+	     * For exemple
+	    $this->cols['theColKey'] = array(
+	        'rank' => $rank, // int : use for ordering columns
+	        'width' => 20, // the column width in mm
+	        'title' => array(
+	            'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
+	            'label' => ' ', // the final label : used fore final generated text
+	            'align' => 'L', // text alignement :  R,C,L
+	            'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+	        ),
+	        'content' => array(
+	            'align' => 'L', // text alignement :  R,C,L
+	            'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+	        ),
+	    );
+	    */
 
-		$rank=0; // do not use negative rank
+		$rank = 0; // do not use negative rank
 		$this->cols['desc'] = array(
 			'rank' => $rank,
 			'width' => false, // only for desc
@@ -890,7 +885,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				'align' => 'L',
 				// 'textkey' => 'yourLangKey', // if there is no label, yourLangKey will be translated to replace label
 				// 'label' => ' ', // the final label
-				'padding' => array(0.5,0.5,0.5,0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+				'padding' => array(0.5, 0.5, 0.5, 0.5), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
 			),
 			'content' => array(
 				'align' => 'L',
@@ -901,19 +896,19 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		$rank = $rank + 10;
 		$this->cols['photo'] = array(
 			'rank' => $rank,
-			'width' => (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH)?20:$conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH), // in mm
+			'width' => (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH) ? 20 : $conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH), // in mm
 			'status' => false,
 			'title' => array(
 				'textkey' => 'Photo',
 				'label' => ' '
 			),
 			'content' => array(
-				'padding' => array(0,0,0,0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
+				'padding' => array(0, 0, 0, 0), // Like css 0 => top , 1 => right, 2 => bottom, 3 => left
 			),
 			'border-left' => false, // remove left line separator
 		);
 
-		if (! empty($conf->global->MAIN_GENERATE_INVOICES_WITH_PICTURE) && !empty($this->atleastonephoto)) {
+		if (!empty($conf->global->MAIN_GENERATE_INVOICES_WITH_PICTURE) && !empty($this->atleastonephoto)) {
 			$this->cols['photo']['status'] = true;
 		}
 
@@ -1010,7 +1005,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		);
 
 
-		$parameters=array(
+		$parameters = array(
 			'object' => $object,
 			'outputlangs' => $outputlangs,
 			'hidedetails' => $hidedetails,
@@ -1018,7 +1013,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			'hideref' => $hideref
 		);
 
-		$reshook=$hookmanager->executeHooks('defineColumnField', $parameters, $this);    // Note that $object may have been modified by hook
+		$reshook = $hookmanager->executeHooks('defineColumnField', $parameters, $this);    // Note that $object may have been modified by hook
 		if ($reshook < 0) {
 			setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 		} elseif (empty($reshook)) {

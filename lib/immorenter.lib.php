@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2018-2021 Philippe GRAND 	<philippe.grand@atoo-net.com>
+/* Copyright (C) 2018-2022 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,14 +37,13 @@ function immorenterPrepareHead($object)
 	$head = array();
 
 	$head[$h][0] = dol_buildpath("/ultimateimmo/renter/immorenter_card.php", 1) . '?id=' . $object->id;
-	$head[$h][1] = $langs->trans("Card");
+	$head[$h][1] = $langs->trans("ImmoRenter");
 	$head[$h][2] = 'card';
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath('/ultimateimmo/renter/immorenter_bilan.php', 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("Bilan");
 	$head[$h][2] = 'bilan';
-	//$hselected = $h;
 	$h ++;
 
 	if (isset($object->fields['note_public']) || isset($object->fields['note_private'])) {

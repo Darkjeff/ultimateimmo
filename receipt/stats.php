@@ -89,21 +89,22 @@ foreach ($months_list as $month_name) {
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
-$sql = "SELECT ll.label AS nom_local";
+$sql = "SELECT ip.label AS nom_local";
 foreach ($months_list as $month_num => $month_name) {
-	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)=' . $month_num . ' then lo.rentamount else 0 end),2) AS month_' . $month_num;
+	$sql .= ', ROUND(SUM(case when MONTH(ir.date_echeance)=' . $month_num . ' then ir.rentamount else 0 end),2) AS month_' . $month_num;
 }
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid ";
-if ($user->id != 1) {
-	$sql .= " AND ll.fk_owner=".$user->id;
-}
+$sql .= ", ROUND(SUM(ir.rentamount),2) as Total";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON ir.fk_property = ip.rowid";
+$sql .= " WHERE ir.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
+$sql .= "  AND ir.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 
-$sql .= " GROUP BY ll.label";
+/*if ($user->id != 1) {
+	$sql .= " AND ip.fk_owner=".$user->id;
+}*/
 
+$sql .= " GROUP BY ip.label";
+//print_r($sql);exit;
 $resql = $db->query ( $sql );
 if ($resql) {
 	$i = 0;
@@ -134,7 +135,7 @@ print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr><tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=10%>' . $langs->trans("Total") . '</td>';
+print '<tr class="liste_titre"><td width=10%>' . $langs->trans("Owner") . '</td>';
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
@@ -142,19 +143,18 @@ print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
 $sql = "SELECT own.firstname AS Proprio";
 foreach ($months_list as $month_num => $month_name) {
-	$sql .= ', ROUND(SUM(case when MONTH(lo.date_echeance)=' . $month_num . ' then lo.rentamount else 0 end),2) AS month_' . $month_num;
+	$sql .= ', ROUND(SUM(case when MONTH(ir.date_echeance)=' . $month_num . ' then ir.rentamount else 0 end),2) AS month_' . $month_num;
 }
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
-$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as own";
-$sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
-$sql .= "  AND lo.fk_property = ll.rowid ";
-$sql .= "  AND ll.fk_owner = own.rowid ";
-if ($user->id != 1) {
-	$sql .= " AND ll.fk_owner=".$user->id;
-}
-$sql .= " GROUP BY ll.fk_owner";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON ir.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoowner as own ON ip.fk_owner = own.rowid";
+$sql .= " WHERE ir.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
+$sql .= "  AND ir.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+
+/*if ($user->id != 1) {
+	$sql .= " AND ip.fk_owner=".$user->id;
+}*/
+$sql .= " GROUP BY ip.fk_owner";
 
 $resql = $db->query ( $sql );
 if ($resql) {

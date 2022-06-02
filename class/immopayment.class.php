@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,21 @@ class ImmoPayment extends CommonObject
 	 */
 	public $picto = 'immopayment@ultimateimmo';
 
+	/**
+	 * Draft status
+	 */
+	const STATUS_DRAFT = 0;
+	
+	/**
+	 * Validated status
+	 */
+	const STATUS_VALIDATED = 1;
+	
+	/**
+	 * Credit note status
+	 */
+	const STATUS_CANCELED = 9;
+
 
 	/**
 	 *  'type' if the field format.
@@ -92,13 +107,13 @@ class ImmoPayment extends CommonObject
 		'fk_rent' => array('type' => 'integer:ImmoRent:ultimateimmo/class/immorent.class.php', 'label' => 'Contract', 'enabled' => 1, 'visible' => 1, 'position' => 25, 'notnull' => -1, 'index' => 1, 'help' => "LinkToContract",),
 		'fk_receipt' => array('type' => 'integer:ImmoReceipt:ultimateimmo/class/immoreceipt.class.php', 'label' => 'ImmoReceipt', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'notnull' => -1, 'index' => 1, 'help' => "LinkToReceipt",),
 		'fk_owner' => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 35, 'notnull' => -1, 'index' => 1, 'help' => "LinkToOwner",),
-		'fk_soc' => array('type' => 'integer:Societe:societe/class/societe.class.php', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 36, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirparty",),
+		'fk_soc' => array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'picto'=>'company', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 36, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirpartyRenter",),
 		'fk_property' => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'Property', 'enabled' => 1, 'visible' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'help' => "LinkToProperty",),
 		'fk_renter' => array('type' => 'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label' => 'Renter', 'enabled' => 1, 'visible' => 1, 'position' => 45, 'notnull' => -1, 'index' => 1, 'help' => "LinkToRenter",),
 		'fk_payment' => array('type' => 'integer', 'label' => 'Payment', 'visible' => 0, 'enabled' => 1, 'position' => 48, 'default' => 1, 'notnull' => 1, 'index' => 1,),
 		'note_public' => array('type' => 'html', 'label' => 'NotePublic', 'enabled' => 1, 'visible' => -1, 'position' => 50, 'notnull' => -1,),
 		'date_payment' => array('type' => 'date', 'label' => 'DatePayment', 'enabled' => 1, 'visible' => -1, 'position' => 70, 'notnull' => 1,),
-		'amount' => array('type' => 'price', 'label' => 'Amount', 'enabled' => 1, 'visible' => 1, 'position' => 72, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1', 'help' => "Help text",),
+		'amount' => array('type' => 'price', 'label' => 'Amount', 'enabled' => 1, 'visible' => 1, 'position' => 72, 'notnull' => -1, 'default' => 'null', 'isameasure' => '1', 'help' => "AmountPayed",),
 		'fk_mode_reglement' => array('type' => 'integer', 'label' => 'TypePayment', 'enabled' => 1, 'visible' => 1, 'position' => 75, 'notnull' => -1, 'index' => 1, 'help' => "LinkToTypePayment",),
 		'fk_account' => array('type' => 'integer:Account:compta/bank/class/account.class.php', 'label' => 'BankAccount', 'enabled' => 1, 'visible' => 1, 'position' => 80, 'notnull' => -1, 'index' => 1, 'help' => "LinkToBank",),
 		'num_payment' => array('type' => 'varchar(50)', 'label' => 'NumPayment', 'enabled' => 1, 'visible' => -1, 'position' => 85, 'notnull' => -1,),
@@ -106,8 +121,8 @@ class ImmoPayment extends CommonObject
 		'chequebank' => array('type' => 'varchar(50)', 'label' => 'ChequeBank', 'enabled' => 1, 'visible' => -1, 'position' => 87, 'notnull' => -1,),
 		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'enabled' => 1, 'visible' => -2, 'position' => 500, 'notnull' => 1,),
 		'tms' => array('type' => 'timestamp', 'label' => 'DateModification', 'enabled' => 1, 'visible' => -2, 'position' => 501, 'notnull' => 1,),
-		'fk_user_creat' => array('type' => 'integer', 'label' => 'UserAuthor', 'enabled' => 1, 'visible' => -2, 'position' => 510, 'notnull' => 1, 'foreignkey' => 'llx_user.rowid',),
-		'fk_user_modif' => array('type' => 'integer', 'label' => 'UserModif', 'enabled' => 1, 'visible' => -2, 'position' => 511, 'notnull' => -1,),
+		'fk_user_creat' => array('type' => 'integer', 'label' => 'UserAuthor', 'picto'=>'user', 'enabled' => 1, 'visible' => -2, 'position' => 510, 'notnull' => 1, 'foreignkey' => 'llx_user.rowid',),
+		'fk_user_modif' => array('type' => 'integer', 'label' => 'UserModif', 'picto'=>'user', 'enabled' => 1, 'visible' => -2, 'position' => 511, 'notnull' => -1,),
 		'import_key' => array('type' => 'varchar(14)', 'label' => 'ImportId', 'enabled' => 1, 'visible' => -2, 'position' => 1000, 'notnull' => -1,),
 		'status' => array('type' => 'integer', 'label' => 'Status', 'enabled' => 1, 'visible' => 1, 'position' => 1000, 'notnull' => 1, 'index' => 1, 'arrayofkeyval' => array('0' => 'Draft', '1' => 'Active', '-1' => 'Cancel')),
 	);
@@ -122,7 +137,7 @@ class ImmoPayment extends CommonObject
 	public $fk_renter;
 	public $note_public;
 	public $amount;			    // Total amount of payment
-	public $amounts=array();    // Array of amounts
+	public $amounts = array();    // Array of amounts
 	public $fk_mode_reglement;
 	public $fk_account;
 	public $fk_payment;
@@ -140,7 +155,6 @@ class ImmoPayment extends CommonObject
 	public $nomlocataire;
 	public $nomloyer;
 	// END MODULEBUILDER PROPERTIES
-
 
 	public $sqlquerymassgen = '';
 
@@ -178,8 +192,12 @@ class ImmoPayment extends CommonObject
 
 		$this->db = $db;
 
-		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) $this->fields['rowid']['visible'] = 0;
-		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
+		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) {
+			$this->fields['rowid']['visible'] = 0;
+		}
+		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) {
+			$this->fields['entity']['enabled'] = 0;
+		}
 
 		// Unset fields that are disabled
 		foreach ($this->fields as $key => $val) {
@@ -204,256 +222,14 @@ class ImmoPayment extends CommonObject
 	 * Create object into database
 	 *
 	 * @param  User $user      User that creates
-	 * @param  int		  	   $closepaidreceipts   	1=Also close payed receipts to paid, 0=Do nothing more
-	 * @param  Societe   	   $thirdparty           Thirdparty
 	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, Id of created object if OK
 	 */
-	/*public function createCommon(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
+	public function create(User $user, $notrigger = false)
 	{
-		global $langs, $object, $form;
-
-		$error = 0;
-
-		$now=dol_now();
-
-		$fieldvalues = $this->setSaveQuery();
-		if (array_key_exists('date_creation', $fieldvalues) && empty($fieldvalues['date_creation'])) $fieldvalues['date_creation']=$this->db->idate($now);
-		if (array_key_exists('date_payment', $fieldvalues) && empty($fieldvalues['date_payment'])) $fieldvalues['date_payment']=$this->db->jdate($object->date_payment);
-		if (array_key_exists('fk_user_creat', $fieldvalues) && ! ($fieldvalues['fk_user_creat'] > 0)) $fieldvalues['fk_user_creat']=$user->id;
-		//if (array_key_exists('fk_mode_reglement', $fieldvalues) && ! ($fieldvalues['fk_mode_reglement'] > 0)) $fieldvalues['fk_mode_reglement']=$form->select_types_paiements((GETPOST('fk_mode_reglement')?GETPOST('fk_mode_reglement'):$object->fk_mode_reglement), 'fk_mode_reglement', '', 2);
-		unset($fieldvalues['rowid']);	// The field 'rowid' is reserved field name for autoincrement field so we don't need it into insert.
-
-		$keys=array();
-		$values = array();
-		foreach ($fieldvalues as $k => $v) {
-			$keys[$k] = $k;
-			$value = $this->fields[$k];
-			$values[$k] = $this->quote($v, $value);
-		}
-
-		// Clean and check mandatory
-		foreach ($keys as $key) {
-			// If field is an implicit foreign key field
-			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && $values[$key] == '-1') $values[$key] = '';
-			if (!empty($this->fields[$key]['foreignkey']) && $values[$key] == '-1') $values[$key] = '';
-			if (empty($this->fields[$key]['ref']) && $values[$key] == '') $values[$key] = '(PROV' . $this->id . ')';
-
-			//var_dump($key.'-'.$values[$key].'-'.($this->fields[$key]['notnull'] == 1));
-			if (isset($this->fields[$key]['notnull']) && $this->fields[$key]['notnull'] == 1 && !isset($values[$key]) && is_null($key['default'])) {
-				$error++;
-				$this->errors[] = $langs->trans("ErrorFieldRequired", $this->fields[$key]['label']);
-			}
-
-			// If field is an implicit foreign key field
-			if (preg_match('/^integer:/i', $this->fields[$key]['type']) && empty($values[$key])) $values[$key] = 'null';
-			if (!empty($this->fields[$key]['foreignkey']) && empty($values[$key])) $values[$key] = 'null';
-		}
-
-		if ($error) return -1;
-
-		$this->db->begin();
-
-		if (!$error) {
-			$sql = 'INSERT INTO ' . MAIN_DB_PREFIX . $this->table_element;
-			$sql .= ' (' . implode(", ", $keys) . ')';
-			$sql .= ' VALUES (' . implode(", ", $values) . ')';
-
-			$res = $this->db->query($sql);
-			if ($res === false) {
-				$error++;
-				$this->errors[] = $this->db->lasterror();
-			}
-		}
-
-		if (!$error) {
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . $this->table_element);
-		}
-
-		// If we have a field ref with a default value of (PROV)
-		if (!$error) {
-			if (key_exists('ref', $this->fields) && $this->fields['ref']['notnull'] > 0 && !is_null($this->fields['ref']['default']) && $this->fields['ref']['default'] == '(PROV)') {
-				$sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element . " SET ref = '(PROV" . $this->id . ")' WHERE (ref = '(PROV)' OR ref = '') AND rowid = " . $this->id;
-				$resqlupdate = $this->db->query($sql);
-
-				if ($resqlupdate === false) {
-					$error++;
-					$this->errors[] = $this->db->lasterror();
-				} else {
-					$this->ref = '(PROV' . $this->id . ')';
-				}
-			}
-		}
-
-		// Create extrafields
-		if (!$error) {
-			$result = $this->insertExtraFields();
-			if ($result < 0) $error++;
-		}
-
-		// Create lines
-		if (!empty($this->table_element_line) && !empty($this->fk_element)) {
-			$num = (is_array($this->lines) ? count($this->lines) : 0);
-			for ($i = 0; $i < $num; $i++) {
-				$line = $this->lines[$i];
-
-				$keyforparent = $this->fk_element;
-				$line->$keyforparent = $this->id;
-
-				// Test and convert into object this->lines[$i]. When coming from REST API, we may still have an array
-				//if (! is_object($line)) $line=json_decode(json_encode($line), false);  // convert recursively array into object.
-				if (!is_object($line)) $line = (object) $line;
-
-				$result = $line->create($user, 1);
-				if ($result < 0) {
-					$this->error = $this->db->lasterror();
-					$this->db->rollback();
-					return -1;
-				}
-			}
-		}
-
-		// Triggers
-		if (!$error && !$notrigger) {
-			// Call triggers
-			$result = $this->call_trigger(strtoupper(get_class($this)) . '_CREATE', $user);
-			if ($result < 0) {
-				$error++;
-			}
-			// End call triggers
-		}
-
-		// Commit or rollback
-		if ($error) {
-			$this->db->rollback();
-			return -1;
-		} else {
-			$this->db->commit();
-			return $this->id;
-		}
-	}*/
-
-	/**
-	 * Create object into database
-	 *
-	 * @param  User $user      User that creates
-	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
-	 * @return int             <0 if KO, Id of created object if OK
-	 */
-	/*public function create(User $user, $closepaidreceipts = 0, $thirdparty = null, $notrigger = false)
-	{
-		return $this->createCommon($user, $closepaidreceipts, $thirdparty, $notrigger);
-	}*/
-
-	/**
-	 *  Create payment of receipt into database.
-	 *  Use this->amounts to have list of lines for the payment
-	 *
-	 *  @param      User		$user			User making payment
-	 *  @param      bool 		$notrigger 		false=launch triggers after, true=disable triggers
-	 *  @return     int     					<0 if KO, id of payment if OK
-	 */
-	public function create($user, $notrigger = false)
-	{
-		global $conf, $langs;
-
-		$error = 0;
-
-		$now = dol_now();
-
-		// Validate parameters
-		if (!$this->date_payment) {
-			$this->error = 'ErrorBadValueForParameterCreatePaymentReceipt';
-			$this->errors[] = 'ErrorBadValueForParameterCreatePaymentReceipt';
-			return -1;
-		}
-
-		// Clean parameters
-		if (isset($this->fk_receipt)) 		$this->fk_receipt = trim($this->fk_receipt);
-		if (isset($this->amount))			$this->amount = trim($this->amount);
-		if (isset($this->fk_mode_reglement)) $this->fk_mode_reglement = trim($this->fk_mode_reglement);
-		if (isset($this->num_payment))      $this->num_payment = trim($this->num_payment);
-		if (isset($this->note_public))		$this->note_public = trim($this->note_public);
-		if (isset($this->fk_account))			$this->fk_account = trim($this->fk_account);
-		if (isset($this->fk_user_creat))	$this->fk_user_creat = trim($this->fk_user_creat);
-		if (isset($this->fk_user_modif))	$this->fk_user_modif = trim($this->fk_user_modif);
-
-		$totalamount = 0;
-		foreach ($this->amounts as $key => $value)  // How payment is dispatch
-		{
-			$newvalue = price2num($value, 'MT');
-			$this->amounts[$key] = $newvalue;
-			$totalamount += $newvalue;
-		}
-		$totalamount = price2num($totalamount);
-
-		// Check parameters
-		if ($totalamount == 0) {
-			$this->error = 'TotalAmount=0 do nothing';
-			$this->errors[] = 'TotalAmount=0 do nothing';
-			return -1; // On accepte les montants negatifs pour les rejets de prelevement mais pas null
-		}
-
-
-		$this->db->begin();
-
-		if ($totalamount != 0) {
-			$sql = "INSERT INTO " . MAIN_DB_PREFIX . "ultimateimmo_immopayment (fk_receipt, date_creation, date_payment, amount,";
-			$sql .= " fk_mode_reglement, fk_property, fk_renter, fk_rent, num_payment, note_public, fk_user_creat, fk_account, ";
-			$sql .= "fk_owner)";
-			$sql .= " VALUES (" . $this->fk_receipt . ", '" . $this->db->idate($now) . "',";
-			$sql .= " '" . $this->db->idate($this->date_payment) . "',";
-			$sql .= " " . $totalamount . ",";
-			$sql .= " " . $this->fk_mode_reglement . ",'" . $this->db->escape($this->fk_property) . "','" .
-				$this->db->escape($this->fk_renter) . "','" . $this->db->escape($this->fk_rent) . "',  '" .
-				$this->db->escape($this->num_payment) . "', '" . $this->db->escape($this->note_public) . "', " . $user->id . ",";
-			$sql .= " 0,";
-			$sql .= isset($this->fk_owner)?(int)$this->fk_owner:'null';
-			$sql .= ")";
-
-			dol_syslog(get_class($this) . "::create", LOG_DEBUG);
-			$resql = $this->db->query($sql);
-			if ($resql) {
-				$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "ultimateimmo_immopayment");
-				$this->ref = $this->id;
-			} else {
-				$error++;
-			}
-		}
-
-		if (!$error && !$notrigger) {
-			// Call triggers
-			$result = $this->call_trigger(strtoupper(get_class($this)) . '_CREATE', $user);
-			if ($result < 0) {
-				$error++;
-			}
-			// End call triggers
-		}
-
-		if ($totalamount != 0 && !$error) {
-			$this->amount = $totalamount;
-			$this->total = $totalamount;    // deprecated
-			$this->db->commit();
-			return $this->id;
-		} else {
-			$this->error = "Error ".$this->db->lasterror();
-			$this->errors[] = "Error ".$this->db->lasterror();
-			$this->db->rollback();
-			return -1;
-		}
+		$resultcreate = $this->createCommon($user, $notrigger);
+		return $resultcreate;
 	}
-
-	/**
-	 * Create object into database
-	 *
-	 * @param  User $user      User that creates
-	 * @param  bool $notrigger false=launch triggers after, true=disable triggers
-	 * @return int             <0 if KO, Id of created object if OK
-	 */
-	/*public function create(User $user, $notrigger = false)
-	{
-		return $this->createCommon($user, $notrigger);
-	}*/
 
 	/**
 	 * Clone and object into another one
@@ -464,44 +240,94 @@ class ImmoPayment extends CommonObject
 	 */
 	public function createFromClone(User $user, $fromid)
 	{
-		global $hookmanager, $langs;
-	    $error = 0;
+		global $langs, $extrafields;
+		$error = 0;
 
-	    dol_syslog(__METHOD__, LOG_DEBUG);
+		dol_syslog(__METHOD__, LOG_DEBUG);
 
-	    $object = new self($this->db);
+		$object = new self($this->db);
 
-	    $this->db->begin();
+		$this->db->begin();
 
-	    // Load source object
-	    $object->fetchCommon($fromid);
-	    // Reset some properties
-	    unset($object->id);
-	    unset($object->fk_user_creat);
-	    unset($object->import_key);
+		// Load source object
+		$result = $object->fetchCommon($fromid);
+		if ($result > 0 && !empty($object->table_element_line)) {
+			$object->fetchLines();
+		}
 
-	    // Clear fields
-	    $object->ref = "copy_of_".$object->ref;
-	    $object->title = $langs->trans("CopyOf")." ".$object->title;
-	    // ...
+		// get lines so they will be clone
+		//foreach($this->lines as $line)
+		//	$line->fetch_optionals();
 
-	    // Create clone
+		// Reset some properties
+		unset($object->id);
+		unset($object->fk_user_creat);
+		unset($object->import_key);
+
+		// Clear fields
+		if (property_exists($object, 'ref')) {
+			$object->ref = empty($this->fields['ref']['default']) ? "Copy_Of_".$object->ref : $this->fields['ref']['default'];
+		}
+		if (property_exists($object, 'label')) {
+			$object->label = empty($this->fields['label']['default']) ? $langs->trans("CopyOf")." ".$object->label : $this->fields['label']['default'];
+		}
+		if (property_exists($object, 'status')) {
+			$object->status = self::STATUS_DRAFT;
+		}
+		if (property_exists($object, 'date_creation')) {
+			$object->date_creation = dol_now();
+		}
+		if (property_exists($object, 'date_modification')) {
+			$object->date_modification = null;
+		}
+		// ...
+		// Clear extrafields that are unique
+		if (is_array($object->array_options) && count($object->array_options) > 0) {
+			$extrafields->fetch_name_optionals_label($this->table_element);
+			foreach ($object->array_options as $key => $option) {
+				$shortkey = preg_replace('/options_/', '', $key);
+				if (!empty($extrafields->attributes[$this->table_element]['unique'][$shortkey])) {
+					//var_dump($key); var_dump($clonedObj->array_options[$key]); exit;
+					unset($object->array_options[$key]);
+				}
+			}
+		}
+
+		// Create clone
 		$object->context['createfromclone'] = 'createfromclone';
-	    $result = $object->createCommon($user);
-	    if ($result < 0) {
-	        $error++;
-	        $this->error = $object->error;
-	        $this->errors = $object->errors;
-	    }
+		$result = $object->createCommon($user);
+		if ($result < 0) {
+			$error++;
+			$this->error = $object->error;
+			$this->errors = $object->errors;
+		}
 
-	    // End
-	    if (!$error) {
-	        $this->db->commit();
-	        return $object;
-	    } else {
-	        $this->db->rollback();
-	        return -1;
-	    }
+		if (!$error) {
+			// copy internal contacts
+			if ($this->copy_linked_contact($object, 'internal') < 0) {
+				$error++;
+			}
+		}
+
+		if (!$error) {
+			// copy external contacts if same company
+			if (!empty($object->socid) && property_exists($this, 'fk_soc') && $this->fk_soc == $object->socid) {
+				if ($this->copy_linked_contact($object, 'external') < 0) {
+					$error++;
+				}
+			}
+		}
+
+		unset($object->context['createfromclone']);
+
+		// End
+		if (!$error) {
+			$this->db->commit();
+			return $object;
+		} else {
+			$this->db->rollback();
+			return -1;
+		}
 	}
 
 	/**
@@ -585,7 +411,7 @@ class ImmoPayment extends CommonObject
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as ll ON t.fk_property = ll.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as lo ON t.fk_receipt = lo.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'bank as b ON t.fk_account = b.rowid';
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_paiement as cp ON t.fk_mode_reglement = cp.id AND cp.entity IN (' . getEntity('c_paiement') . ')';;
+		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_paiement as cp ON t.fk_mode_reglement = cp.id AND cp.entity IN (' . getEntity('c_paiement') . ')';
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
@@ -609,13 +435,13 @@ class ImmoPayment extends CommonObject
 					$this->num_payment		= $obj->num_payment;
 					$this->mode_code 		= $obj->mode_code;
 					$this->mode_payment		= $obj->mode_payment;
-					$this->fk_account			= $obj->fk_account;
+					$this->fk_account		= $obj->fk_account;
 					$this->fk_owner 		= $obj->fk_owner;
 					$this->fk_user_creat	= $obj->fk_user_creat;
 					$this->fk_user_modif	= $obj->fk_user_modif;
 					$this->bank_account		= $obj->fk_account;
 					$this->bank_line		= $obj->fk_account;
-
+				
 					$this->date_payment = $this->db->jdate($obj->date_payment);
 
 					$this->setVarsFromFetchObj($obj);
@@ -651,24 +477,42 @@ class ImmoPayment extends CommonObject
 	public function fetch($id, $ref = null)
 	{
 		$result = $this->fetchCommon($id, $ref);
-		//if ($result > 0 && ! empty($this->table_element_line)) $this->fetchLines();
+		if ($result > 0 && !empty($this->table_element_line)) {
+			$this->fetchLines();
+		}
 		return $result;
 	}
 
 	/**
-	 * Load object in memory from the database
+	 * Load object lines in memory from the database
 	 *
-	 * @param string $sortorder Sort Order
-	 * @param string $sortfield Sort field
-	 * @param int    $limit     offset limit
-	 * @param int    $offset    offset limit
-	 * @param array  $filter    filter array
-	 * @param string $filtermode filter mode (AND or OR)
+	 * @return int         <0 if KO, 0 if not found, >0 if OK
+	 */
+	public function fetchLines()
+	{
+		$this->lines = array();
+
+		// Load lines with object ImmoOwnerLine
+		$result = $this->fetchLinesCommon();
+		return $result;
+	}
+
+
+	/**
+	 * Load list of objects in memory from the database.
 	 *
-	 * @return int <0 if KO, >0 if OK
+	 * @param  string      $sortorder    Sort Order
+	 * @param  string      $sortfield    Sort field
+	 * @param  int         $limit        limit
+	 * @param  int         $offset       Offset
+	 * @param  array       $filter       Filter array. Example array('field'=>'valueforlike', 'customurl'=>...)
+	 * @param  string      $filtermode   Filter mode (AND or OR)
+	 * @return array|int                 int <0 if KO, array of pages if OK
 	 */
 	public function fetchAll($sortorder = '', $sortfield = '', $limit = 0, $offset = 0, array $filter = array(), $filtermode = 'AND')
 	{
+		global $conf;
+
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
 		$sql = 'SELECT';
@@ -802,7 +646,7 @@ class ImmoPayment extends CommonObject
 		$result = '';
 		$companylink = '';
 
-		$label = '<u>' . $langs->trans("ImmoPayment") . '</u>';
+		$label = img_picto('', $this->picto) . '<u>' . $langs->trans("ImmoPayment") . '</u>';
 		$label .= '<br>';
 		$label .= '<b>' . $langs->trans('Ref') . ':</b> ' . $this->ref;
 		$label .= '<br>';
@@ -815,8 +659,12 @@ class ImmoPayment extends CommonObject
 		if ($option != 'nolink') {
 			// Add param to save lastsearch_values or not
 			$add_save_lastsearch_values = ($save_lastsearch_value == 1 ? 1 : 0);
-			if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) $add_save_lastsearch_values = 1;
-			if ($add_save_lastsearch_values) $url .= '&save_lastsearch_values=1';
+			if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) {
+				$add_save_lastsearch_values = 1;
+			}
+			if ($add_save_lastsearch_values) {
+				$url .= '&save_lastsearch_values=1';
+			}
 		}
 
 		$linkclose = '';
@@ -827,15 +675,57 @@ class ImmoPayment extends CommonObject
 			}
 			$linkclose .= ' title="' . dol_escape_htmltag($label, 1) . '"';
 			$linkclose .= ' class="classfortooltip' . ($morecss ? ' ' . $morecss : '') . '"';
-		} else $linkclose = ($morecss ? ' class="' . $morecss . '"' : '');
+		} else {
+			$linkclose = ($morecss ? ' class="'.$morecss.'"' : '');
+		}
 
-		$linkstart = '<a href="' . $url . '"';
-		$linkstart .= $linkclose . '>';
-		$linkend = '</a>';
+		if ($option == 'nolink') {
+			$linkstart = '<span';
+		} else {
+			$linkstart = '<a href="'.$url.'"';
+		}
+		$linkstart .= $linkclose.'>';
+		if ($option == 'nolink') {
+			$linkend = '</span>';
+		} else {
+			$linkend = '</a>';
+		}
 
 		$result .= $linkstart;
-		if ($withpicto) $result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="' . (($withpicto != 2) ? 'paddingright ' : '') . 'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
-		if ($withpicto != 2) $result .= $this->ref;
+
+		if (empty($this->showphoto_on_popup)) {
+			if ($withpicto) {
+				$result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
+			}
+		} else {
+			if ($withpicto) {
+				require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+
+				list($class, $module) = explode('@', $this->picto);
+				$upload_dir = $conf->$module->multidir_output[$conf->entity]."/$class/".dol_sanitizeFileName($this->ref);
+				$filearray = dol_dir_list($upload_dir, "files");
+				$filename = $filearray[0]['name'];
+				if (!empty($filename)) {
+					$pospoint = strpos($filearray[0]['name'], '.');
+
+					$pathtophoto = $class.'/'.$this->ref.'/thumbs/'.substr($filename, 0, $pospoint).'_mini'.substr($filename, $pospoint);
+					if (empty($conf->global->{strtoupper($module.'_'.$class).'_FORMATLISTPHOTOSASUSERS'})) {
+						$result .= '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref"><img class="photo'.$module.'" alt="No photo" border="0" src="'.DOL_URL_ROOT.'/viewimage.php?modulepart='.$module.'&entity='.$conf->entity.'&file='.urlencode($pathtophoto).'"></div></div>';
+					} else {
+						$result .= '<div class="floatleft inline-block valignmiddle divphotoref"><img class="photouserphoto userphoto" alt="No photo" border="0" src="'.DOL_URL_ROOT.'/viewimage.php?modulepart='.$module.'&entity='.$conf->entity.'&file='.urlencode($pathtophoto).'"></div>';
+					}
+
+					$result .= '</div>';
+				} else {
+					$result .= img_object(($notooltip ? '' : $label), ($this->picto ? $this->picto : 'generic'), ($notooltip ? (($withpicto != 2) ? 'class="paddingright"' : '') : 'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip ? 0 : 1);
+				}
+			}
+		}
+
+		if ($withpicto != 2) {
+			$result .= $this->ref;
+		}
+
 		$result .= $linkend;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
@@ -860,38 +750,205 @@ class ImmoPayment extends CommonObject
 	 *  @param  int		$mode          	0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto, 6=Long label + Picto
 	 *  @return string 			       	Label of status
 	 */
-	static function LibStatut($status, $mode = 0)
+	public function LibStatut($status, $mode = 0)
 	{
-		global $langs;
+		// phpcs:enable
+		if (empty($this->labelStatus) || empty($this->labelStatusShort))
+		{
+			global $langs;
+			//$langs->load("mymodule");
+			$this->labelStatus[self::STATUS_DRAFT] = $langs->trans('Draft');
+			$this->labelStatus[self::STATUS_VALIDATED] = $langs->trans('Enabled');
+			$this->labelStatus[self::STATUS_CANCELED] = $langs->trans('Disabled');
+			$this->labelStatusShort[self::STATUS_DRAFT] = $langs->trans('Draft');
+			$this->labelStatusShort[self::STATUS_VALIDATED] = $langs->trans('Enabled');
+			$this->labelStatusShort[self::STATUS_CANCELED] = $langs->trans('Disabled');
+		}
 
-		if ($mode == 0) {
-			$prefix = '';
-			if ($status == 1) return $langs->trans('Enabled');
-			if ($status == 0) return $langs->trans('Disabled');
+		$statusType = 'status'.$status;
+		if ($status == self::STATUS_VALIDATED) $statusType = 'status1';
+		if ($status == self::STATUS_CANCELED) $statusType = 'status6';
+
+		return dolGetStatus($this->labelStatus[$status], $this->labelStatusShort[$status], '', $statusType, $mode);
+	}
+
+	/**
+	 *  Returns the reference to the following non used object depending on the active numbering module.
+	 *
+	 *  @return string      		Object free reference
+	 */
+	public function getNextNumRef()
+	{
+		global $langs, $conf;
+		$langs->load("ultimateimmo@ultimateimmo");
+
+		if (empty($conf->global->ULTIMATEIMMO_ADDON_PAYMENT))
+		{
+			$conf->global->ULTIMATEIMMO_ADDON_PAYMENT = 'mod_ultimateimmo_payment';
 		}
-		if ($mode == 1) {
-			if ($status == 1) return $langs->trans('Enabled');
-			if ($status == 0) return $langs->trans('Disabled');
+
+		if (!empty($conf->global->ULTIMATEIMMO_ADDON_PAYMENT))
+		{
+			$mybool = false;
+
+			$file = $conf->global->ULTIMATEIMMO_ADDON_PAYMENT.".php";
+			$classname = $conf->global->ULTIMATEIMMO_ADDON_PAYMENT;
+
+			// Include file with class
+			$dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);
+			foreach ($dirmodels as $reldir)
+			{
+				$dir = dol_buildpath($reldir."ultimateimmo/core/modules/ultimateimmo/");
+
+				// Load file with numbering class (if found)
+				$mybool |= @include_once $dir.$file;
+			}
+
+			if ($mybool === false)
+			{
+				dol_print_error('', "Failed to include file ".$file);
+				return '';
+			}
+
+			$obj = new $classname();
+			$numref = $obj->getNextValue($this);
+
+			if ($numref != "")
+			{
+				return $numref;
+			}
+			else
+			{
+				$this->error = $obj->error;
+				//dol_print_error($this->db,get_class($this)."::getNextNumRef ".$obj->error);
+				return "";
+			}
 		}
-		if ($mode == 2) {
-			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4') . ' ' . $langs->trans('Enabled');
-			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5') . ' ' . $langs->trans('Disabled');
+		else
+		{
+			print $langs->trans("Error")." ".$langs->trans("Error_ULTIMATEIMMO_ADDON_PAYMENT_NotDefined");
+			return "";
 		}
-		if ($mode == 3) {
-			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4');
-			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5');
+	}
+
+	/**
+	 *	Validate object
+	 *
+	 *	@param		User	$user     		User making status change
+	 *  @param		int		$notrigger		1=Does not execute triggers, 0= execute triggers
+	 *	@return  	int						<=0 if OK, 0=Nothing done, >0 if KO
+	 */
+	public function validate($user, $notrigger = 0)
+	{
+		global $conf, $langs;
+
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+
+		$error = 0;
+
+		// Protection
+		if ($this->status == self::STATUS_VALIDATED) {
+			dol_syslog(get_class($this) . "::validate action abandonned: already validated", LOG_WARNING);
+			return 0;
 		}
-		if ($mode == 4) {
-			if ($status == 1) return img_picto($langs->trans('Enabled'), 'statut4') . ' ' . $langs->trans('Enabled');
-			if ($status == 0) return img_picto($langs->trans('Disabled'), 'statut5') . ' ' . $langs->trans('Disabled');
+
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->write))))
+		{
+			$this->error='ErrorPermissionDenied';
+			dol_syslog(get_class($this)."::valid ".$this->error, LOG_ERR);
+			return -1;
+		}*/
+
+		$now = dol_now();
+
+		$this->db->begin();
+
+		// Define new ref
+		if (!$error && (preg_match('/^[\(]?PROV/i', $this->ref) || empty($this->ref))) // empty should not happened, but when it occurs, the test save life
+		{
+			$num = $this->getNextNumRef();
+		} else {
+			$num = $this->ref;
 		}
-		if ($mode == 5) {
-			if ($status == 1) return $langs->trans('Enabled') . ' ' . img_picto($langs->trans('Enabled'), 'statut4');
-			if ($status == 0) return $langs->trans('Disabled') . ' ' . img_picto($langs->trans('Disabled'), 'statut5');
+		$this->newref = $num;
+
+		// Validate
+		$sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element;
+		$sql .= " SET ref = '" . $this->db->escape($num) . "',";
+		$sql .= " status = " . self::STATUS_VALIDATED . ",";
+		$sql .= " date_payment = '" . $this->db->idate($now) . "',";
+		$sql .= " fk_user_modif = " . $user->id;
+		$sql .= " WHERE rowid = " . $this->id;
+
+		dol_syslog(get_class($this) . "::validate()", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+
+		if (!$resql) {
+			dol_print_error($this->db);
+			$this->error = $this->db->lasterror();
+			$error++;
 		}
-		if ($mode == 6) {
-			if ($status == 1) return $langs->trans('Enabled') . ' ' . img_picto($langs->trans('Enabled'), 'statut4');
-			if ($status == 0) return $langs->trans('Disabled') . ' ' . img_picto($langs->trans('Disabled'), 'statut5');
+
+		// Trigger calls
+		if (!$error && !$notrigger) {
+			// Call trigger
+			//$result = $this->call_trigger('IMMORECEIPT_VALIDATE', $user);
+			if ($result < 0) {
+				$error++;
+			}
+			// End call triggers
+		}
+
+		if (!$error) {
+			$this->oldref = $this->ref;
+
+			// Rename directory if dir was a temporary ref
+			if (preg_match('/^[\(]?PROV/i', $this->ref)) {
+				// Now we rename also files into index
+				$sql = 'UPDATE ' . MAIN_DB_PREFIX . "ecm_files set filename = CONCAT('" . $this->db->escape($this->newref) . "', SUBSTR(filename, " . (strlen($this->ref) + 1) . ")), filepath = 'immopayment/" . $this->db->escape($this->newref) . "'";
+				$sql .= " WHERE filename LIKE '" . $this->db->escape($this->ref) . "%' AND filepath = 'immopayment/" . $this->db->escape($this->ref) . "' and entity = " . $conf->entity;
+				$resql = $this->db->query($sql);
+				if (!$resql) {
+					$error++;
+					$this->error = $this->db->lasterror();
+				}
+				// We rename directory ($this->ref = old ref, $num = new ref) in order not to lose the attachments
+				$oldref = dol_sanitizeFileName($this->ref);
+				$newref = dol_sanitizeFileName($num);
+				$dirsource = $conf->ultimateimmo->dir_output . '/immopayment/' . $oldref;
+				$dirdest = $conf->ultimateimmo->dir_output . '/immopayment/' . $newref;
+
+				if (!$error && file_exists($dirsource)) {
+					dol_syslog(get_class($this) . "::validate() rename dir " . $dirsource . " into " . $dirdest);
+
+					if (@rename($dirsource, $dirdest)) {
+						dol_syslog("Rename ok");
+						// Rename docs starting with $oldref with $newref
+						$listoffiles = dol_dir_list($conf->ultimateimmo->dir_output . '/immopayment/' . $newref, 'files', 1, '^' . preg_quote($oldref, '/'));
+						foreach ($listoffiles as $fileentry) {
+							$dirsource = $fileentry['name'];
+							$dirdest = preg_replace('/^' . preg_quote($oldref, '/') . '/', $newref, $dirsource);
+							$dirsource = $fileentry['path'] . '/' . $dirsource;
+							$dirdest = $fileentry['path'] . '/' . $dirdest;
+							@rename($dirsource, $dirdest);
+						}
+					}
+				}
+			}
+		}
+
+		// Set new ref and current status
+		if (!$error) {
+			$this->ref = $num;
+			$this->status = self::STATUS_VALIDATED;
+		}
+
+		if (!$error) {
+			$this->db->commit();
+			return 1;
+		} else {
+			$this->db->rollback();
+			return -1;
 		}
 	}
 
@@ -1035,7 +1092,7 @@ class ImmoPayment extends CommonObject
 			return 0;
 		}
 	}
-
+	
 	/**
 	 *  Change the payments methods
 	 *
@@ -1077,6 +1134,7 @@ class ImmoPayment extends CommonObject
 			return -2;
 		}
 	}
+
 
 
 	/**
@@ -1133,6 +1191,29 @@ class ImmoPayment extends CommonObject
 		}
 	}
 
+	/**
+	 * 	Create an array of payment lines
+	 *
+	 * 	@return int		>0 if OK, <0 if KO
+	 */
+	public function getLinesArray()
+	{
+		$this->lines = array();
+
+		$objectline = new ImmoPaymentLine($this->db);
+		$result = $objectline->fetchAll('ASC', 'position', 0, 0, array('customsql'=>'fk_immopayment = '.$this->id));
+
+		if (is_numeric($result))
+		{
+			$this->error = $this->error;
+			$this->errors = $this->errors;
+			return $result;
+		} else {
+			$this->lines = $result;
+			return $this->lines;
+		}
+	}
+
 
 	/**
 	 * Action executed by scheduler
@@ -1168,7 +1249,7 @@ class ImmoPayment extends CommonObject
 	 *  Create an intervention document on disk using template defined into PROJECT_ADDON_PDF
 	 *
 	 *  @param	string		$modele			Force template to use ('' by default)
-	 *  @param	Translate	$outputlangs	Objet lang to use for translation
+	 *  @param	Translate	$outputlangs	Object lang to use for translation
 	 *  @param  int			$hidedetails    Hide details of lines
 	 *  @param  int			$hidedesc       Hide description
 	 *  @param  int			$hideref        Hide ref
@@ -1180,10 +1261,14 @@ class ImmoPayment extends CommonObject
 
 		$langs->load("ultimateimmo@ultimateimmo");
 
-		if (empty($modele)) {
-			$this->error='PDFModelMissing';
-			$this->errors[]='PDFModelMissing';
-			return -1;
+		if (!dol_strlen($modele)) {
+			$modele = 'quittance';
+
+			if ($this->model_pdf) {
+				$modele = $this->model_pdf;
+			} elseif (!empty($conf->global->ULTIMATEIMMO_ADDON_PDF)) {
+				$modele = $conf->global->ULTIMATEIMMO_ADDON_PDF;
+			}
 		}
 
 		$modelpath = "/ultimateimmo/core/modules/ultimateimmo/doc/";
@@ -1192,52 +1277,52 @@ class ImmoPayment extends CommonObject
 	}
 }
 
-	/**
-	 * Load object lines in memory from the database
-	 *
-	 * @return int         <0 if KO, 0 if not found, >0 if OK
-	 */
+/**
+ * Load object lines in memory from the database
+ *
+ * @return int         <0 if KO, 0 if not found, >0 if OK
+ */
 
-	class ImmoPaymentLine
-	{
-		/**
-		 * @var int rowID
-		 */
-		public $rowid;
-		/**
-		 * @var int fk_rent
-		 */
-		public $fk_rent;
-		/**
-		 * @var int fk_property
-		 */
-		public $fk_property;
-		/**
-		 * @var int fk_renter
-		 */
-		public $fk_renter;
-		/**
-		 * @var int amount
-		 */
-		public $amount;
-		/**
-		 * @var int fk_mode_reglement
-		 */
-		public $fk_mode_reglement;
-		/**
-		 * @var int note_public
-		 */
-		public $note_public;
-		/**
-		 * @var int date_payment
-		 */
-		public $date_payment = '';
-		/**
-		 * @var int fk_owner
-		 */
-		public $fk_owner;
-		/**
-		 * @var int fk_receipt
-		 */
-		public $fk_receipt;
-	}
+class ImmoPaymentLine
+{
+	/**
+	 * @var int rowID
+	 */
+	public $rowid;
+	/**
+	 * @var int fk_rent
+	 */
+	public $fk_rent;
+	/**
+	 * @var int fk_property
+	 */
+	public $fk_property;
+	/**
+	 * @var int fk_renter
+	 */
+	public $fk_renter;
+	/**
+	 * @var int amount
+	 */
+	public $amount;
+	/**
+	 * @var int fk_mode_reglement
+	 */
+	public $fk_mode_reglement;
+	/**
+	 * @var int note_public
+	 */
+	public $note_public;
+	/**
+	 * @var int date_payment
+	 */
+	public $date_payment = '';
+	/**
+	 * @var int fk_owner
+	 */
+	public $fk_owner;
+	/**
+	 * @var int fk_receipt
+	 */
+	public $fk_receipt;
+}

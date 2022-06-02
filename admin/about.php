@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2004-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018 Philippe GRAND <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2021 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,69 +23,68 @@
  */
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
 // Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+    $i--;
+    $j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
 // Try main.inc.php using relative path
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
+if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
+if (!$res) die("Include of main fails");
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
-require_once '../lib/ultimateimmo.lib.php';
+dol_include_once("ultimateimmo/lib/ultimateimmo.lib.php");
+dol_include_once("ultimateimmo/lib/vendor/autoload.php");
+
+// Get Markdown class
+use Michelf\Markdown;
 
 // Translations
-$langs->load("errors");
-$langs->load("admin");
-$langs->load("ultimateimmo@ultimateimmo");
+$langs->loadLangs(array("admin", "ultimateimmo@ultimateimmo"));
 
 // Access control
 if (! $user->admin) {
 	accessforbidden();
 }
 
-// Parameters
-$action = GETPOST('action', 'alpha');
-$backtopage = GETPOST('backtopage', 'alpha');
-
-
-/*
- * Actions
- */
-
-// None
-
-
 /*
  * View
  */
 
-$form = new Form($db);
-
-$page_name = "UltimateimmoAbout";
-llxHeader('', $langs->trans($page_name));
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+llxHeader('', $langs->trans("UltimateimmoAbout"), $wikihelp);
 
 // Subheader
-$linkback = '<a href="'.($backtopage?$backtopage:DOL_URL_ROOT.'/admin/modules.php').'">'.$langs->trans("BackToModuleList").'</a>';
+$linkback='<a href="'.DOL_URL_ROOT.'/admin/modules.php">'.$langs->trans("BackToModuleList").'</a>';
 
-print load_fiche_titre($langs->trans($page_name), $linkback, 'object_ultimateimmo@ultimateimmo');
+print load_fiche_titre($langs->trans("UltimateimmoAbout"), $linkback, 'object_ultimateimmo@ultimateimmo');
 
 // Configuration header
 $head = ultimateimmoAdminPrepareHead();
-dol_fiche_head($head, 'about', '', 0, 'ultimateimmo@ultimateimmo');
+print dol_get_fiche_head($head, 'about', '', 0, 'ultimateimmo@ultimateimmo');
 
-dol_include_once('/ultimateimmo/core/modules/modUltimateimmo.class.php');
-$tmpmodule = new modUltimateimmo($db);
-print $tmpmodule->getDescLong();
+// About page goes here
+if ($user->conf->MAIN_LANG_DEFAULT == 'fr_FR') {
+    $buffer = file_get_contents(dol_buildpath('/ultimateimmo/README-FR.md', 0));
+} else {
+    $buffer = file_get_contents(dol_buildpath('/ultimateimmo/README.md', 0));
+}
+print Markdown::defaultTransform($buffer);
 
-// Page end
-dol_fiche_end();
+print dol_get_fiche_end();
+
+// Footer
 llxFooter();
+// Close database handler
 $db->close();

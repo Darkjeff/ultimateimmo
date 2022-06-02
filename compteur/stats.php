@@ -2,7 +2,7 @@
 /* Copyright (C) 2001-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2018-2019 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	    <philippe.grand@atoo-net.com>
  * Copyright (C) 2020      Thomas OURSEL         <contact@ogest.fr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -69,11 +69,11 @@ $form = new Form($db);
 
 $optioncss  = GETPOST('optioncss', 'aZ'); // Option for the css output (always '' except when 'print')
 
-$search=array();
+$search = array();
 if (GETPOSTISSET('search_fk_immoproperty') && GETPOST('search_fk_immoproperty', 'int') != -1) {
 	$search['fk_immoproperty'] = GETPOST('search_fk_immoproperty', 'int');
 } else {
-	$search['fk_immoproperty']=0;
+	$search['fk_immoproperty'] = 0;
 }
 
 /*
@@ -90,7 +90,6 @@ print '<input type="hidden" name="token" value="'.newToken().'">';
 print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 print '<input type="hidden" name="action" value="list">';
 
-
 print '<table class="tagtable nobottomiftotal liste">'."\n";
 
 
@@ -98,12 +97,12 @@ $sql = 'SELECT ';
 $sql .= $object->getFieldList('t');
 $sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 if (!empty($search['fk_immoproperty'])) {
-	$sql .=" WHERE fk_immoproperty=".(int) $search['fk_immoproperty'];
+	$sql .= " WHERE fk_immoproperty=" . (int) $search['fk_immoproperty'];
 }
 $sql .= $db->order('t.fk_immoproperty,date_relever');
 
 //$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON t.fk_immoproperty = ip.rowid";
-$result_data=array();
+$result_data = array();
 
 $resql = $db->query($sql);
 if ($resql) {
@@ -147,7 +146,7 @@ print '<td class="left">' . $langs->trans("Consommation mensuel") . '</td>';
 print '<td class="left">' . $langs->trans("Consommation annuel") . '</td>';
 print '<td class="left">' . $langs->trans("Year") . '</td>';
 print '<tr class="oddeven">';
-$i=0;
+$i = 0;
 foreach ($result_data as $obj) {
 	$result = $properties->fetch($obj->fk_immoproperty);
 	if ($result < 0) {
@@ -157,43 +156,43 @@ foreach ($result_data as $obj) {
 	print '<td class="left">' . dol_print_date($obj->date_relever) . '</td>';
 	print '<td class="left">' . $obj->qty . '</td>';
 	print '<td class="left">';
-	if (array_key_exists($i+1, $result_data) && $result_data[$i+1]->fk_immoproperty==$obj->fk_immoproperty) {
-		$day_diff = num_between_day($db->jdate($obj->date_relever), $db->jdate($result_data[$i+1]->date_relever));
+	if (array_key_exists($i + 1, $result_data) && $result_data[$i + 1]->fk_immoproperty == $obj->fk_immoproperty) {
+		$day_diff = num_between_day($db->jdate($obj->date_relever), $db->jdate($result_data[$i + 1]->date_relever));
 		print $day_diff;
 	} else {
-		$day_diff=1;
+		$day_diff = 1;
 	}
 	print '</td>';
 
 	//Consommation
 	print '<td class="left">';
-	if (array_key_exists($i+1, $result_data) && $result_data[$i+1]->fk_immoproperty==$obj->fk_immoproperty) {
-		$rel_diff = $result_data[$i+1]->qty-$obj->qty;
+	if (array_key_exists($i + 1, $result_data) && $result_data[$i + 1]->fk_immoproperty == $obj->fk_immoproperty) {
+		$rel_diff = $result_data[$i + 1]->qty - $obj->qty;
 		print $rel_diff;
 	} else {
-		$rel_diff=0;
+		$rel_diff = 0;
 	}
 	print '</td>';
 
 	//Consommation jour
 	print '<td class="left">';
-	$conso_jour=0;
+	$conso_jour = 0;
 	if (empty($day_diff)) {
 		$day_diff = 1;
 	}
-	$conso_jour=$rel_diff/$day_diff;
+	$conso_jour = $rel_diff / $day_diff;
 	print price($conso_jour);
 	print '</td>';
 
 	//Consommation mois
 	print '<td class="left">';
-	$conso_mois=$conso_jour*30;
+	$conso_mois = $conso_jour * 30;
 	print price($conso_mois);
 	print '</td>';
 
 	//Consommation annuel
 	print '<td class="left">';
-	$conso_year=$conso_jour*365;
+	$conso_year = $conso_jour * 365;
 	print price($conso_year);
 	print '</td>';
 

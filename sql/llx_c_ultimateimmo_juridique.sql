@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2019  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2021  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -- ========================================================================
 CREATE TABLE IF NOT EXISTS  llx_c_ultimateimmo_juridique  (
    rowid integer NOT NULL  AUTO_INCREMENT PRIMARY KEY,
-   code	varchar(20) NOT NULL,
+   code	varchar(50) NOT NULL, 
    entity integer DEFAULT 1 NOT NULL,
    label varchar(200) NOT NULL DEFAULT '',
    active tinyint(4) DEFAULT 1 NOT NULL

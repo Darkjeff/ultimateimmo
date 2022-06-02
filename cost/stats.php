@@ -2,7 +2,7 @@
 /* Copyright (C) 2001-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2018-2019 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	    <philippe.grand@atoo-net.com>
  * Copyright (C) 2020      Thomas OURSEL         <contact@ogest.fr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -55,8 +55,9 @@ if (!$res && file_exists("../../../main.inc.php")) {
 if (!$res) {
 	die("Include of main fails");
 }
+
 // Class
-require_once DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php";
+require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "bills"));
@@ -79,12 +80,12 @@ if (empty($type_stats)) {
 /*
  * View
  */
-llxHeader('', 'Immobilier - charge par mois');
+llxHeader ( '', 'Immobilier - charge par mois' );
 
 $textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?type_stats='.$type_stats.'&year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
 $textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?type_stats='.$type_stats.'&year=' . ($year_current + 1) . '">' . img_next() . '</a>';
 
-print load_fiche_titre("Charges $textprevyear " . $langs->trans("Year") . " $year_start $textnextyear");
+print load_fiche_titre ( "Charges $textprevyear " . $langs->trans ( "Year" ) . " $year_start $textnextyear" );
 
 print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
@@ -114,6 +115,7 @@ if ($type_stats=='cost_type') {
 } elseif ($type_stats=='fourn_type') {
 	$fields = "soc.nom";
 }
+
 $sql = 'SELECT '.$fields.' AS label , ib.label AS nom_immeuble';
 foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
@@ -181,7 +183,6 @@ if ($type_stats=='cost_type') {
 $sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 
-
 $resql = $db->query($sql);
 if ($resql) {
 	$i = 0;
@@ -205,6 +206,7 @@ if ($resql) {
 } else {
 	print $db->lasterror(); // affiche la derniere erreur sql
 }
+
 //Total Ligne
 print '<tr class="oddeven"><td>' . $langs->trans('Moyenne') . '</td>';
 print '<td align="right"></td>';

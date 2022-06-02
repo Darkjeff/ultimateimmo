@@ -1,101 +1,46 @@
-# 
-ULTIMATEIMMO FOR <a href="https://www.dolibarr.org">DOLIBARR ERP CRM</a>
+# ULTIMATEIMMO VERSION 15
 
-## Features
-Description...
+[![GitHub release](https://img.shields.io/badge/Ultimateimmo-v15.0-red?logo=gitlab)](https://atoo-net.com/en/home/90-ultimateimmo-140.html)
+[![Version Dolibarr](https://img.shields.io/badge/Dolibarr-v15.0+-blue?logo=github)](https://github.com/Dolibarr/dolibarr)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg?style=flat-square)](https://php.net/)
 
-<!--
-![Screenshot ultimateimmo](img/screenshot_ultimateimmo.png?raw=true "Ultimateimmo"){imgmd}
--->
+Ultimateimmo is a real estate management module
 
-Other modules are available on <a href="https://www.dolistore.com" target="_new">Dolistore.com</a>.
+This module requires a version of *Dolibarr >= 15.0.0*
 
+Thank you for your contribution
 
+## INSTALL ULTIMATEIMMO
 
-### Translations
+[![wiki](https://img.shields.io/badge/Ultimateimmo-wiki-red?logo=gitlab)](https://wiki.dolibarr.org/index.php?title=Module_Ultimateimmo_EN)
 
-Translations can be define manually by editing files into directories [langs](langs). 
+Online training on the Ultimateimmo module: installation, configuration, tips and tricks.
 
-<!--
-This module contains also a sample configuration for Transifex, under the hidden directory [.tx](.tx), so it is possible to manage translation using this service. 
+## LICENSE
 
-For more informations, see the [translator's documentation](https://wiki.dolibarr.org/index.php/Translator_documentation).
+[![License](https://img.shields.io/badge/Gpl-V3+-red?logo=GNU)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
-There is a [Transifex project](https://transifex.com/projects/p/dolibarr-module-template) for this module.
--->
+Ultimateimmo is distributed under the terms of the GNU General Public License v3 + or higher.
 
+## OTHER LICENSE
 
-<!--
+[![License](https://img.shields.io/badge/License-Lib%20Copyright-blue?logo=FreeBSD)](https://github.com/michelf/php-markdown)
 
-Install
--------
+Uses Michel Fortin's PHP Markdown Licensed under BSD to display this README.
 
-### From the ZIP file and GUI interface
+## CONTACT
 
-- If you get the module in a zip file (like when downloading it from the market place [Dolistore](https://www.dolistore.com)), go into
-menu ```Home - Setup - Modules - Deploy external module``` and upload the zip file.
+[![License](https://img.shields.io/badge/Email-contact@atoo--net.com-red?logo=Gmail)](mailto:contact@atoo-net.com)
+[![License](https://img.shields.io/badge/Contributor-aka:grandoc-blue?logo=Github)](https://github.com/grandoc)
 
+This module is developed by <philippe.grand@atoo-net.com>
 
-Note: If this screen tell you there is no custom directory, check your setup is correct: 
+## TRADUCTIONS
 
-- In your Dolibarr installation directory, edit the ```htdocs/conf/conf.php``` file and check that following lines are not commented:
+[![License](https://img.shields.io/badge/Translation-Transifex-blue?logo=Git%20Extensions)](https://www.transifex.com/atoo-net/ultimateimmo/dashboard)
 
-    ```php
-    //$dolibarr_main_url_root_alt ...
-    //$dolibarr_main_document_root_alt ...
-    ```
+You can participate to a better translation of your language on [Transifex](https://www.transifex.com/atoo-net/ultimateimmo/dashboard)
 
-- Uncomment them if necessary (delete the leading ```//```) and assign a sensible value according to your Dolibarr installation
+## MORE MODULES
 
-    For example :
-
-    - UNIX:
-        ```php
-        $dolibarr_main_url_root_alt = '/custom';
-        $dolibarr_main_document_root_alt = '/var/www/Dolibarr/htdocs/custom';
-        ```
-
-    - Windows:
-        ```php
-        $dolibarr_main_url_root_alt = '/custom';
-        $dolibarr_main_document_root_alt = 'C:/My Web Sites/Dolibarr/htdocs/custom';
-        ```
-        
-### From a GIT repository
-
-- Clone the repository in ```$dolibarr_main_document_root_alt/ultimateimmo```
-
-```sh
-cd ....../custom
-git clone git@github.com:gitlogin/ultimateimmo.git ultimateimmo
-```
-
-### <a name="final_steps"></a>Final steps
-
-From your browser:
-
-  - Log into Dolibarr as a super-administrator
-  - Go to "Setup" -> "Modules"
-  - You should now be able to find and enable the module
-
-
-
--->
-
-
-Licenses
---------
-
-### Main code
-
-![GPLv3 logo](img/gplv3.png)
-
-GPLv3 or (at your option) any later version.
-
-See [COPYING](COPYING) for more information.
-
-#### Documentation
-
-All texts and readmes.
-
-![GFDL logo](img/gfdl.png)
+[![Dolistore](https://www.dolistore.com/img/dolistore-logo-1587392517.jpg?width=390&button=true)](https://www.dolistore.com/en/search?orderby=position&orderway=desc&search_query=atoo)

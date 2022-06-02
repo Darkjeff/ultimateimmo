@@ -15,7 +15,7 @@
 -- along with this program.  If not, see http://www.gnu.org/licenses/.
 
 
-CREATE TABLE llx_ultimateimmo_immorenter(
+CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immorenter(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	ref varchar(128) NOT NULL, 
@@ -23,6 +23,7 @@ CREATE TABLE llx_ultimateimmo_immorenter(
 	fk_rent integer,
 	fk_owner integer,
 	fk_soc integer,
+	morphy varchar(3) NOT NULL,
 	societe varchar(128),	
 	note_public text, 
 	note_private text, 
@@ -32,9 +33,11 @@ CREATE TABLE llx_ultimateimmo_immorenter(
 	email varchar(255),
 	photo varchar(255), 
 	birth date,
-	country_id integer,
-    town varchar(255),
-    phone varchar(30),
+	address varchar(255),
+	zip varchar(32), 
+	town varchar(255),
+	country_id integer,	
+	phone varchar(30), 
 	phone_mobile varchar(30),  	
 	date_creation datetime NOT NULL, 
 	tms timestamp NOT NULL default CURRENT_TIMESTAMP, 
