@@ -205,7 +205,7 @@ if ($action == 'create') {
 
 			// civility
 			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');
-			//var_dump($object->civility_id);exit;	
+			//var_dump($object->civility_id);exit;
 		} elseif ($val['label'] == 'Country') {
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
@@ -286,7 +286,7 @@ if (($id || $ref) && $action == 'edit') {
 				$object->civility_code = $tmparray['code'];
 				$object->civility = $tmparray['label'];
 			}
-			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id);	
+			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id);
 		} elseif ($val['label'] == 'Country') {
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
@@ -379,7 +379,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$res = $soc->fetch($socid);
 
 	$morehtmlref = '<div class="refidno">';
-	
+
 	// Thirdparty
 	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . (is_object($object->thirdparty) ? $object->thirdparty->getNomUrl(1) : '');
 	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?socid=' . $object->thirdparty->id . '&search_fk_soc=' . urlencode($object->thirdparty->id) . '">' . $langs->trans("OtherProperties") . '</a>)';
@@ -414,7 +414,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 		}
 	}
-	
+
 	$morehtmlref .= '</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
@@ -457,9 +457,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($val['type'] == 'text') print ' wordbreak';
 		print '">';
 		print '<td>';
-		
+
 		if ($val['label'] == 'Civility') {
-			// We set civility_id, civility_code and civility for the selected civility	
+			// We set civility_id, civility_code and civility for the selected civility
 			if ($object->civility_id) {
 				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
 				$object->civility_code = $tmparray['code'];
@@ -633,7 +633,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<a name="builddoc"></a>'; // ancre
 
 		// Documents
-		$relativepath = '/owner/' . dol_sanitizeFileName($object->ref) . '/';
+		$relativepath = '/owner/' . dol_sanitizeFileName($object->ref);
 		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
 		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content

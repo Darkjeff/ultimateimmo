@@ -1376,7 +1376,7 @@ if ($action == 'createall') {
 		// Documents generes
 		$objref = dol_sanitizeFileName($object->ref);
 		$relativepath = $objref.'/'.$objref.'.pdf';
-		$filedir = $conf->ultimateimmo->dir_output.'/'.'receipt'.'/'.$objref;
+		$filedir = $conf->ultimateimmo->dir_output.'/receipt'.'/'.$objref;
 		$urlsource = $_SERVER["PHP_SELF"]."?id=".$object->id;
 		$genallowed = $permissiontoread; // If you can read, you can build the PDF to read content
 		$delallowed = $permissiontodelete; // If you can create/edit, you can remove a file on card

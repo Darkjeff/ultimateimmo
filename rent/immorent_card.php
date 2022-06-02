@@ -595,7 +595,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<a name="builddoc"></a>'; // ancre
 
 		// Documents
-		$relativepath = '/rent/' . dol_sanitizeFileName($object->ref).'/';
+		$relativepath = '/rent/' . dol_sanitizeFileName($object->ref);
 		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
 		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
