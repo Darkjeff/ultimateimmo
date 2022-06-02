@@ -511,7 +511,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<a name="builddoc"></a>'; // ancre
 
 	    // Documents
-	    $relativepath = '/cost/' . dol_sanitizeFileName($object->ref).'/';
+	    $relativepath = '/cost/' . dol_sanitizeFileName($object->ref);
 	    $filedir = $conf->ultimateimmo->dir_output . $relativepath;
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 	    $genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
@@ -545,7 +545,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Presend form
 	$modelmail = 'immocost';
 	$defaulttopic = 'InformationMessage';
-	$diroutput = $conf->ultimateimmo->dir_output . '/cost';
+	$diroutput = $conf->ultimateimmo->dir_output . '/cost/';
 	$trackid = 'immo' . $object->id;
 
 	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';

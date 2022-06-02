@@ -430,7 +430,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$res = $soc->fetch($socid);*/
 
 	$morehtmlref = '<div class="refidno">';
-	//var_dump($object);exit;
+
 	// Thirdparty
 	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . is_object($object->fk_soc) ? $object->getNomUrl(0) : '';
 	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?socid=' . $object->id . '&search_fk_soc=' . urlencode($object->id) . '">' . $langs->trans("OtherProperties") . '</a>)';
@@ -683,7 +683,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		// Documents
 		if ($includedocgeneration) {
-			$relativepath = '/owner/' . dol_sanitizeFileName($object->ref) . '/';
+			$relativepath = '/owner/' . dol_sanitizeFileName($object->ref);
 			$filedir = $conf->ultimateimmo->dir_output . $relativepath;
 			$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 			$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
