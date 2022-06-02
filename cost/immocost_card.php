@@ -101,6 +101,8 @@ $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
 // Load object
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
+$upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1].'/cost';
+
 $arrayfields = array();
 
 $permissiontoadd = $user->rights->ultimateimmo->write;
@@ -543,7 +545,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Presend form
 	$modelmail = 'immocost';
 	$defaulttopic = 'InformationMessage';
-	$diroutput = $conf->product->dir_output . '/cost';
+	$diroutput = $conf->ultimateimmo->dir_output . '/cost';
 	$trackid = 'immo' . $object->id;
 
 	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';
