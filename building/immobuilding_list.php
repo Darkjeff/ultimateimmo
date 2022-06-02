@@ -17,7 +17,7 @@
  */
 
 /**
- *   	\file       immobuilding_list.php
+ *   	\file       ultimateimmo/building/immobuilding_list.php
  *		\ingroup    ultimateimmo
  *		\brief      List page for immobuilding
  */
@@ -42,6 +42,7 @@
 //if (! defined("FORCECSP"))                 define('FORCECSP', 'none');				// Disable all Content Security Policies
 //if (! defined('CSRFCHECK_WITH_TOKEN'))     define('CSRFCHECK_WITH_TOKEN', '1');		// Force use of CSRF protection with tokens even for GET
 //if (! defined('NOBROWSERNOTIF'))     		 define('NOBROWSERNOTIF', '1');				// Disable browser notification
+//if (! defined('NOSESSION'))                define('NOSESSION', '1');					// On CLI mode, no need to use web sessions
 
 // Load Dolibarr environment
 $res = 0;
@@ -134,7 +135,7 @@ if (!$sortorder) {
 }
 
 // Initialize array of search criterias
-$search_all = GETPOST('search_all', 'alphanohtml') ? GETPOST('search_all', 'alphanohtml') : GETPOST('sall', 'alphanohtml');
+$search_all = GETPOST('search_all', 'alphanohtml');
 $search = array();
 foreach ($object->fields as $key => $val) {
 	if (GETPOST('search_'.$key, 'alpha') !== '') {
@@ -170,22 +171,22 @@ foreach ($object->fields as $key => $val) {
 	}
 }
 // Extra fields
-if (file_exists(DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_array_fields.tpl.php')) {
-	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_array_fields.tpl.php';
-} else {
-	dol_include_once('/ultimateimmo/core/tpl/extrafields_list_array_fields.tpl.php');
-}
+include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_array_fields.tpl.php';
 
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
 
-$permissiontoread = $user->rights->ultimateimmo->immobuilding->read;
-$permissiontoadd = $user->rights->ultimateimmo->immobuilding->write;
-$permissiontodelete = $user->rights->ultimateimmo->immobuilding->delete;
-
-// Security check
-if (empty($conf->ultimateimmo->enabled)) {
-	accessforbidden('Module not enabled');
+// There is several ways to check permission.
+// Set $enablepermissioncheck to 1 to enable a minimum low level of checks
+$enablepermissioncheck = 0;
+if ($enablepermissioncheck) {
+	$permissiontoread = $user->rights->ultimateimmo->immobuilding->read;
+	$permissiontoadd = $user->rights->ultimateimmo->immobuilding->write;
+	$permissiontodelete = $user->rights->ultimateimmo->immobuilding->delete;
+} else {
+	$permissiontoread = 1;
+	$permissiontoadd = 1;
+	$permissiontodelete = 1;
 }
 
 // Security check (enable the most restrictive one)
@@ -194,8 +195,8 @@ if ($user->socid > 0) accessforbidden();
 //$socid = 0; if ($user->socid > 0) $socid = $user->socid;
 //$isdraft = (($object->status == $object::STATUS_DRAFT) ? 1 : 0);
 //restrictedArea($user, $object->element, $object->id, $object->table_element, '', 'fk_soc', 'rowid', $isdraft);
-//if (empty($conf->ultimateimmo->enabled)) accessforbidden();
-//if (!$permissiontoread) accessforbidden();
+if (empty($conf->ultimateimmo->enabled)) accessforbidden('Moule not enabled');
+if (!$permissiontoread) accessforbidden();
 
 
 
@@ -239,8 +240,8 @@ if (empty($reshook)) {
 	}
 
 	// Mass actions
-	$objectclass = 'ImmoBuilding';
-	$objectlabel = 'ImmoBuilding';
+	$objectclass = 'immobuilding';
+	$objectlabel = 'immobuilding';
 	$uploaddir = $conf->ultimateimmo->dir_output;
 	include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
 }
@@ -255,9 +256,9 @@ $form = new Form($db);
 
 $now = dol_now();
 
-//$help_url="EN:Module_ImmoBuilding|FR:Module_ImmoBuilding_FR|ES:Módulo_ImmoBuilding";
+//$help_url="EN:Module_immobuilding|FR:Module_immobuilding_FR|ES:Módulo_immobuilding";
 $help_url = '';
-$title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("ImmoBuildings"));
+$title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("immobuildings"));
 $morejs = array();
 $morecss = array();
 
@@ -265,23 +266,11 @@ $morecss = array();
 // Build and execute select
 // --------------------------------------------------------------------
 $sql = 'SELECT ';
-
-if (method_exists($object, 'getFieldList'))
-{
-	$reflection = new ReflectionMethod($object, 'getFieldList');
-	if ($reflection->isPublic()) {
-		$sql .= $object->getFieldList('t');
-	} else {
-		foreach($object->fields as $key => $val)
-		{
-			$sql.='t.'.$key.', ';
-		}
-	}
-}
+$sql .= $object->getFieldList('t');
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
 	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
-		$sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? ", ef.".$key.' as options_'.$key.', ' : '');
+		$sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? ", ef.".$key." as options_".$key : '');
 	}
 }
 // Add fields from hooks
@@ -345,7 +334,7 @@ $sql .= $hookmanager->resPrint;
 /* If a group by is required
 $sql .= " GROUP BY ";
 foreach($object->fields as $key => $val) {
-	$sql .= 't.'.$key.', ';
+	$sql .= "t.".$key.", ";
 }
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
@@ -360,34 +349,51 @@ $sql .= $hookmanager->resPrint;
 $sql = preg_replace('/,\s*$/', '', $sql);
 */
 
-$sql .= $db->order($sortfield, $sortorder);
+// Add HAVING from hooks
+/*
+$parameters = array();
+$reshook = $hookmanager->executeHooks('printFieldListHaving', $parameters, $object); // Note that $action and $object may have been modified by hook
+$sql .= empty($hookmanager->resPrint) ? "" : " HAVING 1=1 ".$hookmanager->resPrint;
+*/
 
 // Count total nb of records
 $nbtotalofrecords = '';
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
+	/* This old and fast method to get and count full list returns all record so use a high amount of memory.
 	$resql = $db->query($sql);
 	$nbtotalofrecords = $db->num_rows($resql);
+	*/
+	/* The slow method does not consume memory on mysql (not tested on pgsql) */
+	/*$resql = $db->query($sql, 0, 'auto', 1);
+	while ($db->fetch_object($resql)) {
+		$nbtotalofrecords++;
+	}*/
+	/* The fast and low memory method to get and count full list converts the sql into a sql count */
+	$sqlforcount = preg_replace('/^SELECT[a-z0-9\._\s\(\),]+FROM/i', 'SELECT COUNT(*) as nbtotalofrecords FROM', $sql);
+	$resql = $db->query($sqlforcount);
+	$objforcount = $db->fetch_object($resql);
+	$nbtotalofrecords = $objforcount->nbtotalofrecords;
 	if (($page * $limit) > $nbtotalofrecords) {	// if total of record found is smaller than page * limit, goto and load page 0
 		$page = 0;
 		$offset = 0;
 	}
+	$db->free($resql);
 }
-// if total of record found is smaller than limit, no need to do paging and to restart another select with limits set.
-if (is_numeric($nbtotalofrecords) && ($limit > $nbtotalofrecords || empty($limit))) {
-	$num = $nbtotalofrecords;
-} else {
-	if ($limit) {
-		$sql .= $db->plimit($limit + 1, $offset);
-	}
 
-	$resql = $db->query($sql);
-	if (!$resql) {
-		dol_print_error($db);
-		exit;
-	}
-
-	$num = $db->num_rows($resql);
+// Complete request and execute it with limit
+$sql .= $db->order($sortfield, $sortorder);
+if ($limit) {
+	$sql .= $db->plimit($limit + 1, $offset);
 }
+
+$resql = $db->query($sql);
+if (!$resql) {
+	dol_print_error($db);
+	exit;
+}
+
+$num = $db->num_rows($resql);
+
 
 // Direct jump if only one record found
 if ($num == 1 && !empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $search_all && !$page) {
@@ -404,7 +410,7 @@ if ($num == 1 && !empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $
 llxHeader('', $title, $help_url, '', 0, 0, $morejs, $morecss, '', '');
 
 // Example : Adding jquery code
-// print '<script type="text/javascript" language="javascript">
+// print '<script type="text/javascript">
 // jQuery(document).ready(function() {
 // 	function init_myfunc()
 // 	{
@@ -430,9 +436,11 @@ if ($limit > 0 && $limit != $conf->liste_limit) {
 foreach ($search as $key => $val) {
 	if (is_array($search[$key]) && count($search[$key])) {
 		foreach ($search[$key] as $skey) {
-			$param .= '&search_'.$key.'[]='.urlencode($skey);
+			if ($skey != '') {
+				$param .= '&search_'.$key.'[]='.urlencode($skey);
+			}
 		}
-	} else {
+	} elseif ($search[$key] != '') {
 		$param .= '&search_'.$key.'='.urlencode($search[$key]);
 	}
 }
@@ -478,17 +486,20 @@ $newcardbutton = dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle'
 print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'object_'.$object->picto, 0, $newcardbutton, '', $limit, 0, 0, 1);
 
 // Add code for pre mass action (confirmation or email presend form)
-$topicmail = "SendImmoBuildingRef";
+$topicmail = "SendimmobuildingRef";
 $modelmail = "immobuilding";
-$objecttmp = new ImmoBuilding($db);
+$objecttmp = new immobuilding($db);
 $trackid = 'xxxx'.$object->id;
 include DOL_DOCUMENT_ROOT.'/core/tpl/massactions_pre.tpl.php';
 
 if ($search_all) {
+	$setupstring = '';
 	foreach ($fieldstosearchall as $key => $val) {
 		$fieldstosearchall[$key] = $langs->trans($val);
+		$setupstring .= $key."=".$val.";";
 	}
-	print '<div class="divsearchfieldfilter">'.$langs->trans("FilterOnInto", $search_all).join(', ', $fieldstosearchall).'</div>';
+	print '<!-- Search done like if PRODUCT_QUICKSEARCH_ON_FIELDS = '.$setupstring.' -->'."\n";
+	print '<div class="divsearchfieldfilter">'.$langs->trans("FilterOnInto", $search_all).join(', ', $fieldstosearchall).'</div>'."\n";
 }
 
 $moreforfilter = '';
@@ -538,8 +549,6 @@ foreach ($object->fields as $key => $val) {
 			print $form->selectarray('search_'.$key, $val['arrayofkeyval'], (isset($search[$key]) ? $search[$key] : ''), $val['notnull'], 0, 0, '', 1, 0, 0, '', 'maxwidth100', 1);
 		} elseif ((strpos($val['type'], 'integer:') === 0) || (strpos($val['type'], 'sellist:') === 0)) {
 			print $object->showInputField($val, $key, (isset($search[$key]) ? $search[$key] : ''), '', '', 'search_', 'maxwidth125', 1);
-		} elseif (!preg_match('/^(date|timestamp|datetime)/', $val['type'])) {
-			print '<input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag(isset($search[$key]) ? $search[$key] : '').'">';
 		} elseif (preg_match('/^(date|timestamp|datetime)/', $val['type'])) {
 			print '<div class="nowrap">';
 			print $form->selectDate($search[$key.'_dtstart'] ? $search[$key.'_dtstart'] : '', "search_".$key."_dtstart", 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('From'));
@@ -547,6 +556,12 @@ foreach ($object->fields as $key => $val) {
 			print '<div class="nowrap">';
 			print $form->selectDate($search[$key.'_dtend'] ? $search[$key.'_dtend'] : '', "search_".$key."_dtend", 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('to'));
 			print '</div>';
+		} elseif ($key == 'lang') {
+			require_once DOL_DOCUMENT_ROOT.'/core/class/html.formadmin.class.php';
+			$formadmin = new FormAdmin($db);
+			print $formadmin->select_language($search[$key], 'search_lang', 0, null, 1, 0, 0, 'minwidth150 maxwidth200', 2);
+		} else {
+			print '<input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag(isset($search[$key]) ? $search[$key] : '').'">';
 		}
 		print '</td>';
 	}
@@ -654,7 +669,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 			if (!$i) {
 				$totalarray['nbfield']++;
 			}
-			if (!empty($val['isameasure'])) {
+			if (!empty($val['isameasure']) && $val['isameasure'] == 1) {
 				if (!$i) {
 					$totalarray['pos'][$totalarray['nbfield']] = 't.'.$key;
 				}
@@ -704,7 +719,7 @@ if ($num == 0) {
 			$colspan++;
 		}
 	}
-	print '<tr><td colspan="'.$colspan.'" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
+	print '<tr><td colspan="'.$colspan.'"><span class="opacitymedium">'.$langs->trans("NoRecordFound").'</span></td></tr>';
 }
 
 
