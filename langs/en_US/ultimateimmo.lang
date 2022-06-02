@@ -259,4 +259,14 @@ NoThirdPartyAssociatedToRenter = No thirdparty associated to this renter
 ConfirmCreateThirdParty=Are you sure you want to create a third party for this renter?
 ValidatePayment = Validate payments
 CreatePDF = Create PDF
+ImmoBirthCountry=Pays de naissance
+LotFiscal=Lot fiscal
+MenuImmoLotFiscal=Lot fiscaux
+MenuListImmoLotFiscal=Liste
+ImmoBuildings=Lot fiscal
+PaymentMode = Méthode de paiement
+DateRelever = Date de relevé
+MeterReading = Relevé des compteurs
+UltimateLocation = Location
+LinkedToDolibarrThirdParty = Lien du Tiers 
 
