@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2021  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2022  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -15,14 +15,14 @@
 -- along with this program.  If not, see http://www.gnu.org/licenses/.
 
 
-CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoproperty(
+CREATE TABLE llx_ultimateimmo_immoproperty(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	ref varchar(128) NOT NULL,
 	entity integer DEFAULT 1 NOT NULL,
 	property_type_id integer,
 	fk_property integer,  
-	label varchar(255),
+	label varchar(255) NOT NULL,
 	juridique_id integer,
 	datebuilt varchar(32), 	
 	target integer,		

@@ -15,7 +15,7 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-ALTER TABLE llx_ultimateimmo_immoowner MODIFY COLUMN fk_pays country_id integer;
+ALTER TABLE llx_ultimateimmo_immoowner CHANGE COLUMN fk_pays country_id integer;
 ALTER TABLE llx_c_ultimateimmo_juridique MODIFY COLUMN code varchar(50) NOT NULL;
 ALTER TABLE llx_c_ultimateimmo_immorent_type MODIFY COLUMN code varchar(50) NOT NULL;
 ALTER TABLE llx_ultimateimmo_immorenter ADD COLUMN town varchar(255) AFTER country_id;

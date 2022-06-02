@@ -20,7 +20,7 @@
 CREATE TABLE llx_ultimateimmo_payment_receipt
 (
   rowid           integer AUTO_INCREMENT PRIMARY KEY,
-  fk_paiement     integer,								-- type of payment in llx_c_paiement
+  fk_paiement     integer,								
   fk_receipt      integer,
-  amount          double(24,8)     DEFAULT 0			-- amount paid in Dolibarr currency
+  amount          double(24,8)     DEFAULT 0
 )ENGINE=innodb;
