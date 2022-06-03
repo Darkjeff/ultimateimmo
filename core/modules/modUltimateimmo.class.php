@@ -77,7 +77,7 @@ class modUltimateimmo extends DolibarrModules
 		$this->editor_url = implode(', &nbsp;', $editor_url);
 
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated' or a version string like 'x.y.z'
-		$this->version = '15.0.1';
+		$this->version = '15.0.2';
 		// Url to the file with your last numberversion of this module
 		$this->url_last_version = 'https://atoo-net.com/versionmodules/ultimateimmo/v15/ultimateimmo.txt';
 		// Key used in llx_const table to save module status enabled/disabled (where ULTIMATEIMMO is value of property name of module in uppercase)
