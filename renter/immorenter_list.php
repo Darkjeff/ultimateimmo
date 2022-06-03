@@ -249,7 +249,7 @@ $sql = 'SELECT ';
 foreach ($object->fields as $key => $val) {
 	$sql .= 't.' . $key . ', ';
 }
-$sql .= 'country.label as country, country.rowid as countryid, soc.nom as owner';
+$sql .= 'country.label as country, country.rowid as countryid, soc.nom as owner,';
 
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {

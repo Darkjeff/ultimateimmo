@@ -327,13 +327,14 @@ $morecss = array();
 $sql = 'SELECT ';
 $sql .= $object->getFieldList('t');
 $sql .= ',lc.lastname as nomlocataire, lc.firstname as prenomlocataire, soc.rowid as soc_id, soc.nom as owner_name';
-$sql .= ',ll.label as nomlocal, ll.rowid as property_id';
+$sql .= ',ll.label as nomlocal, ll.rowid as property_id,';
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
 	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
-		$sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? ", ef." . $key . " as options_" . $key . ', ' : '');
+		$sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? " ef." . $key . " as options_" . $key : '');
 	}
 }
+
 // Add fields from hooks
 $parameters = array();
 $reshook = $hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
