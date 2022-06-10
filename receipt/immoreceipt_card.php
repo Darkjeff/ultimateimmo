@@ -708,6 +708,7 @@ if ($action == 'createall') {
 	if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 		$resql = $db->query($sql);
 		$nbtotalofrecords = $db->num_rows($resql);
+		
 		if (($page * $limit) > $nbtotalofrecords)	// if total resultset is smaller then paging size (filtering), goto and load page 0
 		{
 			$page = 0;
@@ -716,7 +717,7 @@ if ($action == 'createall') {
 	}
 
 	$sql .= $db->plimit($limit + 1, $offset);
-
+	//print_r($sql);exit;
 	$resql = $db->query($sql);
 	if ($resql) {
 		$num = $db->num_rows($resql);
