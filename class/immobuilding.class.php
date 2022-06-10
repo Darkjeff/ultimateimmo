@@ -56,7 +56,7 @@ class ImmoBuilding extends CommonObject
 	/**
 	 * @var int  Does object support extrafields ? 0=No, 1=Yes
 	 */
-	public $isextrafieldmanaged = 1;
+	public $isextrafieldmanaged = 0;
 
 	/**
 	 * @var string String with name of icon for immobuilding. Must be the part after the 'object_' into object_immobuilding.png
@@ -185,7 +185,7 @@ class ImmoBuilding extends CommonObject
 	 */
 	public function createFromClone(User $user, $fromid)
 	{
-		global $langs, $extrafields;
+		global $langs;
 		$error = 0;
 
 		dol_syslog(__METHOD__, LOG_DEBUG);
@@ -227,7 +227,7 @@ class ImmoBuilding extends CommonObject
 		}
 		// ...
 		// Clear extrafields that are unique
-		if (is_array($object->array_options) && count($object->array_options) > 0) {
+		/*if (is_array($object->array_options) && count($object->array_options) > 0) {
 			$extrafields->fetch_name_optionals_label($this->table_element);
 			foreach ($object->array_options as $key => $option) {
 				$shortkey = preg_replace('/options_/', '', $key);
@@ -236,7 +236,7 @@ class ImmoBuilding extends CommonObject
 					unset($object->array_options[$key]);
 				}
 			}
-		}
+		}*/
 
 		// Create clone
 		$object->context['createfromclone'] = 'createfromclone';
