@@ -101,11 +101,15 @@ class ImmoBuilding extends CommonObject
 	 */
 	public $fields = array(
 		'rowid' => array('type' => 'integer', 'label' => 'TechnicalID', 'enabled' => 1, 'notnull' => 1, 'position' => 10, 'visible' => 2),
-		'label' => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => '1', 'position' => 15, 'notnull' => 0, 'visible' => 1,),
+		'label' => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => '1', 'position' => 15, 'notnull' => 0, 'visible' => 1),
+		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'enabled' => 1, 'visible' => -2, 'position' => 500, 'notnull' => 1, 'default'=>'CURRENT_TIMESTAMP'),
+		'tms'           => array('type' => 'timestamp', 'label' => 'DateModification', 'enabled' => 1, 'visible' => -2, 'position' => 501, 'notnull' => 1),
 		'fk_property' => array('type' => 'integer:ImmoProperty:ultimateimmo/class/immoproperty.class.php', 'label' => 'Property', 'visible' => 1, 'enabled' => 1, 'position' => 35, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immoproperty.rowid', 'searchall' => 1, 'help' => "LinkToProperty"),
 	);
 	public $rowid;
 	public $label;
+	public $date_creation;
+	public $tms;
 	public $fk_property;
 	// END MODULEBUILDER PROPERTIES
 
