@@ -764,7 +764,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			// Clone
 			if ($permissiontoadd) {
-				print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&socid=' . $object->socid . '&action=clone&object=myobject">' . $langs->trans("ToClone") . '</a>' . "\n";
+				print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&socid=' . $object->socid . '&action=clone&object=immoproperty">' . $langs->trans("ToClone") . '</a>' . "\n";
 			}
 
 			if ($permissiontodelete) {
