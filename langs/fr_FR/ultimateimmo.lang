@@ -202,6 +202,12 @@ CloneImmoReceipt = Cloner cette quittance
 ConfirmCloneImmoReceipt = Etes vous sûr de vouloir cloner cette quittance ?
 DeleteImmoPayment = Suppression de règlement
 ConfirmDeleteImmoPayment = Etes vous sûr de vouloir supprimer ce règlement ?
+ConfirmDeleteImmoOwner = Etes vous sûr de vouloir supprimer ce propriétaire ?
+ConfirmCloneImmoOwner = Etes vous sûr de vouloir cloner ce propriétaire ?
+ConfirmDeleteImmoRent = Etes vous sûr de vouloir supprimer cette location ?
+ConfirmCloneImmoRent = Etes vous sûr de vouloir cloner cette location ?
+ConfirmDeleteImmoProperty = Etes vous sûr de vouloir supprimer ce bien ?
+ConfirmCloneImmoProperty = Etes vous sûr de vouloir cloner ce bien ?
 OwnerName = Nom du propriétaire
 RenterName = Nom du locataire
 SendImmoReceiptRef = Envoi de la quittance %s
@@ -241,9 +247,3 @@ LotFiscal=Lot fiscal
 MenuImmoLotFiscal=Lot fiscaux
 MenuListImmoLotFiscal=Liste
 ImmoBuildings=Lot fiscal
-
-
-
-
-
-
