@@ -213,6 +213,7 @@ ConfirmDeleteImmoRenter = Etes vous sûr de vouloir supprimer ce locataire ?
 ConfirmCloneImmoRenter = Etes vous sûr de vouloir cloner ce locataire ?
 DeleteImmoProperty = Suppression du bien
 ConfirmDeleteImmoProperty = Etes vous sûr de vouloir supprimer ce bien ?
+CloneImmoProperty = Cloner le bien
 ConfirmCloneImmoProperty = Etes vous sûr de vouloir cloner ce bien ?
 OwnerName = Nom du propriétaire
 RenterName = Nom du locataire
