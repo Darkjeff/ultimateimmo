@@ -31,7 +31,7 @@ CREATE TABLE llx_ultimateimmo_immorenter(
 	lastname varchar(255),
 	email varchar(255),
 	photo varchar(255), 
-	birth date,
+	birth datetime,
 	country_id integer,
     town varchar(255),
     phone varchar(30),

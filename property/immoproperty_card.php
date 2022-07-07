@@ -197,7 +197,7 @@ if ($action == 'create') {
 	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
-	dol_fiche_head(array(), '');
+	print dol_get_fiche_head(array(), '');
 
 	print '<table class="border centpercent tableforfieldcreate">' . "\n";
 

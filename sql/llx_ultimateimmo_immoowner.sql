@@ -39,7 +39,7 @@ CREATE TABLE llx_ultimateimmo_immoowner(
 	town varchar(64), 
 	country_id integer,	
 	email varchar(255) NOT NULL, 
-	birth date, 
+	birth datetime,
 	phone varchar(30), 
 	phone_mobile varchar(30)
 	-- END MODULEBUILDER FIELDS

@@ -119,41 +119,6 @@ if (empty($reshook))
     }
 	$triggermodname = 'ULTIMATEIMMO_IMMORENTER_MODIFY';
 
-	/*if ($action == 'setsocid')
-	{
-		$error=0;
-		if (! $error)
-		{
-			if ($socid != $object->fk_soc)	// If link differs from currently in database
-			{
-				$sql ="SELECT rowid FROM ".MAIN_DB_PREFIX."ultimateimmo_immorenter";
-				$sql.=" WHERE fk_soc = '".$socid."'";
-				$sql.=" AND entity = ".$conf->entity;
-				$resql = $db->query($sql);
-				if ($resql)
-				{
-					$obj = $db->fetch_object($resql);
-					if ($obj && $obj->rowid > 0)
-					{
-						$otherrenter=new ImmoRenter($db);
-						$otherrenter->fetch($obj->rowid);
-						$thirdparty=new Societe($db);
-						$thirdparty->fetch($socid);
-						$error++;
-						setEventMessages($langs->trans("ErrorRenterIsAlreadyLinkedToThisThirdParty",$otherrenter->getFullName($langs),$otherrenter->login,$thirdparty->name), null, 'errors');
-					}
-				}
-
-				if (! $error)
-				{
-					$result=$object->setThirdPartyId($socid);
-					if ($result < 0) dol_print_error($object->db,$object->error);
-					$action='';
-				}
-			}
-		}
-	}*/
-
 	// Actions cancel, add, update or delete
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
 
@@ -212,6 +177,7 @@ if ($conf->use_javascript_ajax) {
 
 // Part to create
 if ($action == 'create') {
+
 	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoRenter")), '', 'object_' . $object->picto);
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
@@ -257,9 +223,9 @@ if ($action == 'create') {
 			}
 			// civility
 			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');
-		} elseif ($val['label'] == 'BirthDay') {
+		} /*elseif ($val['label'] == 'BirthDay') {
 			print $form->selectDate(($object->birth ? $object->birth : -1), 'birth', '', '', 1, 'formsoc');
-		} elseif ($val['label'] == 'BirthCountry') {
+		}*/ elseif ($val['label'] == 'BirthCountry') {
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
 			if ($object->country_id) {
@@ -342,9 +308,9 @@ if (($id || $ref) && $action == 'edit')
 				$object->civility = $tmparray['label'];
 			}
 			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id);
-		} elseif ($val['label'] == 'BirthDay') {
-			print $form->selectDate(($object->birth ? $object->birth : -1), 'birth', '', '', 1, 'formsoc');
-		} elseif ($val['label'] == 'ImmoBirthCountry') {
+		} /*elseif ($val['label'] == 'BirthDay') {
+			print $form->selectDate(($object->birth ? $object->birth : -1), 'birth', '', '', 1, '');
+		}*/ elseif ($val['label'] == 'ImmoBirthCountry') {
 			// We set country_id, country_code and country for the selected country
 			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
 			if ($object->country_id) {
