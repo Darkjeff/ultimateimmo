@@ -106,7 +106,7 @@ class ImmoRent extends CommonObject
 									'help'    => "LinkToAccount",),
 		'fk_soc'           => array('type'       => 'integer:Societe:societe/class/societe.class.php',
 									'label'      => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 42,
-									'notnull'    => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirparty",
+									'notnull'    => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirdparty",
 									'foreignkey' => 'societe.rowid',),
 		'location_type_id' => array('type'          => 'integer', 'label' => 'ImmorentType', 'enabled' => 1,
 									'visible'       => 1, 'position' => 44, 'notnull' => -1,
