@@ -103,7 +103,7 @@ class ImmoCost extends CommonObject
 								 'index' => 1, 'help' => "LinkToOwner",),
 		'fk_soc'        => array('type'    => 'integer:Societe:societe/class/societe.class.php',
 								 'label'   => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 45,
-								 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirparty",),
+								 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirdparty",),
 		'fk_cost_type'  => array('type'    => 'integer:ImmoCost_Type:ultimateimmo/class/immocost_type.class.php',
 								 'label'   => 'ImmoCostType', 'enabled' => 1, 'visible' => 1, 'position' => 50,
 								 'notnull' => -1, 'index' => 1, 'help' => "CostType",),
