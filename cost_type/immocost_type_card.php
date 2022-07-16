@@ -136,12 +136,13 @@ llxHeader('', $langs->trans("MenuListImmoCostType"), '');
 
 // Part to create
 if ($action == 'create') {
-	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("MenuListImmoCostType")));
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
-	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="add">';
 	print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
+
+	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("MenuListImmoCostType")), '', 'object_' . $object->picto);
 
 	print dol_get_fiche_head(array(), '');
 
@@ -168,10 +169,10 @@ if ($action == 'create') {
 
 // Part to edit record
 if (($id || $ref) && $action == 'edit') {
-	print load_fiche_titre($langs->trans("MenuListImmoCostType"));
+	print load_fiche_titre($langs->trans("MenuListImmoCostType"), '', 'object_' . $object->picto);
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
-	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="update">';
 	print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 	print '<input type="hidden" name="id" value="' . $object->id . '">';
@@ -202,6 +203,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$res = $object->fetch_optionals();
 
 	$head = immocost_typePrepareHead($object);
+
 	print dol_get_fiche_head($head, 'card', $langs->trans("MenuListImmoCostType"), -1, 'ultimateimmo@ultimateimmo');
 
 	$formconfirm = '';
@@ -227,8 +229,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if (!$formconfirm) {
 		$parameters = array('lineid' => $lineid);
 		$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-		if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
-		elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
+		if (empty($reshook)) {
+			$formconfirm .= $hookmanager->resPrint;
+		} elseif ($reshook > 0) {
+			$formconfirm = $hookmanager->resPrint;
+		}
 	}
 
 	// Print form confirm

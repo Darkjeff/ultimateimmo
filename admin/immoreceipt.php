@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2004-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND 		<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 		<philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -474,6 +474,60 @@ print '</form>';
  */
 
 print load_fiche_titre($langs->trans("OtherOptions"));
+
+print '<div class="div-table-responsive-no-min">';
+print '<table class="noborder centpercent">';
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("Description").'</td>';
+print '<td>'.$langs->trans("Value").'</td>';
+print "</tr>\n";
+
+// Insert subscription into bank account
+print '<tr class="oddeven"><td>'.$langs->trans("MoreActionsOnSubscription").'</td>';
+$arraychoices = array('0'=>$langs->trans("None"));
+if (!empty($conf->banque->enabled)) {
+	$arraychoices['bankdirect'] = $langs->trans("MoreActionBankDirect");
+}
+if (!empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+	$arraychoices['invoiceonly'] = $langs->trans("MoreActionInvoiceOnly");
+}
+if (!empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+	$arraychoices['bankviainvoice'] = $langs->trans("MoreActionBankViaInvoice");
+}
+print '<td>';
+print $form->selectarray('ADHERENT_BANK_USE', $arraychoices, getDolGlobalString('ADHERENT_BANK_USE'), 0);
+if (getDolGlobalString('ADHERENT_BANK_USE') == 'bankdirect' || getDolGlobalString('ADHERENT_BANK_USE') == 'bankviainvoice') {
+	print '<br><div style="padding-top: 5px;"><span class="opacitymedium">'.$langs->trans("ABankAccountMustBeDefinedOnPaymentModeSetup").'</span></div>';
+}
+print '</td>';
+print "</tr>\n";
+
+// Use vat for invoice creation
+if (isModEnabled('facture')) {
+	print '<tr class="oddeven"><td>'.$langs->trans("VATToUseForSubscriptions").'</td>';
+	if (!empty($conf->banque->enabled)) {
+		print '<td>';
+		print $form->selectarray('ADHERENT_VAT_FOR_SUBSCRIPTIONS', array('0'=>$langs->trans("NoVatOnSubscription"), 'defaultforfoundationcountry'=>$langs->trans("Default")), (empty($conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS) ? '0' : $conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS), 0);
+		print '</td>';
+	} else {
+		print '<td class="right">';
+		print $langs->trans("WarningModuleNotActive", $langs->transnoentities("Module85Name"));
+		print '</td>';
+	}
+	print "</tr>\n";
+}
+
+print '</table>';
+print '</div>';
+
+print '<div class="center">';
+print '<input type="submit" class="button" value="'.$langs->trans("Update").'" name="Button">';
+print '</div>';
+
+print '</form>';
+
+
+print '<br>';
 
 // Addresses
 print load_fiche_titre($langs->trans("- le cas échéant, représenté par le mandataire"), '', '') . '<br>';
