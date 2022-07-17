@@ -104,6 +104,21 @@ if ($action == 'updateMask') {
 		setEventMessages($langs->trans("Error"), null, 'errors');
 	}
 
+	$bankuse = GETPOST('ADHERENT_BANK_USE', 'alpha');
+	$res = dolibarr_set_const($db, 'ADHERENT_BANK_USE', $bankuse, 'chaine', 0, '', $conf->entity);
+	if ($res <= 0) {
+		$error++;
+		setEventMessages($langs->trans("Error"), null, 'errors');
+	}
+
+	if (isModEnabled('facture')) {
+		$res = dolibarr_set_const($db, 'ADHERENT_VAT_FOR_SUBSCRIPTIONS', GETPOST('ADHERENT_VAT_FOR_SUBSCRIPTIONS', 'alpha'), 'chaine', 0, '', $conf->entity);
+		if ($res <= 0) {
+			$error++;
+			setEventMessages($langs->trans("Error"), null, 'errors');
+		}
+	}
+
 	if (!$error) {
 		setEventMessages($langs->trans("SetupSaved"), null, 'mesgs');
 	}
@@ -472,6 +487,10 @@ print '</form>';
  * Bail_libre options
  *
  */
+
+print '<form action="'.$_SERVER["PHP_SELF"].'" method="POST">';
+print '<input type="hidden" name="token" value="'.newToken().'">';
+print '<input type="hidden" name="action" value="set_param">';
 
 print load_fiche_titre($langs->trans("OtherOptions"));
 

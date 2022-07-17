@@ -547,8 +547,8 @@ if ($result >= 0) {
 if ($action == 'create') {
 	print load_fiche_titre($langs->transnoentitiesnoconv("MenuNewImmoReceipt"), '', 'object_' . $object->picto);
 
-	$year_current = strftime("%Y", dol_now());
-	$pastmonth = strftime("%m", dol_now());
+	$year_current = dol_print_date(dol_now(), "%Y");
+	$pastmonth = dol_print_date(dol_now(), "%m");
 	$pastmonthyear = $year_current;
 	if ($pastmonth == 0) {
 		$pastmonth = 12;
