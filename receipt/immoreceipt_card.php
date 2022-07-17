@@ -555,14 +555,13 @@ if ($action == 'create') {
 		$pastmonthyear--;
 	}
 
-	$datesp = dol_mktime(0, 0, 0, $datespmonth, $datespday, $datespyear);
-	$dateep = dol_mktime(23, 59, 59, $dateepmonth, $dateepday, $dateepyear);
+	$date_start = dol_mktime(0, 0, 0, $date_startmonth, $date_startday, $date_startyear, 'tzserver');
+	$date_end = dol_mktime(23, 59, 59, $date_endmonth, $date_endday, $date_endyear, 'tzserver');
 
-	if (empty($datesp) || empty($dateep)
-	) // We define date_start and date_end
-	{
-		$datesp = dol_get_first_day($pastmonthyear, $pastmonth, false);
-		$dateep = dol_get_last_day($pastmonthyear, $pastmonth, false);
+	// We define date_start and date_end
+	if (empty($date_start) || empty($date_end)) { // We define date_start and date_end
+		$date_start = dol_get_first_day($pastmonthyear, $pastmonth, false);
+		$date_end = dol_get_last_day($pastmonthyear, $pastmonth, false);
 	}
 
 	print '<form name="fiche_loyer" method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
@@ -607,17 +606,17 @@ if ($action == 'create') {
 			print $tmpcode;
 		} elseif ($val['label'] == 'DateCreation') {
 			// DateCreation
-			print $form->selectDate(($object->date_creation ? $object->date_creation : -1), "date_creation", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate(($object->date_creation ? $object->date_creation : -1), "date_creation", 0, 0, 0,  '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
 		} elseif ($val['label'] == 'DateStart') {
 			// date_start
-			print $form->selectDate(($object->date_start ? $object->date_start : -1), "date_start", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate($date_start, 'date_start', 0, 0, 0, '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
 		} elseif ($val['label'] == 'DateEnd') {
 			// date_end
-			print $form->selectDate(($object->date_end ? $object->date_end : -1), "date_end", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate($date_end, 'date_end', 0, 0, 0, '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
 		} elseif ($val['label'] == 'Echeance') {
 			// Echeance
-			print $form->selectDate(($object->date_echeance ? $object->date_echeance : -1),
-			"date_echeance", 0, 0, 0, "", 1, 1, 1);
+			print $form->selectDate($date_echeance,
+			'date_echeance', 0, 0, 0, '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
 
