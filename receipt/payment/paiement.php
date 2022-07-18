@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2001-2006  Rodolphe Quiedeville    <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2017  Laurent Destailleur     <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021  Philippe GRAND          <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022  Philippe GRAND          <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,8 +59,9 @@ require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 // Load translation files required by the page
 $langs->loadLangs(array('companies', 'bills', 'banks'));
 
-$id			= GETPOST('id', 'int');
-$ref		= GETPOST('ref', 'alpha');
+$id = GETPOST('rowid', 'int') ? GETPOST('rowid', 'int') : GETPOST('id', 'int');
+$rowid = $id;
+$ref		= GETPOST('ref', 'alphanohtml');
 $action		= GETPOST('action', 'alpha');
 $confirm	= GETPOST('confirm', 'alpha');
 
@@ -223,6 +224,68 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 	$total = $receipt->total_amount;
 
+	// Define default choice for complementary actions
+	$bankdirect = 0; // 1 means option by default is write to bank direct with no invoice
+	$invoiceonly = 0; // 1 means option by default is invoice only
+	$bankviainvoice = 0; // 1 means option by default is write to bank via invoice
+	if (GETPOST('paymentsave')) {
+		if (GETPOST('paymentsave') == 'bankdirect') {
+			$bankdirect = 1;
+		}
+		if (GETPOST('paymentsave') == 'invoiceonly') {
+			$invoiceonly = 1;
+		}
+		if (GETPOST('paymentsave') == 'bankviainvoice') {
+			$bankviainvoice = 1;
+		}
+	} else {
+		if (!empty($conf->global->ADHERENT_BANK_USE) && $conf->global->ADHERENT_BANK_USE == 'bankviainvoice' && !empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+			$bankviainvoice = 1;
+		} elseif (!empty($conf->global->ADHERENT_BANK_USE) && $conf->global->ADHERENT_BANK_USE == 'bankdirect' && !empty($conf->banque->enabled)) {
+			$bankdirect = 1;
+		} elseif (!empty($conf->global->ADHERENT_BANK_USE) && $conf->global->ADHERENT_BANK_USE == 'invoiceonly' && !empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+			$invoiceonly = 1;
+		}
+	}
+
+	print "\n\n<!-- Form add subscription -->\n";
+
+	if ($conf->use_javascript_ajax) {
+		//var_dump($bankdirect.'-'.$bankviainvoice.'-'.$invoiceonly.'-'.empty($conf->global->ADHERENT_BANK_USE));
+		print "\n".'<script type="text/javascript">';
+		print '$(document).ready(function () {
+					$(".bankswitchclass, .bankswitchclass2").'.(($bankdirect || $bankviainvoice) ? 'show()' : 'hide()').';
+					$("#none, #invoiceonly").click(function() {
+						$(".bankswitchclass").hide();
+						$(".bankswitchclass2").hide();
+					});
+					$("#bankdirect, #bankviainvoice").click(function() {
+						$(".bankswitchclass").show();
+						$(".bankswitchclass2").show();
+					});
+					$("#selectoperation").change(function() {
+						var code = $(this).val();
+						if (code == "CHQ")
+						{
+							$(".fieldrequireddyn").addClass("fieldrequired");
+							if ($("#fieldchqemetteur").val() == "")
+							{
+								$("#fieldchqemetteur").val($("#memberlabel").val());
+							}
+						}
+						else
+						{
+							$(".fieldrequireddyn").removeClass("fieldrequired");
+						}
+					});
+					';
+		if (GETPOST('paymentsave')) {
+			print '$("#'.GETPOST('paymentsave', 'aZ09').'").prop("checked", true);';
+		}
+		print '});';
+		print '</script>'."\n";
+	}
+
 	if ($result >= 0) {
 		//$ret = $paiement->fetch_thirdparty();
 		$title = '';
@@ -231,7 +294,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		print load_fiche_titre($title);
 
 		print '<form id="payment_form" name="add_payment" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
-		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+		print '<input type="hidden" name="token" value="' . newToken() . '">';
 		print '<input type="hidden" name="action" value="add_payment">';
 		print '<input type="hidden" name="id" value="' . $id . '">';
 		print '<input type="hidden" name="socid" value="' . $renter->fk_soc . '">';
@@ -288,40 +351,142 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		print "<td colspan=\"3\">" . $langs->trans("Payment") . '</td>';
 		print '</tr>';
 
-		print '<tr><td><span class="fieldrequired">' . $langs->trans('Date') . '</span></td><td>';
-		$date_payment = dol_mktime(12, 0, 0, $_POST['remonth'], $_POST['reday'], $_POST['reyear']);
-		$datepayment = empty($conf->global->MAIN_AUTOFILL_DATE) ? (empty($_POST["remonth"]) ? -1 : $date_payment) : 0;
-		print $form->selectDate($datepayment, '', '', '', '', "add_payment", 1, 1);
-		print '</td></tr>';
+		if ((!empty($conf->banque->enabled) || isModEnabled('facture'))) {
+			$company = new Societe($db);
+			if ($renter->fk_soc) {
+				$result = $company->fetch($renter->fk_soc);
+			}
 
-		print '<tr><td class="fieldrequired">' . $langs->trans("PaymentMode") . '</td><td colspan="2">';
-		$form->select_types_paiements((GETPOST('fk_mode_reglement') ? GETPOST('fk_mode_reglement') : $paymentstatic->fk_mode_reglement), 'fk_mode_reglement');
-		print "</td>\n";
-		print '</tr>';
+			// Title payments
+			//print '<tr><td colspan="2"><b>'.$langs->trans("Payment").'</b></td></tr>';
+
+			// No more action
+			print '<tr><td class="tdtop fieldrequired">'.$langs->trans('MoreActions');
+			print '</td>';
+			print '<td>';
+			print '<input type="radio" class="moreaction" id="none" name="paymentsave" value="none"'.(empty($bankdirect) && empty($invoiceonly) && empty($bankviainvoice) ? ' checked' : '').'>';
+			print '<label for="none"> '.$langs->trans("None").'</label><br>';
+			// Add entry into bank accoun
+			if (!empty($conf->banque->enabled)) {
+				print '<input type="radio" class="moreaction" id="bankdirect" name="paymentsave" value="bankdirect"'.(!empty($bankdirect) ? ' checked' : '');
+				print '><label for="bankdirect">  '.$langs->trans("MoreActionBankDirect").'</label><br>';
+			}
+			// Add invoice with no payments
+			if (!empty($conf->societe->enabled) && isModEnabled('facture')) {
+				print '<input type="radio" class="moreaction" id="invoiceonly" name="paymentsave" value="invoiceonly"'.(!empty($invoiceonly) ? ' checked' : '');
+				//if (empty($object->fk_soc)) print ' disabled';
+				print '><label for="invoiceonly"> '.$langs->trans("MoreActionInvoiceOnly");
+				if ($renter->fk_soc) {
+					print ' ('.$langs->trans("ThirdParty").': '.$company->getNomUrl(1).')';
+				} else {
+					print ' (';
+					if (empty($renter->fk_soc)) {
+						print img_warning($langs->trans("NoThirdPartyAssociatedToMember"));
+					}
+					print $langs->trans("NoThirdPartyAssociatedToMember");
+					print ' - <a href="'.$_SERVER["PHP_SELF"].'?rowid='.$renter->id.'&amp;action=create_thirdparty">';
+					print $langs->trans("CreateDolibarrThirdParty");
+					print '</a>)';
+				}
+				if (empty($conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS) || $conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS != 'defaultforfoundationcountry') {
+					print '. <span class="opacitymedium">'.$langs->trans("NoVatOnSubscription", 0).'</span>';
+				}
+				print '</label><br>';
+			}
+			// Add invoice with payments
+			if (!empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+				print '<input type="radio" class="moreaction" id="bankviainvoice" name="paymentsave" value="bankviainvoice"'.(!empty($bankviainvoice) ? ' checked' : '');
+				//if (empty($object->fk_soc)) print ' disabled';
+				print '><label for="bankviainvoice">  '.$langs->trans("MoreActionBankViaInvoice");
+				if ($renter->fk_soc) {
+					print ' ('.$langs->trans("ThirdParty").': '.$company->getNomUrl(1).')';
+				} else {
+					print ' (';
+					if (empty($renter->fk_soc)) {
+						print img_warning($langs->trans("NoThirdPartyAssociatedToMember"));
+					}
+					print $langs->trans("NoThirdPartyAssociatedToMember");
+					print ' - <a href="'.$_SERVER["PHP_SELF"].'?rowid='.$renter->id.'&amp;action=create_thirdparty">';
+					print $langs->trans("CreateDolibarrThirdParty");
+					print '</a>)';
+				}
+				if (empty($conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS) || $conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS != 'defaultforfoundationcountry') {
+					print '. <span class="opacitymedium">'.$langs->trans("NoVatOnSubscription", 0).'</span>';
+				}
+				print '</label><br>';
+			}
+			print '</td></tr>';
+
+			// Bank account
+			print '<tr class="bankswitchclass"><td class="fieldrequired">'.$langs->trans("FinancialAccount").'</td><td>';
+			print img_picto('', 'bank_account');
+			$form->select_comptes(GETPOST('accountid'), 'accountid', 0, '', 2, '', 0, 'minwidth200');
+			print "</td></tr>\n";
+
+			print '<tr><td class="fieldrequired">' . $langs->trans("PaymentMode") . '</td><td colspan="2">';
+			$form->select_types_paiements((GETPOST('fk_mode_reglement') ? GETPOST('fk_mode_reglement') : $paymentstatic->fk_mode_reglement), 'fk_mode_reglement');
+			print "</td>\n";
+			print '</tr>';
+
+			// Payment mode
+			/*print '<tr class="bankswitchclass"><td class="fieldrequired">'.$langs->trans("PaymentMode").'</td><td>';
+			$form->select_types_paiements(GETPOST('operation'), 'operation', '', 2, 1, 0, 0, 1, 'minwidth200');
+			print "</td></tr>\n";*/
+
+			// Date of payment
+			/*print '<tr class="bankswitchclass"><td class="fieldrequired">'.$langs->trans("DatePayment").'</td><td>';
+			print $form->selectDate(isset($paymentdate) ? $paymentdate : -1, 'payment', 0, 0, 1, 'subscription', 1, 1);
+			print "</td></tr>\n";*/
+
+			print '<tr><td><span class="fieldrequired">' . $langs->trans('Date') . '</span></td><td>';
+			$date_payment = dol_mktime(12, 0, 0, $_POST['remonth'], $_POST['reday'], $_POST['reyear']);
+			$datepayment = empty($conf->global->MAIN_AUTOFILL_DATE) ? (empty($_POST["remonth"]) ? -1 : $date_payment) : 0;
+			print $form->selectDate($datepayment, '', '', '', '', "add_payment", 1, 1);
+			print '</td></tr>';
+
+			print '<tr class="bankswitchclass2"><td>'.$langs->trans('Numero');
+			print ' <em>('.$langs->trans("ChequeOrTransferNumber").')</em>';
+			print '</td>';
+			print '<td><input id="fieldnum_chq" name="num_chq" type="text" size="8" value="'.(!GETPOST('num_chq') ? '' : GETPOST('num_chq')).'"></td></tr>';
+
+			print '<tr class="bankswitchclass2 fieldrequireddyn"><td>'.$langs->trans('CheckTransmitter');
+			print ' <em>('.$langs->trans("ChequeMaker").')</em>';
+			print '</td>';
+			print '<td><input id="fieldchqemetteur" name="chqemetteur" size="32" type="text" value="'.(!GETPOST('chqemetteur') ? '' : GETPOST('chqemetteur')).'"></td></tr>';
+
+			print '<tr class="bankswitchclass2"><td>'.$langs->trans('Bank');
+			print ' <em>('.$langs->trans("ChequeBank").')</em>';
+			print '</td>';
+			print '<td><input id="chqbank" name="chqbank" size="32" type="text" value="'.(!GETPOST('chqbank') ? '' : GETPOST('chqbank')).'"></td></tr>';
+		}
+
+		
+
+		
 
 		// Bank account
-		print '<tr>';
+		/*print '<tr>';
 		print '<td class="fieldrequired">' . $langs->trans('AccountToCredit') . '</td>';
 		print '<td colspan="2">';
 		$form->select_comptes(isset($_POST["accountid"]) ? $_POST["accountid"] : $paymentstatic->accountid, "accountid", 0, '', 1);  // Show open bank account list
-		print '</td></tr>';
+		print '</td></tr>';*/
 
 		// Cheque number
-		print '<tr><td>' . $langs->trans('Numero');
+		/*print '<tr><td>' . $langs->trans('Numero');
 		print '(' . $langs->trans("ChequeOrTransferNumber") . ')';
 		print '</td>';
-		print '<td><input name="num_paiement" type="text" value="' . $paymentnum . '"></td></tr>';
+		print '<td><input name="num_paiement" type="text" value="' . $paymentnum . '"></td></tr>';*/
 
 		// Check transmitter
-		print '<tr><td class="' . (GETPOST('fk_mode_reglement') == 'CHQ' ? 'fieldrequired ' : '') . 'fieldrequireddyn">' . $langs->transnoentities('CheckTransmitter');
+		/*print '<tr><td class="' . (GETPOST('fk_mode_reglement') == 'CHQ' ? 'fieldrequired ' : '') . 'fieldrequireddyn">' . $langs->transnoentities('CheckTransmitter');
 		print '</td>';
-		print '<td><input id="fieldchqemetteur" name="chqemetteur" size="30" type="text" value="' . GETPOST('chqemetteur', 'alphanohtml') . '"></td></tr>';
+		print '<td><input id="fieldchqemetteur" name="chqemetteur" size="30" type="text" value="' . GETPOST('chqemetteur', 'alphanohtml') . '"></td></tr>';*/
 
 		// Bank name
-		print '<tr><td>';
+		/*print '<tr><td>';
 		print '(' . $langs->transnoentities("ChequeBank") . ')';
 		print '</td>';
-		print '<td><input name="chqbank" size="30" type="text" value="' . GETPOST('chqbank', 'alphanohtml') . '"></td></tr>';
+		print '<td><input name="chqbank" size="30" type="text" value="' . GETPOST('chqbank', 'alphanohtml') . '"></td></tr>';*/
 
 		// Comments
 		print '<tr><td>' . $langs->transnoentities('Comments') . '</td>';
