@@ -280,7 +280,7 @@ if (empty($reshook)) {
 	/*
 	 * Add rental
 	 */
-	if ($action == 'add' && !$cancel) {
+	if ($action == 'addrental' && !$cancel) {
 		$error = 0;
 
 		$date_echeance = dol_mktime(12, 0, 0, GETPOST("date_echeancemonth"), GETPOST("date_echeanceday"), GETPOST("date_echeanceyear"));
@@ -566,7 +566,7 @@ if ($action == 'create') {
 
 	print '<form name="fiche_loyer" method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
-	print '<input type="hidden" name="action" value="add">';
+	print '<input type="hidden" name="action" value="addrental">';
 	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
@@ -615,8 +615,7 @@ if ($action == 'create') {
 			print $form->selectDate($date_end, 'date_end', 0, 0, 0, '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
 		} elseif ($val['label'] == 'Echeance') {
 			// Echeance
-			print $form->selectDate($date_echeance,
-			'date_echeance', 0, 0, 0, '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
+			print $form->selectDate($date_echeance, 'date_echeance', 0, 0, 0, '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
 
@@ -637,7 +636,7 @@ if ($action == 'create') {
 	print dol_get_fiche_end();
 
 	print '<div class="center">';
-	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
+	print '<input type="submit" class="button" name="addrental" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
 	print '&nbsp; ';
 	print '<input type="' . ($backtopage ? "submit" : "button") . '" class="button" name="cancel" value="' . dol_escape_htmltag($langs->trans("Cancel")) . '"' . ($backtopage ? '' : ' onclick="javascript:history.go(-1)"') . '>';	// Cancel for create does not post form if we don't know the backtopage
 	print '</div>';

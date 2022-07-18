@@ -72,14 +72,14 @@ class ActionsUltimateimmo
 	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
 	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
 	 */
-	public function doActions($parameters, &$object, &$action, $hookmanager)
+	/*public function doActions($parameters, &$object, &$action, $hookmanager)
 	{
 		global $conf, $user, $langs;
 
 		$error = 0; // Error counter
 
         /* print_r($parameters); print_r($object); echo "action: " . $action; */
-	    if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))	    // do something only for the context 'somecontext1' or 'somecontext2'
+	   /* if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))	    // do something only for the context 'somecontext1' or 'somecontext2'
 	    {
 			// Do what you want here...
 			// You can for example call global vars like $fieldstosearchall to overwrite them, or update database depending on $action and $_POST values.
@@ -93,7 +93,7 @@ class ActionsUltimateimmo
 			$this->errors[] = 'Error message';
 			return -1;
 		}
-	}
+	}*/
 
 
 	/**
@@ -105,14 +105,14 @@ class ActionsUltimateimmo
 	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
 	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
 	 */
-	public function doMassActions($parameters, &$object, &$action, $hookmanager)
+	/*public function doMassActions($parameters, &$object, &$action, $hookmanager)
 	{
 	    global $conf, $user, $langs;
 
 	    $error = 0; // Error counter
 
         /* print_r($parameters); print_r($object); echo "action: " . $action; */
-	    if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))		// do something only for the context 'somecontext1' or 'somecontext2'
+	   /* if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))		// do something only for the context 'somecontext1' or 'somecontext2'
 	    {
 	        foreach($parameters['toselect'] as $objectid)
 	        {
@@ -129,7 +129,7 @@ class ActionsUltimateimmo
 	        $this->errors[] = 'Error message';
 	        return -1;
 	    }
-	}
+	}*/
 
 
 	/**
@@ -141,14 +141,14 @@ class ActionsUltimateimmo
 	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
 	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
 	 */
-	public function addMoreMassActions($parameters, &$object, &$action, $hookmanager)
+	/*public function addMoreMassActions($parameters, &$object, &$action, $hookmanager)
 	{
 	    global $conf, $user, $langs;
 
 	    $error = 0; // Error counter
 
         /* print_r($parameters); print_r($object); echo "action: " . $action; */
-	    if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))		// do something only for the context 'somecontext1' or 'somecontext2'
+	   /* if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))		// do something only for the context 'somecontext1' or 'somecontext2'
 	    {
 	        $this->resprints = '<option value="0"'.($disabled?' disabled="disabled"':'').'>'.$langs->trans("UltimateimmoMassAction").'</option>';
 	    }
@@ -159,7 +159,7 @@ class ActionsUltimateimmo
 	        $this->errors[] = 'Error message';
 	        return -1;
 	    }
-	}
+	}*/
 
 
 
@@ -173,7 +173,7 @@ class ActionsUltimateimmo
 	 *                          		=0 if OK but we want to process standard actions too,
 	 *  	                            >0 if OK and we want to replace standard actions.
 	 */
-	function beforePDFCreation($parameters, &$object, &$action)
+	/*function beforePDFCreation($parameters, &$object, &$action)
 	{
 		global $langs,$conf;
 		global $hookmanager;
@@ -184,13 +184,13 @@ class ActionsUltimateimmo
 		dol_syslog(get_class($this).'::executeHooks action='.$action);
 
 		/* print_r($parameters); print_r($object); echo "action: " . $action; */
-		if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))		// do something only for the context 'somecontext1' or 'somecontext2'
+		/*if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))		// do something only for the context 'somecontext1' or 'somecontext2'
 		{
 
 		}
 
 		return $ret;
-	}
+	}*/
 
 	/**
 	 * Execute action
@@ -202,7 +202,7 @@ class ActionsUltimateimmo
 	 *                          		=0 if OK but we want to process standard actions too,
 	 *  	                            >0 if OK and we want to replace standard actions.
 	 */
-	function afterPDFCreation($parameters, &$pdfhandler, &$action)
+	/*function afterPDFCreation($parameters, &$pdfhandler, &$action)
 	{
 		global $langs,$conf;
 		global $hookmanager;
@@ -213,13 +213,13 @@ class ActionsUltimateimmo
 		dol_syslog(get_class($this).'::executeHooks action='.$action);
 
 		/* print_r($parameters); print_r($object); echo "action: " . $action; */
-		if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))		// do something only for the context 'somecontext1' or 'somecontext2'
+		/*if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))		// do something only for the context 'somecontext1' or 'somecontext2'
 		{
 
 		}
 
 		return $ret;
-	}
+	}*/
 
 	/* Add here any other hooked methods... */
 
