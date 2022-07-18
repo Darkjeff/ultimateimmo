@@ -439,8 +439,8 @@ if (GETPOST('action', 'aZ09') == 'create') {
 			print "</td></tr>\n";*/
 
 			print '<tr><td><span class="fieldrequired">' . $langs->trans('Date') . '</span></td><td>';
-			$date_payment = dol_mktime(12, 0, 0, $_POST['remonth'], $_POST['reday'], $_POST['reyear']);
-			$datepayment = empty($conf->global->MAIN_AUTOFILL_DATE) ? (empty($_POST["remonth"]) ? -1 : $date_payment) : 0;
+			$date_payment = dol_mktime(12, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
+			$datepayment = empty($conf->global->MAIN_AUTOFILL_DATE) ? empty(GETPOST('remonth') ? -1 : $date_payment) : 0;
 			print $form->selectDate($datepayment, '', '', '', '', "add_payment", 1, 1);
 			print '</td></tr>';
 
