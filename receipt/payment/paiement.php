@@ -65,7 +65,6 @@ $ref		= GETPOST('ref', 'alphanohtml');
 $action		= GETPOST('action', 'alpha');
 $confirm	= GETPOST('confirm', 'alpha');
 
-$accountid	= GETPOST('accountid', 'int');
 $paymentnum	= GETPOST('num_paiement', 'alpha');
 $socid      = GETPOST('socid', 'int');
 
@@ -137,7 +136,7 @@ if (empty($reshook) && $action == 'confirm_create_thirdparty' && $confirm == 'ye
 			$langs->load("errors");
 			setEventMessages($customer->error, $customer->errors, 'errors');
 		} else {
-			$action = 'addsubscription';
+			$action = 'create';
 		}
 	} else {
 		setEventMessages($renter->error, $renter->errors, 'errors');
@@ -147,6 +146,13 @@ if (empty($reshook) && $action == 'confirm_create_thirdparty' && $confirm == 'ye
 $form = new Form($db);
 if ($action == 'add_payment') {
 	$error = 0;
+
+	// Payment informations
+	$accountid	= GETPOST('accountid', 'int');
+	$operation = GETPOST("fk_mode_reglement", "alphanohtml"); // Payment mode
+	$num_chq = GETPOST("num_chq", "alphanohtml");
+	$emetteur_nom = GETPOST("chqemetteur");
+	$emetteur_banque = GETPOST("chqbank");
 
 	if (GETPOST('cancel')) {
 		$loc = dol_buildpath("/ultimateimmo/receipt/immoreceipt_card.php", 1) . '?id=' . $id;
