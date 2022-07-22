@@ -192,6 +192,7 @@ Deposit = Deposit
 Periodicity = Periodicity
 PeriodicityDescription = monthly, quarterly, annually...
 DateLastRegul = Date last regul
+DateLastRegulDescription = Last known IRL index : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
 VatAmount = VAT amount
 HtAmount = Amount without taxes
 VatTx = VAT rate

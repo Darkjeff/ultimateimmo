@@ -192,6 +192,7 @@ Deposit = Deposit
 Periodicity = Périodicité
 PeriodicityDescription = mensuelle, trimestrielle, annuelle
 DateLastRegul = Date dernière régulation
+DateLastRegulDescription = Dernier index IRL connu : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
 VatAmount = Montant TVA
 HtAmount = Montant HT
 VatTx = Taux TVA

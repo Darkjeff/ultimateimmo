@@ -192,6 +192,7 @@ Deposit = Anzahlung
 Periodicity = Periodicity
 PeriodicityDescription = monthly, quarterly, annually...
 DateLastRegul = Datum letzte Regulierung
+DateLastRegulDescription = Last known IRL index : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
 VatAmount = Mehrwertsteuerbetrag
 HtAmount = Betrag ohne Steuern
 VatTx = Mehrwertsteuersatz
