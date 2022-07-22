@@ -110,7 +110,7 @@ class ImmoRent extends CommonObject
 		'totalamount' => array('type' => 'price', 'label' => 'TotalAmount', 'visible' => 1, 'enabled' => 1, 'position' => 70, 'notnull' => -1, 'isameasure' => 1,),
 		'deposit' => array('type' => 'price', 'label' => 'Deposit', 'visible' => 1, 'enabled' => 1, 'position' => 75, 'notnull' => -1,),
 		'encours' => array('type' => 'price', 'label' => 'Encours', 'visible' => 1, 'enabled' => 1, 'position' => 80, 'notnull' => -1,),
-		'periode' => array('type' => 'varchar(128)', 'label' => 'Periodicity', 'visible' => -1, 'enabled' => 1, 'position' => 85, 'notnull' => -1, 'comment' => "PeriodicityDescription"),
+		'periode' => array('type' => 'varchar(128)', 'label' => 'Periodicity', 'visible' => -1, 'enabled' => 1, 'position' => 85, 'notnull' => -1, 'help' => "PeriodicityDescription"),
 		'date_start' => array('type' => 'date', 'label' => 'DateStartRent', 'visible' => -1, 'enabled' => 1, 'position' => 90, 'notnull' => -1,),
 		'date_end' => array('type' => 'date', 'label' => 'date_end', 'visible' => -1, 'enabled' => 1, 'position' => 95, 'notnull' => -1,),
 		'date_last_regul' => array('type' => 'date', 'label' => 'DateLastRegul', 'visible' => -1, 'enabled' => 1, 'position' => 110, 'notnull' => -1,),
