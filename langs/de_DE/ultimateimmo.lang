@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2021 Philippe GRAND <philippe.grand@atoo-net.com>
+# Copyright (C) 2018-2022 Philippe GRAND <philippe.grand@atoo-net.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -113,6 +113,8 @@ MenuNewImmoCostType = Neue Kostenart
 MenuImmoCompteur = water meter
 MenuNewImmoCompteur = New water meter
 MenuImmoCompteurList = Water meter list
+MenuStatisticsCostFourn = Coût : stats. par fourn.
+MenuImmoCompteurStats=Statistique Conso
 
 #
 # Miscellaneous
@@ -186,7 +188,7 @@ ChargesAmount = Höhe der Gebühren
 TotalAmount = Gesamtsumme
 Encours = Encours
 date_end = Datum Ende
-DateNextRent = Datum nächste Miete
+Deposit = Anzahlung
 DateLastRegul = Datum letzte Regulierung
 VatAmount = Mehrwertsteuerbetrag
 HtAmount = Betrag ohne Steuern
@@ -205,13 +207,17 @@ ConfirmDeleteImmoPayment = Möchten Sie diese Zahlung wirklich löschen?
 DeleteImmoProperty = Eigenschaft löschen
 ConfirmDeleteImmoProperty = Möchten Sie diese Eigenschaft wirklich löschen?
 ConfirmCloneImmoProperty = Möchten Sie diese Property wirklich klonen?
+CloneImmoProperty = Clone this property
+CloneImmoRenter = Clone this Tenant
 ConfirmCloneImmoRenter = Möchten Sie diesen Mieter wirklich klonen?
 ConfirmDeleteImmoRenter = Möchten Sie diesen Mieter wirklich löschen?
 DeleteImmoRent = Miete löschen
 ConfirmDeleteImmoRent = Möchten Sie diese Miete wirklich löschen?
+CloneImmoRent = Clone this rent
 ConfirmCloneImmoRent = Möchten Sie diese Miete wirklich klonen?
 DeleteImmoOwner = Besitzer löschen
 ConfirmDeleteImmoOwner = Möchten Sie diesen Inhaber wirklich löschen?
+CloneImmoOwner = Clone the owner
 ConfirmCloneImmoOwner = Möchten Sie diesen Besitzer wirklich klonen?
 OwnerName = Besitzername
 RenterName = Mietername
@@ -257,4 +263,21 @@ NoThirdPartyAssociatedToRenter = No thirdparty associated to this renter
 ConfirmCreateThirdParty=Are you sure you want to create a third party for this renter?
 ValidatePayment = Validate payments
 CreatePDF = Create PDF
+ImmoBirthCountry=Country of birth
+LotFiscal=Lot fiscal
+MenuImmoLotFiscal=Lot fiscaux
+MenuListImmoLotFiscal=Liste
+ImmoBuildings=Lot fiscal
+LinkToOwner = Link zum Besitzer
+LinkToThirdparty = Lié au tiers
+LinkToOwnerType = Wählen Sie den Eigentümertyp aus
+LinkToProperty = Link zur Immobilie
+LinkToRenter = Lié au locataire
+LinkToAccount = Lié au compte
+LinkToRent = Link to Contract/Rental
+PaymentMode = Méthode de paiement
+DateRelever = Date de relevé
+MeterReading = Relevé des compteurs
+UltimateLocation = Location
+LinkedToDolibarrThirdParty = Lien du Tiers
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2021 Philippe GRAND <philippe.grand@atoo-net.com>
+# Copyright (C) 2018-2022 Philippe GRAND <philippe.grand@atoo-net.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -125,7 +125,7 @@ BirthCountry = Lieu de naissance
 ImmoProperty = Bien immobilier
 Property = Bien immobilier
 Properties = Biens
-ImmoProperties = Biens immobiliers
+ImmoProperties = Biens
 ImmoRents = Locations
 ImmoRent = Location
 ImmoRenters = Locataires
@@ -149,7 +149,6 @@ DateBuilt3 = de 1975 à 1989
 DateBuilt4 = de 1989 à 2005
 DateBuilt5 = depuis 2005
 APA = Appartement
-Apartment = Appartement
 HOU = Maison individuelle
 LOC = Locaux commerciaux
 SHO = Boutique
@@ -179,7 +178,7 @@ PropertyParent = Bien Parent
 BuiltDate = Date de construction
 Target = Cible
 Civility = Titre
-Deposit = Deposit
+Deposit = Caution
 ListOfRents = Liste des locations
 ImmoRenter = Locataire
 Renter = Locataire
@@ -189,7 +188,7 @@ ChargesAmount = Montant des charges
 TotalAmount = Montant total
 Encours = Encours
 date_end = Date de fin
-DateNextRent = Date prochain loyer
+Deposit = Caution
 DateLastRegul = Date dernière régulation
 VatAmount = Montant TVA
 HtAmount = Montant HT
@@ -269,21 +268,16 @@ LotFiscal=Lot fiscal
 MenuImmoLotFiscal=Lot fiscal
 MenuListImmoLotFiscal=Liste
 ImmoBuildings=Lot fiscal
-LinkToOwner = Lié au propriétaire
+LinkToOwner = Lien vers le propriétaire
 LinkToThirdparty = Lié au tiers
-LinkToOwnerType = Lié au type de propriétaire
-LinkToProperty = Lié au bien
+LinkToOwnerType = Sélectionnez le type de propriétaire
+LinkToProperty = Lien vers le bien loué
 LinkToRenter = Lié au locataire
 LinkToAccount = Lier au compte figurant dans le module Banque | Caisses.
-LinkToRent = Lié a la location
-CostType = Type de coût
-bytes = octets
-ImmoRentNoticePeriod = Préavis
-Payed = Payé
-Create = Créer
+LinkToRent = Lien vers Contrat/Location
 PaymentMode = Méthode de paiement
 DateRelever = Date de relevé
 MeterReading = Relevé des compteurs
 UltimateLocation = Location
-LinkedToDolibarrThirdParty = Lien du Tiers 
+LinkedToDolibarrThirdParty = Lien du Tiers
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2021 Philippe GRAND <philippe.grand@atoo-net.com>
+# Copyright (C) 2018-2022 Philippe GRAND <philippe.grand@atoo-net.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -188,7 +188,7 @@ ChargesAmount = Amount of charges
 TotalAmount = Total amount
 Encours = Encours
 date_end = Date end
-DateNextRent = Date next rent
+Deposit = Deposit
 DateLastRegul = Date last regul
 VatAmount = VAT amount
 HtAmount = Amount without taxes
