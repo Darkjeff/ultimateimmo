@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2021  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2022  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -38,8 +38,7 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immorent(
 	periode varchar(128),
 	preavis integer,
 	date_start date, 
-	date_end date, 
-	date_next_rent date, 
+	date_end date,  
 	date_last_regul date, 
 	date_creation datetime NULL, 
 	tms timestamp NOT NULL default CURRENT_TIMESTAMP, 

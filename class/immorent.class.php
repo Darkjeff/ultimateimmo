@@ -113,7 +113,6 @@ class ImmoRent extends CommonObject
 		'periode' => array('type' => 'varchar(128)', 'label' => 'Periode', 'visible' => -1, 'enabled' => 1, 'position' => 85, 'notnull' => -1,),
 		'date_start' => array('type' => 'date', 'label' => 'DateStartRent', 'visible' => -1, 'enabled' => 1, 'position' => 90, 'notnull' => -1,),
 		'date_end' => array('type' => 'date', 'label' => 'date_end', 'visible' => -1, 'enabled' => 1, 'position' => 95, 'notnull' => -1,),
-		'date_next_rent' => array('type' => 'date', 'label' => 'DateNextRent', 'visible' => -1, 'enabled' => 1, 'position' => 100, 'notnull' => -1,),
 		'date_last_regul' => array('type' => 'date', 'label' => 'DateLastRegul', 'visible' => -1, 'enabled' => 1, 'position' => 110, 'notnull' => -1,),
 		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'visible' => -1, 'enabled' => 1, 'position' => 500,),
 		'tms' => array('type' => 'timestamp', 'label' => 'DateModification', 'visible' => -2, 'enabled' => 1, 'position' => 501, 'notnull' => 1,),
@@ -143,7 +142,6 @@ class ImmoRent extends CommonObject
 	public $periode;
 	public $date_start;
 	public $date_end;
-	public $date_next_rent;
 	public $date_last_regul;
 	public $date_creation;
 	public $tms;
