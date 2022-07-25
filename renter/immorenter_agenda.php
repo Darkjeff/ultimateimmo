@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2020 Philippe GRAND 	   <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	   <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,6 @@ include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be inc
 if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity] . "/" . $object->id;
 
 
-
 /*
  *	Actions
  */
@@ -124,7 +123,6 @@ if (empty($reshook)) {
 }
 
 
-
 /*
  *	View
  */
@@ -142,15 +140,14 @@ if ($object->id > 0) {
 	if (!empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immorenterPrepareHead($object);
 
-
-	dol_fiche_head($head, 'agenda', $langs->trans("ImmoRenter"), -1, 'contact');
+	print dol_get_fiche_head($head, 'agenda', $langs->trans("ImmoRenter"), -1, 'contact');
 
 	// Object card
 	// ------------------------------------------------------------
 	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref = '<div class="refidno">';
-
+	
 	// Thirdparty
 	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . (is_object($object->thirdparty) ? $object->thirdparty->getNomUrl(1) : '');
 	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1) . '?socid=' . $object->thirdparty->id . '&search_fk_soc=' . urlencode($object->thirdparty->id) . '">' . $langs->trans("OtherRents") . '</a>)';
@@ -167,8 +164,7 @@ if ($object->id > 0) {
 
 	print '</div>';
 
-	dol_fiche_end();
-
+	print dol_get_fiche_end();
 
 
 	// Actions buttons
