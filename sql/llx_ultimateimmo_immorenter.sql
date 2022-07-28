@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immorenter(
 	email varchar(255),
 	photo varchar(255), 
 	birth date,
+	birthcountry integer,
 	address varchar(255),
 	zip varchar(32), 
 	town varchar(255),

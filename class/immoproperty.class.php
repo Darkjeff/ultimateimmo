@@ -112,7 +112,7 @@ class ImmoProperty extends CommonObject
 		'address'       => array('type' => 'varchar(255)', 'label' => 'Address', 'enabled' => 1, 'visible' => 1, 'position' => 60, 'notnull' => -1),
 		'zip'           => array('type' => 'varchar(32)', 'label' => 'Zip', 'enabled' => 1, 'visible' => 1, 'position' => 95, 'notnull' => -1),
 		'town'          => array('type' => 'varchar(64)', 'label' => 'Town', 'enabled' => 1, 'visible' => 1, 'position' => 100, 'notnull' => -1),
-		'country_id' => array('type' => 'varchar:c_country:label:code:rowid', 'label' => 'Country', 'enabled' => 1, 'visible' => 1, 'position' => 110, 'notnull' => -1,),
+		'country_id' => array('type' => 'integer:c_country:label:code:rowid', 'label' => 'Country', 'enabled' => 1, 'visible' => 1, 'position' => 110, 'notnull' => -1,),
 		'building'      => array('type' => 'varchar(32)', 'label' => 'Building', 'enabled' => 1, 'visible' => 1, 'position' => 65, 'notnull' => -1),
 		'staircase'     => array('type' => 'varchar(8)', 'label' => 'Staircase', 'enabled' => 1, 'visible' => 1, 'position' => 70, 'notnull' => -1),
 		'numfloor'      => array('type' => 'varchar(8)', 'label' => 'NumFloor', 'enabled' => 1, 'visible' => 1, 'position' => 75, 'notnull' => -1),

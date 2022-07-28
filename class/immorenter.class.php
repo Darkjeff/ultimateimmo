@@ -120,10 +120,10 @@ class ImmoRenter extends CommonObject
 		'address'       => array('type' => 'varchar(255)', 'label' => 'Address', 'enabled' => 1, 'visible' => 1, 'position' => 80, 'notnull' => -1),
 		'zip'           => array('type' => 'varchar(32)', 'label' => 'Zip', 'enabled' => 1, 'visible' => 1, 'position' => 81, 'notnull' => -1),
 		'town'          => array('type' => 'varchar(64)', 'label' => 'Town', 'enabled' => 1, 'visible' => 1, 'position' => 82, 'notnull' => -1),
-		'birth' => array('type' => 'date', 'label' => 'BirthDay', 'visible' => 1, 'enabled' => 1, 'position' => 83, 'notnull' => 1,),
-		'country_id' => array('type' => 'integer:Ccountry:core/class/ccountry.class.php', 'label' => 'ImmoBirthCountry', 'enabled' => 1, 'visible' => 1, 'position' => 82, 'notnull' => -1,),
-		'town' => array('type' => 'varchar(255)', 'label' => 'BirthCountry', 'enabled' => 1, 'visible' => 1, 'position' => 83, 'notnull' => -1,),
-		'phone' => array('type' => 'varchar(30)', 'label' => 'Phone', 'visible' => -1, 'enabled' => 1, 'position' => 85, 'notnull' => -1,),
+		'country_id' => array('type' => 'integer:Ccountry:core/class/ccountry.class.php', 'label' => 'Country', 'enabled' => 1, 'visible' => 1, 'position' => 84, 'notnull' => -1,),
+		'birth' => array('type' => 'date', 'label' => 'BirthDay', 'visible' => 1, 'enabled' => 1, 'position' => 85, 'notnull' => 1,),	
+		'birthcountry' => array('type' => 'integer:Ccountry:core/class/ccountry.class.php', 'label' => 'BirthCountry', 'enabled' => 1, 'visible' => 1, 'position' => 86, 'notnull' => -1,),
+		'phone' => array('type' => 'varchar(30)', 'label' => 'Phone', 'visible' => -1, 'enabled' => 1, 'position' => 88, 'notnull' => -1,),
 		'phone_mobile' => array('type' => 'varchar(30)', 'label' => 'PhoneMobile', 'visible' => 1, 'enabled' => 1, 'position' => 90, 'notnull' => -1,),
 		'email' => array('type' => 'varchar(255)', 'label' => 'Email', 'visible' => 1, 'enabled' => 1, 'position' => 95, 'notnull' => -1,),
 		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'visible' => -2, 'enabled' => 1, 'position' => 500, 'notnull' => 1,),
@@ -178,6 +178,8 @@ class ImmoRenter extends CommonObject
 	public $email;
 
 	public $birth;
+
+	public $birthcountry;
 
 	public $address;
 
