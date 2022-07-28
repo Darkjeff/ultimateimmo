@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,8 +131,8 @@ class ImmoReceipt extends CommonObject
 		'note_public'   => array('type' => 'html', 'label' => 'NotePublic', 'enabled' => 1, 'visible' => 0, 'position' => 50),
 		'note_private'  => array('type' => 'html', 'label' => 'NotePrivate', 'enabled' => 1, 'visible' => 0, 'position' => 55),
 		'date_echeance' => array('type' => 'date', 'label' => 'Echeance', 'enabled' => 1, 'visible' => 1, 'position' => 56, 'notnull' => -1, 'default' => 'null'),
-		'date_start'    => array('type' => 'date', 'label' => 'DateStart', 'enabled' => 1, 'visible' => -1, 'position' => 57, 'notnull' => -1),
-		'date_end'      => array('type' => 'date', 'label' => 'DateEnd', 'enabled' => 1, 'visible' => -1, 'position' => 58, 'notnull' => -1),
+		'date_start'    => array('type' => 'date', 'label' => 'DateStartPeriod', 'enabled' => 1, 'visible' => -1, 'position' => 57, 'notnull' => -1),
+		'date_end'      => array('type' => 'date', 'label' => 'DateEndPeriod', 'enabled' => 1, 'visible' => -1, 'position' => 58, 'notnull' => -1),
 		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'enabled' => 1, 'visible' => -2, 'position' => 59, 'notnull' => -1),
 		'date_validation'  => array('type' => 'datetime', 'label' => 'DateValidation', 'enabled' => 1, 'visible' => -2, 'position' => 60, 'notnull' => -1),
 		'label'         => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'searchall' => 1, 'css' => 'minwidth200', 'help' => 'Help text', 'showoncombobox' => 1),

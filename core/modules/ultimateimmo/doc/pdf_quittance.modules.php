@@ -29,10 +29,10 @@ dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
-require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 
 /**
  * PDF Class
@@ -138,11 +138,11 @@ class pdf_quittance extends ModelePDFUltimateimmo
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = $formatarray['width'];
 		$this->page_hauteur = $formatarray['height'];
-		$this->format = array($this->page_largeur,$this->page_hauteur);
-		$this->marge_gauche=isset($conf->global->MAIN_PDF_MARGIN_LEFT)?$conf->global->MAIN_PDF_MARGIN_LEFT:10;
-		$this->marge_droite=isset($conf->global->MAIN_PDF_MARGIN_RIGHT)?$conf->global->MAIN_PDF_MARGIN_RIGHT:10;
-		$this->marge_haute =isset($conf->global->MAIN_PDF_MARGIN_TOP)?$conf->global->MAIN_PDF_MARGIN_TOP:10;
-		$this->marge_basse =isset($conf->global->MAIN_PDF_MARGIN_BOTTOM)?$conf->global->MAIN_PDF_MARGIN_BOTTOM:10;
+		$this->format = array($this->page_largeur, $this->page_hauteur);
+		$this->marge_gauche = isset($conf->global->MAIN_PDF_MARGIN_LEFT) ? $conf->global->MAIN_PDF_MARGIN_LEFT : 10;
+		$this->marge_droite = isset($conf->global->MAIN_PDF_MARGIN_RIGHT) ? $conf->global->MAIN_PDF_MARGIN_RIGHT : 10;
+		$this->marge_haute = isset($conf->global->MAIN_PDF_MARGIN_TOP) ? $conf->global->MAIN_PDF_MARGIN_TOP : 10;
+		$this->marge_basse = isset($conf->global->MAIN_PDF_MARGIN_BOTTOM) ? $conf->global->MAIN_PDF_MARGIN_BOTTOM : 10;
 
 		$this->option_logo = 0;                    // Affiche logo
 		$this->option_tva = 0;                     // Gere option tva FACTURE_TVAOPTION
@@ -257,11 +257,11 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 			$receipt = new ImmoReceipt($this->db);
 			$receipt->fetch($object->fk_receipt);
-
+			
 			// On recupere les infos societe
 			$renter = new ImmoRenter($this->db);
 			$result = $renter->fetch($object->fk_renter);
-
+			
 			$owner = new ImmoOwner($this->db);
 			$result = $owner->fetch($object->fk_owner);
 
@@ -270,7 +270,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 			$paiement = new ImmoPayment($this->db);
 			$result = $paiement->fetch_by_loyer($object->rowid);
-
+			
 			if (!empty($object->id)) {
 				// New page
 				$pdf->AddPage();
@@ -395,9 +395,9 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$totalpaye += $objp->amount;
 						$i++;
 					}
-
+					//var_dump($object);exit;
 					if (
-						$object->status == 0
+						$object->status == 1
 					) {
 						$text .= "<br><tr><td align=\"left\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\">" . price($totalpaye, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
 						$text .= "<tr><td align=\"left\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
