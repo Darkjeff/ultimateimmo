@@ -297,9 +297,9 @@ if (empty($reshook)) {
 			$payment = new ImmoPayment($db);
 			$payment->id = $id;
 			$id = $payment->delete($user);
-			//var_dump($payment);exit;
+			//var_dump($receipt_id);exit;
 		}
-		header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $receipt_id);
+		//header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $receipt_id);
 	}
 
 	// Update 
@@ -689,6 +689,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Confirmation to delete
 	if ($action == 'delete') {
+		var_dump($object->id);exit;
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoPayment'), $langs->trans('ConfirmDeleteImmoPayment'), 'confirm_delete', '', 0, 1);
 	}
 

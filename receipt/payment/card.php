@@ -106,7 +106,7 @@ if ($action == 'confirm_delete' && $confirm == 'yes' && $usercandelete) {
 	$result = $object->delete($user);
 	if ($result > 0) {
 		$db->commit();
-		header("Location: " . dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1));
+		header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1). '?id=' . $object->fk_receipt );
 		exit;
 	} else {
 		setEventMessages($object->error, $object->errors, 'errors');

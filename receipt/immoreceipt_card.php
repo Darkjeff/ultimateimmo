@@ -1198,7 +1198,7 @@ if (($id || $ref) && $action == 'edit') {
 
 			print '<td class="right">';
 			if ($user->admin) {
-				print '<a href="' . dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?id=' . $objp->rowid . "&amp;action=delete&amp;receipt=" . $id . '">';
+				print '<a href="' . dol_buildpath('/ultimateimmo/receipt/payment/card.php', 1) . '?id=' . $objp->rowid . "&amp;action=delete&amp;receipt=" . $id . '">';
 				print img_delete();
 				print '</a>';
 			}
