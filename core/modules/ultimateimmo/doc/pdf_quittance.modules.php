@@ -292,20 +292,32 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->SetXY($posX, $posY - 12);
 				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
 
+				$amountalreadypaid = 0;
+				if ($object->getSommePaiement()) {
+					$amountalreadypaid = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+				}
+				
 				// Bloc Quittance de loyer
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetXY($posX, $posY);
-				if ($object->paye != 1) {
+				if ($object->getSommePaiement() < $object->total_amount) {
 					$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Appel de loyer'), 1, 'C');
 				} else {
 					$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Quittance de loyer'), 1, 'C');
 				}
-
+				
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
 
-				$period = $object->label;
+				if (!empty($object->date_start)) {
+					$date_start = dol_print_date($object->date_start, 'day', 'tzuser');
+				}
+				if (!empty($object->date_end)) {
+					$date_end = dol_print_date($object->date_end, 'day', 'tzuser');
+				}
+
+				$period = $object->label . ' ' . ($outputlangs->convToOutputCharset('Du') . ' ' . $date_start . ' ' . $outputlangs->convToOutputCharset('Au') . ' ' . $date_end);
 				$pdf->MultiCell($widthbox, 3, $period, 1, 'C', 0);
 
 				/*
@@ -320,11 +332,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$posY = $pdf->getY();
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 				$pdf->SetXY($posX, $posY);
-
-				$amountalreadypaid = 0;
-				if ($receipt->getSommePaiement()) {
-					$amountalreadypaid = price($receipt->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
-				}
+				
 				if ($amountalreadypaid  > 0) {
 					$text = 'Reçu de ' . $renter->civilite . '' . $renter->firstname . ' ' . $renter->lastname . ' la somme de ' . $amountalreadypaid . "\n";
 
@@ -360,14 +368,15 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$text .= '</td>';
 				$text .= '</tr>';
 
-				$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.amount, p.note_public as type, il.total_amount ";
-				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
-				$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il ";
+				$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.fk_mode_reglement, p.amount, p.note_public as ref, c.code as type_code, c.libelle as mode_reglement_label, il.total_amount ";
+				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
+				$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ";
+				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as c ON p.fk_mode_reglement = c.id";
 				$sql .= " WHERE p.fk_receipt = " . $object->id;
 				//$sql .= " AND p.fk_receipt = il.rowid";
 				$sql .= " GROUP by p.rowid ";
 				$sql .= " ORDER BY dp DESC";
-
+				//print_r($sql);exit;
 				dol_syslog(get_class($this) . ':: Paiement', LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
@@ -377,29 +386,31 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 					if ($num > 0) {
 						$text .= '<tr>';
-						$text .= '<td align="left">' . $langs->trans("DatePayment") . '</td>';
-						//$text .= '<td align="left">' . $langs->trans("Commentaire") . '</td>';
-						$text .= '<td align="right">' . $langs->trans("Amount") . '</td>';
+						$text .= '<td width="25%">' . $langs->trans("DatePayment") . '</td>';
+						$text .= '<td width="25%">' . $langs->trans("TypePayment") . '</td>';
+						$text .= '<td width="25%">' . $langs->trans("Reference") . '</td>';
+						$text .= '<td width="25%" align="right">' . $langs->trans("Amount") . '</td>';
 						$text .= "</tr>";
 					}
 
 					while ($i < $num) {
 						$objp = $this->db->fetch_object($resql);
-
+						//var_dump($objp);exit;
 						$text .= '<tr>';
 
-						$text .= '<td>' . dol_print_date($this->db->jdate($objp->dp), 'day') . "</td>";
-						//$text .= '<td>' . $objp->type . "</td>";
-						$text .= '<td align="right">' . $objp->type . ' ' . price($objp->amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td>";
+						$text .= '<td width="25%">' . dol_print_date($this->db->jdate($objp->dp), 'day') . "</td>";
+						$text .= '<td width="25%">' . $objp->mode_reglement_label . "</td>";
+						$text .= '<td width="25%">' . $objp->ref . "</td>";
+						$text .= '<td width="25%" align="right">' . price($objp->amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td>";
 						$text .= "</tr>";
 						$totalpaye += $objp->amount;
 						$i++;
 					}
-					//var_dump($object);exit;
+					
 					if (
 						$object->status == 1
 					) {
-						$text .= "<br><tr><td align=\"left\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\">" . price($totalpaye, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
+						$text .= "<br><tr><td align=\"left\" width=\"50%\">" . $langs->trans("AlreadyPaid") . " :</td><td align=\"right\" width=\"50%\">" . price($totalpaye, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
 						$text .= "<tr><td align=\"left\">" . $langs->trans("AmountExpected") . " :</td><td align=\"right\">" . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
 
 						$resteapayer = $object->total_amount - $totalpaye;
@@ -415,9 +426,9 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1, 1);
 
 				// Tableau Loyer et solde
-				$sql = "SELECT il.label, il.balance";
-				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
-				$sql .= " WHERE il.balance<>0 AND paye=0 "; //AND date_start<'" . $this->db->idate($object->date_start) . "'";
+				$sql = "SELECT ir.label, ir.balance";
+				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir";
+				$sql .= " WHERE ir.balance<>0 "; //AND paye=0 AND date_start<'" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
 				$sql .= " ORDER BY date_echeance ASC";
 
