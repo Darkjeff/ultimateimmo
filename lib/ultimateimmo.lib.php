@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2018-2021 Philippe GRAND <philippe.grand@atoo-net.com>
+/* Copyright (C) 2018-2022 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,11 @@ function ultimateimmoAdminPrepareHead()
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/gmaps.php", 1);
 	$head[$h][1] = $langs->trans("Google Maps");
 	$head[$h][2] = 'gmaps';
+	$h++;
+
+	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/renter_emails.php", 1);
+	$head[$h][1] = $langs->trans("Emails");
+	$head[$h][2] = 'emails';
 	$h++;
 	
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/public.php", 1);

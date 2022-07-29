@@ -1513,6 +1513,252 @@ class ImmoRenter extends CommonObject
 		return $out;
 	}
 
+	/**
+	 * Send reminders by emails before subscription end
+	 * CAN BE A CRON TASK
+	 *
+	 * @param	string		$daysbeforeendlist		Nb of days before end of subscription (negative number = after subscription). Can be a list of delay, separated by a semicolon, for example '10;5;0;-5'
+	 * @return	int									0 if OK, <>0 if KO (this function is used also by cron so only 0 is OK)
+	 */
+	public function sendReminderForExpiredSubscription($daysbeforeendlist = '10')
+	{
+		global $conf, $langs, $mysoc, $user;
+
+		$error = 0;
+		$this->output = '';
+		$this->error = '';
+
+		$blockingerrormsg = '';
+
+		if (empty($conf->adherent->enabled)) { // Should not happen. If module disabled, cron job should not be visible.
+			$langs->load("agenda");
+			$this->output = $langs->trans('ModuleNotEnabled', $langs->transnoentitiesnoconv("Adherent"));
+			return 0;
+		}
+		if (empty($conf->global->RENTER_REMINDER_EMAIL)) {
+			$langs->load("agenda");
+			$this->output = $langs->trans('EventRemindersByEmailNotEnabled', $langs->transnoentitiesnoconv("Adherent"));
+			return 0;
+		}
+
+		$now = dol_now();
+		$nbok = 0;
+		$nbko = 0;
+
+		$listofmembersok = array();
+		$listofmembersko = array();
+
+		$arraydaysbeforeend = explode(';', $daysbeforeendlist);
+		foreach ($arraydaysbeforeend as $daysbeforeend) { // Loop on each delay
+			dol_syslog(__METHOD__.' - Process delta = '.$daysbeforeend, LOG_DEBUG);
+
+			if (!is_numeric($daysbeforeend)) {
+				$blockingerrormsg = "Value for delta is not a positive or negative numeric";
+				$nbko++;
+				break;
+			}
+
+			$tmp = dol_getdate($now);
+			$datetosearchfor = dol_time_plus_duree(dol_mktime(0, 0, 0, $tmp['mon'], $tmp['mday'], $tmp['year']), $daysbeforeend, 'd');
+
+			$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'adherent';
+			$sql .= " WHERE entity = ".$conf->entity; // Do not use getEntity('adherent').")" here, we want the batch to be on its entity only;
+			$sql .= " AND datefin = '".$this->db->idate($datetosearchfor)."'";
+
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				$num_rows = $this->db->num_rows($resql);
+
+				include_once DOL_DOCUMENT_ROOT.'/core/class/html.formmail.class.php';
+				$adherent = new Adherent($this->db);
+				$formmail = new FormMail($this->db);
+
+				$i = 0;
+				while ($i < $num_rows) {
+					$obj = $this->db->fetch_object($resql);
+
+					$adherent->fetch($obj->rowid, '', '', '', true, true);
+
+					if (empty($adherent->email)) {
+						$nbko++;
+						$listofmembersko[$adherent->id] = $adherent->id;
+					} else {
+						$adherent->fetch_thirdparty();
+
+						// Language code to use ($languagecodeformember) is default language of thirdparty, if no thirdparty, the language found from country of member then country of thirdparty, and if still not found we use the language of company.
+						$languagefromcountrycode = getLanguageCodeFromCountryCode($adherent->country_code ? $adherent->country_code : $adherent->thirdparty->country_code);
+						$languagecodeformember = (empty($adherent->thirdparty->default_lang) ? ($languagefromcountrycode ? $languagefromcountrycode : $mysoc->default_lang) : $adherent->thirdparty->default_lang);
+
+						// Send reminder email
+						$outputlangs = new Translate('', $conf);
+						$outputlangs->setDefaultLang($languagecodeformember);
+						$outputlangs->loadLangs(array("main", "members"));
+						dol_syslog("sendReminderForExpiredSubscription Language for member id ".$adherent->id." set to ".$outputlangs->defaultlang." mysoc->default_lang=".$mysoc->default_lang);
+
+						$arraydefaultmessage = null;
+						$labeltouse = $conf->global->ADHERENT_EMAIL_TEMPLATE_REMIND_EXPIRATION;
+
+						if (!empty($labeltouse)) {
+							$arraydefaultmessage = $formmail->getEMailTemplate($this->db, 'member', $user, $outputlangs, 0, 1, $labeltouse);
+						}
+
+						if (!empty($labeltouse) && is_object($arraydefaultmessage) && $arraydefaultmessage->id > 0) {
+							$substitutionarray = getCommonSubstitutionArray($outputlangs, 0, null, $adherent);
+							//if (is_array($adherent->thirdparty)) $substitutionarraycomp = ...
+							complete_substitutions_array($substitutionarray, $outputlangs, $adherent);
+
+							$subject = make_substitutions($arraydefaultmessage->topic, $substitutionarray, $outputlangs);
+							$msg = make_substitutions($arraydefaultmessage->content, $substitutionarray, $outputlangs);
+							$from = $conf->global->ADHERENT_MAIL_FROM;
+							$to = $adherent->email;
+
+							$trackid = 'mem'.$adherent->id;
+							$moreinheader = 'X-Dolibarr-Info: sendReminderForExpiredSubscription'."\r\n";
+
+							include_once DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php';
+							$cmail = new CMailFile($subject, $to, $from, $msg, array(), array(), array(), '', '', 0, 1, '', '', $trackid, $moreinheader);
+							$result = $cmail->sendfile();
+							if (!$result) {
+								$error++;
+								$this->error = $cmail->error;
+								if (!is_null($cmail->errors)) {
+									$this->errors += $cmail->errors;
+								}
+								$nbko++;
+								$listofmembersko[$adherent->id] = $adherent->id;
+							} else {
+								$nbok++;
+								$listofmembersok[$adherent->id] = $adherent->id;
+
+								$message = $msg;
+								$sendto = $to;
+								$sendtocc = '';
+								$sendtobcc = '';
+								$actioncode = 'EMAIL';
+								$extraparams = '';
+
+								$actionmsg = '';
+								$actionmsg2 = $langs->transnoentities('MailSentBy').' '.CMailFile::getValidAddress($from, 4, 0, 1).' '.$langs->transnoentities('To').' '.
+									CMailFile::getValidAddress($sendto, 4, 0, 1);
+								if ($message) {
+									$actionmsg = $langs->transnoentities('MailFrom').': '.dol_escape_htmltag($from);
+									$actionmsg = dol_concatdesc($actionmsg, $langs->transnoentities('MailTo').': '.dol_escape_htmltag($sendto));
+									if ($sendtocc) {
+										$actionmsg = dol_concatdesc($actionmsg, $langs->transnoentities('Bcc').": ".dol_escape_htmltag($sendtocc));
+									}
+									$actionmsg = dol_concatdesc($actionmsg, $langs->transnoentities('MailTopic').": ".$subject);
+									$actionmsg = dol_concatdesc($actionmsg, $langs->transnoentities('TextUsedInTheMessageBody').":");
+									$actionmsg = dol_concatdesc($actionmsg, $message);
+								}
+
+								require_once DOL_DOCUMENT_ROOT.'/comm/action/class/actioncomm.class.php';
+
+								// Insert record of emails sent
+								$actioncomm = new ActionComm($this->db);
+
+								$actioncomm->type_code = 'AC_OTH_AUTO'; // Type of event ('AC_OTH', 'AC_OTH_AUTO', 'AC_XXX'...)
+								$actioncomm->code = 'AC_'.$actioncode;
+								$actioncomm->label = $actionmsg2;
+								$actioncomm->note_private = $actionmsg;
+								$actioncomm->fk_project = 0;
+								$actioncomm->datep = $now;
+								$actioncomm->datef = $now;
+								$actioncomm->percentage = -1; // Not applicable
+								$actioncomm->socid = $adherent->thirdparty->id;
+								$actioncomm->contact_id = 0;
+								$actioncomm->authorid = $user->id; // User saving action
+								$actioncomm->userownerid = $user->id; // Owner of action
+								// Fields when action is en email (content should be added into note)
+								$actioncomm->email_msgid = $cmail->msgid;
+								$actioncomm->email_from = $from;
+								$actioncomm->email_sender = '';
+								$actioncomm->email_to = $to;
+								$actioncomm->email_tocc = $sendtocc;
+								$actioncomm->email_tobcc = $sendtobcc;
+								$actioncomm->email_subject = $subject;
+								$actioncomm->errors_to = '';
+
+								$actioncomm->fk_element = $adherent->id;
+								$actioncomm->elementtype = $adherent->element;
+
+								$actioncomm->extraparams = $extraparams;
+
+								$actioncomm->create($user);
+							}
+						} else {
+							$blockingerrormsg = "Can't find email template, defined into member module setup, to use for reminding";
+
+							$nbko++;
+							$listofmembersko[$adherent->id] = $adherent->id;
+
+							break;
+						}
+					}
+
+					$i++;
+				}
+			} else {
+				$this->error = $this->db->lasterror();
+				return 1;
+			}
+		}
+
+		if ($blockingerrormsg) {
+			$this->error = $blockingerrormsg;
+			return 1;
+		} else {
+			$this->output = 'Found '.($nbok + $nbko).' members to send reminder to.';
+			$this->output .= ' Send email successfuly to '.$nbok.' members';
+			if (is_array($listofmembersok)) {
+				$listofids = '';
+				$i = 0;
+				foreach ($listofmembersok as $idmember) {
+					if ($i > 100) {
+						$listofids .= ', ...';
+						break;
+					}
+					if (empty($listofids)) {
+						$listofids .= ' [';
+					} else {
+						$listofids .= ', ';
+					}
+					$listofids .= $idmember;
+					$i++;
+				}
+				if ($listofids) {
+					$listofids .= ']';
+				}
+				$this->output .= $listofids;
+			}
+			if ($nbko) {
+				$this->output .= ' - Canceled for '.$nbko.' member (no email or email sending error)';
+				if (is_array($listofmembersko)) {
+					$listofids = '';
+					$i = 0;
+					foreach ($listofmembersko as $idmember) {
+						if ($i > 100) {
+							$listofids .= ', ...';
+							break;
+						}
+						if (empty($listofids)) {
+							$listofids .= ' [';
+						} else {
+							$listofids .= ', ';
+						}
+						$listofids .= $idmember;
+						$i++;
+					}
+					if ($listofids) {
+						$listofids .= ']';
+					}
+					$this->output .= $listofids;
+				}
+			}
+		}
+
+		return 0;
+	}
+
 }
 
 /**

@@ -46,7 +46,7 @@ class modUltimateimmo extends DolibarrModules
 
 		// Id for module (must be unique).
 		// Use here a free id (See in Home -> System information -> Dolibarr for list of used modules id).
-		$this->numero = 113050;
+		$this->numero = 300050;
 		// Key text used to identify module (for permissions, menus, etc...)
 		$this->rights_class = 'ultimateimmo';
 		// Gives the possibility to the module, to provide his own family info and position of this family.
@@ -77,9 +77,9 @@ class modUltimateimmo extends DolibarrModules
 		$this->editor_url = implode(', &nbsp;', $editor_url);
 
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated' or a version string like 'x.y.z'
-		$this->version = '15.0.2';
+		$this->version = '16.0.0';
 		// Url to the file with your last numberversion of this module
-		$this->url_last_version = 'https://atoo-net.com/versionmodules/ultimateimmo/v15/ultimateimmo.txt';
+		$this->url_last_version = 'https://atoo-net.com/versionmodules/ultimateimmo/v16/ultimateimmo.txt';
 		// Key used in llx_const table to save module status enabled/disabled (where ULTIMATEIMMO is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
 		// Name of image file used for this module.
