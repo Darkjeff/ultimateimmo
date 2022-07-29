@@ -416,7 +416,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$resteapayer = $object->total_amount - $totalpaye;
 
 						$text .= "<tr><td align=\"left\">" . $langs->trans("RemainderToPay") . " :</td>";
-						$text .= "<td align=\"right\">" . price($resteapayer, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
+						$text .= "<td align=\"right\"><b>"  . price($resteapayer, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</b></td></tr>";
 					}
 
 					$this->db->free($resql);
@@ -431,13 +431,13 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$sql .= " WHERE ir.balance<>0 "; //AND paye=0 AND date_start<'" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
 				$sql .= " ORDER BY date_echeance ASC";
-
+				//print_r($sql);exit;
 				dol_syslog(get_class($this) . ':: loyerAnterieur sql=' . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 
 				if ($resql) {
 					$num = $this->db->num_rows($resql);
-
+					
 					if ($num > 0) {
 
 						// $pdf->addPage();
@@ -452,7 +452,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 						$pdf->SetXY($posX, $posY);
-						$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Rappel Solde Anterieur'), 1, 'C');
+						$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Rappel Solde Antérieur'), 1, 'C');
 
 						$text = '<table>';
 
@@ -464,12 +464,12 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$total = 0;
 						while ($i < $num) {
 							$objp = $this->db->fetch_object($resql);
-
+							
 							$text .= '<tr class="oddeven">';
 							$text .= '<td>' . $objp->name . "</td>";
 							$text .= "<td align=\"right\">" . price($objp->balance, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td>";
 							$text .= "</tr>";
-
+							
 							$i++;
 						}
 
@@ -478,7 +478,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$text .= "</table>";
 
 						$posY = $pdf->getY();
-
+						//var_dump($text);exit;
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
 						$pdf->writeHTMLCell($widthbox, 0, $posX, $posY, dol_htmlentitiesbr($text), 1, 1);
 					}
@@ -487,19 +487,19 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				// Bloc total somme due
 
 				// Tableau total somme due
-				$sql = "SELECT label, balance";
-				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il";
-				$sql .= " WHERE il.balance<>0 AND paye=0 AND date_start<='" . $this->db->idate($object->date_start) . "'";
+				$sql = "SELECT ir.label, ir.balance";
+				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir";
+				$sql .= " WHERE ir.balance<>0 AND date_start<='" . $this->db->idate($object->date_start) . "'";
 				$sql .= " AND fk_property=" . $object->fk_property . " AND fk_renter=" . $object->fk_renter;
 
 				// print $sql;
-				dol_syslog(get_class($this) . ':: total somme due', LOG_DEBUG);
+				dol_syslog(get_class($this) . ':: total sommes dues', LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
 					$num = $this->db->num_rows($resql);
 
 					if ($num > 0) {
-						$totaldue = 0;
+						$totaldue = $resteapayer;
 						$textdetail = '';
 						while ($objp = $this->db->fetch_object($resql)) {
 							$textdetail .= "<tr><td>" . $objp->label . "</td><td  align=\"right\">" . price($objp->balance, 0, $outputlangs, 1, -1, -1, $conf->currency) . "</td></tr>";
@@ -515,9 +515,9 @@ class pdf_quittance extends ModelePDFUltimateimmo
 						$pdf->SetXY($posX, $posY);
 
 						if ($totaldue > 0) {
-							$title = 'Total somme due';
+							$title = 'Total sommes dues';
 						} else {
-							$title = 'Total somme à rembourser';
+							$title = 'Total sommes à rembourser';
 						}
 
 						$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset($title), 1, 'C');
