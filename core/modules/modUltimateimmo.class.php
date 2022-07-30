@@ -1147,6 +1147,26 @@ class modUltimateimmo extends DolibarrModules
 			'user' => 2
 		);								// 0=Menu for internal users, 1=external users, 2=both
 
+		// Cronjobs
+		$arraydate = dol_getdate(dol_now());
+		$datestart = dol_mktime(22, 0, 0, $arraydate['mon'], $arraydate['mday'], $arraydate['year']);
+		$this->cronjobs = array(
+			0=>array(
+				'label'=>'SendReminderForExpiredRentLimitTitle',
+				'jobtype'=>'method', 'class'=>'ultimateimmo/class/immorenter.class.php',
+				'objectname'=>'Adherent',
+				'method'=>'SendReminderForExpiredRentLimit',
+				'parameters'=>'10;0',
+				'comment'=>'SendReminderForExpiredRentLimit',
+				'frequency'=>1,
+				'unitfrequency'=> 3600 * 24,
+				'priority'=>50,
+				'status'=>1,
+				'test'=>'$conf->ultimateimmo->enabled',
+				'datestart'=>$datestart
+			),
+		);
+
 	}
 
 	/**

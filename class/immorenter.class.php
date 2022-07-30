@@ -1514,13 +1514,13 @@ class ImmoRenter extends CommonObject
 	}
 
 	/**
-	 * Send reminders by emails before subscription end
+	 * Send reminders by emails before limit date end
 	 * CAN BE A CRON TASK
 	 *
-	 * @param	string		$daysbeforeendlist		Nb of days before end of subscription (negative number = after subscription). Can be a list of delay, separated by a semicolon, for example '10;5;0;-5'
+	 * @param	string		$daysbeforeendlist		Nb of days before limit date (negative number = after limit date). Can be a list of delay, separated by a semicolon, for example '10;5;0;-5'
 	 * @return	int									0 if OK, <>0 if KO (this function is used also by cron so only 0 is OK)
 	 */
-	public function sendReminderForExpiredSubscription($daysbeforeendlist = '10')
+	public function SendReminderForExpiredRentLimit($daysbeforeendlist = '0')
 	{
 		global $conf, $langs, $mysoc, $user;
 
@@ -1530,14 +1530,14 @@ class ImmoRenter extends CommonObject
 
 		$blockingerrormsg = '';
 
-		if (empty($conf->adherent->enabled)) { // Should not happen. If module disabled, cron job should not be visible.
+		if (empty($conf->ultimateimmo->enabled)) { // Should not happen. If module disabled, cron job should not be visible.
 			$langs->load("agenda");
-			$this->output = $langs->trans('ModuleNotEnabled', $langs->transnoentitiesnoconv("Adherent"));
+			$this->output = $langs->trans('ModuleNotEnabled', $langs->transnoentitiesnoconv("Ultimateimmo"));
 			return 0;
 		}
 		if (empty($conf->global->RENTER_REMINDER_EMAIL)) {
 			$langs->load("agenda");
-			$this->output = $langs->trans('EventRemindersByEmailNotEnabled', $langs->transnoentitiesnoconv("Adherent"));
+			$this->output = $langs->trans('EventRemindersByEmailNotEnabled', $langs->transnoentitiesnoconv("Ultimateimmo"));
 			return 0;
 		}
 
@@ -1545,8 +1545,8 @@ class ImmoRenter extends CommonObject
 		$nbok = 0;
 		$nbko = 0;
 
-		$listofmembersok = array();
-		$listofmembersko = array();
+		$listofrentersok = array();
+		$listofrentersko = array();
 
 		$arraydaysbeforeend = explode(';', $daysbeforeendlist);
 		foreach ($arraydaysbeforeend as $daysbeforeend) { // Loop on each delay
@@ -1561,10 +1561,11 @@ class ImmoRenter extends CommonObject
 			$tmp = dol_getdate($now);
 			$datetosearchfor = dol_time_plus_duree(dol_mktime(0, 0, 0, $tmp['mon'], $tmp['mday'], $tmp['year']), $daysbeforeend, 'd');
 
-			$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'adherent';
-			$sql .= " WHERE entity = ".$conf->entity; // Do not use getEntity('adherent').")" here, we want the batch to be on its entity only;
-			$sql .= " AND datefin = '".$this->db->idate($datetosearchfor)."'";
-
+			$sql = 'SELECT rec.rowid, rec.fk_renter, rec.date_end as datefin FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as rec';
+			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
+			$sql .= " WHERE entity = " . $conf->entity; // Do not use getEntity('adherent').")" here, we want the batch to be on its entity only;
+			$sql .= " AND datefin = '" . $this->db->idate($datetosearchfor) . "'";
+			print_r($sql);exit;
 			$resql = $this->db->query($sql);
 			if ($resql) {
 				$num_rows = $this->db->num_rows($resql);
@@ -1581,7 +1582,7 @@ class ImmoRenter extends CommonObject
 
 					if (empty($adherent->email)) {
 						$nbko++;
-						$listofmembersko[$adherent->id] = $adherent->id;
+						$listofrentersko[$adherent->id] = $adherent->id;
 					} else {
 						$adherent->fetch_thirdparty();
 
@@ -1593,10 +1594,10 @@ class ImmoRenter extends CommonObject
 						$outputlangs = new Translate('', $conf);
 						$outputlangs->setDefaultLang($languagecodeformember);
 						$outputlangs->loadLangs(array("main", "members"));
-						dol_syslog("sendReminderForExpiredSubscription Language for member id ".$adherent->id." set to ".$outputlangs->defaultlang." mysoc->default_lang=".$mysoc->default_lang);
+						dol_syslog("SendReminderForExpiredRentLimit Language for member id ".$adherent->id." set to ".$outputlangs->defaultlang." mysoc->default_lang=".$mysoc->default_lang);
 
 						$arraydefaultmessage = null;
-						$labeltouse = $conf->global->ADHERENT_EMAIL_TEMPLATE_REMIND_EXPIRATION;
+						$labeltouse = $conf->global->RENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION;
 
 						if (!empty($labeltouse)) {
 							$arraydefaultmessage = $formmail->getEMailTemplate($this->db, 'member', $user, $outputlangs, 0, 1, $labeltouse);
@@ -1613,7 +1614,7 @@ class ImmoRenter extends CommonObject
 							$to = $adherent->email;
 
 							$trackid = 'mem'.$adherent->id;
-							$moreinheader = 'X-Dolibarr-Info: sendReminderForExpiredSubscription'."\r\n";
+							$moreinheader = 'X-Dolibarr-Info: SendReminderForExpiredRentLimit'."\r\n";
 
 							include_once DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php';
 							$cmail = new CMailFile($subject, $to, $from, $msg, array(), array(), array(), '', '', 0, 1, '', '', $trackid, $moreinheader);
@@ -1625,10 +1626,10 @@ class ImmoRenter extends CommonObject
 									$this->errors += $cmail->errors;
 								}
 								$nbko++;
-								$listofmembersko[$adherent->id] = $adherent->id;
+								$listofrentersko[$adherent->id] = $adherent->id;
 							} else {
 								$nbok++;
-								$listofmembersok[$adherent->id] = $adherent->id;
+								$listofrentersok[$adherent->id] = $adherent->id;
 
 								$message = $msg;
 								$sendto = $to;
@@ -1689,7 +1690,7 @@ class ImmoRenter extends CommonObject
 							$blockingerrormsg = "Can't find email template, defined into member module setup, to use for reminding";
 
 							$nbko++;
-							$listofmembersko[$adherent->id] = $adherent->id;
+							$listofrentersko[$adherent->id] = $adherent->id;
 
 							break;
 						}
@@ -1709,10 +1710,10 @@ class ImmoRenter extends CommonObject
 		} else {
 			$this->output = 'Found '.($nbok + $nbko).' members to send reminder to.';
 			$this->output .= ' Send email successfuly to '.$nbok.' members';
-			if (is_array($listofmembersok)) {
+			if (is_array($listofrentersok)) {
 				$listofids = '';
 				$i = 0;
-				foreach ($listofmembersok as $idmember) {
+				foreach ($listofrentersok as $idmember) {
 					if ($i > 100) {
 						$listofids .= ', ...';
 						break;
@@ -1732,10 +1733,10 @@ class ImmoRenter extends CommonObject
 			}
 			if ($nbko) {
 				$this->output .= ' - Canceled for '.$nbko.' member (no email or email sending error)';
-				if (is_array($listofmembersko)) {
+				if (is_array($listofrentersko)) {
 					$listofids = '';
 					$i = 0;
-					foreach ($listofmembersko as $idmember) {
+					foreach ($listofrentersko as $idmember) {
 						if ($i > 100) {
 							$listofids .= ', ...';
 							break;

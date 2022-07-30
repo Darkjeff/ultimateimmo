@@ -65,7 +65,7 @@ $error = 0;
 // Editing global variables not related to a specific theme
 $constantes = array(
 	'RENTER_REMINDER_EMAIL'=>array('type'=>'yesno', 'label'=>$langs->trans('RENTER_REMINDER_EMAIL', $langs->transnoentities("Module2300Name"))),
-	'RENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION' 	=>'emailtemplate:member',
+	'RENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION' 	=>'emailtemplate:immorenter',
 );
 
 
@@ -85,7 +85,7 @@ if ($action == 'updateall') {
 		$constnote = (GETPOSTISSET('constnote_'.$constname) ? GETPOST('constnote_'.$constname, 'restricthtml') : GETPOST('constnote'));
 
 		$typetouse = empty($oldtypetonewone[$consttype]) ? $consttype : $oldtypetonewone[$consttype];
-		$constvalue = preg_replace('/:member$/', '', $constvalue);
+		$constvalue = preg_replace('/:immorenter$/', '', $constvalue);
 
 		$res = dolibarr_set_const($db, $constname, $constvalue, $consttype, 0, $constnote, $conf->entity);
 		if ($res <= 0) {
@@ -113,7 +113,7 @@ if ($action == 'update' || $action == 'add') {
 	$constnote = (GETPOSTISSET('constnote_'.$constname) ? GETPOST('constnote_'.$constname, 'restricthtml') : GETPOST('constnote'));
 
 	$typetouse = empty($oldtypetonewone[$consttype]) ? $consttype : $oldtypetonewone[$consttype];
-	$constvalue = preg_replace('/:member$/', '', $constvalue);
+	$constvalue = preg_replace('/:immorenter$/', '', $constvalue);
 
 	$res = dolibarr_set_const($db, $constname, $constvalue, $typetouse, 0, $constnote, $conf->entity);
 
