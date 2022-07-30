@@ -1154,9 +1154,9 @@ class modUltimateimmo extends DolibarrModules
 			0=>array(
 				'label'=>'SendReminderForExpiredRentLimitTitle',
 				'jobtype'=>'method', 'class'=>'ultimateimmo/class/immorenter.class.php',
-				'objectname'=>'Adherent',
+				'objectname'=>'ImmoRenter',
 				'method'=>'SendReminderForExpiredRentLimit',
-				'parameters'=>'10;0',
+				'parameters'=>'0',
 				'comment'=>'SendReminderForExpiredRentLimit',
 				'frequency'=>1,
 				'unitfrequency'=> 3600 * 24,

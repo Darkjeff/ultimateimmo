@@ -1561,59 +1561,59 @@ class ImmoRenter extends CommonObject
 			$tmp = dol_getdate($now);
 			$datetosearchfor = dol_time_plus_duree(dol_mktime(0, 0, 0, $tmp['mon'], $tmp['mday'], $tmp['year']), $daysbeforeend, 'd');
 
-			$sql = 'SELECT rec.rowid, rec.fk_renter, rec.date_end as datefin FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as rec';
+			$sql = 'SELECT rec.rowid, rec.fk_renter, rec.date_echeance as datefin FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as rec';
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
 			$sql .= " WHERE entity = " . $conf->entity; // Do not use getEntity('adherent').")" here, we want the batch to be on its entity only;
 			$sql .= " AND datefin = '" . $this->db->idate($datetosearchfor) . "'";
-			print_r($sql);exit;
+			//print_r($sql);exit;
 			$resql = $this->db->query($sql);
 			if ($resql) {
 				$num_rows = $this->db->num_rows($resql);
 
 				include_once DOL_DOCUMENT_ROOT.'/core/class/html.formmail.class.php';
-				$adherent = new Adherent($this->db);
+				$renter = new ImmoRenter($this->db);
 				$formmail = new FormMail($this->db);
 
 				$i = 0;
 				while ($i < $num_rows) {
 					$obj = $this->db->fetch_object($resql);
 
-					$adherent->fetch($obj->rowid, '', '', '', true, true);
+					$renter->fetch($obj->rowid, '', '', '', true, true);
 
-					if (empty($adherent->email)) {
+					if (empty($renter->email)) {
 						$nbko++;
-						$listofrentersko[$adherent->id] = $adherent->id;
+						$listofrentersko[$renter->id] = $renter->id;
 					} else {
-						$adherent->fetch_thirdparty();
+						$renter->fetch_thirdparty();
 
-						// Language code to use ($languagecodeformember) is default language of thirdparty, if no thirdparty, the language found from country of member then country of thirdparty, and if still not found we use the language of company.
-						$languagefromcountrycode = getLanguageCodeFromCountryCode($adherent->country_code ? $adherent->country_code : $adherent->thirdparty->country_code);
-						$languagecodeformember = (empty($adherent->thirdparty->default_lang) ? ($languagefromcountrycode ? $languagefromcountrycode : $mysoc->default_lang) : $adherent->thirdparty->default_lang);
+						// Language code to use ($languagecodeforrenter) is default language of thirdparty, if no thirdparty, the language found from country of renter then country of thirdparty, and if still not found we use the language of company.
+						$languagefromcountrycode = getLanguageCodeFromCountryCode($renter->country_code ? $renter->country_code : $renter->thirdparty->country_code);
+						$languagecodeforrenter = (empty($renter->thirdparty->default_lang) ? ($languagefromcountrycode ? $languagefromcountrycode : $mysoc->default_lang) : $renter->thirdparty->default_lang);
 
 						// Send reminder email
 						$outputlangs = new Translate('', $conf);
-						$outputlangs->setDefaultLang($languagecodeformember);
-						$outputlangs->loadLangs(array("main", "members"));
-						dol_syslog("SendReminderForExpiredRentLimit Language for member id ".$adherent->id." set to ".$outputlangs->defaultlang." mysoc->default_lang=".$mysoc->default_lang);
+						$outputlangs->setDefaultLang($languagecodeforrenter);
+						$outputlangs->loadLangs(array("main", "ultimateimmo@ultimateimmo"));
+						dol_syslog("SendReminderForExpiredRentLimit Language for renter id ".$renter->id." set to ".$outputlangs->defaultlang." mysoc->default_lang=".$mysoc->default_lang);
 
 						$arraydefaultmessage = null;
 						$labeltouse = $conf->global->RENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION;
 
 						if (!empty($labeltouse)) {
-							$arraydefaultmessage = $formmail->getEMailTemplate($this->db, 'member', $user, $outputlangs, 0, 1, $labeltouse);
+							$arraydefaultmessage = $formmail->getEMailTemplate($this->db, 'renter', $user, $outputlangs, 0, 1, $labeltouse);
 						}
 
 						if (!empty($labeltouse) && is_object($arraydefaultmessage) && $arraydefaultmessage->id > 0) {
-							$substitutionarray = getCommonSubstitutionArray($outputlangs, 0, null, $adherent);
-							//if (is_array($adherent->thirdparty)) $substitutionarraycomp = ...
-							complete_substitutions_array($substitutionarray, $outputlangs, $adherent);
+							$substitutionarray = getCommonSubstitutionArray($outputlangs, 0, null, $renter);
+							//if (is_array($renter->thirdparty)) $substitutionarraycomp = ...
+							complete_substitutions_array($substitutionarray, $outputlangs, $renter);
 
 							$subject = make_substitutions($arraydefaultmessage->topic, $substitutionarray, $outputlangs);
 							$msg = make_substitutions($arraydefaultmessage->content, $substitutionarray, $outputlangs);
-							$from = $conf->global->ADHERENT_MAIL_FROM;
-							$to = $adherent->email;
+							$from = $conf->global->RENTER_MAIL_FROM;
+							$to = $renter->email;
 
-							$trackid = 'mem'.$adherent->id;
+							$trackid = 'mem'.$renter->id;
 							$moreinheader = 'X-Dolibarr-Info: SendReminderForExpiredRentLimit'."\r\n";
 
 							include_once DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php';
@@ -1626,10 +1626,10 @@ class ImmoRenter extends CommonObject
 									$this->errors += $cmail->errors;
 								}
 								$nbko++;
-								$listofrentersko[$adherent->id] = $adherent->id;
+								$listofrentersko[$renter->id] = $renter->id;
 							} else {
 								$nbok++;
-								$listofrentersok[$adherent->id] = $adherent->id;
+								$listofrentersok[$renter->id] = $renter->id;
 
 								$message = $msg;
 								$sendto = $to;
@@ -1665,7 +1665,7 @@ class ImmoRenter extends CommonObject
 								$actioncomm->datep = $now;
 								$actioncomm->datef = $now;
 								$actioncomm->percentage = -1; // Not applicable
-								$actioncomm->socid = $adherent->thirdparty->id;
+								$actioncomm->socid = $renter->thirdparty->id;
 								$actioncomm->contact_id = 0;
 								$actioncomm->authorid = $user->id; // User saving action
 								$actioncomm->userownerid = $user->id; // Owner of action
@@ -1679,18 +1679,18 @@ class ImmoRenter extends CommonObject
 								$actioncomm->email_subject = $subject;
 								$actioncomm->errors_to = '';
 
-								$actioncomm->fk_element = $adherent->id;
-								$actioncomm->elementtype = $adherent->element;
+								$actioncomm->fk_element = $renter->id;
+								$actioncomm->elementtype = $renter->element;
 
 								$actioncomm->extraparams = $extraparams;
 
 								$actioncomm->create($user);
 							}
 						} else {
-							$blockingerrormsg = "Can't find email template, defined into member module setup, to use for reminding";
+							$blockingerrormsg = "Can't find email template, defined into renter module setup, to use for reminding";
 
 							$nbko++;
-							$listofrentersko[$adherent->id] = $adherent->id;
+							$listofrentersko[$renter->id] = $renter->id;
 
 							break;
 						}
@@ -1708,8 +1708,8 @@ class ImmoRenter extends CommonObject
 			$this->error = $blockingerrormsg;
 			return 1;
 		} else {
-			$this->output = 'Found '.($nbok + $nbko).' members to send reminder to.';
-			$this->output .= ' Send email successfuly to '.$nbok.' members';
+			$this->output = 'Found '.($nbok + $nbko).' renters to send reminder to.';
+			$this->output .= ' Send email successfuly to '.$nbok.' renters';
 			if (is_array($listofrentersok)) {
 				$listofids = '';
 				$i = 0;
@@ -1732,11 +1732,11 @@ class ImmoRenter extends CommonObject
 				$this->output .= $listofids;
 			}
 			if ($nbko) {
-				$this->output .= ' - Canceled for '.$nbko.' member (no email or email sending error)';
+				$this->output .= ' - Canceled for '.$nbko.' renter (no email or email sending error)';
 				if (is_array($listofrentersko)) {
 					$listofids = '';
 					$i = 0;
-					foreach ($listofrentersko as $idmember) {
+					foreach ($listofrentersko as $idrenter) {
 						if ($i > 100) {
 							$listofids .= ', ...';
 							break;
@@ -1746,7 +1746,7 @@ class ImmoRenter extends CommonObject
 						} else {
 							$listofids .= ', ';
 						}
-						$listofids .= $idmember;
+						$listofids .= $idrenter;
 						$i++;
 					}
 					if ($listofids) {
