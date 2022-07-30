@@ -17,7 +17,7 @@
  */
 
 /**
- * \file ultimateimmo/core/modules/ultimateimmo/pdf/pdf_quitance.module.php
+ * \file ultimateimmo/core/modules/ultimateimmo/doc/pdf_quitance.module.php
  * \ingroup ultimateimmo
  * \brief PDF for ultimateimmo
  */

@@ -1561,10 +1561,10 @@ class ImmoRenter extends CommonObject
 			$tmp = dol_getdate($now);
 			$datetosearchfor = dol_time_plus_duree(dol_mktime(0, 0, 0, $tmp['mon'], $tmp['mday'], $tmp['year']), $daysbeforeend, 'd');
 
-			$sql = 'SELECT rec.rowid, rec.fk_renter, rec.date_echeance as datefin FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as rec';
+			$sql = 'SELECT rec.rowid, rec.fk_renter, rec.date_echeance, loc.entity FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as rec';
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
-			$sql .= " WHERE entity = " . $conf->entity; // Do not use getEntity('adherent').")" here, we want the batch to be on its entity only;
-			$sql .= " AND datefin = '" . $this->db->idate($datetosearchfor) . "'";
+			$sql .= " WHERE loc.entity = " . $conf->entity; // Do not use getEntity('adherent').")" here, we want the batch to be on its entity only;
+			$sql .= " AND rec.date_echeance = '" . $this->db->idate($datetosearchfor) . "'";
 			//print_r($sql);exit;
 			$resql = $this->db->query($sql);
 			if ($resql) {
