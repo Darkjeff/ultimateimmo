@@ -66,6 +66,7 @@ UltimateImmoEquipementEauChaudeCollective=Eau chaude collective
 VATToUseForRents=Taux de TVA pour les loyers
 NoVatOnRent=Pas de TVA pour les loyers
 MoreActionsOnRent=Action supplémentaire proposée par défaut lors de l'enregistrement d'un loyer, également effectuée automatiquement lors du paiement d'un loyer en ligne
+FreeLegalTextOnReceipts= Texte légal libre sur vos quittances
 
 #
 # About page

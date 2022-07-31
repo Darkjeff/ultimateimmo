@@ -66,6 +66,7 @@ UltimateImmoEquipementEauChaudeCollective=Collective hot water
 VATToUseForRents=VAT rate for rents
 NoVatOnRent=No VAT for rents
 MoreActionsOnRent=Additional action proposed by default when registering a rent, also performed automatically when paying a rent online
+FreeLegalTextOnReceipts= Free legal text on Receipts
 
 #
 # About page
