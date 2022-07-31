@@ -1077,8 +1077,24 @@ if (($id || $ref) && $action == 'edit') {
 		print '<tr><td';
 		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
+		
+		if ($val['type'] == 'text' || $val['type'] == 'html'
+		) print ' tdtop';
+		print '">';
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		else print $langs->trans($val['label']);
+		print '<td>';
+		print '<td class="valuefield fieldname_' . $key;
+		if ($val['type'] == 'text') print ' wordbreak';
+		print '">';
+		print '<td>';
 
-		if ($val['label'] == 'PartialPayment') {
+		if ($val['label'] == 'Echeance') {
+			print dol_print_date($object->date_echeance, 'day');
+			if ($object->hasDelay() && ($totalpaye != $object->total_amount)) {			
+				print " " . img_warning($langs->trans("Late"));
+			}
+		} elseif ($val['label'] == 'PartialPayment') {
 			if ($object->getSommePaiement()) {
 				$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
 				print $totalpaye;
@@ -1097,12 +1113,6 @@ if (($id || $ref) && $action == 'edit') {
 				print $object->paye = $langs->trans('PartiallyPaidReceipt');
 			}
 		} else {
-			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-			print '">';
-			if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-			else print $langs->trans($val['label']);
-			print '</td>';
-			print '<td>';
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
 		//var_dump($val.' '.$key.' '.$value);

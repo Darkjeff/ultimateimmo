@@ -1586,6 +1586,26 @@ class ImmoReceipt extends CommonObject
 			return -1;
 		}
 	}
+
+	/**
+	 * Return if a receipt is late or not
+	 *
+	 * @return boolean     True if late, False if not late
+	 */
+	public function hasDelay()
+	{
+		//Only valid receipts
+		if ($this->status != self::STATUS_VALIDATED) {
+			return false;
+		}
+		if (!$this->date_echeance) {
+			return false;
+		}
+
+		$now = dol_now();
+
+		return $this->date_echeance < $now;
+	}
 }
 
 /**

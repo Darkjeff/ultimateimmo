@@ -1204,6 +1204,22 @@ class modUltimateimmo extends DolibarrModules
 					(1, 'STATUS_VALIDATED', '" . $langs->trans("Validate") . "', 1);"*/
 		);
 
+		// ODT template
+		$src = DOL_DOCUMENT_ROOT.'/install/doctemplates/ultimateimmo/template_ultimateimmo.odt';
+		$dirodt = DOL_DATA_ROOT.'/doctemplates/ultimateimmo';
+		$dest = $dirodt.'/template_ultimateimmo.odt';
+
+		if (file_exists($src) && !file_exists($dest)) {
+			require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+			dol_mkdir($dirodt);
+			$result = dol_copy($src, $dest, 0, 0);
+			if ($result < 0) {
+				$langs->load("errors");
+				$this->error = $langs->trans('ErrorFailToCopyFile', $src, $dest);
+				return 0;
+			}
+		}
+
 		// Document templates
 		$moduledir = 'ultimateimmo';
 		$myTmpObjects = array();

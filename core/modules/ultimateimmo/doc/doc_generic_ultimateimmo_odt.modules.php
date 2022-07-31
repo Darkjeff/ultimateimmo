@@ -39,7 +39,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/doc.lib.php';
 /**
  *	Class to build documents using ODF templates generator
  */
-class doc_generic_quittance_odt extends ModelePDFUltimateimmo
+class doc_generic_ultimateimmo_odt extends ModelePDFUltimateimmo
 {
 	/**
 	 * Issuer
