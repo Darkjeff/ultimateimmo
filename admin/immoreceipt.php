@@ -502,7 +502,7 @@ print '<td>'.$langs->trans("Value").'</td>';
 print "</tr>\n";
 
 // Insert subscription into bank account
-print '<tr class="oddeven"><td>'.$langs->trans("MoreActionsOnSubscription").'</td>';
+print '<tr class="oddeven"><td>'.$langs->trans("MoreActionsOnRent").'</td>';
 $arraychoices = array('0'=>$langs->trans("None"));
 if (!empty($conf->banque->enabled)) {
 	$arraychoices['bankdirect'] = $langs->trans("MoreActionBankDirect");
@@ -523,10 +523,10 @@ print "</tr>\n";
 
 // Use vat for invoice creation
 if (isModEnabled('facture')) {
-	print '<tr class="oddeven"><td>'.$langs->trans("VATToUseForRents").'</td>';
+	print '<tr class="oddeven"><td>' . $langs->trans("VATToUseForRents") . '</td>';
 	if (!empty($conf->banque->enabled)) {
 		print '<td>';
-		print $form->selectarray('ULTIMATEIMMO_VAT_FOR_RECEIPTS', array('0'=>$langs->trans("NoVatOnRent"), 'defaultforfoundationcountry'=>$langs->trans("Default")), (empty($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) ? '0' : $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS), 0);
+		print $form->selectarray('ULTIMATEIMMO_VAT_FOR_RECEIPTS', array('0' => $langs->trans("NoVatOnRent"), 'defaultforfoundationcountry' => $langs->trans("Default")), (empty($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) ? '0' : $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS), 0);
 		print '</td>';
 	} else {
 		print '<td class="right">';
@@ -540,7 +540,7 @@ print '</table>';
 print '</div>';
 
 print '<div class="center">';
-print '<input type="submit" class="button" value="'.$langs->trans("Update").'" name="Button">';
+print '<input type="submit" class="button" value="' . $langs->trans("Update") . '" name="Button">';
 print '</div>';
 
 print '</form>';
