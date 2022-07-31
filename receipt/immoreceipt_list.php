@@ -566,11 +566,11 @@ foreach ($object->fields as $key => $val) {
 			print $form->selectDate($search[$key . '_dtend'] ? $search[$key . '_dtend'] : '', "search_" . $key . "_dtend", 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('to'));
 			print '</div>';
 		} elseif ($key == 'lang') {
-			require_once DOL_DOCUMENT_ROOT.'/core/class/html.formadmin.class.php';
+			require_once DOL_DOCUMENT_ROOT . '/core/class/html.formadmin.class.php';
 			$formadmin = new FormAdmin($db);
 			print $formadmin->select_language($search[$key], 'search_lang', 0, null, 1, 0, 0, 'minwidth150 maxwidth200', 2);
 		} else {
-			print '<input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag(isset($search[$key]) ? $search[$key] : '').'">';
+			print '<input type="text" class="flat maxwidth75" name="search_' . $key . '" value="' . dol_escape_htmltag(isset($search[$key]) ? $search[$key] : '') . '">';
 		}
 		print '</td>';
 	}
@@ -738,6 +738,11 @@ while ($i < $imaxinloop) {
 						print $object->paye = $langs->trans('PaidReceipt');
 					} else {
 						print $object->paye = $langs->trans('PartiallyPaidReceipt');
+					}
+				} elseif ($val['label'] == 'Echeance') {
+					print dol_print_date($object->date_echeance, 'day');
+					if ($object->hasDelay() && ($totalpaye != $object->total_amount)) {
+						print " " . img_warning($langs->trans("Late"));
 					}
 				} else {
 					print $object->showOutputField($val, $key, $object->$key, '');

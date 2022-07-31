@@ -63,6 +63,9 @@ UltimateImmoEquipementAntenneTVcollective=Collective TV antenna
 UltimateImmoEquipementEspacesverts=Green spaces
 UltimateImmoEquipementChauffageCollectif=Communal heating
 UltimateImmoEquipementEauChaudeCollective=Collective hot water
+VATToUseForRents=VAT rate for rents
+NoVatOnRent=No VAT for rents
+MoreActionsOnRent=Additional action proposed by default when registering a rent, also performed automatically when paying a rent online
 
 #
 # About page
@@ -285,8 +288,7 @@ DateRelever = Date de relevé
 MeterReading = Relevé des compteurs
 UltimateLocation = Location
 LinkedToDolibarrThirdParty = Lien du Tiers
-RENTER_REMINDER_EMAIL=Activer le rappel automatique <b> par e-mail </b> des loyers en retard. Remarque: le module <strong> %s </strong> doit être activé et configuré correctement pour qu'un rappel soit envoyé.
-DescRENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION=Modèle d'email électronique à utiliser pour envoyer un rappel par courrier électronique lorsque la date limite est sur le point d'être dépassée.
-SendReminderForExpiredRentLimitTitle=Envoyer une relance par mail pour les dates limites expirées
-SendReminderForExpiredRentLimit=Envoyer un rappel par e-mail aux locataires lorsque la date limite est sur le point d'expirer (le paramètre est le nombre de jours avant la date limite pour envoyer le rappel. Il peut s'agir d'une liste de jours séparé par un point-virgule, par exemple '10;5;0;-5')
-
+RENTER_REMINDER_EMAIL=Enable automatic reminder <b>by email</b> of overdue rents. Note: The <strong>%s</strong> module must be enabled and configured correctly for a callback to be sent.
+DescRENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION=Email template to use to send an email reminder when the deadline is about to pass.
+SendReminderForExpiredRentLimitTitle=Send a reminder by email for expired deadlines
+SendReminderForExpiredRentLimit=Send an email reminder to tenants when the deadline is about to expire (the parameter is the number of days before the deadline to send the reminder. It can be a list of days separated by a semicolon, for example '10;5;0;-5')

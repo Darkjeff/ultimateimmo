@@ -104,15 +104,15 @@ if ($action == 'updateMask') {
 		setEventMessages($langs->trans("Error"), null, 'errors');
 	}
 
-	$bankuse = GETPOST('ADHERENT_BANK_USE', 'alpha');
-	$res = dolibarr_set_const($db, 'ADHERENT_BANK_USE', $bankuse, 'chaine', 0, '', $conf->entity);
+	$bankuse = GETPOST('ULTIMATEIMMO_BANK_USE', 'alpha');
+	$res = dolibarr_set_const($db, 'ULTIMATEIMMO_BANK_USE', $bankuse, 'chaine', 0, '', $conf->entity);
 	if ($res <= 0) {
 		$error++;
 		setEventMessages($langs->trans("Error"), null, 'errors');
 	}
 
 	if (isModEnabled('facture')) {
-		$res = dolibarr_set_const($db, 'ADHERENT_VAT_FOR_SUBSCRIPTIONS', GETPOST('ADHERENT_VAT_FOR_SUBSCRIPTIONS', 'alpha'), 'chaine', 0, '', $conf->entity);
+		$res = dolibarr_set_const($db, 'ULTIMATEIMMO_VAT_FOR_RECEIPTS', GETPOST('ULTIMATEIMMO_VAT_FOR_RECEIPTS', 'alpha'), 'chaine', 0, '', $conf->entity);
 		if ($res <= 0) {
 			$error++;
 			setEventMessages($langs->trans("Error"), null, 'errors');
@@ -514,8 +514,8 @@ if (!empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEn
 	$arraychoices['bankviainvoice'] = $langs->trans("MoreActionBankViaInvoice");
 }
 print '<td>';
-print $form->selectarray('ADHERENT_BANK_USE', $arraychoices, getDolGlobalString('ADHERENT_BANK_USE'), 0);
-if (getDolGlobalString('ADHERENT_BANK_USE') == 'bankdirect' || getDolGlobalString('ADHERENT_BANK_USE') == 'bankviainvoice') {
+print $form->selectarray('ULTIMATEIMMO_BANK_USE', $arraychoices, getDolGlobalString('ULTIMATEIMMO_BANK_USE'), 0);
+if (getDolGlobalString('ULTIMATEIMMO_BANK_USE') == 'bankdirect' || getDolGlobalString('ULTIMATEIMMO_BANK_USE') == 'bankviainvoice') {
 	print '<br><div style="padding-top: 5px;"><span class="opacitymedium">'.$langs->trans("ABankAccountMustBeDefinedOnPaymentModeSetup").'</span></div>';
 }
 print '</td>';
@@ -523,10 +523,10 @@ print "</tr>\n";
 
 // Use vat for invoice creation
 if (isModEnabled('facture')) {
-	print '<tr class="oddeven"><td>'.$langs->trans("VATToUseForSubscriptions").'</td>';
+	print '<tr class="oddeven"><td>'.$langs->trans("VATToUseForRents").'</td>';
 	if (!empty($conf->banque->enabled)) {
 		print '<td>';
-		print $form->selectarray('ADHERENT_VAT_FOR_SUBSCRIPTIONS', array('0'=>$langs->trans("NoVatOnSubscription"), 'defaultforfoundationcountry'=>$langs->trans("Default")), (empty($conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS) ? '0' : $conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS), 0);
+		print $form->selectarray('ULTIMATEIMMO_VAT_FOR_RECEIPTS', array('0'=>$langs->trans("NoVatOnRent"), 'defaultforfoundationcountry'=>$langs->trans("Default")), (empty($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) ? '0' : $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS), 0);
 		print '</td>';
 	} else {
 		print '<td class="right">';
