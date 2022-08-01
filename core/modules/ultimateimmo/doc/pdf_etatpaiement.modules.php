@@ -31,12 +31,11 @@ dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immoowner_type.class.php');
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
-dol_include_once('/ultimateimmo/class/myultimateimmo.class.php');
 dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php');
-require_once (DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php');
+require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 
 class pdf_etatpaiement extends ModelePDFUltimateimmo
 {

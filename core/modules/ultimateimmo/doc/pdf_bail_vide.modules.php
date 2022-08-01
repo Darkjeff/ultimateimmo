@@ -1,7 +1,7 @@
 <?php
 /**
  * Copyright (C) 2012-2013 Florian Henry  <florian.henry@open-concept.pro>
- * Copyright (C) 2018-2019 Philippe GRAND <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@ dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/class/immoowner_type.class.php');
 dol_include_once('/ultimateimmo/class/immopayment.class.php');
-dol_include_once('/ultimateimmo/class/myultimateimmo.class.php');
 dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php');
