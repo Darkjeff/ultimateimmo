@@ -17,7 +17,7 @@
  */
 
 /**
- * \file ultimateimmo/core/modules/ultimateimmo/pdf/pdf_bail_vide.module.php
+ * \file ultimateimmo/core/modules/ultimateimmo/pdf/pdf_bail_vide.modules.php
  * \ingroup ultimateimmo
  * \brief PDF for ultimateimmo
  */
