@@ -56,7 +56,9 @@ dol_include_once('/ultimateimmo/core/modules/ultimateimmo/doc/pdf_quittance.modu
 $langs->loadLangs(array("admin", "errors", "ultimateimmo@ultimateimmo"));
 
 // Access control
-if (!$user->admin) accessforbidden();
+if (!$user->admin) {
+	accessforbidden();
+}
 
 // Parameters
 $action = GETPOST('action', 'alpha');
@@ -80,16 +82,18 @@ include DOL_DOCUMENT_ROOT.'/core/actions_setmoduleoptions.inc.php';
 if ($action == 'updateMask') {
 	$maskconstimmo = GETPOST('maskconstimmo', 'alpha');
 	$maskimmo = GETPOST('maskimmo', 'alpha');
-	if (!empty($maskconstimmo))
+	if (!empty($maskconstimmo)) {
 		$res = dolibarr_set_const($db, $maskconstimmo, $maskimmo, 'chaine', 0, '', $conf->entity);
+	}
 
 	if (isset($res)) {
-		if ($res > 0)
+		if ($res > 0) {
 			setEventMessages($langs->trans("SetupSaved"), null, 'mesgs');
-		else
+		} else {
 			setEventMessages($langs->trans("Error"), null, 'errors');
+		}
 	}
-} else if ($action == 'set_param') {
+} elseif ($action == 'set_param') {
 	$freetext = GETPOST('ULTIMATEIMMO_FREE_TEXT', 'none');	// No alpha here, we want exact string
 	$res = dolibarr_set_const($db, "ULTIMATEIMMO_FREE_TEXT", $freetext, 'chaine', 0, '', $conf->entity);
 	if ($res <= 0) {
@@ -122,7 +126,7 @@ if ($action == 'updateMask') {
 	if (!$error) {
 		setEventMessages($langs->trans("SetupSaved"), null, 'mesgs');
 	}
-} else if ($action == 'specimen') {
+} elseif ($action == 'specimen') {
 	$modele = GETPOST('module', 'alpha');
 
 	$receipt = new ImmoReceipt($db);
@@ -160,32 +164,25 @@ if ($action == 'updateMask') {
 		setEventMessages($langs->trans("ErrorModuleNotFound"), null, 'errors');
 		dol_syslog($langs->trans("ErrorModuleNotFound"), LOG_ERR);
 	}
-}
-
-// Activate a model
-else if ($action == 'set') {
+} elseif ($action == 'set') {	// Activate a model
 	$ret = addDocumentModel($value, $type, $label, $scandir);
-} else if ($action == 'del') {
+} elseif ($action == 'del') {
 	$ret = delDocumentModel($value, $type);
 	if ($ret > 0) {
 		if ($conf->global->ULTIMATEIMMO_ADDON_PDF == "$value") dolibarr_del_const($db, 'ULTIMATEIMMO_ADDON_PDF', $conf->entity);
 	}
-}
-
-// Set default model
-else if ($action == 'setdoc') {
+} elseif ($action == 'setdoc') {	// Set default model
 	if (dolibarr_set_const($db, "ULTIMATEIMMO_ADDON_PDF", $value, 'chaine', 0, '', $conf->entity)) {
 		// La constante qui a ete lue en avant du nouveau set
 		// on passe donc par une variable pour avoir un affichage coherent
 		$conf->global->ULTIMATEIMMO_ADDON_PDF = $value;
 	}
-
 	// On active le modele
 	$ret = delDocumentModel($value, $type);
 	if ($ret > 0) {
 		$ret = addDocumentModel($value, $type, $label, $scandir);
 	}
-} else if ($action == 'setmodel') {
+} elseif ($action == 'setmodel') {
 	dolibarr_set_const($db, "ULTIMATEIMMO_ADDON_NUMBER", $value, 'chaine', 0, '', $conf->entity);
 }
 

@@ -18,7 +18,7 @@
  */
 
 /**
- *	\file       htdocs/compta/paiement.php
+ *	\file       htdocs/custom/ultimateimmo/receipt/payment/paiement.php
  *	\ingroup    facture
  *	\brief      Payment page for customers invoices
  */
@@ -55,6 +55,7 @@ dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
 //require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
 require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
+require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
 // Load translation files required by the page
 $langs->loadLangs(array('companies', 'bills', 'banks'));
@@ -279,11 +280,11 @@ if (GETPOST('action', 'aZ09') == 'create') {
 			$bankviainvoice = 1;
 		}
 	} else {
-		if (!empty($conf->global->ADHERENT_BANK_USE) && $conf->global->ADHERENT_BANK_USE == 'bankviainvoice' && !empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+		if (!empty($conf->global->ULTIMATEIMMO_BANK_USE) && $conf->global->ULTIMATEIMMO_BANK_USE == 'bankviainvoice' && !empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
 			$bankviainvoice = 1;
-		} elseif (!empty($conf->global->ADHERENT_BANK_USE) && $conf->global->ADHERENT_BANK_USE == 'bankdirect' && !empty($conf->banque->enabled)) {
+		} elseif (!empty($conf->global->ULTIMATEIMMO_BANK_USE) && $conf->global->ULTIMATEIMMO_BANK_USE == 'bankdirect' && !empty($conf->banque->enabled)) {
 			$bankdirect = 1;
-		} elseif (!empty($conf->global->ADHERENT_BANK_USE) && $conf->global->ADHERENT_BANK_USE == 'invoiceonly' && !empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+		} elseif (!empty($conf->global->ULTIMATEIMMO_BANK_USE) && $conf->global->ULTIMATEIMMO_BANK_USE == 'invoiceonly' && !empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
 			$invoiceonly = 1;
 		}
 	}
@@ -291,7 +292,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 	print "\n\n<!-- Form add subscription -->\n";
 
 	if ($conf->use_javascript_ajax) {
-		//var_dump($bankdirect.'-'.$bankviainvoice.'-'.$invoiceonly.'-'.empty($conf->global->ADHERENT_BANK_USE));
+		//var_dump($bankdirect.'-'.$bankviainvoice.'-'.$invoiceonly.'-'.empty($conf->global->ULTIMATEIMMO_BANK_USE));
 		print "\n".'<script type="text/javascript">';
 		print '$(document).ready(function () {
 					$(".bankswitchclass, .bankswitchclass2").'.(($bankdirect || $bankviainvoice) ? 'show()' : 'hide()').';
@@ -470,16 +471,16 @@ if (GETPOST('action', 'aZ09') == 'create') {
 					print $langs->trans("CreateDolibarrThirdParty");
 					print '</a>)';
 				}
-				if (empty($conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS) || $conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS != 'defaultforfoundationcountry') {
+				if (empty($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) || $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS != 'defaultforfoundationcountry') {
 					print '. <span class="opacitymedium">' . $langs->trans("NoVatOnSubscription", 0) . '</span>';
 				}
-				if (!empty($conf->global->ADHERENT_PRODUCT_ID_FOR_SUBSCRIPTIONS) && (!empty($conf->product->enabled) || !empty($conf->service->enabled))) {
+				if (!empty($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS) && (!empty($conf->product->enabled) || !empty($conf->service->enabled))) {
 					$prodtmp = new Product($db);
-					$result = $prodtmp->fetch($conf->global->ADHERENT_PRODUCT_ID_FOR_SUBSCRIPTIONS);
+					$result = $prodtmp->fetch($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS);
 					if ($result < 0) {
 						setEventMessage($prodtmp->error, 'errors');
 					}
-					print '. ' . $langs->transnoentitiesnoconv("ADHERENT_PRODUCT_ID_FOR_SUBSCRIPTIONS", $prodtmp->getNomUrl(1)); // must use noentitiesnoconv to avoid to encode html into getNomUrl of product
+					print '. ' . $langs->transnoentitiesnoconv("ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS", $prodtmp->getNomUrl(1)); // must use noentitiesnoconv to avoid to encode html into getNomUrl of product
 				}
 				print '</label><br>';
 			}
@@ -500,16 +501,16 @@ if (GETPOST('action', 'aZ09') == 'create') {
 					print $langs->trans("CreateDolibarrThirdParty");
 					print '</a>)';
 				}
-				if (empty($conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS) || $conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS != 'defaultforfoundationcountry') {
+				if (empty($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) || $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS != 'defaultforfoundationcountry') {
 					print '. <span class="opacitymedium">' . $langs->trans("NoVatOnSubscription", 0) . '</span>';
 				}
-				if (!empty($conf->global->ADHERENT_PRODUCT_ID_FOR_SUBSCRIPTIONS) && (!empty($conf->product->enabled) || !empty($conf->service->enabled))) {
+				if (!empty($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS) && (!empty($conf->product->enabled) || !empty($conf->service->enabled))) {
 					$prodtmp = new Product($db);
-					$result = $prodtmp->fetch($conf->global->ADHERENT_PRODUCT_ID_FOR_SUBSCRIPTIONS);
+					$result = $prodtmp->fetch($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS);
 					if ($result < 0) {
 						setEventMessage($prodtmp->error, 'errors');
 					}
-					print '. ' . $langs->transnoentitiesnoconv("ADHERENT_PRODUCT_ID_FOR_SUBSCRIPTIONS", $prodtmp->getNomUrl(1)); // must use noentitiesnoconv to avoid to encode html into getNomUrl of product
+					print '. ' . $langs->transnoentitiesnoconv("ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS", $prodtmp->getNomUrl(1)); // must use noentitiesnoconv to avoid to encode html into getNomUrl of product
 				}
 				print '</label><br>';
 			}

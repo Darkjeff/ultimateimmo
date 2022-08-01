@@ -526,10 +526,12 @@ if (empty($reshook)) {
 $form = new Form($db);
 $formfile = new FormFile($db);
 $paymentstatic = new ImmoPayment($db);
+$paymentstatic->fetch($object->fk_payment);
 $bankaccountstatic = new Account($db);
+$bankaccountstatic->fetch($object->fk_account);
 
 llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
-
+//var_dump($bankaccountstatic);exit;
 // Load object modReceipt
 $module = (!empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER) ? $conf->global->ULTIMATEIMMO_ADDON_NUMBER : 'mod_ultimateimmo_standard');
 

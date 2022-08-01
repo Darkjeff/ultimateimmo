@@ -117,7 +117,8 @@ class modUltimateimmo extends DolibarrModules
 			'/ultimateimmo/owner',
 			'/ultimateimmo/receipt',
 			'/ultimateimmo/renter',
-			'/ultimateimmo/rentmassgen'
+			'/ultimateimmo/rentmassgen',
+			'/doctemplates/ultimateimmo'
 		);
 
 		// Config pages. Put here list of php page, stored into ultimateimmo/admin directory, to use to setup module.
