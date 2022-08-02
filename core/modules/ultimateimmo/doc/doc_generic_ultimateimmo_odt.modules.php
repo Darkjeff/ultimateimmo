@@ -172,13 +172,13 @@ class doc_generic_ultimateimmo_odt extends ModelePDFUltimateimmo
 			$texte .= '</b>';
 		}
 
-		if ($nbofiles) {
-			$texte .= '<div id="div_'.get_class($this).'" class="hidden">';
+		if (count($listofdir)) {
+			$texte .= $langs->trans("NumberOfModelFilesFound").': <b>'.count($listoffiles).'</b>';
+
+			$texte .= '<div id="div_'.get_class($this).'" class="hiddenx">';
+			// Show list of found files
 			foreach ($listoffiles as $file) {
-				$texte .= '- '.$file['name'];
-				$texte .= ' <a href="'.DOL_URL_ROOT.'/document.php?modulepart=doctemplates&file=ultimateimmo/'.urlencode(basename($file['name'])).'">'.img_picto('', 'listlight').'</a>';
-				$texte .= ' &nbsp; <a class="reposition" href="'.$_SERVER["PHP_SELF"].'?modulepart=doctemplates&keyforuploaddir=COMPANY_ADDON_PDF_ODT_PATH&action=deletefile&token='.newToken().'&file='.urlencode(basename($file['name'])).'">'.img_picto('', 'delete').'</a>';
-				$texte .= '<br>';
+				$texte .= '- '.$file['name'].' <a href="'.DOL_URL_ROOT.'/document.php?modulepart=doctemplates&file=ultimateimmo/'.urlencode(basename($file['name'])).'">'.img_picto('', 'listlight').'</a><br>';
 			}
 			$texte .= '</div>';
 		}

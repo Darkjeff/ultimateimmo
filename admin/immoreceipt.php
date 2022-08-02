@@ -64,6 +64,7 @@ if (!$user->admin) {
 $action = GETPOST('action', 'alpha');
 $backtopage = GETPOST('backtopage', 'alpha');
 $value = GETPOST('value', 'alpha');
+$modulepart = GETPOST('modulepart', 'aZ09');	// Used by actions_setmoduleoptions.inc.php
 $label = GETPOST('label', 'alpha');
 $scandir = GETPOST('scan_dir', 'alpha');
 $type = 'ultimateimmo';
@@ -372,20 +373,23 @@ foreach ($dirmodels as $reldir) {
 								print '<tr class="oddeven"><td width="100">';
 								print(empty($module->name) ? $name : $module->name);
 								print "</td><td>\n";
-								if (method_exists($module, 'info')) print $module->info($langs);
-								else print $module->description;
+								if (method_exists($module, 'info')) {
+									print $module->info($langs);
+								} else {
+									print $module->description;
+								}
 								print '</td>';
 
 								// Active
 								if (in_array($name, $def)) {
-									print "<td align=\"center\">\n";
-									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=del&amp;value=' . $name . '">';
+									print '<td class="center">'."\n";
+									print '<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?action=del&token='.newToken().'&value='.urlencode($name).'">';
 									print img_picto($langs->trans("Enabled"), 'switch_on');
 									print '</a>';
-									print "</td>";
+									print '</td>';
 								} else {
-									print "<td align=\"center\">\n";
-									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=set&amp;value=' . $name . '&amp;scan_dir=' . $module->scandir . '&amp;label=' . urlencode($module->name) . '">' . img_picto($langs->trans("Disabled"), 'switch_off') . '</a>';
+									print '<td class="center">'."\n";
+									print '<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?action=set&token='.newToken().'&value='.urlencode($name).'&scan_dir='.urlencode($module->scandir).'&label='.urlencode($module->name).'">'.img_picto($langs->trans("Disabled"), 'switch_off').'</a>';
 									print "</td>";
 								}
 
@@ -394,14 +398,17 @@ foreach ($dirmodels as $reldir) {
 								if ($conf->global->ULTIMATEIMMO_ADDON_PDF == $name) {
 									print img_picto($langs->trans("Default"), 'on');
 								} else {
-									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=setdoc&amp;value=' . $name . '&amp;scan_dir=' . $module->scandir . '&amp;label=' . urlencode($module->name) . '" alt="' . $langs->trans("Default") . '">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
+									print '<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?action=setdoc&token='.newToken().'&value='.urlencode($name).'&amp;scan_dir='.urlencode($module->scandir).'&label='.urlencode($module->name).'" alt="'.$langs->trans("Default").'">'.img_picto($langs->trans("Disabled"), 'off').'</a>';
 								}
 								print '</td>';
 
 								// Info
 								$htmltooltip =    '' . $langs->trans("Name") . ': ' . $module->name;
 								$htmltooltip .= '<br>' . $langs->trans("Type") . ': ' . ($module->type ? $module->type : $langs->trans("Unknown"));
-								$htmltooltip .= '<br>' . $langs->trans("Width") . '/' . $langs->trans("Height") . ': ' . $module->page_largeur . '/' . $module->page_hauteur;
+								if ($module->type == 'pdf') {
+									$htmltooltip .= '<br>'.$langs->trans("Width").'/'.$langs->trans("Height").': '.$module->page_largeur.'/'.$module->page_hauteur;
+								}
+								$htmltooltip .= '<br>' . $langs->trans("Path") . ': ' . preg_replace('/^\//', '', $realpath) . '/' . $file;
 								$htmltooltip .= '<br><br><u>' . $langs->trans("FeaturesSupported") . ':</u>';
 								$htmltooltip .= '<br>' . $langs->trans("Logo") . ': ' . yn($module->option_logo, 1, 1);
 								$htmltooltip .= '<br>' . $langs->trans("PaymentMode") . ': ' . yn($module->option_modereg, 1, 1);
