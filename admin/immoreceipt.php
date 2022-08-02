@@ -51,6 +51,7 @@ dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 dol_include_once('/ultimateimmo/core/modules/ultimateimmo/doc/pdf_bail_vide.modules.php');
 dol_include_once('/ultimateimmo/core/modules/ultimateimmo/doc/pdf_quittance.modules.php');
+dol_include_once('/ultimateimmo/core/modules/ultimateimmo/doc/doc_generic_ultimateimmo_odt.modules.php');
 
 // Translations
 $langs->loadLangs(array("admin", "errors", "ultimateimmo@ultimateimmo"));

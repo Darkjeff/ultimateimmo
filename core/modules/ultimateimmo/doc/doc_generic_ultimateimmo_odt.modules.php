@@ -120,7 +120,7 @@ class doc_generic_ultimateimmo_odt extends ModelePDFUltimateimmo
 		$form = new Form($this->db);
 
 		$texte = $this->description.".<br>\n";
-		$texte .= '<form action="'.$_SERVER["PHP_SELF"].'" method="POST">';
+		$texte .= '<form action="'.$_SERVER["PHP_SELF"].'" method="POST" enctype="multipart/form-data">';
 		$texte .= '<input type="hidden" name="token" value="'.newToken().'">';
 		$texte .= '<input type="hidden" name="page_y" value="">';
 		$texte .= '<input type="hidden" name="action" value="setModuleOptions">';
@@ -163,15 +163,6 @@ class doc_generic_ultimateimmo_odt extends ModelePDFUltimateimmo
 		$texte .= '<br></div></div>';
 
 		// Scan directories
-		$nbofiles = count($listoffiles);
-		if (!empty($conf->global->ULTIMATEIMMO_ADDON_PDF_ODT_PATH)) {
-			$texte .= $langs->trans("NumberOfModelFilesFound").': <b>';
-			//$texte.=$nbofiles?'<a id="a_'.get_class($this).'" href="#">':'';
-			$texte .= count($listoffiles);
-			//$texte.=$nbofiles?'</a>':'';
-			$texte .= '</b>';
-		}
-
 		if (count($listofdir)) {
 			$texte .= $langs->trans("NumberOfModelFilesFound").': <b>'.count($listoffiles).'</b>';
 
@@ -182,8 +173,6 @@ class doc_generic_ultimateimmo_odt extends ModelePDFUltimateimmo
 			}
 			$texte .= '</div>';
 		}
-
-		$texte .= '</td>';
 
 		// Add input to upload a new template file.
 		$texte .= '<div>'.$langs->trans("UploadNewTemplate");
@@ -268,7 +257,7 @@ class doc_generic_ultimateimmo_odt extends ModelePDFUltimateimmo
 			if (!preg_match('/specimen/i', $objectref)) {
 				$dir .= "/".$objectref;
 			}
-			$file = $dir."/".$objectref.".odt";
+			$file = $dir . "/" . $objectref . ".odt";
 
 			if (!file_exists($dir)) {
 				if (dol_mkdir($dir) < 0) {
