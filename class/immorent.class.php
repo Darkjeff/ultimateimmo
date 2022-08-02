@@ -102,7 +102,7 @@ class ImmoRent extends CommonObject
 		'fk_renter' => array('type' => 'integer:ImmoRenter:ultimateimmo/class/immorenter.class.php', 'label' => 'Renter', 'visible' => 1, 'enabled' => 1, 'position' => 40, 'notnull' => -1, 'index' => 1, 'foreignkey' => 'ultimateimmo_immorenter.rowid', 'searchall' => 1, 'help' => "LinkToRenter",),
 		'fk_soc' => array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'picto'=>'company', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 42, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToThirdpartyRenter", 'foreignkey' => 'societe.rowid',),
 		'location_type_id' => array('type' => 'integer', 'label' => 'ImmorentType', 'enabled' => 1, 'visible' => 1, 'position' => 44, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'EmptyHousing', '2' => 'FurnishedApartment')),
-		'vat' => array('type' => 'integer', 'label' => 'VAT', 'visible' => -1, 'enabled' => 1, 'position' => 45, 'notnull' => -1, 'index' => 1, 'arrayofkeyval' => array('1' => 'No', '2' => 'Yes')),
+		'vat' => array('type' => 'integer', 'label' => 'VATToUseForRents', 'visible' => -1, 'enabled' => 1, 'position' => 45, 'notnull' => -1, 'index' => 1, 'arrayofkeyval' => array('1' => "NoVatOnRent", '2' => "Default")),
 		'note_public' => array('type' => 'html', 'label' => 'NotePublic', 'visible' => -1, 'enabled' => 1, 'position' => 50, 'notnull' => -1,),
 		'note_private' => array('type' => 'html', 'label' => 'NotePrivate', 'visible' => -1, 'enabled' => 1, 'position' => 55, 'notnull' => -1,),
 		'rentamount' => array('type' => 'price', 'label' => 'RentAmount', 'visible' => 1, 'enabled' => 1, 'position' => 60, 'notnull' => -1, 'isameasure' => 1,),
@@ -201,7 +201,9 @@ class ImmoRent extends CommonObject
 		}
 
 		// Translate some data of arrayofkeyval
-		$this->fields['vat']['arrayofkeyval'] = array(1 => $langs->trans('No'), 2 => $langs->trans('Yes'));
+		$this->fields['vat']['arrayofkeyval'] = array(
+			1 => $langs->trans("NoVatOnRent"), 
+			2 => $langs->trans("Default"));
 		$this->fields['location_type_id']['arrayofkeyval'] = array(
 			1 => $langs->trans('EmptyHousing'),
 			2 => $langs->trans('FurnishedApartment')
