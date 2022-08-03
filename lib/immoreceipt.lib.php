@@ -36,9 +36,14 @@ function immoreceiptPrepareHead($object)
 	$h = 0;
 	$head = array();
 
-	$head[$h][0] = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1).'?id='.$object->id;
-	$head[$h][1] = $langs->trans("Card");
+	$head[$h][0] = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $object->id;
+	$head[$h][1] = $langs->trans("ImmoReceipt");
 	$head[$h][2] = 'card';
+	$h++;
+
+	$head[$h][0] = dol_buildpath('/ultimateimmo/receipt/payment/paiement.php', 1) . '?id=' . $object->id. '&amp;action=create';
+	$head[$h][1] = $langs->trans("ImmoPayment");
+	$head[$h][2] = 'payment';
 	$h++;
 
 	if (isset($object->fields['note_public']) || isset($object->fields['note_private']))

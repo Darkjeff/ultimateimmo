@@ -52,6 +52,7 @@ dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
+dol_include_once('/ultimateimmo/lib/immoreceipt.lib.php');
 //require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
 require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
@@ -371,10 +372,12 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 	if ($result >= 0) {
 		//$ret = $paiement->fetch_thirdparty();
-		$title = '';
+		/*$title = '';
 		if ($receipt->type != ImmoReceipt::TYPE_CREDIT_NOTE) $title .= $langs->trans("EnterPaymentReceivedFromCustomer");
 		if ($receipt->type == ImmoReceipt::TYPE_CREDIT_NOTE) $title .= $langs->trans("EnterPaymentDueToCustomer");
-		print load_fiche_titre($title);
+		print load_fiche_titre($title);*/
+
+		$head = immoreceiptPrepareHead($receipt);
 
 		print '<form id="payment_form" name="add_payment" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 		print '<input type="hidden" name="token" value="' . newToken() . '">';
@@ -382,7 +385,24 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		print '<input type="hidden" name="id" value="' . $id . '">';
 		print '<input type="hidden" name="socid" value="' . $renter->fk_soc . '">';
 
-		print dol_get_fiche_head(array(), '');
+		print dol_get_fiche_head($head, 'payment', $langs->trans("ImmoPayment"), -1, 'bill');
+
+		$linkback = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+
+		$receipt->fetch_thirdparty();
+
+		$morehtmlref = '<div class="refidno">';
+		// Ref renter
+		$staticImmorenter = new ImmoRenter($db);
+		$staticImmorenter->fetch($receipt->fk_renter);
+		$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $staticImmorenter->ref, $receipt, $usercancreate, 'string', '', 0, 1);
+		$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $staticImmorenter->ref . ' - ' . $staticImmorenter->getFullName($langs), $receipt, $usercancreate, 'string', '', null, null, '', 1);
+		// Thirdparty
+		$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . (is_object($receipt->thirdparty) ? $receipt->thirdparty->getNomUrl(1) : '');
+		if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $receipt->thirdparty->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1) . '?socid=' . $receipt->thirdparty->id . '&search_fk_soc=' . urlencode($receipt->thirdparty->id) . '">' . $langs->trans("OtherReceipts") . '</a>)';
+		$morehtmlref .= '</div>';
+
+		dol_banner_tab($receipt, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '', 0, '', '');
 
 		print '<table class="border centpercent">' . "\n";
 
