@@ -60,8 +60,8 @@ UltimateImmoEquipementEauChaudeCollective=Collective hot water
 #
 # Menu
 #
-ImmoProperties = real estate
-MenuImmoProperty = real estate
+ImmoProperties = Real estate
+MenuImmoProperty = Real estate
 MenuNewImmoProperty = New real estate
 MenuListImmoProperty = List
 MenuImmoPropertyType = Type of real estate
@@ -160,7 +160,7 @@ Staircase = Staircase
 NumFloor = Floor Number
 NumFlat = Apartment Number
 NumDoor = Door n°
-Area = Surfacearea
+Area = Surface area
 NumberOfRoom = Number of rooms
 PropertyParent = Parent property
 BuiltDate = Construction date
