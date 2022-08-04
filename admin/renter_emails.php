@@ -66,6 +66,7 @@ $error = 0;
 $constantes = array(
 	'RENTER_REMINDER_EMAIL'=>array('type'=>'yesno', 'label'=>$langs->trans('RENTER_REMINDER_EMAIL', $langs->transnoentities("Module2300Name"))),
 	'RENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION' 	=>'emailtemplate:immorenter',
+	'RENTER_MAIL_FROM' =>'string',
 );
 
 

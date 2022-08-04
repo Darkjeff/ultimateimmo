@@ -48,7 +48,7 @@ class RenterSoc extends Societe
 	{
 		// phpcs:enable
 		global $conf, $user, $langs;
-
+		
 		dol_syslog(get_class($this)."::create_from_renter", LOG_DEBUG);
 
 		$name = $socname ? $socname : $renter->societe;

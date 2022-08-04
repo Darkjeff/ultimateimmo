@@ -161,7 +161,16 @@ class ImmoRenter extends CommonObject
 
 	public $fk_soc;
 
+	/**
+	 * @var string company name
+	 * @deprecated
+	 */
 	public $societe;
+
+	/**
+	 * @var string company name
+	 */
+	public $company;
 
 	public $note_public;
 
@@ -288,6 +297,126 @@ class ImmoRenter extends CommonObject
 				}
 			}
 		}
+	}
+
+	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
+	/**
+	 *  Function sending an email to the current renter with the text supplied in parameter.
+	 *
+	 *  @param	string	$text				Content of message (not html entities encoded)
+	 *  @param	string	$subject			Subject of message
+	 *  @param 	array	$filename_list      Array of attached files
+	 *  @param 	array	$mimetype_list      Array of mime types of attached files
+	 *  @param 	array	$mimefilename_list  Array of public names of attached files
+	 *  @param 	string	$addr_cc            Email cc
+	 *  @param 	string	$addr_bcc           Email bcc
+	 *  @param 	int		$deliveryreceipt	Ask a delivery receipt
+	 *  @param	int		$msgishtml			1=String IS already html, 0=String IS NOT html, -1=Unknown need autodetection
+	 *  @param	string	$errors_to			erros to
+	 *  @param	string	$moreinheader		Add more html headers
+	 *  @return	int							<0 if KO, >0 if OK
+	 */
+	public function send_an_email($text, $subject, $filename_list = array(), $mimetype_list = array(), $mimefilename_list = array(), $addr_cc = "", $addr_bcc = "", $deliveryreceipt = 0, $msgishtml = -1, $errors_to = '', $moreinheader = '')
+	{
+		// phpcs:enable
+		global $conf, $langs;
+
+		// Detect if message is HTML
+		if ($msgishtml == -1) {
+			$msgishtml = 0;
+			if (dol_textishtml($text, 0)) {
+				$msgishtml = 1;
+			}
+		}
+
+		dol_syslog('send_an_email msgishtml='.$msgishtml);
+
+		$texttosend = $this->makeSubstitution($text);
+		$subjecttosend = $this->makeSubstitution($subject);
+		if ($msgishtml) {
+			$texttosend = dol_htmlentitiesbr($texttosend);
+		}
+
+		// Envoi mail confirmation
+		$from = $conf->email_from;
+		if (!empty($conf->global->ADHERENT_MAIL_FROM)) {
+			$from = $conf->global->ADHERENT_MAIL_FROM;
+		}
+
+		$trackid = 'mem'.$this->id;
+
+		// Send email (substitutionarray must be done just before this)
+		include_once DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php';
+		$mailfile = new CMailFile($subjecttosend, $this->email, $from, $texttosend, $filename_list, $mimetype_list, $mimefilename_list, $addr_cc, $addr_bcc, $deliveryreceipt, $msgishtml, '', '', $trackid, $moreinheader);
+		if ($mailfile->sendfile()) {
+			return 1;
+		} else {
+			$this->error = $langs->trans("ErrorFailedToSendMail", $from, $this->email).'. '.$mailfile->error;
+			return -1;
+		}
+	}
+
+
+	/**
+	 * Make substitution of tags into text with value of current object.
+	 *
+	 * @param	string	$text       Text to make substitution to
+	 * @return  string      		Value of input text string with substitutions done
+	 */
+	public function makeSubstitution($text)
+	{
+		global $conf, $langs;
+
+		$birthday = dol_print_date($this->birth, 'day');
+
+		$msgishtml = 0;
+		if (dol_textishtml($text, 1)) {
+			$msgishtml = 1;
+		}
+
+		$infos = '';
+		if ($this->civility_id) {
+			$infos .= $langs->transnoentities("UserTitle").": ".$this->getCivilityLabel($this->id)."\n";
+		}
+		$infos .= $langs->transnoentities("id").": ".$this->id."\n";
+		$infos .= $langs->transnoentities("ref").": ".$this->ref."\n";
+		$infos .= $langs->transnoentities("Lastname").": ".$this->lastname."\n";
+		$infos .= $langs->transnoentities("Firstname").": ".$this->firstname."\n";
+		$infos .= $langs->transnoentities("Company").": ".$this->company."\n";
+		$infos .= $langs->transnoentities("Address").": ".$this->address."\n";
+		$infos .= $langs->transnoentities("Zip").": ".$this->zip."\n";
+		$infos .= $langs->transnoentities("Town").": ".$this->town."\n";
+		$infos .= $langs->transnoentities("Country").": ".$this->country."\n";
+		$infos .= $langs->transnoentities("EMail").": ".$this->email."\n";
+		$infos .= $langs->transnoentities("PhonePro").": ".$this->phone."\n";
+		$infos .= $langs->transnoentities("PhoneMobile").": ".$this->phone_mobile."\n";
+		$infos .= $langs->transnoentities("Birthday").": ".$birthday."\n";
+		$infos .= $langs->transnoentities("Public").": ".yn($this->public);
+
+		// Substitutions
+		$substitutionarray = array(
+			'__ID__' => $this->id,
+			'__REF__' => $this->ref,
+			'__RENTER_ID__' => $this->id,
+			'__CIVILITY__' => $this->getCivilityLabel($this->id),
+			'__FIRSTNAME__' => $msgishtml ? dol_htmlentitiesbr($this->firstname) : ($this->firstname ? $this->firstname : ''),
+			'__LASTNAME__' => $msgishtml ? dol_htmlentitiesbr($this->lastname) : ($this->lastname ? $this->lastname : ''),
+			'__FULLNAME__' => $msgishtml ? dol_htmlentitiesbr($this->getFullName($langs)) : $this->getFullName($langs),
+			'__COMPANY__' => $msgishtml ? dol_htmlentitiesbr($this->company) : ($this->company ? $this->company : ''),
+			'__ADDRESS__' => $msgishtml ? dol_htmlentitiesbr($this->address) : ($this->address ? $this->address : ''),
+			'__ZIP__' => $msgishtml ? dol_htmlentitiesbr($this->zip) : ($this->zip ? $this->zip : ''),
+			'__TOWN__' => $msgishtml ? dol_htmlentitiesbr($this->town) : ($this->town ? $this->town : ''),
+			'__COUNTRY__' => $msgishtml ? dol_htmlentitiesbr($this->country) : ($this->country ? $this->country : ''),
+			'__EMAIL__' => $msgishtml ? dol_htmlentitiesbr($this->email) : ($this->email ? $this->email : ''),
+			'__BIRTH__' => $msgishtml ? dol_htmlentitiesbr($birthday) : ($birthday ? $birthday : ''),
+			'__PHONE__' => $msgishtml ? dol_htmlentitiesbr($this->phone) : ($this->phone ? $this->phone : ''),
+			'__PHONEMOBILE__' => $msgishtml ? dol_htmlentitiesbr($this->phone_mobile) : ($this->phone_mobile ? $this->phone_mobile : ''),
+			'__TYPE__' => $msgishtml ? dol_htmlentitiesbr($this->type) : ($this->type ? $this->type : '')
+		);
+
+		complete_substitutions_array($substitutionarray, $langs, $this);
+
+		return make_substitutions($text, $substitutionarray, $langs);
 	}
 
 	/**
