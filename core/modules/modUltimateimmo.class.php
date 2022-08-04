@@ -180,6 +180,21 @@ class modUltimateimmo extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$r++;
 
+		// For emails
+		$this->const[$r][0] = "RENTER_MAIL_FROM";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = "";
+		$this->const[$r][3] = "From des mails";
+		$this->const[$r][4] = 0;
+		$r++;
+
+		$this->const[$r][0] = "RENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION";
+		$this->const[$r][1] = "emailtemplate:immorenter";
+		$this->const[$r][2] = "(SendReminderForExpiredRentLimitTitle)";
+		$this->const[$r][3] = "";
+		$this->const[$r][4] = 0;
+		$r++;
+
 		if (!isset($conf->ultimateimmo) || !isset($conf->ultimateimmo->enabled)) {
 			$conf->ultimateimmo = new stdClass();
 			$conf->ultimateimmo->enabled = 0;

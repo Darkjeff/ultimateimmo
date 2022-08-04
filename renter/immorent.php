@@ -211,6 +211,9 @@ if (empty($reshook)) {
 $form = new Form($db);
 $formfile = new FormFile($db);
 
+$staticImmorenter = new ImmoRenter($db);
+$staticImmorenter->fetch($id);
+
 llxHeader('', $langs->trans("ImmoRents"), '');
 
 // Part to create
@@ -287,17 +290,17 @@ if (($id || $ref) && $action == 'edit') {
 }
 
 // Part to show record
-if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
+if ($staticImmorenter->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
 {
     $res = $object->fetch_optionals();
-
+	
 	$soc = new Societe($db);
 	$soc->fetch($object->socid);
 
 	$object = new ImmoRent($db);
 	$result = $object->fetch($id);
 
-	$head = immorenterPrepareHead($object);
+	$head = immorenterPrepareHead($staticImmorenter);
 
 	print dol_get_fiche_head($head, 'immorent', $langs->trans("ImmoRents"), -1, 'payment');
 
@@ -354,7 +357,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$morehtmlref = '<div class="refidno">';
 	// Ref renter
 	$staticImmorenter = new ImmoRenter($db);
-	$staticImmorenter->fetch($object->fk_renter);
+	$staticImmorenter->fetch($id);
 	$staticImmorenter->fetch_thirdparty();
 
 	// Thirdparty
