@@ -1,0 +1,279 @@
+# Copyright (C) 2018-2021 Philippe GRAND 
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see .
+
+#
+# Generisch
+#
+
+# Module label 'ModuleUltimateimmoName'
+ModuleUltimateimmoName = Ultimateimmo
+# Module description 'ModuleUltimateimmoDesc'
+ModuleUltimateimmoDesc = Lösung für Immobilienprofis
+
+#
+# Administrator Seite
+#
+UltimateimmoSetup = Konfigurieren des Ultimateimmo-Moduls
+Settings = Einstellungen
+UltimateimmoSetupPage = Konfigurationsseite des Ultimateimmo-Moduls
+UltimateimmoNumberingModeles = Nummerierungsmodell für die Quittung
+TemplatePDFUltimateimmo = Dokumentvorlagen für Quittungen und Mietverträge
+WatermarkOnDraftImmoCards = Wasserzeichen auf Belegentwürfen (keine, wenn leer)
+PublicSite=Öffentliche Webseite
+EnablePublicSite = Öffentlich zugängliche Website aktivieren
+PublicSiteDesc = Dolibarr kann eine öffentliche Seiten-URL anbieten, um eine Website anzuzeigen, auf der Immobilienanzeigen für externe Besucher aufgelistet werden.
+ULTIMATEIMMO_USE_GOOGLE = Verwenden Sie Google mit dem Ultimateimmo-Modul
+GoogleZoomLevel = Standard-Zoomniveau (1 bis 10)
+GOOGLE_API_SERVERKEY=API-Schlüssel (vom Typ „Serverschlüssel“)
+ParametersForGoogleAPIv3Usage=Für Google-API %s V3
+KeepEmptyYoUsePublicQuotaOfAPI=Leer lassen, um das öffentliche Kontingent dieser API zu verwenden (ansonsten kann der Schlüssel von der Seite https://code.google.com/apis/console/, „API-Zugriff“ erstellt werden, um einen „Serverschlüssel“ und „Dienste“ zu erstellen) um die API „%s“ zu aktivieren)
+AllowGoogleToLoginWithKey=Um die Kontingente Ihres eigenen Google-Kontos zu nutzen, müssen Sie einen Schlüssel von der Seite <a href="%s" target="_blank">%s</a>, Menü "API & Authentifizierung" -> "Identifikation" erstellen. . Klicken Sie auf „Schlüssel erstellen“ und wählen Sie „Serverschlüssel“ und dann „Erstellen“. Sie erhalten Ihren Serverschlüssel.
+EnableAPI=Außerdem müssen Sie APIs für Ihr Google-Konto aktivieren. Gehen Sie dazu auf die Seite <a href="%s" target="_blank">%s</a>, Menü "API & Authentifizierung" -> "API". Klicken Sie auf API für „%s“ aktivieren.
+UltimateimmoEnablePublicInterface = Eine öffentliche Schnittstelle, die keine Identifizierung erfordert, ist unter der folgenden URL verfügbar:
+UltimateimmoPublicAccess = Öffentliche Schnittstelle aktivieren
+UltimateimmoEmailMustExist = Zum Erstellen eines Tickets ist eine bestehende E-Mail-Adresse erforderlich
+UltimateimmoEmailMustExistHelp = Um auf das Frontend zuzugreifen und ein neues Ticket zu erstellen, muss Ihr Konto bereits vorhanden sein.
+UltimateimmoShowCompanyLogo = Firmenlogo im Frontend anzeigen
+UltimateimmoShowCompanyLogoHelp = Aktivieren Sie diese Option, um das Firmenlogo auf Frontend-Seiten auszublenden
+UltimateimmoPublicInterfaceForbidden = Öffentliche Schnittstelle für Tickets wurde nicht aktiviert
+ExtraFieldsProperty = Zusätzliche Attribute (Eigenschaften)
+ExtraFieldsRenter = Zusätzliche Attribute (Mandanten)
+ExtraFieldsOwner = Zusätzliche Attribute (Besitzer)
+ExtraFieldsPayment =  = Zusätzliche Attribute (Zahlungen)
+ExtraFieldsReceipt = Zusätzliche Attribute (Belege)
+ExtraFieldsRent =  = Zusätzliche Attribute (Standorte)
+EnumerationOfPartsAndCommonEquipment=Liste der gemeinsamen Teile und Ausrüstung.
+UltimateImmoEquipementGardiennage=Bewachung
+UltimateImmoEquipementInterphone=Gegensprechanlage
+UltimateImmoEquipementAscenseur=Aufzug
+UltimateImmoEquipementVideOrdures=Müllschlucker
+UltimateImmoEquipementAntenneTVcollective=Gemeinsame Fernsehantenne
+UltimateImmoEquipementEspacesverts=Grünfläche(n)
+UltimateImmoEquipementChauffageCollectif=Zentralheitzung
+UltimateImmoEquipementEauChaudeCollective=Kollektives Warmwasser
+
+#
+# Über Seite
+#
+About = Informationsseite
+UltimateimmoAbout = Über Ultimateimmo
+UltimateimmoAboutPage = Seite über Ultimateimmo
+
+#
+# Menu
+#
+ImmoProperties = Immobilien
+MenuImmoProperty = Immobilie
+MenuNewImmoProperty = Neue Immobilie
+MenuListImmoProperty = Auflistung
+MenuImmoPropertyType = Art der Immobilie
+MenuNewImmoPropertyType = Neue Art
+MenuListImmoPropertyType = Auflistung
+MenuImmoRent = Vermietung
+MenuNewImmoRent = Neue Vermietung
+MenuListImmoRent = Auflistung
+MenuImmoOwner = Besitzer
+MenuNewImmoOwner = Neuer Besitzer
+MenuListImmoOwner = Auflistung
+MenuImmoOwnerType = Art von Besitzer
+MenuNewImmoOwnerType = Neue Besitzerart
+MenuListImmoOwnerType = Auflistung
+MenuImmoRenter = Mieter
+MenuNewImmoRenter = Neuer Mieter
+MenuListImmoRenter = Auflistung
+MenuImmoRenterStats = Zahlungsstatistik
+MenuImmoPayment = Zahlungen
+MenuNewImmoPayment = Neue Zahlung
+MenuListImmoPayment = Auflistung
+MenuListImmoPaymentStats=Zahlungsstatistik
+MenuListImmoReceipt = Quittungen
+MenuNewImmoReceipt = Neue Quittung
+MenuAllReceiptperContract = Quittungen generieren
+MenuValidateReceipt = Zahlungen validieren
+MenuListImmoReceiptStats = Mietstatistik
+MenuListImmoCost = Mietkosten
+MenuNewImmoCost = Neue Mietgebühr
+MenuRenterCost = Mieter kosten
+MenuStatisticsCost = Kosten: Statistiken nach Typ 
+MenuStatisticsCostFourn = Kosten: Statistiken vom Lieferanten
+MenuStatisticsResult = Ergebnisse: Statistiken
+MenuListImmoCostType = Kostenarten
+MenuNewImmoCostType = Neue Kostenart
+MenuImmoCompteurStats=Verbrauchsstatistik
+
+#
+# Immobilien
+#
+PropertyParent = Hauptimmobilie
+APA = Wohnung
+HOU = Individuelles Haus
+LOC = Gewerbebauten
+SHO = Geschäft
+GAR = Garage
+BUL = Gebäude
+Juridique = Rechtsordnung des Gebäudes
+Copropriete = Eigentumswohnung
+MonoPropriete = Einzeleigentum
+DateBuilt = Baujahr
+DateBuilt1 = vor 1949
+DateBuilt2 = von 1949 bis 1974
+DateBuilt3 = von 1975 bis 1989
+DateBuilt4 = von 1989 bis 2005
+DateBuilt5 = seit 2005
+Target = Ziel
+Building = Gebäude
+Staircase = Treppe
+NumFloor = Stockwerk
+NumFlat = Wohnungsnummer
+NumDoor = Türnummer
+Area = Wohnraum
+NumberOfRoom = Anzahl der Haupträume
+DeleteImmoProperty = Entfernung der Immobilie
+ConfirmDeleteImmoProperty = Möchten Sie diese Immobilie wirklich löschen?
+CloneImmoProperty = Klonen Sie die Immobilie
+ConfirmCloneImmoProperty = Möchten Sie dieses Immobilie wirklich klonen?
+MenuImmoLotFiscal=Steuersatz
+MenuListImmoLotFiscal=Auflistung
+
+#
+# Eigentümer
+#
+ImmoOwner = Eigentümer
+LinkToOwnerType = Bezieht sich auf den Eigentümertyp
+RefOwner = Eigentümerreferenz
+LinkToOwner = Mit Eigentümer verknüpft
+OwnerName = Name des Besitzers
+DeleteImmoOwner = Eigentümer entfernen
+ConfirmDeleteImmoOwner = Möchten Sie diesen Eigentümer wirklich löschen?
+CloneImmoOwner = Den Eigentümer klonen
+ConfirmCloneImmoOwner = Möchten Sie diesen Eigentümer wirklich klonen?
+
+#
+# Andere
+#
+BienPrincipal = Hauptvermögen
+BirthDay = Geburtsdatum
+BirthCountry = Geburtsort
+ImmoProperty = Immobilie
+Property = Immobilie
+Properties = Immobilien
+ImmoProperties = Immobilien
+ImmoRents = Mieten
+ImmoRent = Miete
+ImmoRenters = Mieter
+ImmoCost = Quittung
+ImmoCosts = Mietkosten
+ImmoCostType = Arten von Kosten
+ImmoReceipts = Quittungen
+ImmoReceipt = Quittung
+ImmoPayments = Zahlungen
+ImmoPayment = Zahlung
+UnPaidReceipt = Unbezahlte Quittung
+PaidReceipt = Bezahlte Quittung
+PartiallyPaidReceipt = Eingang teilweise beglichen
+ImmorentType = Art der Vermietung
+FurnishedApartment = Möblierte Wohnung
+EmptyHousing = Leeres Haus 
+DateStartRent = Datum des Inkrafttretens des Vertrages
+TypePayment = Abrechnungsart
+NumPayment = <em>Nummer (Scheck-/Überweisungsnummer)</em>
+CheckTransmitter = <em>Aussteller (Scheck-/Überweisungsnummer)</em>
+ChequeBank = <em>Bank (Scheckbank)</em>
+NewImmoPropertyType = Neue Art von Eigentum
+ImmoProperty_Type = Immobilienart
+PropertyTypeStatusActive=Immobilie aktiviert
+PropertyTypeStatusCancel=Immobilie deaktiviert
+BuiltDate = Baudatum
+Civility = Titel
+Deposit = Kaution
+ListOfRents = Liste der Vermietungen
+ImmoRenter = Mieter
+Renter = Mieter
+RenterCost = Kosten/Mieter
+RentAmount = Mietkosten
+ChargesAmount = Höhe der Gebühren
+TotalAmount = Gesamtsumme
+Encours = Im Gange
+date_end = Endtermin
+DateNextRent = Nächster Miettermin
+DateLastRegul = Letztes Regulierungsdatum
+VatAmount = Mehrwertsteuerbetrag
+HtAmount = Betrag ohne MwSt
+VatTx = MwSt.-Satz
+ImmoUnpaid = Unbezahlt
+ImmoPaid = Bezahlt
+PartialPayment = Teilzahlung
+NomLoyer = Bezeichnung der Quittung
+OtherProperties = Andere Immobilien
+DeleteImmoReceipt = Quittung löschen
+ConfirmDeleteImmoReceipt = Möchten Sie diese Quittung wirklich löschen?
+CloneImmoReceipt =  Quittung klonen
+ConfirmCloneImmoReceipt = Möchten Sie diese Quittung wirklich klonen?
+DeleteImmoPayment = Zahlung entfernen
+ConfirmDeleteImmoPayment = Möchten Sie diese Zahlung wirklich entfernen?
+DeleteImmoRent = Miete löschenb
+ConfirmDeleteImmoRent = Möchten Sie diese Miete wirklich löschen?
+CloneImmoRent = Ort klonen
+ConfirmCloneImmoRent = Möchten Sie diesen Ort wirklich klonen?
+DeleteImmoRenter = Mieter löschen
+ConfirmDeleteImmoRenter = Möchten Sie diesen Mieter wirklich löschen?
+CloneImmoRenter = Mieter klonen
+ConfirmCloneImmoRenter = Möchten Sie diesen Mieter wirklich klonen?
+RenterName = Mietername
+SendImmoReceiptRef = Sendebestätigung %s
+ConfirmValidateReceipt = Bestätigen Sie die Validierung der Quittung %s
+TheTechnicalDiagnosticFileDDT = Die technische Diagnosedatei (DDT)
+ObligationsOfTheSeller = Pflichten des Verkäufers
+ObligationsOfTheLessor = Pflichten des Vermieters
+UltimateImmoDiagnosticElectricityInstallation = der Zustand der elektrischen Inneninstallation
+UltimateImmoDiagnosticGasInstallation = der Zustand der Indoor-„Erd“-Gasinstallation
+UltimateImmoDiagnosticLeadExposure = die Aussage über das Risiko einer Exposition gegenüber Blei (CREP)
+UltimateImmoDiagnosticContainingAsbestos = die Erklärung über das Vorhandensein oder Nichtvorhandensein von Materialien oder Produkten, die Asbest enthalten
+UltimateImmoDiagnosticContainingTermites = der Zustand in Bezug auf das Vorhandensein von Termiten im Gebäude
+UltimateImmoDiagnosticNaturalTechnologicalRisks = der Stand der natürlichen und technologischen Risiken
+UltimateImmoDiagnosticNonCollectiveSanitationFacilities = der Zustand der nicht kollektiven sanitären Einrichtungen
+UltimateImmoDiagnosticEnergyPerformanceDiagnosis = Gebäudeenergieleistungsdiagnose (DPE)
+ReceiptPaymentsAdded = Quittungszahlung hinzugefügt
+Echeance = Termin
+Periode_du = Zeitraum von
+Periode_au = Zeitraum bis
+Nomlocal = Name des Anwesens
+Paye = Erledigte Quittung
+ValidateReceipt = Validierung der Quittung
+ShowMandataireDetails = Agentendetails anzeigen
+ShowColocataireDetails = Mitbewohnerdetails anzeigen
+Quittances&Baux = Quittungen und Pachtverträge
+OtherReceipts = Andere Quittungen
+OtherRents = Andere Vermietungen
+NumberReceiptByMonth = Anzahl der Belege pro Monat
+CustomerReceiptPayment = Zahlung der Quittung
+CreatePDF = PDF erzeugen
+MenuImmoCompteur=Zähler
+MenuNewImmoCompteur= Neuer Zähler
+MenuImmoCompteurList= Zählerliste
+ImmoBirthCountry=Heimatland
+LotFiscal=Steuersatz
+ImmoBuildings=Steuersatz
+LinkToThirdparty = Mit Drittanbieter verknüpfen
+LinkToProperty = Mit Immobilie verknüpfen
+LinkToRenter = Mit Mieter verknüpfen
+LinkToAccount = Verknüpfung zum Konto im Bankmodul | Kassa.
+LinkToRent = Mit Vermietung verknüpfen
+CostType = Art der Kosten
+bytes = Bytes
+ImmoRentNoticePeriod = Vorankündigung
+Payed = Bezahlt
+Create = Erzeugen
+PaymentMode = Zahlungsmethode
