@@ -294,3 +294,6 @@ DescRENTER_MAIL_FROM=E-mail émetteur pour les mails automatiques
 DescRENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION=Modèle d'email électronique à utiliser pour envoyer un rappel par courrier électronique lorsque la date limite est sur le point d'être dépassée.
 SendReminderForExpiredRentLimitTitle=Envoyer une relance par mail pour les dates limites expirées
 SendReminderForExpiredRentLimit=Envoyer un rappel par e-mail aux locataires lorsque la date limite est sur le point d'expirer (le paramètre est le nombre de jours avant la date limite pour envoyer le rappel. Il peut s'agir d'une liste de jours séparés par un point-virgule, par exemple '10;5;0;-5')
+ReminderForExpiredRentLimit=Rappel par mail pour une date limite de loyer dépassée
+ExampleOfContentForExpiredRentLimit=Exemple de contenu pour une date limite de loyer dépassée.
+

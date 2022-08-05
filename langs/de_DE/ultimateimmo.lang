@@ -294,3 +294,6 @@ DescRENTER_MAIL_FROM=Sender Email for automatic emails
 DescRENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION=Email template to use to send an email reminder when the deadline is about to pass.
 SendReminderForExpiredRentLimitTitle=Send a reminder by email for expired deadlines
 SendReminderForExpiredRentLimit=Send an email reminder to tenants when the deadline is about to expire (the parameter is the number of days before the deadline to send the reminder. It can be a list of days separated by a semicolon, for example '10;5;0;-5')
+ReminderForExpiredRentLimit=Reminder by email for expired deadlines
+ExampleOfContentForExpiredRentLimit=Example of content for expired rent limit
+
