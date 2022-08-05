@@ -148,6 +148,19 @@ MenuImmoLotFiscal=Lot fiscaux
 MenuListImmoLotFiscal=Liste
 
 #
+# Proprietaire
+#
+ImmoOwner = Propriétaire
+LinkToOwnerType = Lié au type de propriétaire
+RefOwner = Référence propriétaire
+LinkToOwner = Lié au propriétaire
+OwnerName = Nom du propriétaire
+DeleteImmoOwner = Suppression du propriétaire
+ConfirmDeleteImmoOwner = Etes vous sûr de vouloir supprimer ce propriétaire ?
+CloneImmoOwner = Cloner le propriétaire
+ConfirmCloneImmoOwner = Etes vous sûr de vouloir cloner ce propriétaire ?
+
+#
 # Autres
 #
 BienPrincipal = Bien principal
@@ -173,7 +186,6 @@ PartiallyPaidReceipt = Quittance partiellement réglée
 ImmorentType = Type de location
 FurnishedApartment = Logement meublé
 EmptyHousing = Logement vide 
-ImmoOwner = Propriétaire
 DateStartRent = Date de prise d'effet du contrat
 TypePayment = Type de Règlement
 NumPayment = <em>Numéro(Chèque/Virement N°)</em>
@@ -184,7 +196,6 @@ ImmoProperty_Type = Type de bien immobilier
 PropertyTypeStatusActive=Bien actif
 PropertyTypeStatusCancel=Bien désactivé
 BuiltDate = Date de construction
-ImmoOwner = Propriétaire
 Civility = Titre
 Deposit = Dépôt de garantie
 ListOfRents = Liste des locations
@@ -212,10 +223,6 @@ CloneImmoReceipt = Cloner cette quittance
 ConfirmCloneImmoReceipt = Etes vous sûr de vouloir cloner cette quittance ?
 DeleteImmoPayment = Suppression de règlement
 ConfirmDeleteImmoPayment = Etes vous sûr de vouloir supprimer ce règlement ?
-DeleteImmoOwner = Suppression du propriétaire
-ConfirmDeleteImmoOwner = Etes vous sûr de vouloir supprimer ce propriétaire ?
-CloneImmoOwner = Cloner le propriétaire
-ConfirmCloneImmoOwner = Etes vous sûr de vouloir cloner ce propriétaire ?
 DeleteImmoRent = Suppression de la location
 ConfirmDeleteImmoRent = Etes vous sûr de vouloir supprimer cette location ?
 CloneImmoRent = Cloner la location
@@ -224,10 +231,8 @@ DeleteImmoRenter = Suppression du locataire
 ConfirmDeleteImmoRenter = Etes vous sûr de vouloir supprimer ce locataire ?
 CloneImmoRenter = Cloner le locataire
 ConfirmCloneImmoRenter = Etes vous sûr de vouloir cloner ce locataire ?
-OwnerName = Nom du propriétaire
 RenterName = Nom du locataire
 SendImmoReceiptRef = Envoi de la quittance %s
-RefOwner = Référence propriétaire
 ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
 TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
 ObligationsOfTheSeller = Obligations du vendeur
@@ -261,11 +266,14 @@ MenuImmoCompteurList= Liste compteur
 ImmoBirthCountry=Pays de naissance
 LotFiscal=Lot fiscal
 ImmoBuildings=Lot fiscal
-LinkToOwner = Lié au propriétaire
 LinkToThirdparty = Lié au tiers
-LinkToOwnerType = Lié au type de propriétaire
 LinkToProperty = Lié au bien
 LinkToRenter = Lié au locataire
-LinkToAccount = Lié au compte
+LinkToAccount = Lier au compte figurant dans le module Banque | Caisses.
 LinkToRent = Lié a la location
 CostType = Type de cout
+bytes = octets
+ImmoRentNoticePeriod = Préavis
+Payed = Payé
+Create = Créer
+PaymentMode = Mode de paiement
