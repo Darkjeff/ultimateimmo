@@ -1649,7 +1649,7 @@ class ImmoRenter extends CommonObject
 	 * @param	string		$daysbeforeendlist		Nb of days before limit date (negative number = after limit date). Can be a list of delay, separated by a semicolon, for example '10;5;0;-5'
 	 * @return	int									0 if OK, <>0 if KO (this function is used also by cron so only 0 is OK)
 	 */
-	public function SendReminderForExpiredRentLimit($daysbeforeendlist = '0')
+	public function sendReminderForExpiredRentLimit($daysbeforeendlist = '0')
 	{
 		global $conf, $langs, $mysoc, $user;
 
@@ -1723,13 +1723,13 @@ class ImmoRenter extends CommonObject
 						$outputlangs = new Translate('', $conf);
 						$outputlangs->setDefaultLang($languagecodeforrenter);
 						$outputlangs->loadLangs(array("main", "ultimateimmo@ultimateimmo"));
-						dol_syslog("SendReminderForExpiredRentLimit Language for renter id ".$renter->id." set to ".$outputlangs->defaultlang." mysoc->default_lang=".$mysoc->default_lang);
+						dol_syslog("sendReminderForExpiredRentLimit Language for renter id ".$renter->id." set to ".$outputlangs->defaultlang." mysoc->default_lang=".$mysoc->default_lang);
 
 						$arraydefaultmessage = null;
 						$labeltouse = $conf->global->RENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION;
 
 						if (!empty($labeltouse)) {
-							$arraydefaultmessage = $formmail->getEMailTemplate($this->db, 'renter', $user, $outputlangs, 0, 1, $labeltouse);
+							$arraydefaultmessage = $formmail->getEMailTemplate($this->db, 'immorenter', $user, $outputlangs, 0, 1, $labeltouse);
 						}
 
 						if (!empty($labeltouse) && is_object($arraydefaultmessage) && $arraydefaultmessage->id > 0) {
@@ -1743,7 +1743,7 @@ class ImmoRenter extends CommonObject
 							$to = $renter->email;
 
 							$trackid = 'mem'.$renter->id;
-							$moreinheader = 'X-Dolibarr-Info: SendReminderForExpiredRentLimit'."\r\n";
+							$moreinheader = 'X-Dolibarr-Info: sendReminderForExpiredRentLimit'."\r\n";
 
 							include_once DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php';
 							$cmail = new CMailFile($subject, $to, $from, $msg, array(), array(), array(), '', '', 0, 1, '', '', $trackid, $moreinheader);
@@ -1842,7 +1842,7 @@ class ImmoRenter extends CommonObject
 			if (is_array($listofrentersok)) {
 				$listofids = '';
 				$i = 0;
-				foreach ($listofrentersok as $idmember) {
+				foreach ($listofrentersok as $idrenter) {
 					if ($i > 100) {
 						$listofids .= ', ...';
 						break;
@@ -1852,7 +1852,7 @@ class ImmoRenter extends CommonObject
 					} else {
 						$listofids .= ', ';
 					}
-					$listofids .= $idmember;
+					$listofids .= $idrenter;
 					$i++;
 				}
 				if ($listofids) {

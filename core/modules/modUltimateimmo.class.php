@@ -293,8 +293,23 @@ class modUltimateimmo extends DolibarrModules
 
 		// Cronjobs (List of cron jobs entries to add when module is enabled)
 		// unit_frequency must be 60 for minute, 3600 for hour, 86400 for day, 604800 for week
+		$arraydate = dol_getdate(dol_now());
+		$datestart = dol_mktime(22, 0, 0, $arraydate['mon'], $arraydate['mday'], $arraydate['year']);
 		$this->cronjobs = array(
-			0 => array('label' => 'MyJob label', 'jobtype' => 'method', 'class' => '/ultimateimmo/class/immorenter.class.php', 'objectname' => 'ImmoRenter', 'method' => 'doScheduledJob', 'parameters' => '', 'comment' => 'Comment', 'frequency' => 2, 'unitfrequency' => 3600, 'status' => 0, 'test' => true)
+			0=>array(
+				'label'=>'SendReminderForExpiredRentLimitTitle',
+				'jobtype'=>'method', 'class'=>'ultimateimmo/class/immorenter.class.php',
+				'objectname'=>'ImmoRenter',
+				'method'=>'sendReminderForExpiredRentLimit',
+				'parameters'=>'0',
+				'comment'=>'SendReminderForExpiredRentLimit',
+				'frequency'=>1,
+				'unitfrequency'=> 3600 * 24,
+				'priority'=>50,
+				'status'=>1,
+				'test'=>'$conf->ultimateimmo->enabled',
+				'datestart'=>$datestart
+			),
 		);
 		// Example: $this->cronjobs=array(0=>array('label'=>'My label', 'jobtype'=>'method', 'class'=>'/dir/class/file.class.php', 'objectname'=>'MyClass', 'method'=>'myMethod', 'parameters'=>'param1, param2', 'comment'=>'Comment', 'frequency'=>2, 'unitfrequency'=>3600, 'status'=>0, 'test'=>true),
 		//								1=>array('label'=>'My label', 'jobtype'=>'command', 'command'=>'', 'parameters'=>'param1, param2', 'comment'=>'Comment', 'frequency'=>1, 'unitfrequency'=>3600*24, 'status'=>0, 'test'=>true)
@@ -1162,26 +1177,6 @@ class modUltimateimmo extends DolibarrModules
 			'target' => '',
 			'user' => 2
 		);								// 0=Menu for internal users, 1=external users, 2=both
-
-		// Cronjobs
-		$arraydate = dol_getdate(dol_now());
-		$datestart = dol_mktime(22, 0, 0, $arraydate['mon'], $arraydate['mday'], $arraydate['year']);
-		$this->cronjobs = array(
-			0=>array(
-				'label'=>'SendReminderForExpiredRentLimitTitle',
-				'jobtype'=>'method', 'class'=>'ultimateimmo/class/immorenter.class.php',
-				'objectname'=>'ImmoRenter',
-				'method'=>'SendReminderForExpiredRentLimit',
-				'parameters'=>'0',
-				'comment'=>'SendReminderForExpiredRentLimit',
-				'frequency'=>1,
-				'unitfrequency'=> 3600 * 24,
-				'priority'=>50,
-				'status'=>1,
-				'test'=>'$conf->ultimateimmo->enabled',
-				'datestart'=>$datestart
-			),
-		);
 
 	}
 

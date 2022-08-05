@@ -65,7 +65,7 @@ $error = 0;
 // Editing global variables not related to a specific theme
 $constantes = array(
 	'RENTER_REMINDER_EMAIL'=>array('type'=>'yesno', 'label'=>$langs->trans('RENTER_REMINDER_EMAIL', $langs->transnoentities("Module2300Name"))),
-	'RENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION' 	=>'emailtemplate:immorenter',
+	'RENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION' 	=>array('type'=>'emailtemplate:immorenter', 'enabled'=>1),
 	'RENTER_MAIL_FROM' =>'string',
 );
 
@@ -155,11 +155,32 @@ print '<input type="hidden" name="token" value="'.newToken().'">';
 print '<input type="hidden" name="action" value="updateall">';
 
 $helptext = '*'.$langs->trans("FollowingConstantsWillBeSubstituted").'<br>';
-$helptext .= '__DOL_MAIN_URL_ROOT__, __ID__, __FIRSTNAME__, __LASTNAME__, __FULLNAME__, __LOGIN__, __PASSWORD__, ';
-$helptext .= '__COMPANY__, __ADDRESS__, __ZIP__, __TOWN__, __COUNTRY__, __EMAIL__, __BIRTH__, __PHOTO__, __TYPE__, ';
+$helptext .= '__DOL_MAIN_URL_ROOT__, __ID__, __FIRSTNAME__, __LASTNAME__, __FULLNAME__, ';
+$helptext .= '__COMPANY__, __ADDRESS__, __ZIP__, __TOWN__, __COUNTRY__, __EMAIL__, __BIRTH__, __TYPE__, ';
 //$helptext.='__YEAR__, __MONTH__, __DAY__';	// Not supported
 
 form_constantes($constantes, 3, $helptext);
+if (preg_match('/emailtemplate:/', $val['type'])) {
+	include_once DOL_DOCUMENT_ROOT . '/core/class/html.formmail.class.php';
+	$formmail = new FormMail($db);
+
+	$tmp = explode(':', $val['type']);
+	$nboftemplates = $formmail->fetchAllEMailTemplate($tmp[1], $user, null, 1); // We set lang=null to get in priority record with no lang
+	//$arraydefaultmessage = $formmail->getEMailTemplate($db, $tmp[1], $user, null, 0, 1, '');
+	$arrayofmessagename = array();
+	if (is_array($formmail->lines_model)) {
+		foreach ($formmail->lines_model as $modelmail) {
+			//var_dump($modelmail);
+			$moreonlabel = '';
+			if (!empty($arrayofmessagename[$modelmail->label])) {
+				$moreonlabel = ' <span class="opacitymedium">(' . $langs->trans("SeveralLangugeVariatFound") . ')</span>';
+			}
+			// The 'label' is the key that is unique if we exclude the language
+			$arrayofmessagename[$modelmail->id] = $langs->trans(preg_replace('/\(|\)/', '', $modelmail->label)) . $moreonlabel;
+		}
+	}
+	print $form->selectarray($constname, $arrayofmessagename, $conf->global->{$constname}, 'None', 0, 0, '', 0, 0, 0, '', '', 1);
+}
 
 print '<div class="center"><input type="submit" class="button" value="'.$langs->trans("Update").'" name="update"></div>';
 print '</form>';
