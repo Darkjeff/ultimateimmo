@@ -146,6 +146,11 @@ CloneImmoProperty = Cloner le bien
 ConfirmCloneImmoProperty = Etes vous sûr de vouloir cloner ce bien ?
 MenuImmoLotFiscal=Lot fiscaux
 MenuListImmoLotFiscal=Liste
+DeleteImmoCompteur = Suppression du compteur
+CloneImmoCompteur = Cloner le compteur
+ImmoCompteurDailyConsumption = Consommation journalière
+ImmoCompteurMonthlyConsumption = Consommation mensuelle
+ImmoCompteurYearlyConsumption = Consommation annuelle
 
 #
 # Proprietaire
@@ -161,6 +166,61 @@ CloneImmoOwner = Cloner le propriétaire
 ConfirmCloneImmoOwner = Etes vous sûr de vouloir cloner ce propriétaire ?
 
 #
+# Location
+#
+ListOfRents = Liste des locations
+ImmorentType = Type de location
+EmptyHousing = Logement vide 
+FurnishedApartment = Logement meublé
+RentAmount = Montant du loyer
+ChargesAmount = Montant des charges
+TotalAmount = Montant total
+Deposit = Dépôt de garantie
+Encours = Encours
+ImmoRentNoticePeriod = Préavis
+date_end = Date de fin
+DateNextRent = Date prochain loyer
+DateLastRegul = Date dernière régulation
+DeleteImmoRent = Suppression de la location
+ConfirmDeleteImmoRent = Etes vous sûr de vouloir supprimer cette location ?
+CloneImmoRent = Cloner la location
+ConfirmCloneImmoRent = Etes vous sûr de vouloir cloner cette location ?
+
+#
+# Locataires
+#
+ImmoRenter = Locataire
+RenterName = Nom du locataire
+DeleteImmoRenter = Suppression du locataire
+ConfirmDeleteImmoRenter = Etes vous sûr de vouloir supprimer ce locataire ?
+CloneImmoRenter = Cloner le locataire
+ConfirmCloneImmoRenter = Etes vous sûr de vouloir cloner ce locataire ?
+
+#
+# Quittances
+#
+ImmoCost = Quittance
+ImmoReceipts = Quittances
+ImmoReceipt = Quittance
+UnPaidReceipt = Quittance impayée
+PaidReceipt = Quittance payée
+PartiallyPaidReceipt = Quittance partiellement réglée
+NomLoyer = Dénomination de la Quittance
+Paye = Quittance réglée
+ValidateReceipt = Validation de la quittance
+Quittances&Baux = Quittances et Baux
+OtherReceipts = Autres quittances
+SendImmoReceiptRef = Envoi de la quittance %s
+ReceiptPaymentsAdded = Règlement de quittances ajouté
+ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
+NumberReceiptByMonth = Nombre de quittances par mois
+CustomerReceiptPayment = Règlement de quittance
+DeleteImmoReceipt = Suppression de Quittance
+ConfirmDeleteImmoReceipt = Etes vous sûr de vouloir supprimer cette quittance ?
+CloneImmoReceipt = Cloner cette quittance 
+ConfirmCloneImmoReceipt = Etes vous sûr de vouloir cloner cette quittance ?
+
+#
 # Autres
 #
 BienPrincipal = Bien principal
@@ -173,19 +233,10 @@ ImmoProperties = Biens immobiliers
 ImmoRents = Locations
 ImmoRent = Location
 ImmoRenters = Locataires
-ImmoCost = Quittance
 ImmoCosts = Charges locatives
 ImmoCostType = Types de coûts
-ImmoReceipts = Quittances
-ImmoReceipt = Quittance
 ImmoPayments = Paiements
 ImmoPayment = Règlement
-UnPaidReceipt = Quittance impayée
-PaidReceipt = Quittance payée
-PartiallyPaidReceipt = Quittance partiellement réglée
-ImmorentType = Type de location
-FurnishedApartment = Logement meublé
-EmptyHousing = Logement vide 
 DateStartRent = Date de prise d'effet du contrat
 TypePayment = Type de Règlement
 NumPayment = <em>Numéro(Chèque/Virement N°)</em>
@@ -197,43 +248,17 @@ PropertyTypeStatusActive=Bien actif
 PropertyTypeStatusCancel=Bien désactivé
 BuiltDate = Date de construction
 Civility = Titre
-Deposit = Dépôt de garantie
-ListOfRents = Liste des locations
-ImmoRenter = Locataire
 Renter = Locataire
 RenterCost = Coût/locataire
-RentAmount = Montant du loyer
-ChargesAmount = Montant des charges
-TotalAmount = Montant total
-Encours = Encours
-date_end = Date de fin
-DateNextRent = Date prochain loyer
-DateLastRegul = Date dernière régulation
 VatAmount = Montant TVA
 HtAmount = Montant HT
 VatTx = Taux TVA
 ImmoUnpaid = Impayée
 ImmoPaid = Payée
 PartialPayment = Paiement partiel
-NomLoyer = Dénomination de la Quittance
 OtherProperties = Autres biens
-DeleteImmoReceipt = Suppression de Quittance
-ConfirmDeleteImmoReceipt = Etes vous sûr de vouloir supprimer cette quittance ?
-CloneImmoReceipt = Cloner cette quittance 
-ConfirmCloneImmoReceipt = Etes vous sûr de vouloir cloner cette quittance ?
 DeleteImmoPayment = Suppression de règlement
 ConfirmDeleteImmoPayment = Etes vous sûr de vouloir supprimer ce règlement ?
-DeleteImmoRent = Suppression de la location
-ConfirmDeleteImmoRent = Etes vous sûr de vouloir supprimer cette location ?
-CloneImmoRent = Cloner la location
-ConfirmCloneImmoRent = Etes vous sûr de vouloir cloner cette location ?
-DeleteImmoRenter = Suppression du locataire
-ConfirmDeleteImmoRenter = Etes vous sûr de vouloir supprimer ce locataire ?
-CloneImmoRenter = Cloner le locataire
-ConfirmCloneImmoRenter = Etes vous sûr de vouloir cloner ce locataire ?
-RenterName = Nom du locataire
-SendImmoReceiptRef = Envoi de la quittance %s
-ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
 TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
 ObligationsOfTheSeller = Obligations du vendeur
 ObligationsOfTheLessor = Obligations du bailleur
@@ -245,20 +270,13 @@ UltimateImmoDiagnosticContainingTermites = l’état relatif à la présence de 
 UltimateImmoDiagnosticNaturalTechnologicalRisks = l’état des risques naturels et technologiques
 UltimateImmoDiagnosticNonCollectiveSanitationFacilities = l’état des installations d’assainissement non collectif
 UltimateImmoDiagnosticEnergyPerformanceDiagnosis = le diagnostic de performance énergétique du bâtiment (DPE)
-ReceiptPaymentsAdded = Règlement de quittances ajouté
 Echeance = Échéance
 Periode_du = Période du
 Periode_au = Période au
 Nomlocal = Nom du bien
-Paye = Quittance réglée
-ValidateReceipt = Validation de la quittance
 ShowMandataireDetails = Afficher les détails du mandataire
 ShowColocataireDetails = Afficher les détails des colocataires
-Quittances&Baux = Quittances et Baux
-OtherReceipts = Autres quittances
 OtherRents = Autres locations
-NumberReceiptByMonth = Nombre de quittances par mois
-CustomerReceiptPayment = Règlement de quittance
 CreatePDF = Créer un PDF
 MenuImmoCompteur=Compteur
 MenuNewImmoCompteur= Nouveau compteur
@@ -273,7 +291,7 @@ LinkToAccount = Lier au compte figurant dans le module Banque | Caisses.
 LinkToRent = Lié a la location
 CostType = Type de cout
 bytes = octets
-ImmoRentNoticePeriod = Préavis
 Payed = Payé
 Create = Créer
 PaymentMode = Mode de paiement
+Contract = Contrat
