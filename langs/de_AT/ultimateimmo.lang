@@ -290,6 +290,7 @@ MeterReading = Relevé des compteurs
 UltimateLocation = Location
 LinkedToDolibarrThirdParty = Lien du Tiers
 RENTER_REMINDER_EMAIL=Enable automatic reminder <b>by email</b> of overdue rents. Note: The <strong>%s</strong> module must be enabled and configured correctly for a callback to be sent.
+DescRENTER_MAIL_FROM=Sender Email for automatic emails
 DescRENTER_EMAIL_TEMPLATE_REMIND_EXPIRATION=Email template to use to send an email reminder when the deadline is about to pass.
 SendReminderForExpiredRentLimitTitle=Send a reminder by email for expired deadlines
 SendReminderForExpiredRentLimit=Send an email reminder to tenants when the deadline is about to expire (the parameter is the number of days before the deadline to send the reminder. It can be a list of days separated by a semicolon, for example '10;5;0;-5')
