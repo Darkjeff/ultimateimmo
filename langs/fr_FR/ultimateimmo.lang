@@ -116,6 +116,7 @@ MenuImmoCompteurStats=Statistique Conso
 #
 # Biens
 #
+Equipements = Équipements
 ImmoProperty_Type = Type de bien immobilier
 PropertyParent = Bien Parent
 APA = Appartement
@@ -142,20 +143,38 @@ NumDoor = Porte n°
 Area = Surface habitable
 NumberOfRoom = Nombre de pièces principales
 ObligationsOfTheSeller = Obligations du vendeur
+TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
+UltimateImmoDiagnosticElectricityInstallation = l’état de l’installation intérieure d’électricité
+UltimateImmoDiagnosticGasInstallation = l’état de l’installation intérieure de gaz « naturel »
+UltimateImmoDiagnosticLeadExposure = le constat de risque d’exposition au plomb (CREP)
+UltimateImmoDiagnosticContainingAsbestos = l’état mentionnant la présence ou l’absence de matériaux ou produits contenant de l’amiante 
+UltimateImmoDiagnosticContainingTermites = l’état relatif à la présence de termites dans le bâtiment
+UltimateImmoDiagnosticNaturalTechnologicalRisks = l’état des risques naturels et technologiques
+UltimateImmoDiagnosticNonCollectiveSanitationFacilities = l’état des installations d’assainissement non collectif
+UltimateImmoDiagnosticEnergyPerformanceDiagnosis = le diagnostic de performance énergétique du bâtiment (DPE)
 ObligationsOfTheLessor = Obligations du bailleur
 DeleteImmoProperty = Suppression du bien
 ConfirmDeleteImmoProperty = Etes vous sûr de vouloir supprimer ce bien ?
 CloneImmoProperty = Cloner le bien
 ConfirmCloneImmoProperty = Etes vous sûr de vouloir cloner ce bien ?
-MenuImmoLotFiscal=Lot fiscaux
-MenuListImmoLotFiscal=Liste
+# Lots Fiscaux
+MenuImmoLotFiscal = Lots fiscaux
+MenuListImmoLotFiscal = Liste des lots fiscaux
+immobuildings = lots fiscaux
+ImmoBuilding = Lot fiscal
+DeleteImmoBuilding = Suppression du lot fiscal
+# Compteur
+MenuImmoCompteur = Compteur
+MenuNewImmoCompteur = Nouveau compteur
+MenuImmoCompteurList = Liste compteur
 ImmoCompteur = Compteur
 ImmoProperty = Bien immobilier
 ImmoCompteurs = Compteurs
 DeleteImmoCompteur = Suppression du compteur
 CloneImmoCompteur = Cloner le compteur
-ImmoCompteurDateStatement = Date de Relevé
+ImmoCompteurDateStatement = Date de relevé
 ImmoCompteurStatement = Relevé
+ImmoCompteurStatementInfo = Indiquer le relevé du compteur (eau, autre...)
 ImmoCompteurNbDays = Nb Jours
 ImmoCompteurConsumption = Consommation
 ImmoCompteurDailyConsumption = Consommation journalière
@@ -165,8 +184,12 @@ ImmoCompteurYearlyConsumption = Consommation annuelle
 #
 # Proprietaire
 #
+# Type de Proprietaire
+ImmoOwner_TypeInfo = Indiquer le type de proprietaire (SCI, FCPI, autre...)
+# Proprietaire
 ImmoOwner = Propriétaire
 LinkToOwnerType = Lié au type de propriétaire
+Societe = Societé
 RefOwner = Référence propriétaire
 LinkToOwner = Lié au propriétaire
 OwnerName = Nom du propriétaire
@@ -211,6 +234,9 @@ ConfirmCloneImmoRenter = Etes vous sûr de vouloir cloner ce locataire ?
 #
 # Quittances
 #
+# Quittances
+Echeance = Échéance
+VatTx = Taux TVA
 ImmoCost = Quittance
 ImmoReceipts = Quittances
 ImmoReceipt = Quittance
@@ -231,6 +257,10 @@ DeleteImmoReceipt = Suppression de Quittance
 ConfirmDeleteImmoReceipt = Etes vous sûr de vouloir supprimer cette quittance ?
 CloneImmoReceipt = Cloner cette quittance 
 ConfirmCloneImmoReceipt = Etes vous sûr de vouloir cloner cette quittance ?
+# Charges
+HtAmount = Montant HT
+VatAmount = Montant TVA
+
 
 #
 # Autres
@@ -260,33 +290,17 @@ BuiltDate = Date de construction
 Civility = Titre
 Renter = Locataire
 RenterCost = Coût/locataire
-VatAmount = Montant TVA
-HtAmount = Montant HT
-VatTx = Taux TVA
 ImmoUnpaid = Impayée
 ImmoPaid = Payée
 PartialPayment = Paiement partiel
 OtherProperties = Autres biens
 DeleteImmoPayment = Suppression de règlement
 ConfirmDeleteImmoPayment = Etes vous sûr de vouloir supprimer ce règlement ?
-TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
-UltimateImmoDiagnosticElectricityInstallation = l’état de l’installation intérieure d’électricité
-UltimateImmoDiagnosticGasInstallation = l’état de l’installation intérieure de gaz « naturel »
-UltimateImmoDiagnosticLeadExposure = le constat de risque d’exposition au plomb (CREP)
-UltimateImmoDiagnosticContainingAsbestos = l’état mentionnant la présence ou l’absence de matériaux ou produits contenant de l’amiante 
-UltimateImmoDiagnosticContainingTermites = l’état relatif à la présence de termites dans le bâtiment
-UltimateImmoDiagnosticNaturalTechnologicalRisks = l’état des risques naturels et technologiques
-UltimateImmoDiagnosticNonCollectiveSanitationFacilities = l’état des installations d’assainissement non collectif
-UltimateImmoDiagnosticEnergyPerformanceDiagnosis = le diagnostic de performance énergétique du bâtiment (DPE)
-Echeance = Échéance
 Periode_du = Période du
 Periode_au = Période au
 Nomlocal = Nom du bien
 OtherRents = Autres locations
 CreatePDF = Créer un PDF
-MenuImmoCompteur = Compteur
-MenuNewImmoCompteur = Nouveau compteur
-MenuImmoCompteurList = Liste compteur
 ImmoBirthCountry = Pays de naissance
 LotFiscal = Lot fiscal
 ImmoBuildings = Lot fiscal
