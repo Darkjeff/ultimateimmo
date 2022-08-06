@@ -139,9 +139,9 @@ print '<tr class="liste_titre">';
 
 print '<td class="left">' . $langs->trans("Building") . '</td>';
 print '<td class="left">' . $langs->trans("Date") . '</td>';
-print '<td class="left">' . $langs->trans("Relever") . '</td>';
-print '<td class="left">' . $langs->trans("Nb Jour") . '</td>';
-print '<td class="left">' . $langs->trans("Consommation") . '</td>';
+print '<td class="left">' . $langs->trans("ImmoCompteurStatement") . '</td>';
+print '<td class="left">' . $langs->trans("ImmoCompteurNbDays") . '</td>';
+print '<td class="left">' . $langs->trans("ImmoCompteurConsumption") . '</td>';
 print '<td class="left">' . $langs->trans("ImmoCompteurDailyConsumption") . '</td>';
 print '<td class="left">' . $langs->trans("ImmoCompteurMonthlyConsumption") . '</td>';
 print '<td class="left">' . $langs->trans("ImmoCompteurYearlyConsumption") . '</td>';
