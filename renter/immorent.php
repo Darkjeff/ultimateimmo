@@ -374,12 +374,12 @@ if ($staticImmorenter->id > 0 && (empty($action) || ($action != 'edit' && $actio
 	print '<table class="border centpercent">' . "\n";
 
 	// Common attributes
-	$object->fields = dol_sort_array($object->fields, 'position');
+	$staticImmorenter->fields = dol_sort_array($staticImmorenter->fields, 'position');
 	
 	$keyforbreak = 'rentamount';
 	//include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_view.tpl.php';
 
-	foreach ($object->fields as $key => $val) {
+	foreach ($staticImmorenter->fields as $key => $val) {
 		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
 
 		// Discard if extrafield is a hidden field on form
@@ -388,7 +388,7 @@ if ($staticImmorenter->id > 0 && (empty($action) || ($action != 'edit' && $actio
 		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
 		if (in_array($key, array('ref', 'status'))) continue;	// Ref and status are already in dol_banner
 
-		$value = $object->$key;
+		$value = $staticImmorenter->$key;
 
 		print '<tr><td';
 		print ' class="titlefield fieldname_' . $key;
@@ -405,7 +405,7 @@ if ($staticImmorenter->id > 0 && (empty($action) || ($action != 'edit' && $actio
 
 		if ($val['label'] == 'Owner') {
 			$staticowner = new ImmoOwner($db);
-			$staticowner->fetch($object->fk_owner);
+			$staticowner->fetch($staticImmorenter->fk_owner);
 			if ($staticowner->ref) {
 				$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
 			}
@@ -417,14 +417,14 @@ if ($staticImmorenter->id > 0 && (empty($action) || ($action != 'edit' && $actio
 				$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs);
 			}
 			print $staticrenter->ref;
-		} elseif ($val['label'] == 'Property'
+		/*} elseif ($val['label'] == 'Property'
 		) {
 			$staticproperty = new ImmoProperty($db);
 			$staticproperty->fetch($object->fk_property);
 			if ($staticproperty->ref) {
 				$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
 			}
-			print $staticproperty->ref;
+			print $staticproperty->ref;*/
 		/*} elseif ($val['label'] == 'BankAccount') {
 			$accountstatic = new Account($db);
 			$accountstatic->fetch($object->fk_account);
