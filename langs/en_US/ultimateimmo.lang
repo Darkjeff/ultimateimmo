@@ -114,6 +114,8 @@ LOC = Business premises
 SHO = Shop
 GAR = Garage
 BUL = Building
+PropertyParent = Parent property
+Juridique = Property legal status
 MonoPropriete = Single owner property
 Copropriete = Joint ownership 
 DateBuilt = Construction period
@@ -173,7 +175,7 @@ ConfirmDeleteImmoOwner = Are you sure you want to delete this owner ?
 CloneImmoOwner = Clone owner
 ConfirmCloneImmoOwner = Are you sure you want to clone this owner ?
 
-#
+
 # Rents
 #
 ImmoRents = Rents
@@ -181,8 +183,12 @@ ImmoRent = Rental
 ListOfRents = List of rents
 EmptyHousing = Empty Housing
 FurnishedApartment = Furnished Apartment
+RentAmount = Rent amount
 Deposit = Deposit
+Encours = Outstanding
 ImmoRentNoticePeriod = Notice period
+DateNextRent = Date next rent
+DateLastRegul = Date last regul
 DeleteImmoRent = Delete rent
 ConfirmDeleteImmoRent = Are you sure you want to delete this rent ?
 CloneImmoRent = Clone rent
@@ -205,9 +211,17 @@ ConfirmDeleteImmoReceipt = Are you sure you want to delete this receipt ?
 CloneImmoReceipt = Clone this Receipt
 ConfirmCloneImmoReceipt = Are you sure you want to clone this receipt ?
 # Payment
+ImmoPaymentRentUpdate = Rent is updated
 DeleteImmoPayment = Delete payment
 ConfirmDeleteImmoPayment = Are you sure you want to delete this payment ?
-
+# Rental
+MenuStatisticsCostFourn = Cost: Statistics by Vendor
+# Cost Types
+ImmoCostType = Types of cost
+CostTypeLabel = Label
+CostTypeLabelInfo = Enter a type of cost
+CostTypeFamille = Cost type
+CostTypeFamilleInfo = Enter a group cost
 
 #
 # Miscellaneous
@@ -222,7 +236,6 @@ ImmoProperties = Properties
 ImmoRenters = Renters
 ImmoCost = Quittance
 ImmoCosts = Rental charges
-ImmoCostType = Types of costs
 ImmoReceipts = Receipts
 ImmoReceipt = Receipt
 ImmoPayments = Payments
@@ -231,7 +244,6 @@ UnPaidReceipt = Unpaid receipt
 PaidReceipt = Paid receipt
 PartiallyPaidReceipt = Partially paid receipt
 ImmorentType = Type of rental
-Juridique = Property legal status
 DateStartRent = Date Start Rent
 TypePayment = Payment type
 NumPayment = <em>Number(Cheque/Transfer N°)</em>
@@ -241,19 +253,14 @@ NewImmoPropertyType = New Type of Property
 ImmoProperty_Type = Type of Property
 PropertyTypeStatusActive=Active
 PropertyTypeStatusCancel=Cancel
-PropertyParent = Parent property
 BuiltDate = Construction date
 Civility = Title
 ImmoRenter = Renter
 Renter = Renter
 RenterCost = Cost/Renter
-RentAmount = Rent amount
 ChargesAmount = Charges amount
 TotalAmount = Total amount
-Encours = Outstanding
 date_end = Date end
-DateNextRent = Date next rent
-DateLastRegul = Date last regul
 VatAmount = VAT amount
 VatTx = VAT rate
 ImmoUnpaid = Unpaid
