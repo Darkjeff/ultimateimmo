@@ -107,6 +107,7 @@ UltimateimmoAboutPage = Ultimateimmo about page
 #
 # Real Estate
 #
+# Real Estate
 APA = Apartement
 HOU = Individual house
 LOC = Business premises
@@ -122,24 +123,91 @@ DateBuilt3 = from 1975 to 1989
 DateBuilt4 = from 1989 to 2005
 DateBuilt5 = since 2005
 Target = Target
+Building = Building
+Staircase = Staircase
+NumFloor = Floor Number
+NumFlat = Apartment Number
+NumDoor = Door n°
+Area = Surface area
+NumberOfRoom = Number of rooms
 ObligationsOfTheSeller = Obligations of the seller
+TheTechnicalDiagnosticFileDDT = The technical diagnostic file (DDT)
+UltimateImmoDiagnosticElectricityInstallation = The state of the internal electricity installation
+UltimateImmoDiagnosticGasInstallation = The state of the "natural" indoor gas installation
+UltimateImmoDiagnosticLeadExposure = The risk of exposure to lead (CREP)
+UltimateImmoDiagnosticContainingAsbestos = The condition mentioning the presence or absence of materials or products containing asbestos
+UltimateImmoDiagnosticContainingTermites = condition relating to the presence of termites in the building
+UltimateImmoDiagnosticNaturalTechnologicalRisks = the state of natural and technological risks
+UltimateImmoDiagnosticNonCollectiveSanitationFacilities = state of non-collective sanitation facilities
+UltimateImmoDiagnosticEnergyPerformanceDiagnosis = building energy performance diagnosis (DPE)
 ObligationsOfTheLessor = Obligations of the lessor
-MenuImmoLotFiscal = Fiscal Lots
+DeleteImmoProperty = Delete property
+ConfirmDeleteImmoProperty = Are you sure you want to delete this property ?
+CloneImmoProperty = Clone property
+ConfirmCloneImmoProperty = Are you sure you want to clone this property ?
+# Fiscal lots
+MenuImmoLotFiscal = Fiscal lots
 MenuListImmoLotFiscal = List Fiscal Lots
 MenuImmoCompteur = Counters
+# Counters
 MenuNewImmoCompteur = New Counter
 MenuImmoCompteurList = List Counters
 MenuImmoCompteurStats = Counter Statistics
+ImmoCompteurDateStatement = Date Statement
 ImmoCompteurStatement = Statement
+ImmoCompteurStatementInfo = Enter counter statement (for water, else...)
 ImmoCompteurNbDays = Nb Days
 ImmoCompteurConsumption = Consumption
 ImmoCompteurDailyConsumption = Daily Consumption
 ImmoCompteurMonthlyConsumption = Monthly Consumption
 ImmoCompteurYearlyConsumption = Yearly Consumption
-DeleteImmoProperty = Delete property
-ConfirmDeleteImmoProperty = Are you sure you want to delete this property ?
-CloneImmoProperty = Clone property
-ConfirmCloneImmoProperty = Are you sure you want to clone this property ?
+CloneImmoCompteur = Clone counter
+
+#
+# Owners
+#
+ImmoOwner = Owner
+ImmoOwner_TypeInfo = Enter the type of owner (Company, else...)
+DeleteImmoOwner = Delete owner
+ConfirmDeleteImmoOwner = Are you sure you want to delete this owner ?
+CloneImmoOwner = Clone owner
+ConfirmCloneImmoOwner = Are you sure you want to clone this owner ?
+
+#
+# Rents
+#
+ImmoRents = Rents
+ImmoRent = Rental
+ListOfRents = List of rents
+EmptyHousing = Empty Housing
+FurnishedApartment = Furnished Apartment
+Deposit = Deposit
+ImmoRentNoticePeriod = Notice period
+DeleteImmoRent = Delete rent
+ConfirmDeleteImmoRent = Are you sure you want to delete this rent ?
+CloneImmoRent = Clone rent
+ConfirmCloneImmoRent = Are you sure you want to clone this rent ?
+
+#
+# Renters
+#
+DeleteImmoRenter = Delete renter
+ConfirmCloneImmoRenter = Are you sure you want to clone this renter ?
+CloneImmoRenter = Clone renter
+ConfirmDeleteImmoRenter = Are you sure you want to delete this renter ?
+
+#
+# Receipts
+#
+# Receipts
+DeleteImmoReceipt = Delete receipt
+ConfirmDeleteImmoReceipt = Are you sure you want to delete this receipt ?
+CloneImmoReceipt = Clone this Receipt
+ConfirmCloneImmoReceipt = Are you sure you want to clone this receipt ?
+# Payment
+DeleteImmoPayment = Delete payment
+ConfirmDeleteImmoPayment = Are you sure you want to delete this payment ?
+
 
 #
 # Miscellaneous
@@ -151,8 +219,6 @@ ImmoProperty = Property
 Property = Property
 Properties = Properties
 ImmoProperties = Properties
-ImmoRents = Rents
-ImmoRent = Rental
 ImmoRenters = Renters
 ImmoCost = Quittance
 ImmoCosts = Rental charges
@@ -165,8 +231,6 @@ UnPaidReceipt = Unpaid receipt
 PaidReceipt = Paid receipt
 PartiallyPaidReceipt = Partially paid receipt
 ImmorentType = Type of rental
-FurnishedApartment = Furnished Apartment
-EmptyHousing = Empty Housing
 Juridique = Property legal status
 DateStartRent = Date Start Rent
 TypePayment = Payment type
@@ -175,22 +239,11 @@ CheckTransmitter = <em>Issuer(Check/Transfer N°)</em>
 ChequeBank = <em>Bank(Check bank)</em>
 NewImmoPropertyType = New Type of Property
 ImmoProperty_Type = Type of Property
-ImmoOwner = Owner
 PropertyTypeStatusActive=Active
 PropertyTypeStatusCancel=Cancel
-Building = Building
-Staircase = Staircase
-NumFloor = Floor Number
-NumFlat = Apartment Number
-NumDoor = Door n°
-Area = Surface area
-NumberOfRoom = Number of rooms
 PropertyParent = Parent property
 BuiltDate = Construction date
-ImmoOwner = Owner
 Civility = Title
-Deposit = Deposit
-ListOfRents = List of rents
 ImmoRenter = Renter
 Renter = Renter
 RenterCost = Cost/Renter
@@ -208,38 +261,11 @@ ImmoPaid = Paid
 PartialPayment = Partial Payment
 NomLoyer = Rent name
 OtherProperties = Other properties
-DeleteImmoReceipt = Delete receipt
-ConfirmDeleteImmoReceipt = Are you sure you want to delete this receipt ?
-CloneImmoReceipt = Clone this Receipt
-ConfirmCloneImmoReceipt = Are you sure you want to clone this receipt ?
-DeleteImmoPayment = Delete payment
-ConfirmDeleteImmoPayment = Are you sure you want to delete this payment ?
-DeleteImmoRenter = Delete renter
-ConfirmCloneImmoRenter = Are you sure you want to clone this renter ?
-CloneImmoRenter = Clone renter
-ConfirmDeleteImmoRenter = Are you sure you want to delete this renter ?
-DeleteImmoRent = Delete rent
-ConfirmDeleteImmoRent = Are you sure you want to delete this rent ?
-CloneImmoRent = Clone rent
-ConfirmCloneImmoRent = Are you sure you want to clone this rent ?
-DeleteImmoOwner = Delete owner
-ConfirmDeleteImmoOwner = Are you sure you want to delete this owner ?
-CloneImmoOwner = Clone owner
-ConfirmCloneImmoOwner = Are you sure you want to clone this owner ?
 OwnerName = Owner Name
 RenterName = Renter Name
 RefOwner = Owner reference
 SendImmoReceiptRef = Submission of receipt %s
 ConfirmValidateReceipt = Do you confirm validation of receipt %s
-TheTechnicalDiagnosticFileDDT = The technical diagnostic file (DDT)
-UltimateImmoDiagnosticElectricityInstallation = The state of the internal electricity installation
-UltimateImmoDiagnosticGasInstallation = The state of the "natural" indoor gas installation
-UltimateImmoDiagnosticLeadExposure = The risk of exposure to lead (CREP)
-UltimateImmoDiagnosticContainingAsbestos = The condition mentioning the presence or absence of materials or products containing asbestos
-UltimateImmoDiagnosticContainingTermites = condition relating to the presence of termites in the building
-UltimateImmoDiagnosticNaturalTechnologicalRisks = the state of natural and technological risks
-UltimateImmoDiagnosticNonCollectiveSanitationFacilities = state of non-collective sanitation facilities
-UltimateImmoDiagnosticEnergyPerformanceDiagnosis = building energy performance diagnosis (DPE)
 ReceiptPaymentsAdded = Receipt payments added
 Echeance = Deadline
 Periode_du = Period from
@@ -254,6 +280,7 @@ OtherReceipts = Other Receipts
 OtherRents = Other Rents
 NumberReceiptByMonth  = Number receipts by month
 CustomerReceiptPayment = Customer receipt payment
+Societe = Company
 
 #
 # Sample page
