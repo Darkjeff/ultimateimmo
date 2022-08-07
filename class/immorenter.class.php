@@ -27,6 +27,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
+dol_include_once('/ultimateimmo/class/immorentersoc.class.php');
 //require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
 /**
@@ -833,6 +834,338 @@ class ImmoRenter extends CommonObject
 
 		// Load lines with object ImmoRenterLine
 		return count($this->lines) ? 1 : 0;
+	}
+
+	/**
+	 *	Insert receiptsubscription into database and eventually add links to banks, mailman, etc...
+	 *
+	 *	@param	int	        $date        		Date of effect of receiptsubscription
+	 *	@param	double		$amount     		Amount of receiptsubscription 
+	 *	@param	int			$accountid			Id bank account. NOT USED.
+	 *	@param	string		$operation			Code of payment mode (if Id bank account provided). Example: 'CB', ... NOT USED.
+	 *	@param	string		$label				Label operation (if Id bank account provided).
+	 *	@param	string		$num_chq			Numero cheque (if Id bank account provided)
+	 *	@param	string		$emetteur_nom		Name of cheque writer
+	 *	@param	string		$emetteur_banque	Name of bank of cheque
+	 *	@param	int     	$datesubend			Date end receiptsubscription
+	 *	@return int         					rowid of record added, <0 if KO
+	 */
+	public function receiptsubscription($date, $amount, $accountid = 0, $operation = '', $label = '', $num_chq = '', $emetteur_nom = '', $emetteur_banque = '', $datesubend = 0)
+	{
+		global $conf, $langs, $user;
+
+		$error = 0;
+
+		// Clean parameters
+		if (!$amount) {
+			$amount = 0;
+		}
+
+		$this->db->begin();
+
+		if ($datesubend) {
+			$datefin = $datesubend;
+		} else {
+			// If no end date, end date = date + 1 year - 1 day
+			$datefin = dol_time_plus_duree($date, 1, 'm');
+			$datefin = dol_time_plus_duree($datefin, -1, 'd');
+		}
+
+		// Create subscription
+		$subscription = new ImmoReceipt($this->db);
+		$subscription->fk_renter = $this->id;
+		$subscription->date_start = $date; // Date of new receipt subscription
+		$subscription->date_end = $datefin; // End data of new receipt subscription
+		$subscription->total_amount = $amount;
+		$subscription->note_public = $label;
+
+		$rowid = $subscription->create($user);
+		if ($rowid > 0) {
+
+			if (!$error) {
+				$this->db->commit();
+				return $rowid;
+			} else {
+				$this->db->rollback();
+				return -2;
+			}
+		} else {
+			$this->error = $subscription->error;
+			$this->errors = $subscription->errors;
+			$this->db->rollback();
+			return -1;
+		}
+	}
+
+	/**
+	 *	Do complementary actions after receiptsubscription recording.
+	 *
+	 *	@param	int			$subscriptionid			Id of created receiptsubscription
+	 *  @param	string		$option					Which action ('bankdirect', 'bankviainvoice', 'invoiceonly', ...)
+	 *	@param	int			$accountid				Id bank account
+	 *	@param	int			$datesubscription		Date of receiptsubscription
+	 *	@param	int			$paymentdate			Date of payment
+	 *	@param	string		$operation				Code of type of operation (if Id bank account provided). Example 'CB', ...
+	 *	@param	string		$label					Label operation (if Id bank account provided)
+	 *	@param	double		$amount     			Amount of receiptsubscription 
+	 *	@param	string		$num_chq				Numero cheque (if Id bank account provided)
+	 *	@param	string		$emetteur_nom			Name of cheque writer
+	 *	@param	string		$emetteur_banque		Name of bank of cheque
+	 *  @param	string		$autocreatethirdparty	Auto create new thirdparty if renter not yet linked to a thirdparty and we request an option that generate invoice.
+	 *  @param  string      $ext_payment_id         External id of payment (for example Stripe charge id)
+	 *  @param  string      $ext_payment_site       Name of external paymentmode (for example 'stripe')
+	 *	@return int									<0 if KO, >0 if OK
+	 */
+	public function receiptSubscriptionComplementaryActions($subscriptionid, $option, $accountid, $datesubscription, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom = '', $emetteur_banque = '', $autocreatethirdparty = 0, $ext_payment_id = '', $ext_payment_site = '')
+	{
+		global $conf, $langs, $user, $mysoc;
+
+		$error = 0;
+
+		$this->invoice = null; // This will contains invoice if an invoice is created
+
+		dol_syslog("receiptSubscriptionComplementaryActions subscriptionid=" . $subscriptionid . " option=" . $option . " accountid=" . $accountid . " datesubscription=" . $datesubscription . " paymentdate=" .
+		$paymentdate . " label=" . $label . " amount=" . $amount . " num_chq=" . $num_chq . " autocreatethirdparty=" . $autocreatethirdparty);
+
+		// Insert into bank account directly (if option choosed for) + link to llx_subscription if option is 'bankdirect'
+		if ($option == 'bankdirect' && $accountid) {
+			require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
+
+			$acct = new Account($this->db);
+			$result = $acct->fetch($accountid);
+
+			$dateop = $paymentdate;
+
+			$insertid = $acct->addline($dateop, $operation, $label, $amount, $num_chq, '', $user, $emetteur_nom, $emetteur_banque);
+			if ($insertid > 0) {
+				$url = dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1) . '?id=' . $this->id;
+				$inserturlid = $acct->add_url_line($insertid, $this->id, $url, $this->getFullname($langs), 'renter');
+				if ($inserturlid > 0) {
+					// Update table ultimateimmo_immopayment
+					$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immopayment SET fk_bank=".((int) $insertid);
+					$sql .= " WHERE rowid=".((int) $subscriptionid);
+
+					dol_syslog("subscription::subscription", LOG_DEBUG);
+					$resql = $this->db->query($sql);
+					if (!$resql) {
+						$error++;
+						$this->error = $this->db->lasterror();
+						$this->errors[] = $this->error;
+					}
+				} else {
+					$error++;
+					$this->error = $acct->error;
+					$this->errors = $acct->errors;
+				}
+			} else {
+				$error++;
+				$this->error = $acct->error;
+				$this->errors = $acct->errors;
+			}
+		}
+
+		// If option choosed, we create invoice
+		if (($option == 'bankviainvoice' && $accountid) || $option == 'invoiceonly') {
+			require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
+			require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/paymentterm.class.php';
+
+			$invoice = new Facture($this->db);
+			$customer = new RenterSoc($this->db);
+
+			if (!$error) {
+				if (!($this->fk_soc > 0)) { // If not yet linked to a company
+					if ($autocreatethirdparty) {
+						// Create a linked thirdparty to member
+						$companyalias = '';
+						$fullname = $this->getFullName($langs);
+
+						if ($this->morphy == 'mor') {
+							$companyname = $this->company;
+							if (!empty($fullname)) {
+								$companyalias = $fullname;
+							}
+						} else {
+							$companyname = $fullname;
+							if (!empty($this->company)) {
+								$companyalias = $this->company;
+							}
+						}
+
+						$result = $customer->create_from_renter($this, $companyname, $companyalias);
+						if ($result < 0) {
+							$this->error = $customer->error;
+							$this->errors = $customer->errors;
+							$error++;
+						} else {
+							$this->fk_soc = $result;
+						}
+					} else {
+						$langs->load("errors");
+						$this->error = $langs->trans("ErrorRenterNotLinkedToAThirpartyLinkOrCreateFirst");
+						$this->errors[] = $this->error;
+						$error++;
+					}
+				}
+			}
+			if (!$error) {
+				$result = $customer->fetch($this->fk_soc);
+				if ($result <= 0) {
+					$this->error = $customer->error;
+					$this->errors = $customer->errors;
+					$error++;
+				}
+			}
+
+			if (!$error) {
+				// Create draft invoice
+				$invoice->type = Facture::TYPE_STANDARD;
+				$invoice->cond_reglement_id = $customer->cond_reglement_id;
+				if (empty($invoice->cond_reglement_id)) {
+					$paymenttermstatic = new PaymentTerm($this->db);
+					$invoice->cond_reglement_id = $paymenttermstatic->getDefaultId();
+					if (empty($invoice->cond_reglement_id)) {
+						$error++;
+						$this->error = 'ErrorNoPaymentTermRECEPFound';
+						$this->errors[] = $this->error;
+					}
+				}
+				$invoice->socid = $this->fk_soc;
+				//$invoice->date = $datesubscription;
+				$invoice->date = dol_now();
+
+				// Possibility to add external linked objects with hooks
+				$invoice->linked_objects['subscription'] = $subscriptionid;
+				if (!empty($_POST['other_linked_objects']) && is_array($_POST['other_linked_objects'])) {
+					$invoice->linked_objects = array_merge($invoice->linked_objects, $_POST['other_linked_objects']);
+				}
+
+				$result = $invoice->create($user);
+				if ($result <= 0) {
+					$this->error = $invoice->error;
+					$this->errors = $invoice->errors;
+					$error++;
+				} else {
+					$this->invoice = $invoice;
+				}
+			}
+
+			if (!$error) {
+				// Add line to draft invoice
+				$idprodsubscription = 0;
+				if (!empty($conf->global->ADHERENT_PRODUCT_ID_FOR_SUBSCRIPTIONS) && (!empty($conf->product->enabled) || !empty($conf->service->enabled))) {
+					$idprodsubscription = $conf->global->ADHERENT_PRODUCT_ID_FOR_SUBSCRIPTIONS;
+				}
+
+				$vattouse = 0;
+				if (isset($conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS) && $conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS == 'defaultforfoundationcountry') {
+					$vattouse = get_default_tva($mysoc, $mysoc, $idprodsubscription);
+				}
+				//print xx".$vattouse." - ".$mysoc." - ".$customer;exit;
+				$result = $invoice->addline($label, 0, 1, $vattouse, 0, 0, $idprodsubscription, 0, $datesubscription, '', 0, 0, '', 'TTC', $amount, 1);
+				if ($result <= 0) {
+					$this->error = $invoice->error;
+					$this->errors = $invoice->errors;
+					$error++;
+				}
+			}
+
+			if (!$error) {
+				// Validate invoice
+				$result = $invoice->validate($user);
+				if ($result <= 0) {
+					$this->error = $invoice->error;
+					$this->errors = $invoice->errors;
+					$error++;
+				}
+			}
+
+			if (!$error) {
+				// TODO Link invoice with subscription ?
+			}
+
+			// Add payment onto invoice
+			if (!$error && $option == 'bankviainvoice' && $accountid) {
+				require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
+				require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
+				require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
+
+				$amounts = array();
+				$amounts[$invoice->id] = price2num($amount);
+
+				$paiement = new Paiement($this->db);
+				$paiement->datepaye = $paymentdate;
+				$paiement->amounts = $amounts;
+				$paiement->paiementcode = $operation;
+				$paiement->paiementid = dol_getIdFromCode($this->db, $operation, 'c_paiement', 'code', 'id', 1);
+				$paiement->num_payment = $num_chq;
+				$paiement->note_public = $label;
+				$paiement->ext_payment_id = $ext_payment_id;
+				$paiement->ext_payment_site = $ext_payment_site;
+
+				if (!$error) {
+					// Create payment line for invoice
+					$paiement_id = $paiement->create($user);
+					if (!$paiement_id > 0) {
+						$this->error = $paiement->error;
+						$this->errors = $paiement->errors;
+						$error++;
+					}
+				}
+
+				if (!$error) {
+					// Add transaction into bank account
+					$bank_line_id = $paiement->addPaymentToBank($user, 'payment', '(SubscriptionPayment)', $accountid, $emetteur_nom, $emetteur_banque);
+					if (!($bank_line_id > 0)) {
+						$this->error = $paiement->error;
+						$this->errors = $paiement->errors;
+						$error++;
+					}
+				}
+
+				if (!$error && !empty($bank_line_id)) {
+					// Update fk_bank into subscription table
+					$sql = 'UPDATE '.MAIN_DB_PREFIX.'subscription SET fk_bank='.((int) $bank_line_id);
+					$sql .= ' WHERE rowid='.((int) $subscriptionid);
+
+					$result = $this->db->query($sql);
+					if (!$result) {
+						$error++;
+					}
+				}
+
+				if (!$error) {
+					// Set invoice as paid
+					$invoice->setPaid($user);
+				}
+			}
+
+			if (!$error) {
+				// Define output language
+				$outputlangs = $langs;
+				$newlang = '';
+				$lang_id = GETPOST('lang_id');
+				if ($conf->global->MAIN_MULTILANGS && empty($newlang) && !empty($lang_id)) {
+					$newlang = $lang_id;
+				}
+				if ($conf->global->MAIN_MULTILANGS && empty($newlang)) {
+					$newlang = $customer->default_lang;
+				}
+				if (!empty($newlang)) {
+					$outputlangs = new Translate("", $conf);
+					$outputlangs->setDefaultLang($newlang);
+				}
+				// Generate PDF (whatever is option MAIN_DISABLE_PDF_AUTOUPDATE) so we can include it into email
+				//if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE))
+
+				$invoice->generateDocument($invoice->model_pdf, $outputlangs);
+			}
+		}
+
+		if ($error) {
+			return -1;
+		} else {
+			return 1;
+		}
 	}
 
 	/**
