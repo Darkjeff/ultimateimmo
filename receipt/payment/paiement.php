@@ -52,6 +52,7 @@ dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
+dol_include_once('/ultimateimmo/lib/immoreceipt.lib.php');
 //require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
 require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
@@ -433,8 +434,9 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		//$ret = $paiement->fetch_thirdparty();
 		/*$title = '';
 		if ($receipt->type != ImmoReceipt::TYPE_CREDIT_NOTE) $title .= $langs->trans("EnterPaymentReceivedFromCustomer");
-		if ($receipt->type == ImmoReceipt::TYPE_CREDIT_NOTE) $title .= $langs->trans("EnterPaymentDueToCustomer");
-		print load_fiche_titre($title);*/
+		if ($receipt->type == ImmoReceipt::TYPE_CREDIT_NOTE) $title .= $langs->trans("EnterPaymentDueToCustomer");*/
+
+		$head = immoreceiptPrepareHead($receipt);
 
 		print '<form id="payment_form" name="add_payment" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 		print '<input type="hidden" name="token" value="' . newToken() . '">';
