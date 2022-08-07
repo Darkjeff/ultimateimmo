@@ -303,23 +303,8 @@ foreach ($search as $key => $val) {
 			}
 			$mode_search = 2;
 		}
-		if ($key == 'ref') {
-			$search[$key] = $search['ref'];
-		}
-		if ($key == 'label') {
-			$search[$key] = $search['label'];
-		}
-		if ($key == 'fk_property') {
-			$search[$key] = $search['fk_property'];
-		}
-		if ($key == 'fk_owner') {
-			$search[$key] = $search['fk_owner'];
-		}
-		if ($key == 'fk_soc') {
-			$search[$key] = $search['fk_soc'];
-		}
 		if ($search[$key] != '') {
-			$sql .= natural_search($key, $search[$key], (($key == 'status') ? 2 : $mode_search)); //TODO : verify for 't.'
+			$sql .= natural_search("t." . $db->escape($key), $search[$key], (($key == 'status') ? 2 : $mode_search));
 		}
 	} else {
 		if (preg_match('/(_dtstart|_dtend)$/', $key) && $search[$key] != '') {
