@@ -148,12 +148,60 @@ $form = new Form($db);
 if ($action == 'add_payment') {
 	$error = 0;
 
+	// addpayment informations
+	$datereceipt = 0; // date_start
+	$datesubend = 0;  // date_end
+	$paymentdate = ''; // Do not use 0 here, default value is '' that means not filled where 0 means 1970-01-01
+	if (GETPOST("reyear", "int") && GETPOST("remonth", "int") && GETPOST("reday", "int")) {
+		$datereceipt = dol_mktime(0, 0, 0, GETPOST("remonth", "int"), GETPOST("reday", "int"), GETPOST("reyear", "int"));
+	}
+	if (GETPOST("endyear", 'int') && GETPOST("endmonth", 'int') && GETPOST("endday", 'int')) {
+		$datesubend = dol_mktime(0, 0, 0, GETPOST("endmonth", 'int'), GETPOST("endday", 'int'), GETPOST("endyear", 'int'));
+	}
+	/*if (GETPOST("paymentyear", 'int') && GETPOST("paymentmonth", 'int') && GETPOST("paymentday", 'int')) {
+		$paymentdate = dol_mktime(0, 0, 0, GETPOST("paymentmonth", 'int'), GETPOST("paymentday", 'int'), GETPOST("paymentyear", 'int'));
+	}*/
+	$amount = price2num(GETPOST("amount", 'alpha')); // Amount of addpayment
+	$label = GETPOST("label");
+	$paymentdate = dol_mktime(12, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
+	//var_dump($paymentdate);exit;
 	// Payment informations
 	$accountid	= GETPOST('accountid', 'int');
 	$operation = GETPOST("fk_mode_reglement", "alphanohtml"); // Payment mode
 	$num_chq = GETPOST("num_chq", "alphanohtml");
 	$emetteur_nom = GETPOST("chqemetteur");
 	$emetteur_banque = GETPOST("chqbank");
+	$option = GETPOST("paymentsave");
+	//var_dump($renter);exit;
+	if (empty($option)) {
+		$option = 'none';
+	}
+	$sendalsoemail = GETPOST("sendmail", 'alpha');
+
+	// Check parameters
+	if (!$datereceipt) {
+		$error++;
+		$langs->load("errors");
+		$errmsg = $langs->trans("ErrorBadDateFormat", $langs->transnoentitiesnoconv("DateStartPeriod"));
+		setEventMessages($errmsg, null, 'errors');
+		$action = 'addpayment';
+	}
+	if (GETPOST('end') && !$datesubend) {
+		$error++;
+		$langs->load("errors");
+		$errmsg = $langs->trans("ErrorBadDateFormat", $langs->transnoentitiesnoconv("DateEndPeriod"));
+		setEventMessages($errmsg, null, 'errors');
+		$action = 'addpayment';
+	}
+	if (!$datesubend) {
+		$datesubend = dol_time_plus_duree(dol_time_plus_duree($datereceipt, $defaultdelay, $defaultdelayunit), -1, 'd');
+	}
+	if (($option == 'bankviainvoice' || $option == 'bankdirect') && !$paymentdate) {
+		$error++;
+		$errmsg = $langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("DatePayment"));
+		setEventMessages($errmsg, null, 'errors');
+		$action = 'addpayment';
+	}
 
 	if (GETPOST('cancel')) {
 		$loc = dol_buildpath("/ultimateimmo/receipt/immoreceipt_card.php", 1) . '?id=' . $id;
@@ -179,7 +227,8 @@ if ($action == 'add_payment') {
 
 	if (!$error) {
 		// Create subscription
-		$crowid = $renter->receiptsubscription($datereceipt, $amount, $accountid, $operation, $label, $num_chq, $emetteur_nom, $emetteur_banque, $datesubend);
+		$crowid = $renter->receiptsubscription($datereceipt,$amount, $accountid, $operation, $label, $num_chq, $emetteur_nom, $emetteur_banque, $datesubend);
+		
 		if ($crowid <= 0) {
 			$error++;
 			$errmsg = $renter->error;
@@ -206,9 +255,10 @@ if ($action == 'add_payment') {
 
 			// Create a line of payments
 			$payment = new ImmoPayment($db);
+			$payment->fetch($rowid);
 			$receipt = new ImmoReceipt($db);
 			$result = $receipt->fetch($id);
-
+			//var_dump(GETPOST("amount"));exit;
 			$payment->ref          = $receipt->ref;
 			$payment->rowid        = $id;
        		$payment->fk_receipt   = $receipt->rowid;
