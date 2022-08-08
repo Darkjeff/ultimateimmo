@@ -128,7 +128,6 @@ ImmoProperties = Properties
 ImmoRenters = Tenants
 ImmoCost = Quittance
 ImmoCosts = Rental charges
-ImmoCostType = Types of costs
 ImmoReceipts = Receipts
 ImmoReceipt = Receipt
 ImmoPayments = Payments
@@ -142,6 +141,7 @@ Juridique = Property legal status
 #
 # Real Estate
 #
+ImmoPropertyLabelInfo = Enter a label
 APA = Apartement
 HOU = Individual house
 LOC = Business premises
@@ -241,6 +241,10 @@ ConfirmCloneImmoRenter = Are you sure you want to clone this Tenant ?
 #
 # Receipts
 #
+ImmoPaymentLabelInfo = Enter a label
+ImmoPaymentRentAmountInfo = Enter the rental amount
+ImmoPaymentChargeAmountInfo = Enter the charge amount
+ImmoPaymentTotalAmountInfo = Enter the total amount
 DeleteImmoReceipt = Delete receipt
 ConfirmDeleteImmoReceipt = Are you sure you want to delete this receipt ?
 CloneImmoReceipt = Clone this Receipt
@@ -249,8 +253,33 @@ ConfirmCloneImmoReceipt = Are you sure you want to clone this receipt ?
 #
 # Payment
 #
+NumPayment = <em>Number(Cheque/Transfer N°)</em>
+CheckTransmitter = <em>Issuer(Check/Transfer N°)</em>
+ChequeBank = <em>Bank(Check bank)</em>
+ImmoPaymentIncome = Income
+ImmoPaymentRentUpdate = Rent is updated
 DeleteImmoPayment = Delete payment
 ConfirmDeleteImmoPayment = Are you sure you want to delete this payment ?
+
+#
+# Rental
+#
+MenuStatisticsCostFourn = Cost: Statistics by Vendor
+ImmoCostLabelInfo = Enter a label
+ImmoCostAmountExTaxInfo = Enter an amount VAT excluded
+ImmoCostAmountTaxInfo = Enter the amount of VAT
+
+#
+# Cost Types
+#
+ImmoCostType = Types of cost
+CostTypeLabel = Label
+CostTypeLabelInfo = Enter a type of cost
+CostTypeFamille = Cost type
+CostTypeFamilleInfo = Enter a group cost
+ImmoCostVentilAmount = Amount
+ImmoCostVentilSelect = Select
+ImmoCostVentilAddRepartition = ADD REPARTITION
 
 
 DateStartRent = Date Start Rent
