@@ -115,12 +115,15 @@ MenuStatisticsResult = Résultats : statistiques
 MenuListImmoCostType = Types de coût
 MenuNewImmoCostType = Nouveau type de coût
 
-# Fiscal lots
-MenuImmoLotFiscal = Lot fiscal
-MenuListImmoLotFiscal = Liste
-MenuImmoCompteur = Compteur
+# Lots Fiscaux
+MenuImmoLotFiscal = Lots fiscaux
+MenuListImmoLotFiscal = Liste des lots fiscaux
+immobuildings = lots fiscaux
+ImmoBuilding = Lot fiscal
+DeleteImmoBuilding = Suppression du lot fiscal
 
-# Counters
+# Compteur
+MenuImmoCompteur = Compteur
 MenuNewImmoCompteur = Nouveau compteur
 MenuImmoCompteurList = Liste compteur
 MenuImmoCompteurStats = Statistique Conso
@@ -159,7 +162,7 @@ ImmorentType = Type de location
 Juridique = Régime juridique de l'immeuble
 
 #
-# Real Estate
+# Biens
 #
 APA = Appartement
 HOU = Maison individuelle
@@ -196,7 +199,7 @@ DeleteImmoProperty = Suppression du bien
 ConfirmDeleteImmoProperty = Êtes vous sûr de vouloir supprimer ce bien ?
 CloneImmoProperty = Cloner le bien
 ConfirmCloneImmoProperty = Êtes vous sûr de vouloir cloner ce bien ?
-
+Equipements = Équipements
 Copropriete = Copropriété
 MonoPropriete = Mono Propriété
 DateStartRent = Date de prise d'effet du contrat
@@ -318,9 +321,7 @@ ConfirmCreateThirdParty=Êtes-vous sûr de vouloir créer un tiers pour ce locat
 ValidatePayment = Valider les paiements
 CreatePDF = Générez le PDF
 ImmoBirthCountry=Pays de naissance
-LotFiscal=Lot fiscal
 
-ImmoBuildings=Lot fiscal
 LinkToOwner = Lien vers le propriétaire
 LinkToThirdparty = Lié au tiers
 LinkToOwnerType = Sélectionnez le type de propriétaire
