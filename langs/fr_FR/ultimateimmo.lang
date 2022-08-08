@@ -114,11 +114,25 @@ MenuStatisticsCost = Coût : statistiques
 MenuStatisticsResult = Résultats : statistiques
 MenuListImmoCostType = Types de coût
 MenuNewImmoCostType = Nouveau type de coût
+
+# Fiscal lots
+MenuImmoLotFiscal = Lot fiscal
+MenuListImmoLotFiscal = Liste
 MenuImmoCompteur = Compteur
+
+# Counters
 MenuNewImmoCompteur = Nouveau compteur
 MenuImmoCompteurList = Liste compteur
-MenuStatisticsCostFourn = Coût : stats. par fourn.
-MenuImmoCompteurStats=Statistique Conso
+MenuImmoCompteurStats = Statistique Conso
+ImmoCompteurDateStatement = Date de relevé
+ImmoCompteurStatement = Relevé
+ImmoCompteurStatementInfo = Indiquer le relevé du compteur (eau, autre...)
+ImmoCompteurNbDays = Nb Jours
+ImmoCompteurConsumption = Consommation
+ImmoCompteurDailyConsumption = Consommation journalière
+ImmoCompteurMonthlyConsumption = Consommation mensuelle
+ImmoCompteurYearlyConsumption = Consommation annuelle
+CloneImmoCompteur = Cloner le compteur
 
 #
 # Miscellaneous
@@ -130,8 +144,6 @@ ImmoProperty = Bien immobilier
 Property = Bien immobilier
 Properties = Biens
 ImmoProperties = Biens
-ImmoRents = Locations
-ImmoRent = Location
 ImmoRenters = Locataires
 ImmoCost = Quittance
 ImmoCosts = Charges locatives
@@ -144,24 +156,49 @@ UnPaidReceipt = Quittance impayée
 PaidReceipt = Quittance payée
 PartiallyPaidReceipt = Quittance partiellement réglée
 ImmorentType = Type de location
-FurnishedApartment = Logement meublé
 Juridique = Régime juridique de l'immeuble
-DateBuilt = Période de construction
-DateBuilt1 = avant 1949
-DateBuilt2 = de 1949 à 1974
-DateBuilt3 = de 1975 à 1989
-DateBuilt4 = de 1989 à 2005
-DateBuilt5 = depuis 2005
+
+#
+# Real Estate
+#
 APA = Appartement
 HOU = Maison individuelle
 LOC = Locaux commerciaux
 SHO = Boutique
 GAR = Garage
 BUL = Immeuble
-EmptyHousing = Logement vide
+DateBuilt = Période de construction
+DateBuilt1 = avant 1949
+DateBuilt2 = de 1949 à 1974
+DateBuilt3 = de 1975 à 1989
+DateBuilt4 = de 1989 à 2005
+DateBuilt5 = depuis 2005
+Target = Cible
+Building = Immeuble
+Staircase = Escalier
+NumFloor = Etage
+NumFlat = Numéro Appartement
+NumDoor = Porte n°
+Area = Surface habitable
+NumberOfRoom = Nombre de pièces principales
+ObligationsOfTheSeller = Obligations du vendeur
+TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
+UltimateImmoDiagnosticElectricityInstallation = l’état de l’installation intérieure d’électricité
+UltimateImmoDiagnosticGasInstallation = l’état de l’installation intérieure de gaz « naturel »
+UltimateImmoDiagnosticLeadExposure = Le constat de risque d’exposition au plomb (CREP)
+UltimateImmoDiagnosticContainingAsbestos = l’état mentionnant la présence ou l’absence de matériaux ou produits contenant de l’amiante
+UltimateImmoDiagnosticContainingTermites = l’état relatif à la présence de termites dans le bâtiment
+UltimateImmoDiagnosticNaturalTechnologicalRisks = l’état des risques naturels et technologiques
+UltimateImmoDiagnosticNonCollectiveSanitationFacilities = l’état des installations d’assainissement non collectif
+UltimateImmoDiagnosticEnergyPerformanceDiagnosis = le diagnostic de performance énergétique du bâtiment (DPE)
+ObligationsOfTheLessor = Obligations du bailleur
+DeleteImmoProperty = Suppression du bien
+ConfirmDeleteImmoProperty = Êtes vous sûr de vouloir supprimer ce bien ?
+CloneImmoProperty = Cloner le bien
+ConfirmCloneImmoProperty = Êtes vous sûr de vouloir cloner ce bien ?
+
 Copropriete = Copropriété
 MonoPropriete = Mono Propriété
-ImmoOwner = Propriétaire
 DateStartRent = Date de prise d'effet du contrat
 DateStartPeriod = Date de début de période
 DateEndPeriod = Date de fin de période
@@ -173,19 +210,11 @@ NewImmoPropertyType = Nouveau type de bien
 ImmoProperty_Type = Type de bien immobilier
 PropertyTypeStatusActive=Bien actif
 PropertyTypeStatusCancel=Bien désactivé
-Building = Immeuble
-Staircase = Escalier
-NumFloor = Etage
-NumFlat = Numéro Appartement
-NumDoor = Porte n°
-Area = Surface habitable
-NumberOfRoom = Nombre de pièces principales
+
 PropertyParent = Bien Parent
 BuiltDate = Date de construction
-Target = Cible
+
 Civility = Titre
-Deposit = Caution
-ListOfRents = Liste des locations
 ImmoRenter = Locataire
 Renter = Locataire
 RenterCost = Coût/locataire
@@ -194,7 +223,6 @@ ChargesAmount = Montant des charges
 TotalAmount = Montant total
 Encours = Encours
 DateEndRent = Date de fin du contrat
-Deposit = Caution
 Periodicity = Périodicité
 PeriodicityDescription = mensuelle, trimestrielle, annuelle
 DateLastRegul = Date dernière régulation
@@ -207,23 +235,12 @@ ImmoPaid = Payée
 PartialPayment = Paiement partiel
 NomLoyer = Dénomination de la Quittance
 OtherProperties = Autres biens
-DeleteImmoReceipt = Delete receipt
-ConfirmDeleteImmoReceipt = Êtes vous sûr de vouloir supprimer cette quittance ?
-CloneImmoReceipt = Cloner cette quittance
-ConfirmCloneImmoReceipt = Êtes vous sûr de vouloir cloner cette quittance ?
-DeleteImmoPayment = Supprimer le règlement
-ConfirmDeleteImmoPayment = Êtes vous sûr de vouloir supprimer ce règlement
-DeleteImmoProperty = Suppression du bien
-ConfirmDeleteImmoProperty = Êtes vous sûr de vouloir supprimer ce bien ?
-ConfirmCloneImmoProperty = Êtes vous sûr de vouloir cloner ce bien ?
-CloneImmoProperty = Cloner le bien
-CloneImmoRenter = Cloner le locataire
-ConfirmCloneImmoRenter = Êtes vous sûr de vouloir cloner ce locataire ?
-ConfirmDeleteImmoRenter = Êtes vous sûr de vouloir supprimer ce locataire ?
-DeleteImmoRent = Supprimer la location
-ConfirmDeleteImmoRent = Êtes vous sûr de vouloir supprimer cette location ?
-CloneImmoRent = Cloner la location
-ConfirmCloneImmoRent = Êtes vous sûr de vouloir cloner cette location ?
+
+#
+# Owners
+#
+ImmoOwner = Propriétaire
+ImmoOwner_TypeInfo = Indiquer le type de propriétaire (SCI, FCPI, autre...)
 DeleteImmoOwner = Supprimer le propriétaire
 ConfirmDeleteImmoOwner = Êtes vous sûr de vouloir supprimer ce propriétaire ?
 CloneImmoOwner = Cloner le propriétaire
@@ -231,19 +248,47 @@ ConfirmCloneImmoOwner = Êtes vous sûr de vouloir cloner ce propriétaire ?
 OwnerName = Nom du propriétaire
 RenterName = Nom du locataire
 RefOwner = Référence propriétaire
+
+#
+# Rents
+#
+ImmoRents = Locations
+ImmoRent = Location
+ListOfRents = Liste des locations
+EmptyHousing = Logement vide
+FurnishedApartment = Logement meublé
+Deposit = Caution
+ImmoRentNoticePeriod = Préavis
+DeleteImmoRent = Supprimer la location
+ConfirmDeleteImmoRent = Êtes vous sûr de vouloir supprimer cette location ?
+CloneImmoRent = Cloner la location
+ConfirmCloneImmoRent = Êtes vous sûr de vouloir cloner cette location ?
+
+#
+# Renters
+#
+DeleteImmoRenter = Suppression du locataire
+ConfirmDeleteImmoRenter = Êtes vous sûr de vouloir supprimer ce locataire ?
+CloneImmoRenter = Cloner le locataire
+ConfirmCloneImmoRenter = Êtes vous sûr de vouloir cloner ce locataire ?
+
+#
+# Receipts
+#
+DeleteImmoReceipt = Delete receipt
+ConfirmDeleteImmoReceipt = Êtes vous sûr de vouloir supprimer cette quittance ?
+CloneImmoReceipt = Cloner cette quittance
+ConfirmCloneImmoReceipt = Êtes vous sûr de vouloir cloner cette quittance ?
+
+#
+# Payment
+#
+DeleteImmoPayment = Supprimer le règlement
+ConfirmDeleteImmoPayment = Êtes vous sûr de vouloir supprimer ce règlement
+
 SendImmoReceiptRef = Envoi de la quittance %s
 ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
-TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
-ObligationsOfTheSeller = Obligations du vendeur
-ObligationsOfTheLessor = Obligations du bailleur
-UltimateImmoDiagnosticElectricityInstallation = l’état de l’installation intérieure d’électricité
-UltimateImmoDiagnosticGasInstallation = l’état de l’installation intérieure de gaz « naturel »
-UltimateImmoDiagnosticLeadExposure = Le constat de risque d’exposition au plomb (CREP)
-UltimateImmoDiagnosticContainingAsbestos = l’état mentionnant la présence ou l’absence de matériaux ou produits contenant de l’amiante
-UltimateImmoDiagnosticContainingTermites = l’état relatif à la présence de termites dans le bâtiment
-UltimateImmoDiagnosticNaturalTechnologicalRisks = l’état des risques naturels et technologiques
-UltimateImmoDiagnosticNonCollectiveSanitationFacilities = l’état des installations d’assainissement non collectif
-UltimateImmoDiagnosticEnergyPerformanceDiagnosis = le diagnostic de performance énergétique du bâtiment (DPE)
+
 ReceiptPaymentsAdded = Règlement de quittances ajouté
 Echeance = Date limite
 Periode_du = Période du
@@ -274,8 +319,7 @@ ValidatePayment = Valider les paiements
 CreatePDF = Générez le PDF
 ImmoBirthCountry=Pays de naissance
 LotFiscal=Lot fiscal
-MenuImmoLotFiscal=Lot fiscal
-MenuListImmoLotFiscal=Liste
+
 ImmoBuildings=Lot fiscal
 LinkToOwner = Lien vers le propriétaire
 LinkToThirdparty = Lié au tiers

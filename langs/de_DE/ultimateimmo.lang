@@ -114,11 +114,25 @@ MenuStatisticsCost = Kosten: Statistik
 MenuStatisticsResult = Ergebnisse: Statistik
 MenuListImmoCostType = Kostenart
 MenuNewImmoCostType = Neue Kostenart
+
+# Fiscal lots
+MenuImmoLotFiscal = Lot fiscaux
+MenuListImmoLotFiscal = Liste
 MenuImmoCompteur = water meter
+
+# Counters
 MenuNewImmoCompteur = New water meter
 MenuImmoCompteurList = Water meter list
-MenuStatisticsCostFourn = Coût : stats. par fourn.
-MenuImmoCompteurStats=Statistique Conso
+MenuImmoCompteurStats = Statistique Conso
+ImmoCompteurDateStatement = Date Statement
+ImmoCompteurStatement = Statement
+ImmoCompteurStatementInfo = Enter counter statement (for water, else...)
+ImmoCompteurNbDays = Nb Days
+ImmoCompteurConsumption = Consumption
+ImmoCompteurDailyConsumption = Daily Consumption
+ImmoCompteurMonthlyConsumption = Monthly Consumption
+ImmoCompteurYearlyConsumption = Yearly Consumption
+CloneImmoCompteur = Clone counter
 
 #
 # Miscellaneous
@@ -130,8 +144,6 @@ ImmoProperty = Eigentum
 Property = Eigentum
 Properties = Eigenschaften
 ImmoProperties = Immobilie
-ImmoRents = Mieten
-ImmoRent = Vermietung
 ImmoRenters = Mieter
 ImmoCost = Kündigung
 ImmoCosts = Lädt Lokativen auf
@@ -144,24 +156,49 @@ UnPaidReceipt = Unbezahlter Beleg
 PaidReceipt = Bezahlter Beleg
 PartiallyPaidReceipt = Teilweise bezahlte Quittung
 ImmorentType = Unmoralischer Typ
-FurnishedApartment = Möblierte Wohnung
 Juridique = Rechtsordnung des Gebäudes
-DateBuilt = Bauzeit
-DateBuilt1 = vor 1949
-DateBuilt2 = von 1949 bis 1974
-DateBuilt3 = von 1975 bis 1989
-DateBuilt4 = von 1989 bis 2005
-DateBuilt5 = von 2005
+
+#
+# Real Estate
+#
 APA = Appartement
 HOU = Einzelhaus
 LOC = Geschäftsräume
 SHO = Einkaufen
 GAR = Garage
 BUL = Gebäude
-EmptyHousing = Leeres Gehäuse
+DateBuilt = Bauzeit
+DateBuilt1 = vor 1949
+DateBuilt2 = von 1949 bis 1974
+DateBuilt3 = von 1975 bis 1989
+DateBuilt4 = von 1989 bis 2005
+DateBuilt5 = von 2005
+Target = Ziel
+Building = Gebäude
+Staircase = Treppe
+NumFloor = Boden
+NumFlat = Wohnungsnummer
+NumDoor = Tür Nr.
+Area = Bereich
+NumberOfRoom = Anzahl Haupträume
+ObligationsOfTheSeller = Pflichten des Verkäufers
+TheTechnicalDiagnosticFileDDT = Die technische Diagnosedatei (DDT)
+UltimateImmoDiagnosticElectricityInstallation = Der Zustand der internen Elektroinstallation
+UltimateImmoDiagnosticGasInstallation = Der Stand der "Erdgas"-Innenraum-Gasinstallation
+UltimateImmoDiagnosticLeadExposure = Das Risiko einer Bleiexposition (CREP)
+UltimateImmoDiagnosticContainingAsbestos = Die Bedingung, die das Vorhandensein oder Fehlen von asbesthaltigen Materialien oder Produkten erwähnt
+UltimateImmoDiagnosticContainingTermites = Bedingung in Bezug auf das Vorhandensein von Termiten im Gebäude
+UltimateImmoDiagnosticNaturalTechnologicalRisks = der Stand der natürlichen und technologischen Risiken
+UltimateImmoDiagnosticNonCollectiveSanitationFacilities = Zustand nichtkollektiver sanitärer Einrichtungen
+UltimateImmoDiagnosticEnergyPerformanceDiagnosis = Gebäudeenergieleistungsdiagnose (DPE)
+ObligationsOfTheLessor = Pflichten des Vermieters
+DeleteImmoProperty = Eigenschaft löschen
+ConfirmDeleteImmoProperty = Möchten Sie diese Eigenschaft wirklich löschen?
+CloneImmoProperty = Clone this property
+ConfirmCloneImmoProperty = Möchten Sie diese Property wirklich klonen?
+
 Copropriete = Miteigentum
 MonoPropriete = MonoEigenschaft
-ImmoOwner = Eigentümer
 DateStartRent = Datum Beginn Miete
 DateStartPeriod = Date start period
 DateEndPeriod = Date end period
@@ -173,19 +210,11 @@ NewImmoPropertyType = Neuer Immobilientyp
 ImmoProperty_Type = Art des Vermögens
 PropertyTypeStatusActive=Aktiv
 PropertyTypeStatusCancel=Abbrechen
-Building = Gebäude
-Staircase = Treppe
-NumFloor = Boden
-NumFlat = Wohnungsnummer
-NumDoor = Tür Nr.
-Area = Bereich
-NumberOfRoom = Anzahl Haupträume
+
 PropertyParent = Eigentums-Elternteil
 BuiltDate = Baujahr
-Target = Ziel
+
 Civility = Höflichkeit
-Deposit = Anzahlung
-ListOfRents = Liste der Mieten
 ImmoRenter = Mieter
 Renter = Mieter
 RenterCost = Kosten/Mieter
@@ -194,7 +223,6 @@ ChargesAmount = Höhe der Gebühren
 TotalAmount = Gesamtsumme
 Encours = Encours
 DateEndRent = Date end of rent
-Deposit = Anzahlung
 Periodicity = Periodicity
 PeriodicityDescription = monthly, quarterly, annually...
 DateLastRegul = Datum letzte Regulierung
@@ -207,23 +235,12 @@ ImmoPaid = Bezahlt
 PartialPayment = Teilzahlung
 NomLoyer = Mietname
 OtherProperties = Andere Eigenschaften
-DeleteImmoReceipt = Quittung löschen
-ConfirmDeleteImmoReceipt = Möchten Sie diesen Beleg wirklich löschen?
-CloneImmoReceipt = Diese Quittung klonen
-ConfirmCloneImmoReceipt = Möchten Sie diesen Beleg wirklich klonen?
-DeleteImmoPayment = Zahlung löschen
-ConfirmDeleteImmoPayment = Möchten Sie diese Zahlung wirklich löschen?
-DeleteImmoProperty = Eigenschaft löschen
-ConfirmDeleteImmoProperty = Möchten Sie diese Eigenschaft wirklich löschen?
-ConfirmCloneImmoProperty = Möchten Sie diese Property wirklich klonen?
-CloneImmoProperty = Clone this property
-CloneImmoRenter = Clone this Tenant
-ConfirmCloneImmoRenter = Möchten Sie diesen Mieter wirklich klonen?
-ConfirmDeleteImmoRenter = Möchten Sie diesen Mieter wirklich löschen?
-DeleteImmoRent = Miete löschen
-ConfirmDeleteImmoRent = Möchten Sie diese Miete wirklich löschen?
-CloneImmoRent = Clone this rent
-ConfirmCloneImmoRent = Möchten Sie diese Miete wirklich klonen?
+
+#
+# Owners
+#
+ImmoOwner = Eigentümer
+ImmoOwner_TypeInfo = Enter the type of owner (Company, else...)
 DeleteImmoOwner = Besitzer löschen
 ConfirmDeleteImmoOwner = Möchten Sie diesen Inhaber wirklich löschen?
 CloneImmoOwner = Clone the owner
@@ -231,19 +248,47 @@ ConfirmCloneImmoOwner = Möchten Sie diesen Besitzer wirklich klonen?
 OwnerName = Besitzername
 RenterName = Mietername
 RefOwner = Eigentümerreferenz
+
+#
+# Rents
+#
+ImmoRents = Mieten
+ImmoRent = Vermietung
+ListOfRents = Liste der Mieten
+EmptyHousing = Leeres Gehäuse
+FurnishedApartment = Möblierte Wohnung
+Deposit = Anzahlung
+ImmoRentNoticePeriod = Notice period
+DeleteImmoRent = Miete löschen
+ConfirmDeleteImmoRent = Möchten Sie diese Miete wirklich löschen?
+CloneImmoRent = Clone this rent
+ConfirmCloneImmoRent = Möchten Sie diese Miete wirklich klonen?
+
+#
+# Renters
+#
+DeleteImmoRenter = Delete renter
+ConfirmDeleteImmoRenter = Möchten Sie diesen Mieter wirklich löschen?
+CloneImmoRenter = Clone this Tenant
+ConfirmCloneImmoRenter = Möchten Sie diesen Mieter wirklich klonen?
+
+#
+# Receipts
+#
+DeleteImmoReceipt = Quittung löschen
+ConfirmDeleteImmoReceipt = Möchten Sie diesen Beleg wirklich löschen?
+CloneImmoReceipt = Diese Quittung klonen
+ConfirmCloneImmoReceipt = Möchten Sie diesen Beleg wirklich klonen?
+
+#
+# Payment
+#
+DeleteImmoPayment = Zahlung löschen
+ConfirmDeleteImmoPayment = Möchten Sie diese Zahlung wirklich löschen?
+
 SendImmoReceiptRef = Abgabe der Quittung %s
 ConfirmValidateReceipt = Bestätigen Sie die Bestätigung des Empfangs %s?
-TheTechnicalDiagnosticFileDDT = Die technische Diagnosedatei (DDT)
-ObligationsOfTheSeller = Pflichten des Verkäufers
-ObligationsOfTheLessor = Pflichten des Vermieters
-UltimateImmoDiagnosticElectricityInstallation = Der Zustand der internen Elektroinstallation
-UltimateImmoDiagnosticGasInstallation = Der Stand der "Erdgas"-Innenraum-Gasinstallation
-UltimateImmoDiagnosticLeadExposure = Das Risiko einer Bleiexposition (CREP)
-UltimateImmoDiagnosticContainingAsbestos = Die Bedingung, die das Vorhandensein oder Fehlen von asbesthaltigen Materialien oder Produkten erwähnt
-UltimateImmoDiagnosticContainingTermites = Bedingung in Bezug auf das Vorhandensein von Termiten im Gebäude
-UltimateImmoDiagnosticNaturalTechnologicalRisks = der Stand der natürlichen und technologischen Risiken
-UltimateImmoDiagnosticNonCollectiveSanitationFacilities = Zustand nichtkollektiver sanitärer Einrichtungen
-UltimateImmoDiagnosticEnergyPerformanceDiagnosis = Gebäudeenergieleistungsdiagnose (DPE)
+
 ReceiptPaymentsAdded = Zahlungseingang hinzugefügt
 Echeance = Termin
 Periode_du = Zeitraum von
@@ -274,8 +319,7 @@ ValidatePayment = Validate payments
 CreatePDF = Create PDF
 ImmoBirthCountry=Country of birth
 LotFiscal=Lot fiscal
-MenuImmoLotFiscal=Lot fiscaux
-MenuListImmoLotFiscal=Liste
+
 ImmoBuildings=Lot fiscal
 LinkToOwner = Link zum Besitzer
 LinkToThirdparty = Lié au tiers
