@@ -125,6 +125,7 @@ LOC = Locaux commerciaux
 SHO = Boutique
 GAR = Garage
 BUL = Immeuble
+ImmoPropertyLabelInfo = Entrer un libellé
 Juridique = Régime juridique de l'immeuble
 Copropriete = Copropriété
 MonoPropriete = Mono Propriété
@@ -172,6 +173,7 @@ ImmoProperty = Bien immobilier
 ImmoCompteurs = Compteurs
 DeleteImmoCompteur = Suppression du compteur
 CloneImmoCompteur = Cloner le compteur
+Property = Bien immobilier
 ImmoCompteurDateStatement = Date de relevé
 ImmoCompteurStatement = Relevé
 ImmoCompteurStatementInfo = Indiquer le relevé du compteur (eau, autre...)
@@ -235,7 +237,11 @@ ConfirmCloneImmoRenter = Etes vous sûr de vouloir cloner ce locataire ?
 # Quittances
 #
 # Quittances
+ImmoPaymentLabelInfo = Entrer un libellé
 Echeance = Échéance
+ImmoPaymentRentAmountInfo = Entrer le montant du loyer H.C
+ImmoPaymentChargeAmountInfo = Entrer le montant des charges
+ImmoPaymentTotalAmountInfo = Entrer le montant du loyer C.C
 VatTx = Taux TVA
 ImmoCost = Quittance
 ImmoReceipts = Quittances
@@ -260,15 +266,24 @@ CloneImmoReceipt = Cloner cette quittance
 ConfirmCloneImmoReceipt = Etes vous sûr de vouloir cloner cette quittance ?
 # Paiements
 PaymentMode = Mode de paiement
+NumPayment = <em>Numéro(Chèque/Virement N°)</em>
+CheckTransmitter = <em>Emetteur(Chèque/Virement N°)</em>
+ChequeBank = <em>Banque(Banque du chèque)</em>
+TypePayment = Type de Règlement
+ImmoPaymentIncome = Revenu
 ImmoPaymentRentUpdate = Loyer mis à jour avec succès
 # Charges
 HtAmount = Montant HT
 VatAmount = Montant TVA
+RenterCost = Coût/locataire
 # Types de couts
 CostTypeLabel = Libellé
 CostTypeLabelInfo = Indiquer un libellé
 CostTypeFamille = Famille de coût
 CostTypeFamilleInfo = Indiquer la famille de coût
+ImmoCostVentilAmount = Montant
+ImmoCostVentilSelect = Select
+ImmoCostVentilAddRepartition = AJOUTER REPARTITION
 
 #
 # Autres
@@ -276,7 +291,6 @@ CostTypeFamilleInfo = Indiquer la famille de coût
 BienPrincipal = Bien principal
 BirthDay = Date de Naissance
 BirthCountry = Lieu de naissance
-Property = Bien immobilier
 Properties = Biens
 ImmoProperties = Biens immobiliers
 ImmoRents = Locations
@@ -287,17 +301,12 @@ ImmoCostType = Types de coûts
 ImmoPayments = Paiements
 ImmoPayment = Règlement
 DateStartRent = Date de prise d'effet du contrat
-TypePayment = Type de Règlement
-NumPayment = <em>Numéro(Chèque/Virement N°)</em>
-CheckTransmitter = <em>Emetteur(Chèque/Virement N°)</em>
-ChequeBank = <em>Banque(Banque du chèque)</em>
 NewImmoPropertyType = Nouveau type de bien
 PropertyTypeStatusActive=Bien actif
 PropertyTypeStatusCancel=Bien désactivé
 BuiltDate = Date de construction
 Civility = Titre
 Renter = Locataire
-RenterCost = Coût/locataire
 ImmoUnpaid = Impayée
 ImmoPaid = Payée
 OtherProperties = Autres biens
