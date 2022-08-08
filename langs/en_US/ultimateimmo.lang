@@ -137,7 +137,7 @@ UnPaidReceipt = Unpaid receipt
 PaidReceipt = Paid receipt
 PartiallyPaidReceipt = Partially paid receipt
 ImmorentType = Type of rental
-Juridique = Legal regime of the building
+Juridique = Property legal status
 
 #
 # Real Estate
@@ -221,11 +221,14 @@ ListOfRents = List of rents
 EmptyHousing = Empty Housing
 FurnishedApartment = Furnished Apartment
 Deposit = Deposit
+Encours = Outstanding
 ImmoRentNoticePeriod = Notice period
+DateNextRent = Date next rent
+DateLastRegul = Date last regul
+DateLastRegulDescription = Last known IRL index : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
 DeleteImmoRent = Delete rent
 ConfirmDeleteImmoRent = Are you sure you want to delete this rent ?
 CloneImmoRent = Clone rent
-ConfirmCloneImmoRent = Are you sure you want to clone this rent ?
 
 #
 # Renters
@@ -262,7 +265,7 @@ ImmoProperty_Type = Type of property
 PropertyTypeStatusActive=Active
 PropertyTypeStatusCancel=Cancel
 
-PropertyParent = Property Parent
+PropertyParent = Parent property
 BuiltDate = Built date
 
 Civility = Title
@@ -276,8 +279,7 @@ Encours = Outstanding
 DateEndRent = Date end of rent
 Periodicity = Periodicity
 PeriodicityDescription = monthly, quarterly, annually...
-DateLastRegul = Date last regul
-DateLastRegulDescription = Last known IRL index : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
+
 VatAmount = VAT amount
 HtAmount = Amount without taxes
 VatTx = VAT rate
