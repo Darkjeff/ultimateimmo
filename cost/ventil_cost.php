@@ -3,7 +3,7 @@
  * Copyright (C) 2005-2006 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2014      Florian Henry        <florian.henry@open-concept.pro>
- * Copyright (C) 2018-2019 Philippe GRAND 		<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 		<philippe.grand@atoo-net.com>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -174,7 +174,7 @@ if ($id > 0)
 {
 	$head = immocostPrepareHead($charge);
 
-	dol_fiche_head($head, 'repartition', $langs->trans("ImmoCost"), -1, 'ultimateimmo@ultimateimmo');
+	print dol_get_fiche_head($head, 'repartition', $langs->trans("ImmoCost"), -1, 'ultimateimmo@ultimateimmo');
 	
 	// Object Charge
 	// ------------------------------------------------------------
@@ -201,8 +201,8 @@ if ($id > 0)
 		print '<td>' . $langs->trans('fk_immocost') . '</td>';
 		print '<td>' . $langs->trans('fk_property') . '</td>';
 		print '<td>' . $langs->trans('nomlocal') . '</td>';
-		print '<td align="right">' . $langs->trans('amount') . '</td>';
-		print '<td align="right">' . $langs->trans('select') . '</td>';
+		print '<td align="right">' . $langs->trans('ImmoCostVentilAmount') . '</td>';
+		print '<td align="right">' . $langs->trans('ImmoCostVentilSelect') . '</td>';
 		print "</tr>\n";
 		
 		$i = 0;
@@ -260,7 +260,7 @@ if ($id > 0)
 			}
 		}
 		print '<tr><td colspan="5" align="center">'.$langs->trans('Type').'<input class="flat" type="text" value="" name="typecharge"></td></tr>';
-		print '<tr><td colspan="5" align="center"><input class="button" type="submit" value="' . $langs->trans("AddRepartition") . '" name="addrepartition"></td></tr>';
+		print '<tr><td colspan="5" align="center"><input class="button" type="submit" value="' . $langs->trans("ImmoCostVentilAddRepartition") . '" name="addrepartition"></td></tr>';
 		
 		print "</tbody></table></div>";
 		
