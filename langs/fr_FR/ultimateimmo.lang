@@ -221,11 +221,14 @@ ListOfRents = Liste des locations
 EmptyHousing = Logement vide
 FurnishedApartment = Logement meublé
 Deposit = Caution
+Encours = Encours
 ImmoRentNoticePeriod = Préavis
+DateNextRent = Date next rent
+DateLastRegul = Date dernière régulation
+DateLastRegulDescription = Dernier index IRL connu : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
 DeleteImmoRent = Supprimer la location
 ConfirmDeleteImmoRent = Êtes vous sûr de vouloir supprimer cette location ?
 CloneImmoRent = Cloner la location
-ConfirmCloneImmoRent = Êtes vous sûr de vouloir cloner cette location ?
 
 #
 # Renters
@@ -276,8 +279,7 @@ Encours = Encours
 DateEndRent = Date de fin du contrat
 Periodicity = Périodicité
 PeriodicityDescription = mensuelle, trimestrielle, annuelle
-DateLastRegul = Date dernière régulation
-DateLastRegulDescription = Dernier index IRL connu : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
+
 VatAmount = Montant TVA
 HtAmount = Montant HT
 VatTx = Taux TVA
