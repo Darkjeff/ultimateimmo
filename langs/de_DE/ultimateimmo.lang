@@ -81,26 +81,26 @@ UltimateimmoAboutPage = Seite über Ultimateimmo
 ImmoProperties = Immobilien
 MenuImmoProperty = Immobilie
 MenuNewImmoProperty = Neue Immobilie
-MenuListImmoProperty = Auflistung
+MenuListImmoProperty = Liste
 MenuImmoPropertyType = Art der Immobilie
 MenuNewImmoPropertyType = Neue Art
-MenuListImmoPropertyType = Auflistung
+MenuListImmoPropertyType = Liste
 MenuImmoRent = Vermietung
 MenuNewImmoRent = Neue Vermietung
-MenuListImmoRent = Auflistung
+MenuListImmoRent = Liste
 MenuImmoOwner = Besitzer
 MenuNewImmoOwner = Neuer Besitzer
-MenuListImmoOwner = Auflistung
+MenuListImmoOwner = Liste
 MenuImmoOwnerType = Art von Besitzer
 MenuNewImmoOwnerType = Neue Besitzerart
-MenuListImmoOwnerType = Auflistung
+MenuListImmoOwnerType = Liste
 MenuImmoRenter = Mieter
 MenuNewImmoRenter = Neuer Mieter
-MenuListImmoRenter = Auflistung
+MenuListImmoRenter = Liste
 MenuImmoRenterStats = Zahlungsstatistik
 MenuImmoPayment = Zahlungen
 MenuNewImmoPayment = Neue Zahlung
-MenuListImmoPayment = Auflistung
+MenuListImmoPayment = Liste
 MenuListImmoPaymentStats=Zahlungsstatistik
 MenuListImmoReceipt = Quittungen
 MenuNewImmoReceipt = Neue Quittung
@@ -117,24 +117,28 @@ MenuListImmoCostType = Kostenarten
 MenuNewImmoCostType = Neue Kostenart
 MenuImmoCompteurStats=Verbrauchsstatistik
 
-# Fiscal lots
+# Steuersatz
+LotFiscal = Steuersatz
 MenuImmoLotFiscal = Lot fiscaux
 MenuListImmoLotFiscal = Liste
-MenuImmoCompteur=Zähler
 
 # Counters
-MenuNewImmoCompteur= Neuer Zähler
-MenuImmoCompteurList= Zählerliste
+ImmoCompteur = Zähler
+ImmoProperty = Immobilie
+ImmoCompteurs = Zähler
+DeleteImmoCompteur = Zähler löschen
+CloneImmoCompteur = Zähler klonen
+MenuImmoCompteur =Zähler
+MenuNewImmoCompteur = Neuer Zähler
+MenuImmoCompteurList = Zählerliste
 MenuImmoCompteurStats = Statistique Conso
-ImmoCompteurDateStatement = Date Statement
-ImmoCompteurStatement = Statement
-ImmoCompteurStatementInfo = Enter counter statement (for water, else...)
-ImmoCompteurNbDays = Nb Days
-ImmoCompteurConsumption = Consumption
-ImmoCompteurDailyConsumption = Daily Consumption
-ImmoCompteurMonthlyConsumption = Monthly Consumption
-ImmoCompteurYearlyConsumption = Yearly Consumption
-CloneImmoCompteur = Clone counter
+ImmoCompteurDateStatement = Datum der Erklärung
+ImmoCompteurStatement = Erklärung
+ImmoCompteurNbDays = Nb Jours
+ImmoCompteurConsumption = Verbrauch
+ImmoCompteurDailyConsumption = Täglicher Verbrauch
+ImmoCompteurMonthlyConsumption = Monatlicher Verbrauch
+ImmoCompteurYearlyConsumption = Jährlicher Verbrauch
 
 #
 # Andere
@@ -157,7 +161,6 @@ ImmoPayment = Zahlung
 UnPaidReceipt = Unbezahlte Quittung
 PaidReceipt = Bezahlte Quittung
 PartiallyPaidReceipt = Eingang teilweise beglichen
-ImmorentType = Art der Vermietung
 Juridique = Rechtsordnung des Gebäudes
 
 #
@@ -187,12 +190,14 @@ NumFlat = Wohnungsnummer
 NumDoor = Türnummer
 Area = Wohnraum
 NumberOfRoom = Anzahl der Haupträume
+ObligationsOfTheSeller = Pflichten des Verkäufers
+ObligationsOfTheLessor = Pflichten des Vermieters
 DeleteImmoProperty = Entfernung der Immobilie
 ConfirmDeleteImmoProperty = Möchten Sie diese Immobilie wirklich löschen?
 CloneImmoProperty = Klonen Sie die Immobilie
 ConfirmCloneImmoProperty = Möchten Sie dieses Immobilie wirklich klonen?
 MenuImmoLotFiscal=Steuersatz
-MenuListImmoLotFiscal=Auflistung
+MenuListImmoLotFiscal=Liste
 
 Copropriete = Miteigentum
 MonoPropriete = MonoEigenschaft
@@ -204,7 +209,7 @@ NumPayment = <i>Nummer(Scheck-/Überweisungsnummer)</i>
 CheckTransmitter = <i>Aussteller(Scheck-/Überweisungsnummer)</i>
 ChequeBank = <i>Bank (Bank des Schecks)</i>
 NewImmoPropertyType = Neuer Immobilientyp
-ImmoProperty_Type = Art des Vermögens
+ImmoProperty_Type = Immobilienart
 PropertyTypeStatusActive=Aktiv
 PropertyTypeStatusCancel=Abbrechen
 
@@ -212,17 +217,11 @@ PropertyParent = Eigentums-Elternteil
 BuiltDate = Baujahr
 
 Civility = Höflichkeit
-ImmoRenter = Mieter
 Renter = Mieter
 RenterCost = Kosten/Mieter
-RentAmount = Miete
-ChargesAmount = Höhe der Gebühren
-TotalAmount = Gesamtsumme
-Encours = Encours
 DateEndRent = Date end of rent
 Periodicity = Periodicity
 PeriodicityDescription = monthly, quarterly, annually...
-DateLastRegul = Datum letzte Regulierung
 DateLastRegulDescription = Last known IRL index : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
 VatAmount = Mehrwertsteuerbetrag
 HtAmount = Betrag ohne Steuern
@@ -245,29 +244,40 @@ DeleteImmoOwner = Eigentümer entfernen
 ConfirmDeleteImmoOwner = Möchten Sie diesen Eigentümer wirklich löschen?
 CloneImmoOwner = Den Eigentümer klonen
 ConfirmCloneImmoOwner = Möchten Sie diesen Eigentümer wirklich klonen?
+DeleteImmoOwner_Type = Löschung des Eigentümertyps
+ConfirmDeleteImmoOwner_Type = Möchten Sie diesen Eigentümertyp wirklich löschen?
 
 #
 # Rents
 #
 ImmoRents = Mieten
 ImmoRent = Miete
-ListOfRents = Liste der Mieten
-EmptyHousing = Leeres Gehäuse
-FurnishedApartment = Möblierte Wohnung
+ListOfRents = Liste der Vermietungen
+ImmorentType = Art der Vermietung
+EmptyHousing = Leeres Haus 
+FurnishedApartment = Mobilierte Wohnung
+RentAmount = Höhe der Miete
+ChargesAmount = Höhe der Gebühren
+TotalAmount = Gesamtsumme
 Deposit = Kaution
+Encours = Im Gange
 ImmoRentNoticePeriod = Vorankündigung
-DeleteImmoRent = Miete löschenb
-ConfirmDeleteImmoRent = Möchten Sie diese Miete wirklich löschen?
-CloneImmoRent = Ort klonen
-ConfirmCloneImmoRent = Möchten Sie diesen Ort wirklich klonen?
+date_end = Endtermin
+DateNextRent = Nächster Mietzahlungstermin
+DateLastRegul = Letztes Regulierungsdatum
+DeleteImmoRent = Löschung der Vermietung
+ConfirmDeleteImmoRent = Möchten Sie diese Vermietung wirklich löschen?
+CloneImmoRent = Klonen der Vermietung
+ConfirmCloneImmoRent = Möchten Sie diese Vermietung wirklich klonen?
 
 #
-# Renters
+# Mieter
 #
-RenterName = Mietername
-DeleteImmoRenter = Mieter löschen
+ImmoRenter = Mieter
+RenterName = Name des Mieters
+DeleteImmoRenter = Löschung des Mieters
 ConfirmDeleteImmoRenter = Möchten Sie diesen Mieter wirklich löschen?
-CloneImmoRenter = Mieter klonen
+CloneImmoRenter = Klonen des Mieters
 ConfirmCloneImmoRenter = Möchten Sie diesen Mieter wirklich klonen?
 
 #
