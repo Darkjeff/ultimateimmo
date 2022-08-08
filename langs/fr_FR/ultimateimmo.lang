@@ -137,7 +137,6 @@ UnPaidReceipt = Quittance impayée
 PaidReceipt = Quittance payée
 PartiallyPaidReceipt = Quittance partiellement réglée
 ImmorentType = Type de location
-Juridique = Régime juridique de l'immeuble
 
 #
 # Real Estate
@@ -148,6 +147,8 @@ LOC = Locaux commerciaux
 SHO = Boutique
 GAR = Garage
 BUL = Immeuble
+ImmoPropertyLabelInfo = Entrer un libellé
+Juridique = Régime juridique de l'immeuble
 MonoPropriete = Mono Propriété
 Copropriete = Copropriété
 DateBuilt = Période de construction
@@ -189,6 +190,10 @@ MenuImmoCompteur = Compteur
 MenuNewImmoCompteur = Nouveau compteur
 MenuImmoCompteurList = Liste compteur
 MenuImmoCompteurStats = Statistique Conso
+ImmoCompteurs = Compteurs
+DeleteImmoCompteur = Suppression du compteur
+CloneImmoCompteur = Cloner le compteur
+Property = Bien immobilier
 ImmoCompteurDateStatement = Date de relevé
 ImmoCompteurStatement = Relevé
 ImmoCompteurStatementInfo = Indiquer le relevé du compteur (eau, autre...)
@@ -197,7 +202,6 @@ ImmoCompteurConsumption = Consommation
 ImmoCompteurDailyConsumption = Consommation journalière
 ImmoCompteurMonthlyConsumption = Consommation mensuelle
 ImmoCompteurYearlyConsumption = Consommation annuelle
-CloneImmoCompteur = Cloner le compteur
 
 #
 # Owners
@@ -239,19 +243,22 @@ CloneImmoRenter = Cloner le locataire
 ConfirmCloneImmoRenter = Êtes vous sûr de vouloir cloner ce locataire ?
 
 #
-# Receipts
+# Quittances
 #
 DeleteImmoReceipt = Delete receipt
 ConfirmDeleteImmoReceipt = Êtes vous sûr de vouloir supprimer cette quittance ?
 CloneImmoReceipt = Cloner cette quittance
 ConfirmCloneImmoReceipt = Êtes vous sûr de vouloir cloner cette quittance ?
+ImmoPaymentLabelInfo = Entrer un libellé
+ImmoPaymentRentAmountInfo = Entrer le montant du loyer H.C
+ImmoPaymentChargeAmountInfo = Entrer le montant des charges
+ImmoPaymentTotalAmountInfo = Entrer le montant du loyer C.C
 
 #
 # Payment
 #
 DeleteImmoPayment = Supprimer le règlement
 ConfirmDeleteImmoPayment = Êtes vous sûr de vouloir supprimer ce règlement
-
 
 DateStartRent = Date de prise d'effet du contrat
 DateStartPeriod = Date de début de période
@@ -271,7 +278,6 @@ BuiltDate = Date de construction
 Civility = Titre
 ImmoRenter = Locataire
 Renter = Locataire
-RenterCost = Coût/locataire
 RentAmount = Montant du loyer
 ChargesAmount = Montant des charges
 TotalAmount = Montant total
@@ -280,9 +286,26 @@ DateEndRent = Date de fin du contrat
 Periodicity = Périodicité
 PeriodicityDescription = mensuelle, trimestrielle, annuelle
 
+#
+# Charges
+#
 VatAmount = Montant TVA
 HtAmount = Montant HT
 VatTx = Taux TVA
+RenterCost = Coût/locataire
+
+#
+# Types de couts
+#
+CostTypeLabel = Libellé
+CostTypeLabelInfo = Indiquer un libellé
+CostTypeFamille = Famille de coût
+CostTypeFamilleInfo = Indiquer la famille de coût
+ImmoCostVentilAmount = Montant
+ImmoCostVentilSelect = Select
+ImmoCostVentilAddRepartition = AJOUTER REPARTITION
+
+
 ImmoUnpaid = Impayée
 ImmoPaid = Payée
 PartialPayment = Paiement partiel
