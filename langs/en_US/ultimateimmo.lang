@@ -167,6 +167,8 @@ LOC = Business premises
 SHO = Shop
 GAR = Garage
 BUL = Building
+MonoPropriete = Single owner property
+Copropriete = Joint ownership
 DateBuilt = Construction period
 DateBuilt1 = before 1949
 DateBuilt2 = from 1949 to 1974
@@ -197,8 +199,6 @@ ConfirmDeleteImmoProperty = Are you sure you want to delete this property ?
 CloneImmoProperty = Clone this property
 ConfirmCloneImmoProperty = Are you sure you want to clone this property ?
 
-Copropriete = Joint ownership
-MonoPropriete = Single owner property
 DateStartRent = Date Start Rent
 DateStartPeriod = Date start period
 DateEndPeriod = Date end period
