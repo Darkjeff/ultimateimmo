@@ -151,14 +151,14 @@ if ($reshook < 0) {
 if (empty($reshook)) {
 	$error = 0;
 
-	$backurlforlist = dol_buildpath('/ultimateimmo/immobuilding_list.php', 1);
+	$backurlforlist = dol_buildpath('/ultimateimmo/building/immobuilding_list.php', 1);
 
 	if (empty($backtopage) || ($cancel && empty($id))) {
 		if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
 			if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) {
 				$backtopage = $backurlforlist;
 			} else {
-				$backtopage = dol_buildpath('/ultimateimmo/immobuilding_card.php', 1).'?id='.($id > 0 ? $id : '__ID__');
+				$backtopage = dol_buildpath('/ultimateimmo/building/immobuilding_card.php', 1).'?id='.($id > 0 ? $id : '__ID__');
 			}
 		}
 	}

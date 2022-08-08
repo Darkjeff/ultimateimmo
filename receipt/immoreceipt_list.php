@@ -237,7 +237,7 @@ if ($action == 'validaterent') {
 
 				$db->commit();
 
-				$mesg = $langs->trans("Loyer mis a jour avec succes");
+				$mesg = $langs->trans("ImmoPaymentRentUpdate");
 				setEventMessages($mesg, null, 'mesgs');
 			}
 		} else {

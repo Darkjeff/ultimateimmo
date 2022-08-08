@@ -240,6 +240,7 @@ VatTx = Taux TVA
 ImmoCost = Quittance
 ImmoReceipts = Quittances
 ImmoReceipt = Quittance
+PartialPayment = Paiement partiel
 UnPaidReceipt = Quittance impayée
 PaidReceipt = Quittance payée
 PartiallyPaidReceipt = Quittance partiellement réglée
@@ -257,10 +258,17 @@ DeleteImmoReceipt = Suppression de Quittance
 ConfirmDeleteImmoReceipt = Etes vous sûr de vouloir supprimer cette quittance ?
 CloneImmoReceipt = Cloner cette quittance 
 ConfirmCloneImmoReceipt = Etes vous sûr de vouloir cloner cette quittance ?
+# Paiements
+PaymentMode = Mode de paiement
+ImmoPaymentRentUpdate = Loyer mis à jour avec succès
 # Charges
 HtAmount = Montant HT
 VatAmount = Montant TVA
-
+# Types de couts
+CostTypeLabel = Libellé
+CostTypeLabelInfo = Indiquer un libellé
+CostTypeFamille = Famille de coût
+CostTypeFamilleInfo = Indiquer la famille de coût
 
 #
 # Autres
@@ -292,7 +300,6 @@ Renter = Locataire
 RenterCost = Coût/locataire
 ImmoUnpaid = Impayée
 ImmoPaid = Payée
-PartialPayment = Paiement partiel
 OtherProperties = Autres biens
 DeleteImmoPayment = Suppression de règlement
 ConfirmDeleteImmoPayment = Etes vous sûr de vouloir supprimer ce règlement ?
@@ -313,7 +320,7 @@ CostType = Type de cout
 bytes = octets
 Payed = Payé
 Create = Créer
-PaymentMode = Mode de paiement
 Contract = Contrat
 ShowMandataireDetails = Afficher les détails du mandataire
 ShowColocataireDetails = Afficher les détails des colocataires
+UserValid = Utilisateur Valide
