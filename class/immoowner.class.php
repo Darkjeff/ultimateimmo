@@ -129,12 +129,13 @@ class ImmoOwner extends CommonObject
 		'phone_mobile' 	=> array('type' => 'varchar(30)', 'label' => 'PhoneMobile', 'visible' => -1, 'enabled' => 1, 'position' => 80, 'notnull' => -1,),
 		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'visible' => -2, 'enabled' => 1, 'position' => 500, 'notnull' => 1,),
 		'tms' => array('type' => 'timestamp', 'label' => 'DateModification', 'visible' => -2, 'enabled' => 1, 'position' => 501, 'notnull' => 1,),
-		'fk_user_creat' => array('type' => 'integer', 'label' => 'UserAuthor', 'picto'=>'user', 'visible' => -2, 'enabled' => 1, 'position' => 510, 'notnull' => 1,),
-		'fk_user_modif' => array('type' => 'integer', 'label' => 'UserModif', 'picto'=>'user', 'visible' => -2, 'enabled' => 1, 'position' => 511, 'notnull' => -1,),
-		'import_key' 	=> array('type' => 'varchar(14)', 'label' => 'ImportId', 'visible' => -2, 'enabled' => 1, 'position' => 1000, 'notnull' => -1,),
+		'fk_user_creat' => array('type' => 'integer:User:user/class/user.class.php', 'label' => 'UserAuthor', 'picto'=>'user', 'visible' => -2, 'enabled' => 1, 'position' => 510, 'notnull' => 1,'foreignkey' => 'llx_user.rowid',),
+		'fk_user_modif' => array('type' => 'integer:User:user/class/user.class.php', 'label' => 'UserModif', 'picto'=>'user', 'visible' => -2, 'enabled' => 1, 'position' => 511, 'notnull' => -1,'foreignkey' => 'llx_user.rowid',),
+		'import_key' 	=> array('type' => 'varchar(14)', 'label' => 'ImportId', 'visible' => -2, 'enabled' => 1, 'position' =>
+		1000, 'notnull' => -1,),
 		'status' 		=> array(
 			'type' => 'integer', 'label' => 'Status', 'visible' => 1, 'enabled' => 1, 'position' => 1000, 'notnull' => 1, 'index' => 1,
-			'arrayofkeyval' => array('0' => 'Draft', '1' => 'Active', '-1' => 'Cancel')
+			'arrayofkeyval' => array('0' => 'Disabled', '1' => 'Active', '-1' => 'Cancel')
 		),
 
 	);
