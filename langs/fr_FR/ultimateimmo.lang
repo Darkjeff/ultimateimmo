@@ -115,28 +115,6 @@ MenuStatisticsResult = Résultats : statistiques
 MenuListImmoCostType = Types de coût
 MenuNewImmoCostType = Nouveau type de coût
 
-# Lots Fiscaux
-MenuImmoLotFiscal = Lots fiscaux
-MenuListImmoLotFiscal = Liste des lots fiscaux
-immobuildings = lots fiscaux
-ImmoBuilding = Lot fiscal
-DeleteImmoBuilding = Suppression du lot fiscal
-
-# Compteur
-MenuImmoCompteur = Compteur
-MenuNewImmoCompteur = Nouveau compteur
-MenuImmoCompteurList = Liste compteur
-MenuImmoCompteurStats = Statistique Conso
-ImmoCompteurDateStatement = Date de relevé
-ImmoCompteurStatement = Relevé
-ImmoCompteurStatementInfo = Indiquer le relevé du compteur (eau, autre...)
-ImmoCompteurNbDays = Nb Jours
-ImmoCompteurConsumption = Consommation
-ImmoCompteurDailyConsumption = Consommation journalière
-ImmoCompteurMonthlyConsumption = Consommation mensuelle
-ImmoCompteurYearlyConsumption = Consommation annuelle
-CloneImmoCompteur = Cloner le compteur
-
 #
 # Miscellaneous
 #
@@ -162,7 +140,7 @@ ImmorentType = Type de location
 Juridique = Régime juridique de l'immeuble
 
 #
-# Biens
+# Real Estate
 #
 APA = Appartement
 HOU = Maison individuelle
@@ -170,6 +148,8 @@ LOC = Locaux commerciaux
 SHO = Boutique
 GAR = Garage
 BUL = Immeuble
+MonoPropriete = Mono Propriété
+Copropriete = Copropriété
 DateBuilt = Période de construction
 DateBuilt1 = avant 1949
 DateBuilt2 = de 1949 à 1974
@@ -199,45 +179,25 @@ DeleteImmoProperty = Suppression du bien
 ConfirmDeleteImmoProperty = Êtes vous sûr de vouloir supprimer ce bien ?
 CloneImmoProperty = Cloner le bien
 ConfirmCloneImmoProperty = Êtes vous sûr de vouloir cloner ce bien ?
-Equipements = Équipements
-Copropriete = Copropriété
-MonoPropriete = Mono Propriété
-DateStartRent = Date de prise d'effet du contrat
-DateStartPeriod = Date de début de période
-DateEndPeriod = Date de fin de période
-TypePayment = Type de Règlement
-NumPayment = <i>Numéro(Chèque/Virement N°)</i>
-CheckTransmitter = <i>Emetteur(Chèque/Virement N°)</i>
-ChequeBank = <i>Banque(Banque du chèque)</i>
-NewImmoPropertyType = Nouveau type de bien
-ImmoProperty_Type = Type de bien immobilier
-PropertyTypeStatusActive=Bien actif
-PropertyTypeStatusCancel=Bien désactivé
 
-PropertyParent = Bien Parent
-BuiltDate = Date de construction
+# Fiscal lots
+MenuImmoLotFiscal = Lots fiscaux
+MenuListImmoLotFiscal = Liste des lots fiscaux
+MenuImmoCompteur = Compteur
 
-Civility = Titre
-ImmoRenter = Locataire
-Renter = Locataire
-RenterCost = Coût/locataire
-RentAmount = Montant du loyer
-ChargesAmount = Montant des charges
-TotalAmount = Montant total
-Encours = Encours
-DateEndRent = Date de fin du contrat
-Periodicity = Périodicité
-PeriodicityDescription = mensuelle, trimestrielle, annuelle
-DateLastRegul = Date dernière régulation
-DateLastRegulDescription = Dernier index IRL connu : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
-VatAmount = Montant TVA
-HtAmount = Montant HT
-VatTx = Taux TVA
-ImmoUnpaid = Impayée
-ImmoPaid = Payée
-PartialPayment = Paiement partiel
-NomLoyer = Dénomination de la Quittance
-OtherProperties = Autres biens
+# Counters
+MenuNewImmoCompteur = Nouveau compteur
+MenuImmoCompteurList = Liste compteur
+MenuImmoCompteurStats = Statistique Conso
+ImmoCompteurDateStatement = Date de relevé
+ImmoCompteurStatement = Relevé
+ImmoCompteurStatementInfo = Indiquer le relevé du compteur (eau, autre...)
+ImmoCompteurNbDays = Nb Jours
+ImmoCompteurConsumption = Consommation
+ImmoCompteurDailyConsumption = Consommation journalière
+ImmoCompteurMonthlyConsumption = Consommation mensuelle
+ImmoCompteurYearlyConsumption = Consommation annuelle
+CloneImmoCompteur = Cloner le compteur
 
 #
 # Owners
@@ -289,6 +249,44 @@ ConfirmCloneImmoReceipt = Êtes vous sûr de vouloir cloner cette quittance ?
 DeleteImmoPayment = Supprimer le règlement
 ConfirmDeleteImmoPayment = Êtes vous sûr de vouloir supprimer ce règlement
 
+
+DateStartRent = Date de prise d'effet du contrat
+DateStartPeriod = Date de début de période
+DateEndPeriod = Date de fin de période
+TypePayment = Type de Règlement
+NumPayment = <i>Numéro(Chèque/Virement N°)</i>
+CheckTransmitter = <i>Emetteur(Chèque/Virement N°)</i>
+ChequeBank = <i>Banque(Banque du chèque)</i>
+NewImmoPropertyType = Nouveau type de bien
+ImmoProperty_Type = Type de bien immobilier
+PropertyTypeStatusActive=Bien actif
+PropertyTypeStatusCancel=Bien désactivé
+
+PropertyParent = Bien Parent
+BuiltDate = Date de construction
+
+Civility = Titre
+ImmoRenter = Locataire
+Renter = Locataire
+RenterCost = Coût/locataire
+RentAmount = Montant du loyer
+ChargesAmount = Montant des charges
+TotalAmount = Montant total
+Encours = Encours
+DateEndRent = Date de fin du contrat
+Periodicity = Périodicité
+PeriodicityDescription = mensuelle, trimestrielle, annuelle
+DateLastRegul = Date dernière régulation
+DateLastRegulDescription = Dernier index IRL connu : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
+VatAmount = Montant TVA
+HtAmount = Montant HT
+VatTx = Taux TVA
+ImmoUnpaid = Impayée
+ImmoPaid = Payée
+PartialPayment = Paiement partiel
+NomLoyer = Dénomination de la Quittance
+OtherProperties = Autres biens
+
 SendImmoReceiptRef = Envoi de la quittance %s
 ConfirmValidateReceipt = Confirmez vous la validation de la quittance %s
 
@@ -306,6 +304,7 @@ OtherReceipts = Autres quittances
 OtherRents = Autres locations
 NumberReceiptByMonth  = Nombre de quittances par mois
 CustomerReceiptPayment = Règlement de quittance
+Societe = Company
 LinkToReceipt = Lien vers la quittance
 LinkToOwner = Lien vers le propriétaire
 LinkToOwnerType = Sélectionnez le type de propriétaire
@@ -321,7 +320,9 @@ ConfirmCreateThirdParty=Êtes-vous sûr de vouloir créer un tiers pour ce locat
 ValidatePayment = Valider les paiements
 CreatePDF = Générez le PDF
 ImmoBirthCountry=Pays de naissance
+LotFiscal=Lot fiscal
 
+ImmoBuildings=Lot fiscal
 LinkToOwner = Lien vers le propriétaire
 LinkToThirdparty = Lié au tiers
 LinkToOwnerType = Sélectionnez le type de propriétaire

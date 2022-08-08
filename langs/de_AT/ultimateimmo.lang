@@ -115,25 +115,6 @@ MenuStatisticsResult = Results: Statistics
 MenuListImmoCostType = Cost type
 MenuNewImmoCostType = New cost type
 
-# Fiscal lots
-MenuImmoLotFiscal = Lot fiscaux
-MenuListImmoLotFiscal = Liste
-MenuImmoCompteur = water meter
-
-# Counters
-MenuNewImmoCompteur = New water meter
-MenuImmoCompteurList = Water meter list
-MenuImmoCompteurStats = Statistique Conso
-ImmoCompteurDateStatement = Date Statement
-ImmoCompteurStatement = Statement
-ImmoCompteurStatementInfo = Enter counter statement (for water, else...)
-ImmoCompteurNbDays = Nb Days
-ImmoCompteurConsumption = Consumption
-ImmoCompteurDailyConsumption = Daily Consumption
-ImmoCompteurMonthlyConsumption = Monthly Consumption
-ImmoCompteurYearlyConsumption = Yearly Consumption
-CloneImmoCompteur = Clone counter
-
 #
 # Miscellaneous
 #
@@ -167,6 +148,8 @@ LOC = Business premises
 SHO = Shop
 GAR = Garage
 BUL = Building
+MonoPropriete = MonoProperty
+Copropriete = Co-ownership
 DateBuilt = Period of construction
 DateBuilt1 = before 1949
 DateBuilt2 = from 1949 to 1974
@@ -197,44 +180,24 @@ ConfirmDeleteImmoProperty = Are you sure you want to delete this property ?
 CloneImmoProperty = Clone this property
 ConfirmCloneImmoProperty = Are you sure you want to clone this property ?
 
-Copropriete = Co-ownership
-MonoPropriete = MonoProperty
-DateStartRent = Date Start Rent
-DateStartPeriod = Date start period
-DateEndPeriod = Date end period
-TypePayment = Payment type
-NumPayment = <i>Number(Check/Transfer N°)</i>
-CheckTransmitter = <i>Issuer(Check/Transfer N°)</i>
-ChequeBank = <i>Bank(Bank of the check)</i>
-NewImmoPropertyType = New property type
-ImmoProperty_Type = Type of property
-PropertyTypeStatusActive=Active
-PropertyTypeStatusCancel=Cancel
+# Fiscal lots
+MenuImmoLotFiscal = Lot fiscaux
+MenuListImmoLotFiscal = Liste
+MenuImmoCompteur = water meter
 
-PropertyParent = Property Parent
-BuiltDate = Built date
-
-Civility = Civility
-ImmoRenter = Tenant
-Renter = Tenant
-RenterCost = Cost/Tenant
-RentAmount = Rent amount
-ChargesAmount = Amount of charges
-TotalAmount = Total amount
-Encours = Encours
-DateEndRent = Date end of rent
-Periodicity = Periodicity
-PeriodicityDescription = monthly, quarterly, annually...
-DateLastRegul = Date last regul
-DateLastRegulDescription = Last known IRL index : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
-VatAmount = VAT amount
-HtAmount = Amount without taxes
-VatTx = VAT rate
-ImmoUnpaid = Unpaid
-ImmoPaid = Paid
-PartialPayment = Partial Payment
-NomLoyer = Rent name
-OtherProperties = Other properties
+# Counters
+MenuNewImmoCompteur = New water meter
+MenuImmoCompteurList = Water meter list
+MenuImmoCompteurStats = Statistique Conso
+ImmoCompteurDateStatement = Date Statement
+ImmoCompteurStatement = Statement
+ImmoCompteurStatementInfo = Enter counter statement (for water, else...)
+ImmoCompteurNbDays = Nb Days
+ImmoCompteurConsumption = Consumption
+ImmoCompteurDailyConsumption = Daily Consumption
+ImmoCompteurMonthlyConsumption = Monthly Consumption
+ImmoCompteurYearlyConsumption = Yearly Consumption
+CloneImmoCompteur = Clone counter
 
 #
 # Owners
@@ -286,6 +249,44 @@ ConfirmCloneImmoReceipt = Are you sure you want to clone this receipt ?
 DeleteImmoPayment = Delete payment
 ConfirmDeleteImmoPayment = Are you sure you want to delete this payment ?
 
+
+DateStartRent = Date Start Rent
+DateStartPeriod = Date start period
+DateEndPeriod = Date end period
+TypePayment = Payment type
+NumPayment = <i>Number(Check/Transfer N°)</i>
+CheckTransmitter = <i>Issuer(Check/Transfer N°)</i>
+ChequeBank = <i>Bank(Bank of the check)</i>
+NewImmoPropertyType = New property type
+ImmoProperty_Type = Type of property
+PropertyTypeStatusActive=Active
+PropertyTypeStatusCancel=Cancel
+
+PropertyParent = Property Parent
+BuiltDate = Built date
+
+Civility = Civility
+ImmoRenter = Tenant
+Renter = Tenant
+RenterCost = Cost/Tenant
+RentAmount = Rent amount
+ChargesAmount = Amount of charges
+TotalAmount = Total amount
+Encours = Encours
+DateEndRent = Date end of rent
+Periodicity = Periodicity
+PeriodicityDescription = monthly, quarterly, annually...
+DateLastRegul = Date last regul
+DateLastRegulDescription = Last known IRL index : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
+VatAmount = VAT amount
+HtAmount = Amount without taxes
+VatTx = VAT rate
+ImmoUnpaid = Unpaid
+ImmoPaid = Paid
+PartialPayment = Partial Payment
+NomLoyer = Rent name
+OtherProperties = Other properties
+
 SendImmoReceiptRef = Submission of receipt %s
 ConfirmValidateReceipt = Do you confirm validation of receipt %s
 
@@ -303,6 +304,7 @@ OtherReceipts = Other Receipts
 OtherRents = Other Rents
 NumberReceiptByMonth  = Number receipts by month
 CustomerReceiptPayment = Customer receipt payment
+Societe = Company
 LinkToReceipt = Link to receipt
 LinkToOwner = Link to Landlord
 LinkToOwnerType = Select the Landlord type

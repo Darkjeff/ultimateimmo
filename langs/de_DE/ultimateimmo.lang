@@ -23,7 +23,7 @@ ModuleUltimateimmoName = Ultimateimmo
 ModuleUltimateimmoDesc = Lösung für Immobilienprofis
 
 #
-# Administrator Seite
+# Admin page
 #
 UltimateimmoSetup = Konfigurieren des Ultimateimmo-Moduls
 Settings = Einstellungen
@@ -69,7 +69,7 @@ MoreActionsOnRent=Additional action proposed by default when registering a rent,
 FreeLegalTextOnReceipts= Free legal text on Receipts
 
 #
-# Über Seite
+# About page
 #
 About = Informationsseite
 UltimateimmoAbout = Über Ultimateimmo
@@ -110,38 +110,13 @@ MenuListImmoReceiptStats = Mietstatistik
 MenuListImmoCost = Mietkosten
 MenuNewImmoCost = Neue Mietgebühr
 MenuRenterCost = Mieter kosten
-MenuStatisticsCost = Kosten: Statistiken nach Typ 
-MenuStatisticsCostFourn = Kosten: Statistiken vom Lieferanten
+MenuStatisticsCost = Kosten: Statistiken nach Typ
 MenuStatisticsResult = Ergebnisse: Statistiken
 MenuListImmoCostType = Kostenarten
 MenuNewImmoCostType = Neue Kostenart
-MenuImmoCompteurStats=Verbrauchsstatistik
-
-# Steuersatz
-LotFiscal = Steuersatz
-MenuImmoLotFiscal = Lot fiscaux
-MenuListImmoLotFiscal = Liste
-
-# Counters
-ImmoCompteur = Zähler
-ImmoProperty = Immobilie
-ImmoCompteurs = Zähler
-DeleteImmoCompteur = Zähler löschen
-CloneImmoCompteur = Zähler klonen
-MenuImmoCompteur =Zähler
-MenuNewImmoCompteur = Neuer Zähler
-MenuImmoCompteurList = Zählerliste
-MenuImmoCompteurStats = Statistique Conso
-ImmoCompteurDateStatement = Datum der Erklärung
-ImmoCompteurStatement = Erklärung
-ImmoCompteurNbDays = Nb Jours
-ImmoCompteurConsumption = Verbrauch
-ImmoCompteurDailyConsumption = Täglicher Verbrauch
-ImmoCompteurMonthlyConsumption = Monatlicher Verbrauch
-ImmoCompteurYearlyConsumption = Jährlicher Verbrauch
 
 #
-# Andere
+# Miscellaneous
 #
 BienPrincipal = Hauptvermögen
 BirthDay = Geburtsdatum
@@ -161,21 +136,20 @@ ImmoPayment = Zahlung
 UnPaidReceipt = Unbezahlte Quittung
 PaidReceipt = Bezahlte Quittung
 PartiallyPaidReceipt = Eingang teilweise beglichen
+ImmorentType = Art der Vermietung
 Juridique = Rechtsordnung des Gebäudes
 
 #
-# Immobilien
+# Real Estate
 #
-PropertyParent = Hauptimmobilie
 APA = Wohnung
 HOU = Individuelles Haus
 LOC = Gewerbebauten
 SHO = Geschäft
 GAR = Garage
 BUL = Gebäude
-Juridique = Rechtsordnung des Gebäudes
-Copropriete = Eigentumswohnung
 MonoPropriete = Einzeleigentum
+Copropriete = Eigentumswohnung
 DateBuilt = Baujahr
 DateBuilt1 = vor 1949
 DateBuilt2 = von 1949 bis 1974
@@ -191,61 +165,52 @@ NumDoor = Türnummer
 Area = Wohnraum
 NumberOfRoom = Anzahl der Haupträume
 ObligationsOfTheSeller = Pflichten des Verkäufers
+TheTechnicalDiagnosticFileDDT = Die technische Diagnosedatei (DDT)
+UltimateImmoDiagnosticElectricityInstallation = Der Zustand der internen Elektroinstallation
+UltimateImmoDiagnosticGasInstallation = Der Stand der "Erdgas"-Innenraum-Gasinstallation
+UltimateImmoDiagnosticLeadExposure = Das Risiko einer Bleiexposition (CREP)
+UltimateImmoDiagnosticContainingAsbestos = Die Bedingung, die das Vorhandensein oder Fehlen von asbesthaltigen Materialien oder Produkten erwähnt
+UltimateImmoDiagnosticContainingTermites = Bedingung in Bezug auf das Vorhandensein von Termiten im Gebäude
+UltimateImmoDiagnosticNaturalTechnologicalRisks = der Stand der natürlichen und technologischen Risiken
+UltimateImmoDiagnosticNonCollectiveSanitationFacilities = Zustand nichtkollektiver sanitärer Einrichtungen
+UltimateImmoDiagnosticEnergyPerformanceDiagnosis = Gebäudeenergieleistungsdiagnose (DPE)
 ObligationsOfTheLessor = Pflichten des Vermieters
 DeleteImmoProperty = Entfernung der Immobilie
 ConfirmDeleteImmoProperty = Möchten Sie diese Immobilie wirklich löschen?
 CloneImmoProperty = Klonen Sie die Immobilie
 ConfirmCloneImmoProperty = Möchten Sie dieses Immobilie wirklich klonen?
-MenuImmoLotFiscal=Steuersatz
-MenuListImmoLotFiscal=Liste
 
-Copropriete = Miteigentum
-MonoPropriete = MonoEigenschaft
-DateStartRent = Datum Beginn Miete
-DateStartPeriod = Date start period
-DateEndPeriod = Date end period
-TypePayment = Zahlungsart
-NumPayment = <i>Nummer(Scheck-/Überweisungsnummer)</i>
-CheckTransmitter = <i>Aussteller(Scheck-/Überweisungsnummer)</i>
-ChequeBank = <i>Bank (Bank des Schecks)</i>
-NewImmoPropertyType = Neuer Immobilientyp
-ImmoProperty_Type = Immobilienart
-PropertyTypeStatusActive=Aktiv
-PropertyTypeStatusCancel=Abbrechen
+# Fiscal lots
+MenuImmoLotFiscal = Lot fiscaux
+MenuListImmoLotFiscal = Liste
+MenuImmoCompteur = Zähler
 
-PropertyParent = Eigentums-Elternteil
-BuiltDate = Baujahr
-
-Civility = Höflichkeit
-Renter = Mieter
-RenterCost = Kosten/Mieter
-DateEndRent = Date end of rent
-Periodicity = Periodicity
-PeriodicityDescription = monthly, quarterly, annually...
-DateLastRegulDescription = Last known IRL index : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
-VatAmount = Mehrwertsteuerbetrag
-HtAmount = Betrag ohne Steuern
-VatTx = Mehrwertsteuersatz
-ImmoUnpaid = Unbezahlt
-ImmoPaid = Bezahlt
-PartialPayment = Teilzahlung
-NomLoyer = Mietname
-OtherProperties = Andere Eigenschaften
+# Counters
+MenuNewImmoCompteur = Neuer Zähler
+MenuImmoCompteurList = Zählerliste
+MenuImmoCompteurStats = Verbrauchsstatistik
+ImmoCompteurDateStatement = Datum der Erklärung
+ImmoCompteurStatement = Erklärung
+ImmoCompteurStatementInfo = Enter counter statement (for water, else...)
+ImmoCompteurNbDays = Nb Jours
+ImmoCompteurConsumption = Verbrauch
+ImmoCompteurDailyConsumption = Täglicher Verbrauch
+ImmoCompteurMonthlyConsumption = Monatlicher Verbrauch
+ImmoCompteurYearlyConsumption = Jährlicher Verbrauch
+CloneImmoCompteur = Zähler klonen
 
 #
-# Eigentümer
+# Owners
 #
 ImmoOwner = Eigentümer
-LinkToOwnerType = Bezieht sich auf den Eigentümertyp
-RefOwner = Eigentümerreferenz
-LinkToOwner = Mit Eigentümer verknüpft
-OwnerName = Name des Besitzers
+ImmoOwner_TypeInfo = Enter the type of owner (Company, else...)
 DeleteImmoOwner = Eigentümer entfernen
 ConfirmDeleteImmoOwner = Möchten Sie diesen Eigentümer wirklich löschen?
 CloneImmoOwner = Den Eigentümer klonen
 ConfirmCloneImmoOwner = Möchten Sie diesen Eigentümer wirklich klonen?
-DeleteImmoOwner_Type = Löschung des Eigentümertyps
-ConfirmDeleteImmoOwner_Type = Möchten Sie diesen Eigentümertyp wirklich löschen?
+OwnerName = Name des Besitzers
+RenterName = Name des Mieters
+RefOwner = Eigentümerreferenz
 
 #
 # Rents
@@ -253,28 +218,18 @@ ConfirmDeleteImmoOwner_Type = Möchten Sie diesen Eigentümertyp wirklich lösch
 ImmoRents = Mieten
 ImmoRent = Miete
 ListOfRents = Liste der Vermietungen
-ImmorentType = Art der Vermietung
-EmptyHousing = Leeres Haus 
+EmptyHousing = Leeres Haus
 FurnishedApartment = Mobilierte Wohnung
-RentAmount = Höhe der Miete
-ChargesAmount = Höhe der Gebühren
-TotalAmount = Gesamtsumme
 Deposit = Kaution
-Encours = Im Gange
 ImmoRentNoticePeriod = Vorankündigung
-date_end = Endtermin
-DateNextRent = Nächster Mietzahlungstermin
-DateLastRegul = Letztes Regulierungsdatum
 DeleteImmoRent = Löschung der Vermietung
 ConfirmDeleteImmoRent = Möchten Sie diese Vermietung wirklich löschen?
 CloneImmoRent = Klonen der Vermietung
 ConfirmCloneImmoRent = Möchten Sie diese Vermietung wirklich klonen?
 
 #
-# Mieter
+# Renters
 #
-ImmoRenter = Mieter
-RenterName = Name des Mieters
 DeleteImmoRenter = Löschung des Mieters
 ConfirmDeleteImmoRenter = Möchten Sie diesen Mieter wirklich löschen?
 CloneImmoRenter = Klonen des Mieters
@@ -287,14 +242,53 @@ DeleteImmoReceipt = Quittung löschen
 ConfirmDeleteImmoReceipt = Möchten Sie diesen Beleg wirklich löschen?
 CloneImmoReceipt = Diese Quittung klonen
 ConfirmCloneImmoReceipt = Möchten Sie diesen Beleg wirklich klonen?
-SendImmoReceiptRef = Sendebestätigung %s
-ConfirmValidateReceipt = Bestätigen Sie die Bestätigung des Empfangs %s?
 
 #
 # Payment
 #
 DeleteImmoPayment = Zahlung löschen
 ConfirmDeleteImmoPayment = Möchten Sie diese Zahlung wirklich löschen?
+
+
+DateStartRent = Datum Beginn Miete
+DateStartPeriod = Date start period
+DateEndPeriod = Date end period
+TypePayment = Zahlungsart
+NumPayment = <i>Nummer(Scheck-/Überweisungsnummer)</i>
+CheckTransmitter = <i>Aussteller(Scheck-/Überweisungsnummer)</i>
+ChequeBank = <i>Bank (Bank des Schecks)</i>
+NewImmoPropertyType = Neuer Immobilientyp
+ImmoProperty_Type = Immobilienart
+PropertyTypeStatusActive=Aktiv
+PropertyTypeStatusCancel=Abbrechen
+
+PropertyParent = Hauptimmobilie
+BuiltDate = Baujahr
+
+Civility = Höflichkeit
+ImmoRenter = Mieter
+Renter = Mieter
+RenterCost = Kosten/Mieter
+RentAmount = Höhe der Miete
+ChargesAmount = Höhe der Gebühren
+TotalAmount = Gesamtsumme
+Encours = Im Gange
+DateEndRent = Date end of rent
+Periodicity = Periodicity
+PeriodicityDescription = monthly, quarterly, annually...
+DateLastRegul = Letztes Regulierungsdatum
+DateLastRegulDescription = Last known IRL index : https://www.anil.org/outils/indices-et-plafonds/tableau-de-lirl/
+VatAmount = Mehrwertsteuerbetrag
+HtAmount = Betrag ohne Steuern
+VatTx = Mehrwertsteuersatz
+ImmoUnpaid = Unbezahlt
+ImmoPaid = Bezahlt
+PartialPayment = Teilzahlung
+NomLoyer = Mietname
+OtherProperties = Andere Eigenschaften
+
+SendImmoReceiptRef = Sendebestätigung %s
+ConfirmValidateReceipt = Bestätigen Sie die Bestätigung des Empfangs %s?
 
 ReceiptPaymentsAdded = Quittungszahlung hinzugefügt
 Echeance = Termin
@@ -308,11 +302,12 @@ ShowColocataireDetails = Mitbewohnerdetails anzeigen
 Quittances&Baux = Quittungen und Pachtverträge
 OtherReceipts = Andere Quittungen
 OtherRents = Andere Vermietungen
-NumberReceiptByMonth = Anzahl der Belege pro Monat
+NumberReceiptByMonth  = Anzahl der Belege pro Monat
 CustomerReceiptPayment = Zahlung der Quittung
+Societe = Company
 LinkToReceipt = Link zur Quittung
-LinkToOwner = Link zum Besitzer
-LinkToOwnerType = Wählen Sie den Eigentümertyp aus
+LinkToOwner = Mit Eigentümer verknüpft
+LinkToOwnerType = Bezieht sich auf den Eigentümertyp
 LinkToThirdpartyRenter = Sie müssen hier einen Mieter-Drittanbieter auswählen
 LinkToProperty = Link zur Immobilie
 AmountPayed = Bezahlter Betrag
@@ -325,12 +320,12 @@ ConfirmCreateThirdParty=Are you sure you want to create a third party for this r
 ValidatePayment = Validate payments
 CreatePDF = Create PDF
 ImmoBirthCountry=Country of birth
-LotFiscal=Lot fiscal
+LotFiscal=Steuersatz
 
 ImmoBuildings=Lot fiscal
-LinkToOwner = Link zum Besitzer
+LinkToOwner = Mit Eigentümer verknüpft
 LinkToThirdparty = Lié au tiers
-LinkToOwnerType = Wählen Sie den Eigentümertyp aus
+LinkToOwnerType = Bezieht sich auf den Eigentümertyp
 LinkToProperty = Link zur Immobilie
 LinkToRenter = Lié au locataire
 LinkToAccount = Lié au compte
