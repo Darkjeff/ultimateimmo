@@ -850,7 +850,7 @@ class ImmoRenter extends CommonObject
 	 *	@param	int     	$datesubend			Date end receiptsubscription
 	 *	@return int         					rowid of record added, <0 if KO
 	 */
-	public function receiptsubscription($date, $amount, $accountid = 0, $operation = '', $label = '', $num_chq = '', $emetteur_nom = '', $emetteur_banque = '', $datesubend = 0)
+	public function receiptsubscription($date, $amount, $accountid = 0, $operation = '', $label = '', $num_chq = '', $emetteur_nom = '', $emetteur_banque = '', $datesubend = '')
 	{
 		global $conf, $langs, $user;
 
@@ -866,7 +866,7 @@ class ImmoRenter extends CommonObject
 		if ($datesubend) {
 			$datefin = $datesubend;
 		} else {
-			// If no end date, end date = date + 1 year - 1 day
+			// If no date_echeance date, end date = date + 1 month - 1 day
 			$datefin = dol_time_plus_duree($date, 1, 'm');
 			$datefin = dol_time_plus_duree($datefin, -1, 'd');
 		}
@@ -1052,12 +1052,12 @@ class ImmoRenter extends CommonObject
 			if (!$error) {
 				// Add line to draft invoice
 				$idprodsubscription = 0;
-				if (!empty($conf->global->ADHERENT_PRODUCT_ID_FOR_SUBSCRIPTIONS) && (!empty($conf->product->enabled) || !empty($conf->service->enabled))) {
-					$idprodsubscription = $conf->global->ADHERENT_PRODUCT_ID_FOR_SUBSCRIPTIONS;
+				if (!empty($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS) && (!empty($conf->product->enabled) || !empty($conf->service->enabled))) {
+					$idprodsubscription = $conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS;
 				}
 
 				$vattouse = 0;
-				if (isset($conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS) && $conf->global->ADHERENT_VAT_FOR_SUBSCRIPTIONS == 'defaultforfoundationcountry') {
+				if (isset($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) && $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS == 'defaultforfoundationcountry') {
 					$vattouse = get_default_tva($mysoc, $mysoc, $idprodsubscription);
 				}
 				//print xx".$vattouse." - ".$mysoc." - ".$customer;exit;

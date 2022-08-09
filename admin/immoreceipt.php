@@ -539,6 +539,16 @@ if (isModEnabled('facture')) {
 		print '</td>';
 	}
 	print "</tr>\n";
+
+	if (!empty($conf->product->enabled) || !empty($conf->service->enabled)) {
+		print '<tr class="oddeven"><td>'.$langs->trans("UltimateimmoProductIdForReceipts").'</td>';
+		print '<td>';
+		$selected = (empty($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS) ? '' : $conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS);
+		print img_picto('', 'product', 'class="pictofixedwidth"');
+		$form->select_produits($selected, 'ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS', '', 0);
+		print '</td>';
+	}
+	print "</tr>\n";
 }
 
 print '</table>';

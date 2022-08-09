@@ -249,6 +249,7 @@ DeleteImmoReceipt = Delete receipt
 ConfirmDeleteImmoReceipt = Are you sure you want to delete this receipt ?
 CloneImmoReceipt = Clone this Receipt
 ConfirmCloneImmoReceipt = Are you sure you want to clone this receipt ?
+UltimateimmoProductIdForReceipts = Product used for receipt line into invoice: %s
 
 #
 # Payment
