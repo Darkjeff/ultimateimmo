@@ -128,7 +128,6 @@ ImmoProperties = Immobilien
 ImmoRenters = Mieter
 ImmoCost = Quittung
 ImmoCosts = Mietkosten
-ImmoCostType = Arten von Kosten
 ImmoReceipts = Quittungen
 ImmoReceipt = Quittung
 ImmoPayments = Zahlungen
@@ -142,6 +141,7 @@ Juridique = Rechtsordnung des Gebäudes
 #
 # Real Estate
 #
+ImmoPropertyLabelInfo = Enter a label
 APA = Wohnung
 HOU = Individuelles Haus
 LOC = Gewerbebauten
@@ -241,16 +241,46 @@ ConfirmCloneImmoRenter = Möchten Sie diesen Mieter wirklich klonen?
 #
 # Receipts
 #
+ImmoPaymentLabelInfo = Enter a label
+ImmoPaymentRentAmountInfo = Enter the rental amount
+ImmoPaymentChargeAmountInfo = Enter the charge amount
+ImmoPaymentTotalAmountInfo = Enter the total amount
 DeleteImmoReceipt = Quittung löschen
 ConfirmDeleteImmoReceipt = Möchten Sie diesen Beleg wirklich löschen?
 CloneImmoReceipt = Diese Quittung klonen
 ConfirmCloneImmoReceipt = Möchten Sie diesen Beleg wirklich klonen?
+UltimateimmoProductIdForReceipts = Product used for receipt line into invoice: %s
 
 #
 # Payment
 #
+NumPayment = <i>Nummer(Scheck-/Überweisungsnummer)</i>
+CheckTransmitter = <i>Aussteller(Scheck-/Überweisungsnummer)</i>
+ChequeBank = <i>Bank (Bank des Schecks)</i>
+ImmoPaymentIncome = Income
+ImmoPaymentRentUpdate = Rent is updated
 DeleteImmoPayment = Zahlung löschen
 ConfirmDeleteImmoPayment = Möchten Sie diese Zahlung wirklich löschen?
+
+#
+# Rental
+#
+MenuStatisticsCostFourn = Cost: Statistics by Vendor
+ImmoCostLabelInfo = Enter a label
+ImmoCostAmountExTaxInfo = Enter an amount VAT excluded
+ImmoCostAmountTaxInfo = Enter the amount of VAT
+
+#
+# Cost Types
+#
+ImmoCostType = Arten von Kosten
+CostTypeLabel = Label
+CostTypeLabelInfo = Enter a type of cost
+CostTypeFamille = Cost type
+CostTypeFamilleInfo = Enter a group cost
+ImmoCostVentilAmount = Amount
+ImmoCostVentilSelect = Select
+ImmoCostVentilAddRepartition = ADD REPARTITION
 
 
 DateStartRent = Datum Beginn Miete
