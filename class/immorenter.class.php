@@ -933,7 +933,7 @@ class ImmoRenter extends CommonObject
 
 			$acct = new Account($this->db);
 			$result = $acct->fetch($accountid);
-
+			
 			$dateop = $paymentdate;
 
 			$insertid = $acct->addline($dateop, $operation, $label, $amount, $num_chq, '', $user, $emetteur_nom, $emetteur_banque);
@@ -971,7 +971,7 @@ class ImmoRenter extends CommonObject
 
 			$invoice = new Facture($this->db);
 			$customer = new RenterSoc($this->db);
-
+			
 			if (!$error) {
 				if (!($this->fk_soc > 0)) { // If not yet linked to a company
 					if ($autocreatethirdparty) {
@@ -1123,8 +1123,8 @@ class ImmoRenter extends CommonObject
 				}
 
 				if (!$error && !empty($bank_line_id)) {
-					// Update fk_bank into subscription table
-					$sql = 'UPDATE '.MAIN_DB_PREFIX.'subscription SET fk_bank='.((int) $bank_line_id);
+					// Update fk_bank into ultimateimmo_immoreceipt table
+					$sql = 'UPDATE '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt SET fk_bank='.((int) $bank_line_id);
 					$sql .= ' WHERE rowid='.((int) $subscriptionid);
 
 					$result = $this->db->query($sql);

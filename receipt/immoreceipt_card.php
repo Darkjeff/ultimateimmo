@@ -1169,7 +1169,12 @@ if (($id || $ref) && $action == 'edit') {
 		print '<td class="right">' . $langs->trans("Amount") . '</td>';
 		if ($user->admin) print '<td>&nbsp;</td>';
 		print '</tr>';
+		require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 
+		$paiement = new Paiement($db);
+		$paiement->fetch($rowid);
+		$paiement->datepaye = $paymentdate;
+		var_dump($paiement->ref);exit;
 		while ($i < $num) {
 			$objp = $db->fetch_object($resql);
 

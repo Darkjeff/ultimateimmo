@@ -96,9 +96,6 @@ $rent->fetch($receipt->fk_rent);
 $property = new ImmoProperty($db);
 $property->fetch($receipt->fk_property);
 
-$paymentstatic = new ImmoPayment($db);
-$paymentstatic->fetch($receipt->fk_payment);
-
 $defaultdelay = 5;
 $defaultdelayunit = 'd';
 
@@ -196,16 +193,18 @@ if ($action == 'add_payment') {
 		$paymentdate = dol_mktime(0, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
 	}
 	$amount = price2num(GETPOST("amount", 'alpha')); // Amount of addpayment
-	$label = GETPOST("note_public");
-	//var_dump(dol_print_date($paymentdate));exit;
+	if ($receipt->label) {
+	$label = $receipt->label;
+	}
+	//var_dump($receipt->label);exit;
 	// Payment informations
 	$accountid	= GETPOST('accountid', 'int');
-	$operation = GETPOST("fk_mode_reglement", "alphanohtml"); // Payment mode
+	$operation = GETPOST("operation", "alphanohtml"); // Payment mode
 	$num_chq = GETPOST("num_chq", "alphanohtml");
 	$emetteur_nom = GETPOST("chqemetteur");
 	$emetteur_banque = GETPOST("chqbank");
 	$option = GETPOST("paymentsave");
-	//var_dump($renter);exit;
+	//var_dump($operation);exit;
 	if (empty($option)) {
 		$option = 'none';
 	}
@@ -245,7 +244,7 @@ if ($action == 'add_payment') {
 	} else {
 		// If an amount has been provided, we check also fields that becomes mandatory when amount is not null.
 		if (isModEnabled('banque') && GETPOST("paymentsave") != 'none') {
-			/*if (!GETPOST("label")) {
+			if (!$receipt->label) {
 				$errmsg = $langs->trans("ErrorFieldRequired", $langs->transnoentities("Label"));
 				setEventMessages($errmsg, null, 'errors');
 				$error++;
@@ -256,7 +255,7 @@ if ($action == 'add_payment') {
 				setEventMessages($errmsg, null, 'errors');
 				$error++;
 				$action = 'add_payment';
-			}*/
+			}
 			if (GETPOST("paymentsave") != 'invoiceonly' && !(GETPOST("accountid", 'int') > 0)) {
 				$errmsg = $langs->trans("ErrorFieldRequired", $langs->transnoentities("FinancialAccount"));
 				setEventMessages($errmsg, null, 'errors');
@@ -275,6 +274,7 @@ if ($action == 'add_payment') {
 	if (!$error) {
 		// Create subscription
 		$crowid = $renter->receiptsubscription($datereceipt, $amount, $accountid, $operation, $label, $num_chq, $emetteur_nom, $emetteur_banque, $datesubend);
+		//var_dump($crowid, $operation, $amount);exit;
 		if ($crowid <= 0) {
 			$error++;
 			$errmsg = $renter->error;
@@ -283,18 +283,22 @@ if ($action == 'add_payment') {
 
 		if (!$error) {
 			$result = $renter->receiptSubscriptionComplementaryActions($crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
-			var_dump($crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount);exit;
+			//var_dump($result, $crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount);exit;
+			//var_dump($object);exit;
 			if ($result < 0) {
 				$error++;
 				setEventMessages($renter->error, $renter->errors, 'errors');
 			} else {
-				// If an invoice was created, it is into $object->invoice
+				/*$db->commit();
+				$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $id;
+				header('Location: ' . $loc);
+				exit;*/
 			}
 		}
 	}
 
 	if (!$error) {
-		$date_payment = dol_mktime(0, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
+		//$date_payment = dol_mktime(0, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
 		$paymentid = 0;
 
 		if (!$error) {
@@ -305,7 +309,7 @@ if ($action == 'add_payment') {
 			$payment->fetch($rowid);
 			$receipt = new ImmoReceipt($db);
 			$result = $receipt->fetch($id);
-			//var_dump(GETPOST("amount"));exit;
+			
 			$payment->ref          = $receipt->ref;
 			$payment->rowid        = $id;
        		$payment->fk_receipt   = $receipt->rowid;
@@ -313,13 +317,13 @@ if ($action == 'add_payment') {
 			$payment->fk_property  = $receipt->fk_property;
 			$payment->fk_renter	   = $receipt->fk_renter;
 			$payment->fk_payment   = $receipt->fk_payment;
-			$payment->date_payment = $date_payment;
+			$payment->date_payment = $paymentdate;
 			$payment->amount      = GETPOST("amount");
 			$payment->fk_mode_reglement  = GETPOST('fk_mode_reglement', 'int');
 			$payment->fk_account  = GETPOST('fk_bank', 'int');
 			$payment->num_payment  = GETPOST('num_payment', 'int');
 			$payment->note_public  = GETPOST('note_public', 'string');
-			//var_dump($payment->note_public);exit;
+			//var_dump($receipt->rowid);exit;
 			if (!$error) {
 				$paymentid = $payment->create($user);
 				if ($paymentid < 0) {
@@ -329,16 +333,17 @@ if ($action == 'add_payment') {
 				}
 			}
 
-			if (!$error) {
+			/*if (!$error) {
 				$label = '(CustomerReceiptPayment)';
 				if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
-				$result = $payment->addPaymentToBank($user, 'immopayment', $label, $_POST['accountid'], '', '');
+				//$result = $payment->addPaymentToBank($user, 'immopayment', $label, $_POST['accountid'], '', '');
+ 
 				if ($result <= 0) {
 					$errmsg = $payment->errors;
 					setEventMessages(null, $errmsg, 'errors');
 					$error++;
 				}
-			}
+			}*/
 
 			if (!$error) {
 				$db->commit();
@@ -519,12 +524,14 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		$tmpref = GETPOST('ref', 'alpha') ? GETPOST('ref', 'alpha') : $receipt->id;
 		print '<tr><td class="titlefieldcreate"><span class="fieldrequired">' . $langs->trans('Reference') . '</span></td><td>' . $tmpref . "</td></tr>\n";
 
-		// Date payment
 		// Date start period
 		print '<tr><td>' . $langs->trans("DateStartPeriod") . "</td><td colspan=2>" . dol_print_date($receipt->date_start, 'day') . "</td></tr>\n";
 
 		// Date start period
 		print '<tr><td>' . $langs->trans("DateEndPeriod") . "</td><td colspan=2>" . dol_print_date($receipt->date_end, 'day') . "</td></tr>\n";
+
+		// Label
+		print '<tr><td>' . $langs->trans("Label") . "</td><td colspan=2>" . $receipt->label . "</td></tr>\n";
 
 		$rent = new ImmoRent($db);
 		$rent->fetch($receipt->fk_rent);
@@ -655,15 +662,16 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 			// Payment mode
 			print '<tr><td class="fieldrequired">' . $langs->trans("PaymentMode") . '</td><td colspan="2">';
-			$form->select_types_paiements((GETPOST('operation') ? GETPOST('operation') : $paymentstatic->fk_mode_reglement), 'operation');
+			//$form->select_types_paiements((GETPOST('operation') ? GETPOST('operation') : $paymentstatic->fk_mode_reglement), 'operation');
+			$form->select_types_paiements(GETPOST('operation'), 'operation', '', 2, 1, 0, 0, 1, 'minwidth200');
 			print "</td>\n";
 			print '</tr>';
-
+			//var_dump(GETPOST('operation'));exit;
 			// Date of payment
 			print '<tr><td><span class="fieldrequired">' . $langs->trans('DatePayment') . '</span></td><td>';
-			$date_payment = dol_mktime(12, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
+			//$date_payment = dol_mktime(12, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
 			//$datepayment = empty($conf->global->MAIN_AUTOFILL_DATE) ? empty(GETPOST('remonth') ? -1 : $date_payment) : 0;
-			print $form->selectDate($datepayment, '', '', '', '', "add_payment", 1, 1);
+			print $form->selectDate($paymentdate, '', '', '', '', "add_payment", 1, 1);
 			print '</td></tr>';
 
 			print '<tr class="bankswitchclass2"><td>' . $langs->trans('Numero');
