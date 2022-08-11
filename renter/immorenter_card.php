@@ -51,7 +51,7 @@ dol_include_once('/ultimateimmo/class/immorentersoc.class.php');
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "members", "users"));
 
 // Get parameters
-$id			= GETPOST('id', 'int');
+$id = GETPOST('id') ? GETPOST('id', 'int') : $rowid;
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
 $confirm    = GETPOST('confirm', 'alpha');
@@ -65,7 +65,9 @@ $socid		= GETPOST('socid', 'int');
 $object = new ImmoRenter($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/' . $user->id;
-$hookmanager->initHooks(array('immorentercard', 'globalcard'));     // Note that conf->hooks_modules contains array
+
+// Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
+$hookmanager->initHooks(array('immorentercard', 'globalcard'));     
 
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
@@ -90,11 +92,11 @@ include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be inc
 //$isdraft = (($object->statut == $object::STATUS_DRAFT) ? 1 : 0);
 //$result = restrictedArea($user, 'mymodule', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
 
-$permissiontoread = $user->rights->ultimateimmo->read;
-$permissiontoadd = $user->rights->ultimateimmo->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
-$permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
-$permissionnote = $user->rights->ultimateimmo->write; // Used by the include of actions_setnotes.inc.php
-$permissiondellink = $user->rights->ultimateimmo->write; // Used by the include of actions_dellink.inc.php
+$permissiontoread = $user->hasRight('ultimateimmo', 'read');
+$permissiontoadd = $user->hasRight('ultimateimmo', 'write'); // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+$permissiontodelete = $user->hasRight('ultimateimmo', 'delete') || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+$permissionnote = $user->hasRight('ultimateimmo', 'write'); // Used by the include of actions_setnotes.inc.php
+$permissiondellink = $user->hasRight('ultimateimmo', 'write'); // Used by the include of actions_dellink.inc.php
 $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1];
 
 /*
@@ -104,31 +106,46 @@ $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $obj
 
 $parameters = array('id'=>$id, 'rowid'=>$id);
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
-if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+if ($reshook < 0) {
+	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+}
 
-if (empty($reshook))
-{
+if (empty($reshook)) {
 	$error = 0;
-
 	$backurlforlist = dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1);
 
 	if (empty($backtopage) || ($cancel && empty($id))) {
-    	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
-    		if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
-    		else $backtopage = dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?id='.($id > 0 ? $id : '__ID__');
-    	}
-    }
+		if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
+			if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) {
+				$backtopage = $backurlforlist;
+			} else {
+				$backtopage = dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1) . '?id=' . ((!empty($id) && $id > 0) ? $id : '__ID__');
+			}
+		}
+	}
+
+	if ($cancel) {
+		if (!empty($backtopageforcancel)) {
+			header("Location: ".$backtopageforcancel);
+			exit;
+		} elseif (!empty($backtopage)) {
+			header("Location: ".$backtopage);
+			exit;
+		}
+		$action = '';
+	}
+
 	$triggermodname = 'ULTIMATEIMMO_IMMORENTER_MODIFY';
 
 	if ($action == 'setsocid') {
 		$error = 0;
 		if (!$error) {
-			if ($socid != $object->fk_soc)	// If link differs from currently in database
-			{
+			if ($socid != $object->fk_soc) { // If link differs from currently in database
 				$sql = "SELECT rowid FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter";
 				$sql .= " WHERE fk_soc = '" . $object->fk_soc . "'";
 				$sql .= " AND entity = " . $conf->entity;
 				$resql = $db->query($sql);
+				
 				if ($resql) {
 					$obj = $db->fetch_object($resql);
 					if ($obj && $obj->rowid > 0) {
@@ -137,14 +154,16 @@ if (empty($reshook))
 						$thirdparty = new Societe($db);
 						$thirdparty->fetch($object->fk_soc);
 						$error++;
-						
+
 						setEventMessages($langs->trans("ErrorRenterIsAlreadyLinkedToThisThirdParty", $otherrenter->getFullName($langs), $otherrenter->login, $thirdparty->name), null, 'errors');
 					}
 				}
 				
 				if (!$error) {
 					$result = $object->setThirdPartyId($thirdparty->id);
-					if ($result < 0) dol_print_error($object->db, $object->error);
+					if ($result < 0) {
+						dol_print_error($object->db, $object->error);
+					}
 					$action = '';
 				}
 			}
@@ -152,11 +171,12 @@ if (empty($reshook))
 	}
 
 	// Create third party from a renter
-	if ($action == 'confirm_create_thirdparty' && $confirm == 'yes' && $user->rights->societe->creer) {
+	if ($action == 'confirm_create_thirdparty' && $confirm == 'yes' && $user->hasRight('societe', 'creer')) {
 		if ($result > 0) {
 			// Thirdparty creation
 			$company = new RenterSoc($db);
 			$result = $company->create_from_renter($object, GETPOST('companyname', 'alpha'), GETPOST('companyalias', 'alpha'));
+			
 			if ($result < 0) {
 				$langs->load("errors");
 				setEventMessages($langs->trans($company->error), null, 'errors');
@@ -243,9 +263,13 @@ $formproject = new FormProjets($db);
 
 llxHeader('', $langs->trans('ImmoRenter'), '');
 
-if ($conf->use_javascript_ajax) {
-	print "\n".'<script type="text/javascript" language="javascript">';
-	print 'jQuery(document).ready(function () {
+// Part to create
+if ($action == 'create') {
+	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoRenter")), '', 'object_' . $object->picto);
+
+	if ($conf->use_javascript_ajax) {
+		print "\n" . '<script type="text/javascript" language="javascript">';
+		print 'jQuery(document).ready(function () {
 				jQuery("#country_id").change(function() {
 					document.formsoc.action.value="create";
 					document.formsoc.submit();
@@ -268,17 +292,16 @@ if ($conf->use_javascript_ajax) {
 				
 				initfieldrequired();
 			})';
-	print '</script>'."\n";
-}
+		print '</script>' . "\n";
+	}
 
-// Part to create
-if ($action == 'create') {
-	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoRenter")), '', 'object_' . $object->picto);
-
-	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
+	print '<form name="formsoc" action="'.$_SERVER["PHP_SELF"].'" method="post" enctype="multipart/form-data">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="add">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
+	print '<input type="hidden" name="socid" value="'.$socid.'">';
+	if ($backtopage) {
+		print '<input type="hidden" name="backtopage" value="'.($backtopage != '1' ? $backtopage : $_SERVER["HTTP_REFERER"]).'">';
+	}
 	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
 	print dol_get_fiche_head(array(), '');
@@ -319,7 +342,7 @@ if ($action == 'create') {
 		if ($val['label'] == 'MorPhy') {
 			$morphys["phy"] = $langs->trans("Physical");
 			$morphys["mor"] = $langs->trans("Moral");
-			print $form->selectarray("morphy", $morphys, (GETPOST('morphy', 'alpha') ?GETPOST('morphy', 'alpha') : $object->morphy), 1, 0, 0, '', 0, 0, 0, '', '', 1);
+			print $form->selectarray("morphy", $morphys, (GETPOST('morphy', 'alpha') ? GETPOST('morphy', 'alpha') : $object->morphy), 1, 0, 0, '', 0, 0, 0, '', '', 1);
 			//print $object->getmorphylib();
 		}
 		elseif ($val['label'] == 'Civility') {
@@ -433,11 +456,13 @@ if (($id || $ref) && $action == 'edit')
 		print '</script>'."\n";
 	}
 
-	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
+	print '<form name="formsoc" action="' . $_SERVER["PHP_SELF"] . '" method="post" enctype="multipart/form-data">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="update">';
 	print '<input type="hidden" name="id" value="' . $object->id . '">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
+	if ($backtopage) {
+		print '<input type="hidden" name="backtopage" value="' . ($backtopage != '1' ? $backtopage : $_SERVER["HTTP_REFERER"]) . '">';
+	}
 	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 
 	print dol_get_fiche_head();
@@ -546,19 +571,30 @@ if (($id || $ref) && $action == 'edit')
 
 	print dol_get_fiche_end();
 
-	print '<div class="center"><input type="submit" class="button" name="save" value="' . $langs->trans("Save") . '">';
-	print ' &nbsp; <input type="submit" class="button" name="cancel" value="' . $langs->trans("Cancel") . '">';
-	print '</div>';
+	print $form->buttonsSaveCancel('Save', 'Cancel');
 
 	print '</form>';
 }
 
 // Part to show record
 if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create'))) {
+	$res = $object->fetch($id);
+	if ($res < 0) {
+		dol_print_error($db, $object->error);
+		exit;
+	}
 	$res = $object->fetch_optionals();
+	if ($res < 0) {
+		dol_print_error($db);
+		exit;
+	}
 
+	/*
+	 * Show tabs
+	 */
 	$head = immorenterPrepareHead($object);
-	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoRenter"), -1, 'contact');
+
+	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoRenter"), -1, 'user');
 
 	$formconfirm = '';
 
@@ -577,7 +613,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('CloneImmoRenter'), $langs->trans('ConfirmCloneImmoRenter', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
 	}
 
-	// Confirmation of action xxxx
+	// Confirm create third party
 	if ($action == 'create_thirdparty') {
 		$companyalias = '';
 		$fullname = $object->getFullName($langs);
@@ -632,8 +668,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				$morehtmlref .= '<form method="post" action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '">';
 				$morehtmlref .= '<input type="hidden" name="action" value="classin">';
 				$morehtmlref .= '<input type="hidden" name="token" value="' . newToken() . '">';
-				$morehtmlref .= $formproject->select_projects($object->socid, $object->fk_project, 'projectid', $maxlength, 0, 1, 0, 1, 0, 0, '', 1);
-				$morehtmlref .= '<input type="submit" class="button valignmiddle" value="' . $langs->trans("Modify") . '">';
+				//$morehtmlref .= $formproject->select_projects($object->socid, $object->fk_project, 'projectid', $maxlength, 0, 1, 0, 1, 0, 0, '', 1);
+				//$morehtmlref .= '<input type="submit" class="button valignmiddle" value="' . $langs->trans("Modify") . '">';
 				$morehtmlref .= '</form>';
 			} else {
 				$morehtmlref .= $form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'none', 0, 0, 0, 1);
@@ -650,7 +686,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 	$morehtmlref .= '</div>';
 
-	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
+	dol_banner_tab($object, 'rowid', $linkback, 1, 'rowid', 'ref', $morehtmlref);
 
 
 	print '<div class="fichecenter">';

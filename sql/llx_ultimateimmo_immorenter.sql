@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2021  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2022  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immorenter(
 	fk_rent integer,
 	fk_owner integer,
 	fk_soc integer,
+	fk_project integer NOT NULL,
 	morphy varchar(3) NOT NULL,
 	societe varchar(128),	
 	note_public text, 

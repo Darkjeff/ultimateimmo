@@ -1174,7 +1174,7 @@ if (($id || $ref) && $action == 'edit') {
 		$paiement = new Paiement($db);
 		$paiement->fetch($rowid);
 		$paiement->datepaye = $paymentdate;
-		var_dump($paiement->ref);exit;
+		//var_dump($paiement->ref);exit;
 		while ($i < $num) {
 			$objp = $db->fetch_object($resql);
 
