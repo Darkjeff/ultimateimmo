@@ -162,6 +162,7 @@ class ImmoRenter extends CommonObject
 	public $morphy;
 
 	public $fk_soc;
+	public $socid;
 
 	/**
 	 * @var int Project ID

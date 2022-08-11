@@ -140,27 +140,29 @@ if (empty($reshook)) {
 	if ($action == 'setsocid') {
 		$error = 0;
 		if (!$error) {
-			if ($socid != $object->fk_soc) { // If link differs from currently in database
+			
+			if ($socid != $object->socid) { // If link differs from currently in database
 				$sql = "SELECT rowid FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter";
-				$sql .= " WHERE fk_soc = '" . $object->fk_soc . "'";
+				$sql .= " WHERE fk_soc = '" . $socid . "'";
 				$sql .= " AND entity = " . $conf->entity;
 				$resql = $db->query($sql);
 				
 				if ($resql) {
 					$obj = $db->fetch_object($resql);
+					
 					if ($obj && $obj->rowid > 0) {
 						$otherrenter = new ImmoRenter($db);
 						$otherrenter->fetch($obj->rowid);
 						$thirdparty = new Societe($db);
-						$thirdparty->fetch($object->fk_soc);
+						$thirdparty->fetch($socid);
 						$error++;
-
+						//var_dump($socid);exit;
 						setEventMessages($langs->trans("ErrorRenterIsAlreadyLinkedToThisThirdParty", $otherrenter->getFullName($langs), $otherrenter->login, $thirdparty->name), null, 'errors');
 					}
 				}
 				
 				if (!$error) {
-					$result = $object->setThirdPartyId($thirdparty->id);
+					$result = $object->setThirdPartyId($socid);
 					if ($result < 0) {
 						dol_print_error($object->db, $object->error);
 					}
@@ -724,10 +726,52 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '">';
 		print '<td>';
 
-		if ($val['label'] == 'MorPhy') {
+		/*if ($val['label'] == 'LinkedToDolibarrThirdParty') {
+			
+			// Third party Dolibarr
+			if (!empty($conf->societe->enabled)) {
+				
+				//print '<tr><td>';
+				//$editenable = $user->rights->adherent->creer;
+				print $form->editfieldkey('LinkedToDolibarrThirdParty', 'thirdparty', '', $object, $permissiontoadd);
+				
+				//print '</td><td colspan="2" class="valeur">';
+				if ($action == 'editthirdparty') {
+					$htmlname = 'socid';
+					print '<form method="POST" action="' . $_SERVER['PHP_SELF'] . '" name="form' . $htmlname . '">';
+					print '<input type="hidden" name="rowid" value="' . $object->id . '">';
+					print '<input type="hidden" name="action" value="set' . $htmlname . '">';
+					print '<input type="hidden" name="token" value="' . newToken() . '">';
+					print '<table class="nobordernopadding">';
+					print '<tr><td>';
+					print $form->select_company($socid, 'socid', '', 1);
+					print '</td>';
+					print '<td class="left"><input type="submit" class="button button-edit" value="' . $langs->trans("Modify") . '"></td>';
+					print '</tr></table></form>';
+				} else {
+					
+					if ($object->id) {
+						//var_dump($object);exit;
+						$company = new Societe($db);
+						$result = $company->fetch($socid);
+						print $company->getNomUrl(1);
+
+						// Show link to invoices
+						$tmparray = $company->getOutstandingBills('customer');
+						if (!empty($tmparray['refs'])) {
+							print ' - ' . img_picto($langs->trans("Invoices"), 'bill', 'class="paddingright"') . '<a href="' . DOL_URL_ROOT . '/compta/facture/list.php?socid=' . $socid . '">' . $langs->trans("Invoices") . ' (' . count($tmparray['refs']) . ')';
+							// TODO Add alert if warning on at least one invoice late
+							print '</a>';
+						}
+					} else {
+						print '<span class="opacitymedium">' . $langs->trans("NoThirdPartyAssociatedToMember") . '</span>';
+					}
+				}
+				//print '</td></tr>';
+			}
+		} else*/if ($val['label'] == 'MorPhy') {
 			print $object->getmorphylib();
-		}
-		elseif ($val['label'] == 'Owner') {
+		} elseif ($val['label'] == 'Owner') {
 			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);
 			if ($staticowner->ref) {
