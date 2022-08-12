@@ -726,50 +726,27 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '">';
 		print '<td>';
 
-		/*if ($val['label'] == 'LinkedToDolibarrThirdParty') {
-			
+		if ($val['label'] == 'LinkedToDolibarrThirdParty') {
 			// Third party Dolibarr
 			if (!empty($conf->societe->enabled)) {
-				
-				//print '<tr><td>';
-				//$editenable = $user->rights->adherent->creer;
-				print $form->editfieldkey('LinkedToDolibarrThirdParty', 'thirdparty', '', $object, $permissiontoadd);
-				
-				//print '</td><td colspan="2" class="valeur">';
-				if ($action == 'editthirdparty') {
-					$htmlname = 'socid';
-					print '<form method="POST" action="' . $_SERVER['PHP_SELF'] . '" name="form' . $htmlname . '">';
-					print '<input type="hidden" name="rowid" value="' . $object->id . '">';
-					print '<input type="hidden" name="action" value="set' . $htmlname . '">';
-					print '<input type="hidden" name="token" value="' . newToken() . '">';
-					print '<table class="nobordernopadding">';
-					print '<tr><td>';
-					print $form->select_company($socid, 'socid', '', 1);
-					print '</td>';
-					print '<td class="left"><input type="submit" class="button button-edit" value="' . $langs->trans("Modify") . '"></td>';
-					print '</tr></table></form>';
-				} else {
-					
-					if ($object->id) {
-						//var_dump($object);exit;
-						$company = new Societe($db);
-						$result = $company->fetch($socid);
-						print $company->getNomUrl(1);
 
-						// Show link to invoices
-						$tmparray = $company->getOutstandingBills('customer');
-						if (!empty($tmparray['refs'])) {
-							print ' - ' . img_picto($langs->trans("Invoices"), 'bill', 'class="paddingright"') . '<a href="' . DOL_URL_ROOT . '/compta/facture/list.php?socid=' . $socid . '">' . $langs->trans("Invoices") . ' (' . count($tmparray['refs']) . ')';
-							// TODO Add alert if warning on at least one invoice late
-							print '</a>';
-						}
-					} else {
-						print '<span class="opacitymedium">' . $langs->trans("NoThirdPartyAssociatedToMember") . '</span>';
+				if ($object->fk_soc) {
+
+					$company = new Societe($db);
+					$result = $company->fetch($object->fk_soc);
+					print $company->getNomUrl(1);
+					// Show link to invoices
+					$tmparray = $company->getOutstandingBills('customer');
+					if (!empty($tmparray['refs'])) {
+						print ' - ' . img_picto($langs->trans("Invoices"), 'bill', 'class="paddingright"') . '<a href="' . DOL_URL_ROOT . '/compta/facture/list.php?socid=' . $object->fk_soc . '">' . $langs->trans("Invoices") . ' (' . count($tmparray['refs']) . ')';
+						// TODO Add alert if warning on at least one invoice late
+						print '</a>';
 					}
+				} else {
+					print '<span class="opacitymedium">' . $langs->trans("NoThirdPartyAssociatedToRenter") . '</span>';
 				}
-				//print '</td></tr>';
 			}
-		} else*/if ($val['label'] == 'MorPhy') {
+		} elseif ($val['label'] == 'MorPhy') {
 			print $object->getmorphylib();
 		} elseif ($val['label'] == 'Owner') {
 			$staticowner = new ImmoOwner($db);
