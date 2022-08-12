@@ -403,7 +403,27 @@ if ($staticImmorenter->id > 0 && (empty($action) || ($action != 'edit' && $actio
 		print '">';
 		print '<td>';
 
-		if ($val['label'] == 'Owner') {
+		if ($val['label'] == 'LinkedToDolibarrThirdParty') {
+			// Third party Dolibarr
+			if (!empty($conf->societe->enabled)) {
+
+				if ($staticImmorenter->fk_soc) {
+
+					$company = new Societe($db);
+					$result = $company->fetch($staticImmorenter->fk_soc);
+					print $company->getNomUrl(1);
+					// Show link to invoices
+					$tmparray = $company->getOutstandingBills('customer');
+					if (!empty($tmparray['refs'])) {
+						print ' - ' . img_picto($langs->trans("Invoices"), 'bill', 'class="paddingright"') . '<a href="' . DOL_URL_ROOT . '/compta/facture/list.php?socid=' . $staticImmorenter->fk_soc . '">' . $langs->trans("Invoices") . ' (' . count($tmparray['refs']) . ')';
+						// TODO Add alert if warning on at least one invoice late
+						print '</a>';
+					}
+				} else {
+					print '<span class="opacitymedium">' . $langs->trans("NoThirdPartyAssociatedToRenter") . '</span>';
+				}
+			}
+		} elseif ($val['label'] == 'Owner') {
 			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($staticImmorenter->fk_owner);
 			if ($staticowner->ref) {
