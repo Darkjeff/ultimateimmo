@@ -949,8 +949,8 @@ class ImmoRenter extends CommonObject
 				$url = dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1) . '?id=' . $this->id;
 				$inserturlid = $acct->add_url_line($insertid, $this->id, $url, $this->getFullname($langs), 'renter');
 				if ($inserturlid > 0) {
-					// Update table ultimateimmo_immopayment
-					$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immopayment SET fk_bank=".((int) $insertid);
+					// Update table ultimateimmo_immoreceipt
+					$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immoreceipt SET fk_bank=".((int) $insertid);
 					$sql .= " WHERE rowid=".((int) $subscriptionid);
 
 					dol_syslog("subscription::subscription", LOG_DEBUG);
@@ -1122,7 +1122,7 @@ class ImmoRenter extends CommonObject
 
 				if (!$error) {
 					// Add transaction into bank account
-					$bank_line_id = $paiement->addPaymentToBank($user, 'payment', '(SubscriptionPayment)', $accountid, $emetteur_nom, $emetteur_banque);
+					$bank_line_id = $paiement->addPaymentToBank($user, 'payment', '(ImmoReceiptPayment)', $accountid, $emetteur_nom, $emetteur_banque);
 					if (!($bank_line_id > 0)) {
 						$this->error = $paiement->error;
 						$this->errors = $paiement->errors;

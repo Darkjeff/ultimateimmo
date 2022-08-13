@@ -284,32 +284,13 @@ if ($action == 'add_payment') {
 		if (!$error) {
 			$result = $renter->receiptSubscriptionComplementaryActions($crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
 			//var_dump($result, $crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount);exit;
-			//var_dump($object);exit;
-			if ($result < 0) {
-				$error++;
-				setEventMessages($renter->error, $renter->errors, 'errors');
-			} else {
-				/*$db->commit();
-				$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $id;
-				header('Location: ' . $loc);
-				exit;*/
-			}
-		}
-	}
-
-	if (!$error) {
-		//$date_payment = dol_mktime(0, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
-		$paymentid = 0;
-
-		if (!$error) {
-			$db->begin();
-
+			
 			// Create a line of payments
-			$payment = new ImmoPayment($db);
+			$payment = new Paiement($db);
 			$payment->fetch($rowid);
 			$receipt = new ImmoReceipt($db);
 			$result = $receipt->fetch($id);
-			
+			//var_dump($receipt);exit;
 			$payment->ref          = $receipt->ref;
 			$payment->rowid        = $id;
        		$payment->fk_receipt   = $receipt->rowid;
@@ -323,7 +304,7 @@ if ($action == 'add_payment') {
 			$payment->fk_account  = GETPOST('fk_bank', 'int');
 			$payment->num_payment  = GETPOST('num_payment', 'int');
 			$payment->note_public  = GETPOST('note_public', 'string');
-			//var_dump($receipt->rowid);exit;
+			//var_dump($receipt->ref);exit;
 			if (!$error) {
 				$paymentid = $payment->create($user);
 				if ($paymentid < 0) {
@@ -332,6 +313,26 @@ if ($action == 'add_payment') {
 					$error++;
 				}
 			}
+			if ($result < 0) {
+				$error++;
+				setEventMessages($renter->error, $renter->errors, 'errors');
+			} else {
+				$db->commit();
+				$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $id;
+				header('Location: ' . $loc);
+				exit;
+			}
+		}
+	}
+
+	if (!$error) {
+		//$date_payment = dol_mktime(0, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
+		$paymentid = 0;
+
+		if (!$error) {
+			$db->begin();
+
+			
 
 			/*if (!$error) {
 				$label = '(CustomerReceiptPayment)';
