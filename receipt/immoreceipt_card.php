@@ -22,6 +22,8 @@
  *		\brief      Page to create/edit/view immoreceipt
  */
 
+use Stripe\Invoice;
+
 // Load Dolibarr environment
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
@@ -1160,22 +1162,19 @@ if (($id || $ref) && $action == 'edit') {
 	}
 
 	// List of payments
-	$sql = "SELECT p.rowid,p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, r.partial_payment, ";
-	$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
-	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
-	$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
-	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_account = b.rowid";
+	$sql = 'SELECT SUM(pf.amount) as total_paiements, p.rowid, p.ref, p.datep, p.fk_bank';
+	$sql .= ' FROM ' . MAIN_DB_PREFIX . 'paiement_facture as pf, ' . MAIN_DB_PREFIX . 'paiement as p';
+	$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_paiement as c ON p.fk_paiement = c.id';
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_bank = b.rowid";
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
-	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as c ON p.fk_mode_reglement = c.id";
-	$sql .= " WHERE r.rowid = '" . $id . "'";
-	$sql .= " AND p.fk_receipt = r.rowid";
-	$sql .= " AND r.entity IN (" . getEntity($object->element) . ")";
-	$sql .= ' ORDER BY dp';
-
+	$sql .= ' WHERE pf.fk_facture = ' . ((int) 696);
+	$sql .= ' AND pf.fk_paiement = p.rowid';
+	$sql .= ' AND p.entity IN (' . getEntity('invoice') . ')';
+	//print_r($sql);exit;
 	$resql = $db->query($sql);
 	if ($resql) {
 		$num = $db->num_rows($resql);
-
+		
 		$i = 0;
 		$total = 0;
 		print '<table class="noborder" width="100%">';
@@ -1191,13 +1190,17 @@ if (($id || $ref) && $action == 'edit') {
 		print '</tr>';
 		require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 
-		$paiement = new Paiement($db);
-		$paiement->fetch($rowid);
-		$paiement->datepaye = $paymentdate;
-		//var_dump($paiement->ref);exit;
+		//$paiement = new Paiement($db);
+		//$paiement->fetch($rowid);
+		//$paiement->datepaye = $paymentdate;
+		//$res = $db->fetch_object($resql);
+		//$total_paiements = $res->total_paiements;
+		$invoice = new Facture($db);
+		$result = $invoice->fetch(696);
+		//var_dump($invoice);exit;
 		while ($i < $num) {
 			$objp = $db->fetch_object($resql);
-
+			//var_dump($objp);exit;
 			$paymentstatic->id = $objp->rowid;
 			$paymentstatic->fk_rent = $objp->fk_rent;
 			$paymentstatic->datepaye = $db->jdate($objp->dp);
@@ -1205,9 +1208,9 @@ if (($id || $ref) && $action == 'edit') {
 			$paymentstatic->num_paiement = $objp->num_paiement;
 
 			print '<tr class="oddeven"><td>';
-			print '<a href="' . dol_buildpath('/ultimateimmo/receipt/payment/card.php', 1) . '?id=' . $objp->rowid . "&amp;receipt=" . $id . '">' . img_object($langs->trans("Payment"), "payment") . ' ' . $objp->rowid . '</a></td>';
-			print '<td>' . dol_print_date($db->jdate($objp->dp), 'day') . '</td>';
-			$paymentstatic->fk_mode_reglement = $objp->mode_reglement_label;
+			print '<a href="' . DOL_URL_ROOT.'/compta/paiement/card.php' . '?id=' . $objp->rowid . '">' . img_object($langs->trans("Payment"), "payment") . ' ' . $objp->ref . '</a></td>';
+			print '<td>' . dol_print_date($db->jdate($objp->datep), 'day') . '</td>';
+			$form->form_modes_reglement($_SERVER['PHP_SELF'].'?facid='. ((int) 696), $invoice->mode_reglement_id, 'none', 'CRDT');
 			$paymentstatic->type_code = $objp->type_code;
 			$paymentstatic->mode_reglement_label = $objp->mode_reglement_label;
 			print '<td>' . $paymentstatic->fk_mode_reglement . '</td>';
@@ -1231,7 +1234,7 @@ if (($id || $ref) && $action == 'edit') {
 					print $bankaccountstatic->getNomUrl(1, 'transactions');
 				print '</td>';
 			}
-			print '<td class="right">' . $cursymbolbefore . price($objp->amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td>\n";
+			print '<td class="right">' . $cursymbolbefore . price($objp->total_paiements, 0, $outputlangs) . ' ' . $cursymbolafter . "</td>\n";
 
 			print '<td class="right">';
 			if ($user->admin) {
