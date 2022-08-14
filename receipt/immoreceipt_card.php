@@ -1189,7 +1189,7 @@ if (($id || $ref) && $action == 'edit') {
 		if ($user->admin) print '<td>&nbsp;</td>';
 		print '</tr>';
 		require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
-
+		require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 		//$paiement = new Paiement($db);
 		//$paiement->fetch($rowid);
 		//$paiement->datepaye = $paymentdate;

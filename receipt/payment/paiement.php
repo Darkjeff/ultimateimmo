@@ -290,7 +290,7 @@ if ($action == 'add_payment') {
 			$payment->fetch($rowid);
 			$receipt = new ImmoReceipt($db);
 			$result = $receipt->fetch($id);
-			//var_dump($renter->invoice);exit;
+			//var_dump($renter->invoice->ref);exit;
 			$payment->ref          = $receipt->ref;
 			$payment->rowid        = $id;
        		$payment->fk_receipt   = $receipt->rowid;
