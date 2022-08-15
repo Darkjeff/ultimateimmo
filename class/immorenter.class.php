@@ -22,6 +22,8 @@
  * \brief       This file is a CRUD class file for ImmoRenter (Create/Read/Update/Delete)
  */
 
+use ImmoRenter as GlobalImmoRenter;
+
 // Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
@@ -858,36 +860,20 @@ class ImmoRenter extends CommonObject
 	 *	@param	int     	$datesubend			Date end receiptsubscription
 	 *	@return int         					rowid of record added, <0 if KO
 	 */
-	public function receiptsubscription($date, $amount, $accountid = 0, $operation = '', $label = '', $num_chq = '', $emetteur_nom = '', $emetteur_banque = '', $datesubend = '')
+	public function receiptsubscription($id)
 	{
-		global $conf, $langs, $user;
 
 		$error = 0;
 
-		// Clean parameters
-		if (!$amount) {
-			$amount = 0;
-		}
-
 		$this->db->begin();
-
-		if ($datesubend) {
-			$datefin = $datesubend;
-		} else {
-			// If no date_echeance date, end date = date + 1 month - 1 day
-			$datefin = dol_time_plus_duree($date, 1, 'm');
-			$datefin = dol_time_plus_duree($datefin, -1, 'd');
-		}
 
 		// Create subscription
 		$subscription = new ImmoReceipt($this->db);
 		$subscription->fk_renter = $this->id;
-		$subscription->date_start = $date; // Date of new receipt subscription
-		$subscription->date_end = $datefin; // End data of new receipt subscription
-		$subscription->total_amount = $amount;
-		$subscription->note_public = $label;
-
-		$rowid = $subscription->create($user);
+		// Load object
+		if ($id > 0) {
+			$rowid = $subscription->fetch($id);
+		}
 		if ($rowid > 0) {
 
 			if (!$error) {
@@ -908,7 +894,7 @@ class ImmoRenter extends CommonObject
 	/**
 	 *	Do complementary actions after receiptsubscription recording.
 	 *
-	 *	@param	int			$subscriptionid			Id of created receiptsubscription
+	 *	@param	int			$subscriptionid			Id of updated receiptsubscription
 	 *  @param	string		$option					Which action ('bankdirect', 'bankviainvoice', 'invoiceonly', ...)
 	 *	@param	int			$accountid				Id bank account
 	 *	@param	int			$datesubscription		Date of receiptsubscription
@@ -1040,7 +1026,7 @@ class ImmoRenter extends CommonObject
 				$invoice->socid = $this->fk_soc;
 				//$invoice->date = $datesubscription;
 				$invoice->date = dol_now();
-
+				
 				// Possibility to add external linked objects with hooks
 				$invoice->linked_objects['subscription'] = $subscriptionid;
 				if (!empty($_POST['other_linked_objects']) && is_array($_POST['other_linked_objects'])) {
@@ -1100,7 +1086,15 @@ class ImmoRenter extends CommonObject
 				$amounts = array();
 				$amounts[$invoice->id] = price2num($amount);
 
+				$sql = 'SELECT d.rowid as recid, d.paye, d.total_amount, pd.amount, d.ref';
+				$sql .= ' FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immopayment as pd,' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as d';
+				$sql .= ' WHERE pd.fk_receipt = d.rowid';
+				$sql .= ' AND d.entity = ' . $conf->entity;
+				$sql .= ' AND pd.rowid = ' . $id;
+				$receipt = new ImmoReceipt($this->db);
+				
 				$paiement = new Paiement($this->db);
+				//var_dump($invoice->id);exit;
 				$paiement->datepaye = $paymentdate;
 				$paiement->amounts = $amounts;
 				$paiement->paiementcode = $operation;
@@ -1133,7 +1127,7 @@ class ImmoRenter extends CommonObject
 				if (!$error && !empty($bank_line_id)) {
 					// Update fk_bank into ultimateimmo_immoreceipt table
 					$sql = 'UPDATE '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt SET fk_bank='.((int) $bank_line_id);
-					$sql .= ' WHERE rowid='.((int) $subscriptionid);
+					$sql .= ' WHERE rowid='.((int) $receipt->id);
 
 					$result = $this->db->query($sql);
 					if (!$result) {

@@ -273,8 +273,7 @@ if ($action == 'add_payment') {
 
 	if (!$error) {
 		// Create subscription
-		$crowid = $renter->receiptsubscription($datereceipt, $amount, $accountid, $operation, $label, $num_chq, $emetteur_nom, $emetteur_banque, $datesubend);
-		//var_dump($crowid, $operation, $amount);exit;
+		$crowid = $renter->receiptsubscription($id);
 		if ($crowid <= 0) {
 			$error++;
 			$errmsg = $renter->error;
@@ -284,13 +283,13 @@ if ($action == 'add_payment') {
 		if (!$error) {
 			$result = $renter->receiptSubscriptionComplementaryActions($crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
 			//var_dump($result, $crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount);exit;
-			
+
 			// Create a line of payments
-			$payment = new Paiement($db);
+			$payment = new ImmoPayment($db);
 			$payment->fetch($rowid);
 			$receipt = new ImmoReceipt($db);
 			$result = $receipt->fetch($id);
-			//var_dump($renter->invoice->ref);exit;
+			
 			$payment->ref          = $receipt->ref;
 			$payment->rowid        = $id;
        		$payment->fk_receipt   = $receipt->rowid;
@@ -300,11 +299,11 @@ if ($action == 'add_payment') {
 			$payment->fk_payment   = $receipt->fk_payment;
 			$payment->date_payment = $paymentdate;
 			$payment->amount      = GETPOST("amount");
-			$payment->fk_mode_reglement  = GETPOST('fk_mode_reglement', 'int');
+			$payment->fk_mode_reglement  = $operation;
 			$payment->fk_account  = GETPOST('fk_bank', 'int');
 			$payment->num_payment  = GETPOST('num_payment', 'int');
 			$payment->note_public  = GETPOST('note_public', 'string');
-			//var_dump($receipt->ref);exit;
+			//var_dump($payment->fk_mode_reglement);exit;
 			if (!$error) {
 				$paymentid = $payment->create($user);
 				if ($paymentid < 0) {
@@ -313,6 +312,7 @@ if ($action == 'add_payment') {
 					$error++;
 				}
 			}
+
 			if ($result < 0) {
 				$error++;
 				setEventMessages($renter->error, $renter->errors, 'errors');
@@ -321,40 +321,6 @@ if ($action == 'add_payment') {
 				$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $id;
 				header('Location: ' . $loc);
 				exit;
-			}
-		}
-	}
-
-	if (!$error) {
-		//$date_payment = dol_mktime(0, 0, 0, GETPOST('remonth'), GETPOST('reday'), GETPOST('reyear'));
-		$paymentid = 0;
-
-		if (!$error) {
-			$db->begin();
-
-			
-
-			/*if (!$error) {
-				$label = '(CustomerReceiptPayment)';
-				if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
-				//$result = $payment->addPaymentToBank($user, 'immopayment', $label, $_POST['accountid'], '', '');
- 
-				if ($result <= 0) {
-					$errmsg = $payment->errors;
-					setEventMessages(null, $errmsg, 'errors');
-					$error++;
-				}
-			}*/
-
-			if (!$error) {
-				$db->commit();
-				$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $id;
-				header('Location: ' . $loc);
-				exit;
-			} else {
-				$db->rollback();
-				$errmsg = $payment->errors;
-				setEventMessages(null, $errmsg, 'errors');
 			}
 		}
 	}
@@ -663,7 +629,6 @@ if (GETPOST('action', 'aZ09') == 'create') {
 
 			// Payment mode
 			print '<tr><td class="fieldrequired">' . $langs->trans("PaymentMode") . '</td><td colspan="2">';
-			//$form->select_types_paiements((GETPOST('operation') ? GETPOST('operation') : $paymentstatic->fk_mode_reglement), 'operation');
 			$form->select_types_paiements(GETPOST('operation'), 'operation', '', 2, 1, 0, 0, 1, 'minwidth200');
 			print "</td>\n";
 			print '</tr>';

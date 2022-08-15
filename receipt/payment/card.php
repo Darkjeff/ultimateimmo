@@ -75,6 +75,8 @@ $langs->loadLangs(array("bills", "banks", "companies"));
 $id = GETPOST('rowid') ? GETPOST('rowid', 'int') : GETPOST('id', 'int');
 $action = GETPOST('action', 'aZ09');
 $confirm = GETPOST('confirm');
+$cancel = GETPOST('cancel', 'alpha');
+$amount = price2num(GETPOST('amount', 'alpha'), 'MT');
 if ($user->societe_id) $socid = $user->societe_id;
 // TODO Add rule to restrict access payment
 //$result = restrictedArea($user, 'facture', $id,'');
@@ -98,6 +100,14 @@ $usercandelete = $user->rights->ultimateimmo->delete || ($usercancreate && $obje
 /*
  * Actions
  */
+
+if ($cancel) {
+	$action = '';
+}
+
+//include DOL_DOCUMENT_ROOT.'/core/actions_setnotes.inc.php'; // Must be include, not include_once
+
+include DOL_DOCUMENT_ROOT.'/core/actions_dellink.inc.php'; // Must be include, not include_once
 
 // Delete payment
 if ($action == 'confirm_delete' && $confirm == 'yes' && $usercandelete) {
@@ -307,12 +317,19 @@ if (!empty($conf->banque->enabled)) {
 		}
 	}
 
-	print '<tr>';
-	print '<td>' . $langs->trans('BankTransactionLine') . '</td>';
-	print '<td>';
-	print '<a href="' . DOL_URL_ROOT.'/compta/bank/line.php?rowid=' . $accountstatic->id .'">' . img_object($langs->trans("Payment"), "payment") . ' ' . $accountstatic->id . '</a></td>';
-	print '</td>';
-	print '</tr>';
+	// Bank line
+	if (!empty($conf->banque->enabled) && ($conf->global->RENTER_BANK_USE || $receipt->fk_account)) {
+		print '<tr><td>'.$langs->trans("BankTransactionLine").'</td><td class="valeur">';
+		var_dump($receipt);exit;
+		if ($object->fk_account) {
+			$bankline = new AccountLine($db);
+			$result = $bankline->fetch($object->fk_account);
+			print $bankline->getNomUrl(1, 0, 'showall');
+		} else {
+			print $langs->trans("NoneF");
+		}
+		print '</td></tr>';
+	}
 }
 
 // Note
@@ -534,6 +551,20 @@ if ($_GET['action'] == '') {
 		}
 	}
 }
+
+require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
+$facture = new Facture($db);
+$facture->fetch($id);
+$renter = new ImmoRenter($db);
+$renter->fetch($id);
+
+// Create subscription
+$crowid = $renter->receiptsubscription($datereceipt, $amount, $accountid, $operation, $label, $num_chq, $emetteur_nom, $emetteur_banque, $datesubend);
+
+$renter->receiptSubscriptionComplementaryActions($crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
+
+//var_dump($renter);exit;
+$somethingshown = $form->showLinkedObjectBlock($facture, '');
 
 print '</div>';
 

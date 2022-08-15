@@ -293,14 +293,14 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
 
 				$amountalreadypaid = 0;
-				if ($object->getSommePaiement()) {
-					$amountalreadypaid = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+				if ($receipt->getSommePaiement()) {
+					$amountalreadypaid = price($receipt->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
 				}
 				
 				// Bloc Quittance de loyer
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetXY($posX, $posY);
-				if ($object->getSommePaiement() < $object->total_amount) {
+				if ($receipt->getSommePaiement() < $receipt->total_amount) {
 					$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Appel de loyer'), 1, 'C');
 				} else {
 					$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('Quittance de loyer'), 1, 'C');

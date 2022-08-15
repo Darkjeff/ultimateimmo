@@ -128,7 +128,7 @@ class ImmoReceipt extends CommonObject
 		'fk_soc' 		=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'picto'=>'company', 'label' => 'LinkedToDolibarrThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 42, 'notnull' => -1, 'index' => 1, 'help' => 'SetLinkToThirdparty'),
 		'fk_owner'      => array('type' => 'integer:ImmoOwner:ultimateimmo/class/immoowner.class.php', 'label' => 'Owner', 'visible' => 1, 'enabled' => 1, 'position' => 45, 'notnull' => -1, 'index' => 1, 'searchall' => 1, 'help' => "LinkToOwner"),
 		/*'fk_payment' => array('type'=>'integer:ImmoPayment:ultimateimmo/class/immopayment.class.php', 'label'=>'ImmoPayment', 'enabled'=>1, 'visible'=>1, 'position'=>48, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToPayment",),*/
-		'fk_bank' => array('type'=>'integer', 'label'=>'Bank', 'enabled'=>1, 'visible'=>1, 'position'=>46, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToBank",),
+		//'fk_bank' => array('type'=>'integer', 'label'=>'Bank', 'enabled'=>1, 'visible'=>1, 'position'=>46, 'notnull'=>-1, 'index'=>1, 'help'=>"LinkToBank",),
 		'note_public'   => array('type' => 'html', 'label' => 'NotePublic', 'enabled' => 1, 'visible' => 0, 'position' => 50),
 		'note_private'  => array('type' => 'html', 'label' => 'NotePrivate', 'enabled' => 1, 'visible' => 0, 'position' => 55),
 		'date_echeance' => array('type' => 'date', 'label' => 'Echeance', 'enabled' => 1, 'visible' => 1, 'position' => 56, 'notnull' => -1, 'default' => 'null'),
@@ -188,6 +188,8 @@ class ImmoReceipt extends CommonObject
 	public $fk_renter;
 
 	public $fk_owner;
+
+	//public $fk_bank;
 
 	public $fk_soc;
 
@@ -907,6 +909,7 @@ class ImmoReceipt extends CommonObject
 				$line->fk_property = $obj->fk_property;
 				$line->nomlocal = $obj->nomlocal;
 				$line->label = $obj->nomrenter;
+				//$line->fk_bank = $obj->fk_bank;
 				$line->fk_renter = $obj->fk_renter;
 				$line->nomlocataire = $obj->nomlocataire;
 				$line->total_amount = $obj->total_amount;
