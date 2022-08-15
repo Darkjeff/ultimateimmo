@@ -115,7 +115,7 @@ if ($object->id) {
 	/*
 	 * Show tabs
 	 */
-	if (!empty($conf->notification->enabled)) $langs->load("mails");
+	if (isModEnabled('notification')) $langs->load("mails");
 	$head = immocostPrepareHead($object);
 
 	print dol_get_fiche_head($head, 'document', $langs->trans("ImmoCost"), -1, 'immocost@ultimateimmo');
