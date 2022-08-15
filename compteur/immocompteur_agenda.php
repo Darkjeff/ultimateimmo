@@ -136,11 +136,11 @@ if ($object->id > 0)
 	$help_url = '';
 	llxHeader('', $title, $help_url);
 
-	if (!empty($conf->notification->enabled)) $langs->load("mails");
+	if (isModEnabled('notification')) $langs->load("mails");
 	$head = immocompteurPrepareHead($object);
 
 
-	dol_fiche_head($head, 'agenda', $langs->trans("ImmoCompteur"), -1, 'object_'.$object->picto);
+	print dol_get_fiche_head($head, 'agenda', $langs->trans("ImmoCompteur"), -1, 'object_'.$object->picto);
 
 	// Object card
 	// ------------------------------------------------------------
@@ -154,7 +154,7 @@ if ($object->id > 0)
 	// Thirdparty
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . (is_object($object->thirdparty) ? $object->thirdparty->getNomUrl(1) : '');
 	// Project
-	if (! empty($conf->projet->enabled))
+	if (isModEnabled('projet'))
 	{
 		$langs->load("projects");
 		$morehtmlref.='<br>'.$langs->trans('Project') . ' ';
@@ -197,7 +197,7 @@ if ($object->id > 0)
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 
 
@@ -221,7 +221,7 @@ if ($object->id > 0)
 
 	print '<div class="tabsAction">';
 
-	if (!empty($conf->agenda->enabled))
+	if (isModEnabled('agenda'))
 	{
 		if (!empty($user->rights->agenda->myactions->create) || !empty($user->rights->agenda->allactions->create))
 		{
@@ -235,7 +235,7 @@ if ($object->id > 0)
 
 	print '</div>';
 
-	if (!empty($conf->agenda->enabled) && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read)))
+	if (isModEnabled('agenda') && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read)))
 	{
 		$param = '&id='.$object->id.'&socid='.$socid;
 		if (!empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param .= '&contextpage='.urlencode($contextpage);
