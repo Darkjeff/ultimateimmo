@@ -173,7 +173,7 @@ if ($user->socid > 0) accessforbidden();
 //$socid = 0; if ($user->socid > 0) $socid = $user->socid;
 //$isdraft = (($object->status == $object::STATUS_DRAFT) ? 1 : 0);
 //restrictedArea($user, $object->element, 0, $object->table_element, '', 'fk_soc', 'rowid', $isdraft);
-if (empty($conf->ultimateimmo->enabled)) accessforbidden('Module not enabled');
+if (!isModEnabled('ultimateimmo')) accessforbidden('Module not enabled');
 if (!$permissiontoread) accessforbidden();
 
 
