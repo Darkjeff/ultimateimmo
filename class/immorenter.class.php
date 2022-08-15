@@ -281,7 +281,7 @@ class ImmoRenter extends CommonObject
 		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) {
 			$this->fields['rowid']['visible'] = 0;
 		}
-		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) {
+		if (!isModEnabled('multicompany') && isset($this->fields['entity'])) {
 			$this->fields['entity']['enabled'] = 0;
 		}
 
@@ -1046,7 +1046,7 @@ class ImmoRenter extends CommonObject
 			if (!$error) {
 				// Add line to draft invoice
 				$idprodsubscription = 0;
-				if (!empty($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS) && (!empty($conf->product->enabled) || !empty($conf->service->enabled))) {
+				if (!empty($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS) && (isModEnabled('product') || isModEnabled('service'))) {
 					$idprodsubscription = $conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS;
 				}
 
@@ -1994,7 +1994,7 @@ class ImmoRenter extends CommonObject
 
 		$blockingerrormsg = '';
 
-		if (empty($conf->ultimateimmo->enabled)) { // Should not happen. If module disabled, cron job should not be visible.
+		if (!isModEnabled('ultimateimmo')) { // Should not happen. If module disabled, cron job should not be visible.
 			$langs->load("agenda");
 			$this->output = $langs->trans('ModuleNotEnabled', $langs->transnoentitiesnoconv("Ultimateimmo"));
 			return 0;
