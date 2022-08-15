@@ -196,7 +196,7 @@ class ImmoPayment extends CommonObject
 		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) {
 			$this->fields['rowid']['visible'] = 0;
 		}
-		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) {
+		if (!isModEnabled('multicompany') && isset($this->fields['entity'])) {
 			$this->fields['entity']['enabled'] = 0;
 		}
 
@@ -1017,7 +1017,7 @@ class ImmoPayment extends CommonObject
 
 		$error = 0;
 
-		if (!empty($conf->banque->enabled)) {
+		if (isModEnabled('banque')) {
 			require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
 
 			$acc = new Account($this->db);
