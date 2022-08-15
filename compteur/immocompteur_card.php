@@ -145,7 +145,7 @@ $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $obj
 //$isdraft = (($object->statut == $object::STATUS_DRAFT) ? 1 : 0);
 //$result = restrictedArea($user, 'ultimateimmo', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
 
-if (empty($conf->ultimateimmo->enabled)) accessforbidden();
+if (!isModEnabled('ultimateimmo')) accessforbidden();
 if (!$permissiontoread) accessforbidden();
 
 
@@ -346,7 +346,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Confirmation of action xxxx
 	if ($action == 'xxx') {
 		$text = $langs->trans('ConfirmActionImmoCompteur', $object->ref);
-		/*if (! empty($conf->notification->enabled))
+		/*if (isModEnabled('notification'))
 		{
 			require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';
 			$notify = new Notify($db);
@@ -392,7 +392,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	 // Thirdparty
 	 $morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . (is_object($object->thirdparty) ? $object->thirdparty->getNomUrl(1) : '');
 	 // Project
-	 if (! empty($conf->projet->enabled))
+	 if (isModEnabled('projet'))
 	 {
 	 $langs->load("projects");
 	 $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
