@@ -101,7 +101,7 @@ $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
 // Load object
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
-$upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1].'/cost';
+$upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1] . '/cost';
 
 $arrayfields = array();
 
@@ -119,11 +119,10 @@ if ($reshook < 0) {
 	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 }
 
-if (empty($reshook))
-{
+if (empty($reshook)) {
 	$error = 0;
 
-	$backurlforlist = dol_buildpath('/ultimateimmo/cost/immocost_list.php',1);
+	$backurlforlist = dol_buildpath('/ultimateimmo/cost/immocost_list.php', 1);
 
 	if (empty($backtopage) || ($cancel && empty($id))) {
 		if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
@@ -198,7 +197,7 @@ if (empty($reshook))
 $form = new Form($db);
 $formfile = new FormFile($db);
 
-llxHeader('','ImmoCost','');
+llxHeader('', 'ImmoCost', '');
 
 // Part to create
 if ($action == 'create') {
@@ -268,8 +267,7 @@ if ($action == 'create') {
 }
 
 // Part to edit record
-if (($id || $ref) && $action == 'edit')
-{
+if (($id || $ref) && $action == 'edit') {
 	print load_fiche_titre($langs->trans("ImmoCost"));
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
@@ -277,10 +275,10 @@ if (($id || $ref) && $action == 'edit')
 	print '<input type="hidden" name="action" value="update">';
 	print '<input type="hidden" name="id" value="' . $object->id . '">';
 	if ($backtopage) {
-		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+		print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 	}
 	if ($backtopageforcancel) {
-		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+		print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
 	}
 
 	print dol_get_fiche_head();
@@ -330,9 +328,8 @@ if (($id || $ref) && $action == 'edit')
 }
 
 // Part to show record
-if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
-{
-    $res = $object->fetch_optionals();
+if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create'))) {
+	$res = $object->fetch_optionals();
 
 	$head = immocostPrepareHead($object);
 	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoCost"), -1, 'immocost@ultimateimmo');
@@ -370,10 +367,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	// Call Hook formConfirm
-	if (! $formconfirm) {
-	    $parameters = array('lineid' => $lineid);
-	    $reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	    if (empty($reshook)) {
+	if (!$formconfirm) {
+		$parameters = array('lineid' => $lineid);
+		$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+		if (empty($reshook)) {
 			$formconfirm .= $hookmanager->resPrint;
 		} elseif ($reshook > 0) {
 			$formconfirm = $hookmanager->resPrint;
@@ -396,7 +393,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Thirdparty
 	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . is_object($object->fk_soc) ? $object->getNomUrl(0) : '';
 	// Project
-	/*if (! empty($conf->projet->enabled))
+	/*if (isModEnabled('projet'))
 	{
 	    $langs->load("projects");
 	    $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
@@ -503,44 +500,44 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Select mail models is same action as presend
 	if (GETPOST('modelselected')) {
-	    $action = 'presend';
+		$action = 'presend';
 	}
 
 	if ($action != 'presend') {
 		print '<div class="fichecenter"><div class="fichehalfleft">';
 		print '<a name="builddoc"></a>'; // ancre
 
-	    // Documents
-	    $relativepath = '/cost/' . dol_sanitizeFileName($object->ref);
-	    $filedir = $conf->ultimateimmo->dir_output . $relativepath;
-	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-	    $genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
-	    $delallowed = $user->rights->ultimateimmo->create;	// If you can create/edit, you can remove a file on card
-	    print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->model_pdf);
+		// Documents
+		$relativepath = '/cost/' . dol_sanitizeFileName($object->ref);
+		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
+		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
+		$genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
+		$delallowed = $user->rights->ultimateimmo->create;	// If you can create/edit, you can remove a file on card
+		print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->model_pdf);
 
-	    // Show links to link elements
-	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immocost'));
-	    $somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
+		// Show links to link elements
+		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immocost'));
+		$somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
 
 
-	    print '</div><div class="fichehalfright"><div class="ficheaddleft">';
+		print '</div><div class="fichehalfright"><div class="ficheaddleft">';
 
-	    $MAXEVENT = 10;
+		$MAXEVENT = 10;
 
 		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/cost/immocost_info.php', 1) . '?id=' . $object->id . '">';
 		$morehtmlright .= $langs->trans("SeeAll");
 		$morehtmlright .= '</a>';
 
-	    // List of actions on element
-	    include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
-	    $formactions = new FormActions($db);
-	    $somethingshown = $formactions->showactions($object, 'immocost', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
+		// List of actions on element
+		include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
+		$formactions = new FormActions($db);
+		$somethingshown = $formactions->showactions($object, 'immocost', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
 
-	    print '</div></div></div>';
+		print '</div></div></div>';
 	}
 
 	//Select mail models is same action as presend
-	 if (GETPOST('modelselected')) $action = 'presend';
+	if (GETPOST('modelselected')) $action = 'presend';
 
 	// Presend form
 	$modelmail = 'immocost';
@@ -549,7 +546,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$trackid = 'immo' . $object->id;
 
 	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';
-
 }
 
 
