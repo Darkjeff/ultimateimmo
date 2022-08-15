@@ -97,7 +97,7 @@ class InterfaceUltimateimmoTriggers extends DolibarrTriggers
 	 */
 	public function runTrigger($action, $object, User $user, Translate $langs, Conf $conf)
 	{
-        if (empty($conf->ultimateimmo->enabled)) return 0;     // Module not active, we do nothing
+        if (!isModEnabled('ultimateimmo')) return 0;     // Module not active, we do nothing
 
 	    // Put here code you want to execute when a Dolibarr business events occurs.
 		// Data and type of action are stored into $object and $action
