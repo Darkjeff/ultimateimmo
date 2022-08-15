@@ -509,13 +509,13 @@ print "</tr>\n";
 // Insert subscription into bank account
 print '<tr class="oddeven"><td>'.$langs->trans("MoreActionsOnRent").'</td>';
 $arraychoices = array('0'=>$langs->trans("None"));
-if (!empty($conf->banque->enabled)) {
+if (isModEnabled('banque')) {
 	$arraychoices['bankdirect'] = $langs->trans("MoreActionBankDirect");
 }
-if (!empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+if (isModEnabled('banque') && !empty($conf->societe->enabled) && isModEnabled('facture')) {
 	$arraychoices['invoiceonly'] = $langs->trans("MoreActionInvoiceOnly");
 }
-if (!empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+if (isModEnabled('banque') && !empty($conf->societe->enabled) && isModEnabled('facture')) {
 	$arraychoices['bankviainvoice'] = $langs->trans("MoreActionBankViaInvoice");
 }
 print '<td>';
@@ -529,7 +529,7 @@ print "</tr>\n";
 // Use vat for invoice creation
 if (isModEnabled('facture')) {
 	print '<tr class="oddeven"><td>' . $langs->trans("VATToUseForRents") . '</td>';
-	if (!empty($conf->banque->enabled)) {
+	if (isModEnabled('banque')) {
 		print '<td>';
 		print $form->selectarray('ULTIMATEIMMO_VAT_FOR_RECEIPTS', array('0' => $langs->trans("NoVatOnRent"), 'defaultforfoundationcountry' => $langs->trans("Default")), (empty($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) ? '0' : $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS), 0);
 		print '</td>';
@@ -540,7 +540,7 @@ if (isModEnabled('facture')) {
 	}
 	print "</tr>\n";
 
-	if (!empty($conf->product->enabled) || !empty($conf->service->enabled)) {
+	if (isModEnabled('product') || isModEnabled('service')) {
 		print '<tr class="oddeven"><td>'.$langs->trans("UltimateimmoProductIdForReceipts").'</td>';
 		print '<td>';
 		$selected = (empty($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS) ? '' : $conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS);
