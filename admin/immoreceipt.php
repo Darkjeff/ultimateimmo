@@ -512,10 +512,10 @@ $arraychoices = array('0'=>$langs->trans("None"));
 if (isModEnabled('banque')) {
 	$arraychoices['bankdirect'] = $langs->trans("MoreActionBankDirect");
 }
-if (isModEnabled('banque') && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+if (isModEnabled('banque') && isModEnabled('societe') && isModEnabled('facture')) {
 	$arraychoices['invoiceonly'] = $langs->trans("MoreActionInvoiceOnly");
 }
-if (isModEnabled('banque') && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+if (isModEnabled('banque') && isModEnabled('societe') && isModEnabled('facture')) {
 	$arraychoices['bankviainvoice'] = $langs->trans("MoreActionBankViaInvoice");
 }
 print '<td>';
