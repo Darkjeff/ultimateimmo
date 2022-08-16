@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,11 +138,11 @@ if ($object->id > 0) {
 	$help_url = '';
 	llxHeader('', $title, $help_url);
 
-	if (!empty($conf->notification->enabled)) $langs->load("mails");
+	if (isModEnabled('notification')) $langs->load("mails");
 	$head = immopropertyPrepareHead($object);
 
 
-	dol_fiche_head($head, 'agenda', $langs->trans("ImmoProperty"), -1, 'company');
+	print dol_get_fiche_head($head, 'agenda', $langs->trans("ImmoProperty"), -1, 'company');
 
 	// Object card
 	// ------------------------------------------------------------
@@ -167,7 +167,7 @@ if ($object->id > 0) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	// Actions buttons
 
@@ -188,7 +188,7 @@ if ($object->id > 0) {
 
 	print '<div class="tabsAction">';
 
-	if (!empty($conf->agenda->enabled)) {
+	if (isModEnabled('agenda')) {
 		if (!empty($user->rights->agenda->myactions->create) || !empty($user->rights->agenda->allactions->create)) {
 			print '<a class="butAction" href="' . DOL_URL_ROOT . '/comm/action/card.php?action=create' . $out . '">' . $langs->trans("AddAction") . '</a>';
 		} else {
@@ -198,7 +198,7 @@ if ($object->id > 0) {
 
 	print '</div>';
 
-	/* if (! empty($conf->agenda->enabled) && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read) ))
+	/* if (isModEnabled('agenda') && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read) ))
     {
         $param='&socid='.$socid;
         if (! empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param.='&contextpage='.$contextpage;
