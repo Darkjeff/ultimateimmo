@@ -279,14 +279,14 @@ print '<tr><td>' . $langs->trans('Mode') . '</td><td>' . $fk_mode_reglement . '<
 print '<tr><td>' . $langs->trans('Amount') . '</td><td>' . price($object->amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td></tr>';
 
 // Bank account
-if (!empty($conf->banque->enabled)) {
+if (isModEnabled('banque')) {
 	$bankline = new AccountLine($db);
 	$bankaccount = new Account($db);
 	if ($object->fk_account > 0) {
 		$bankline->fetch($object->bank_line);
 		if ($bankline->rappro) {
 			$disable_delete = 1;
-			$title_button = dol_escape_htmltag($langs-> transnoentitiesnoconv("CantRemoveConciliatedPayment"));
+			$title_button = dol_escape_htmltag($langs->transnoentitiesnoconv("CantRemoveConciliatedPayment"));
 		}
 
 		print '<tr>';
@@ -301,7 +301,7 @@ if (!empty($conf->banque->enabled)) {
 }
 
 // Bank transaction
-if (!empty($conf->banque->enabled)) {
+if (isModEnabled('banque')) {
 	if ($object->fk_account > 0) {
 		if ($object->type_code == 'CHQ' && $bankline->fk_bordereau > 0) {
 			include_once DOL_DOCUMENT_ROOT . '/compta/paiement/cheque/class/remisecheque.class.php';
@@ -318,9 +318,8 @@ if (!empty($conf->banque->enabled)) {
 	}
 
 	// Bank line
-	if (!empty($conf->banque->enabled) && ($conf->global->RENTER_BANK_USE || $receipt->fk_account)) {
-		print '<tr><td>'.$langs->trans("BankTransactionLine").'</td><td class="valeur">';
-		var_dump($receipt);exit;
+	if (isModEnabled('banque') && ($conf->global->RENTER_BANK_USE || $receipt->fk_account)) {
+		print '<tr><td>' . $langs->trans("BankTransactionLine") . '</td><td class="valeur">';
 		if ($object->fk_account) {
 			$bankline = new AccountLine($db);
 			$result = $bankline->fetch($object->fk_account);
