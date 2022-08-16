@@ -139,7 +139,7 @@ $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $obj
 //if ($user->socid > 0) $socid = $user->socid;
 //$isdraft = (isset($object->status) && ($object->status == $object::STATUS_DRAFT) ? 1 : 0);
 //restrictedArea($user, $object->element, $object->id, $object->table_element, '', 'fk_soc', 'rowid', $isdraft);
-if (empty($conf->ultimateimmo->enabled)) accessforbidden();
+if (!isModEnabled('ultimateimmo')) accessforbidden();
 if (!$permissiontoread) accessforbidden();
 
 /*
