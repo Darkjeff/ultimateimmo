@@ -67,13 +67,13 @@ dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/lib/immopayment.lib.php');
 dol_include_once('/ultimateimmo/class/immorent.class.php');
-if (!empty($conf->banque->enabled)) require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
-if (!empty($conf->accounting->enabled)) {
+if (isModEnabled('banque')) require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
+if (isModEnabled('accounting')) {
 	require_once DOL_DOCUMENT_ROOT . '/accountancy/class/accountingjournal.class.php';
 }
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo","other", "contracts", "bills"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "contracts", "bills"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -97,7 +97,7 @@ $paymentyear = GETPOST("paymentyear", 'int');
 $button_search_x = GETPOST('button_search_x', 'alpha');
 $button_createpdf = GETPOST('button_createpdf', 'alpha');
 
-$createpdf='';
+$createpdf = '';
 
 // Array of ids of elements selected into a list
 $toselect   = GETPOST('toselect', 'array');
@@ -134,7 +134,7 @@ if (empty($action) && empty($id) && empty($ref)) {
 $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
 
 // Load object
-include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
+include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
 if (!empty($button_search_x)) {
 	$action = 'createall';
@@ -240,8 +240,7 @@ if (empty($reshook)) {
 	}
 
 	// payment mode
-	elseif ($action == 'setmode' && $usercancreate)
-	{
+	elseif ($action == 'setmode' && $usercancreate) {
 		$result = $object->setPaymentMethods(GETPOST('mode_reglement_id', 'int'));
 	}
 
@@ -454,7 +453,7 @@ if ($action == 'create') {
 
 	// Update fields properties in realtime
 	if (!empty($conf->use_javascript_ajax)) {
-		print "\n".'<script type="text/javascript">';
+		print "\n" . '<script type="text/javascript">';
 		print '$(document).ready(function () {
             			setPaymentType();
             			$("#selectpaymenttype").change(function() {
@@ -484,16 +483,16 @@ if ($action == 'create') {
             			}
 			';
 
-		print '	});'."\n";
+		print '	});' . "\n";
 
 		//Add js for AutoFill
 		print ' $(document).ready(function () {';
-			print ' 	$(".AutoFillAmout").on(\'click touchstart\', function(){
+		print ' 	$(".AutoFillAmout").on(\'click touchstart\', function(){
 						$("input[name="+$(this).data(\'rowname\')+"]").val($(this).data("value")).trigger("change");
 					});';
-			print '	});'."\n";
+		print '	});' . "\n";
 
-		print '	</script>'."\n";
+		print '	</script>' . "\n";
 	}
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
@@ -513,7 +512,7 @@ if ($action == 'create') {
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
-	
+
 	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1) continue;
@@ -532,9 +531,9 @@ if ($action == 'create') {
 		print '</td>';
 
 		print '<td>';
-		
+
 		if ($val['label'] == 'DatePayment') {
-			print $form->selectDate((empty($date_payment) ?-1 : $date_payment), "date_payment", '', '', '', 'add', 1, 1);
+			print $form->selectDate((empty($date_payment) ? -1 : $date_payment), "date_payment", '', '', '', 'add', 1, 1);
 		} elseif ($val['label'] == 'TypePayment') {
 			// Payment mode
 			if ($object->fk_mode_reglement) $selected = $object->fk_mode_reglement;
@@ -542,7 +541,7 @@ if ($action == 'create') {
 			$form->select_types_paiements($selected, 'paiementtype', 'CRDT', 0, 1);
 		} elseif ($val['label'] == 'BankAccount') {
 			//BankAccount
-			if (!empty($conf->banque->enabled)) {
+			if (isModEnabled('banque')) {
 				/*if ($receipt->type != 2) print '<span class="fieldrequired">' . $langs->trans('AccountToCredit') . '</span>';
 				if ($receipt->type == 2) print '<span class="fieldrequired">' . $langs->trans('AccountToDebit') . '</span>';*/
 
@@ -582,7 +581,7 @@ if (($id || $ref) && $action == 'edit') {
 
 	print dol_get_fiche_head();
 
-	print '<table class="border centpercent tableforfieldedit">'."\n";
+	print '<table class="border centpercent tableforfieldedit">' . "\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
@@ -616,7 +615,7 @@ if (($id || $ref) && $action == 'edit') {
 
 		if ($val['label'] == 'BankAccount') {
 			//BankAccount
-			if (!empty($conf->banque->enabled)) {
+			if (isModEnabled('banque')) {
 				$form->select_comptes($accountid, 'accountid', 0, '', 2);
 			}
 		} elseif ($val['label'] == 'TypePayment') {
@@ -972,7 +971,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 /* *************************************************************************** */
 
 if ($actionlist == 'createall') {
-	$action='createall';
+	$action = 'createall';
 }
 if ($action == 'createall') {
 
@@ -995,15 +994,15 @@ if ($action == 'createall') {
 
 	if (!empty($search_loyer)) {
 		$sql .=  natural_search('rec.label', $search_loyer);
-		$param .= '&search_loyer='.$search_loyer;
+		$param .= '&search_loyer=' . $search_loyer;
 	}
 	if (!empty($search_local)) {
 		$sql .=  natural_search('prop.label', $search_local);
-		$param .= '&search_local='.$search_local;
+		$param .= '&search_local=' . $search_local;
 	}
 	if (!empty($search_renter)) {
 		$sql .=  natural_search('loc.lastname', $search_renter);
-		$param .= '&search_renter='.$search_renter;
+		$param .= '&search_renter=' . $search_renter;
 	}
 
 	if ($createpdf == 'createpdf') {
@@ -1013,9 +1012,9 @@ if ($action == 'createall') {
 			exit;
 		}
 
-		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
-		require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
-		require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 
 		// Create empty PDF
 		$formatarray = pdf_getFormat();
@@ -1025,8 +1024,7 @@ if ($action == 'createall') {
 
 		$pdf = pdf_getInstance($format);
 
-		if (class_exists('TCPDF'))
-		{
+		if (class_exists('TCPDF')) {
 			$pdf->setPrintHeader(false);
 			$pdf->setPrintFooter(false);
 		}
@@ -1096,7 +1094,7 @@ if ($action == 'createall') {
 	print '<td class="left">';
 	print $form->select_comptes(GETPOSTISSET('accountid', 'int') ? GETPOST('accountid', 'int') : $payment->fk_account, "accountid", 0, '', 1);  // Show open bank account list
 	print '</td>';
-	
+
 	// num_payment
 	print '<td><input name="num_payment" size="30" value="' . GETPOST('num_payment') . '"</td>';
 
@@ -1112,9 +1110,9 @@ if ($action == 'createall') {
 
 		print '<br><table class="noborder" width="100%">';
 		print '<tr class="liste_titre">';
-		print '<td><input type="text" name="search_loyer" id="search_loyer" value="'.$search_loyer.'"></td>';
-		print '<td><input type="text" name="search_local" id="search_local" value="'.$search_local.'"></td>';
-		print '<td><input type="text" name="search_renter" id="search_renter" value="'.$search_renter.'"></td>';
+		print '<td><input type="text" name="search_loyer" id="search_loyer" value="' . $search_loyer . '"></td>';
+		print '<td><input type="text" name="search_local" id="search_local" value="' . $search_local . '"></td>';
+		print '<td><input type="text" name="search_renter" id="search_renter" value="' . $search_renter . '"></td>';
 		print '<td></td>';
 		print '<td></td>';
 		print '<td></td>';
@@ -1151,7 +1149,7 @@ if ($action == 'createall') {
 
 				print '<td class="right">' .  price($objp->total, 0, '', 1, -1, -1, $conf->currency) . '</td>';
 				print '<td class="right">' . price($objp->partial_payment, 0, '', 1, -1, -1, $conf->currency) . '</td>';
-				print '<td class="right">' .price($objp->balance, 0, '', 1, -1, -1, $conf->currency)  . '</td>';
+				print '<td class="right">' . price($objp->balance, 0, '', 1, -1, -1, $conf->currency)  . '</td>';
 
 				print '<input type="hidden" name="fk_rent_' . $objp->reference . '" size="10" value="' . $objp->refcontract . '">';
 				print '<input type="hidden" name="fk_property_' . $objp->reference . '" size="10" value="' . $objp->reflocal . '">';
@@ -1164,7 +1162,7 @@ if ($action == 'createall') {
 				print '<input type="text" name="incomeprice_' . $objp->reference . '" id="incomeprice_' . $objp->reference . '" size="6" value="" class="flat">';
 				print '</td>';
 				print '<td></td>';
-				
+
 				// Action column
 				print '<td class="nowrap center">';
 				if (in_array($objp->reference, $arrayofselected)) $selected = 1;
@@ -1186,8 +1184,8 @@ if ($action == 'createall') {
 		print '<td class="left">' . $langs->trans("Total") . '</td>';
 		print '<td colspan="2"></td>';
 		print '<td class="right">' . price($total_montant_tot, 0, '', 1, -1, -1, $conf->currency) . '</td>';
-		print '<td class="right">'.price($total_payed, 0, '', 1, -1, -1, $conf->currency).'</td>';
-		print '<td class="right">'.price($total_due, 0, '', 1, -1, -1, $conf->currency).'</td>';
+		print '<td class="right">' . price($total_payed, 0, '', 1, -1, -1, $conf->currency) . '</td>';
+		print '<td class="right">' . price($total_due, 0, '', 1, -1, -1, $conf->currency) . '</td>';
 		print '<td colspan="3"></td>';
 		print '</tr>';
 
@@ -1261,7 +1259,7 @@ if ($action == 'update') {
 	print '</td>';
 
 	print '</table>';
-	
+
 	print dol_get_fiche_end();
 
 	print '<div align="center">';
