@@ -1,7 +1,7 @@
 ﻿<?php
 /* Copyright (C) 2013-2016 Olivier Geffroy		<jeff@jeffinfo.com>
  * Copyright (C) 2015-2016 Alexandre Spangaro	<aspangaro@zendsi.com>
- * Copyright (C) 2018-2021 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	    <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ dol_include_once('/ultimateimmo/lib/immorenter.lib.php');
 // Load translation files required by the page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
 
-$id = GETPOST ( 'id', 'int' );
+$id = GETPOST('id', 'int');
 $ref = GETPOST('ref', 'alpha');
 
 $mesg = '';
@@ -64,11 +64,11 @@ $limit = $conf->liste_limit;
 $object = new ImmoRenter($db);
 $object->fetch($id, $ref);
 
-llxheader( '', $langs->trans("Renter").' | '.$langs->trans("Bilan"), '' );
+llxheader('', $langs->trans("Renter") . ' | ' . $langs->trans("Bilan"), '');
 
 $object->fetch_thirdparty();
 
-if (!empty($conf->notification->enabled)) $langs->load("mails");
+if (isModEnabled('notification')) $langs->load("mails");
 $head = immorenterPrepareHead($object);
 
 print dol_get_fiche_head($head, 'bilan',  $langs->trans("Renter"), 0, 'user');
