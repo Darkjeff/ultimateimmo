@@ -174,7 +174,7 @@ $permissiontoadd = $user->rights->ultimateimmo->write;
 $permissiontodelete = $user->rights->ultimateimmo->delete;
 
 // Security check
-if (empty($conf->ultimateimmo->enabled)) {
+if (!isModEnabled('ultimateimmo')) {
 	accessforbidden('Module not enabled');
 }
 
