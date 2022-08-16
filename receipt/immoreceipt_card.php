@@ -51,7 +51,7 @@ include_once(DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/paiement/class/paiement.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
-if (!empty($conf->accounting->enabled)) {
+if (isModEnabled('accounting')) {
 	require_once DOL_DOCUMENT_ROOT . '/accountancy/class/accountingjournal.class.php';
 }
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
@@ -945,7 +945,7 @@ if (($id || $ref) && $action == 'edit') {
 
 			$text = $langs->trans('ConfirmValidateReceipt', $numref);
 
-			if (! empty($conf->notification->enabled))
+			if (isModEnabled('notification'))
 			{
 				require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';
 				$notify = new Notify($db);
@@ -1022,7 +1022,7 @@ if (($id || $ref) && $action == 'edit') {
 
 		if ($val['label'] == 'LinkedToDolibarrThirdParty') {
 			// Third party Dolibarr
-			if (!empty($conf->societe->enabled)) {
+			if (isModEnabled('societe')) {
 
 				if ($object->fk_soc) {
 
@@ -1185,7 +1185,7 @@ if (($id || $ref) && $action == 'edit') {
 		print '<td>' . $langs->trans("RefPayment") . '</td>';
 		print '<td>' . $langs->trans("Date") . '</td>';
 		print '<td>' . $langs->trans("Type") . '</td>';
-		if (!empty($conf->banque->enabled)) {
+		if (isModEnabled('banque')) {
 			print '<td class="liste_titre right">' . $langs->trans('BankAccount') . '</td>';
 		}
 		print '<td class="right">' . $langs->trans("Amount") . '</td>';
@@ -1209,13 +1209,13 @@ if (($id || $ref) && $action == 'edit') {
 			$paymentstatic->mode_reglement_label = $objp->mode_reglement_label;
 			print '<td>' . $objp->mode_reglement_label . '</td>';
 			//var_dump($objp);
-			if (!empty($conf->banque->enabled)) {
+			if (isModEnabled('banque')) {
 				$bankaccountstatic->id = $objp->baid;
 				$bankaccountstatic->ref = $objp->baref;
 				$bankaccountstatic->label = $objp->baref;
 				$bankaccountstatic->number = $objp->banumber;
 
-				if (!empty($conf->accounting->enabled)) {
+				if (isModEnabled('accounting')) {
 					$bankaccountstatic->account_number = $objp->account_number;
 
 					$accountingjournal = new AccountingJournal($db);
