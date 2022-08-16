@@ -659,7 +659,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1) . '?socid=' . $object->thirdparty->id . '&search_fk_soc=' . urlencode($object->thirdparty->id) . '">' . $langs->trans("OtherRents") . '</a>)';
 
 	// Project
-	if (!empty($conf->projet->enabled)) {
+	if (isModEnabled('projet')) {
 		$langs->load("projects");
 		$morehtmlref .= '<br>' . $langs->trans('Project') . ' ';
 		if ($permissiontoadd) {
@@ -728,7 +728,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		if ($val['label'] == 'LinkedToDolibarrThirdParty') {
 			// Third party Dolibarr
-			if (!empty($conf->societe->enabled)) {
+			if (isModEnabled('societe')) {
 
 				if ($object->fk_soc) {
 
@@ -923,7 +923,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
 
 			// Create third party
-			if (!empty($conf->societe->enabled) && !$object->fk_soc) {
+			if (isModEnabled('societe') && !$object->fk_soc) {
 				if ($user->rights->societe->creer) {
 					if (ImmoRenter::STATUS_DRAFT != $object->status) {
 						print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=create_thirdparty" title="' . dol_escape_htmltag($langs->trans("CreateDolibarrThirdPartyDesc")) . '">' . $langs->trans("CreateDolibarrThirdParty") . '</a>' . "\n";
