@@ -359,11 +359,11 @@ if (GETPOST('action', 'aZ09') == 'create') {
 			$bankviainvoice = 1;
 		}
 	} else {
-		if (!empty($conf->global->ULTIMATEIMMO_BANK_USE) && $conf->global->ULTIMATEIMMO_BANK_USE == 'bankviainvoice' && !empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+		if (!empty($conf->global->ULTIMATEIMMO_BANK_USE) && $conf->global->ULTIMATEIMMO_BANK_USE == 'bankviainvoice' && isModEnabled('banque') && isModEnabled('societe') && isModEnabled('facture')) {
 			$bankviainvoice = 1;
-		} elseif (!empty($conf->global->ULTIMATEIMMO_BANK_USE) && $conf->global->ULTIMATEIMMO_BANK_USE == 'bankdirect' && !empty($conf->banque->enabled)) {
+		} elseif (!empty($conf->global->ULTIMATEIMMO_BANK_USE) && $conf->global->ULTIMATEIMMO_BANK_USE == 'bankdirect' && isModEnabled('banque')) {
 			$bankdirect = 1;
-		} elseif (!empty($conf->global->ULTIMATEIMMO_BANK_USE) && $conf->global->ULTIMATEIMMO_BANK_USE == 'invoiceonly' && !empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+		} elseif (!empty($conf->global->ULTIMATEIMMO_BANK_USE) && $conf->global->ULTIMATEIMMO_BANK_USE == 'invoiceonly' && isModEnabled('banque') && isModEnabled('societe') && isModEnabled('facture')) {
 			$invoiceonly = 1;
 		}
 	}
@@ -539,7 +539,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 		print "<td colspan=\"3\">" . $langs->trans("Payment") . '</td>';
 		print '</tr>';
 
-		if ((!empty($conf->banque->enabled) || isModEnabled('facture'))) {
+		if (isModEnabled('banque') || isModEnabled('facture')) {
 			$company = new Societe($db);
 			if ($renter->fk_soc) {
 				$result = $company->fetch($renter->fk_soc);
@@ -555,12 +555,12 @@ if (GETPOST('action', 'aZ09') == 'create') {
 			print '<input type="radio" class="moreaction" id="none" name="paymentsave" value="none"' . (empty($bankdirect) && empty($invoiceonly) && empty($bankviainvoice) ? ' checked' : '') . '>';
 			print '<label for="none"> ' . $langs->trans("None") . '</label><br>';
 			// Add entry into bank account
-			if (!empty($conf->banque->enabled)) {
+			if (isModEnabled('banque')) {
 				print '<input type="radio" class="moreaction" id="bankdirect" name="paymentsave" value="bankdirect"' . (!empty($bankdirect) ? ' checked' : '');
 				print '><label for="bankdirect">  ' . $langs->trans("MoreActionBankDirect") . '</label><br>';
 			}
 			// Add invoice with no payments
-			if (!empty($conf->societe->enabled) && isModEnabled('facture')) {
+			if (isModEnabled('societe') && isModEnabled('facture')) {
 				print '<input type="radio" class="moreaction" id="invoiceonly" name="paymentsave" value="invoiceonly"' . (!empty($invoiceonly) ? ' checked' : '');
 				//if (empty($object->fk_soc)) print ' disabled';
 				print '><label for="invoiceonly"> ' . $langs->trans("MoreActionInvoiceOnly");
@@ -579,7 +579,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 				if (empty($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) || $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS != 'defaultforfoundationcountry') {
 					print '. <span class="opacitymedium">' . $langs->trans("NoVatOnSubscription", 0) . '</span>';
 				}
-				if (!empty($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS) && (!empty($conf->product->enabled) || !empty($conf->service->enabled))) {
+				if (!empty($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS) && (isModEnabled('product') || isModEnabled('service'))) {
 					$prodtmp = new Product($db);
 					$result = $prodtmp->fetch($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS);
 					if ($result < 0) {
@@ -590,7 +590,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 				print '</label><br>';
 			}
 			// Add invoice with payments
-			if (!empty($conf->banque->enabled) && !empty($conf->societe->enabled) && isModEnabled('facture')) {
+			if (isModEnabled('banque') && isModEnabled('societe') && isModEnabled('facture')) {
 				print '<input type="radio" class="moreaction" id="bankviainvoice" name="paymentsave" value="bankviainvoice"' . (!empty($bankviainvoice) ? ' checked' : '');
 				//if (empty($object->fk_soc)) print ' disabled';
 				print '><label for="bankviainvoice">  ' . $langs->trans("MoreActionBankViaInvoice");
@@ -599,9 +599,9 @@ if (GETPOST('action', 'aZ09') == 'create') {
 				} else {
 					print ' (';
 					if (empty($renter->fk_soc)) {
-						print img_warning($langs->trans("NoThirdPartyAssociatedToMember"));
+						print img_warning($langs->trans("NoThirdPartyAssociatedToRenter"));
 					}
-					print $langs->trans("NoThirdPartyAssociatedToMember");
+					print $langs->trans("NoThirdPartyAssociatedToRenter");
 					print ' - <a href="' . $_SERVER["PHP_SELF"] . '?rowid=' . $renter->id . '&amp;action=create_thirdparty">';
 					print $langs->trans("CreateDolibarrThirdParty");
 					print '</a>)';
@@ -609,7 +609,7 @@ if (GETPOST('action', 'aZ09') == 'create') {
 				if (empty($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) || $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS != 'defaultforfoundationcountry') {
 					print '. <span class="opacitymedium">' . $langs->trans("NoVatOnSubscription", 0) . '</span>';
 				}
-				if (!empty($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS) && (!empty($conf->product->enabled) || !empty($conf->service->enabled))) {
+				if (!empty($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS) && (isModEnabled('product') || isModEnabled('service'))) {
 					$prodtmp = new Product($db);
 					$result = $prodtmp->fetch($conf->global->ULTIMATEIMMO_PRODUCT_ID_FOR_RECEIPTS);
 					if ($result < 0) {
