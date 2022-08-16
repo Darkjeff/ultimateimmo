@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2020 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,27 +23,33 @@
  */
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
 // Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
+if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
+if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
+if (!$res) die("Include of main fails");
 
-include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
-include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php');
+include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
+include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
 dol_include_once('/ultimateimmo/class/immoowner_type.class.php');
 dol_include_once('/ultimateimmo/lib/immoowner_type.lib.php');
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo","other"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
 
 // Get parameters
 $id			= GETPOST('id', 'int');
@@ -53,23 +59,22 @@ $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 
 // Initialize technical objects
-$object=new ImmoOwner_Type($db);
+$object = new ImmoOwner_Type($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction=$conf->ultimateimmo->dir_output . '/temp/massgeneration/'.$user->id;
+$diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/' . $user->id;
 $hookmanager->initHooks(array('immorenter_typecard'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immoowner_type');
-$search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
+$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
 
 // Initialize array of search criterias
-$search_all=trim(GETPOST("search_all",'alpha'));
-$search=array();
-foreach($object->fields as $key => $val)
-{
-    if (GETPOST('search_'.$key,'alpha')) $search[$key]=GETPOST('search_'.$key,'alpha');
+$search_all = trim(GETPOST("search_all", 'alpha'));
+$search = array();
+foreach ($object->fields as $key => $val) {
+	if (GETPOST('search_' . $key, 'alpha')) $search[$key] = GETPOST('search_' . $key, 'alpha');
 }
 
-if (empty($action) && empty($id) && empty($ref)) $action='view';
+if (empty($action) && empty($id) && empty($ref)) $action = 'view';
 
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
@@ -80,54 +85,47 @@ if (empty($action) && empty($id) && empty($ref)) $action='view';
 $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
 
 // Load object
-include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
-
+include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
 
 /*
  * Actions
  *
- * Put here all code to do according to value of "action" parameter
  */
 
-$parameters=array();
-$reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+$parameters = array();
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
-if (empty($reshook))
-{
-	$error=0;
+if (empty($reshook)) {
+	$error = 0;
 
 	$permissiontoadd = $user->rights->ultimateimmo->write;
 	$permissiontodelete = $user->rights->ultimateimmo->delete;
-	$backurlforlist = dol_buildpath('/ultimateimmo/owner_type/immoowner_type_list.php',1);
+	$backurlforlist = dol_buildpath('/ultimateimmo/owner_type/immoowner_type_list.php', 1);
 
 	// Actions cancel, add, update or delete
-	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_addupdatedelete.inc.php';
 
 	// Actions when printing a doc from card
-	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
 
 	// Actions to send emails
-	$trigger_name='MYOBJECT_SENTBYMAIL';
-	$autocopy='MAIN_MAIL_AUTOCOPY_MYOBJECT_TO';
-	$trackid='immoowner_type'.$object->id;
-	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
+	$trigger_name = 'MYOBJECT_SENTBYMAIL';
+	$autocopy = 'MAIN_MAIL_AUTOCOPY_MYOBJECT_TO';
+	$trackid = 'immoowner_type' . $object->id;
+	include DOL_DOCUMENT_ROOT . '/core/actions_sendmails.inc.php';
 }
-
-
 
 
 /*
  * View
- *
- * Put here all code to build page
  */
 
-$form=new Form($db);
-$formfile=new FormFile($db);
+$form = new Form($db);
+$formfile = new FormFile($db);
 
-llxHeader('','ImmoOwner_Type','');
+llxHeader('', 'ImmoOwner_Type', '');
 
 // Example : Adding jquery code
 print '<script type="text/javascript" language="javascript">
@@ -146,37 +144,35 @@ jQuery(document).ready(function() {
 
 
 // Part to create
-if ($action == 'create')
-{
+if ($action == 'create') {
 	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("MenuImmoOwnerType")));
 
-	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
+	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	print '<input type="hidden" name="action" value="add">';
-	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
 
-	dol_fiche_head(array(), '');
+	print dol_get_fiche_head(array(), '');
 
-	print '<table class="border centpercent">'."\n";
+	print '<table class="border centpercent">' . "\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 
-	foreach($object->fields as $key => $val)
-	{
+	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! verifCond($val['enabled'])) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
 
-		print '<tr id="field_'.$key.'">';
+		print '<tr id="field_' . $key . '">';
 		print '<td';
 		print ' class="titlefieldcreate';
 		if ($val['notnull'] > 0) print ' fieldrequired';
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
 		print '>';
-		if (! empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
 		else print $langs->trans($val['label']);
 		print '</td>';
 		print '<td>';
@@ -192,33 +188,32 @@ if ($action == 'create')
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
 
-	print '</table>'."\n";
+	print '</table>' . "\n";
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	print '<div class="center">';
-	print '<input type="submit" class="button" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'">';
+	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
 	print '&nbsp; ';
-	print '<input type="'.($backtopage?"submit":"button").'" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"'.($backtopage?'':' onclick="javascript:history.go(-1)"').'>';	// Cancel for create does not post form if we don't know the backtopage
+	print '<input type="' . ($backtopage ? "submit" : "button") . '" class="button" name="cancel" value="' . dol_escape_htmltag($langs->trans("Cancel")) . '"' . ($backtopage ? '' : ' onclick="javascript:history.go(-1)"') . '>';	// Cancel for create does not post form if we don't know the backtopage
 	print '</div>';
 
 	print '</form>';
 }
 
 // Part to edit record
-if (($id || $ref) && $action == 'edit')
-{
+if (($id || $ref) && $action == 'edit') {
 	print load_fiche_titre($langs->trans("MenuImmoOwnerType"));
 
-	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
+	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	print '<input type="hidden" name="action" value="update">';
-	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-	print '<input type="hidden" name="id" value="'.$object->id.'">';
+	print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
+	print '<input type="hidden" name="id" value="' . $object->id . '">';
 
-	dol_fiche_head();
+	print dol_get_fiche_head();
 
-	print '<table class="border centpercent">'."\n";
+	print '<table class="border centpercent">' . "\n";
 
 	// Common attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/commonfields_edit.tpl.php';
@@ -228,50 +223,47 @@ if (($id || $ref) && $action == 'edit')
 
 	print '</table>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
-	print '<div class="center"><input type="submit" class="button" name="save" value="'.$langs->trans("Save").'">';
-	print ' &nbsp; <input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
+	print '<div class="center"><input type="submit" class="button" name="save" value="' . $langs->trans("Save") . '">';
+	print ' &nbsp; <input type="submit" class="button" name="cancel" value="' . $langs->trans("Cancel") . '">';
 	print '</div>';
 
 	print '</form>';
 }
 
 // Part to show record
-if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
-{
-    $res = $object->fetch_optionals();
+if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create'))) {
+	$res = $object->fetch_optionals();
 
 	$head = immoowner_typePrepareHead($object);
-	dol_fiche_head($head, 'card', $langs->trans("MenuImmoOwnerType"), -1, 'ultimateimmo@ultimateimmo');
+	print dol_get_fiche_head($head, 'card', $langs->trans("MenuImmoOwnerType"), -1, 'ultimateimmo@ultimateimmo');
 
 	$formconfirm = '';
 
 	// Confirmation to delete
-	if ($action == 'delete')
-	{
-	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoRenter_Type'), $langs->trans('ConfirmDeleteImmoRenter_Type'), 'confirm_delete', '', 0, 1);
+	if ($action == 'delete') {
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoRenter_Type'), $langs->trans('ConfirmDeleteImmoRenter_Type'), 'confirm_delete', '', 0, 1);
 	}
 
 	// Confirmation of action xxxx
-	if ($action == 'xxx')
-	{
-	    $formquestion=array();
-	    /*
+	if ($action == 'xxx') {
+		$formquestion = array();
+		/*
 	        $formquestion = array(
 	            // 'text' => $langs->trans("ConfirmClone"),
 	            // array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
 	            // array('type' => 'checkbox', 'name' => 'update_prices', 'label' => $langs->trans("PuttingPricesUpToDate"), 'value' => 1),
 	            // array('type' => 'other',    'name' => 'idwarehouse',   'label' => $langs->trans("SelectWarehouseForStockDecrease"), 'value' => $formproduct->selectWarehouses(GETPOST('idwarehouse')?GETPOST('idwarehouse'):'ifone', 'idwarehouse', '', 1)));
 	    }*/
-	    $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('XXX'), $text, 'confirm_xxx', $formquestion, 0, 1, 220);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('XXX'), $text, 'confirm_xxx', $formquestion, 0, 1, 220);
 	}
 
-	if (! $formconfirm) {
-	    $parameters = array('lineid' => $lineid);
-	    $reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	    if (empty($reshook)) $formconfirm.=$hookmanager->resPrint;
-	    elseif ($reshook > 0) $formconfirm=$hookmanager->resPrint;
+	if (!$formconfirm) {
+		$parameters = array('lineid' => $lineid);
+		$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+		if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
+		elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
 	}
 
 	// Print form confirm
@@ -280,9 +272,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/owner_type/immoowner_type_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/owner_type/immoowner_type_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
-	$morehtmlref='<div class="refidno">';
+	$morehtmlref = '<div class="refidno">';
 	/*
 	// Ref bis
 	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', 0, 1);
@@ -290,7 +282,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Thirdparty
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $soc->getNomUrl(1);
 	// Project
-	if (! empty($conf->projet->enabled))
+	if (isModEnabled('projet'))
 	{
 	    $langs->load("projects");
 	    $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
@@ -322,7 +314,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    }
 	}
 	*/
-	$morehtmlref.='</div>';
+	$morehtmlref .= '</div>';
 
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
@@ -331,7 +323,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<div class="fichecenter">';
 	print '<div class="fichehalfleft">';
 	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border centpercent">'."\n";
+	print '<table class="border centpercent">' . "\n";
 
 	// Common attributes
 	//$keyforbreak='fieldkeytoswithonsecondcolumn';
@@ -347,31 +339,27 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	print '<div class="clearboth"></div><br>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 
 	// Buttons for actions
 	if ($action != 'presend' && $action != 'editline') {
-    	print '<div class="tabsAction">'."\n";
-    	$parameters=array();
-    	$reshook=$hookmanager->executeHooks('addMoreActionsButtons',$parameters,$object,$action);    // Note that $action and $object may have been modified by hook
-    	if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		print '<div class="tabsAction">' . "\n";
+		$parameters = array();
+		$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
+		if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
-    	if (empty($reshook))
-    	{
-    	    // Send
-            print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
+		if (empty($reshook)) {
+			// Send
+			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
 
-    		if ($user->rights->ultimateimmo->write)
-    		{
-    			print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
-    		}
-    		else
-    		{
-    			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
-    		}
+			if ($user->rights->ultimateimmo->write) {
+				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
+			} else {
+				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
+			}
 
-    		/*
+			/*
     		if ($user->rights->ultimateimmo->create)
     		{
     			if ($object->status == 1)
@@ -385,31 +373,27 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
     		*/
 
-    		if ($user->rights->ultimateimmo->delete)
-    		{
-    			print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
-    		}
-    		else
-    		{
-    			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Delete').'</a>'."\n";
-    		}
-    	}
-    	print '</div>'."\n";
+			if ($user->rights->ultimateimmo->delete) {
+				print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=delete">' . $langs->trans('Delete') . '</a>' . "\n";
+			} else {
+				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Delete') . '</a>' . "\n";
+			}
+		}
+		print '</div>' . "\n";
 	}
 
 
 	// Select mail models is same action as presend
 	if (GETPOST('modelselected')) {
-	    $action = 'presend';
+		$action = 'presend';
 	}
 
-	if ($action != 'presend')
-	{
-	    print '<div class="fichecenter"><div class="fichehalfleft">';
-	    print '<a name="builddoc"></a>'; // ancre
+	if ($action != 'presend') {
+		print '<div class="fichecenter"><div class="fichehalfleft">';
+		print '<a name="builddoc"></a>'; // ancre
 
-	    // Documents
-	    /*$objref = dol_sanitizeFileName($object->ref);
+		// Documents
+		/*$objref = dol_sanitizeFileName($object->ref);
 	    $relativepath = $comref . '/' . $comref . '.pdf';
 	    $filedir = $conf->ultimateimmo->dir_output . '/' . $objref;
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
@@ -418,25 +402,25 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    print $formfile->showdocuments('ultimateimmo', $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
 		*/
 
-	    // Show links to link elements
-	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immoowner_type'));
-	    $somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
+		// Show links to link elements
+		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoowner_type'));
+		$somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
 
 
-	    print '</div><div class="fichehalfright"><div class="ficheaddleft">';
+		print '</div><div class="fichehalfright"><div class="ficheaddleft">';
 
-	    $MAXEVENT = 10;
+		$MAXEVENT = 10;
 
-	    $morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/owner_type/immoowner_type_info.php', 1).'?id='.$object->id.'">';
-	    $morehtmlright.= $langs->trans("SeeAll");
-	    $morehtmlright.= '</a>';
+		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/owner_type/immoowner_type_info.php', 1) . '?id=' . $object->id . '">';
+		$morehtmlright .= $langs->trans("SeeAll");
+		$morehtmlright .= '</a>';
 
-	    // List of actions on element
-	    include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
-	    $formactions = new FormActions($db);
-	    $somethingshown = $formactions->showactions($object, 'immoowner_type', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
+		// List of actions on element
+		include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
+		$formactions = new FormActions($db);
+		$somethingshown = $formactions->showactions($object, 'immoowner_type', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
 
-	    print '</div></div></div>';
+		print '</div></div></div>';
 	}
 
 	//Select mail models is same action as presend
