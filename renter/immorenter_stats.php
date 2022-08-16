@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2003-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (c) 2004-2016 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe Grand       <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe Grand       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ if (!$res) die("Include of main fails");
 
 // Classes
 include_once DOL_DOCUMENT_ROOT . '/core/class/dolgraph.class.php';
-include_once DOL_DOCUMENT_ROOT.'/theme/'.$conf->theme.'/theme_vars.inc.php';
+include_once DOL_DOCUMENT_ROOT . '/theme/' . $conf->theme . '/theme_vars.inc.php';
 dol_include_once('/ultimateimmo/class/immorenterstats.class.php');
 dol_include_once('/ultimateimmo/lib/immorenter.lib.php');
 
@@ -73,7 +73,7 @@ $mode = GETPOST("mode") ? GETPOST("mode") : 'customer';
 $codageccam = GETPOST('codageccam');
 $typevisit = GETPOST('typevisit');
 
-if (empty($conf->ultimateimmo->enabled)) accessforbidden();
+if (!isModEnabled('ultimateimmo')) accessforbidden();
 
 
 /*
@@ -148,7 +148,7 @@ if (!$mesg) {
 	$px2->SetMaxValue($px2->GetCeilMaxValue());
 	$px2->SetMinValue(min(0, $px2->GetFloorMinValue()));
 	$px2->setShowPercent(1);
-   // $px2->SetType(array('pie'));
+	// $px2->SetType(array('pie'));
 	$px2->SetHeight('200');
 	$px2->SetYLabel($langs->trans("Amount"));
 	$px2->SetShading(3);
@@ -240,8 +240,7 @@ print '</td></tr></table>';
 print '</div></div></div>';
 print '<div style="clear:both"></div>';
 
-
-dol_fiche_end();
+print dol_get_fiche_end();
 
 llxFooter();
 

@@ -2,7 +2,7 @@
 /* Copyright (C) 2003      Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (c) 2005-2011 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2005-2009 Regis Houssin        <regis.houssin@capnetworks.com>
- * Copyright (C) 2018-2020 Philippe Grand       <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe Grand       <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ class RenterStats extends Stats
      * @param   int		$year       Year
      * @return	array				Array of nb each month
 	 */
-	function getNbByMonth($year)
+	public function getNbByMonth($year, $sql = 0)
 	{
 		global $user;
 
@@ -126,7 +126,7 @@ class RenterStats extends Stats
      * @param   int		$year       Year
      * @return	array				Array of amount each month
 	 */
-	function getAmountByMonth($year)
+	function getAmountByMonth($year, $sql = 0)
 	{
 		global $user;
 
