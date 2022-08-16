@@ -89,7 +89,7 @@ $extrafields->fetch_name_optionals_label($object->table_element);
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Include fetch and fetch_thirdparty but not fetch_optionals
 
 $permissiontoadd = $user->rights->ultimateimmo->property->write; // Used by the include of actions_addupdatedelete.inc.php
-$permissiontoread=  $user->rights->ultimateimmo->property->read;
+$permissiontoread =  $user->rights->ultimateimmo->property->read;
 
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
 if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity ? $object->entity : $conf->entity] . "/property/" . dol_sanitizeFileName($object->ref);
@@ -118,10 +118,10 @@ if ($object->id) {
 	/*
 	 * Show tabs
 	 */
-	if (!empty($conf->notification->enabled)) $langs->load("mails");
+	if (isModEnabled('notification')) $langs->load("mails");
 	$head = immopropertyPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoProperty"), -1, 'company');
+	print dol_get_fiche_head($head, 'document', $langs->trans("ImmoProperty"), -1, 'company');
 
 
 	// Build file list
@@ -161,7 +161,7 @@ if ($object->id) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	$modulepart = 'ultimateimmo';
 	//$permission = $user->rights->ultimateimmo->write;
