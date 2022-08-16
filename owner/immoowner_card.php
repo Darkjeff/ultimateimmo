@@ -128,7 +128,7 @@ $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $obj
 //if ($user->socid > 0) $socid = $user->socid;
 //$isdraft = (isset($object->status) && ($object->status == $object::STATUS_DRAFT) ? 1 : 0);
 //restrictedArea($user, $object->element, $object->id, $object->table_element, '', 'fk_soc', 'rowid', $isdraft);
-if (empty($conf->ultimateimmo->enabled)) accessforbidden();
+if (!isModEnabled('ultimateimmo')) accessforbidden();
 if (!$permissiontoread) accessforbidden();
 
 /*
@@ -435,7 +435,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . is_object($object->fk_soc) ? $object->getNomUrl(0) : '';
 	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?socid=' . $object->id . '&search_fk_soc=' . urlencode($object->id) . '">' . $langs->trans("OtherProperties") . '</a>)';
 	// Project
-	/*if (!empty($conf->projet->enabled)) {
+	/*if (isModEnabled('projet')) {
 		$langs->load("projects");
 		$morehtmlref .= '<br>' . $langs->trans('Project') . ' ';
 		if ($user->rights->ultimateimmo->creer) {
