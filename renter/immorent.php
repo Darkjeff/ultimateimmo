@@ -405,7 +405,7 @@ if ($staticImmorenter->id > 0 && (empty($action) || ($action != 'edit' && $actio
 
 		if ($val['label'] == 'LinkedToDolibarrThirdParty') {
 			// Third party Dolibarr
-			if (!empty($conf->societe->enabled)) {
+			if (isModEnabled('societe')) {
 
 				if ($staticImmorenter->fk_soc) {
 
