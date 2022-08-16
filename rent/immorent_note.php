@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,14 +100,14 @@ if ($id > 0 || !empty($ref)) {
 
 	$head = immorentPrepareHead($object);
 
-	dol_fiche_head($head, 'note', $langs->trans("ImmoRents"), -1, 'payment');
+	print dol_get_fiche_head($head, 'note', $langs->trans("ImmoRents"), -1, 'payment');
 
 	// Object card
 	// ------------------------------------------------------------
 	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/immorent_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref = '<div class="refidno">';
-	
+
 	// Ref renter
 	$staticImmorenter = new ImmoRenter($db);
 	$staticImmorenter->fetch($object->fk_renter);
@@ -119,37 +119,35 @@ if ($id > 0 || !empty($ref)) {
 		$result = $company->fetch($object->fk_soc);
 	}
 	// Project
-	if (! empty($conf->projet->enabled))
-	{
-	    $langs->load("projects");
-	    $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
-	    if ($user->rights->ultimateimmo->creer)
-	    {
-	        if ($action != 'classify')
-	            //$morehtmlref.='<a href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
-	            $morehtmlref.=' : ';
-	            if ($action == 'classify') {
-	                //$morehtmlref.=$form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'projectid', 0, 0, 1, 1);
-	                $morehtmlref.='<form method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'">';
-	                $morehtmlref.='<input type="hidden" name="action" value="classin">';
-	                $morehtmlref.='<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	                $morehtmlref.=$formproject->select_projects($object->socid, $object->fk_project, 'projectid', $maxlength, 0, 1, 0, 1, 0, 0, '', 1);
-	                $morehtmlref.='<input type="submit" class="button valignmiddle" value="'.$langs->trans("Modify").'">';
-	                $morehtmlref.='</form>';
-	            } else {
-	                $morehtmlref.=$form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'none', 0, 0, 0, 1);
-	            }
-	    } else {
-	        if (! empty($object->fk_project)) {
-	            $proj = new Project($db);
-	            $proj->fetch($object->fk_project);
-	            $morehtmlref.='<a href="'.DOL_URL_ROOT.'/projet/card.php?id=' . $object->fk_project . '" title="' . $langs->trans('ShowProject') . '">';
-	            $morehtmlref.=$proj->ref;
-	            $morehtmlref.='</a>';
-	        } else {
-	            $morehtmlref.='';
-	        }
-	    }
+	if (isModEnabled('projet')) {
+		$langs->load("projects");
+		$morehtmlref .= '<br>' . $langs->trans('Project') . ' ';
+		if ($user->rights->ultimateimmo->creer) {
+			if ($action != 'classify')
+				//$morehtmlref.='<a href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
+				$morehtmlref .= ' : ';
+			if ($action == 'classify') {
+				//$morehtmlref.=$form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'projectid', 0, 0, 1, 1);
+				$morehtmlref .= '<form method="post" action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '">';
+				$morehtmlref .= '<input type="hidden" name="action" value="classin">';
+				$morehtmlref .= '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+				$morehtmlref .= $formproject->select_projects($object->socid, $object->fk_project, 'projectid', $maxlength, 0, 1, 0, 1, 0, 0, '', 1);
+				$morehtmlref .= '<input type="submit" class="button valignmiddle" value="' . $langs->trans("Modify") . '">';
+				$morehtmlref .= '</form>';
+			} else {
+				$morehtmlref .= $form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'none', 0, 0, 0, 1);
+			}
+		} else {
+			if (!empty($object->fk_project)) {
+				$proj = new Project($db);
+				$proj->fetch($object->fk_project);
+				$morehtmlref .= '<a href="' . DOL_URL_ROOT . '/projet/card.php?id=' . $object->fk_project . '" title="' . $langs->trans('ShowProject') . '">';
+				$morehtmlref .= $proj->ref;
+				$morehtmlref .= '</a>';
+			} else {
+				$morehtmlref .= '';
+			}
+		}
 	}
 	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . $company->getNomUrl(1, 'renter');
 	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $staticImmorenter->fk_soc > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1) . '?socid=' . $staticImmorenter->fk_soc . '&search_fk_soc=' . urlencode($staticImmorenter->fk_soc) . '">' . $langs->trans("OtherRents") . '</a>)';
@@ -168,7 +166,7 @@ if ($id > 0 || !empty($ref)) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 }
 
 
