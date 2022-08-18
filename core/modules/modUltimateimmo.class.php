@@ -618,25 +618,7 @@ class modUltimateimmo extends DolibarrModules
 			'target'   => '',
 			'user'     => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both 		// 0=Menu for internal users, 1=external users, 2=both
-		$this->menu[$r++] = array(
-			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immobuilding',
-			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-			'type'     => 'left',                            // This is a Left menu entry
-			'titre'    => 'MenuListImmoLotFiscal',
-			'mainmenu' => 'properties',
-			'leftmenu' => 'ultimateimmo_immobuilding_list',
-			'url'      => '/ultimateimmo/building/immobuilding_list.php',
-			'langs'    => 'ultimateimmo@ultimateimmo',
-			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position' => 1100 + $r,
-			'enabled'  => '$conf->ultimateimmo->enabled',
-			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-			'perms'    => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
-			'target'   => '',
-			'user'     => 2
-		);                // 0=Menu for internal users, 1=external users, 2=both
-
+		
 		//Compteur
 		$this->menu[$r++] = array(
 			'fk_menu'  => 'fk_mainmenu=properties',
@@ -748,7 +730,7 @@ $this->menu[$r++] = array(
 			'url'      => '/ultimateimmo/rent/immorent_list.php',
 			'langs'    => 'ultimateimmo@ultimateimmo',
 			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position' => 1300 + $r,
+			'position' => 1100 + $r,
 			'enabled'  => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms'    => '1',
@@ -766,7 +748,7 @@ $this->menu[$r++] = array(
 			'url'      => '/ultimateimmo/rent/immorent_card.php?action=create',
 			'langs'    => 'ultimateimmo@ultimateimmo',
 			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position' => 1300 + $r,
+			'position' => 1100 + $r,
 			'enabled'  => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms'    => '1',
@@ -774,6 +756,309 @@ $this->menu[$r++] = array(
 			'target'   => '',
 			'user'     => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
+		
+		
+		
+		// receipt 
+		
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuListImmoReceipt',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immoreceipt',
+			'url'      => '/ultimateimmo/receipt/immoreceipt_list.php',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immoreceipt',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuNewImmoReceipt',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immoreceipt_create',
+			'url'      => '/ultimateimmo/receipt/immoreceipt_card.php?action=create',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immoreceipt',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuAllReceiptperContract',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immoreceipt_createall',
+			'url'      => '/ultimateimmo/receipt/immoreceipt_card.php?action=createall',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immoreceipt',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuValidateReceipt',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immoreceipt_validaterent',
+			'url'      => '/ultimateimmo/receipt/immoreceipt_list.php?action=validaterent',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immoreceipt',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuListImmoReceiptStats',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immoreceipt',
+			'url'      => '/ultimateimmo/receipt/stats.php',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuImmoPayment',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immopayment',
+			'url'      => '/ultimateimmo/payment/immopayment_list.php',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immopayment',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuNewImmoPayment',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immopayment_new',
+			'url'      => '/ultimateimmo/payment/immopayment_card.php?action=createall',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immopayment',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuListImmoPayment',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immopayment_list',
+			'url'      => '/ultimateimmo/payment/immopayment_list.php',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immopayment',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuListImmoPaymentStats',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immopayment_list',
+			'url'      => '/ultimateimmo/payment/stats.php',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1500 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);
+
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuListImmoCost',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immocost',
+			'url'      => '/ultimateimmo/cost/immocost_list.php',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1500 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immocost',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuNewImmoCost',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immocost_new_cost',
+			'url'      => '/ultimateimmo/cost/immocost_card.php?action=create',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immocost',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuRenterCost',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immocost_renter_cost',
+			'url'      => '/ultimateimmo/cost/cost_renter.php',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
+
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immocost',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuStatisticsCost',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immocost_stats_cost',
+			'url'      => '/ultimateimmo/cost/stats.php?type_stats=cost_type',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immocost',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuStatisticsCostFourn',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immocost_stats_cost',
+			'url'      => '/ultimateimmo/cost/stats.php?type_stats=fourn_type',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immocost',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuStatisticsResult',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immocost_stats_result',
+			'url'      => '/ultimateimmo/result/result.php',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		
 		
