@@ -253,8 +253,7 @@ $form = new Form($db);
 
 $now = dol_now();
 
-//$help_url="EN:Module_ImmoCompteur|FR:Module_ImmoCompteur_FR|ES:Módulo_ImmoCompteur";
-$help_url = '';
+$wikihelp = '';
 $title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("MeterReading"));
 $morejs = array();
 $morecss = array();
@@ -267,7 +266,7 @@ $sql .= $object->getFieldList('t');
 // Add fields from extrafields
 if (!empty($extrafields->attributes[$object->table_element]['label'])) {
 	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
-		$sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? ", ef.".$key." as options_".$key : '');
+		$sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? ", ef." . $key . " as options_" . $key : '');
 	}
 }
 // Add fields from hooks
@@ -275,17 +274,17 @@ $parameters = array();
 $reshook = $hookmanager->executeHooks('printFieldListSelect', $parameters, $object); // Note that $action and $object may have been modified by hook
 $sql .= preg_replace('/^,/', '', $hookmanager->resPrint);
 $sql = preg_replace('/,\s*$/', '', $sql);
-$sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
+$sql .= " FROM " . MAIN_DB_PREFIX . $object->table_element . " as t";
 //$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."anothertable as rc ON rc.parent = t.rowid";
 if (isset($extrafields->attributes[$object->table_element]['label']) && is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) {
-	$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . $object->table_element . "_extrafields as ef on (t.rowid = ef.fk_object)";
 }
 // Add table from hooks
 $parameters = array();
 $reshook = $hookmanager->executeHooks('printFieldListFrom', $parameters, $object); // Note that $action and $object may have been modified by hook
 $sql .= $hookmanager->resPrint;
 if ($object->ismultientitymanaged == 1) {
-	$sql .= " WHERE t.entity IN (".getEntity($object->element).")";
+	$sql .= " WHERE t.entity IN (" . getEntity($object->element) . ")";
 } else {
 	$sql .= " WHERE 1 = 1";
 }
@@ -302,17 +301,17 @@ foreach ($search as $key => $val) {
 			$mode_search = 2;
 		}
 		if ($search[$key] != '') {
-			$sql .= natural_search("t.".$db->escape($key), $search[$key], (($key == 'status') ? 2 : $mode_search));
+			$sql .= natural_search("t." . $db->escape($key), $search[$key], (($key == 'status') ? 2 : $mode_search));
 		}
 	} else {
 		if (preg_match('/(_dtstart|_dtend)$/', $key) && $search[$key] != '') {
 			$columnName = preg_replace('/(_dtstart|_dtend)$/', '', $key);
 			if (preg_match('/^(date|timestamp|datetime)/', $object->fields[$columnName]['type'])) {
 				if (preg_match('/_dtstart$/', $key)) {
-					$sql .= " AND t.".$db->escape($columnName)." >= '".$db->idate($search[$key])."'";
+					$sql .= " AND t." . $db->escape($columnName) . " >= '" . $db->idate($search[$key]) . "'";
 				}
 				if (preg_match('/_dtend$/', $key)) {
-					$sql .= " AND t.".$db->escape($columnName)." <= '".$db->idate($search[$key])."'";
+					$sql .= " AND t." . $db->escape($columnName) . " <= '" . $db->idate($search[$key]) . "'";
 				}
 			}
 		}
@@ -323,7 +322,7 @@ if ($search_all) {
 }
 //$sql.= dolSqlDateFilter("t.field", $search_xxxday, $search_xxxmonth, $search_xxxyear);
 // Add where from extra fields
-include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
+include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_sql.tpl.php';
 // Add where from hooks
 $parameters = array();
 $reshook = $hookmanager->executeHooks('printFieldListWhere', $parameters, $object); // Note that $action and $object may have been modified by hook
@@ -399,11 +398,11 @@ if ($num == 1 && !empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $
 	exit;
 }
 
-
 // Output page
 // --------------------------------------------------------------------
 
-llxHeader('', $title, $help_url, '', 0, 0, $morejs, $morecss, '', '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+llxHeader('', $title, $wikihelp, '', 0, 0, $morejs, $morecss, '', '');
 
 // Example : Adding jquery code
 // print '<script type="text/javascript">
@@ -424,30 +423,30 @@ $arrayofselected = is_array($toselect) ? $toselect : array();
 
 $param = '';
 if (!empty($mode)) {
-	$param .= '&mode='.urlencode($mode);
+	$param .= '&mode=' . urlencode($mode);
 }
 if (!empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) {
-	$param .= '&contextpage='.urlencode($contextpage);
+	$param .= '&contextpage=' . urlencode($contextpage);
 }
 if ($limit > 0 && $limit != $conf->liste_limit) {
-	$param .= '&limit='.urlencode($limit);
+	$param .= '&limit=' . urlencode($limit);
 }
 foreach ($search as $key => $val) {
 	if (is_array($search[$key]) && count($search[$key])) {
 		foreach ($search[$key] as $skey) {
 			if ($skey != '') {
-				$param .= '&search_'.$key.'[]='.urlencode($skey);
+				$param .= '&search_' . $key . '[]=' . urlencode($skey);
 			}
 		}
 	} elseif ($search[$key] != '') {
-		$param .= '&search_'.$key.'='.urlencode($search[$key]);
+		$param .= '&search_' . $key . '=' . urlencode($search[$key]);
 	}
 }
 if ($optioncss != '') {
-	$param .= '&optioncss='.urlencode($optioncss);
+	$param .= '&optioncss=' . urlencode($optioncss);
 }
 // Add $param from extra fields
-include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_param.tpl.php';
+include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_param.tpl.php';
 
 // Add $param from hooks
 $parameters = array();
@@ -462,40 +461,40 @@ $arrayofmassactions = array(
 	//'presend'=>img_picto('', 'email', 'class="pictofixedwidth"').$langs->trans("SendByMail"),
 );
 if ($permissiontodelete) {
-	$arrayofmassactions['predelete'] = img_picto('', 'delete', 'class="pictofixedwidth"').$langs->trans("Delete");
+	$arrayofmassactions['predelete'] = img_picto('', 'delete', 'class="pictofixedwidth"') . $langs->trans("Delete");
 }
 if (GETPOST('nomassaction', 'int') || in_array($massaction, array('presend', 'predelete'))) {
 	$arrayofmassactions = array();
 }
 $massactionbutton = $form->selectMassAction('', $arrayofmassactions);
 
-print '<form method="POST" id="searchFormList" action="'.$_SERVER["PHP_SELF"].'">'."\n";
+print '<form method="POST" id="searchFormList" action="' . $_SERVER["PHP_SELF"] . '">' . "\n";
 if ($optioncss != '') {
-	print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
+	print '<input type="hidden" name="optioncss" value="' . $optioncss . '">';
 }
-print '<input type="hidden" name="token" value="'.newToken().'">';
+print '<input type="hidden" name="token" value="' . newToken() . '">';
 print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 print '<input type="hidden" name="action" value="list">';
-print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
-print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
-print '<input type="hidden" name="page" value="'.$page.'">';
-print '<input type="hidden" name="contextpage" value="'.$contextpage.'">';
-print '<input type="hidden" name="mode" value="'.$mode.'">';
+print '<input type="hidden" name="sortfield" value="' . $sortfield . '">';
+print '<input type="hidden" name="sortorder" value="' . $sortorder . '">';
+print '<input type="hidden" name="page" value="' . $page . '">';
+print '<input type="hidden" name="contextpage" value="' . $contextpage . '">';
+print '<input type="hidden" name="mode" value="' . $mode . '">';
 
 $newcardbutton = '';
-$newcardbutton .= dolGetButtonTitle($langs->trans('ViewKanban'), '', 'fa fa-th-list imgforviewmode', $_SERVER["PHP_SELF"].'?mode=kanban'.preg_replace('/^&mode=[^&]+/', '', $param), '', ($mode == 'kanban' ? 2 : 1), array('morecss'=>'reposition'));
-$newcardbutton .= dolGetButtonTitle($langs->trans('ViewList'), '', 'fa fa-list-alt imgforviewmode', $_SERVER["PHP_SELF"].'?mode=common'.preg_replace('/^&mode=[^&]+/', '', $param), '', ((empty($mode) || $mode == 'common') ? 2 : 1), array('morecss'=>'reposition'));
+$newcardbutton .= dolGetButtonTitle($langs->trans('ViewKanban'), '', 'fa fa-th-list imgforviewmode', $_SERVER["PHP_SELF"] . '?mode=kanban' . preg_replace('/^&mode=[^&]+/', '', $param), '', ($mode == 'kanban' ? 2 : 1), array('morecss' => 'reposition'));
+$newcardbutton .= dolGetButtonTitle($langs->trans('ViewList'), '', 'fa fa-list-alt imgforviewmode', $_SERVER["PHP_SELF"] . '?mode=common' . preg_replace('/^&mode=[^&]+/', '', $param), '', ((empty($mode) || $mode == 'common') ? 2 : 1), array('morecss' => 'reposition'));
 $newcardbutton .= dolGetButtonTitleSeparator();
-$newcardbutton .= dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/compteur/immocompteur_card.php', 1).'?action=create&backtopage='.urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
+$newcardbutton .= dolGetButtonTitle($langs->trans('New'), '', 'fa fa-plus-circle', dol_buildpath('/ultimateimmo/compteur/immocompteur_card.php', 1) . '?action=create&backtopage=' . urlencode($_SERVER['PHP_SELF']), '', $permissiontoadd);
 
-print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'object_'.$object->picto, 0, $newcardbutton, '', $limit, 0, 0, 1);
+print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'object_' . $object->picto, 0, $newcardbutton, '', $limit, 0, 0, 1);
 
 // Add code for pre mass action (confirmation or email presend form)
 $topicmail = "SendImmoCompteurRef";
 $modelmail = "immocompteur";
 $objecttmp = new ImmoCompteur($db);
-$trackid = 'xxxx'.$object->id;
-include DOL_DOCUMENT_ROOT.'/core/tpl/massactions_pre.tpl.php';
+$trackid = 'xxxx' . $object->id;
+include DOL_DOCUMENT_ROOT . '/core/tpl/massactions_pre.tpl.php';
 
 if ($search_all) {
 	foreach ($fieldstosearchall as $key => $val) {
@@ -528,7 +527,7 @@ $selectedfields = $form->multiSelectArrayWithCheckbox('selectedfields', $arrayfi
 $selectedfields .= (count($arrayofmassactions) ? $form->showCheckAddButtons('checkforselect', 1) : '');
 
 print '<div class="div-table-responsive">'; // You can use div-table-responsive-no-min if you dont need reserved height for your table
-print '<table class="tagtable nobottomiftotal liste'.($moreforfilter ? " listwithfilterbefore" : "").'">'."\n";
+print '<table class="tagtable nobottomiftotal liste' . ($moreforfilter ? " listwithfilterbefore" : "") . '">' . "\n";
 
 
 // Fields title search
@@ -537,42 +536,42 @@ print '<tr class="liste_titre">';
 foreach ($object->fields as $key => $val) {
 	$cssforfield = (empty($val['csslist']) ? (empty($val['css']) ? '' : $val['css']) : $val['csslist']);
 	if ($key == 'status') {
-		$cssforfield .= ($cssforfield ? ' ' : '').'center';
+		$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 	} elseif (in_array($val['type'], array('date', 'datetime', 'timestamp'))) {
-		$cssforfield .= ($cssforfield ? ' ' : '').'center';
+		$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 	} elseif (in_array($val['type'], array('timestamp'))) {
-		$cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+		$cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
 	} elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $val['label'] != 'TechnicalID' && empty($val['arrayofkeyval'])) {
-		$cssforfield .= ($cssforfield ? ' ' : '').'right';
+		$cssforfield .= ($cssforfield ? ' ' : '') . 'right';
 	}
-	if (!empty($arrayfields['t.'.$key]['checked'])) {
-		print '<td class="liste_titre'.($cssforfield ? ' '.$cssforfield : '').'">';
+	if (!empty($arrayfields['t.' . $key]['checked'])) {
+		print '<td class="liste_titre' . ($cssforfield ? ' ' . $cssforfield : '') . '">';
 		if (!empty($val['arrayofkeyval']) && is_array($val['arrayofkeyval'])) {
-			print $form->selectarray('search_'.$key, $val['arrayofkeyval'], (isset($search[$key]) ? $search[$key] : ''), $val['notnull'], 0, 0, '', 1, 0, 0, '', 'maxwidth100', 1);
+			print $form->selectarray('search_' . $key, $val['arrayofkeyval'], (isset($search[$key]) ? $search[$key] : ''), $val['notnull'], 0, 0, '', 1, 0, 0, '', 'maxwidth100', 1);
 		} elseif ((strpos($val['type'], 'integer:') === 0) || (strpos($val['type'], 'sellist:') === 0)) {
 			print $object->showInputField($val, $key, (isset($search[$key]) ? $search[$key] : ''), '', '', 'search_', 'maxwidth125', 1);
 		} elseif (preg_match('/^(date|timestamp|datetime)/', $val['type'])) {
 			print '<div class="nowrap">';
-			print $form->selectDate($search[$key.'_dtstart'] ? $search[$key.'_dtstart'] : '', "search_".$key."_dtstart", 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('From'));
+			print $form->selectDate($search[$key . '_dtstart'] ? $search[$key . '_dtstart'] : '', "search_" . $key . "_dtstart", 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('From'));
 			print '</div>';
 			print '<div class="nowrap">';
-			print $form->selectDate($search[$key.'_dtend'] ? $search[$key.'_dtend'] : '', "search_".$key."_dtend", 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('to'));
+			print $form->selectDate($search[$key . '_dtend'] ? $search[$key . '_dtend'] : '', "search_" . $key . "_dtend", 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', $langs->trans('to'));
 			print '</div>';
 		} elseif ($key == 'lang') {
-			require_once DOL_DOCUMENT_ROOT.'/core/class/html.formadmin.class.php';
+			require_once DOL_DOCUMENT_ROOT . '/core/class/html.formadmin.class.php';
 			$formadmin = new FormAdmin($db);
 			print $formadmin->select_language($search[$key], 'search_lang', 0, null, 1, 0, 0, 'minwidth150 maxwidth200', 2);
 		} else {
-			print '<input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag(isset($search[$key]) ? $search[$key] : '').'">';
+			print '<input type="text" class="flat maxwidth75" name="search_' . $key . '" value="' . dol_escape_htmltag(isset($search[$key]) ? $search[$key] : '') . '">';
 		}
 		print '</td>';
 	}
 }
 // Extra fields
-include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
+include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php';
 
 // Fields from hook
-$parameters = array('arrayfields'=>$arrayfields);
+$parameters = array('arrayfields' => $arrayfields);
 $reshook = $hookmanager->executeHooks('printFieldListOption', $parameters, $object); // Note that $action and $object may have been modified by hook
 print $hookmanager->resPrint;
 // Action column
@@ -580,7 +579,7 @@ print '<td class="liste_titre maxwidthsearch">';
 $searchpicto = $form->showFilterButtons();
 print $searchpicto;
 print '</td>';
-print '</tr>'."\n";
+print '</tr>' . "\n";
 
 $totalarray = array();
 $totalarray['nbfield'] = 0;
@@ -591,30 +590,29 @@ print '<tr class="liste_titre">';
 foreach ($object->fields as $key => $val) {
 	$cssforfield = (empty($val['csslist']) ? (empty($val['css']) ? '' : $val['css']) : $val['csslist']);
 	if ($key == 'status') {
-		$cssforfield .= ($cssforfield ? ' ' : '').'center';
+		$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 	} elseif (in_array($val['type'], array('date', 'datetime', 'timestamp'))) {
-		$cssforfield .= ($cssforfield ? ' ' : '').'center';
+		$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 	} elseif (in_array($val['type'], array('timestamp'))) {
-		$cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+		$cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
 	} elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $val['label'] != 'TechnicalID' && empty($val['arrayofkeyval'])) {
-		$cssforfield .= ($cssforfield ? ' ' : '').'right';
+		$cssforfield .= ($cssforfield ? ' ' : '') . 'right';
 	}
-	if (!empty($arrayfields['t.'.$key]['checked'])) {
-		print getTitleFieldOfList($arrayfields['t.'.$key]['label'], 0, $_SERVER['PHP_SELF'], 't.'.$key, '', $param, ($cssforfield ? 'class="'.$cssforfield.'"' : ''), $sortfield, $sortorder, ($cssforfield ? $cssforfield.' ' : ''))."\n";
+	if (!empty($arrayfields['t.' . $key]['checked'])) {
+		print getTitleFieldOfList($arrayfields['t.' . $key]['label'], 0, $_SERVER['PHP_SELF'], 't.' . $key, '', $param, ($cssforfield ? 'class="' . $cssforfield . '"' : ''), $sortfield, $sortorder, ($cssforfield ? $cssforfield . ' ' : '')) . "\n";
 		$totalarray['nbfield']++;
 	}
 }
 // Extra fields
-include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_title.tpl.php';
+include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_title.tpl.php';
 // Hook fields
-$parameters = array('arrayfields'=>$arrayfields, 'param'=>$param, 'sortfield'=>$sortfield, 'sortorder'=>$sortorder);
+$parameters = array('arrayfields' => $arrayfields, 'param' => $param, 'sortfield' => $sortfield, 'sortorder' => $sortorder);
 $reshook = $hookmanager->executeHooks('printFieldListTitle', $parameters, $object); // Note that $action and $object may have been modified by hook
 print $hookmanager->resPrint;
 // Action column
-print getTitleFieldOfList(($mode != 'kanban' ? $selectedfields : ''), 0, $_SERVER["PHP_SELF"], '', '', '', '', $sortfield, $sortorder, 'center maxwidthsearch ')."\n";
+print getTitleFieldOfList(($mode != 'kanban' ? $selectedfields : ''), 0, $_SERVER["PHP_SELF"], '', '', '', '', $sortfield, $sortorder, 'center maxwidthsearch ') . "\n";
 $totalarray['nbfield']++;
-print '</tr>'."\n";
-
+print '</tr>' . "\n";
 
 // Detect if we need a fetch on each output line
 $needToFetchEachLine = 0;
@@ -625,7 +623,6 @@ if (is_array($extrafields->attributes[$object->table_element]['computed']) && co
 		}
 	}
 }
-
 
 // Loop on record
 // --------------------------------------------------------------------
@@ -644,7 +641,7 @@ while ($i < $imaxinloop) {
 
 	if ($mode == 'kanban') {
 		if ($i == 0) {
-			print '<tr><td colspan="'.$savnbfield.'">';
+			print '<tr><td colspan="' . $savnbfield . '">';
 			print '<div class="box-flex-container">';
 		}
 		// Output Kanban
@@ -660,24 +657,24 @@ while ($i < $imaxinloop) {
 		foreach ($object->fields as $key => $val) {
 			$cssforfield = (empty($val['csslist']) ? (empty($val['css']) ? '' : $val['css']) : $val['csslist']);
 			if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) {
-				$cssforfield .= ($cssforfield ? ' ' : '').'center';
+				$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 			} elseif ($key == 'status') {
-				$cssforfield .= ($cssforfield ? ' ' : '').'center';
+				$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 			}
 
 			if (in_array($val['type'], array('timestamp'))) {
-				$cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+				$cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
 			} elseif ($key == 'ref') {
-				$cssforfield .= ($cssforfield ? ' ' : '').'nowrap';
+				$cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
 			}
 
 			if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && !in_array($key, array('rowid', 'status')) && empty($val['arrayofkeyval'])) {
-				$cssforfield .= ($cssforfield ? ' ' : '').'right';
+				$cssforfield .= ($cssforfield ? ' ' : '') . 'right';
 			}
 			//if (in_array($key, array('fk_soc', 'fk_user', 'fk_warehouse'))) $cssforfield = 'tdoverflowmax100';
 
-			if (!empty($arrayfields['t.'.$key]['checked'])) {
-				print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
+			if (!empty($arrayfields['t.' . $key]['checked'])) {
+				print '<td' . ($cssforfield ? ' class="' . $cssforfield . '"' : '') . '>';
 				if ($key == 'status') {
 					print $object->getLibStatut(5);
 				} elseif ($key == 'rowid') {
@@ -691,15 +688,15 @@ while ($i < $imaxinloop) {
 				}
 				if (!empty($val['isameasure']) && $val['isameasure'] == 1) {
 					if (!$i) {
-						$totalarray['pos'][$totalarray['nbfield']] = 't.'.$key;
+						$totalarray['pos'][$totalarray['nbfield']] = 't.' . $key;
 					}
 					if (!isset($totalarray['val'])) {
 						$totalarray['val'] = array();
 					}
-					if (!isset($totalarray['val']['t.'.$key])) {
-						$totalarray['val']['t.'.$key] = 0;
+					if (!isset($totalarray['val']['t.' . $key])) {
+						$totalarray['val']['t.' . $key] = 0;
 					}
-					$totalarray['val']['t.'.$key] += $object->$key;
+					$totalarray['val']['t.' . $key] += $object->$key;
 				}
 			}
 		}
@@ -731,7 +728,7 @@ while ($i < $imaxinloop) {
 }
 
 // Show total line
-include DOL_DOCUMENT_ROOT.'/core/tpl/list_print_total.tpl.php';
+include DOL_DOCUMENT_ROOT . '/core/tpl/list_print_total.tpl.php';
 
 // If no record found
 if ($num == 0) {
@@ -747,14 +744,14 @@ if ($num == 0) {
 
 $db->free($resql);
 
-$parameters = array('arrayfields'=>$arrayfields, 'sql'=>$sql);
+$parameters = array('arrayfields' => $arrayfields, 'sql' => $sql);
 $reshook = $hookmanager->executeHooks('printFieldListFooter', $parameters, $object); // Note that $action and $object may have been modified by hook
 print $hookmanager->resPrint;
 
-print '</table>'."\n";
-print '</div>'."\n";
+print '</table>' . "\n";
+print '</div>' . "\n";
 
-print '</form>'."\n";
+print '</form>' . "\n";
 
 if (in_array('builddoc', $arrayofmassactions) && ($nbtotalofrecords === '' || $nbtotalofrecords)) {
 	$hidegeneratedfilelistifempty = 1;
