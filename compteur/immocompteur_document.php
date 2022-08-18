@@ -37,10 +37,10 @@ if (!$res && file_exists("../../main.inc.php")) $res = @include "../../main.inc.
 if (!$res && file_exists("../../../main.inc.php")) $res = @include "../../../main.inc.php";
 if (!$res) die("Include of main fails");
 
-require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 dol_include_once('/ultimateimmo/class/immocompteur.class.php');
 dol_include_once('/ultimateimmo/lib/ultimateimmo_immocompteur.lib.php');
 
@@ -58,7 +58,9 @@ $limit = GETPOST('limit', 'int') ? GETPOST('limit', 'int') : $conf->liste_limit;
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
 $page = GETPOSTISSET('pageplusone') ? (GETPOST('pageplusone') - 1) : GETPOST("page", 'int');
-if (empty($page) || $page == -1) { $page = 0; }     // If $page is not defined, or '' or -1
+if (empty($page) || $page == -1) {
+	$page = 0;
+}     // If $page is not defined, or '' or -1
 $offset = $liste_limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -69,16 +71,16 @@ if (!$sortfield) $sortfield = "name";
 // Initialize technical objects
 $object = new ImmoCompteur($db);
 $extrafields = new ExtraFields($db);
-$diroutputmassaction = $conf->ultimateimmo->dir_output.'/temp/massgeneration/'.$user->id;
+$diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/' . $user->id;
 $hookmanager->initHooks(array('immocompteurdocument', 'globalcard')); // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
 
 // Load object
-include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php'; // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
+include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php'; // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity?$object->entity:$conf->entity] . "/immocompteur/" . dol_sanitizeFileName($object->id);
-if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity ? $object->entity : $conf->entity]."/immocompteur/".dol_sanitizeFileName($object->ref);
+if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity ? $object->entity : $conf->entity] . "/immocompteur/" . dol_sanitizeFileName($object->ref);
 
 // Security check - Protection if external user
 //if ($user->socid > 0) accessforbidden();
@@ -87,14 +89,11 @@ if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[
 
 $permissiontoadd = $user->rights->ultimateimmo->immocompteur->write; // Used by the include of actions_addupdatedelete.inc.php
 
-
-
 /*
  * Actions
  */
 
-include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
-
+include_once DOL_DOCUMENT_ROOT . '/core/actions_linkedfiles.inc.php';
 
 /*
  * View
@@ -102,13 +101,11 @@ include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
 
 $form = new Form($db);
 
-$title = $langs->trans("ImmoCompteur").' - '.$langs->trans("Files");
-$help_url = '';
-//$help_url='EN:Module_Third_Parties|FR:Module_Tiers|ES:Empresas';
-llxHeader('', $title, $help_url);
+$title = $langs->trans("ImmoCompteur") . ' - ' . $langs->trans("Files");
+$wikihelp = 'EN:Module_UltimateImmo|FR:Module_UltimateImmo';
+llxHeader('', $title, $wikihelp);
 
-if ($object->id)
-{
+if ($object->id) {
 	/*
 	 * Show tabs
 	 */
@@ -116,18 +113,16 @@ if ($object->id)
 
 	print dol_get_fiche_head($head, 'document', $langs->trans("ImmoCompteur"), -1, $object->picto);
 
-
 	// Build file list
-	$filearray = dol_dir_list($upload_dir, "files", 0, '', '(\.meta|_preview.*\.png)$', $sortfield, (strtolower($sortorder) == 'desc' ?SORT_DESC:SORT_ASC), 1);
+	$filearray = dol_dir_list($upload_dir, "files", 0, '', '(\.meta|_preview.*\.png)$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
 	$totalsize = 0;
-	foreach ($filearray as $key => $file)
-	{
+	foreach ($filearray as $key => $file) {
 		$totalsize += $file['size'];
 	}
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="'.dol_buildpath('/ultimateimmo/immocompteur_list.php', 1).'?restore_lastsearch_values=1'.(!empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
+	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/immocompteur_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref = '<div class="refidno">';
 	/*
@@ -177,10 +172,10 @@ if ($object->id)
 	print '<table class="border centpercent tableforfield">';
 
 	// Number of files
-	print '<tr><td class="titlefield">'.$langs->trans("NbOfAttachedFiles").'</td><td colspan="3">'.count($filearray).'</td></tr>';
+	print '<tr><td class="titlefield">' . $langs->trans("NbOfAttachedFiles") . '</td><td colspan="3">' . count($filearray) . '</td></tr>';
 
 	// Total size
-	print '<tr><td>'.$langs->trans("TotalSizeOfAttachedFiles").'</td><td colspan="3">'.$totalsize.' '.$langs->trans("bytes").'</td></tr>';
+	print '<tr><td>' . $langs->trans("TotalSizeOfAttachedFiles") . '</td><td colspan="3">' . $totalsize . ' ' . $langs->trans("bytes") . '</td></tr>';
 
 	print '</table>';
 
@@ -193,15 +188,13 @@ if ($object->id)
 	$permission = 1;
 	//$permtoedit = $user->rights->ultimateimmo->immocompteur->write;
 	$permtoedit = 1;
-	$param = '&id='.$object->id;
+	$param = '&id=' . $object->id;
 
 	//$relativepathwithnofile='immocompteur/' . dol_sanitizeFileName($object->id).'/';
-	$relativepathwithnofile = 'immocompteur/'.dol_sanitizeFileName($object->ref).'/';
+	$relativepathwithnofile = 'immocompteur/' . dol_sanitizeFileName($object->ref) . '/';
 
-	include_once DOL_DOCUMENT_ROOT.'/core/tpl/document_actions_post_headers.tpl.php';
-}
-else
-{
+	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
+} else {
 	accessforbidden('', 0, 1);
 }
 
