@@ -921,7 +921,7 @@ $this->menu[$r++] = array(
 			'url'      => '/ultimateimmo/payment/stats.php',
 			'langs'    => 'ultimateimmo@ultimateimmo',
 			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position' => 1500 + $r,
+			'position' => 1100 + $r,
 			'enabled'  => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms'    => '1',
@@ -940,7 +940,7 @@ $this->menu[$r++] = array(
 			'url'      => '/ultimateimmo/cost/immocost_list.php',
 			'langs'    => 'ultimateimmo@ultimateimmo',
 			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position' => 1500 + $r,
+			'position' => 1100 + $r,
 			'enabled'  => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms'    => '1',
