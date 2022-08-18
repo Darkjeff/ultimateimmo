@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2015	Alexandre Spangaro	<aspangaro@zendsi.com>
- * Copyright (C) 2018-2019  Philippe GRAND  <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022  Philippe GRAND  <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,23 +23,29 @@
  */
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
 // Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+    $i--;
+    $j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
+if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
+if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
+if (!$res) die("Include of main fails");
 
-require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
-require_once ('../lib/ultimateimmo.lib.php');
+require_once DOL_DOCUMENT_ROOT . '/core/lib/admin.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
+require_once('../lib/ultimateimmo.lib.php');
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "admin"));
@@ -48,15 +54,14 @@ $langs->loadLangs(array("ultimateimmo@ultimateimmo", "admin"));
 $value = GETPOST('value', 'alpha');
 $action = GETPOST('action', 'alpha');
 
-if (! $user->admin) accessforbidden();
+if (!$user->admin) accessforbidden();
 
 
 /*
  * Actions
  */
 
-if ($action == 'setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE')
-{
+if ($action == 'setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE') {
     if (GETPOST('value')) dolibarr_set_const($db, 'ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE', 1, 'chaine', 0, '', $conf->entity);
     else dolibarr_set_const($db, 'ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE', 0, 'chaine', 0, '', $conf->entity);
 }
@@ -67,20 +72,19 @@ if ($action == 'setvarother') {
     if (!$res > 0) {
         $error++;
     }
-	
-	$param_must_exists = GETPOST('ULTIMATEIMMO_EMAIL_MUST_EXISTS', 'alpha');
+
+    $param_must_exists = GETPOST('ULTIMATEIMMO_EMAIL_MUST_EXISTS', 'alpha');
     $res = dolibarr_set_const($db, 'ULTIMATEIMMO_EMAIL_MUST_EXISTS', $param_must_exists, 'chaine', 0, '', $conf->entity);
     if (!$res > 0) {
         $error++;
     }
-	
-	if ($conf->global->MAIN_FEATURES_LEVEL >= 2)
-    {
-    	$param_show_company_logo = GETPOST('ULTIMATEIMMO_SHOW_COMPANY_LOGO', 'alpha');
-    	$res = dolibarr_set_const($db, 'ULTIMATEIMMO_SHOW_COMPANY_LOGO', $param_show_company_logo, 'chaine', 0, '', $conf->entity);
-    	if (!$res > 0) {
-        	$error++;
-    	}
+
+    if ($conf->global->MAIN_FEATURES_LEVEL >= 2) {
+        $param_show_company_logo = GETPOST('ULTIMATEIMMO_SHOW_COMPANY_LOGO', 'alpha');
+        $res = dolibarr_set_const($db, 'ULTIMATEIMMO_SHOW_COMPANY_LOGO', $param_show_company_logo, 'chaine', 0, '', $conf->entity);
+        if (!$res > 0) {
+            $error++;
+        }
     }
 }
 
@@ -89,13 +93,14 @@ if ($action == 'setvarother') {
  * View
  */
 
-$form=new Form($db);
+$form = new Form($db);
 
 $page_name = "UltimateimmoSetup";
-llxHeader('', $langs->trans($page_name));
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+llxHeader('', $langs->trans($page_name), $wikihelp);
 
 // Subheader
-$linkback = '<a href="'.($backtopage?$backtopage:DOL_URL_ROOT.'/admin/modules.php').'">'.$langs->trans("BackToModuleList").'</a>';
+$linkback = '<a href="' . ($backtopage ? $backtopage : DOL_URL_ROOT . '/admin/modules.php') . '">' . $langs->trans("BackToModuleList") . '</a>';
 
 print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
 
@@ -103,34 +108,30 @@ print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
 $head = ultimateimmoAdminPrepareHead();
 print dol_get_fiche_head($head, 'public', $langs->trans("ModuleUltimateimmoName"), -1, 'building@ultimateimmo');
 
-print '<span class="opacitymedium">'.$langs->trans("UltimateimmoEnablePublicInterface") . '</span> : <a href="' . dol_buildpath('/ultimateimmo/public/index.php', 1) . '" target="_blank" >' . dol_buildpath('/ultimateimmo/public/index.php', 2) . '</a>';
+print '<span class="opacitymedium">' . $langs->trans("UltimateimmoEnablePublicInterface") . '</span> : <a href="' . dol_buildpath('/ultimateimmo/public/index.php', 1) . '" target="_blank" >' . dol_buildpath('/ultimateimmo/public/index.php', 2) . '</a>';
 print '<br><br>';
-print $langs->trans("PublicSiteDesc").'<br><br>';
+print $langs->trans("PublicSiteDesc") . '<br><br>';
 
 print dol_get_fiche_end();
 
-$enabledisablehtml = $langs->trans("UltimateimmoPublicAccess").' ';
-if (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
-{
+$enabledisablehtml = $langs->trans("UltimateimmoPublicAccess") . ' ';
+if (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE)) {
     // Button off, click to enable
-    $enabledisablehtml.='<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?action=setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE&value=1'.$param.'">';
-    $enabledisablehtml.=img_picto($langs->trans("Disabled"), 'switch_off');
-    $enabledisablehtml.='</a>';
-}
-else
-{
+    $enabledisablehtml .= '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?action=setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE&value=1' . $param . '">';
+    $enabledisablehtml .= img_picto($langs->trans("Disabled"), 'switch_off');
+    $enabledisablehtml .= '</a>';
+} else {
     // Button on, click to disable
-    $enabledisablehtml.='<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?action=setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE&value=0'.$param.'">';
-    $enabledisablehtml.=img_picto($langs->trans("Activated"), 'switch_on');
-    $enabledisablehtml.='</a>';
+    $enabledisablehtml .= '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?action=setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE&value=0' . $param . '">';
+    $enabledisablehtml .= img_picto($langs->trans("Activated"), 'switch_on');
+    $enabledisablehtml .= '</a>';
 }
 print $enabledisablehtml;
-print '<input type="hidden" id="ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE" name="ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE" value="'.(empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE)?0:1).'">';
+print '<input type="hidden" id="ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE" name="ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE" value="' . (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE) ? 0 : 1) . '">';
 
 print '<br><br>';
 
-if (! empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
-{
+if (!empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE)) {
 
     if (!$conf->use_javascript_ajax) {
         print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" enctype="multipart/form-data" >';
@@ -145,8 +146,8 @@ if (! empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
     print '<td class="center">';
     print '</td>';
     print '</tr>';
-	
-	 // Check if email exists
+
+    // Check if email exists
     print '<tr class="oddeven"><td>' . $langs->trans("UltimateimmoEmailMustExist") . '</td>';
     print '<td class="left">';
     if ($conf->use_javascript_ajax) {
@@ -160,15 +161,15 @@ if (! empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
     print $form->textwithpicto('', $langs->trans("UltimateimmoEmailMustExistHelp"), 1, 'help');
     print '</td>';
     print '</tr>';
-	
-	// Show logo for company
+
+    // Show logo for company
     print '<tr class="oddeven"><td>' . $langs->trans("UltimateimmoShowCompanyLogo") . '</td>';
     print '<td class="left">';
     if ($conf->use_javascript_ajax) {
-    	print ajax_constantonoff('ULTIMATEIMMO_SHOW_COMPANY_LOGO');
+        print ajax_constantonoff('ULTIMATEIMMO_SHOW_COMPANY_LOGO');
     } else {
-    	$arrval = array('0' => $langs->trans("No"), '1' => $langs->trans("Yes"));
-    	print $form->selectarray("ULTIMATEIMMO_SHOW_COMPANY_LOGO", $arrval, $conf->global->ULTIMATEIMMO_SHOW_COMPANY_LOGO);
+        $arrval = array('0' => $langs->trans("No"), '1' => $langs->trans("Yes"));
+        print $form->selectarray("ULTIMATEIMMO_SHOW_COMPANY_LOGO", $arrval, $conf->global->ULTIMATEIMMO_SHOW_COMPANY_LOGO);
     }
     print '</td>';
     print '<td align="center">';
@@ -176,7 +177,7 @@ if (! empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
     print '</td>';
     print '</tr>';
 
-	 if (!$conf->use_javascript_ajax) {
+    if (!$conf->use_javascript_ajax) {
         print '<tr class="impair"><td colspan="3" align="center"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
         print '</tr>';
     }
@@ -187,7 +188,6 @@ if (! empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
         print '</form>';
     }
 }
-
 
 llxFooter();
 
