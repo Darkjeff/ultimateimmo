@@ -73,26 +73,23 @@ $hookmanager->initHooks(array('immoownercard', 'globalcard'));     // Note that 
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
 
-$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
+$search_array_options = $extrafields->getOptionalsFromPost($object->table_element, '', 'search_');
 
 // Initialize array of search criterias
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
 foreach ($object->fields as $key => $val) {
-	if (GETPOST('search_' . $key, 'alpha')) $search[$key] = GETPOST('search_' . $key, 'alpha');
+	if (GETPOST('search_'.$key, 'alpha')) {
+		$search[$key] = GETPOST('search_'.$key, 'alpha');
+	}
 }
 
-if (empty($action) && empty($id) && empty($ref)) $action = 'view';
+if (empty($action) && empty($id) && empty($ref)) {
+	$action = 'view';
+}
 
 // Load object
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Include fetch and fetch_thirdparty but not fetch_optionals
-
-// Security check - Protection if external user
-//if ($user->socid > 0) accessforbidden();
-//if ($user->socid > 0) $socid = $user->socid;
-//$isdraft = (($object->statut == $object::STATUS_DRAFT) ? 1 : 0);
-//$result = restrictedArea($user, 'mymodule', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
-
 $permissiontoread = $user->rights->ultimateimmo->read;
 $permissiontoadd = $user->rights->ultimateimmo->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
 $permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
@@ -107,7 +104,9 @@ $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $obj
 
 $parameters = array();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
-if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+if ($reshook < 0) {
+	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+}
 
 if (empty($reshook)) {
 	$error = 0;
@@ -120,6 +119,7 @@ if (empty($reshook)) {
 			else $backtopage = dol_buildpath('/ultimateimmo/owner/immoowner_card.php', 1) . '?id=' . ($id > 0 ? $id : '__ID__');
 		}
 	}
+
 	$triggermodname = 'ULTIMATEIMMO_IMMOOWNER_MODIFY'; // Name of trigger action code to execute when we modify record
 
 	// Actions cancel, add, update or delete
@@ -130,6 +130,12 @@ if (empty($reshook)) {
 
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
+
+	// Action to move up and down lines of object
+	//include DOL_DOCUMENT_ROOT.'/core/actions_lineupdown.inc.php';
+
+	// Action to build doc
+	include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
 
 	if ($action == 'set_thirdparty' && $permissiontoadd) {
 		$object->setValueFrom('fk_soc', GETPOST('fk_soc', 'int'), '', '', 'date', '', $user, 'IMMOOWNER_MODIFY');
@@ -148,6 +154,7 @@ if (empty($reshook)) {
 /*
  * View
  *
+ * Put here all code to build page
  */
 
 $form = new Form($db);
@@ -159,86 +166,42 @@ llxHeader('', $langs->trans('ImmoOwner'), '');
 
 // Part to create
 if ($action == 'create') {
+	if (empty($permissiontoadd)) {
+		accessforbidden($langs->trans('NotEnoughPermissions'), 0, 1);
+		exit;
+	}
 	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoOwner")), '', 'object_' . $object->picto);
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="add">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
+	if ($backtopage) {
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	}
+	if ($backtopageforcancel) {
+		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	}
 
-	dol_fiche_head(array(), '');
+	print dol_get_fiche_head(array(), '');
+
+	// Set some default values
+	//if (! GETPOSTISSET('fieldname')) $_POST['fieldname'] = 'myvalue';
 
 	print '<table class="border centpercent tableforfieldcreate">' . "\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 
-	foreach ($object->fields as $key => $val) {
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
-
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
-
-		print '<tr id="field_' . $key . '">';
-		print '<td';
-		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '"';
-		print '>';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
-		print '</td>';
-		print '<td>';
-
-		if ($val['label'] == 'Civility') {
-			// We set civility_id, civility_code and civility for the selected civility
-			$object->civility_id	= GETPOST("civility_id", 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
-
-			if ($object->civility_id) {
-				$tmparray = array();
-				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
-				if (in_array($tmparray['code'], $tmparray)) $object->civility_code = $tmparray['code'];
-				if (in_array($tmparray['label'], $tmparray)) $object->civility = $tmparray['label'];
-			}
-
-			// civility
-			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');
-			//var_dump($object->civility_id);exit;
-		} elseif ($val['label'] == 'Country') {
-			// We set country_id, country_code and country for the selected country
-			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
-			if ($object->country_id) {
-				$tmparray = $object->getCountry($object->country_id, 'all');
-				$object->country_code = $tmparray['code'];
-				$object->country = $tmparray['label'];
-			}
-			// Country
-			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
-		} else {
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
-
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
-			else $value = GETPOST($key, 'alpha');
-			print $object->showInputField($val, $key, $value, '', '', '', 0);
-		}
-		print '</td>';
-		print '</tr>';
-	}
+	include DOL_DOCUMENT_ROOT.'/core/tpl/commonfields_add.tpl.php';
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
 
 	print '</table>' . "\n";
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
-	print '<div class="center">';
-	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
-	print '&nbsp; ';
-	print '<input type="' . ($backtopage ? "submit" : "button") . '" class="button" name="cancel" value="' . dol_escape_htmltag($langs->trans("Cancel")) . '"' . ($backtopage ? '' : ' onclick="javascript:history.go(-1)"') . '>';	// Cancel for create does not post form if we don't know the backtopage
-	print '</div>';
+	print $form->buttonsSaveCancel("Create");
 
 	print '</form>';
 }
@@ -251,74 +214,30 @@ if (($id || $ref) && $action == 'edit') {
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="update">';
 	print '<input type="hidden" name="id" value="' . $object->id . '">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
+	if ($backtopage) {
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	}
+	if ($backtopageforcancel) {
+		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	}
 
-	dol_fiche_head();
+	print dol_get_fiche_head();
 
 	print '<table class="border centpercent tableforfieldedit">' . "\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
 
-	foreach ($object->fields as $key => $val) {
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
-
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
-
-		print '<tr><td';
-		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '"';
-		print '>';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
-		print '</td>';
-		print '<td>';
-
-		if ($val['label'] == 'Civility') {
-			// We set civility_id, civility_code and civility for the selected civility
-			$object->civility_id = GETPOST('civility_id', 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
-			if ($object->civility_id) {
-				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
-				$object->civility_code = $tmparray['code'];
-				$object->civility = $tmparray['label'];
-			}
-			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id);
-		} elseif ($val['label'] == 'Country') {
-			// We set country_id, country_code and country for the selected country
-			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
-			if ($object->country_id) {
-				$tmparray = $object->getCountry($object->country_id, 'all');
-				$object->country_code = $tmparray['code'];
-				$object->country = $tmparray['label'];
-			}
-			// Country
-			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
-		} else {
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
-			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
-			//var_dump($val.' '.$key.' '.$value);
-			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-			else print $object->showInputField($val, $key, $value, '', '', '', 0);
-		}
-		print '</td>';
-		print '</tr>';
-	}
+	include DOL_DOCUMENT_ROOT.'/core/tpl/commonfields_edit.tpl.php';
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
 
 	print '</table>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
-	print '<div class="center"><input type="submit" class="button" name="save" value="' . $langs->trans("Save") . '">';
-	print ' &nbsp; <input type="submit" class="button" name="cancel" value="' . $langs->trans("Cancel") . '">';
-	print '</div>';
+	print $form->buttonsSaveCancel();
 
 	print '</form>';
 }
@@ -328,7 +247,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$res = $object->fetch_optionals();
 
 	$head = immoownerPrepareHead($object);
-	dol_fiche_head($head, 'card', $langs->trans("ImmoOwner"), -1, 'user');
+	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoOwner"), -1, 'user');
 
 	$formconfirm = '';
 
@@ -351,20 +270,26 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if ($action == 'xxx') {
 		$formquestion = array();
 		/*
+		$forcecombo=0;
+		if ($conf->browser->name == 'ie') $forcecombo = 1;	// There is a bug in IE10 that make combo inside popup crazy
 	        $formquestion = array(
 	            // 'text' => $langs->trans("ConfirmClone"),
 	            // array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
 	            // array('type' => 'checkbox', 'name' => 'update_prices', 'label' => $langs->trans("PuttingPricesUpToDate"), 'value' => 1),
-	            // array('type' => 'other',    'name' => 'idwarehouse',   'label' => $langs->trans("SelectWarehouseForStockDecrease"), 'value' => $formproduct->selectWarehouses(GETPOST('idwarehouse')?GETPOST('idwarehouse'):'ifone', 'idwarehouse', '', 1)));
-	    }*/
+			// array('type' => 'other',    'name' => 'idwarehouse',   'label' => $langs->trans("SelectWarehouseForStockDecrease"), 'value' => $formproduct->selectWarehouses(GETPOST('idwarehouse')?GETPOST('idwarehouse'):'ifone', 'idwarehouse', '', 1, 0, 0, '', 0, $forcecombo))
+		);
+		*/
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('XXX'), $text, 'confirm_xxx', $formquestion, 0, 1, 220);
 	}
 
 	// Call Hook formConfirm
 	$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
 	$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
-	elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
+	if (empty($reshook)) {
+		$formconfirm .= $hookmanager->resPrint;
+	} elseif ($reshook > 0) {
+		$formconfirm = $hookmanager->resPrint;
+	}
 
 	// Print form confirm
 	print $formconfirm;
@@ -429,195 +354,50 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	//unset($object->fields['fk_project']);				// Hide field already shown in banner
 	//unset($object->fields['fk_soc']);					// Hide field already shown in banner
 
-	$object->fields = dol_sort_array($object->fields, 'position');
+
+	//$object->fields = dol_sort_array($object->fields, 'position');
+
+	// Common attributes
+	//$keyforbreak='fieldkeytoswitchonsecondcolumn';	// We change column just before this field
+	//unset($object->fields['fk_project']);				// Hide field already shown in banner
+	//unset($object->fields['fk_soc']);					// Hide field already shown in banner
 	$keyforbreak = 'address';
-	foreach ($object->fields as $key => $val) {
-		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
+	include DOL_DOCUMENT_ROOT.'/core/tpl/commonfields_view.tpl.php';
 
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
-
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
-		if (in_array($key, array('ref', 'status'))) continue;	// Ref and status are already in dol_banner
-
-		$value = $object->$key;
-
-		print '<tr><td';
-		print ' class="titlefield fieldname_' . $key;
-		//if ($val['notnull'] > 0) print ' fieldrequired';     // No fieldrequired on the view output
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '">';
-		if (!empty($val['help'])) print $form->textwithpicto(
-			$langs->trans($val['label']),
-			$langs->trans($val['help'])
-		);
-		else print $langs->trans($val['label']);
-		print '</td>';
-		print '<td class="valuefield fieldname_' . $key;
-		if ($val['type'] == 'text') print ' wordbreak';
-		print '">';
-		print '<td>';
-
-		if ($val['label'] == 'Civility') {
-			// We set civility_id, civility_code and civility for the selected civility
-			if ($object->civility_id) {
-				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
-				$object->civility_code = $tmparray['code'];
-				$object->civility = $tmparray['label'];
-			}
-			print $object->civility;
-		} elseif ($val['label'] == 'MenuImmoOwnerType') {
-			$staticownertype = new ImmoOwner_Type($db);
-			$staticownertype->fetch($object->fk_owner_type);
-			if ($staticownertype->ref) {
-				print $staticownertype->ref;
-			}
-		} else {
-			print $object->showOutputField($val, $key, $value, '', '', '', 0);
-		}
-		//print dol_escape_htmltag($object->$key, 1, 1);
-		print '</td>';
-		print '</tr>';
-	}
-
-	print '</table>';
-
-	// We close div and reopen for second column
-	print '</div>';
-	print '<div class="fichehalfright">';
-
-	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border centpercent tableforfield">';
-
-	$alreadyoutput = 1;
-	foreach ($object->fields as $key => $val) {
-		if ($alreadyoutput) {
-			if (!empty($keyforbreak) && $key == $keyforbreak) {
-				$alreadyoutput = 0; // key used for break on second column
-			} else {
-				continue;
-			}
-		}
-
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
-
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue;	// We don't want this field
-		if (in_array($key, array('ref', 'status'))) continue;	// Ref and status are already in dol_banner
-
-		$value = $object->$key;
-
-		print '<tr><td';
-		print ' class="titlefield fieldname_' . $key;
-		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
-		if ($val['label'] == 'Country') {
-			if ($object->country_id) {
-				include_once(DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
-				$tmparray = getCountry($object->country_id, 'all');
-				$object->country_code = $tmparray['code'];
-				$object->country = $tmparray['label'];
-			}
-			print '<tr><td width="25%">' . $langs->trans('Country') . '</td><td>';
-			print $object->country;
-		} else {
-			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-			print '">';
-			if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-			else print $langs->trans($val['label']);
-			print '</td>';
-			print '<td>';
-			print $object->showOutputField($val, $key, $value, '', '', '', 0);
-		}
-		//print dol_escape_htmltag($object->$key, 1, 1);
-		print '</td>';
-		print '</tr>';
-	}
-
-	// Other attributes
+	// Other attributes. Fields from hook formObjectOptions and Extrafields.
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_view.tpl.php';
 
 	print '</table>';
 	print '</div>';
 	print '</div>';
 
-	print '<div class="clearboth"></div><br>';
+	print '<div class="clearboth"></div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
-	/*
-	 * Lines
-	 */
 
-	if (!empty($object->table_element_line)) {
-		// Show object lines
-		$result = $object->getLinesArray();
-
-		print '	<form name="addproduct" id="addproduct" action="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . (($action != 'editline') ? '#addline' : '#line_' . GETPOST('lineid', 'int')) . '" method="POST">
-    	<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">
-    	<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline') . '">
-    	<input type="hidden" name="mode" value="">
-    	<input type="hidden" name="id" value="' . $object->id . '">
-    	';
-
-		if (!empty($conf->use_javascript_ajax) && $object->status == 0) {
-			include DOL_DOCUMENT_ROOT . '/core/tpl/ajaxrow.tpl.php';
-		}
-
-		print '<div class="div-table-responsive-no-min">';
-		if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline')) {
-			print '<table id="tablelines" class="noborder noshadow" width="100%">';
-		}
-
-		if (!empty($object->lines)) {
-			$object->printObjectLines($action, $mysoc, null, GETPOST('lineid', 'int'), 1);
-		}
-
-		// Form to add new line
-		if ($object->status == 0 && $permissiontoadd && $action != 'selectlines') {
-			if ($action != 'editline') {
-				// Add products/services form
-				$object->formAddObjectLine(1, $mysoc, $soc);
-
-				$parameters = array();
-				$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-			}
-		}
-
-		if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline')) {
-			print '</table>';
-		}
-		print '</div>';
-
-		print "</form>\n";
-	}
-
-	// Buttons for actions
+		// Buttons for actions
 	if ($action != 'presend' && $action != 'editline') {
 		print '<div class="tabsAction">' . "\n";
 		$parameters = array();
 		$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
-		if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		if ($reshook < 0) {
+			setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		}
 
 		if (empty($reshook)) {
 			// Send
-			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
-
-			if ($permissiontoadd) {
-				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
-			} else {
-				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
+			if (empty($user->socid)) {
+				print dolGetButtonAction($langs->trans('SendMail'), '', 'default', $_SERVER["PHP_SELF"].'?id='.$object->id.'&action=presend&mode=init&token='.newToken().'#formmailbeforetitle');
 			}
+
+			print dolGetButtonAction($langs->trans('Modify'), '', 'default', $_SERVER["PHP_SELF"].'?id='.$object->id.'&action=edit&token='.newToken(), '', $permissiontoadd);
 
 			// Clone
-			if ($permissiontoadd) {
-				print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&socid=' . $object->socid . '&action=clone&object=immoowner">' . $langs->trans("ToClone") . '</a>' . "\n";
-			}
+			print dolGetButtonAction($langs->trans('ToClone'), '', 'default', $_SERVER['PHP_SELF'].'?id='.$object->id.(!empty($object->socid)?'&socid='.$object->socid:'').'&action=clone&object=immoowner&token='.newToken(), '', $permissiontoadd);
 
-			if ($permissiontodelete) {
-				print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=delete">' . $langs->trans('Delete') . '</a>' . "\n";
-			} else {
-				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Delete') . '</a>' . "\n";
-			}
+			print dolGetButtonAction($langs->trans('Delete'), '', 'delete', $_SERVER['PHP_SELF'].'?id='.$object->id.'&action=delete&token='.newToken(), '', $permissiontodelete || ($object->status == $object::STATUS_DRAFT && $permissiontoadd));
+
 		}
 		print '</div>' . "\n";
 	}
@@ -632,37 +412,41 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<div class="fichecenter"><div class="fichehalfleft">';
 		print '<a name="builddoc"></a>'; // ancre
 
-		// Documents
-		$relativepath = '/owner/' . dol_sanitizeFileName($object->ref);
-		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
-		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
-		$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
-		print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
+		$includedocgeneration = 0;
 
-		// Show links to link elements
+		if ($includedocgeneration) {
+			$objref = dol_sanitizeFileName($object->ref);
+			$relativepath = 'owner/'.$objref.'.pdf';
+			$filedir = $conf->ultimateimmo->dir_output.$relativepath;
+			$urlsource = $_SERVER["PHP_SELF"]."?id=".$object->id;
+			$genallowed = $permissiontoread; // If you can read, you can build the PDF to read content
+			$delallowed = $permissiontoadd; // If you can create/edit, you can remove a file on card
+			print $formfile->showdocuments('ultimateimmo:ImmoOwner', 'owner/'.$objref, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $langs->defaultlang);
+		}
+
+				// Show links to link elements
 		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoowner'));
 		$somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
 
-		print '</div><div class="fichehalfright"><div class="ficheaddleft">';
+
+		print '</div><div class="fichehalfright">';
 
 		$MAXEVENT = 10;
 
-		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/owner/immoowner_agenda.php', 1) . '?id=' . $object->id . '">';
-		$morehtmlright .= $langs->trans("SeeAll");
-		$morehtmlright .= '</a>';
+		$morehtmlcenter = dolGetButtonTitle($langs->trans('SeeAll'), '', 'fa fa-list-alt imgforviewmode', dol_buildpath('/ultimateimmo/owner/immoowner_agenda.php', 1).'?id='.$object->id);
 
 		// List of actions on element
 		include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
 		$formactions = new FormActions($db);
-		$somethingshown = $formactions->showactions($object, $object->element, (is_object($object->thirdparty) ? $object->thirdparty->id : 0), 1, '', $MAXEVENT, '', $morehtmlright);
+		$somethingshown = $formactions->showactions($object, $object->element.'@'.$object->module, (is_object($object->thirdparty) ? $object->thirdparty->id : 0), 1, '', $MAXEVENT, '', $morehtmlcenter);
 
-		print '</div></div></div>';
+		print '</div></div>';
 	}
 
 	//Select mail models is same action as presend
-
-	if (GETPOST('modelselected')) $action = 'presend';
+	if (GETPOST('modelselected')) {
+		$action = 'presend';
+	}
 
 	// Presend form
 	$modelmail = 'immoowner';
