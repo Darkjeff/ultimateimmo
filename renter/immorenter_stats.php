@@ -62,8 +62,8 @@ if ($socid < 0) $socid = 0;
 
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
-if ($user->societe_id > 0) $socid = $user->societe_id;
-$result = restrictedArea($user, 'ultimateimmo', $id);
+//if ($user->societe_id > 0) $socid = $user->societe_id;
+$result = restrictedArea($user, 'ultimateimmo', 0);
 
 $year = strftime("%Y", time());
 $startyear = $year - 2;

@@ -1243,12 +1243,13 @@ if (($id || $ref) && $action == 'edit') {
 			$i++;
 		}
 		//exit;
+		//var_dump($object);exit;
 		if ($object->paye == 0) {
 			print '<tr><td colspan="4" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs) . ' ' . $cursymbolafter . '</b>' . "</td><td>&nbsp;</td></tr>\n";
 			print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
 
 			$remaintopay = $object->total_amount - $object->getSommePaiement();
-
+			
 			print '<tr><td colspan="4" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
 			print '<td class="right"' . ($remaintopay ? ' class="amountremaintopay"' : '') . '>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
 		}
