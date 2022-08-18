@@ -1,5 +1,5 @@
 -- ========================================================================
--- Copyright (C) 2018-2021  Philippe GRAND 	<philippe.grand@atoo-net.com>
+-- Copyright (C) 2018-2022  Philippe GRAND 	<philippe.grand@atoo-net.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoowner(
 	town varchar(64), 
 	country_id integer,	
 	email varchar(255) NOT NULL, 
-	birth date, 
 	phone varchar(30), 
 	phone_mobile varchar(30)
 	-- END MODULEBUILDER FIELDS
