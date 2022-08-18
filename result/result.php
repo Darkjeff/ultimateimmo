@@ -622,7 +622,7 @@ if ($resqlpaiement && $resqlencaissement && $resqlcharged && $resqlchargend) {
 }
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width="10%">' . $langs->trans("Revenu Net") . '</td>';
+print '<tr class="liste_titre"><td width="10%">' . $langs->trans("ImmoResultRevenuNet") . '</td>';
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
