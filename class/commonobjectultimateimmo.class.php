@@ -102,6 +102,14 @@ class CommonObjectUltimateImmo extends CommonObject
 			if ($staticownertype->ref) {
 				print $staticownertype->ref;
 			}
+		} elseif ($val['label']=='Country') {
+			if ($this->country_id) {
+				$tmparray = $this->getCountry($this->country_id, 'all');
+				$this->country_code = $tmparray['code'];
+				$this->country = $tmparray['label'];
+				// Country
+				print $this->country;
+			}
 		} else {
 			return parent::showOutputField($val, $key, $value, $moreparam, $keysuffix, $keyprefix, $morecss);
 		}
