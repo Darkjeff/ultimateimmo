@@ -498,6 +498,26 @@ class modUltimateimmo extends DolibarrModules
 		$this->rights[$r][4] = 'immocompteur';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
 		$this->rights[$r][5] = 'delete';
 
+		$r++;
+		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
+		$this->rights[$r][1] = 'Read dict';    // Permission label
+		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
+		$this->rights[$r][4] = 'dict';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+
+		$r++;
+		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
+		$this->rights[$r][1] = 'Create/Update dict';    // Permission label
+		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
+		$this->rights[$r][4] = 'dict';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+
+		$r++;
+		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
+		$this->rights[$r][1] = 'Delete dict';    // Permission label
+		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
+		$this->rights[$r][4] = 'dict';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][5] = 'delete';
 
 		// Main menu entries
 		$this->menu = array();            // List of menus to add
@@ -1026,7 +1046,25 @@ $this->menu[$r++] = array(
 			'user'     => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
 
-			
+			$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuDictionarie',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immocost_dictionarie',
+			'url'      => '/ultimateimmo/dict.php',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '1',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);                                // 0=Menu for internal users, 1=external users, 2=both
+
 	}
 
 	/**
