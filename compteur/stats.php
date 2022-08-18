@@ -79,7 +79,9 @@ if (GETPOSTISSET('search_fk_immoproperty') && GETPOST('search_fk_immoproperty', 
 /*
  * View
  */
-llxHeader('', $langs->trans('MenuImmoCompteurList') . ' ' .$langs->trans('MenuImmoCompteurStats'));
+
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+llxHeader('', $langs->trans('MenuImmoCompteurList') . ' ' .$langs->trans('MenuImmoCompteurStats'), $wikihelp);
 
 print '<div class="div-table-responsive">'; // You can use div-table-responsive-no-min if you dont need reserved height for your table
 
