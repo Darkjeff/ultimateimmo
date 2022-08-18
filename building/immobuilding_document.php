@@ -149,9 +149,8 @@ include DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
 $form = new Form($db);
 
 $title = $langs->trans("ImmoBuilding").' - '.$langs->trans("Files");
-$help_url = '';
-//$help_url='EN:Module_Third_Parties|FR:Module_Tiers|ES:Empresas';
-llxHeader('', $title, $help_url);
+$wikihelp = 'EN:Module_UltimateImmo|FR:Module_UltimateImmo';
+llxHeader('', $title, $wikihelp);
 
 if ($object->id) {
 	/*

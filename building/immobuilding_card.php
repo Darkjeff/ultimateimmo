@@ -200,7 +200,6 @@ if (empty($reshook)) {
 /*
  * View
  *
- * Put here all code to build page
  */
 
 $form = new Form($db);
@@ -208,8 +207,8 @@ $formfile = new FormFile($db);
 $formproject = new FormProjets($db);
 
 $title = $langs->trans("ImmoBuilding");
-$help_url = '';
-llxHeader('', $title, $help_url);
+$wikihelp = 'EN:Module_UltimateImmo|FR:Module_UltimateImmo';
+llxHeader('', $title, $wikihelp);
 
 // Example : Adding jquery code
 // print '<script type="text/javascript" language="javascript">
