@@ -201,8 +201,8 @@ if ($id > 0)
 		print '<td>' . $langs->trans('fk_immocost') . '</td>';
 		print '<td>' . $langs->trans('fk_property') . '</td>';
 		print '<td>' . $langs->trans('nomlocal') . '</td>';
-		print '<td align="right">' . $langs->trans('amount') . '</td>';
-		print '<td align="right">' . $langs->trans('select') . '</td>';
+		print '<td align="right">' . $langs->trans('ImmoCostVentilAmount') . '</td>';
+		print '<td align="right">' . $langs->trans('ImmoCostVentilSelect') . '</td>';
 		print "</tr>\n";
 		
 		$i = 0;
@@ -260,7 +260,7 @@ if ($id > 0)
 			}
 		}
 		print '<tr><td colspan="5" align="center">'.$langs->trans('Type').'<input class="flat" type="text" value="" name="typecharge"></td></tr>';
-		print '<tr><td colspan="5" align="center"><input class="button" type="submit" value="' . $langs->trans("AddRepartition") . '" name="addrepartition"></td></tr>';
+		print '<tr><td colspan="5" align="center"><input class="button" type="submit" value="' . $langs->trans("ImmoCostVentilAddRepartition") . '" name="addrepartition"></td></tr>';
 		
 		print "</tbody></table></div>";
 		
