@@ -23,7 +23,6 @@
  */
 
 // Put here all includes required by your class file
-//require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
 dol_include_once('/ultimateimmo/class/commonobjectultimateimmo.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 //require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
@@ -32,7 +31,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 /**
  * Class for ImmoOwner
  */
-class ImmoOwner extends CommonObject
+class ImmoOwner extends CommonObjectUltimateImmo
 {
 	/**
 	 * @var string ID to identify managed object
@@ -47,7 +46,7 @@ class ImmoOwner extends CommonObject
 	/**
 	 * @var int Field with ID of parent key if this field has a parent
 	 */
-	public $fk_element='fk_owner';
+	public $fk_element = 'fk_owner';
 
 	/**
 	 * @var int  Does immoowner support multicompany module ? 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
@@ -427,81 +426,6 @@ class ImmoOwner extends CommonObject
 	        }*/ else {
 				$this->{$field} = $obj->{$field};
 			}
-		}
-	}
-
-	/**
-	 * Load object in memory from the database
-	 *
-	 * @param	int    $id				Id object
-	 * @param	string $ref				Ref
-	 * @param	string	$morewhere		More SQL filters (' AND ...')
-	 * @return 	int         			<0 if KO, 0 if not found, >0 if OK
-	 */
-	public function fetchCommon($id, $ref = null, $morewhere = '')
-	{
-		if (empty($id) && empty($ref)) return false;
-
-		global $langs;
-
-		$array = preg_split("/[\s,]+/", $this->get_field_list());
-		$array[0] = 't.rowid';
-		$array = array_splice($array, 0, count($array), array($array[0]));
-		$array = implode(', t.', $array);
-		
-		$sql = 'SELECT ' . $array . ',';
-		
-		$sql .= 'country.rowid as country_id, country.code as country_code, country.label as country, civility.rowid as civility_id, civility.code as civility_code, civility.label as civility';
-		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_country as country ON t.country_id = country.rowid';
-		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_civility as civility ON t.civility_id = civility.rowid';
-		
-		if (!empty($id)) $sql .= ' WHERE t.rowid = ' . $id;
-		else $sql .= ' WHERE t.ref = ' . $this->quote($ref, $this->fields['ref']);
-		if ($morewhere) $sql .= $morewhere;
-
-		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
-		$res = $this->db->query($sql);
-		
-		if ($res) {
-			if ($obj = $this->db->fetch_object($res)) {
-				if ($obj) {
-					$this->id = $obj->rowid;
-					$this->set_vars_by_db($obj);
-					
-					$this->date_creation = $this->db->jdate($obj->date_creation);
-					$this->tms = $this->db->jdate($obj->tms);
-
-					$this->civility_id    = $obj->civility_id;
-					$this->civility_code  = $obj->civility_code; 
-					if ($langs->trans("Civility" . $obj->civility_code) != "Civility" . $obj->civility_code) {
-						$this->civility = $langs->transnoentitiesnoconv("Civility" .  $obj->civility_code);
-					} else {
-						$this->civility = $obj->civility;
-					}
-					
-					$this->country_id	= $obj->country_id;
-					$this->country_code	= $obj->country_code;
-					if ($langs->trans("Country" . $obj->country_code) != "Country" . $obj->country_code) {
-						$this->country = $langs->transnoentitiesnoconv("Country" . $obj->country_code);
-					} else {
-						$this->country = $obj->country;
-					}
-					$this->setVarsFromFetchObj($obj);
-
-					return $this->id;
-				} else {
-					return 0;
-				}
-			} else {
-				$this->error = $this->db->lasterror();
-				$this->errors[] = $this->error;
-				return -1;
-			}
-		} else {
-			$this->error = $this->db->lasterror();
-			$this->errors[] = $this->error;
-			return -1;
 		}
 	}
 
