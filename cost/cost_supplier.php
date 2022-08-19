@@ -2,7 +2,7 @@
 /* Copyright (C) 2001-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2018-2019 Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	    <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,31 +25,37 @@
  */
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
 // Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
+if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
+if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
+if (!$res) die("Include of main fails");
 
-	
+
 // Class
-require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
+require_once(DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
-$res = dol_include_once ( "/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php" );	
+$res = dol_include_once("/ultimateimmo/core/modules/ultimateimmo/modules_ultimateimmo.php");
 
 // Load traductions files requiredby by page
-$langs->loadLangs(array("ultimateimmo@ultimateimmo","other","bills"));
+$langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "bills"));
 
-$model='chargefourn';
-$action=GETPOST('action');
+$model = 'chargefourn';
+$action = GETPOST('action');
 
 
 // Filter
@@ -68,9 +74,9 @@ $filedir = $conf->ultimateimmo->dir_output . '/chargefourn/';
 
 
 if ($action == 'builddoc') {
-	
-	$result = chargefourn_pdf_create($db, $year_start, $model, $langs,$filedir,$filename);
-	
+
+	$result = chargefourn_pdf_create($db, $year_start, $model, $langs, $filedir, $filename);
+
 	if ($result <= 0) {
 		dol_print_error($db, $result);
 		exit();
@@ -83,11 +89,13 @@ if ($action == 'builddoc') {
 /*
  * View
  */
-llxHeader('', 'Immobilier - charges par mois');
+
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+llxHeader('', 'Immobilier - charges par mois', $wikihelp);
 $formfile = new FormFile($db);
 
-$textprevyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/cost_supplier.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
-$textnextyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/cost_supplier.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
+$textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/cost_supplier.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
+$textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/cost_supplier.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';
 
 print load_fiche_titre("Charges $textprevyear " . $langs->trans("Year") . " $year_start $textnextyear");
 
@@ -138,11 +146,11 @@ $resql = $db->query($sql);
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows($resql);
-	
-	while ( $i < $num ) {
-		
+
+	while ($i < $num) {
+
 		$row = $db->fetch_row($resql);
-		
+
 		print '<tr><td>' . $row[0] . '</td>';
 		print '<td align="right">' . $row[1] . '</td>';
 		print '<td align="right">' . $row[2] . '</td>';
@@ -159,7 +167,7 @@ if ($resql) {
 		print '<td align="right">' . $row[13] . '</td>';
 		print '<td align="right">' . $row[14] . '</td>';
 		print '</tr>';
-		$i ++;
+		$i++;
 	}
 	$db->free($resql);
 } else {
@@ -210,11 +218,11 @@ $resql = $db->query($sql);
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows($resql);
-	
-	while ( $i < $num ) {
-		
+
+	while ($i < $num) {
+
 		$row = $db->fetch_row($resql);
-		
+
 		print '<tr><td>' . $row[0] . '</td>';
 		print '<td align="right">' . $row[1] . '</td>';
 		print '<td align="right">' . $row[2] . '</td>';
@@ -230,7 +238,7 @@ if ($resql) {
 		print '<td align="right">' . $row[12] . '</td>';
 		print '<td align="right">' . $row[13] . '</td>';
 		print '</tr>';
-		$i ++;
+		$i++;
 	}
 	$db->free($resql);
 } else {
@@ -241,7 +249,7 @@ print "</table>\n";
 
 print '</td></tr></table>';
 
-	if (is_file($filedir.$filename)) {
+if (is_file($filedir . $filename)) {
 	print '&nbsp';
 	print '<table class="border" width="100%">';
 	print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("LinkedDocuments") . '</td></tr>';

@@ -90,9 +90,8 @@ include DOL_DOCUMENT_ROOT.'/core/actions_setnotes.inc.php';	// Must be include, 
 
 $form = new Form($db);
 
-//$help_url='EN:Customers_Orders|FR:Commandes_Clients|ES:Pedidos de clientes';
-$help_url = '';
-llxHeader('', $langs->trans('ImmoCost'), $help_url);
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+llxHeader('', $langs->trans('ImmoCost'), $wikihelp);
 
 if ($id > 0 || !empty($ref)) {
 	$object->fetch_thirdparty();

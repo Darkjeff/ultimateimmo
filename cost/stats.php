@@ -80,7 +80,9 @@ if (empty($type_stats)) {
 /*
  * View
  */
-llxHeader ( '', 'Immobilier - charge par mois' );
+
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+llxHeader ( '', 'Immobilier - charges par mois', $wikihelp);
 
 $textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?type_stats='.$type_stats.'&year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
 $textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?type_stats='.$type_stats.'&year=' . ($year_current + 1) . '">' . img_next() . '</a>';

@@ -197,7 +197,8 @@ if (empty($reshook)) {
 $form = new Form($db);
 $formfile = new FormFile($db);
 
-llxHeader('', 'ImmoCost', '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+llxHeader('', 'ImmoCost', $wikihelp);
 
 // Part to create
 if ($action == 'create') {
@@ -519,7 +520,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immocost'));
 		$somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
 
-
 		print '</div><div class="fichehalfright"><div class="ficheaddleft">';
 
 		$MAXEVENT = 10;
@@ -547,7 +547,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';
 }
-
 
 // End of page
 llxFooter();

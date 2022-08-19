@@ -23,26 +23,31 @@
  */
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
 // Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
+if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
+if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
+if (!$res) die("Include of main fails");
 
 require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 dol_include_once('/ultimateimmo/class/immocost.class.php');
 dol_include_once('/ultimateimmo/lib/immocost.lib.php');
-
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
@@ -92,8 +97,6 @@ $extralabels = $extrafields->fetch_name_optionals_label('immocost');
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity] . "/" . $object->id;
 
-
-
 /*
  *	Actions
  */
@@ -117,8 +120,6 @@ if (empty($reshook)) {
 	}
 }
 
-
-
 /*
  *	View
  */
@@ -130,12 +131,11 @@ $form = new Form($db);
 if ($object->id > 0) {
 	$title = $langs->trans("Agenda");
 	//if (! empty($conf->global->MAIN_HTML_TITLE) && preg_match('/thirdpartynameonly/',$conf->global->MAIN_HTML_TITLE) && $object->name) $title=$object->name." - ".$title;
-	$help_url = '';
-	llxHeader('', $title, $help_url);
+	$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+	llxHeader('', $title, $wikihelp);
 
 	if (isModEnabled('notification')) $langs->load("mails");
 	$head = immocostPrepareHead($object);
-
 
 	print dol_get_fiche_head($head, 'agenda', $langs->trans("ImmoCost"), -1, 'ultimateimmo@ultimateimmo');
 
@@ -183,20 +183,17 @@ if ($object->id > 0) {
 	}*/
 	$morehtmlref .= '</div>';
 
-
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
-    print '<div class="fichecenter">';
-    print '<div class="underbanner clearboth"></div>';
+	print '<div class="fichecenter">';
+	print '<div class="underbanner clearboth"></div>';
 
-    $object->info($object->id);
+	$object->info($object->id);
 	print dol_print_object_info($object, 1);
 
 	print '</div>';
 
 	print dol_get_fiche_end();
-
-
 
 	// Actions buttons
 
@@ -214,22 +211,17 @@ if ($object->id > 0) {
 		//$out.="</a>";
 	}
 
-
 	print '<div class="tabsAction">';
 
-    if (isModEnabled('agenda'))
-    {
-    	if (! empty($user->rights->agenda->myactions->create) || ! empty($user->rights->agenda->allactions->create))
-    	{
-        	print '<a class="butAction" href="'.DOL_URL_ROOT.'/comm/action/card.php?action=create'.$out.'">'.$langs->trans("AddAction").'</a>';
-    	}
-    	else
-    	{
-        	print '<a class="butActionRefused" href="#">'.$langs->trans("AddAction").'</a>';
-    	}
-    }
+	if (isModEnabled('agenda')) {
+		if (!empty($user->rights->agenda->myactions->create) || !empty($user->rights->agenda->allactions->create)) {
+			print '<a class="butAction" href="' . DOL_URL_ROOT . '/comm/action/card.php?action=create' . $out . '">' . $langs->trans("AddAction") . '</a>';
+		} else {
+			print '<a class="butActionRefused" href="#">' . $langs->trans("AddAction") . '</a>';
+		}
+	}
 
-    print '</div>';
+	print '</div>';
 
 	if (isModEnabled('agenda') && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read))) {
 		$param = '&socid=' . $socid;
@@ -248,7 +240,5 @@ if ($object->id > 0) {
 	}
 }
 
-
 llxFooter();
-
 $db->close();

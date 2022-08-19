@@ -146,8 +146,8 @@ if ($action == 'ventil')
 $form = new Form($db);
 $loyer = new Immoreceipt($db);
 
-$help_url='';
-llxheader('', $langs->trans("newventilcharge"), $help_url);
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+llxheader('', $langs->trans("newventilcharge"), $wikihelp);
 
 $charge = new ImmoCost ($db);
 $result = $charge->fetch($id);
