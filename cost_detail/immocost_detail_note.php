@@ -76,14 +76,11 @@ if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[
 $permissionnote = 1;
 //$permissionnote=$user->rights->ultimateimmo->creer;	// Used by the include of actions_setnotes.inc.php
 
-
-
 /*
  * Actions
  */
 
 include DOL_DOCUMENT_ROOT . '/core/actions_setnotes.inc.php';	// Must be include, not include_once
-
 
 /*
  * View
@@ -91,9 +88,8 @@ include DOL_DOCUMENT_ROOT . '/core/actions_setnotes.inc.php';	// Must be include
 
 $form = new Form($db);
 
-//$help_url='EN:Customers_Orders|FR:Commandes_Clients|ES:Pedidos de clientes';
-$help_url = '';
-llxHeader('', $langs->trans('ImmoCost_Detail'), $help_url);
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+llxHeader('', $langs->trans('ImmoCost_Detail'), $wikihelp);
 
 if ($id > 0 || !empty($ref)) {
 	$object->fetch_thirdparty();
@@ -147,7 +143,6 @@ if ($id > 0 || !empty($ref)) {
 	    }
 	}*/
 	$morehtmlref .= '</div>';
-
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
