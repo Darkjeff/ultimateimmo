@@ -282,6 +282,7 @@ ImmoResultLoyerBrutEncaisse = Loyer brut encaissé
 ImmoResultChargesDeductibles = Charges déductibles
 ImmoResultRevenuFiscal = Revenu fiscal
 ImmoResultRevenuNet= Revenu Net
+Average = Moyenne
 # Types de couts
 CostTypeLabel = Libellé
 CostTypeLabelInfo = Indiquer un libellé

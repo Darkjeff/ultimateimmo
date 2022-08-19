@@ -238,6 +238,7 @@ ImmoResultLoyerBrutEncaisse = Gross rent cashed
 ImmoResultChargesDeductibles = Deductibles charges
 ImmoResultRevenuFiscal = Fiscal revenue
 ImmoResultRevenuNet= Net Revenue
+Average = Average
 # Cost Types
 ImmoCostType = Types of cost
 CostTypeLabel = Label

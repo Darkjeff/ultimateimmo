@@ -206,7 +206,7 @@ if ($resql) {
 	print $db->lasterror(); // affiche la derniere erreur sql
 }
 //Total Ligne
-print '<tr class="oddeven"><td>' . $langs->trans('Moyenne') . '</td>';
+print '<tr class="oddeven"><td>' . $langs->trans('Average') . '</td>';
 print '<td align="right"></td>';
 foreach ($months_list as $month_num => $month_name) {
 	print '<td align="right"></td>';
