@@ -49,7 +49,6 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 dol_include_once('/ultimateimmo/class/immocost_detail.class.php');
 dol_include_once('/ultimateimmo/lib/immocost_detail.lib.php');
 
-
 // Load translation files required by the page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
 
@@ -121,8 +120,6 @@ if (empty($reshook)) {
 	}
 }
 
-
-
 /*
  *	View
  */
@@ -134,8 +131,8 @@ $form = new Form($db);
 if ($object->id > 0) {
 	$title = $langs->trans("Agenda");
 	//if (! empty($conf->global->MAIN_HTML_TITLE) && preg_match('/thirdpartynameonly/',$conf->global->MAIN_HTML_TITLE) && $object->name) $title=$object->name." - ".$title;
-	$help_url = '';
-	llxHeader('', $title, $help_url);
+	$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+	llxHeader('', $title, $wikihelp);
 
 	if (isModEnabled('notification')) $langs->load("mails");
 	$head = immocost_detailPrepareHead($object);
@@ -189,7 +186,6 @@ if ($object->id > 0) {
 	 	}*/
 	$morehtmlref .= '</div>';
 
-
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
 	print '<div class="fichecenter">';
@@ -201,7 +197,6 @@ if ($object->id > 0) {
 	print '</div>';
 
 	print dol_get_fiche_end();
-
 
 	// Actions buttons
 
@@ -236,7 +231,6 @@ if ($object->id > 0) {
 		$param = '&socid=' . $socid;
 		if (!empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param .= '&contextpage=' . $contextpage;
 		if ($limit > 0 && $limit != $conf->liste_limit) $param .= '&limit=' . $limit;
-
 
 		print load_fiche_titre($langs->trans("ActionsOnImmoCost_Detail"), '', '');
 
