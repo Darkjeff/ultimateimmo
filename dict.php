@@ -125,7 +125,7 @@ $tabfieldcheck=array(0);
 
 
 // Complete all arrays with entries found into modules
-complete_dictionary_with_gestionparc($taborder, $tabname, $tablib, $tabsql, $tabsqlsort, $tabfield, $tabfieldvalue, $tabfieldinsert, $tabrowid, $tabcond, $tabhelp, $tabfieldcheck);
+complete_dictionary_with_ultimateimmo($taborder, $tabname, $tablib, $tabsql, $tabsqlsort, $tabfield, $tabfieldvalue, $tabfieldinsert, $tabrowid, $tabcond, $tabhelp, $tabfieldcheck);
 
 
 // Defaut sortorder
@@ -891,12 +891,12 @@ function fieldList($fieldlist, $obj = '', $tabname = '', $context = '')
  * @param  array $tabfieldcheck  Tabfieldcheck
  * @return int            1
  */
-function complete_dictionary_with_gestionparc(&$taborder, &$tabname, &$tablib, &$tabsql, &$tabsqlsort, &$tabfield, &$tabfieldvalue, &$tabfieldinsert, &$tabrowid, &$tabcond, &$tabhelp, &$tabfieldcheck)
+function complete_dictionary_with_ultimateimmo(&$taborder, &$tabname, &$tablib, &$tabsql, &$tabsqlsort, &$tabfield, &$tabfieldvalue, &$tabfieldinsert, &$tabrowid, &$tabcond, &$tabhelp, &$tabfieldcheck)
 {
     global $db, $modules, $conf, $langs;
 
     // Search modules
-    $dir = DOL_DOCUMENT_ROOT."/custom/gestionparc/core/modules/";
+    $dir = DOL_DOCUMENT_ROOT."/custom/ultimateimmo/core/modules/";
     $i = 0; // is a sequencer of modules found
     $j = 0; // j is module number. Automatically affected if module number not defined.
 
