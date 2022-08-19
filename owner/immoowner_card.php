@@ -222,60 +222,7 @@ if ($action == 'create') {
 	print '<table class="border centpercent tableforfieldcreate">' . "\n";
 
 	// Common attributes
-	$object->fields = dol_sort_array($object->fields, 'position');
-
-	foreach ($object->fields as $key => $val) {
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
-
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
-
-		print '<tr id="field_' . $key . '">';
-		print '<td';
-		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '"';
-		print '>';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
-		print '</td>';
-		print '<td>';
-
-		if ($val['label'] == 'Civility') {
-			// We set civility_id, civility_code and civility for the selected civility
-			$object->civility_id	= GETPOST("civility_id", 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
-
-			if ($object->civility_id) {
-				$tmparray = array();
-				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
-				if (in_array($tmparray['code'], $tmparray)) $object->civility_code = $tmparray['code'];
-				if (in_array($tmparray['label'], $tmparray)) $object->civility = $tmparray['label'];
-			}
-
-			// civility
-			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id, 'civility_id');
-			//var_dump($object->civility_id);exit;	
-		} elseif ($val['label'] == 'Country') {
-			// We set country_id, country_code and country for the selected country
-			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
-			if ($object->country_id) {
-				$tmparray = $object->getCountry($object->country_id, 'all');
-				$object->country_code = $tmparray['code'];
-				$object->country = $tmparray['label'];
-			}
-			// Country
-			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
-		} else {
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
-
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
-			else $value = GETPOST($key, 'alpha');
-			print $object->showInputField($val, $key, $value, '', '', '', 0);
-		}
-		print '</td>';
-		print '</tr>';
-	}
+	include DOL_DOCUMENT_ROOT.'/core/tpl/commonfields_add.tpl.php';
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_add.tpl.php';
@@ -287,6 +234,8 @@ if ($action == 'create') {
 	print $form->buttonsSaveCancel("Create");
 
 	print '</form>';
+
+	//dol_set_focus('input[name="ref"]');
 }
 
 // Part to edit record
@@ -309,55 +258,7 @@ if (($id || $ref) && $action == 'edit') {
 	print '<table class="border centpercent tableforfieldedit">' . "\n";
 
 	// Common attributes
-	$object->fields = dol_sort_array($object->fields, 'position');
-
-	foreach ($object->fields as $key => $val) {
-		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
-
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
-
-		print '<tr><td';
-		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
-		print '"';
-		print '>';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
-		print '</td>';
-		print '<td>';
-
-		if ($val['label'] == 'Civility') {
-			// We set civility_id, civility_code and civility for the selected civility
-			$object->civility_id = GETPOST('civility_id', 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
-			if ($object->civility_id) {
-				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
-				$object->civility_code = $tmparray['code'];
-				$object->civility = $tmparray['label'];
-			}
-			print $object->select_civility(GETPOSTISSET("civility_id") != '' ? GETPOST("civility_id", 'int') : $object->civility_id);	
-		} elseif ($val['label'] == 'Country') {
-			// We set country_id, country_code and country for the selected country
-			$object->country_id = GETPOST('country_id', 'int') ? GETPOST('country_id', 'int') : $object->country_id;
-			if ($object->country_id) {
-				$tmparray = $object->getCountry($object->country_id, 'all');
-				$object->country_code = $tmparray['code'];
-				$object->country = $tmparray['label'];
-			}
-			// Country
-			print $form->select_country((GETPOST('country_id') != '' ? GETPOST('country_id') : $object->country_id));
-		} else {
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
-			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
-			//var_dump($val.' '.$key.' '.$value);
-			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
-			else print $object->showInputField($val, $key, $value, '', '', '', 0);
-		}
-		print '</td>';
-		print '</tr>';
-	}
+	include DOL_DOCUMENT_ROOT.'/core/tpl/commonfields_edit.tpl.php';
 
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';

@@ -93,7 +93,7 @@ class CommonObjectUltimateImmo extends CommonObject
 				$this->civility = $tmparray['label'];
 			}
 			print $this->civility;
-		} elseif ($val['label'] == 'MenuImmoOwnerType') {
+		} elseif ($val['label']=='MenuImmoOwnerType') {
 
 			dol_include_once('/ultimateimmo/class/immoowner_type.class.php');
 
@@ -102,7 +102,7 @@ class CommonObjectUltimateImmo extends CommonObject
 			if ($staticownertype->ref) {
 				print $staticownertype->ref;
 			}
-		} elseif ($val['label'] == 'Country') {
+		} elseif ($val['label']=='Country') {
 			if ($this->country_id) {
 				$tmparray = $this->getCountry($this->country_id, 'all');
 				$this->country_code = $tmparray['code'];
