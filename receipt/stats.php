@@ -70,7 +70,7 @@ llxHeader ( '', 'Loyer - Stats' );
 $textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/receipt/stats.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
 $textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/receipt/stats.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';
 
-print load_fiche_titre ( $langs->trans("loyer")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
+print load_fiche_titre ( $langs->trans("ImmoReceiptStatTitre")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
 
 print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';

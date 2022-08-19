@@ -979,7 +979,7 @@ if ($action == 'createall') {
 		print '<td class="left">' . $langs->trans('TotalAmount') . '</td>';
 		print '<td class="left">' . $langs->trans('PartialPayment') . '</td>';
 		print '<td class="left">' . $langs->trans('Balance') . '</td>';
-		print '<td align="right">' . $langs->trans('income') . '</td>';
+		print '<td align="right">' . $langs->trans('ImmoPaymentIncome') . '</td>';
 		print '<td>';
 		print $form->showCheckAddButtons('checkforselect', 1);
 		print '</td>';

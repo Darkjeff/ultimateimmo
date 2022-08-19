@@ -214,6 +214,7 @@ ChargesAmount = Montant des charges
 TotalAmount = Montant total
 Deposit = Dépôt de garantie
 Encours = Encours
+ImmoRentPeriod = Période
 ImmoRentNoticePeriod = Préavis
 date_end = Date de fin
 DateNextRent = Date prochain loyer
@@ -264,6 +265,7 @@ DeleteImmoReceipt = Suppression de Quittance
 ConfirmDeleteImmoReceipt = Etes vous sûr de vouloir supprimer cette quittance ?
 CloneImmoReceipt = Cloner cette quittance 
 ConfirmCloneImmoReceipt = Etes vous sûr de vouloir cloner cette quittance ?
+ImmoReceiptStatTitre= Loyers
 # Paiements
 PaymentMode = Mode de paiement
 NumPayment = <em>Numéro(Chèque/Virement N°)</em>
@@ -276,6 +278,7 @@ ImmoPaymentRentUpdate = Loyer mis à jour avec succès
 HtAmount = Montant HT
 VatAmount = Montant TVA
 RenterCost = Coût/locataire
+ImmoResultRevenuNet= Revenu Net
 # Types de couts
 CostTypeLabel = Libellé
 CostTypeLabelInfo = Indiquer un libellé
