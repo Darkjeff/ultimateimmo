@@ -64,7 +64,8 @@ $limit = $conf->liste_limit;
 $object = new ImmoRenter($db);
 $object->fetch($id, $ref);
 
-llxheader('', $langs->trans("Renter") . ' | ' . $langs->trans("Bilan"), '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_locataires';
+llxheader('', $langs->trans("Renter") . ' | ' . $langs->trans("Bilan"), $wikihelp);
 
 $object->fetch_thirdparty();
 

@@ -263,7 +263,8 @@ $form = new Form($db);
 $formfile = new FormFile($db);
 $formproject = new FormProjets($db);
 
-llxHeader('', $langs->trans('ImmoRenter'), '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_locataires';
+llxHeader('', $langs->trans('ImmoRenter'), $wikihelp);
 
 // Part to create
 if ($action == 'create') {

@@ -214,7 +214,8 @@ $formfile = new FormFile($db);
 $staticImmorenter = new ImmoRenter($db);
 $staticImmorenter->fetch($id);
 
-llxHeader('', $langs->trans("ImmoRents"), '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_contrats_de_location';
+llxHeader('', $langs->trans("ImmoRents"), $wikihelp);
 
 // Part to create
 if ($action == 'create') {

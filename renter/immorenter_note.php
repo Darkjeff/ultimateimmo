@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2018-2021 Philippe GRAND 	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,16 +90,15 @@ include DOL_DOCUMENT_ROOT . '/core/actions_setnotes.inc.php';	// Must be include
 
 $form = new Form($db);
 
-//$help_url='EN:Customers_Orders|FR:Commandes_Clients|ES:Pedidos de clientes';
-$help_url = '';
-llxHeader('', $langs->trans('ImmoRenter'), $help_url);
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_locataires';
+llxHeader('', $langs->trans('ImmoRenter'), $wikihelp);
 
 if ($id > 0 || !empty($ref)) {
 	$object->fetch_thirdparty();
 
 	$head = immorenterPrepareHead($object);
 
-	dol_fiche_head($head, 'note', $langs->trans("ImmoRenter"), -1, 'contact');
+	print dol_get_fiche_head($head, 'note', $langs->trans("ImmoRenter"), -1, 'contact');
 
 	// Object card
 	// ------------------------------------------------------------
@@ -126,7 +125,7 @@ if ($id > 0 || !empty($ref)) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 }
 
 

@@ -84,7 +84,8 @@ $langs->load("ultimateimmo@ultimateimmo");
 
 $form = new Form($db);
 
-llxHeader();
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_locataires';
+llxHeader('', '', $wikihelp);
 
 $title = $langs->trans("Statistics");
 $dir = $conf->ultimateimmo->dir_temp;
