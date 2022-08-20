@@ -335,7 +335,8 @@ if ($action == 'add_payment') {
 
 $form = new Form($db);
 
-llxHeader('', $langs->trans("Payment"));
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_quittances';
+llxHeader('', $langs->trans("Payment"), $wikihelp);
 
 // Form to create immoreceipt payment
 if (GETPOST('action', 'aZ09') == 'create') {
