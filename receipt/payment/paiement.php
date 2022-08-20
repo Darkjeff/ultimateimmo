@@ -273,15 +273,15 @@ if ($action == 'add_payment') {
 
 	if (!$error) {
 		// Create subscription
-		$crowid = $renter->receiptsubscription($id);
+		$crowid = $receipt->receiptsubscription($id);
 		if ($crowid <= 0) {
 			$error++;
-			$errmsg = $renter->error;
-			setEventMessages($renter->error, $renter->errors, 'errors');
+			$errmsg = $receipt->error;
+			setEventMessages($rereceiptnter->error, $receipt->errors, 'errors');
 		}
 
 		if (!$error) {
-			$result = $renter->receiptSubscriptionComplementaryActions($crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
+			$result = $receipt->receiptSubscriptionComplementaryActions($crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
 			//var_dump($result, $crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount);exit;
 
 			// Create a line of payments
@@ -303,7 +303,7 @@ if ($action == 'add_payment') {
 			$payment->fk_account  = GETPOST('fk_bank', 'int');
 			$payment->num_payment  = GETPOST('num_payment', 'int');
 			$payment->note_public  = GETPOST('note_public', 'string');
-			//var_dump($payment->fk_mode_reglement);exit;
+			//var_dump(GETPOST("paymentsave"));exit;
 			if (!$error) {
 				$paymentid = $payment->create($user);
 				if ($paymentid < 0) {
@@ -315,7 +315,7 @@ if ($action == 'add_payment') {
 
 			if ($result < 0) {
 				$error++;
-				setEventMessages($renter->error, $renter->errors, 'errors');
+				setEventMessages($receipt->error, $receipt->errors, 'errors');
 			} else {
 				$db->commit();
 				$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $id;

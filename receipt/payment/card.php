@@ -554,13 +554,11 @@ if ($_GET['action'] == '') {
 require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 $facture = new Facture($db);
 $facture->fetch($id);
-$renter = new ImmoRenter($db);
-$renter->fetch($id);
 
 // Create subscription
-$crowid = $renter->receiptsubscription($datereceipt, $amount, $accountid, $operation, $label, $num_chq, $emetteur_nom, $emetteur_banque, $datesubend);
+$crowid = $receipt->receiptsubscription($datereceipt, $amount, $accountid, $operation, $label, $num_chq, $emetteur_nom, $emetteur_banque, $datesubend);
 
-$renter->receiptSubscriptionComplementaryActions($crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
+$receipt->receiptSubscriptionComplementaryActions($crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
 
 //var_dump($renter);exit;
 $somethingshown = $form->showLinkedObjectBlock($facture, '');

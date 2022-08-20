@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoreceipt (
    --fk_mode_reglement int(11) DEFAULT NULL,
    fk_payment INT(11) DEFAULT NULL,
    fk_bank INT(11) DEFAULT NULL,
-   paye INT(2) NULL DEFAULT 0,
+   paye varchar(64) DEFAULT NULL,
    vat_amount double(24,8) DEFAULT NULL,
    vat_tx INT(11) DEFAULT NULL,
    date_rent datetime DEFAULT NULL,

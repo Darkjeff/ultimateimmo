@@ -69,6 +69,7 @@ ALTER TABLE llx_ultimateimmo_building ADD COLUMN tms timestamp AFTER date_creati
 ALTER TABLE llx_ultimateimmo_building ADD COLUMN fk_user_creat INT AFTER tms;
 ALTER TABLE llx_ultimateimmo_building ADD COLUMN fk_user_modif INT AFTER fk_user_creat;
 ALTER TABLE llx_ultimateimmo_immoreceipt ADD COLUMN fk_bank INT(11) AFTER fk_payment;
+ALTER TABLE llx_ultimateimmo_immoreceipt ALTER COLUMN paye VARCHAR(64);
 
 
 
