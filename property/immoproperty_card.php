@@ -229,7 +229,8 @@ $form = new Form($db);
 $formfile = new FormFile($db);
 $formImmo = new FormUltimateimmo($db);
 
-llxHeader('', $langs->trans('ImmoProperty'), '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_biens';
+llxHeader('', $langs->trans('ImmoProperty'), $wikihelp);
 
 // Part to create
 if ($action == 'create') {

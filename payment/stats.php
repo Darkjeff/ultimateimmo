@@ -2,7 +2,7 @@
 /* Copyright (C) 2001-2006 Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2004-2005 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2018-2021 Philippe GRAND       <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 Philippe GRAND       <philippe.grand@atoo-net.com>
  * Copyright (C) 2020      Thomas OURSEL         <contact@ogest.fr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,9 @@ if ($year == 0) {
 /*
  * View
  */
-llxHeader('', 'Encaissement - Stats');
+
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_paiements';
+llxHeader('', 'Encaissement - Stats', $wikihelp);
 
 $textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/payment/stats.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
 $textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/payment/stats.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';

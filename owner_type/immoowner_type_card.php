@@ -125,7 +125,8 @@ if (empty($reshook)) {
 $form = new Form($db);
 $formfile = new FormFile($db);
 
-llxHeader('', 'ImmoOwner_Type', '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_types_de_propriétaires';
+llxHeader('', 'ImmoOwner_Type', $wikihelp);
 
 // Example : Adding jquery code
 print '<script type="text/javascript" language="javascript">

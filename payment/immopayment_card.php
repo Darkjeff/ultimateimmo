@@ -440,7 +440,8 @@ if ($result < 0) {
 	exit;
 }
 
-llxHeader('', $langs->trans("ImmoPayment"), '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_paiements';
+llxHeader('', $langs->trans("ImmoPayment"), $wikihelp);
 
 $arrayofselected = is_array($toselect) ? $toselect : array();
 

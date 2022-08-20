@@ -50,7 +50,6 @@ dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immoproperty.lib.php');
 
-
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
 
@@ -99,7 +98,6 @@ $extralabels = $extrafields->fetch_name_optionals_label('immoproperty');
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity] . "/" . $object->id;
 
-
 /*
  *	Actions
  */
@@ -123,7 +121,6 @@ if (empty($reshook)) {
 	}
 }
 
-
 /*
  *	View
  */
@@ -135,8 +132,8 @@ $form = new Form($db);
 if ($object->id > 0) {
 	$title = $langs->trans("Agenda");
 	//if (! empty($conf->global->MAIN_HTML_TITLE) && preg_match('/thirdpartynameonly/',$conf->global->MAIN_HTML_TITLE) && $object->name) $title=$object->name." - ".$title;
-	$help_url = '';
-	llxHeader('', $title, $help_url);
+	$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_biens';
+	llxHeader('', $title, $wikihelp);
 
 	if (isModEnabled('notification')) $langs->load("mails");
 	$head = immopropertyPrepareHead($object);
@@ -184,7 +181,6 @@ if ($object->id > 0) {
 		//$out.=img_picto($langs->trans("AddAnAction"),'filenew');
 		//$out.="</a>";
 	}
-
 
 	print '<div class="tabsAction">';
 

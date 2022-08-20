@@ -279,8 +279,8 @@ if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && 
 
 // Output page
 // --------------------------------------------------------------------
-
-llxHeader('', $title, $help_url);
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_types_de_propriétaires';
+llxHeader('', $title, $wikihelp);
 
 // Example : Adding jquery code
 print '<script type="text/javascript" language="javascript">

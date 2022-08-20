@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2013		Olivier Geffroy		<jeff@jeffinfo.com>
  * Copyright (C) 2015-2016	Alexandre Spangaro	<aspangaro@zendsi.com>
- * Copyright (C) 2018-2021 	Philippe GRAND 	    <philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022 	Philippe GRAND 	    <philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,12 +102,13 @@ if ($result < 0) {
 }
 
 $page_name = $langs->trans("Property") . '|' . $langs->trans("Equipement");
-llxheader('', $langs->trans($page_name), '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_biens';
+llxheader('', $langs->trans($page_name), $wikihelp);
 
 // Configuration header
 $head = immopropertyPrepareHead($object);
 
-dol_fiche_head($head, 'equipement', $langs->trans("Property"), -1, 'company');
+print dol_get_fiche_head($head, 'equipement', $langs->trans("Property"), -1, 'company');
 
 // Subheader
 $linkback = '<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
@@ -273,8 +274,9 @@ if ($conf->use_javascript_ajax) {
 }
 print '</td></tr>';
 
-
 print '</table>';
+
+print dol_get_fiche_end();
 
 // Footer
 llxFooter();

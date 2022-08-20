@@ -195,8 +195,8 @@ $formproject = new FormProjets($db);
 $formcompany = new FormCompany($db);
 
 $title = $langs->trans("ImmoOwner");
-$help_url = '';
-llxHeader('', $title, $help_url);
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_propriétaires';
+llxHeader('', $title, $wikihelp);
 
 // Part to create
 if ($action == 'create') {

@@ -144,8 +144,8 @@ $form = new Form($db);
 if ($object->id > 0) {
 	$title = $langs->trans("Agenda");
 	//if (! empty($conf->global->MAIN_HTML_TITLE) && preg_match('/thirdpartynameonly/',$conf->global->MAIN_HTML_TITLE) && $object->name) $title=$object->name." - ".$title;
-	$help_url = '';
-	llxHeader('', $title, $help_url);
+	$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_propriétaires';
+	llxHeader('', $title, $wikihelp);
 
 	if (isModEnabled('notification')) $langs->load("mails");
 	$head = immoownerPrepareHead($object);
