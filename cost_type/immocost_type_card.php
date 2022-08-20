@@ -129,7 +129,8 @@ if (empty($reshook)) {
 $form = new Form($db);
 $formfile = new FormFile($db);
 
-llxHeader('', $langs->trans("MenuListImmoCostType"), '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+llxHeader('', $langs->trans("MenuListImmoCostType"), $wikihelp);
 
 
 // Part to create

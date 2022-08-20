@@ -135,12 +135,11 @@ $form = new Form($db);
 if ($object->id > 0) {
 	$title = $langs->trans("Agenda");
 	//if (! empty($conf->global->MAIN_HTML_TITLE) && preg_match('/thirdpartynameonly/',$conf->global->MAIN_HTML_TITLE) && $object->name) $title=$object->name." - ".$title;
-	$help_url = '';
-	llxHeader('', $title, $help_url);
+	$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+	llxHeader('', $title, $wikihelp);
 
 	if (isModEnabled('notification')) $langs->load("mails");
 	$head = immocost_typePrepareHead($object);
-
 
 	print dol_get_fiche_head($head, 'agenda', $langs->trans("MenuListImmoCostType"), -1, 'ultimateimmo@ultimateimmo');
 
