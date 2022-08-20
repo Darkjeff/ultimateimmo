@@ -532,7 +532,8 @@ $paymentstatic->fetch($object->rowid);
 $bankaccountstatic = new Account($db);
 $bankaccountstatic->fetch($object->fk_account);
 
-llxHeader('', $langs->trans("MenuNewImmoReceipt"), '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_quittances';
+llxHeader('', $langs->trans("MenuNewImmoReceipt"), $wikihelp);
 //var_dump($bankaccountstatic);exit;
 // Load object modReceipt
 $module = (!empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER) ? $conf->global->ULTIMATEIMMO_ADDON_NUMBER : 'mod_ultimateimmo_standard');
