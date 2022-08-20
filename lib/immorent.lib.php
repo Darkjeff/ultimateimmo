@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2018-2019 Philippe GRAND 	<philippe.grand@atoo-net.com>
+/* Copyright (C) 2018-2022 Philippe GRAND 	<philippe.grand@atoo-net.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,35 +36,39 @@ function immorentPrepareHead($object)
 	$h = 0;
 	$head = array();
 
-	$head[$h][0] = dol_buildpath("/ultimateimmo/rent/immorent_card.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/rent/immorent_card.php", 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("ContractRent");
 	$head[$h][2] = 'card';
 	$h++;
 
-	if (isset($object->fields['note_public']) || isset($object->fields['note_private']))
-	{
+	if (isset($object->fields['note_public']) || isset($object->fields['note_private'])) {
 		$nbNote = 0;
 		if (!empty($object->note_private)) $nbNote++;
 		if (!empty($object->note_public)) $nbNote++;
-		$head[$h][0] = dol_buildpath('/ultimateimmo/rent/immorent_note.php', 1).'?id='.$object->id;
+		$head[$h][0] = dol_buildpath('/ultimateimmo/rent/immorent_note.php', 1) . '?id=' . $object->id;
 		$head[$h][1] = $langs->trans('Notes');
-		if ($nbNote > 0) $head[$h][1].= ' <span class="badge">'.$nbNote.'</span>';
+		if ($nbNote > 0) $head[$h][1] .= ' <span class="badge">' . $nbNote . '</span>';
 		$head[$h][2] = 'note';
 		$h++;
 	}
 
-	require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
-	require_once DOL_DOCUMENT_ROOT.'/core/class/link.class.php';
+	require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+	require_once DOL_DOCUMENT_ROOT . '/core/class/link.class.php';
 	$upload_dir = $conf->ultimateimmo->dir_output . "/rent/" . dol_sanitizeFileName($object->ref);
-	$nbFiles = count(dol_dir_list($upload_dir,'files',0,'','(\.meta|_preview.*\.png)$'));
-	$nbLinks=Link::count($db, $object->element, $object->id);
-	$head[$h][0] = dol_buildpath("/ultimateimmo/rent/immorent_document.php", 1).'?id='.$object->id;
+	$nbFiles = count(dol_dir_list($upload_dir, 'files', 0, '', '(\.meta|_preview.*\.png)$'));
+	$nbLinks = Link::count($db, $object->element, $object->id);
+	$head[$h][0] = dol_buildpath("/ultimateimmo/rent/immorent_document.php", 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans('Documents');
-	if (($nbFiles+$nbLinks) > 0) $head[$h][1].= ' <span class="badge">'.($nbFiles+$nbLinks).'</span>';
+	if (($nbFiles + $nbLinks) > 0) $head[$h][1] .= ' <span class="badge">' . ($nbFiles + $nbLinks) . '</span>';
 	$head[$h][2] = 'document';
 	$h++;
 
-	$head[$h][0] = dol_buildpath("/ultimateimmo/rent/immorent_agenda.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/rent/bilan_contrat.php", 1) . '?id=' . $object->id;
+	$head[$h][1] = $langs->trans("Bilan");
+	$head[$h][2] = 'bilan';
+	$h++;
+
+	$head[$h][0] = dol_buildpath("/ultimateimmo/rent/immorent_agenda.php", 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("Events");
 	$head[$h][2] = 'agenda';
 	$h++;
