@@ -143,7 +143,7 @@ class ImmoReceipt extends CommonObject
 		'partial_payment' => array('type' => 'price', 'label' => 'PartialPayment', 'enabled' => 1, 'visible' => 1, 'position' => 80, 'notnull' => -1, 'default' => 'null', 'isameasure' => 1, 'help' => "Help text for partial payment"),
 		'balance'       => array('type' => 'price', 'label' => 'Balance', 'enabled' => 1, 'visible' => 1, 'position' => 85, 'notnull' => -1, 'default' => 'null', 'isameasure' => 1, 'help' => "Help text"),
 		'paye'          => array('type' => 'varchar(64)', 'label' => 'Paye', 'enabled' => 1, 'visible' => 1, 'position' => 90, 'notnull' => 1, 'arrayofkeyval' => array('0' => 'UnPaidReceipt', '1' => 'PaidReceipt', '2' => 'PartiallyPaidReceipt')),
-		'vat_tx'        => array('type' => 'integer', 'label' => 'VatTx', 'enabled' => 1, 'visible' => 1, 'position' => 95, 'notnull' => -1),
+		'vat_tx'        => array('type' => 'double(6,3)', 'label' => 'VatTx', 'enabled' => 1, 'visible' => 1, 'position' => 95, 'notnull' => -1),
 		'vat_amount'    => array('type' => 'price', 'label' => 'VatAmount', 'enabled' => 1, 'visible' => 1, 'position' => 96, 'notnull' => -1,),
 		'tms'           => array('type' => 'timestamp', 'label' => 'DateModification', 'enabled' => 1, 'visible' => -2, 'position' => 501, 'notnull' => 1),
 		//'fk_statut' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>-2, 'position'=>509, 'notnull'=>-1,),
