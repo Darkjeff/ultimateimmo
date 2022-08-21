@@ -105,10 +105,14 @@ $search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'se
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
 foreach ($object->fields as $key => $val) {
-	if (GETPOST('search_' . $key, 'alpha')) $search[$key] = GETPOST('search_' . $key, 'alpha');
+	if (GETPOST('search_' . $key, 'alpha')) {
+		$search[$key] = GETPOST('search_' . $key, 'alpha');
+	}
 }
 
-if (empty($action) && empty($id) && empty($ref)) $action = 'view';
+if (empty($action) && empty($id) && empty($ref)) {
+	$action = 'view';
+}
 
 // Load object
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
@@ -572,8 +576,12 @@ if ($action == 'create') {
 	print '<form name="fiche_loyer" method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="addrental">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
+	if ($backtopage) {
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	}
+	if ($backtopageforcancel) {
+		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	}
 
 	print dol_get_fiche_head(array(), '');
 
@@ -584,19 +592,30 @@ if ($action == 'create') {
 
 	foreach ($object->fields as $key => $val) {
 		// Discard if extrafield is a hidden field on form
-		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
+		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) {
+			continue;
+		}
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) {
+			continue; // We don't want this field
+		}
 
 		print '<tr id="field_' . $key . '">';
 		print '<td';
 		print ' class="titlefieldcreate';
-		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
+		if (isset($val['notnull']) && $val['notnull'] > 0) {
+			print ' fieldrequired';
+		}
+		if ($val['type'] == 'text' || $val['type'] == 'html') {
+			print ' tdtop';
+		}
 		print '"';
 		print '>';
-		if (!empty($val['help'])) print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
-		else print $langs->trans($val['label']);
+		if (!empty($val['help'])) {
+			print $form->textwithpicto($langs->trans($val['label']), $langs->trans($val['help']));
+		} else {
+			print $langs->trans($val['label']);
+		}
 		print '</td>';
 		print '<td>';
 
