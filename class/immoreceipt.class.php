@@ -1819,7 +1819,7 @@ class ImmoReceipt extends CommonObject
 				if (isset($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) && $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS == 'defaultforfoundationcountry') {
 					$vattouse = get_default_tva($mysoc, $mysoc, $idprodsubscription);
 				}
-				//print xx".$vattouse." - ".$mysoc." - ".$customer;exit;
+				//var_dump($vattouse, $idprodsubscription, $mysoc, $customer);exit;
 				$result = $invoice->addline($label, 0, 1, $vattouse, 0, 0, $idprodsubscription, 0, $datesubscription, '', 0, 0, '', 'TTC', $amount, 1);
 				if ($result <= 0) {
 					$this->error = $invoice->error;

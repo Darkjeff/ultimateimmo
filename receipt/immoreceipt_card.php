@@ -621,6 +621,12 @@ if ($action == 'create') {
 		} elseif ($val['label'] == 'Echeance') {
 			// Echeance
 			print $form->selectDate($date_echeance, 'date_echeance', 0, 0, 0, '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
+		} elseif ($val['label'] == 'VatTx') {
+			$vattouse = 0;
+			if (isset($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) && $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS == 'defaultforfoundationcountry') {
+				$vattouse = get_default_tva($mysoc, $mysoc, $idprodsubscription);
+			}
+			print $vattouse . '%';
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
 
@@ -860,7 +866,11 @@ if (($id || $ref) && $action == 'edit') {
 				print '<input name="partiallypaidreceipt" class="flat" size="25" value="' . $object->paye . '">';
 			}
 		} elseif ($val['label'] == 'VatTx') {
-			print $form->load_tva("vat_tx", $object->default_vat_code ? $object->vat_tx.' ('.$object->default_vat_code.')' : $object->vat_tx, $mysoc, '', $object->id, $object->tva_npr, $object->type, false, 1);			
+			$vattouse = 0;
+			if (isset($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) && $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS == 'defaultforfoundationcountry') {
+				$vattouse = get_default_tva($mysoc, $mysoc, $idprodsubscription);
+			}
+			print $vattouse . '%';		
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
@@ -1129,6 +1139,12 @@ if (($id || $ref) && $action == 'edit') {
 			if ($balance >= 0) {
 				print price($balance, 0, $outputlangs, 1, -1, -1, $conf->currency);
 			}
+		} elseif ($val['label'] == 'VatTx') {
+			$vattouse = 0;
+			if (isset($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) && $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS == 'defaultforfoundationcountry') {
+				$vattouse = get_default_tva($mysoc, $mysoc, $idprodsubscription);
+			}
+			print $vattouse . '%';
 		} elseif ($val['label'] == 'Paye') {
 			if ($totalpaye == 0) {
 				print $object->paye = $langs->trans('UnPaidReceipt');
