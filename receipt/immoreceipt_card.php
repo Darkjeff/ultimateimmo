@@ -27,23 +27,33 @@ use Stripe\Invoice;
 // Load Dolibarr environment
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php";
-// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
-$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
-$tmp2 = realpath(__FILE__);
-$i = strlen($tmp) - 1;
-$j = strlen($tmp2) - 1;
-while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
-	$i--;
-	$j--;
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
 }
-if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include substr($tmp, 0, ($i + 1)) . "/main.inc.php";
-if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php";
+// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--; $j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1))."/main.inc.php";
+}
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
+}
 // Try main.inc.php using relative path
-if (!$res && file_exists("../main.inc.php")) $res = @include "../main.inc.php";
-if (!$res && file_exists("../../main.inc.php")) $res = @include "../../main.inc.php";
-if (!$res && file_exists("../../../main.inc.php")) $res = @include "../../../main.inc.php";
-if (!$res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) {
+	$res = @include "../main.inc.php";
+}
+if (!$res && file_exists("../../main.inc.php")) {
+	$res = @include "../../main.inc.php";
+}
+if (!$res && file_exists("../../../main.inc.php")) {
+	$res = @include "../../../main.inc.php";
+}
+if (!$res) {
+	die("Include of main fails");
+}
 
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
@@ -669,13 +679,39 @@ if ($action == 'create') {
 			}
 			print $vattouse . '%';
 		} else {
-			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOST($key, 'int');
-
-			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOST($key, 'none');
-			else $value = GETPOST($key, 'alpha');
-			print $object->showInputField($val, $key, $value, '', '', '', 0);
+			if (!empty($val['picto'])) {
+				print img_picto('', $val['picto'], '', false, 0, 0, '', 'pictofixedwidth');
+			}
+			if (in_array($val['type'], array('int', 'integer'))) {
+				$value = GETPOST($key, 'int');
+			} elseif ($val['type'] == 'double') {
+				$value = price2num(GETPOST($key, 'alphanohtml'));
+			} elseif ($val['type'] == 'text' || $val['type'] == 'html') {
+				$value = GETPOST($key, 'restricthtml');
+			} elseif ($val['type'] == 'date') {
+				$value = dol_mktime(12, 0, 0, GETPOST($key.'month', 'int'), GETPOST($key.'day', 'int'), GETPOST($key.'year', 'int'));
+			} elseif ($val['type'] == 'datetime') {
+				$value = dol_mktime(GETPOST($key.'hour', 'int'), GETPOST($key.'min', 'int'), 0, GETPOST($key.'month', 'int'), GETPOST($key.'day', 'int'), GETPOST($key.'year', 'int'));
+			} elseif ($val['type'] == 'boolean') {
+				$value = (GETPOST($key) == 'on' ? 1 : 0);
+			} elseif ($val['type'] == 'price') {
+				$value = price2num(GETPOST($key));
+			} elseif ($key == 'lang') {
+				$value = GETPOST($key, 'aZ09');
+			} else {
+				$value = GETPOST($key, 'alphanohtml');
+			}
+			if (!empty($val['noteditable'])) {
+				print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			} else {
+				if ($key == 'lang') {
+					print img_picto('', 'language', 'class="pictofixedwidth"');
+					print $formadmin->select_language($value, $key, 0, null, 1, 0, 0, 'minwidth300', 2);
+				} else {
+					print $object->showInputField($val, $key, $value, '', '', '', 0);
+				}
+			}
 		}
-
 		print '</td>';
 		print '</tr>';
 	}
@@ -935,55 +971,51 @@ if (($id || $ref) && $action == 'edit') {
 		print '</tr>';
 	}
 
-		// Other attributes
-		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
+	// Other attributes
+	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
 
-		print '</table>';
+	print '</table>';
 
-		print dol_get_fiche_end();
+	print dol_get_fiche_end();
 
-		print '<div class="center"><input type="submit" class="button" name="save" value="'.$langs->trans("Save").'">';
-		print ' &nbsp; <input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
-		print '</div>';
+	print '<div class="center"><input type="submit" class="button" name="save" value="' . $langs->trans("Save") . '">';
+	print ' &nbsp; <input type="submit" class="button" name="cancel" value="' . $langs->trans("Cancel") . '">';
+	print '</div>';
 
-		print '</form>';
+	print '</form>';
+}
+
+// Part to show record
+if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create'))) {
+	$res = $object->fetch_optionals();
+
+	$soc = new Societe($db);
+	$soc->fetch($object->socid);
+
+	$object = new ImmoReceipt($db);
+	$result = $object->fetch($id);
+
+	$head = immoreceiptPrepareHead($object);
+	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'bill');
+
+	$totalpaye = $object->getSommePaiement();
+
+	$formconfirm = '';
+
+	// Confirmation to delete
+	if ($action == 'delete') {
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
 	}
 
-	// Part to show record
-	if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
-	{
-		$res = $object->fetch_optionals();
-
-		$soc = new Societe($db);
-		$soc->fetch($object->socid);
-
-		$object = new ImmoReceipt($db);
-		$result = $object->fetch($id);
-		
-		$head = immoreceiptPrepareHead($object);
-		print dol_get_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'bill');
-
-		$totalpaye = $object->getSommePaiement();
-
-		$formconfirm = '';
-
-		// Confirmation to delete
-		if ($action == 'delete')
-		{
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?recid='.$object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
-		}
-
-		// Clone confirmation
-		if ($action == 'clone')
-		{
-			// Create an array for form
-			$formquestion = array(
-				array('type' => 'other','name' => 'socid','label' => $langs->trans("SelectThirdParty"),'value' => $form->select_company($object->fk_soc, 'socid', '(s.client=1 OR s.client=2 OR s.client=3)', 1)),
-				array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
-			);
-			// Ask confirmation to clone
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
-		}
+	// Clone confirmation
+	if ($action == 'clone') {	// Create an array for form			
+		$formquestion = array(
+			array('type' => 'other', 'name' => 'socid', 'label' => $langs->trans("SelectThirdParty"), 'value' => $form->select_company($object->fk_soc, 'socid', '(s.client=1 OR s.client=2 OR s.client=3)', 1)),
+			array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
+		);
+		// Ask confirmation to clone
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
+	}
 
 		// Confirmation of validation
 		if ($action == 'validate')
