@@ -609,6 +609,28 @@ if ($action == 'create') {
 				$tmpcode = '<input name="ref" class="maxwidth100" maxlength="128" value="' . dol_escape_htmltag(GETPOST('ref') ? GETPOST('ref') : $tmpcode) . '">';
 			}
 			print $tmpcode;
+		} elseif ($val['label'] == 'LinkedToDolibarrThirdParty') {
+			// Thirdparty
+			if (isModEnabled('societe')) {
+				$text = img_picto('', 'company') . $form->select_company(GETPOST('socid', 'int'), 'socid', $filteronlist, 'SelectThirdParty', 1, 0, array(), 0, 'minwidth300 widthcentpercentminusxx maxwidth500');
+				if (empty($conf->dol_use_jmobile)) {
+					$texthelp = $langs->trans("IfNeedToUseOtherObjectKeepEmpty");
+					print $form->textwithtooltip($text . ' ' . img_help(), $texthelp, 1);
+				} else {
+					print $text;
+				}
+				if (!GETPOSTISSET('backtopage')) {
+					$url = '/societe/card.php?action=create&client=3&fournisseur=0&backtopage=' . urlencode($_SERVER["PHP_SELF"] . '?action=create');
+					$newbutton = '<span class="fa fa-plus-circle valignmiddle paddingleft" title="' . $langs->trans("AddThirdParty") . '"></span>';
+					// TODO @LDR Implement this
+					if (getDolGlobalInt('MAIN_FEATURES_LEVEL') >= 2) {
+						$tmpbacktopagejsfields = 'addthirdparty:socid,search_socid';
+						print dolButtonToOpenUrlInDialogPopup('addthirdparty', $langs->transnoentitiesnoconv('AddThirdParty'), $newbutton, $url, '', '', $tmpbacktopagejsfields);
+					} else {
+						print ' <a href="' . DOL_URL_ROOT . $url . '">' . $newbutton . '</a>';
+					}
+				}
+			}
 		} elseif ($val['label'] == 'DateCreation') {
 			// DateCreation
 			print $form->selectDate(($object->date_creation ? $object->date_creation : -1), "date_creation", 0, 0, 0,  '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
@@ -847,6 +869,17 @@ if (($id || $ref) && $action == 'edit') {
 			if ($object->getSommePaiement()) {
 				$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
 				print '<input name="partial_payment" class="flat" size="8" value="' . $totalpaye . '">';
+			}
+		} elseif ($val['label'] == 'LinkedToDolibarrThirdParty') {
+			// Thirdparty
+			if (isModEnabled('societe')) {
+				$text = img_picto('', 'company') . $form->select_company($object->thirdparty->id, 'socid', $filteronlist, 'None', 1, 0, array(), 0, 'minwidth300');
+				if (empty($conf->dol_use_jmobile)) {
+					$texthelp = $langs->trans("IfNeedToUseOtherObjectKeepEmpty");
+					print $form->textwithtooltip($text . ' ' . img_help(), $texthelp, 1, 0, '', '', 2);
+				} else {
+					print $text;
+				}
 			}
 		} elseif ($val['label'] == 'Balance') {
 			$balance = $object->total_amount - $object->getSommePaiement();
