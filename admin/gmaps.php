@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2008-2011 	Laurent Destailleur	<eldy@users.sourceforge.net>
  * Copyright (C) 2016		Alexandre Spangaro	<aspangaro@zendsi.com>
- * Copyright (C) 2018-2021  Philippe GRAND  	<philippe.grand@atoo-net.com>
+ * Copyright (C) 2018-2022  Philippe GRAND  	<philippe.grand@atoo-net.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ $formadmin = new FormAdmin($db);
 $formother = new FormOther($db);
 
 $page_name = "UltimateimmoSetup";
-$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR#Configuration_Google_Maps';
 llxHeader('', $langs->trans($page_name), $wikihelp);
 
 // Subheader

@@ -394,7 +394,7 @@ if ($num == 1 && !empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $
 
 // Output page
 // --------------------------------------------------------------------
-$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_locataires';
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Création_des_locataires';
 llxHeader('', $title, $wikihelp, '', 0, 0, $morejs, $morecss, '', '');
 
 $arrayofselected = is_array($toselect) ? $toselect : array();

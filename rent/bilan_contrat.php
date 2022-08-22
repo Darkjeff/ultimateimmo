@@ -65,7 +65,7 @@ $limit = $conf->liste_limit;
 *
 */
 
-$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_contrats_de_location';
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Création_des_contrats_de_location';
 llxheader('', $langs->trans("bilancontrat"), $wikihelp);
 
 $object = new ImmoRent($db);

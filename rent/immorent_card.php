@@ -210,7 +210,8 @@ if (empty($reshook)) {
 $form = new Form($db);
 $formfile = new FormFile($db);
 
-llxHeader('', $langs->trans("ImmoRents"), '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Création_des_contrats_de_location';
+llxHeader('', $langs->trans("ImmoRents"), $wikihelp);
 
 // Part to create
 if ($action == 'create') {

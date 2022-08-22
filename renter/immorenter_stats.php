@@ -84,7 +84,7 @@ $langs->load("ultimateimmo@ultimateimmo");
 
 $form = new Form($db);
 
-$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_locataires';
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Création_des_locataires';
 llxHeader('', '', $wikihelp);
 
 $title = $langs->trans("Statistics");

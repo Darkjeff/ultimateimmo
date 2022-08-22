@@ -108,7 +108,7 @@ include_once DOL_DOCUMENT_ROOT . '/core/actions_linkedfiles.inc.php';
 $form = new Form($db);
 
 $title = $langs->trans("ImmoRenter") . ' - ' . $langs->trans("Files");
-$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_locataires';
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Création_des_locataires';
 llxHeader('', $title, $wikihelp);
 
 if ($object->id) {

@@ -392,8 +392,8 @@ if ($num == 1 && !empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && $
 
 // Output page
 // --------------------------------------------------------------------
-
-llxHeader('', $title, $help_url, '', 0, 0, $morejs, $morecss, '', '');
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Création_des_contrats_de_location';
+llxHeader('', $title, $wikihelp, '', 0, 0, $morejs, $morecss, '', '');
 
 $arrayofselected = is_array($toselect) ? $toselect : array();
 

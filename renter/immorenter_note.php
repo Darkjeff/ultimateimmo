@@ -90,7 +90,7 @@ include DOL_DOCUMENT_ROOT . '/core/actions_setnotes.inc.php';	// Must be include
 
 $form = new Form($db);
 
-$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_locataires';
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Création_des_locataires';
 llxHeader('', $langs->trans('ImmoRenter'), $wikihelp);
 
 if ($id > 0 || !empty($ref)) {
