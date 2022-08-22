@@ -61,7 +61,7 @@ $globalboxes = array();
 
 // Color theme : (#96BBBB, #F2E3BC, #618985, #C19875)
 if ($user->rights->ultimateimmo->device->read) {
-    $globalboxes[] = array('name' => $langs->trans(PROPERTY'), 'color' => '#'.$conf->global->GESTIONPARC_COLOR_DEVICE, 'icon' => 'fa-cube',
+    $globalboxes[] = array('name' => $langs->trans('PROPERTY'), 'color' =>'#96BBBB',
         'url' => dol_buildpath('/ultimateimmo/device_list.php', 1),
         'url_add' => dol_buildpath('/ultimateimmo/device_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->device->write,
@@ -85,7 +85,7 @@ if ($user->rights->ultimateimmo->user->read) {
 }
 
 if ($user->rights->gestionparc->application->read) {
-    $globalboxes[] = array('name' => $langs->trans('RENT), 'color' => '#'.$conf->global->GESTIONPARC_COLOR_APP, 'icon' => 'fa-mobile',
+    $globalboxes[] = array('name' => $langs->trans('RENT'), 'color' => '#'.$conf->global->GESTIONPARC_COLOR_APP, 'icon' => 'fa-mobile',
         'url' => dol_buildpath('/gestionparc/application_list.php', 1),
         'url_add' => dol_buildpath('/gestionparc/application_card.php?action=create', 1),
         'right' => $user->rights->gestionparc->application->write,
