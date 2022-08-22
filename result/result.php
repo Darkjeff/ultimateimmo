@@ -88,7 +88,7 @@ llxHeader('', 'Immobilier - Resultat');
 $textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/result/result.php', 1) . '?year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
 $textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/result/result.php', 1) . '?year=' . ($year_current + 1) . '">' . img_next() . '</a>';
 
-print load_fiche_titre($langs->trans("Encaissement") . " " . $textprevyear . " " . $langs->trans("Year") . " " . $year_start . " " . $textnextyear, '', 'title_accountancy');
+print load_fiche_titre($langs->trans("ImmoResultResultat") . " " . $textprevyear . " " . $langs->trans("Year") . " " . $year_start . " " . $textnextyear, '', 'title_accountancy');
 
 print '<table border="0" width="100%" class="notopnoleftnoright">';
 print '<tr><td valign="top" width="30%" class="notopnoleft">';
@@ -103,7 +103,7 @@ for ($month_num = 1; $month_num <= 12; $month_num++) {
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td></tr>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width="10%">' . $langs->trans("Resultat Immo") . '</td>';
+print '<tr class="liste_titre"><td width="10%">' . $langs->trans("ImmoResultResultatImmo") . '</td>';
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
@@ -475,7 +475,7 @@ print '</tr>';
 //Charges non Déductibles
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width="10%">' . $langs->trans("Charges non Déductibles") . '</td>';
+print '<tr class="liste_titre"><td width="10%">' . $langs->trans("ImmoResultChargesNonDeductibles") . '</td>';
 
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
