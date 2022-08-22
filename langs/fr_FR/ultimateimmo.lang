@@ -277,8 +277,12 @@ ImmoPaymentRentUpdate = Loyer mis à jour avec succès
 # Charges
 HtAmount = Montant HT
 VatAmount = Montant TVA
-RenterCost = Coût/locataire
+RenterCost = Ventilation des coûts par locataire
+ImmoResultLoyerBrutEncaisse = Loyer brut encaissé
+ImmoResultChargesDeductibles = Charges déductibles
+ImmoResultRevenuFiscal = Revenu fiscal
 ImmoResultRevenuNet= Revenu Net
+Average = Moyenne
 # Types de couts
 CostTypeLabel = Libellé
 CostTypeLabelInfo = Indiquer un libellé
