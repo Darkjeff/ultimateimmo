@@ -958,7 +958,12 @@ if (($id || $ref) && $action == 'edit') {
 			if (isset($conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS) && $conf->global->ULTIMATEIMMO_VAT_FOR_RECEIPTS == 'defaultforfoundationcountry') {
 				$vattouse = get_default_tva($mysoc, $mysoc, $idprodsubscription);
 			}
-			print $vattouse . '%';		
+			print $vattouse . '%';
+		} elseif ($val['label'] == 'VatAmount') {
+			if ($vattouse != 0) {
+				$object->vat_amount = price(($object->total_amount / (100 + $vattouse)) * $vattouse, 0, $outputlangs, 1, -1, 2, $conf->currency);
+			}
+			print $object->vat_amount;
 		} else {
 			if (in_array($val['type'], array('int', 'integer'))) $value = GETPOSTISSET($key) ? GETPOST($key, 'int') : $object->$key;
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
@@ -970,7 +975,7 @@ if (($id || $ref) && $action == 'edit') {
 		print '</td>';
 		print '</tr>';
 	}
-
+	
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
 
@@ -1229,6 +1234,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				$vattouse = get_default_tva($mysoc, $mysoc, $idprodsubscription);
 			}
 			print $vattouse . '%';
+		} elseif ($val['label'] == 'VatAmount') {
+			if ($vattouse != 0) {
+				$object->vat_amount = price(($object->total_amount / (100 + $vattouse)) * $vattouse, 0, $outputlangs, 1, -1, 2, $conf->currency);
+			}
+			print $object->vat_amount;
 		} elseif ($val['label'] == 'Paye') {
 			if ($totalpaye == 0) {
 				print $object->paye = $langs->trans('UnPaidReceipt');
