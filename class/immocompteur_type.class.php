@@ -30,12 +30,12 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
 /**
  * Class for ImmoCost_Type
  */
-class ImmoProperty_Type extends CommonObject
+class ImmoCompteur_Type extends CommonObject
 {
 	/**
 	 * @var string ID to identify managed object
 	 */
-	public $element = 'immocompteur_type';
+	public $element = 'immoCompteur_Type';
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
