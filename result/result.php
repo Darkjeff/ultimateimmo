@@ -273,7 +273,7 @@ if ($resqlpaiement && $resqlencaissement) {
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width="10%">' . $langs->trans("Loyer brut encaissé") . '</td>';
+print '<tr class="liste_titre"><td width="10%">' . $langs->trans("ImmoResultLoyerBrutEncaisse") . '</td>';
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
@@ -309,7 +309,7 @@ print '</tr>';
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width="10%">' . $langs->trans("Charges Déductibles") . '</td>';
+print '<tr class="liste_titre"><td width="10%">' . $langs->trans("ImmoResultChargesDeductibles") . '</td>';
 
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
@@ -440,7 +440,7 @@ if ($resqlpaiement && $resqlencaissement && $resqlcharged) {
 
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width="10%">' . $langs->trans("Revenu Fiscal") . '</td>';
+print '<tr class="liste_titre"><td width="10%">' . $langs->trans("ImmoResultRevenuFiscal") . '</td>';
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
