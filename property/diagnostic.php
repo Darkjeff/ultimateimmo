@@ -98,7 +98,7 @@ if ($result < 0) {
 }
 
 $page_name = $langs->trans("Property") . '|' . $langs->trans("Diagnostic");
-$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_biens';
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Création_des_biens';
 llxheader('', $page_name, $wikihelp);
 
 // Configuration header

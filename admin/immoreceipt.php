@@ -197,7 +197,7 @@ $form = new Form($db);
 $dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);
 
 $page_name = "UltimateimmoSetup";
-$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR';
+$wikihelp = 'EN:Module_Ultimateimmo_EN|FR:Module_Ultimateimmo_FR#Configuration_des_quittances_et_baux';
 llxHeader('', $langs->trans($page_name), $wikihelp);
 
 // Subheader

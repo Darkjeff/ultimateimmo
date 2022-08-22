@@ -110,7 +110,7 @@ include_once DOL_DOCUMENT_ROOT . '/core/actions_linkedfiles.inc.php';
 $form = new Form($db);
 
 $title = $langs->trans("ImmoProperty") . ' - ' . $langs->trans("Files");
-$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_biens';
+$wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Création_des_biens';
 llxHeader('', $title, $wikihelp);
 
 if ($object->id) {
