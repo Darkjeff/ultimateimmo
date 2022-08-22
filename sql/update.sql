@@ -29,5 +29,6 @@ ALTER TABLE llx_ultimateimmo_immorent MODIFY COLUMN date_next_rent date;
 ALTER TABLE llx_ultimateimmo_immorent MODIFY COLUMN date_last_regul date;
 ALTER TABLE llx_ultimateimmo_immocost_type CHANGE COLUMN fk_user_creat fk_user_create integer NOT NULL;
 ALTER TABLE llx_ultimateimmo_immocost_type ADD CONSTRAINT llx_ultimateimmo_immocost_type_fk_user_creat FOREIGN KEY (fk_user_create) REFERENCES llx_user(rowid);
+ALTER TABLE llx_ultimateimmo_immocompteur ADD COLUMN compteur_type_id integer AFTER fk_immoproperty;
 
 

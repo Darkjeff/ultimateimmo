@@ -22,6 +22,7 @@ CREATE TABLE llx_ultimateimmo_immocompteur(
 	date_relever date NOT NULL, 
 	qty real, 
 	fk_immoproperty integer, 
+	compteur_type_id integer, 
 	description text, 
 	note_public text, 
 	note_private text, 
