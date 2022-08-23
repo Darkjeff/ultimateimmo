@@ -153,7 +153,7 @@ class ImmoReceipt extends CommonObject
 		'import_key'    => array('type' => 'varchar(14)', 'label' => 'ImportId', 'enabled' => 1, 'visible' => -2, 'position' => 1000, 'notnull' => -1),
 		'model_pdf'     => array('type' => 'varchar(128)', 'label' => 'ModelPdf', 'enabled' => 1, 'visible' => -2, 'position' => 1010, 'notnull' => -1, 'index' => 1, 'searchall' => 1),
 		'last_main_doc' => array('type' => 'varchar(255)', 'label' => 'LastMainDoc', 'enabled' => 1, 'visible' => -2, 'position' => 1020, 'notnull' => -1),
-		'status' => array('type' => 'integer', 'label' => 'Status', 'enabled' => 1, 'visible' => 1, 'position' => 1000, 'notnull' => -1, 'default' => '0', 'index' => 1, 'arrayofkeyval' => array('0' => 'Draft', '1' => 'Active', '-1' => 'Cancel')),
+		'status' => array('type' => 'integer', 'label' => 'Status', 'enabled' => 1, 'visible' => 1, 'position' => 1000, 'notnull' => -1, 'default' => '0', 'index' => 1, 'arrayofkeyval' => array('0' => 'Draft', '1' => 'Validate', '2' => 'Cancel')),
 	);
 
 	/**
@@ -317,6 +317,7 @@ class ImmoReceipt extends CommonObject
 		global $conf, $langs, $user;
 
 		$this->db = $db;
+		$this->status = self::STATUS_DRAFT;
 
 		if (empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && isset($this->fields['rowid'])) {
 			$this->fields['rowid']['visible'] = 0;
@@ -707,7 +708,7 @@ class ImmoReceipt extends CommonObject
 					$this->set_vars_by_db($obj);
 
 					if ($obj->status == self::STATUS_DRAFT) {
-						$this->brouillon = 1;
+						$this->brouillon = -1;
 					}
 
 					$this->fk_mode_reglement  = $obj->fk_mode_reglement;

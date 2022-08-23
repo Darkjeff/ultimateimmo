@@ -131,20 +131,14 @@ include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be inc
 
 // There is several ways to check permission.
 // Set $enablepermissioncheck to 1 to enable a minimum low level of checks
-$enablepermissioncheck = 0;
-if ($enablepermissioncheck) {
+
 $permissiontoread = $user->hasRight('ultimateimmo', 'read');
 $permissiontoadd = $user->hasRight('ultimateimmo', 'write'); // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
 $permissiontodelete = $user->hasRight('ultimateimmo', 'delete') || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+
 $permissionnote = $user->hasRight('ultimateimmo', 'write'); // Used by the include of actions_setnotes.inc.php
 $permissiondellink = $user->hasRight('ultimateimmo', 'write'); // Used by the include of actions_dellink.inc.php
-} else {
-	$permissiontoread = 1;
-	$permissiontoadd = 1; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
-	$permissiontodelete = 1;
-	$permissionnote = 1;
-	$permissiondellink = 1;
-}
+
 $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1] . '/immoreceipt';
 
 // Security check (enable the most restrictive one)
@@ -182,23 +176,8 @@ if (empty($reshook)) {
 		Header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $id);
 	}
 
-	/**
-	 *	Delete rental
-	 */
-	if ($action == 'confirm_delete' && $_REQUEST["confirm"] == 'yes' && $permissiontodelete) {
-		$receipt = new ImmoReceipt($db);
-		$receipt->fetch($id);
-		$result = $receipt->delete($user);
-		if ($result > 0) {
-			header("Location:" . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1));
-			exit();
-		} else {
-			$langs->load("errors");
-			setEventMessages(null, $receipt->errors, 'errors');
-		}
-	}
 	// Delete payment
-	elseif ($action == 'confirm_delete_paiement' && $confirm == 'yes' && $permissiontodelete) {
+	if ($action == 'confirm_delete_paiement' && $confirm == 'yes' && $permissiontodelete) {
 		$receipt->fetch($id);
 		if ($receipt->status == ImmoReceipt::STATUS_VALIDATED && $receipt->paye == 0) {
 			$paiement = new ImmoPayment($db);
@@ -214,7 +193,7 @@ if (empty($reshook)) {
 	}
 
 	// Validation
-	if ($action == 'confirm_validate' && $confirm == 'yes' && $permissiontoadd) {
+	/*if ($action == 'confirm_validate' && $confirm == 'yes' && $permissiontoadd) {
 		$result = $object->validate($user);
 
 		if ($result >= 0) {
@@ -238,7 +217,7 @@ if (empty($reshook)) {
 			if (count($object->errors) > 0) setEventMessages(null, $object->errors, 'errors');
 			else setEventMessages($langs->trans(null), null, 'errors');
 		}
-	}
+	}*/
 
 	/**
 	 * Action generate quittance
@@ -439,7 +418,7 @@ if (empty($reshook)) {
 				}
 			}
 		}
-		//exit;
+		
 		if (empty($error)) {
 			setEventMessages($langs->trans("ReceiptPaymentsAdded"), null, 'mesgs');
 			Header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1));
@@ -457,7 +436,7 @@ if (empty($reshook)) {
 
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
-
+	
 	/*
 	 * Edit Receipt
 	 */
@@ -1024,10 +1003,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
 	}
 
-		// Confirmation of validation
-		if ($action == 'validate')
-		{
-			$error = 0;
+	// Confirmation of validation
+	if ($action == 'validate') {
+		$error = 0;
 
 		// We verifie whether the object is provisionally numbering
 		$ref = substr($object->ref, 1, 4);
@@ -1050,9 +1028,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			$text .= $notify->confirmMessage('ULTIMATEIMMO_VALIDATE', $object->socid, $object);
 		}
 
-			if (! $error)
-				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?recid='.$object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
+		if (!$error) {
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
 		}
+	}
 
 		// Call Hook formConfirm
 		$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
@@ -1448,12 +1427,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($reshook < 0) {
 			setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 		}
-
+		
 		if (empty($reshook)) {
-			// Validate
-			if ($object->status == ImmoReceipt::STATUS_DRAFT) {
+			// Validate			
+			if ($object->status == ImmoReceipt::STATUS_DRAFT) {				
 				if ($permissiontoadd) {
-					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
+					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
 				} else {
 					print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('Validate') . '</a></div>';
 				}
