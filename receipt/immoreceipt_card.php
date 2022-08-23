@@ -86,6 +86,8 @@ $toselect   = GETPOST('toselect', 'array');
 $cancel     = GETPOST('cancel', 'aZ09');
 $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'immoreceiptcard';   // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
+$backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
+$dol_openinpopup = GETPOST('dol_openinpopup', 'aZ09');
 $search_fk_soc = GETPOST('search_fk_soc', 'alpha');
 
 $limit = GETPOST('limit', 'int') ?GETPOST('limit', 'int') : $conf->liste_limit;
@@ -105,14 +107,14 @@ $immorent = new ImmoRent($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/' . $user->id;
 $hookmanager->initHooks(array('immoreceiptcard', 'globalcard'));     // Note that conf->hooks_modules contains array
-//var_dump($object->fields);exit;
+
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
 
 $search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
 
 // Initialize array of search criterias
-$search_all = trim(GETPOST("search_all", 'alpha'));
+$search_all = GETPOST("search_all", 'alpha');
 $search = array();
 foreach ($object->fields as $key => $val) {
 	if (GETPOST('search_' . $key, 'alpha')) {
@@ -127,12 +129,35 @@ if (empty($action) && empty($id) && empty($ref)) {
 // Load object
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
-$permissiontoread = $user->rights->ultimateimmo->read;
-$permissiontoadd = $user->rights->ultimateimmo->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
-$permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
-$permissionnote = $user->rights->ultimateimmo->write; // Used by the include of actions_setnotes.inc.php
-$permissiondellink = $user->rights->ultimateimmo->write; // Used by the include of actions_dellink.inc.php
-$upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1];
+// There is several ways to check permission.
+// Set $enablepermissioncheck to 1 to enable a minimum low level of checks
+$enablepermissioncheck = 0;
+if ($enablepermissioncheck) {
+$permissiontoread = $user->hasRight('ultimateimmo', 'read');
+$permissiontoadd = $user->hasRight('ultimateimmo', 'write'); // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+$permissiontodelete = $user->hasRight('ultimateimmo', 'delete') || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+$permissionnote = $user->hasRight('ultimateimmo', 'write'); // Used by the include of actions_setnotes.inc.php
+$permissiondellink = $user->hasRight('ultimateimmo', 'write'); // Used by the include of actions_dellink.inc.php
+} else {
+	$permissiontoread = 1;
+	$permissiontoadd = 1; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+	$permissiontodelete = 1;
+	$permissionnote = 1;
+	$permissiondellink = 1;
+}
+$upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1] . '/immoreceipt';
+
+// Security check (enable the most restrictive one)
+//if ($user->socid > 0) accessforbidden();
+//if ($user->socid > 0) $socid = $user->socid;
+//$isdraft = (isset($object->status) && ($object->status == $object::STATUS_DRAFT) ? 1 : 0);
+//restrictedArea($user, $object->element, $object->id, $object->table_element, '', 'fk_soc', 'rowid', $isdraft);
+if (!isModEnabled('ultimateimmo')) {
+	accessforbidden();
+}
+if (!$permissiontoread) {
+	accessforbidden();
+}
 
 
 /**
@@ -142,7 +167,9 @@ $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $obj
 
 $parameters = array();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
-if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+if ($reshook < 0) {
+	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+}
 
 if (empty($reshook)) {
 	/**
@@ -213,8 +240,6 @@ if (empty($reshook)) {
 		}
 	}
 
-	
-
 	/**
 	 * Action generate quittance
 	 */
@@ -261,35 +286,11 @@ if (empty($reshook)) {
 
 	if (empty($backtopage) || ($cancel && empty($id))) {
 		if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
-			if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
-			else $backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . ($id > 0 ? $id : '__ID__');
-		}
-	}
-	$triggermodname = 'ULTIMATEIMMO_IMMORECEIPT_MODIFY';	// Name of trigger action code to execute when we modify record
-
-	// Actions cancel, add, update, delete or clone
-	include DOL_DOCUMENT_ROOT . '/core/actions_addupdatedelete.inc.php';
-
-	// Actions when linking object each other
-	include DOL_DOCUMENT_ROOT . '/core/actions_dellink.inc.php';		// Must be include, not include_once
-
-	// Actions when printing a doc from card
-	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
-
-	// Action clone object
-	if ($action == 'confirm_clone' && $confirm == 'yes' && $permissiontoadd) {
-		$objectutil = dol_clone($object, 1);   // To avoid to denaturate loaded object when setting some properties for clone. We use native clone to keep this->db valid.
-		$objectutil->date = dol_mktime(12, 0, 0, GETPOST('newdatemonth', 'int'), GETPOST('newdateday', 'int'), GETPOST('newdateyear', 'int'));
-		$objectutil->socid = $socid;
-
-		$result = $objectutil->createFromClone($user, $id);
-		if ($result > 0) {
-			header("Location: " . $_SERVER['PHP_SELF'] . '?recid=' . $result);
-			exit();
-		} else {
-			$langs->load("errors");
-			if (count($object->errors) > 0) setEventMessages($object->error, $object->errors, 'errors');
-			$action = '';
+			if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) {
+				$backtopage = $backurlforlist;
+			} else {
+				$backtopage = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . ($id > 0 ? $id : '__ID__');
+			}
 		}
 	}
 
@@ -446,6 +447,17 @@ if (empty($reshook)) {
 		}
 	}
 
+	$triggermodname = 'ULTIMATEIMMO_IMMORECEIPT_MODIFY';	// Name of trigger action code to execute when we modify record
+
+	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
+	include DOL_DOCUMENT_ROOT . '/core/actions_addupdatedelete.inc.php';
+
+	// Actions when linking object each other
+	include DOL_DOCUMENT_ROOT . '/core/actions_dellink.inc.php';		// Must be include, not include_once
+
+	// Actions when printing a doc from card
+	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
+
 	/*
 	 * Edit Receipt
 	 */
@@ -503,25 +515,8 @@ if (empty($reshook)) {
 	// Action to build doc
 	include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
 
-	// Build doc
-	if ($action == 'builddoc' && $permissiontoadd) {
-		// Save last template used to generate document
-		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model', 'alpha'));
-
-		$outputlangs = $langs;
-		if (GETPOST('lang_id', 'aZ09')) {
-			$outputlangs = new Translate("", $conf);
-			$outputlangs->setDefaultLang(GETPOST('lang_id', 'aZ09'));
-		}
-		$result = $object->generateDocument($object->model_pdf, $outputlangs);
-		if ($result <= 0) {
-			setEventMessages($object->error, $object->errors, 'errors');
-			$action = '';
-		}
-	}
-
 	if ($action == 'set_thirdparty' && $permissiontoadd) {
-		$object->setValueFrom('fk_soc', GETPOST('fk_soc', 'int'), '', '', 'date', '', $user, 'IMMORECEIPT_MODIFY');
+		$object->setValueFrom('fk_soc', GETPOST('fk_soc', 'int'), '', '', 'date', '', $user, $triggermodname);
 	}
 	if ($action == 'classin' && $permissiontoadd) {
 		$object->setProject(GETPOST('projectid', 'int'));
@@ -546,9 +541,10 @@ $paymentstatic->fetch($object->rowid);
 $bankaccountstatic = new Account($db);
 $bankaccountstatic->fetch($object->fk_account);
 
+$title = $langs->trans("MenuNewImmoReceipt");
 $wikihelp = 'EN:Module_Ultimateimmo_EN#Owners|FR:Module_Ultimateimmo_FR#Configuration_des_quittances';
-llxHeader('', $langs->trans("MenuNewImmoReceipt"), $wikihelp);
-//var_dump($bankaccountstatic);exit;
+llxHeader('', $title, $wikihelp);
+
 // Load object modReceipt
 $module = (!empty($conf->global->ULTIMATEIMMO_ADDON_NUMBER) ? $conf->global->ULTIMATEIMMO_ADDON_NUMBER : 'mod_ultimateimmo_standard');
 
@@ -564,6 +560,10 @@ if ($result >= 0) {
 
 // Part to create
 if ($action == 'create') {
+	if (empty($permissiontoadd)) {
+		accessforbidden($langs->trans('NotEnoughPermissions'), 0, 1);
+		exit;
+	}
 	print load_fiche_titre($langs->transnoentitiesnoconv("MenuNewImmoReceipt"), '', 'object_' . $object->picto);
 
 	$year_current = dol_print_date(dol_now(), "%Y");
@@ -723,11 +723,7 @@ if ($action == 'create') {
 
 	print dol_get_fiche_end();
 
-	print '<div class="center">';
-	print '<input type="submit" class="button" name="addrental" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
-	print '&nbsp; ';
-	print '<input type="' . ($backtopage ? "submit" : "button") . '" class="button" name="cancel" value="' . dol_escape_htmltag($langs->trans("Cancel")) . '"' . ($backtopage ? '' : ' onclick="javascript:history.go(-1)"') . '>';	// Cancel for create does not post form if we don't know the backtopage
-	print '</div>';
+	print $form->buttonsSaveCancel("Create");
 
 	print '</form>';
 }
@@ -878,7 +874,7 @@ if ($action == 'createall') {
 
 // Part to edit record
 if (($id || $ref) && $action == 'edit') {
-	print load_fiche_titre($langs->trans("MenuNewImmoReceipt", $langs->transnoentitiesnoconv("ImmoReceipt")));
+	print load_fiche_titre($langs->trans("MenuNewImmoReceipt", $langs->transnoentitiesnoconv("ImmoReceipt")), '', 'object_'.$object->picto);
 
 	$receipt = new ImmoReceipt($db);
 	$result = $receipt->fetch($id);
@@ -890,12 +886,16 @@ if (($id || $ref) && $action == 'edit') {
 			print '<br>';
 	}
 
-	print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
+	print '<form name="fiche_loyer" method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="update">';
 	print '<input type="hidden" name="id" value="' . $object->id . '">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="' . $backtopage . '">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="' . $backtopageforcancel . '">';
+	if ($backtopage) {
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	}
+	if ($backtopageforcancel) {
+		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	}
 
 	print dol_get_fiche_head();
 
@@ -983,9 +983,7 @@ if (($id || $ref) && $action == 'edit') {
 
 	print dol_get_fiche_end();
 
-	print '<div class="center"><input type="submit" class="button" name="save" value="' . $langs->trans("Save") . '">';
-	print ' &nbsp; <input type="submit" class="button" name="cancel" value="' . $langs->trans("Cancel") . '">';
-	print '</div>';
+	print $form->buttonsSaveCancel();
 
 	print '</form>';
 }
@@ -1011,6 +1009,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if ($action == 'delete') {
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
 	}
+	// Confirmation to delete line
+	if ($action == 'deleteline') {
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&lineid='.$lineid, $langs->trans('DeleteLine'), $langs->trans('ConfirmDeleteLine'), 'confirm_deleteline', '', 0, 1);
+	}
 
 	// Clone confirmation
 	if ($action == 'clone') {	// Create an array for form			
@@ -1027,31 +1029,26 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		{
 			$error = 0;
 
-			// We verifie whether the object is provisionally numbering
-			$ref = substr($object->ref, 1, 4);
-			if ($ref == 'PROV')
-			{
-				$numref = $object->getNextNumRef($soc);
-				if (empty($numref))
-				{
-					$error ++;
-					setEventMessages(null, $object->errors, 'errors');
-				}
+		// We verifie whether the object is provisionally numbering
+		$ref = substr($object->ref, 1, 4);
+		if ($ref == 'PROV') {
+			$numref = $object->getNextNumRef($soc);
+			if (empty($numref)) {
+				$error++;
+				setEventMessages(null, $object->errors, 'errors');
 			}
-			else
-			{
-				$numref = $object->ref;
-			}
+		} else {
+			$numref = $object->ref;
+		}
 
-			$text = $langs->trans('ConfirmValidateReceipt', $numref);
+		$text = $langs->trans('ConfirmValidateReceipt', $numref);
 
-			if (isModEnabled('notification'))
-			{
-				require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';
-				$notify = new Notify($db);
-				$text .= '<br>';
-				$text .= $notify->confirmMessage('ULTIMATEIMMO_VALIDATE', $object->socid, $object);
-			}
+		if (isModEnabled('notification')) {
+			require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';
+			$notify = new Notify($db);
+			$text .= '<br>';
+			$text .= $notify->confirmMessage('ULTIMATEIMMO_VALIDATE', $object->socid, $object);
+		}
 
 			if (! $error)
 				$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?recid='.$object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
@@ -1060,8 +1057,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		// Call Hook formConfirm
 		$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
 		$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-		if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
-		elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
+		if (empty($reshook)) {
+			$formconfirm .= $hookmanager->resPrint;
+		} elseif ($reshook > 0) {
+			$formconfirm = $hookmanager->resPrint;
+		}
 
 		// Print form confirm
 		print $formconfirm;
@@ -1387,7 +1387,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$result = $object->getLinesArray();
 
 		print '	<form name="addproduct" id="addproduct" action="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . (($action != 'editline') ? '#addline' : '#line_' . GETPOST('lineid', 'int')) . '" method="POST">
-			<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">
+			<input type="hidden" name="token" value="' . newToken() . '">
 			<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline') . '">
 			<input type="hidden" name="mode" value="">
 			<input type="hidden" name="id" value="' . $object->id . '">
@@ -1410,10 +1410,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($object->status == 0 && $permissiontoadd && $action != 'selectlines') {
 			if ($action != 'editline') {
 				// Add products/services form
-				$object->formAddObjectLine(1, $mysoc, $soc);
-
 				$parameters = array();
 				$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+				if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+				if (empty($reshook))
+					$object->formAddObjectLine(1, $mysoc, $soc);
 			}
 		}
 
@@ -1444,7 +1445,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<div class="tabsAction">' . "\n";
 		$parameters = array();
 		$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
-		if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		if ($reshook < 0) {
+			setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		}
 
 		if (empty($reshook)) {
 			// Validate
@@ -1457,16 +1460,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 
 			// Send
-			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
-
-			// Modify
-			if ($permissiontoadd) {
-				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?recid=' . $id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
-			} else {
-				print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
+			if (empty($user->socid)) {
+				print dolGetButtonAction($langs->trans('SendMail'), '', 'default', $_SERVER["PHP_SELF"].'?id='.$object->id.'&action=presend&mode=init&token='.newToken().'#formmailbeforetitle');
 			}
+			// Modify
+			print dolGetButtonAction($langs->trans('Modify'), '', 'default', $_SERVER["PHP_SELF"].'?id='.$object->id.'&action=edit&token='.newToken(), '', $permissiontoadd);
 
-			////// generate pdf
+			// generate pdf
 			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=builddoc&id=' . $id . '">' . $langs->trans('Quittance') . '</a></div>';
 
 			// Create payment
@@ -1484,15 +1484,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 
 			// Clone
-			if ($permissiontoadd) {
-				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&amp;socid=' . $object->fk_soc . '&amp;action=clone&amp;object=immoreceipt">' . $langs->trans("ToClone") . '</a></div>';
-			}
+			print dolGetButtonAction($langs->trans('ToClone'), '', 'default', $_SERVER['PHP_SELF'].'?id='.$object->id.(!empty($object->socid)?'&socid='.$object->socid:'').'&action=clone&token='.newToken(), '', $permissiontoadd);
 
-			if ($permissiontodelete) {
-				print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=delete">' . $langs->trans('Delete') . '</a></div>' . "\n";
-			} else {
-				print '<a class="butActionRefused classfortooltip" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Delete') . '</a>' . "\n";
-			}
+			// Delete (need delete permission, or if draft, just need create/modify permission)
+			print dolGetButtonAction($langs->trans('Delete'), '', 'delete', $_SERVER['PHP_SELF'].'?id='.$object->id.'&action=delete&token='.newToken(), '', $permissiontodelete || ($object->status == $object::STATUS_DRAFT && $permissiontoadd));
 		}
 		print '</div>' . "\n";
 	}
@@ -1508,12 +1503,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		// Documents generes
 		$objref = dol_sanitizeFileName($object->ref);
-		$relativepath = $objref.'/'.$objref.'.pdf';
-		$filedir = $conf->ultimateimmo->dir_output.'/receipt'.'/'.$objref;
-		$urlsource = $_SERVER["PHP_SELF"]."?id=".$object->id;
+		$relativepath = $objref . '/' . $objref . '.pdf';
+		$filedir = $conf->ultimateimmo->dir_output . '/receipt' . '/' . $objref;
+		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 		$genallowed = $permissiontoread; // If you can read, you can build the PDF to read content
-		$delallowed = $permissiontodelete; // If you can create/edit, you can remove a file on card
-		print $formfile->showdocuments('ultimateimmo', 'receipt/'.$objref, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $langs->defaultlang);
+		$delallowed = $permissiontoadd; // If you can create/edit, you can remove a file on card
+		print $formfile->showdocuments('ultimateimmo', 'receipt/' . $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $langs->defaultlang);
 
 		// Show links to link elements
 		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immoreceipt'));
@@ -1523,26 +1518,26 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		$MAXEVENT = 10;
 
-		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1) . '?recid=' . $object->id . '">';
-		$morehtmlright .= $langs->trans("SeeAll");
-		$morehtmlright .= '</a>';
+		$morehtmlright = dolGetButtonTitle($langs->trans('SeeAll'), '', 'fa fa-bars imgforviewmode', dol_buildpath('/ultimateimmo/receipt/immoreceipt_agenda.php', 1).'?id='.$object->id);
 
 		// List of actions on element
 		include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
 		$formactions = new FormActions($db);
-		$somethingshown = $formactions->showactions($object, $object->element, (is_object($object->thirdparty) ? $object->thirdparty->id : 0), 1, '', $MAXEVENT, '', $morehtmlright);
+		$somethingshown = $formactions->showactions($object, $object->element.'@'.$object->module, (is_object($object->thirdparty) ? $object->thirdparty->id : 0), 1, '', $MAXEVENT, '', $morehtmlright);
 
 		print '</div></div></div>';
 	}
 
 	//Select mail models is same action as presend
-	if (GETPOST('modelselected')) $action = 'presend';
+	if (GETPOST('modelselected')) {
+		$action = 'presend';
+	}
 
 	// Presend form
 	$modelmail = 'immoreceipt';
 	$defaulttopic = 'InformationMessage';
 	$diroutput = $conf->ultimateimmo->dir_output . '/receipt';
-	$trackid = 'immo' . $object->id;
+	$trackid = 'immoreceipt' . $object->id;
 
 	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';
 }
