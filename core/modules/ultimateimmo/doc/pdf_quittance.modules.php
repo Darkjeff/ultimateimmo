@@ -254,9 +254,10 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			if (!empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) $pdf->SetCompression(false);
 
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
-
-			$receipt = new ImmoReceipt($this->db);
-			$receipt->fetch($object->fk_receipt);
+//var_dump(get_class($object)); 
+//exit;
+			$receipt = $object; //new ImmoReceipt($this->db);
+			//$receipt->fetch($object->id);
 			
 			// On recupere les infos societe
 			$renter = new ImmoRenter($this->db);

@@ -748,6 +748,7 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function fetch($id, $ref = null)
 	{
+		//var_dump(__file__.' '.__line__);
 		$result = $this->fetchCommon($id, $ref);
 		if ($result > 0 && !empty($this->table_element_line)) {
 			$this->fetchLines();
@@ -1329,7 +1330,7 @@ class ImmoReceipt extends CommonObject
 		// We reinit status array to force to redefine them because label may change according to properties values.
 		$this->labelStatus = array();
 		$this->labelStatusShort = array();
-		$alreadypaid = $this->getSommePaiement();
+		//$alreadypaid = $this->getSommePaiement();
 
 		if (empty($this->labelStatus) || empty($this->labelStatusShort)) {
 			global $langs;
@@ -1575,11 +1576,12 @@ class ImmoReceipt extends CommonObject
 	{
 		$table = 'ultimateimmo_immopayment';
 		$field = 'fk_receipt';
+//var_dump($this->id); exit; 
 
 		$sql = 'SELECT SUM(amount) as amount';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $table;
 		$sql .= ' WHERE ' . $field . ' = ' . $this->id;
-
+//echo $sql; 
 		dol_syslog(get_class($this) . "::getSommePaiement", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {

@@ -193,9 +193,10 @@ if (empty($reshook)) {
 	}
 
 	// Validation
-	/*if ($action == 'confirm_validate' && $confirm == 'yes' && $permissiontoadd) {
+	if ($action == 'confirm_validate' && $confirm == 'yes' && $permissiontoadd) {
+		$db->begin();
+		
 		$result = $object->validate($user);
-
 		if ($result >= 0) {
 			if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE)) {
 				// Define output language
@@ -209,7 +210,7 @@ if (empty($reshook)) {
 				}
 				$model = $object->model_pdf;
 
-				$ret = $object->fetch($id); // Reload to get new records
+				//$ret = $object->fetch($id); // Reload to get new records
 				$object->generateDocument($model, $outputlangs, $hidedetails, $hidedesc, $hideref);
 			}
 		} else {
@@ -217,8 +218,14 @@ if (empty($reshook)) {
 			if (count($object->errors) > 0) setEventMessages(null, $object->errors, 'errors');
 			else setEventMessages($langs->trans(null), null, 'errors');
 		}
-	}*/
 
+		if (!$error) {
+			$db->commit(); 
+		} else {
+			$db->rollback();
+		}
+	}
+	
 	/**
 	 * Action generate quittance
 	 */
@@ -860,7 +867,7 @@ if (($id || $ref) && $action == 'edit') {
 
 	if ($action == 'delete') {
 		// Param url = id de la periode à supprimer - id session
-		$ret = $form->formconfirm($_SERVER['PHP_SELF'] . '?recid=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
+		$ret = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
 		if ($ret == 'html')
 			print '<br>';
 	}
@@ -900,8 +907,9 @@ if (($id || $ref) && $action == 'edit') {
 		print '<td>';
 
 		if ($val['label'] == 'PartialPayment') {
-			if ($object->getSommePaiement()) {
-				$totalpaye = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
+			$res = $object->getSommePaiement(); 
+			if ($res) {
+				$totalpaye = price($res, 0, $outputlangs, 1, -1, -1, $conf->currency);
 				print '<input name="partial_payment" class="flat" size="8" value="' . $totalpaye . '">';
 			}
 		} elseif ($val['label'] == 'LinkedToDolibarrThirdParty') {
@@ -974,19 +982,16 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$soc = new Societe($db);
 	$soc->fetch($object->socid);
 
-	$object = new ImmoReceipt($db);
-	$result = $object->fetch($id);
-
 	$head = immoreceiptPrepareHead($object);
 	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'bill');
 
 	$totalpaye = $object->getSommePaiement();
-
+ 
 	$formconfirm = '';
 
 	// Confirmation to delete
 	if ($action == 'delete') {
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('DeleteImmoReceipt'), $langs->trans('ConfirmDeleteImmoReceipt'), 'confirm_delete', '', 0, 1);
 	}
 	// Confirmation to delete line
 	if ($action == 'deleteline') {
@@ -1000,7 +1005,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
 		);
 		// Ask confirmation to clone
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('CloneImmoReceipt'), $langs->trans('ConfirmCloneImmoReceipt', $object->ref), 'confirm_clone', $formquestion, 'yes', 1, 250);
 	}
 
 	// Confirmation of validation
@@ -1332,8 +1337,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			$i++;
 		}
-		//exit;
-		//var_dump($object);exit;
+
 		if ($object->paye == 0) {
 			print '<tr><td colspan="4" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs) . ' ' . $cursymbolafter . '</b>' . "</td><td>&nbsp;</td></tr>\n";
 			print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
