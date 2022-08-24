@@ -1575,13 +1575,12 @@ class ImmoReceipt extends CommonObject
 	function getSommePaiement()
 	{
 		$table = 'ultimateimmo_immopayment';
-		$field = 'fk_receipt';
-//var_dump($this->id); exit; 
+		$field = 'fk_receipt'; 
 
 		$sql = 'SELECT SUM(amount) as amount';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $table;
 		$sql .= ' WHERE ' . $field . ' = ' . $this->id;
-//echo $sql; 
+ 
 		dol_syslog(get_class($this) . "::getSommePaiement", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
