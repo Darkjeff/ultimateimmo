@@ -161,7 +161,7 @@ print "\n<br>\n";
 
 //Paiement Charges locataires
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width="10%">' . $langs->trans("Paiement Charges locataires") . '</td>';
+print '<tr class="liste_titre"><td width="10%">' . $langs->trans("ImmoCostPaiementChargelocataire") . '</td>';
 
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
