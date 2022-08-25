@@ -1684,7 +1684,7 @@ class ImmoReceipt extends CommonObject
 		$error = 0;
 
 		$this->invoice = null; // This will contains invoice if an invoice is created
-
+		
 		dol_syslog("receiptSubscriptionComplementaryActions subscriptionid=" . $subscriptionid . " option=" . $option . " accountid=" . $accountid . " datesubscription=" . $datesubscription . " paymentdate=" .
 		$paymentdate . " label=" . $label . " amount=" . $amount . " num_chq=" . $num_chq . " autocreatethirdparty=" . $autocreatethirdparty);
 
@@ -1839,7 +1839,7 @@ class ImmoReceipt extends CommonObject
 					$error++;
 				}
 			}
-
+			
 			if (!$error) {
 				// TODO Link invoice with subscription ?
 			}
@@ -1852,7 +1852,7 @@ class ImmoReceipt extends CommonObject
 
 				$amounts = array();
 				$amounts[$invoice->id] = price2num($amount);
-
+				//var_dump($subscriptionid, $idprodsubscription, $mysoc, $customer);exit;
 				/*$sql = 'SELECT d.rowid as recid, d.paye, d.total_amount, pd.amount, d.ref';
 				$sql .= ' FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immopayment as pd,' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as d';
 				$sql .= ' WHERE pd.fk_receipt = d.rowid';
@@ -1881,7 +1881,7 @@ class ImmoReceipt extends CommonObject
 						$error++;
 					}
 				}
-				//var_dump($paiement);exit;
+				//var_dump($paiement, $invoice->linked_objects['subscription']);exit;
 				if (!$error) {
 					// Add transaction into bank account
 					$bank_line_id = $paiement->addPaymentToBank($user, 'payment', '(ImmoReceiptPayment)', $accountid, $emetteur_nom, $emetteur_banque);
@@ -1908,7 +1908,7 @@ class ImmoReceipt extends CommonObject
 					$invoice->setPaid($user);
 				}
 			}
-
+			
 			if (!$error) {
 				// Define output language
 				$outputlangs = $langs;
@@ -1930,7 +1930,7 @@ class ImmoReceipt extends CommonObject
 				$invoice->generateDocument($invoice->model_pdf, $outputlangs);
 			}
 		}
-
+		
 		if ($error) {
 			return -1;
 		} else {
