@@ -275,12 +275,16 @@ TypePayment = Type de Règlement
 ImmoPaymentIncome = Revenu
 ImmoPaymentRentUpdate = Loyer mis à jour avec succès
 # Charges
+CostStatsTitle = Charges
+ImmoResultResultat = Résultat
+ImmoResultResultatImmo = Résultat immo
 HtAmount = Montant HT
 VatAmount = Montant TVA
 RenterCost = Ventilation des coûts par locataire
 ImmoResultLoyerBrutEncaisse = Loyer brut encaissé
 ImmoResultChargesDeductibles = Charges déductibles
 ImmoResultRevenuFiscal = Revenu fiscal
+ImmoResultChargesNonDeductibles = Charges non déductibles
 ImmoResultRevenuNet= Revenu Net
 Average = Moyenne
 # Types de couts

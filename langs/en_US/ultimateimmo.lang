@@ -156,6 +156,7 @@ MenuImmoCompteur = Counters
 MenuNewImmoCompteur = New Counter
 MenuImmoCompteurList = List Counters
 MenuImmoCompteurStats = Counter Statistics
+ImmoCompteur = counter
 ImmoCompteurDateStatement = Date Statement
 ImmoCompteurStatement = Statement
 ImmoCompteurStatementInfo = Enter counter statement (for water, else...)
@@ -234,9 +235,13 @@ ImmoCostLabelInfo = Enter a label
 ImmoCostAmountExTaxInfo = Enter an amount VAT excluded
 ImmoCostAmountTaxInfo = Enter the amount of VAT
 RenterCost = Costs per renter
+CostStatsTitle = Costs
+ImmoResultResultat = Result
+ImmoResultResultatImmo = Result real estate
 ImmoResultLoyerBrutEncaisse = Gross rent cashed
-ImmoResultChargesDeductibles = Deductibles charges
+ImmoResultChargesDeductibles = Deductible charges
 ImmoResultRevenuFiscal = Fiscal revenue
+ImmoResultChargesNonDeductibles = Non-deductible charges
 ImmoResultRevenuNet= Net Revenue
 Average = Average
 # Cost Types
@@ -307,6 +312,7 @@ OtherRents = Other Rents
 NumberReceiptByMonth  = Number receipts by month
 CustomerReceiptPayment = Customer receipt payment
 Societe = Company
+Appartement = Apartment
 
 #
 # Sample page
