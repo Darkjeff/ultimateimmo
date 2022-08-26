@@ -348,7 +348,7 @@ function GPGetBoxesArea($user, $areacode)
     // Javascript code for dynamic actions
     if (! empty($conf->use_javascript_ajax))
     {
-        $box_file = dol_buildpath('/gestionparc/ajax/box.php', 1);
+        $box_file = dol_buildpath('/ultimateimmo/ajax/box.php', 1);
 
         $selectboxlist.='<script type="text/javascript" language="javascript">
   
