@@ -75,6 +75,11 @@ if (GETPOSTISSET('search_fk_immoproperty') && GETPOST('search_fk_immoproperty', 
 } else {
 	$search['fk_immoproperty']=0;
 }
+if (GETPOSTISSET('search_compteur_type_id') && GETPOST('search_compteur_type_id', 'int') != -1) {
+	$search['compteur_type_id'] = GETPOST('search_compteur_type_id', 'int');
+} else {
+	$search['compteur_type_id']=0;
+}
 
 /*
  * View
@@ -99,6 +104,9 @@ $sql .= $object->getFieldList('t');
 $sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 if (!empty($search['fk_immoproperty'])) {
 	$sql .=" WHERE fk_immoproperty=".(int) $search['fk_immoproperty'];
+}
+if (!empty($search['compteur_type_id'])) {
+	$sql .=" WHERE compteur_type_id=".(int) $search['compteur_type_id'];
 }
 $sql .= $db->order('t.fk_immoproperty,date_relever');
 
@@ -126,6 +134,12 @@ print '<tr class="liste_titre">';
 print '<td class="left">';
 print $object->showInputField($object->fields['fk_immoproperty'], 'fk_immoproperty', $search['fk_immoproperty'], '', '', 'search_', 'maxwidth150', 1);
 print '</td>';
+print '<td colspan="1"></td>';
+
+
+print '<td class="left">';
+print $object->showInputField($object->fields['compteur_type_id'], 'compteur_type_id', $search['compteur_type_id'], '', '', 'search_', 'maxwidth150', 1);
+print '</td>';
 print '<td colspan="7"></td>';
 // Action column
 print '<td class="liste_titre maxwidthsearch">';
@@ -139,6 +153,7 @@ print '<tr class="liste_titre">';
 
 print '<td class="left">' . $langs->trans("Building") . '</td>';
 print '<td class="left">' . $langs->trans("Date") . '</td>';
+print '<td class="left">' . $langs->trans("ImmoCompteurType") . '</td>';
 print '<td class="left">' . $langs->trans("ImmoCompteurStatement") . '</td>';
 print '<td class="left">' . $langs->trans("ImmoCompteurNbDays") . '</td>';
 print '<td class="left">' . $langs->trans("ImmoCompteurConsumption") . '</td>';
@@ -155,6 +170,7 @@ foreach ($result_data as $obj) {
 	}
 	print '<td class="left">' . $properties->getNomUrl() . '</td>';
 	print '<td class="left">' . dol_print_date($obj->date_relever) . '</td>';
+	print '<td class="left">' . $obj->compteur_type_id . '</td>';
 	print '<td class="left">' . $obj->qty . '</td>';
 	print '<td class="left">';
 	if (array_key_exists($i+1, $result_data) && $result_data[$i+1]->fk_immoproperty==$obj->fk_immoproperty) {
@@ -164,7 +180,17 @@ foreach ($result_data as $obj) {
 		$day_diff=1;
 	}
 	print '</td>';
-
+	
+	//Type Compteur
+	print '<td class="left">';
+	if (array_key_exists($i+1, $result_data) && $result_data[$i+1]->compteur_type_id==$obj->compteur_type_id) {
+		$rel_diff = $result_data[$i+1]->qty-$obj->qty;
+		print $rel_diff;
+	} else {
+		$rel_diff=0;
+	}
+	print '</td>';
+	
 	//Consommation
 	print '<td class="left">';
 	if (array_key_exists($i+1, $result_data) && $result_data[$i+1]->fk_immoproperty==$obj->fk_immoproperty) {
