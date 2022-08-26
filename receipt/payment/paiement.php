@@ -272,58 +272,57 @@ if ($action == 'add_payment') {
 	}
 
 	if (!$error) {
-		// Create subscription
-		$crowid = $receipt->receiptsubscription($id);
-		if ($crowid <= 0) {
+		$result = $receipt->receiptSubscriptionComplementaryActions($option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
+		//var_dump($result, $crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount);exit;
+		if ($result < 0) {
 			$error++;
-			$errmsg = $receipt->error;
-			setEventMessages($rereceiptnter->error, $receipt->errors, 'errors');
+			setEventMessages($receipt->error, $receipt->errors, 'errors');
+		} else {
+			$db->commit();
+			$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $id;
+			header('Location: ' . $loc);
+			exit;
 		}
 
-		if (!$error) {
-			$result = $receipt->receiptSubscriptionComplementaryActions($crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
-			//var_dump($result, $crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount);exit;
+		// Create a line of payments
+		/*$payment = new ImmoPayment($db);
+		$payment->fetch($rowid);
+		$receipt = new ImmoReceipt($db);
+		$result = $receipt->fetch($id);
 
-			// Create a line of payments
-			$payment = new ImmoPayment($db);
-			$payment->fetch($rowid);
-			$receipt = new ImmoReceipt($db);
-			$result = $receipt->fetch($id);
-			
-			$payment->ref          = $receipt->ref;
-			$payment->rowid        = $id;
-       		$payment->fk_receipt   = $receipt->rowid;
-			$payment->fk_rent	   = $receipt->fk_rent;
-			$payment->fk_property  = $receipt->fk_property;
-			$payment->fk_renter	   = $receipt->fk_renter;
-			$payment->fk_payment   = $receipt->fk_payment;
-			$payment->date_payment = $paymentdate;
-			$payment->amount      = GETPOST("amount");
-			$payment->fk_mode_reglement  = $operation;
-			$payment->fk_account  = GETPOST('fk_bank', 'int');
-			$payment->num_payment  = GETPOST('num_payment', 'int');
-			$payment->note_public  = GETPOST('note_public', 'string');
-			//var_dump(GETPOST("paymentsave"));exit;
-			if (!$error) {
-				$paymentid = $payment->create($user);
-				if ($paymentid < 0) {
-					$errmsg = $payment->errors;
-					setEventMessages(null, $errmsg, 'errors');
-					$error++;
-				}
-			}
-
-			if ($result < 0) {
-				$error++;
-				setEventMessages($receipt->error, $receipt->errors, 'errors');
-			} else {
-				$db->commit();
-				$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $id;
-				header('Location: ' . $loc);
-				exit;
-			}
+		$payment->ref          = $receipt->ref;
+		$payment->rowid        = $id;
+		$payment->fk_receipt   = $receipt->rowid;
+		$payment->fk_rent	   = $receipt->fk_rent;
+		$payment->fk_property  = $receipt->fk_property;
+		$payment->fk_renter	   = $receipt->fk_renter;
+		$payment->fk_payment   = $receipt->fk_payment;
+		$payment->date_payment = $paymentdate;
+		$payment->amount      = GETPOST("amount");
+		$payment->fk_mode_reglement  = $operation;
+		$payment->fk_account  = GETPOST('fk_bank', 'int');
+		$payment->num_payment  = GETPOST('num_payment', 'int');
+		$payment->note_public  = GETPOST('note_public', 'string');
+		//var_dump(GETPOST("paymentsave"));exit;
+		$paymentid = $payment->create($user);
+		if ($paymentid < 0) {
+			$errmsg = $payment->errors;
+			setEventMessages(null, $errmsg, 'errors');
+			$error++;
 		}
+
+
+		if ($result < 0) {
+			$error++;
+			setEventMessages($receipt->error, $receipt->errors, 'errors');
+		} else {
+			$db->commit();
+			$loc = dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $id;
+			header('Location: ' . $loc);
+			exit;
+		}*/
 	}
+
 
 	$_GET["action"] = 'create';
 }

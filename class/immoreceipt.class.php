@@ -349,7 +349,7 @@ class ImmoReceipt extends CommonObject
 			}
 		}
 	}
-			
+
 
 	/**
 	 * Create object into database
@@ -1145,7 +1145,7 @@ class ImmoReceipt extends CommonObject
 		}
 	}
 
-	
+
 	/**
      *  Return a link to the object card (with optionaly the picto)
      *
@@ -1575,12 +1575,12 @@ class ImmoReceipt extends CommonObject
 	function getSommePaiement()
 	{
 		$table = 'ultimateimmo_immopayment';
-		$field = 'fk_receipt'; 
+		$field = 'fk_receipt';
 
 		$sql = 'SELECT SUM(amount) as amount';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $table;
 		$sql .= ' WHERE ' . $field . ' = ' . $this->id;
- 
+
 		dol_syslog(get_class($this) . "::getSommePaiement", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -1614,87 +1614,41 @@ class ImmoReceipt extends CommonObject
 	}
 
 	/**
-	 *	Insert receiptsubscription into database and eventually add links to banks, mailman, etc...
-	 *
-	 *	@param	int	        $date        		Date of effect of receiptsubscription
-	 *	@param	double		$amount     		Amount of receiptsubscription 
-	 *	@param	int			$accountid			Id bank account. NOT USED.
-	 *	@param	string		$operation			Code of payment mode (if Id bank account provided). Example: 'CB', ... NOT USED.
-	 *	@param	string		$label				Label operation (if Id bank account provided).
-	 *	@param	string		$num_chq			Numero cheque (if Id bank account provided)
-	 *	@param	string		$emetteur_nom		Name of cheque writer
-	 *	@param	string		$emetteur_banque	Name of bank of cheque
-	 *	@param	int     	$datesubend			Date end receiptsubscription
-	 *	@return int         					rowid of record added, <0 if KO
-	 */
-	public function receiptsubscription($id)
-	{
-
-		$error = 0;
-
-		$this->db->begin();
-
-		// Create subscription
-		$subscription = new ImmoReceipt($this->db);
-		$subscription->fk_renter = $this->id;
-		// Load object
-		if ($id > 0) {
-			$rowid = $subscription->fetch($id);
-		}
-		if ($rowid > 0) {
-
-			if (!$error) {
-				$this->db->commit();
-				return $rowid;
-			} else {
-				$this->db->rollback();
-				return -2;
-			}
-		} else {
-			$this->error = $subscription->error;
-			$this->errors = $subscription->errors;
-			$this->db->rollback();
-			return -1;
-		}
-	}
-
-	/**
 	 *	Do complementary actions after receiptsubscription recording.
 	 *
-	 *	@param	int			$subscriptionid			Id of updated receiptsubscription
 	 *  @param	string		$option					Which action ('bankdirect', 'bankviainvoice', 'invoiceonly', ...)
 	 *	@param	int			$accountid				Id bank account
 	 *	@param	int			$datesubscription		Date of receiptsubscription
 	 *	@param	int			$paymentdate			Date of payment
 	 *	@param	string		$operation				Code of type of operation (if Id bank account provided). Example 'CB', ...
 	 *	@param	string		$label					Label operation (if Id bank account provided)
-	 *	@param	double		$amount     			Amount of receiptsubscription 
+	 *	@param	double		$amount     			Amount of receiptsubscription
 	 *	@param	string		$num_chq				Numero cheque (if Id bank account provided)
 	 *	@param	string		$emetteur_nom			Name of cheque writer
 	 *	@param	string		$emetteur_banque		Name of bank of cheque
-	 *  @param	string		$autocreatethirdparty	Auto create new thirdparty if renter not yet linked to a thirdparty and we request an option that generate invoice.
 	 *  @param  string      $ext_payment_id         External id of payment (for example Stripe charge id)
 	 *  @param  string      $ext_payment_site       Name of external paymentmode (for example 'stripe')
 	 *	@return int									<0 if KO, >0 if OK
 	 */
-	public function receiptSubscriptionComplementaryActions($subscriptionid, $option, $accountid, $datesubscription, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom = '', $emetteur_banque = '', $autocreatethirdparty = 0, $ext_payment_id = '', $ext_payment_site = '')
+	public function receiptSubscriptionComplementaryActions($option, $accountid, $datesubscription, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom = '', $emetteur_banque = '', $ext_payment_id = '', $ext_payment_site = '')
 	{
 		global $conf, $langs, $user, $mysoc;
 
 		$error = 0;
 
 		$this->invoice = null; // This will contains invoice if an invoice is created
-		
-		dol_syslog("receiptSubscriptionComplementaryActions subscriptionid=" . $subscriptionid . " option=" . $option . " accountid=" . $accountid . " datesubscription=" . $datesubscription . " paymentdate=" .
-		$paymentdate . " label=" . $label . " amount=" . $amount . " num_chq=" . $num_chq . " autocreatethirdparty=" . $autocreatethirdparty);
+
+		dol_syslog("receiptSubscriptionComplementaryActions receiptid=" . $this->id . " option=" . $option . " accountid=" . $accountid . " datesubscription=" . $datesubscription . " paymentdate=" .
+		$paymentdate . " label=" . $label . " amount=" . $amount . " num_chq=" . $num_chq);
 
 		// Insert into bank account directly (if option choosed for) + link to llx_subscription if option is 'bankdirect'
+
 		if ($option == 'bankdirect' && $accountid) {
 			require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 
 			$acct = new Account($this->db);
 			$result = $acct->fetch($accountid);
-			
+
 			$dateop = $paymentdate;
 
 			$insertid = $acct->addline($dateop, $operation, $label, $amount, $num_chq, '', $user, $emetteur_nom, $emetteur_banque);
@@ -1704,7 +1658,7 @@ class ImmoReceipt extends CommonObject
 				if ($inserturlid > 0) {
 					// Update table ultimateimmo_immoreceipt
 					$sql = "UPDATE ".MAIN_DB_PREFIX."ultimateimmo_immoreceipt SET fk_bank=".((int) $insertid);
-					$sql .= " WHERE rowid=".((int) $subscriptionid);
+					$sql .= " WHERE rowid=".((int) $this->id);
 
 					dol_syslog("subscription::subscription", LOG_DEBUG);
 					$resql = $this->db->query($sql);
@@ -1725,6 +1679,7 @@ class ImmoReceipt extends CommonObject
 			}
 		}
 
+
 		// If option choosed, we create invoice
 		if (($option == 'bankviainvoice' && $accountid) || $option == 'invoiceonly') {
 			require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
@@ -1732,52 +1687,16 @@ class ImmoReceipt extends CommonObject
 
 			$invoice = new Facture($this->db);
 			$customer = new RenterSoc($this->db);
-			
-			if (!$error) {
-				if (!($this->fk_soc > 0)) { // If not yet linked to a company
-					if ($autocreatethirdparty) {
-						// Create a linked thirdparty to member
-						$companyalias = '';
-						$fullname = $this->getFullName($langs);
 
-						if ($this->morphy == 'mor') {
-							$companyname = $this->company;
-							if (!empty($fullname)) {
-								$companyalias = $fullname;
-							}
-						} else {
-							$companyname = $fullname;
-							if (!empty($this->company)) {
-								$companyalias = $this->company;
-							}
-						}
 
-						$result = $customer->create_from_renter($this->fk_renter, $companyname, $companyalias);
-						if ($result < 0) {
-							$this->error = $customer->error;
-							$this->errors = $customer->errors;
-							$error++;
-						} else {
-							$this->fk_soc = $result;
-						}
-					} else {
-						$langs->load("errors");
-						$this->error = $langs->trans("ErrorRenterNotLinkedToAThirpartyLinkOrCreateFirst");
-						$this->errors[] = $this->error;
-						$error++;
-					}
-				}
-			}
-			if (!$error) {
-				$result = $customer->fetch($this->fk_soc);
-				if ($result <= 0) {
-					$this->error = $customer->error;
-					$this->errors = $customer->errors;
-					$error++;
-				}
+			$result = $customer->fetch($this->fk_soc);
+			if ($result <= 0) {
+				$this->error = $customer->error;
+				$this->errors = $customer->errors;
+				$error++;
 			}
 
-			if (!$error) {
+			if (!$error && !empty($this->fk_soc)) {
 				// Create draft invoice
 				$invoice->type = Facture::TYPE_STANDARD;
 				$invoice->cond_reglement_id = $customer->cond_reglement_id;
@@ -1793,9 +1712,9 @@ class ImmoReceipt extends CommonObject
 				$invoice->socid = $this->fk_soc;
 				//$invoice->date = $datesubscription;
 				$invoice->date = dol_now();
-				
+
 				// Possibility to add external linked objects with hooks
-				$invoice->linked_objects['subscription'] = $subscriptionid;
+				$invoice->linked_objects[$this->element] = $this->id;
 				if (!empty($_POST['other_linked_objects']) && is_array($_POST['other_linked_objects'])) {
 					$invoice->linked_objects = array_merge($invoice->linked_objects, $_POST['other_linked_objects']);
 				}
@@ -1830,6 +1749,7 @@ class ImmoReceipt extends CommonObject
 				}
 			}
 
+
 			if (!$error) {
 				// Validate invoice
 				$result = $invoice->validate($user);
@@ -1839,12 +1759,13 @@ class ImmoReceipt extends CommonObject
 					$error++;
 				}
 			}
-			
+
 			if (!$error) {
 				// TODO Link invoice with subscription ?
 			}
 
 			// Add payment onto invoice
+
 			if (!$error && $option == 'bankviainvoice' && $accountid) {
 				require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 				require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
@@ -1852,17 +1773,17 @@ class ImmoReceipt extends CommonObject
 
 				$amounts = array();
 				$amounts[$invoice->id] = price2num($amount);
-				//var_dump($subscriptionid, $idprodsubscription, $mysoc, $customer);exit;
-				/*$sql = 'SELECT d.rowid as recid, d.paye, d.total_amount, pd.amount, d.ref';
-				$sql .= ' FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immopayment as pd,' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as d';
-				$sql .= ' WHERE pd.fk_receipt = d.rowid';
-				$sql .= ' AND d.entity = ' . $conf->entity;
-				$sql .= ' AND pd.rowid = ' . $id;*/
+				//var_dump($receiptid, $idprodsubscription, $mysoc, $customer);exit;
+//				$sql = 'SELECT d.rowid as recid, d.paye, d.total_amount, pd.amount, d.ref';
+//				$sql .= ' FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immopayment as pd,' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as d';
+//				$sql .= ' WHERE pd.fk_receipt = d.rowid';
+//				$sql .= ' AND d.entity = ' . $conf->entity;
+//				$sql .= ' AND pd.rowid = ' . $id;
 
 				//$receipt = new ImmoReceipt($this->db);
-				
+
 				$paiement = new Paiement($this->db);
-				
+
 				$paiement->datepaye = $paymentdate;
 				$paiement->amounts = $amounts;
 				$paiement->paiementcode = $operation;
@@ -1881,6 +1802,7 @@ class ImmoReceipt extends CommonObject
 						$error++;
 					}
 				}
+
 				//var_dump($paiement, $invoice->linked_objects['subscription']);exit;
 				if (!$error) {
 					// Add transaction into bank account
@@ -1895,7 +1817,7 @@ class ImmoReceipt extends CommonObject
 				/*if (!$error && !empty($bank_line_id)) {
 					// Update fk_bank into ultimateimmo_immoreceipt table
 					$sql = 'UPDATE '.MAIN_DB_PREFIX.'ultimateimmo_immoreceipt SET fk_bank='.((int) $bank_line_id);
-					$sql .= ' WHERE rowid='.((int) $receipt->id);
+					$sql .= ' WHERE rowid='.((int) $this->id);
 
 					$result = $this->db->query($sql);
 					if (!$result) {
@@ -1908,11 +1830,12 @@ class ImmoReceipt extends CommonObject
 					$invoice->setPaid($user);
 				}
 			}
-			
+
+
 			if (!$error) {
 				// Define output language
 				$outputlangs = $langs;
-				$newlang = '';
+				/*$newlang = '';
 				$lang_id = GETPOST('lang_id');
 				if ($conf->global->MAIN_MULTILANGS && empty($newlang) && !empty($lang_id)) {
 					$newlang = $lang_id;
@@ -1927,10 +1850,10 @@ class ImmoReceipt extends CommonObject
 				// Generate PDF (whatever is option MAIN_DISABLE_PDF_AUTOUPDATE) so we can include it into email
 				//if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE))
 
-				$invoice->generateDocument($invoice->model_pdf, $outputlangs);
+				$invoice->generateDocument($invoice->model_pdf, $outputlangs);*/
 			}
 		}
-		
+
 		if ($error) {
 			return -1;
 		} else {

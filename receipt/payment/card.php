@@ -267,7 +267,7 @@ if ($resql) {
 
 		$accountstatic->id = $objp->fk_account;
 		$accountstatic->fetch($objp->fk_account);
-		
+
 		$fk_mode_reglement = $objp->mode_reglement_label;
 
 		$i++;
@@ -364,10 +364,10 @@ if ($action == 'createall') {
 	print $langs->trans("Numero");
 	print '</td>';
 	print "</tr>\n";
-	
+
 	print '<tr class="oddeven" valign="top">';
 
-	// Due date	
+	// Due date
 	print '<td align="center">';
 	print $form->selectDate(!empty($date_payment) ? $date_payment : '-1', 'payment', 0, 0, 0, 'card', 1);
 	print '</td>';
@@ -551,14 +551,11 @@ if ($_GET['action'] == '') {
 	}
 }
 
-require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
+/*require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 $facture = new Facture($db);
-$facture->fetch($id);
+$facture->fetch($id);*/
 
-// Create subscription
-$crowid = $receipt->receiptsubscription($datereceipt, $amount, $accountid, $operation, $label, $num_chq, $emetteur_nom, $emetteur_banque, $datesubend);
-
-$receipt->receiptSubscriptionComplementaryActions($crowid, $option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
+$receipt->receiptSubscriptionComplementaryActions($option, $accountid, $datereceipt, $paymentdate, $operation, $label, $amount, $num_chq, $emetteur_nom, $emetteur_banque);
 
 //var_dump($renter);exit;
 $somethingshown = $form->showLinkedObjectBlock($facture, '');

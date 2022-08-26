@@ -195,7 +195,7 @@ if (empty($reshook)) {
 	// Validation
 	if ($action == 'confirm_validate' && $confirm == 'yes' && $permissiontoadd) {
 		$db->begin();
-		
+
 		$result = $object->validate($user);
 		if ($result >= 0) {
 			if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE)) {
@@ -220,12 +220,12 @@ if (empty($reshook)) {
 		}
 
 		if (!$error) {
-			$db->commit(); 
+			$db->commit();
 		} else {
 			$db->rollback();
 		}
 	}
-	
+
 	/**
 	 * Action generate quittance
 	 */
@@ -327,7 +327,7 @@ if (empty($reshook)) {
 			$action = "create";
 			$error++;
 		}
-		
+
 		if (!$error) {
 			$db->begin();
 
@@ -377,7 +377,7 @@ if (empty($reshook)) {
 
 			foreach ($mesLignesCochees as $maLigneCochee) {
 				$receipt = new ImmoReceipt($db);
-				
+
 				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
 
 				$monId = $maLigneCourante[0];
@@ -401,7 +401,7 @@ if (empty($reshook)) {
 				$receipt->fk_rent = $monId;
 				$receipt->fk_property = $monLocal;
 				$receipt->fk_renter = $monLocataire;
-				
+
 				if ($maTVA == 'Oui') {
 					$receipt->total_amount = $monMontant * 1.2;
 					$receipt->vat_amount = $monMontant * 0.2;
@@ -417,7 +417,7 @@ if (empty($reshook)) {
 				$receipt->status = 0;
 				$receipt->paye = 0;
 				$result = $receipt->create($user);
-	
+
 				if ($result < 0) {
 					setEventMessages(null, $receipt->errors, 'errors');
 					$action = 'createall';
@@ -425,7 +425,7 @@ if (empty($reshook)) {
 				}
 			}
 		}
-		
+
 		if (empty($error)) {
 			setEventMessages($langs->trans("ReceiptPaymentsAdded"), null, 'mesgs');
 			Header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_list.php', 1));
@@ -443,60 +443,6 @@ if (empty($reshook)) {
 
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
-	
-	/*
-	 * Edit Receipt
-	 */
-
-	if ($action == 'update') {
-		$date_echeance = dol_mktime(12, 0, 0, GETPOST("date_echeancemonth", 'int'), GETPOST("date_echeanceday", 'int'), GETPOST("date_echeanceyear", 'int'));
-		$date_start = dol_mktime(12, 0, 0, GETPOST("date_startmonth", 'int'), GETPOST("date_startday", 'int'), GETPOST("date_startyear", 'int'));
-		$date_end = dol_mktime(12, 0, 0, GETPOST("date_endmonth", 'int'), GETPOST("date_endday", 'int'), GETPOST("date_endyear", 'int'));
-
-		$receipt = new ImmoReceipt($db);
-		$result = $receipt->fetch($id);
-		$receipt->label 		= GETPOST('label');
-		if ($receipt->vat_tx != 0) {
-			$rentamount = price2num(GETPOST("rentamount"));
-			$chargesamount = price2num(GETPOST("chargesamount"));
-			$receipt->total_amount 	= ($rentamount + $chargesamount) * 1.2;
-		} else {
-			$rentamount = price2num(GETPOST("rentamount"));
-			$chargesamount = price2num(GETPOST("chargesamount"));
-			$receipt->total_amount 	= $rentamount + $chargesamount;
-		}
-		$receipt->rentamount 	= GETPOST("rentamount");
-		$receipt->chargesamount = GETPOST("chargesamount");
-		if ($receipt->vat_tx != 0) {
-			$rentamount = price2num(GETPOST("rentamount"));
-			$chargesamount = price2num(GETPOST("chargesamount"));
-			$receipt->vat_amount = ($rentamount + $chargesamount) * 0.2;
-		} else {
-			$receipt->vat_amount = 0;
-		}
-
-		$receipt->fk_rent 		= GETPOST("fk_rent");
-		$receipt->fk_property 	= GETPOST("fk_property");
-		$receipt->fk_renter 	= GETPOST("fk_renter");
-		$receipt->fk_soc 		= GETPOST("fk_soc");
-		$receipt->fk_owner 		= GETPOST("fk_owner");
-		$receipt->fk_mode_reglement = GETPOST("fk_mode_reglement");
-		$receipt->mode_code 	= GETPOST("mode_code");
-		$receipt->mode_payment	= GETPOST("mode_payment");
-		$receipt->date_echeance = $date_echeance;
-		$receipt->note_public 	= GETPOST("note_public");
-		$receipt->status 		= GETPOST("status");
-		$receipt->date_start 	= $date_start;
-		$receipt->date_end 		= $date_end;
-
-		$result = $receipt->update($user);
-		header("Location: " . dol_buildpath('/ultimateimmo/receipt/immoreceipt_card.php', 1) . '?id=' . $receipt->id);
-		if ($id > 0) {
-			// $mesg='<div class="ok">'.$langs->trans("SocialContributionAdded").'</div>';
-		} else {
-			$mesg = '<div class="error">' . $receipt->error . '</div>';
-		}
-	}
 
 	// Action to build doc
 	include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
@@ -626,7 +572,7 @@ if ($action == 'create') {
 		} elseif ($val['label'] == 'LinkedToDolibarrThirdParty') {
 			// Thirdparty
 			if (isModEnabled('societe')) {
-				$text = img_picto('', 'company') . $form->select_company(GETPOST('socid', 'int'), 'socid', $filteronlist, 'SelectThirdParty', 1, 0, array(), 0, 'minwidth300 widthcentpercentminusxx maxwidth500');
+				$text = img_picto('', 'company') . $form->select_company(GETPOST('fk_soc', 'int'), 'fk_soc', $filteronlist, 'SelectThirdParty', 1, 0, array(), 0, 'minwidth300 widthcentpercentminusxx maxwidth500');
 				if (empty($conf->dol_use_jmobile)) {
 					$texthelp = $langs->trans("IfNeedToUseOtherObjectKeepEmpty");
 					print $form->textwithtooltip($text . ' ' . img_help(), $texthelp, 1);
@@ -775,7 +721,7 @@ if ($action == 'createall') {
 	if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 		$resql = $db->query($sql);
 		$nbtotalofrecords = $db->num_rows($resql);
-		
+
 		if (($page * $limit) > $nbtotalofrecords)	// if total resultset is smaller then paging size (filtering), goto and load page 0
 		{
 			$page = 0;
@@ -906,7 +852,7 @@ if (($id || $ref) && $action == 'edit') {
 		print '<td>';
 
 		if ($val['label'] == 'PartialPayment') {
-			$res = $object->getSommePaiement(); 
+			$res = $object->getSommePaiement();
 			if ($res) {
 				$totalpaye = price($res, 0, $outputlangs, 1, -1, -1, $conf->currency);
 				print '<input name="partial_payment" class="flat" size="8" value="' . $totalpaye . '">';
@@ -914,7 +860,7 @@ if (($id || $ref) && $action == 'edit') {
 		} elseif ($val['label'] == 'LinkedToDolibarrThirdParty') {
 			// Thirdparty
 			if (isModEnabled('societe')) {
-				$text = img_picto('', 'company') . $form->select_company($object->thirdparty->id, 'socid', $filteronlist, 'None', 1, 0, array(), 0, 'minwidth300');
+				$text = img_picto('', 'company') . $form->select_company($object->thirdparty->id, 'fk_soc', $filteronlist, 'None', 1, 0, array(), 0, 'minwidth300');
 				if (empty($conf->dol_use_jmobile)) {
 					$texthelp = $langs->trans("IfNeedToUseOtherObjectKeepEmpty");
 					print $form->textwithtooltip($text . ' ' . img_help(), $texthelp, 1, 0, '', '', 2);
@@ -961,7 +907,7 @@ if (($id || $ref) && $action == 'edit') {
 		print '</td>';
 		print '</tr>';
 	}
-	
+
 	// Other attributes
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_edit.tpl.php';
 
@@ -985,7 +931,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print dol_get_fiche_head($head, 'card', $langs->trans("ImmoReceipt"), -1, 'bill');
 
 	$totalpaye = $object->getSommePaiement();
- 
+
 	$formconfirm = '';
 
 	// Confirmation to delete
@@ -998,7 +944,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}
 
 	// Clone confirmation
-	if ($action == 'clone') {	// Create an array for form			
+	if ($action == 'clone') {	// Create an array for form
 		$formquestion = array(
 			array('type' => 'other', 'name' => 'socid', 'label' => $langs->trans("SelectThirdParty"), 'value' => $form->select_company($object->fk_soc, 'socid', '(s.client=1 OR s.client=2 OR s.client=3)', 1)),
 			array('type' => 'date', 'name' => 'newdate', 'label' => $langs->trans("Date"), 'value' => dol_now())
@@ -1184,7 +1130,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<tr><td';
 		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
-		
+
 		if ($val['type'] == 'text' || $val['type'] == 'html'
 		) print ' tdtop';
 		print '">';
@@ -1198,7 +1144,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		if ($val['label'] == 'Echeance') {
 			print dol_print_date($object->date_echeance, 'day');
-			if ($object->hasDelay() && ($totalpaye != $object->total_amount)) {			
+			if ($object->hasDelay() && ($totalpaye != $object->total_amount)) {
 				print " " . img_warning($langs->trans("Late"));
 			}
 		} elseif ($val['label'] == 'PartialPayment') {
@@ -1255,7 +1201,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$cursymbolafter = $langs->getCurrencySymbol($conf->currency);
 	}
 
-	
+
 	//var_dump($object->rowid, $invoice->linked_objects['subscription']);
 	//exit;
 
@@ -1273,7 +1219,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$sql .= " AND pf.fk_facture = f.rowid";
 	$sql .= " AND r.entity IN (" . getEntity($object->element) . ")";
 	$sql .= ' ORDER BY dp';
-	
+
 	// List of payments
 	/*$sql = "SELECT p.rowid, p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, r.partial_payment, ";
 	$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
@@ -1287,7 +1233,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$sql .= " AND r.entity IN (" . getEntity($object->element) . ")";
 	$sql .= ' ORDER BY dp';*/
 	//print_r($sql);exit;
-	$resql = $db->query($sql);
+	$remaintopay = 460;
+	//$resql = $db->query($sql);
+	/*$resql=0;
 	if ($resql) {
 		$num = $db->num_rows($resql);
 
@@ -1313,7 +1261,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			$invoice->fetch($objp->rowid);
 			$paymentstatic = new Paiement($db);
 			$paymentstatic->fetch($objp->rowid);
-			
+
 			$paymentstatic->id = $objp->fk_paiement;
 			$paymentstatic->datepaye = $db->jdate($objp->dp);
 			$paymentstatic->ref = $objp->ref;
@@ -1368,7 +1316,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
 
 			$remaintopay = $object->total_amount - $object->getSommePaiement();
-			
+
 			print '<tr><td colspan="4" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
 			print '<td class="right"' . ($remaintopay ? ' class="amountremaintopay"' : '') . '>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
 		}
@@ -1376,8 +1324,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$db->free($resql);
 	} else {
 		dol_print_error($db);
-	}
-	
+	}*/
+
 	print '</table>';
 	print '</div>';
 	print '</div>';
@@ -1456,10 +1404,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($reshook < 0) {
 			setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 		}
-		
+
 		if (empty($reshook)) {
-			// Validate			
-			if ($object->status == ImmoReceipt::STATUS_DRAFT) {				
+			// Validate
+			if ($object->status == ImmoReceipt::STATUS_DRAFT) {
 				if ($permissiontoadd) {
 					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=validate">' . $langs->trans('Validate') . '</a></div>';
 				} else {
