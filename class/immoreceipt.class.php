@@ -1860,6 +1860,103 @@ class ImmoReceipt extends CommonObject
 			return 1;
 		}
 	}
+
+	/**
+	 *  Return list of payments
+	 *
+	 *  @return     array					Array with list of payments
+	 */
+	public function getListOfPaymentsInvoice($invoiceId=0)
+	{
+		$retarray = array();
+
+		$table = 'paiement_facture';
+		$table2 = 'paiement';
+		$field = 'fk_facture';
+		$field2 = 'fk_paiement';
+		$field3 = ', p.ref_ext';
+		$sharedentity = 'facture';
+
+		$sql = "SELECT p.rowid, p.ref, pf.amount, pf.multicurrency_amount, p.fk_paiement, p.datep, p.num_paiement as num, t.code".$field3;
+		$sql .= ", t.libelle as mode_reglement_label";
+		$sql .= "      ,b.fk_account,
+					   ba.rowid  as baid,
+					   ba.ref    as baref,
+					   ba.label,
+					   ba.number as banumber,
+					   ba.account_number,
+					   ba.fk_accountancy_journal";
+		$sql .= " FROM ".$this->db->prefix().$table." as pf
+		 	 INNER JOIN ".$this->db->prefix().$table2." as p ON pf.".$field2." = p.rowid
+		  	INNER JOIN ".$this->db->prefix()."c_paiement as t ON p.fk_paiement = t.id
+			LEFT JOIN llx_bank as b ON p.fk_bank = b.rowid
+         	LEFT JOIN llx_bank_account as ba ON b.fk_account = ba.rowid";
+		$sql .= " WHERE pf.".$field." = ".((int) $invoiceId);
+		$sql .= ' AND p.entity IN ('.getEntity($sharedentity).')';
+
+		dol_syslog(get_class($this)."::getListOfPayments", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			while ($obj = $this->db->fetch_object($resql)) {
+
+				$tmp = array('id'=>$obj->rowid,
+							 'amount'=>$obj->amount,
+							 'type'=>$obj->code,
+							 'date'=>$obj->datep,
+							 'num'=>$obj->num,
+							 'ref'=>$obj->ref,
+							 'mode_reglement_label'=>$obj->mode_reglement_label,
+							'fk_account'=>$obj->fk_account,
+							'baid'=>$obj->baid,
+							'label'=>$obj->label,
+							'banumber'=>$obj->banumber,
+							'account_number'=>$obj->account_number,
+							'fk_accountancy_journal'=>$obj->fk_accountancy_journal,
+					);
+				if (!empty($field3)) {
+					$tmp['ref_ext'] = $obj->ref_ext;
+				}
+				$retarray[] = $tmp;
+
+			}
+
+			//look for credit notes and discounts and deposits
+			$sql = "SELECT rc.amount_ttc as amount, rc.multicurrency_amount_ttc as multicurrency_amount, rc.datec as date, f.ref as ref, rc.description as type";
+			$sql .= ' FROM '.$this->db->prefix().'societe_remise_except as rc, '.$this->db->prefix().'facture as f';
+			$sql .= ' WHERE rc.fk_facture_source=f.rowid AND rc.fk_facture = '.((int) $invoiceId);
+			$sql .= ' AND (f.type = 2 OR f.type = 0 OR f.type = 3)'; // Find discount coming from credit note or excess received or deposits (payments from deposits are always null except if FACTURE_DEPOSITS_ARE_JUST_PAYMENTS is set)
+
+
+			if ($sql) {
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					while ($obj = $this->db->fetch_object($resql)) {
+						$retarray[] = array('id'=>'',
+											'amount'=>$obj->amount,
+											'type'=>$obj->type,
+											'date'=>$obj->date,
+											'num'=>'',
+											'ref'=>$obj->ref,
+											'mode_reglement_label'=>'',
+											'fk_account'=>'',
+											'baid'=>'',
+											'label'=>'',
+											'banumber'=>'',
+											'account_number'=>'',
+											'fk_accountancy_journal'=>'');
+					}
+				} else {
+					$this->error = $this->db->lasterror();
+					return -1;
+				}
+			}
+
+			return $retarray;
+		} else {
+			$this->error = $this->db->lasterror();
+			return -1;
+		}
+	}
 }
 
 /**

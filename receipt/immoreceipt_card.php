@@ -1205,126 +1205,93 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	//var_dump($object->rowid, $invoice->linked_objects['subscription']);
 	//exit;
 
-	$sql = "SELECT p.rowid, p.ref, p.fk_paiement, p.datep as dp, p.amount, p.fk_bank, pf.fk_facture, pf.fk_paiement, r.rowid, f.rowid, c.code as type_code, c.libelle as mode_reglement_label, r.partial_payment, ";
-	$sql .= ' b.fk_account, ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
-	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
-	$sql .= ", " . MAIN_DB_PREFIX . "facture as f";
-	$sql .= ", " . MAIN_DB_PREFIX . "paiement_facture as pf";
-	$sql .= ", " . MAIN_DB_PREFIX . "paiement as p";
-	$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX.'c_paiement as c ON p.fk_paiement = c.id';
-	$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX.'bank as b ON p.fk_bank = b.rowid';
-	$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX.'bank_account as ba ON b.fk_account = ba.rowid';
-	$sql .= " WHERE r.rowid = '" . $id . "'";
-	$sql .= " AND pf.fk_paiement = p.rowid";
-	$sql .= " AND pf.fk_facture = f.rowid";
-	$sql .= " AND r.entity IN (" . getEntity($object->element) . ")";
-	$sql .= ' ORDER BY dp';
+	$invoiceLinked = array();
+	$resultObjLink = $object->fetchObjectLinked();
+	if ($resultObjLink<0) {
+		setEventMessages($object->error,$object->errors,'errors');
+	}
 
-	// List of payments
-	/*$sql = "SELECT p.rowid, p.fk_rent, p.fk_receipt, p.date_payment as dp, p.amount, p.fk_mode_reglement, c.code as type_code, c.libelle as mode_reglement_label, r.partial_payment, ";
-	$sql .= ' ba.rowid as baid, ba.ref as baref, ba.label, ba.number as banumber, ba.account_number, ba.fk_accountancy_journal';
-	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as r";
-	$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
-	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_account = b.rowid";
-	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
-	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as c ON p.fk_mode_reglement = c.id";
-	$sql .= " WHERE r.rowid = '" . $id . "'";
-	$sql .= " AND p.fk_receipt = r.rowid";
-	$sql .= " AND r.entity IN (" . getEntity($object->element) . ")";
-	$sql .= ' ORDER BY dp';*/
-	//print_r($sql);exit;
-	$remaintopay = 460;
-	//$resql = $db->query($sql);
-	/*$resql=0;
-	if ($resql) {
-		$num = $db->num_rows($resql);
+	print '<table class="noborder" width="100%">';
+	print '<tr class="liste_titre">';
+	print '<td>' . $langs->trans("RefPayment") . '</td>';
+	print '<td>' . $langs->trans("Date") . '</td>';
+	print '<td>' . $langs->trans("Type") . '</td>';
+	if (isModEnabled('banque')) {
+		print '<td class="liste_titre right">' . $langs->trans('BankAccount') . '</td>';
+	}
+	print '<td class="right">' . $langs->trans("Amount") . '</td>';
+	if ($user->admin) print '<td>&nbsp;</td>';
+	print '</tr>';
 
-		$i = 0;
-		$total = 0;
-		print '<table class="noborder" width="100%">';
-		print '<tr class="liste_titre">';
-		print '<td>' . $langs->trans("RefPayment") . '</td>';
-		print '<td>' . $langs->trans("Date") . '</td>';
-		print '<td>' . $langs->trans("Type") . '</td>';
-		if (isModEnabled('banque')) {
-			print '<td class="liste_titre right">' . $langs->trans('BankAccount') . '</td>';
-		}
-		print '<td class="right">' . $langs->trans("Amount") . '</td>';
-		if ($user->admin) print '<td>&nbsp;</td>';
-		print '</tr>';
+	if (is_array($object->linkedObjects) && array_key_exists('facture', $object->linkedObjects) && count($object->linkedObjects['facture']) > 0) {
+		foreach ($object->linkedObjects['facture'] as $invoice) {
 
-		while ($i < $num) {
-			$objp = $db->fetch_object($resql);
+			/**
+			 * @param Facture $invoice
+			 */
+			$receiptPayment = new ImmoReceipt($db);
+			$resultListPaiement=$receiptPayment->getListOfPaymentsInvoice($invoice->id);
+			if ($resultListPaiement<0) {
+				setEventMessages($receiptPayment->error,$receiptPayment->errors,'errors');
+			}
+			if (is_array($resultListPaiement) && !empty($resultListPaiement)) {
+				foreach($resultListPaiement as $payment) {
+					$paymentstatic = new Paiement($db);
+					$paymentstatic->id = $payment['id'];
+					$paymentstatic->datepaye = $db->jdate($payment['date']);
+					$paymentstatic->ref = $payment['ref'];
+					$paymentstatic->num_payment = $payment['num'];
+					$paymentstatic->paiementcode = $payment['type'];
+					$paymentstatic->type_code = $payment['type'];
 
-			require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
-			$invoice = new Facture($db);
-			$invoice->fetch($objp->rowid);
-			$paymentstatic = new Paiement($db);
-			$paymentstatic->fetch($objp->rowid);
+					print '<tr class="oddeven"><td class="nowraponall">';
+					print $paymentstatic->getNomUrl(1);
+					print '</td>';
+					print '<td>' . dol_print_date($paymentstatic->datepaye, 'day') . '</td>';
+					print '<td>' . $payment['mode_reglement_label'] . '</td>';
+					if (isModEnabled('banque')) {
+						$bankaccountstatic->id = $payment['baid'];
+						$bankaccountstatic->ref = $payment['baref'];
+						$bankaccountstatic->label = $payment['baref'];
+						$bankaccountstatic->number = $payment['banumber'];
 
-			$paymentstatic->id = $objp->fk_paiement;
-			$paymentstatic->datepaye = $db->jdate($objp->dp);
-			$paymentstatic->ref = $objp->ref;
-			$paymentstatic->num_payment = $objp->num_payment;
-			$paymentstatic->paiementcode = $objp->payment_code;
+						if (isModEnabled('accounting')) {
+							$bankaccountstatic->account_number = $payment['account_number'];
 
-			print '<tr class="oddeven"><td class="nowraponall">';
-			print $paymentstatic->getNomUrl(1);
-			print '</td>';
-			print '<td>' . dol_print_date($db->jdate($objp->dp), 'day') . '</td>';
-			$paymentstatic->fk_mode_reglement = $objp->mode_reglement_label;
-			$paymentstatic->type_code = $objp->type_code;
-			$paymentstatic->mode_reglement_label = $objp->mode_reglement_label;
-			print '<td>' . $objp->mode_reglement_label . '</td>';
-			//var_dump($objp->fk_paiement);exit;
-			if (isModEnabled('banque')) {
-				$bankaccountstatic->id = $objp->baid;
-				$bankaccountstatic->ref = $objp->baref;
-				$bankaccountstatic->label = $objp->baref;
-				$bankaccountstatic->number = $objp->banumber;
+							$accountingjournal = new AccountingJournal($db);
+							$accountingjournal->fetch($payment['fk_accountancy_journal']);
+							$bankaccountstatic->accountancy_journal = $accountingjournal->getNomUrl(0, 1, 1, '', 1);
+						}
 
-				if (isModEnabled('accounting')) {
-					$bankaccountstatic->account_number = $objp->account_number;
+						print '<td class="right">';
+						if ($bankaccountstatic->id)
+							print $bankaccountstatic->getNomUrl(1, 'transactions');
+						print '</td>';
+					}
+					print '<td class="right">' . $cursymbolbefore . price($payment['amount'], 0, $outputlangs) . ' ' . $cursymbolafter . "</td>\n";
 
-					$accountingjournal = new AccountingJournal($db);
-					$accountingjournal->fetch($objp->fk_accountancy_journal);
-					$bankaccountstatic->accountancy_journal = $accountingjournal->getNomUrl(0, 1, 1, '', 1);
+					print '<td class="right">';
+					print '</td>';
+					print '</tr>';
+
 				}
-
-				print '<td class="right">';
-				if ($bankaccountstatic->id)
-					print $bankaccountstatic->getNomUrl(1, 'transactions');
-				print '</td>';
 			}
-			print '<td class="right">' . $cursymbolbefore . price($objp->amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td>\n";
-
-			print '<td class="right">';
-			if ($user->admin) {
-				print '<a href="' . DOL_URL_ROOT . '/compta/facture/card.php' . '?id=' . $invoice->id . '&action=delete&token=' . newToken() . '&paiement_id=' . $objp->fk_paiement . '">';
-				print img_delete();
-				print '</a>';
-			}
-			print '</td>';
-			print '</tr>';
-			$totalpaye = $object->getSommePaiement();
-			//var_dump($totalpaye);
-			$i++;
+			$totalpaye += $invoice->getSommePaiement();
 		}
+	}
 
-		if ($object->paye == 0) {
-			print '<tr><td colspan="4" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs) . ' ' . $cursymbolafter . '</b>' . "</td><td>&nbsp;</td></tr>\n";
-			print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
+	if ($object->paye == 0) {
+		print '<tr><td colspan="4" class="right">' . $langs->trans("AlreadyPaid") . ' :</td><td class="right"><b>' . $cursymbolbefore . price($totalpaye, 0, $outputlangs) . ' ' . $cursymbolafter . '</b>' . "</td><td>&nbsp;</td></tr>\n";
+		print '<tr><td colspan="4" class="right">' . $langs->trans("AmountExpected") . ' :</td><td class="right">' . $cursymbolbefore . price($object->total_amount, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
 
-			$remaintopay = $object->total_amount - $object->getSommePaiement();
+		//$remaintopay = $object->total_amount - $object->getSommePaiement();
+		$remaintopay = $object->total_amount - $totalpaye;
 
-			print '<tr><td colspan="4" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
-			print '<td class="right"' . ($remaintopay ? ' class="amountremaintopay"' : '') . '>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
-		}
-		print '</table>';
-		$db->free($resql);
-	} else {
-		dol_print_error($db);
-	}*/
+		print '<tr><td colspan="4" class="right">' . $langs->trans("RemainderToPay") . ' :</td>';
+		print '<td class="right"' . ($remaintopay ? ' class="amountremaintopay"' : '') . '>' . $cursymbolbefore . price($remaintopay, 0, $outputlangs) . ' ' . $cursymbolafter . "</td><td>&nbsp;</td></tr>\n";
+	}
+	print '</table>';
+
 
 	print '</table>';
 	print '</div>';
