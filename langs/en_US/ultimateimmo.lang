@@ -151,12 +151,15 @@ ConfirmCloneImmoProperty = Are you sure you want to clone this property ?
 # Fiscal lots
 MenuImmoLotFiscal = Fiscal lots
 MenuListImmoLotFiscal = List Fiscal Lots
-MenuImmoCompteur = Counters
+immobuildings = buildings
 # Counters
+MenuImmoCompteur = Counters
 MenuNewImmoCompteur = New Counter
 MenuImmoCompteurList = List Counters
 MenuImmoCompteurStats = Counter Statistics
 ImmoCompteur = counter
+ImmoCompteurs = counters
+ImmoCompteur_Type = Type of counter
 ImmoCompteurDateStatement = Date Statement
 ImmoCompteurStatement = Statement
 ImmoCompteurStatementInfo = Enter counter statement (for water, else...)
@@ -229,12 +232,16 @@ ImmoPaymentIncome = Income
 ImmoPaymentRentUpdate = Rent is updated
 DeleteImmoPayment = Delete payment
 ConfirmDeleteImmoPayment = Are you sure you want to delete this payment ?
+ImmomPaiementResultat = Result
 # Rental
 MenuStatisticsCostFourn = Cost: Statistics by Vendor
 ImmoCostLabelInfo = Enter a label
 ImmoCostAmountExTaxInfo = Enter an amount VAT excluded
 ImmoCostAmountTaxInfo = Enter the amount of VAT
 RenterCost = Costs per renter
+ImmoCostPaiementChargelocataire = Renter's cost payment
+ImmoCostChargesReelLocataire = Renter's real costs
+ImmoCostDifferentielCharge = Cost differential
 CostStatsTitle = Costs
 ImmoResultResultat = Result
 ImmoResultResultatImmo = Result real estate

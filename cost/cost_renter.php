@@ -88,7 +88,7 @@ print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr><tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Paiement Charge locataire").'</td>';
+print '<tr class="liste_titre"><td width=10%>'.$langs->trans("ImmoCostPaiementChargelocataire").'</td>';
 foreach( $months_list as $month_name )
 {
 	print '<td align="right">'.$langs->trans($month_name).'</td>';
@@ -145,7 +145,7 @@ print '</tr>';
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Charges Réel Locataire").'</td>';
+print '<tr class="liste_titre"><td width=10%>'.$langs->trans("ImmoCostChargesReelLocataire").'</td>';
 foreach( $months_list as $month_name )
 {
 	print '<td align="right">'.$langs->trans($month_name).'</td>';
@@ -267,7 +267,7 @@ else
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=10%>'.$langs->trans("Differentiel Charge").'</td>';
+print '<tr class="liste_titre"><td width=10%>'.$langs->trans("ImmoCostDifferentielCharge").'</td>';
 foreach( $months_list as $month_name )
 {
 	print '<td align="right">'.$langs->trans($month_name).'</td>';
