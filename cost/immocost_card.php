@@ -296,7 +296,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			array('type' => 'text', 'name' => 'label', 'label' => $langs->trans("Label"), 'value' => $object->label),
 			array('type' => 'text', 'name' => 'amount', 'label' => $langs->trans("Amount"), 'value' => $object->amount),
 		);
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneAsk', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('CloneImmoCost'), $langs->trans('ConfirmCloneAsk', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
 	}
 
 	// Confirmation of action xxxx

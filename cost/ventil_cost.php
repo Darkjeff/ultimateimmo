@@ -200,7 +200,7 @@ if ($id > 0)
 		print '<tr class="liste_titre">';
 		print '<td>' . $langs->trans('fk_immocost') . '</td>';
 		print '<td>' . $langs->trans('fk_property') . '</td>';
-		print '<td>' . $langs->trans('nomlocal') . '</td>';
+		print '<td>' . $langs->trans('ImmoCostVentilNameProperty') . '</td>';
 		print '<td align="right">' . $langs->trans('ImmoCostVentilAmount') . '</td>';
 		print '<td align="right">' . $langs->trans('ImmoCostVentilSelect') . '</td>';
 		print "</tr>\n";

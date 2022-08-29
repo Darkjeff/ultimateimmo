@@ -63,7 +63,7 @@ function immobuildingPrepareHead($object)
 	$upload_dir = $conf->ultimateimmo->dir_output."/immobuilding/".dol_sanitizeFileName($object->ref);
 	$nbFiles = count(dol_dir_list($upload_dir, 'files', 0, '', '(\.meta|_preview.*\.png)$'));
 	$nbLinks = Link::count($db, $object->element, $object->id);
-	$head[$h][0] = dol_buildpath("/ultimateimmo/immobuilding_document.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/building/immobuilding_document.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans('Documents');
 	if (($nbFiles + $nbLinks) > 0) {
 		$head[$h][1] .= '<span class="badge marginleftonlyshort">'.($nbFiles + $nbLinks).'</span>';
@@ -71,7 +71,7 @@ function immobuildingPrepareHead($object)
 	$head[$h][2] = 'document';
 	$h++;
 
-	$head[$h][0] = dol_buildpath("/ultimateimmo/immobuilding_agenda.php", 1).'?id='.$object->id;
+	$head[$h][0] = dol_buildpath("/ultimateimmo/building/immobuilding_agenda.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Events");
 	$head[$h][2] = 'agenda';
 	$h++;
