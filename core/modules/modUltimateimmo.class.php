@@ -232,8 +232,8 @@ class modUltimateimmo extends DolibarrModules
 				"ImmoProperty_Type",
 				"Juridique",
 				"BuiltDate",
-				"immocost_type",
-				"immocompteur_type"
+				"ImmoCost_Type",
+				"ImmoCompteurType"
 			),
 			'tabsql'         => array(
 				'SELECT d.rowid as rowid, d.code, d.label, d.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_diagnostic as d',
