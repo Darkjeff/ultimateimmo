@@ -32,3 +32,9 @@ ALTER TABLE llx_ultimateimmo_immocost_type ADD CONSTRAINT llx_ultimateimmo_immoc
 ALTER TABLE llx_ultimateimmo_immocompteur ADD COLUMN compteur_type_id integer AFTER fk_immoproperty;
 
 
+ALTER TABLE llx_ultimateimmo_building add date_creation datetime NOT NULL after fk_property;
+ALTER TABLE llx_ultimateimmo_building add tms timestamp NOT NULL after date_creation;
+ALTER TABLE llx_ultimateimmo_building add fk_user_creat integer NOT NULL after tms;
+ALTER TABLE llx_ultimateimmo_building add fk_user_modif integer after fk_user_creat;
+
+
