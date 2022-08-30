@@ -164,6 +164,9 @@ MenuListImmoLotFiscal = Liste des lots fiscaux
 immobuildings = lots fiscaux
 ImmoBuilding = Lot fiscal
 DeleteImmoBuilding = Suppression du lot fiscal
+ConfirmDeleteImmoBuilding = Etes vous sûr de vouloir supprimer ce lot fiscal
+CloneImmoBuilding = Cloner le lot fiscal
+
 # Compteur
 MenuImmoCompteur = Compteur
 MenuNewImmoCompteur = Nouveau compteur
@@ -184,7 +187,6 @@ ImmoCompteurConsumption = Consommation
 ImmoCompteurDailyConsumption = Consommation journalière
 ImmoCompteurMonthlyConsumption = Consommation mensuelle
 ImmoCompteurYearlyConsumption = Consommation annuelle
-
 
 #
 # Proprietaire
@@ -286,6 +288,9 @@ ImmoResultResultat = Résultat
 ImmoResultResultatImmo = Résultat immo
 HtAmount = Montant HT
 VatAmount = Montant TVA
+DeleteImmoCost = Supprimer la charge
+ConfirmDeleteImmoCost = Etes vous sûr de vouloir supprimer cette charge ?
+CloneImmoCost = Cloner la charge
 RenterCost = Ventilation des coûts par locataire
 ImmoCostChargesReelLocataire = Charges réel Locataire
 ImmoCostDifferentielCharge = Differentiel Charge
@@ -297,10 +302,12 @@ ImmoResultChargesNonDeductibles = Charges non déductibles
 ImmoResultRevenuNet= Revenu Net
 Average = Moyenne
 # Types de couts
+ImmoCost_Type = Type de coût
 CostTypeLabel = Libellé
 CostTypeLabelInfo = Indiquer un libellé
 CostTypeFamille = Famille de coût
 CostTypeFamilleInfo = Indiquer la famille de coût
+ImmoCostVentilNameProperty = Nom du bien
 ImmoCostVentilAmount = Montant
 ImmoCostVentilSelect = Select
 ImmoCostVentilAddRepartition = AJOUTER REPARTITION
