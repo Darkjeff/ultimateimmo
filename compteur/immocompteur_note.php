@@ -99,7 +99,7 @@ if ($id > 0 || !empty($ref))
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="'.dol_buildpath('/ultimateimmo/immocompteur_list.php', 1).'?restore_lastsearch_values=1'.(!empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
+	$linkback = '<a href="'.dol_buildpath('/ultimateimmo/compteur/immocompteur_list.php', 1).'?restore_lastsearch_values=1'.(!empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
 
 	$morehtmlref = '<div class="refidno">';
 	/*
