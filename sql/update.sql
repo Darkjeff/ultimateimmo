@@ -37,4 +37,6 @@ ALTER TABLE llx_ultimateimmo_building add tms timestamp NOT NULL after date_crea
 ALTER TABLE llx_ultimateimmo_building add fk_user_creat integer NOT NULL after tms;
 ALTER TABLE llx_ultimateimmo_building add fk_user_modif integer after fk_user_creat;
 
+ALTER TABLE llx_ultimateimmo_immocost_type add active integer after status;
+
 
