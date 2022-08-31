@@ -128,7 +128,7 @@ class ImmoCost extends CommonObject
 								 'position' => 500, 'notnull' => 1,),
 		'tms'           => array('type'     => 'timestamp', 'label' => 'DateModification', 'enabled' => 1,
 								 'visible'  => -2, 'position' => 501, 'notnull' => 1,),
-		'fk_user_create' => array('type'     => 'integer:User:user/class/user.class.php', 'label' => 'UserAuthor', 'enabled' => 1, 'visible' => -2,
+		'fk_user_creat' => array('type'     => 'integer:User:user/class/user.class.php', 'label' => 'UserAuthor', 'enabled' => 1, 'visible' => -2,
 								 'position' => 510, 'notnull' => 1, 'foreignkey' => 'llx_user.rowid',),
 		'fk_user_modif' => array('type'     => 'integer:User:user/class/user.class.php', 'label' => 'UserModif', 'enabled' => 1, 'visible' => -2,
 								 'position' => 511, 'notnull' => -1, 'foreignkey' => 'llx_user.rowid',),
@@ -457,7 +457,7 @@ class ImmoCost extends CommonObject
 	public function info($id)
 	{
 		$sql = 'SELECT rowid, date_creation as datec, tms as datem,';
-		$sql .= ' fk_user_create, fk_user_modif';
+		$sql .= ' fk_user_creat, fk_user_modif';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' WHERE t.rowid = ' . $id;
 		$result = $this->db->query($sql);

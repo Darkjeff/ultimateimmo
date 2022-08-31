@@ -83,7 +83,7 @@ MenuImmoRenterStats = Stats
 MenuImmoPayment = Payment
 MenuNewImmoPayment = New Payment
 MenuListImmoPayment = Payments
-MenuListImmoPaymentStats=payment statistics
+MenuListImmoPaymentStats = Payment statistics
 MenuListImmoReceipt = Receipts
 MenuNewImmoReceipt = New receipt
 MenuAllReceiptperContract = Generate the receipts
@@ -175,6 +175,7 @@ ImmoCompteurConsumption = Consumption
 ImmoCompteurDailyConsumption = Daily Consumption
 ImmoCompteurMonthlyConsumption = Monthly Consumption
 ImmoCompteurYearlyConsumption = Yearly Consumption
+DeleteImmoCompteur = Delete counter
 CloneImmoCompteur = Clone counter
 
 #
@@ -231,6 +232,7 @@ Echeance = Deadline
 Periode_du = Period from
 Periode_au = Period to
 ImmoReceiptStatTitre= Rents
+Quittance = Receipt
 # Payment
 ImmoPaymentTitle = Result
 NumPayment = <em>Number(Cheque/Transfer N°)</em>
