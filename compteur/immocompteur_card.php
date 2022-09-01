@@ -130,7 +130,7 @@ if (empty($reshook))
 {
 	$error = 0;
 
-	$backurlforlist = dol_buildpath('/ultimateimmo/immocompteur_list.php', 1);
+	$backurlforlist = dol_buildpath('/ultimateimmo/compteur/immocompteur_list.php', 1);
 
 	if (empty($backtopage) || ($cancel && empty($id))) {
 		if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
@@ -586,7 +586,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		$MAXEVENT = 10;
 
-		$morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/immocompteur_agenda.php', 1).'?id='.$object->id.'">';
+		$morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/compteur/immocompteur_agenda.php', 1).'?id='.$object->id.'">';
 		$morehtmlright .= $langs->trans("SeeAll");
 		$morehtmlright .= '</a>';
 

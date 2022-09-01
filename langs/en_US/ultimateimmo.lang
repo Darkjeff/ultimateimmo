@@ -185,6 +185,7 @@ ImmoOwner = Owner
 ImmoOwner_TypeInfo = Enter the type of owner (Company, else...)
 DeleteImmoOwner = Delete owner
 ConfirmDeleteImmoOwner = Are you sure you want to delete this owner ?
+ImmoOwner_Type = Type of owner
 CloneImmoOwner = Clone owner
 ConfirmCloneImmoOwner = Are you sure you want to clone this owner ?
 
@@ -194,6 +195,7 @@ ConfirmCloneImmoOwner = Are you sure you want to clone this owner ?
 ImmoRents = Rents
 ImmoRent = Rental
 ListOfRents = List of rents
+ImmorentType = Type of rental
 EmptyHousing = Empty Housing
 FurnishedApartment = Furnished Apartment
 RentAmount = Rent amount
@@ -201,6 +203,8 @@ Deposit = Deposit
 Encours = Outstanding
 ImmoRentPeriod = Period
 ImmoRentNoticePeriod = Notice period
+DateStartRent = Date Start Rent
+date_end = Date end
 DateNextRent = Date next rent
 DateLastRegul = Date last regul
 DeleteImmoRent = Delete rent
@@ -211,6 +215,8 @@ ConfirmCloneImmoRent = Are you sure you want to clone this rent ?
 #
 # Renters
 #
+ImmoRenter = Renter
+ImmoCountry = Country
 DeleteImmoRenter = Delete renter
 ConfirmCloneImmoRenter = Are you sure you want to clone this renter ?
 CloneImmoRenter = Clone renter
@@ -220,6 +226,7 @@ ConfirmDeleteImmoRenter = Are you sure you want to delete this renter ?
 # Receipts
 #
 # Receipts
+OtherReceipts = Other Receipts
 ImmoPaymentLabelInfo = Enter a label
 ImmoPaymentRentAmountInfo = Enter the rental amount
 ImmoPaymentChargeAmountInfo = Enter the charge amount
@@ -234,6 +241,8 @@ Periode_au = Period to
 ImmoReceiptStatTitre= Rents
 Quittance = Receipt
 # Payment
+CreatePDF = Create PDF
+Property = Property
 ImmoPaymentTitle = Result
 NumPayment = <em>Number(Cheque/Transfer N°)</em>
 CheckTransmitter = <em>Issuer(Check/Transfer N°)</em>
@@ -282,10 +291,9 @@ ConfirmDeleteImmoCost_Type = Are you sure you want to delete this cost type ?
 # Miscellaneous
 #
 BienPrincipal = Principal property
-BirthDay = Birthday
+BirthDay = Date of birth
 BirthCountry = Country of birth
 ImmoProperty = Property
-Property = Property
 Properties = Properties
 ImmoProperties = Properties
 ImmoRenters = Renters
@@ -298,8 +306,6 @@ ImmoPayment = Payment
 UnPaidReceipt = Unpaid receipt
 PaidReceipt = Paid receipt
 PartiallyPaidReceipt = Partially paid receipt
-ImmorentType = Type of rental
-DateStartRent = Date Start Rent
 TypePayment = Payment type
 NewImmoPropertyType = New Type of Property
 ImmoProperty_Type = Type of Property
@@ -307,11 +313,9 @@ PropertyTypeStatusActive=Active
 PropertyTypeStatusCancel=Cancel
 BuiltDate = Construction date
 Civility = Title
-ImmoRenter = Renter
 Renter = Renter
 ChargesAmount = Charges amount
 TotalAmount = Total amount
-date_end = Date end
 VatAmount = VAT amount
 VatTx = VAT rate
 ImmoUnpaid = Unpaid
@@ -331,7 +335,6 @@ ValidateReceipt = Validate receipt
 ShowMandataireDetails = View agent details
 ShowColocataireDetails = View roommate details
 Quittances&Baux = Quittances and Leases
-OtherReceipts = Other Receipts
 OtherRents = Other Rents
 NumberReceiptByMonth  = Number receipts by month
 CustomerReceiptPayment = Customer receipt payment
