@@ -156,7 +156,7 @@ class ImmoRent extends CommonObject
 									'searchall' => 1,),
 		'status'           => array('type'          => 'integer', 'label' => 'Status', 'visible' => 1, 'enabled' => 1,
 									'position'      => 1000, 'notnull' => 1, 'index' => 1,
-									'arrayofkeyval' => array('0' => 'Disabled', '1' => 'Active')),
+									'arrayofkeyval' => array('0' => 'ImmoRentStatusDisabled', '1' => 'ImmoRentStatusActive')),
 	);
 	public $rowid;
 	public $ref;
@@ -234,11 +234,21 @@ class ImmoRent extends CommonObject
 				unset($this->fields[$key]);
 			}
 		}
+		
+		// Translate some data of arrayofkeyval
+		if (is_object($langs)) {
+			foreach ($this->fields as $key => $val) {
+				if (is_array($val['arrayofkeyval'])) {
+					foreach ($val['arrayofkeyval'] as $key2 => $val2) {
+						$this->fields[$key]['arrayofkeyval'][$key2] = $langs->trans($val2);
+					}
+				}
+			}
+		}
 
 		// Translate some data
 		$this->fields['vat']['arrayofkeyval'] = array(1 => $langs->trans('No'), 2 => $langs->trans('Yes'));
-		$this->fields['location_type_id']['arrayofkeyval'] = array(1 => $langs->trans('EmptyHousing'),
-																   2 => $langs->trans('FurnishedApartment'));
+		$this->fields['location_type_id']['arrayofkeyval'] = array(1 => $langs->trans('EmptyHousing'), 2 => $langs->trans('FurnishedApartment'));
 	}
 
 	/**

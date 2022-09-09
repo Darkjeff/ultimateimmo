@@ -207,6 +207,8 @@ ConfirmCloneImmoOwner = Êtes vous sûr de vouloir cloner ce propriétaire ?
 ImmoOwner_Type = Type de propriétaire
 DeleteImmoOwner_Type = Suppression du type de propriétaire
 ConfirmDeleteImmoOwner_Type = Êtes vous sûr de vouloir supprimer ce type de propriétaire ?
+ImmoOwnerStatusActive = Propriétaire Actif
+ImmoOwnerStatusDisabled = Propriétaire Désactivé
 
 #
 # Location
@@ -230,6 +232,8 @@ DeleteImmoRent = Suppression de la location
 ConfirmDeleteImmoRent = Êtes vous sûr de vouloir supprimer cette location ?
 CloneImmoRent = Cloner la location
 ConfirmCloneImmoRent = Êtes vous sûr de vouloir cloner cette location ?
+ImmoRentStatusActive = Location Active
+ImmoRentStatusDisabled = Location Désactivée
 
 #
 # Locataires
@@ -241,6 +245,8 @@ DeleteImmoRenter = Suppression du locataire
 ConfirmDeleteImmoRenter = Êtes vous sûr de vouloir supprimer ce locataire ?
 CloneImmoRenter = Cloner le locataire
 ConfirmCloneImmoRenter = Êtes vous sûr de vouloir cloner ce locataire ?
+ImmoRenterStatusActive = Locataire Actif
+ImmoRenterStatusDisabled = Locataire Désactivé
 
 #
 # Quittances
@@ -296,6 +302,8 @@ VatAmount = Montant TVA
 DeleteImmoCost = Supprimer la charge
 ConfirmDeleteImmoCost = Êtes vous sûr de vouloir supprimer cette charge ?
 CloneImmoCost = Cloner la charge
+ImmoCostStatusActive = Charge Active
+ImmoCostStatusDisabled = Charge Désactivée
 RenterCost = Ventilation des coûts par locataire
 ImmoCostChargesReelLocataire = Charges réel Locataire
 ImmoCostDifferentielCharge = Differentiel Charge
@@ -331,8 +339,8 @@ ImmoRenters = Locataires
 ImmoCosts = Charges locatives
 ImmoCostType = Types de coûts
 NewImmoPropertyType = Nouveau type de bien
-PropertyTypeStatusActive=Bien actif
-PropertyTypeStatusCancel=Bien désactivé
+PropertyTypeStatusActive = Bien actif
+PropertyTypeStatusCancel = Bien désactivé
 BuiltDate = Date de construction
 Civility = Titre
 Renter = Locataire
