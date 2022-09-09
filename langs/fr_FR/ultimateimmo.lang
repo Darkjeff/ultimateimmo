@@ -288,6 +288,7 @@ ImmoPaymentIncome = Revenu
 ImmoPaymentRentUpdate = Loyer mis à jour avec succès
 # Charges
 CostStatsTitle = Charges
+ImmoCostRepartition = Répartition
 ImmoResultResultat = Résultat
 ImmoResultResultatImmo = Résultat immo
 HtAmount = Montant HT
