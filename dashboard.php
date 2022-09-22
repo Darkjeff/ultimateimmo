@@ -67,7 +67,7 @@ if ($user->rights->ultimateimmo->read) {
         'url_add' => dol_buildpath('/ultimateimmo/property/immoproperty_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('NbProperty'), 'value' => getProperties(), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1)),
+            array('title' => $langs->trans('NbProperty'), 'value' => getPropertiesNumber(), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1)),
         )
     );
 }
@@ -195,7 +195,7 @@ if (! is_object($form)) $form=new Form($db);
 $langs->loadLangs(array("admin", "ultimateimmo@gultimateimmo"));
 
 // Title
-$title = $langs->trans("GPDashboard");
+$title = $langs->trans("UltimateImmoDashboard");
 if (! empty($conf->global->MAIN_APPLICATION_TITLE)) $title=$langs->trans("HomeArea").' - '.$conf->global->MAIN_APPLICATION_TITLE;
 
 llxHeader('', $title);

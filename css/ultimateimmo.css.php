@@ -117,10 +117,60 @@ div.mainmenu.result {
 	width: 80%;
 }
 
-?
->
-.myclasscss {
-	/* ... */
+/* Card for dashboard */
+.ultimateimmo-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	grid-gap: 30px;
+	align-items: stretch;
+	justify-items: center;
+}
+
+.ultimateimmo-card {
+	width: 270px;
+	min-height: 110px;
+	background-color: #fff;
+	border-radius: .25em;
+	color: #fff;
+	box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+	padding: 0;
+	display: flex;
+	margin-right: 1%;
+	margin-bottom: 1%;
+}
+
+.ultimateimmo-left-side {
+	background-color: #FFBF69;
+	border-top-left-radius: .25rem;
+	border-bottom-left-radius: .25rem;
+	width: 25%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+
+.ultimateimmo-left-side .icon {
+	font-size: 50px;
+}
+
+.ultimateimmo-right-side {
+	width: 75%;
+}
+
+.ultimateimmo-right-side .inner {
+	padding: 1% 3% 1% 3%;
+	color: #0c0c0c;
+}
+
+.ultimateimmo-right-side .line-info {
+	padding: 1% 0 1% 0;
+}
+
+.ultimateimmo-right-side .line-info span, .color-span {
+	padding: 1px 6px 1px 6px;
+	color: white;
+	border-radius: .25em;
 }
 
 
