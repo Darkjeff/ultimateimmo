@@ -24,7 +24,7 @@
 /**
  * Class to manage building of HTML components
  */
-class FormUltimateimmo extends Form 
+class FormUltimateimmo extends Form
 {
 	/**
      * @var DoliDB Database handler.
@@ -35,17 +35,17 @@ class FormUltimateimmo extends Form
 	 * @var string Error code (or message)
 	 */
 	public $error='';
-	
+
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDB $db handler
 	 */
-	function __construct($db) 
+	function __construct($db)
 	{
 		$this->db = $db;
 	}
-	
+
 	/**
 	 * Display list of property type
 	 *
@@ -54,11 +54,11 @@ class FormUltimateimmo extends Form
 	 *  @param  string  $morecss        Add more css on SELECT element
 	 *  @return	string					String with HTML select
 	 */
-	public function select_type_property($selected='',$htmlname='type_property_id',$morecss='maxwidth100') 
+	public function select_type_property($selected='',$htmlname='type_property_id',$morecss='maxwidth100')
 	{
 		global $conf,$langs,$user;
 		$langs->load("dict", "ultimateimmo@ultimateimmo");
-		
+
 		$out='';
 
 		$sql = "SELECT t.rowid, t.code, t.label, t.active FROM ".MAIN_DB_PREFIX."c_ultimateimmo_immoproperty_type as t";
@@ -66,11 +66,11 @@ class FormUltimateimmo extends Form
 			$sql .= ' WHERE ' . $filter;
 		}
 		$sql .= " ORDER BY t.label";
-		
+
 		dol_syslog(get_class($this) . "::select_type_property", LOG_DEBUG);
 		$resql = $this->db->query($sql);
-		if ($resql) 
-		{			
+		if ($resql)
+		{
 			$out.= '<select class="flat'.($morecss?' '.$morecss:'').'" name="'.$htmlname.'" id="'.$htmlname.'">';
 			$out.= '<option value="">&nbsp;</option>';
 			$num = $this->db->num_rows($resql);
@@ -101,11 +101,11 @@ class FormUltimateimmo extends Form
 		{
 			dol_print_error($this->db);
 		}
-		
+
 		return $out;
 	}
-	
-	
+
+
 	/**
 	 *    Return ImmoProperty_Type label of a property
 	 *
@@ -120,9 +120,9 @@ class FormUltimateimmo extends Form
 		if (empty($code)) return '';
 		return $langs->getLabelFromKey($this->db, "ImmoProperty_Type".$code, "c_ultimateimmo_immoproperty_type", "code", "label", $code);
 	}
-	
+
 	/**
-	 *  Return combo list with juridique forme 
+	 *  Return combo list with juridique forme
 	 *
 	 *  @param  string	$selected   	Juridique code preselected
 	 * 	@param	string	$htmlname		Name of HTML select combo field
@@ -132,7 +132,7 @@ class FormUltimateimmo extends Form
 	public function select_juridique($selected = '', $htmlname = 'juridique_id', $morecss = 'maxwidth100', $usecodeaskey = '', $showempty = 1, $disablefavorites = 0, $addspecialentries = 0)
 	{
 		global $db, $langs;
-		
+
 		$langs->load("dict");
 
 		$out='';
@@ -166,15 +166,15 @@ class FormUltimateimmo extends Form
 					$label[$i] = dol_string_unaccent($juridiqueArray[$i]['label']);
 					$i++;
 				}
-				
+
 				if (empty($disablefavorites)) array_multisort($favorite, SORT_DESC, $label, SORT_ASC, $juridiqueArray);
 				else $juridiqueArray = dol_sort_array($juridiqueArray, 'label');
-				
+
 				if ($showempty)
 				{
 					$out.='<option value="">&nbsp;</option>'."\n";
 				}
-				
+
 				foreach ($juridiqueArray as $row)
 				{
 					//if (empty($showempty) && empty($row['rowid'])) continue;
@@ -207,14 +207,14 @@ class FormUltimateimmo extends Form
 		{
 			dol_print_error($this->db);
 		}
-		
+
 		// Make select dynamic
 		include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
 		$out .= ajax_combobox('select'.$htmlname);
 
 		return $out;
 	}
-	
+
 	/**
 	 *    Return Juridique label, code or id from an id, code or label
 	 *
@@ -280,7 +280,7 @@ class FormUltimateimmo extends Form
 		return 'Error';
 	}
 
-	
+
 	/**
 	 *    Retourne le nom traduit de la date de construction
 	 *
@@ -315,4 +315,27 @@ class FormUltimateimmo extends Form
 		}
 	}
 
+	public function selectYearImmoCost($selected = '', $htmlname = 'selectyearcost')
+	{
+		global $conf;
+		if (empty($conf->global->ULTIMATEIMMO_TYPECOST_ADJUST)) {
+			setEventMessage('Missing configuration TypeCostForAdjust','errors');
+		} else {
+			$dataYear=array();
+			$sql = 'SELECT DISTINCT YEAR(date_start) as yearcost FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immocost WHERE fk_cost_type IN (' . $conf->global->ULTIMATEIMMO_TYPECOST_ADJUST . ')';
+			$sql .= 'ORDER BY date_start DESC';
+			$resql=$this->db->query($sql);
+
+			if ($resql) {
+				while($obj=$this->db->fetch_object($resql)) {
+
+					$dataYear[$obj->yearcost] = $obj->yearcost;
+				}
+			} else {
+				setEventMessage($this->db->lasterror,'errors');
+			}
+
+			print $this::selectarray($htmlname,$dataYear,$selected);
+		}
+	}
 }
