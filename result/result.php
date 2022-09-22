@@ -114,9 +114,9 @@ foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)=' . $month_num . ' then lp.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON lp.fk_property = ip.rowid";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp ON lp.fk_property = ip.rowid";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
 $sql .= " WHERE lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 
@@ -321,7 +321,7 @@ foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
-$sq = " FROM llx_ultimateimmo_immoproperty as ip
+$sql .= " FROM llx_ultimateimmo_immoproperty as ip
         LEFT JOIN llx_ultimateimmo_immocost as ic ON ic.fk_property = ip.rowid AND ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "' AND
 				ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'
          LEFT JOIN llx_ultimateimmo_immocost_type as it
@@ -330,7 +330,6 @@ $sq = " FROM llx_ultimateimmo_immoproperty as ip
                     ON ib.fk_property = ip.fk_property ";
 $sql .= " GROUP BY  ib.label";
 
-print $sql;
 $resql = $db->query($sql);
 $total_month=array();
 if ($resql) {
