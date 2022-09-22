@@ -273,8 +273,8 @@ class modUltimateimmo extends DolibarrModules
 		// Boxes/Widgets
 		// Add here list of php file(s) stored in ultimateimmo/core/boxes that contains class to show a widget.
 		$this->boxes = array(
-			0 => array('file'               => 'box_immorenter.php', 'note' => 'Widget provided by Ultimateimmo',
-					   'enabledbydefaulton' => 'Home')
+			//0 => array('file'               => 'box_immorenter.php', 'note' => 'Widget provided by Ultimateimmo',
+			//		   'enabledbydefaulton' => 'Home')
 			//1=>array('file'=>'immobilierwidget2.php@ultimateimmo','note'=>'Widget provided by ultimateimmo'),
 			//2=>array('file'=>'immobilierwidget3.php@ultimateimmo','note'=>'Widget provided by ultimateimmo')
 		);
@@ -539,7 +539,7 @@ class modUltimateimmo extends DolibarrModules
 			'titre'    => 'UltimateImmo',
 			'mainmenu' => 'properties',
 			'leftmenu' => '',
-			'url'      => '/ultimateimmo/property/immoproperty_list.php',
+			'url'      => '/ultimateimmo/dashboard.php',
 			'langs'    => 'ultimateimmo@ultimateimmo',
 			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 			'position' => 1100 + $r,
@@ -551,8 +551,8 @@ class modUltimateimmo extends DolibarrModules
 			'user'     => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
 
-///Owner		
-		
+///Owner
+
 		$this->menu[$r++] = array(
 			'fk_menu'  => 'fk_mainmenu=properties',
 			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
@@ -589,7 +589,7 @@ class modUltimateimmo extends DolibarrModules
 			'target'   => '',
 			'user'     => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
-		
+
 		$this->menu[$r++] = array(
 			'fk_menu'  => 'fk_mainmenu=properties',
 			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
@@ -626,7 +626,7 @@ class modUltimateimmo extends DolibarrModules
 			'target'   => '',
 			'user'     => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
-		
+
 		//Lot Fiscal
 		$this->menu[$r++] = array(
 			'fk_menu'  => 'fk_mainmenu=properties',
@@ -646,7 +646,7 @@ class modUltimateimmo extends DolibarrModules
 			'target'   => '',
 			'user'     => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both 		// 0=Menu for internal users, 1=external users, 2=both
-		
+
 		//Compteur
 		$this->menu[$r++] = array(
 			'fk_menu'  => 'fk_mainmenu=properties',
@@ -684,7 +684,7 @@ class modUltimateimmo extends DolibarrModules
 			'target'   => '',
 			'user'     => 2
 		);
-		
+
 		$this->menu[$r++] = array(
 			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immocompteur',
 			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
@@ -704,7 +704,7 @@ class modUltimateimmo extends DolibarrModules
 			'user'     => 2
 		);        // 0=Menu for internal users, 1=external users, 2=both
 
-//// renter 
+//// renter
 
 $this->menu[$r++] = array(
 			'fk_menu'  => 'fk_mainmenu=properties',
@@ -742,12 +742,12 @@ $this->menu[$r++] = array(
 			'target'   => '',
 			'user'     => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
-		
-		
-		
+
+
+
 		/// rent
-		
-		
+
+
 		$this->menu[$r++] = array(
 			'fk_menu'  => 'fk_mainmenu=properties',
 			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
@@ -784,11 +784,11 @@ $this->menu[$r++] = array(
 			'target'   => '',
 			'user'     => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
-		
-		
-		
-		// receipt 
-		
+
+
+
+		// receipt
+
 		$this->menu[$r++] = array(
 			'fk_menu'  => 'fk_mainmenu=properties',
 			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
@@ -808,7 +808,7 @@ $this->menu[$r++] = array(
 			'user'     => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
 
-	
+
 		$this->menu[$r++] = array(
 			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immoreceipt',
 			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode

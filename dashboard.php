@@ -1,6 +1,7 @@
 <?php
 /*
- * Copyright (C) 2019-2020 Fabien Fernandes Alves   <fabien@code42.fr>
+ * Copyright (C) 2019-2022 Fabien Fernandes Alves   <fabien@code42.fr>
+ * Copyright (C) 2019-2022 Florian HENRY   <florian.henry@scopen.fr>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +18,9 @@
  */
 
 /**
- *    \file       htdocs/gestionparc/template/index.php
- *    \ingroup    gestionparc
- *    \brief      Home page of gestionparc top menu
+ *    \file       htdocs/ultimateimmo/template/index.php
+ *    \ingroup    ultimateimmo
+ *    \brief      Home page of ultimateimmo top menu
  */
 
 // Load Dolibarr environment
@@ -46,8 +47,8 @@ if (! $res) { die("Include of main fails");
 }
 
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
-dol_include_once('ultimateimmo/class/gp_infobox.class.php');
-dol_include_once('ultimateimmo/class/gp_modele_boxes.class.php');
+dol_include_once('ultimateimmo/class/ultimateimmo_infobox.class.php');
+dol_include_once('ultimateimmo/class/ultimateimmo_modele_boxes.class.php');
 dol_include_once('ultimateimmo/lib/dashboard.lib.php');
 
 // If not defined, we select menu "home"
@@ -60,63 +61,61 @@ $hookmanager->initHooks(array('index'));
 $globalboxes = array();
 
 // Color theme : (#96BBBB, #F2E3BC, #618985, #C19875)
-if ($user->rights->ultimateimmo->device->read) {
+if ($user->rights->ultimateimmo->read) {
     $globalboxes[] = array('name' => $langs->trans('PROPERTY'), 'color' =>'#96BBBB',
-        'url' => dol_buildpath('/ultimateimmo/device_list.php', 1),
-        'url_add' => dol_buildpath('/ultimateimmo/device_card.php?action=create', 1),
-        'right' => $user->rights->ultimateimmo->device->write,
+        'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1),
+        'url_add' => dol_buildpath('/ultimateimmo/property/immoproperty_card.php?action=create', 1),
+        'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('NbDevicesUnderManagement'), 'value' => getDevicesNumberUnderContract(), 'url' => dol_buildpath('/ultimateimmo/device_list.php?search_under_management=1', 1)),
-            array('title' => $langs->trans('NbDevicesWithoutManagement'), 'value' => getDevicesNumberWithoutContract(), 'url' => dol_buildpath('/ultimateimmo/device_list.php?search_under_management=-1', 1)),
-            array('title' => $langs->trans('Total'), 'value' => getDevicesNumber(), 'url' => dol_buildpath('/ultimateimmo/device_list.php', 1))
+            array('title' => $langs->trans('NbProperty'), 'value' => getProperties(), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1)),
         )
     );
 }
 
-if ($user->rights->ultimateimmo->user->read) {
-    $globalboxes[] = array('name' => $langs->trans('RENTER'), 'color' => '#'.$conf->global->GESTIONPARC_COLOR_USER, 'icon' => 'fa-user',
-        'url' => dol_buildpath('/gestionparc/contact_list.php', 1),
-        'url_add' => dol_buildpath('/gestionparc/contact_card.php?action=create', 1),
-        'right' => $user->rights->gestionparc->user->write,
+/*if ($user->rights->ultimateimmo->user->read) {
+    $globalboxes[] = array('name' => $langs->trans('RENTER'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_USER, 'icon' => 'fa-user',
+        'url' => dol_buildpath('/ultimateimmo/contact_list.php', 1),
+        'url_add' => dol_buildpath('/ultimateimmo/contact_card.php?action=create', 1),
+        'right' => $user->rights->ultimateimmo->user->write,
         'lines' => array(
-            array('title' => $langs->trans('Total'), 'value' => getUsersNumber(), 'url' => dol_buildpath('/gestionparc/contact_list.php', 1)),
+            array('title' => $langs->trans('Total'), 'value' => getUsersNumber(), 'url' => dol_buildpath('/ultimateimmo/contact_list.php', 1)),
         )
     );
 }
 
-if ($user->rights->gestionparc->application->read) {
-    $globalboxes[] = array('name' => $langs->trans('RENT'), 'color' => '#'.$conf->global->GESTIONPARC_COLOR_APP, 'icon' => 'fa-mobile',
-        'url' => dol_buildpath('/gestionparc/application_list.php', 1),
-        'url_add' => dol_buildpath('/gestionparc/application_card.php?action=create', 1),
-        'right' => $user->rights->gestionparc->application->write,
+if ($user->rights->ultimateimmo->application->read) {
+    $globalboxes[] = array('name' => $langs->trans('RENT'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_APP, 'icon' => 'fa-mobile',
+        'url' => dol_buildpath('/ultimateimmo/application_list.php', 1),
+        'url_add' => dol_buildpath('/ultimateimmo/application_card.php?action=create', 1),
+        'right' => $user->rights->ultimateimmo->application->write,
         'lines' => array(
-            array('title' => $langs->trans('Total'), 'value' => getApplicationsNumber(), 'url' => dol_buildpath('/gestionparc/application_list.php', 1)),
+            array('title' => $langs->trans('Total'), 'value' => getApplicationsNumber(), 'url' => dol_buildpath('/ultimateimmo/application_list.php', 1)),
         )
     );
 }
 
-if ($user->rights->gestionparc->adresse->read) {
-    $globalboxes[] = array('name' => $langs->trans('ADDRESSES'), 'color' => '#'.$conf->global->GESTIONPARC_COLOR_ADDR, 'icon' => 'fa-code-fork',
-        'url' => dol_buildpath('/gestionparc/address_list.php', 1),
-        'url_add' => dol_buildpath('/gestionparc/address_card.php?action=create', 1),
-        'right' => $user->rights->gestionparc->adresse->write,
+if ($user->rights->ultimateimmo->adresse->read) {
+    $globalboxes[] = array('name' => $langs->trans('ADDRESSES'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_ADDR, 'icon' => 'fa-code-fork',
+        'url' => dol_buildpath('/ultimateimmo/address_list.php', 1),
+        'url_add' => dol_buildpath('/ultimateimmo/address_card.php?action=create', 1),
+        'right' => $user->rights->ultimateimmo->adresse->write,
         'lines' => array(
-            array('title' => $langs->trans('Total'), 'value' => getAddressesNumber(), 'url' => dol_buildpath('/gestionparc/address_list.php', 1)),
+            array('title' => $langs->trans('Total'), 'value' => getAddressesNumber(), 'url' => dol_buildpath('/ultimateimmo/address_list.php', 1)),
         )
     );
 }
 
-if ($user->rights->gestionparc->auth->read) {
-    $globalboxes[] = array('name' => $langs->trans('AUTHENTICATIONS'), 'color' => '#'.$conf->global->GESTIONPARC_COLOR_AUTH, 'icon' => 'fa-key',
-        'url' => dol_buildpath('/gestionparc/auth_list.php', 1),
+if ($user->rights->ultimateimmo->auth->read) {
+    $globalboxes[] = array('name' => $langs->trans('AUTHENTICATIONS'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_AUTH, 'icon' => 'fa-key',
+        'url' => dol_buildpath('/ultimateimmo/auth_list.php', 1),
         'lines' => array(
-            array('title' => $langs->trans('Total'), 'value' => getAuthenticationsNumber(), 'url' => dol_buildpath('/gestionparc/auth_list.php', 1)),
+            array('title' => $langs->trans('Total'), 'value' => getAuthenticationsNumber(), 'url' => dol_buildpath('/ultimateimmo/auth_list.php', 1)),
         )
     );
 }
 
 if ($user->rights->infoextranet->user->read) {
-    $globalboxes[] = array('name' => $langs->trans('USERS'), 'color' => '#'.$conf->global->GESTIONPARC_COLOR_USER, 'icon' => 'fa-user',
+    $globalboxes[] = array('name' => $langs->trans('USERS'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_USER, 'icon' => 'fa-user',
         'lines' => array(
             array('title' => $langs->trans('Total'), 'value' => getUsersNumber(), 'url' => dol_buildpath('/infoextranet/contact_list.php', 1)),
         )
@@ -124,7 +123,7 @@ if ($user->rights->infoextranet->user->read) {
 }
 
 if (!empty($conf->contrat->enabled) && $user->rights->contrat->lire) {
-    $globalboxes[] = array('name' => $langs->trans('CONTRACTS'), 'color' => '#'.$conf->global->GESTIONPARC_COLOR_CONTRACT, 'icon' => 'fa-plug',
+    $globalboxes[] = array('name' => $langs->trans('CONTRACTS'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_CONTRACT, 'icon' => 'fa-plug',
         'url' => dol_buildpath('/contrat/list.php', 1),
         'url_add' => dol_buildpath('/contrat/card.php?action=create', 1),
         'right' => $user->rights->contrat->creer,
@@ -134,8 +133,8 @@ if (!empty($conf->contrat->enabled) && $user->rights->contrat->lire) {
     );
 }
 
-if (!empty($conf->ficheinter->enabled) && $conf->global->GESTIONPARC_INTER_LINK && $user->rights->ficheinter->lire) {
-    $globalboxes[] = array('name' => $langs->trans('INTERVENTIONS'), 'color' => '#'.$conf->global->GESTIONPARC_COLOR_INTER, 'icon' => 'fa-ambulance',
+if (!empty($conf->ficheinter->enabled) && $conf->global->ULTIMATEIMMO_INTER_LINK && $user->rights->ficheinter->lire) {
+    $globalboxes[] = array('name' => $langs->trans('INTERVENTIONS'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_INTER, 'icon' => 'fa-ambulance',
         'url' => dol_buildpath('/fichinter/list.php', 1),
         'url_add' => dol_buildpath('/fichinter/card.php?action=create', 1),
         'right' => $user->rights->ficheinter->creer,
@@ -145,9 +144,9 @@ if (!empty($conf->ficheinter->enabled) && $conf->global->GESTIONPARC_INTER_LINK 
     );
 }
 
-if (!empty($conf->ticket->enabled) && $conf->global->GESTIONPARC_TICKET_LINK && $user->rights->ticket->read) {
+if (!empty($conf->ticket->enabled) && $conf->global->ULTIMATEIMMO_TICKET_LINK && $user->rights->ticket->read) {
     require_once DOL_DOCUMENT_ROOT.'/ticket/class/ticket.class.php';
-    $globalboxes[] = array('name' => $langs->trans('TICKETS'), 'color' => '#'.$conf->global->GESTIONPARC_COLOR_TICKET, 'icon' => 'fa-ticket',
+    $globalboxes[] = array('name' => $langs->trans('TICKETS'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_TICKET, 'icon' => 'fa-ticket',
         'url' => dol_buildpath('/ticket/list.php', 1),
         'url_add' => dol_buildpath('/ticket/card.php?action=create', 1),
         'right' => $user->rights->ticket->write,
@@ -158,7 +157,7 @@ if (!empty($conf->ticket->enabled) && $conf->global->GESTIONPARC_TICKET_LINK && 
             array('title' => $langs->trans('Waiting'), 'value' => getTicketsNumber(Ticket::STATUS_WAITING), 'url' => dol_buildpath('/ticket/list.php', 1)),
         )
     );
-}
+}*/
 
 /*
  * Actions
@@ -182,7 +181,7 @@ if (GETPOST('addbox'))	// Add box (when submit is done from a form when ajax dis
     $boxorder=GETPOST('boxorder', 'aZ09');
     $boxorder.=GETPOST('boxcombo', 'aZ09');
 
-    $result=GPInfoBox::saveboxorder($db, $zone, $boxorder, $userid);
+    $result=UltimateImmoInfoBox::saveboxorder($db, $zone, $boxorder, $userid);
     if ($result > 0) setEventMessages($langs->trans("BoxAdded"), null);
 }
 
@@ -200,18 +199,18 @@ $title = $langs->trans("GPDashboard");
 if (! empty($conf->global->MAIN_APPLICATION_TITLE)) $title=$langs->trans("HomeArea").' - '.$conf->global->MAIN_APPLICATION_TITLE;
 
 llxHeader('', $title);
-$resultboxes = GPGetBoxesArea($user, "0");    // Load $resultboxes (selectboxlist + boxactivated + boxlista + boxlistb)
+$resultboxes = UltimateImmoGetBoxesArea($user, "0");    // Load $resultboxes (selectboxlist + boxactivated + boxlista + boxlistb)
 $morehtmlright = $resultboxes['selectboxlist'];
 
-print load_fiche_titre($langs->trans("GPDashboard"), $morehtmlright, 'gestionparc_minimized@gestionparc');
+print load_fiche_titre($langs->trans("UltimateImmoDashboard"), $morehtmlright, 'ultimateimmo_minimized@ultimateimmo');
 print '<div class="dashboardBtnContainer">'.$button.'</div>';
 
 /*
  * Demo text
  */
-if ($conf->global->GESTIONPARC_DEMO_ACTIVE == 1 && !empty($conf->global->GESTIONPARC_DEMO_HOME)) {
-    print '<div class="gp-demo-div">';
-    print $conf->global->GESTIONPARC_DEMO_HOME;
+if ($conf->global->ULTIMATEIMMO_DEMO_ACTIVE == 1 && !empty($conf->global->ULTIMATEIMMO_DEMO_HOME)) {
+    print '<div class="ultimateimmo-demo-div">';
+    print $conf->global->ULTIMATEIMMO_DEMO_HOME;
     print '</div>';
     print '<div class="clearboth"></div>';
 }
@@ -220,14 +219,14 @@ if ($conf->global->GESTIONPARC_DEMO_ACTIVE == 1 && !empty($conf->global->GESTION
  * Global synthesis
  */
 
-print '<div class="fichecenter gp-grid">';
+print '<div class="fichecenter ultimateimmo-grid">';
 
 foreach ($globalboxes as $globalbox) {
-    print '<div class="gp-card">';
-    print '<div class="gp-left-side" style="background-color: '.$globalbox['color'].';"><i class="fa '.$globalbox['icon'].' icon"></i></div>';
-    print '<div class="gp-right-side"><div class="inner"><b style="color: '.$globalbox['color'].';">'.$globalbox['name'].'</b>';
+    print '<div class="ultimateimmo-card">';
+    print '<div class="ultimateimmo-left-side" style="background-color: '.$globalbox['color'].';"><i class="fa '.$globalbox['icon'].' icon"></i></div>';
+    print '<div class="ultimateimmo-right-side"><div class="inner"><b style="color: '.$globalbox['color'].';">'.$globalbox['name'].'</b>';
     if (!empty($globalbox['url_add']) && $globalbox['right'])
-        print '<a href="'.$globalbox['url_add'].'" class="gp-rounded-btn"><i class="fa fa-plus-circle fa-2x" style="color: '.$globalbox['color'].';"></i></a>';
+        print '<a href="'.$globalbox['url_add'].'" class="ultimateimmo-rounded-btn"><i class="fa fa-plus-circle fa-2x" style="color: '.$globalbox['color'].';"></i></a>';
     foreach ($globalbox['lines'] as $line) {
         print '<div class="line-info">'.$line['title'].' : <a href="'.$line['url'].'"><span style="background-color: '.$globalbox['color'].'">' . $line['value'] . '</span></a></div>';
     }
@@ -284,7 +283,7 @@ $db->close();
  * @param   String  $areacode       Code of area for pages ('0'=value for Home page)
  * @return  array
  */
-function GPGetBoxesArea($user, $areacode)
+function UltimateImmoGetBoxesArea($user, $areacode)
 {
     global $conf,$langs,$db;
 
@@ -294,7 +293,7 @@ function GPGetBoxesArea($user, $areacode)
     // $boxidactivatedforuser will be array of boxes choosed by user
 
     $selectboxlist='';
-    $boxactivated=GPInfoBox::listBoxes($db, 'activated', $areacode, (empty($user->conf->$confuserzone)?null:$user), array(), 0);  // Search boxes of common+user (or common only if user has no specific setup)
+    $boxactivated=UltimateImmoInfoBox::listBoxes($db, 'activated', $areacode, (empty($user->conf->$confuserzone)?null:$user), array(), 0);  // Search boxes of common+user (or common only if user has no specific setup)
     $boxidactivatedforuser=array();
     foreach ($boxactivated as $box)
     {
@@ -351,7 +350,7 @@ function GPGetBoxesArea($user, $areacode)
         $box_file = dol_buildpath('/ultimateimmo/ajax/box.php', 1);
 
         $selectboxlist.='<script type="text/javascript" language="javascript">
-  
+
              // To update list of activated boxes
              function updateBoxOrder(closing) {
                  var left_list = cleanSerialize(jQuery("#boxhalfleft").sortable("serialize"));
@@ -374,7 +373,7 @@ function GPGetBoxesArea($user, $areacode)
                      });
                  }
              }
-  
+
              jQuery(document).ready(function() {
                  jQuery("#boxcombo").change(function() {
                  var boxid=jQuery("#boxcombo").val();
@@ -391,7 +390,7 @@ function GPGetBoxesArea($user, $areacode)
                  });';
         if (! count($arrayboxtoactivatelabel)) $selectboxlist.='jQuery("#boxcombo").hide();';
         $selectboxlist.='
-  
+
                  jQuery("#boxhalfleft, #boxhalfright").sortable({
                      handle: \'.boxhandle\',
                      revert: \'invalid\',
@@ -402,7 +401,7 @@ function GPGetBoxesArea($user, $areacode)
                          updateBoxOrder(1);  /* 1 to avoid message after a move */
                      }
                  });
-  
+
                  jQuery(".boxclose").click(function() {
                      var self = this;    // because JQuery can modify this
                      var boxid=self.id.substring(8);
@@ -412,7 +411,7 @@ function GPGetBoxesArea($user, $areacode)
                      if (boxid > 0) jQuery(\'#boxcombo\').append(new Option(label, boxid));
                      updateBoxOrder(1);  /* 1 to avoid message after a remove */
                  });
-  
+
              });'."\n";
 
         $selectboxlist.='</script>'."\n";
@@ -428,17 +427,18 @@ function GPGetBoxesArea($user, $areacode)
         $langs->load("boxes");
         $langs->load("projects");
 
-        $emptybox=new GPModeleBoxes($db);
+        $emptybox=new UltimateImmoModeleBoxes($db);
 
         $boxlista.="\n<!-- Box left container -->\n";
 
         // Define $box_max_lines
         $box_max_lines=5;
-        if (! empty($conf->global->GESTIONPARC_BOXES_MAXLINES)) $box_max_lines=$conf->global->GESTIONPARC_BOXES_MAXLINES;
+        if (! empty($conf->global->ULTIMATEIMMO_BOXES_MAXLINES)) $box_max_lines=$conf->global->ULTIMATEIMMO_BOXES_MAXLINES;
 
         $ii=0;
         foreach ($boxactivated as $key => $box)
         {
+			var_dump($box);
             if ((! empty($user->conf->$confuserzone) && $box->fk_user == 0) || (empty($user->conf->$confuserzone) && $box->fk_user != 0)) continue;
             if (empty($box->box_order) && $ii < ($nbboxactivated / 2)) $box->box_order='A'.sprintf("%02d", ($ii+1)); // When box_order was not yet set to Axx or Bxx and is still 0
             if (preg_match('/^A/i', $box->box_order)) // column A

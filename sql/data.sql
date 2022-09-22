@@ -56,7 +56,8 @@ INSERT INTO llx_ultimateimmo_immocost_type(rowid, ref, label, famille, fk_user_c
 INSERT INTO llx_ultimateimmo_immocost_type(rowid, ref, label, famille, fk_user_create, status, date_creation) VALUES (17, 'COSTTYPE017', 'Arrêté des comptes : Charges déductibles', 'Syndic de copropriété', 1, 1, NOW());
 INSERT INTO llx_ultimateimmo_immocost_type(rowid, ref, label, famille, fk_user_create, status, date_creation) VALUES (18, 'COSTTYPE018', 'Arrêté des comptes : Charges non déductibles', 'Syndic de copropriété', 1, 1, NOW());
 
-
+INSERT INTO llx_c_gestionparc_boxes_def VALUES (1, 'widgetNbRent.php@ultimateimmo', '1', now());
+INSERT INTO llx_c_gestionparc_boxes_def VALUES (2, 'widgetNbRenter.php@ultimateimmo', '1', now());
 
 
 

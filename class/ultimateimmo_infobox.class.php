@@ -19,7 +19,7 @@
 /**
  * Class for InfoBox in dashboard
  */
-class GPInfoBox
+class UltimateImmoInfoBox
 {
     /**
      * Name of positions 0=Home, 1=...
@@ -53,7 +53,7 @@ class GPInfoBox
         {
             $sql = "SELECT b.rowid, b.position, b.box_order, b.fk_user,";
             $sql.= " d.rowid as box_id, d.file, d.note, d.tms";
-            $sql.= " FROM ".MAIN_DB_PREFIX."c_gestionparc_boxes as b, ".MAIN_DB_PREFIX."c_gestionparc_boxes_def as d";
+            $sql.= " FROM ".MAIN_DB_PREFIX."c_ultimateimmo_boxes as b, ".MAIN_DB_PREFIX."c_ultimateimmo_boxes_def as d";
             $sql.= " WHERE b.box_id = d.rowid";
             $sql.= " AND b.entity IN (0,".$conf->entity.")";
             if ($zone >= 0) $sql.= " AND b.position = ".$zone;
@@ -199,7 +199,7 @@ class GPInfoBox
         }
 
         // Delete all lines
-        $sql = "DELETE FROM ".MAIN_DB_PREFIX."c_gestionparc_boxes";
+        $sql = "DELETE FROM ".MAIN_DB_PREFIX."c_ultimateimmo_boxes";
         $sql.= " WHERE entity = ".$conf->entity;
         $sql.= " AND fk_user = ".$userid;
         $sql.= " AND position = ".$zone;
@@ -225,7 +225,7 @@ class GPInfoBox
                         //dol_syslog("aaaaa".count($listarray));
                         $i++;
                         $ii=sprintf('%02d', $i);
-                        $sql = "INSERT INTO ".MAIN_DB_PREFIX."c_gestionparc_boxes";
+                        $sql = "INSERT INTO ".MAIN_DB_PREFIX."c_ultimateimmo_boxes";
                         $sql.= "(box_id, position, box_order, fk_user, entity)";
                         $sql.= " values (";
                         $sql.= " ".$id.",";

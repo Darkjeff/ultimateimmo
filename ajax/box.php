@@ -45,7 +45,7 @@ if (! $res && file_exists("../../../main.inc.php")) { $res=@include "../../../ma
 if (! $res) { die("Include of main fails");
 }
 
-dol_include_once('gestionparc/class/gp_infobox.class.php');
+dol_include_once('ultimateimmo/class/ultimateimmo_infobox.class.php');
 
 
 
@@ -81,7 +81,7 @@ if ($boxorder && $zone != '' &&  $userid > 0)
 	// boxorder value is the target order: "A:idboxA1,idboxA2,A-B:idboxB1,idboxB2,B"
 	dol_syslog("AjaxBox boxorder=".$boxorder." zone=".$zone." userid=".$userid, LOG_DEBUG);
 
-	$result=GPInfoBox::saveboxorder($db, $zone, $boxorder, $userid);
+	$result=UltimateImmoInfoBox::InfoBox::saveboxorder($db, $zone, $boxorder, $userid);
 	if ($result > 0)
 	{
 		$langs->load("boxes");
