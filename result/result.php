@@ -321,16 +321,16 @@ foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON ic.fk_property = ip.rowid";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
-$sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
-$sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= "  AND it.famille = 'Charge déductible' ";
-
+$sq = " FROM llx_ultimateimmo_immoproperty as ip
+        LEFT JOIN llx_ultimateimmo_immocost as ic ON ic.fk_property = ip.rowid AND ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "' AND
+				ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'
+         LEFT JOIN llx_ultimateimmo_immocost_type as it
+                   ON ic.fk_cost_type = it.rowid AND it.famille = 'Charge déductible'
+         LEFT JOIN llx_ultimateimmo_building as ib
+                    ON ib.fk_property = ip.fk_property ";
 $sql .= " GROUP BY  ib.label";
 
+print $sql;
 $resql = $db->query($sql);
 $total_month=array();
 if ($resql) {
@@ -404,13 +404,11 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
+$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid AND it.famille = 'Charge déductible'";
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON ic.fk_property = ip.rowid";
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
 $sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-
-$sql .= "  AND it.famille = 'Charge déductible' ";
 
 $sql .= " GROUP BY  ib.label";
 

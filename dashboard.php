@@ -234,6 +234,7 @@ if ($conf->global->ULTIMATEIMMO_DEMO_ACTIVE == 1 && !empty($conf->global->ULTIMA
 print '<div class="fichecenter ultimateimmo-grid">';
 
 foreach ($globalboxes as $globalbox) {
+
     print '<div class="ultimateimmo-card">';
     print '<div class="ultimateimmo-left-side" style="background-color: '.$globalbox['color'].';"><i class="fa '.$globalbox['icon'].' icon"></i></div>';
     print '<div class="ultimateimmo-right-side"><div class="inner"><b style="color: '.$globalbox['color'].';">'.$globalbox['name'].'</b>';

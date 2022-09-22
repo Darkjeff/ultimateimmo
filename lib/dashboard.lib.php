@@ -27,7 +27,7 @@ function getPropertiesNumber()
     global $db;
 
     $res = 0;
-    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty WHERE entity IN('.getEntity('ultimateimmo_immoproperty').')';
+    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty';
     $resql = $db->query($sql);
     if ($resql) {
         $res = ($db->fetch_object($resql))->total;
@@ -41,7 +41,7 @@ function getRentNumber()
     global $db;
 
     $res = 0;
-    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immorent WHERE status=1 AND entity IN('.getEntity('ultimateimmo_immoproperty').')';
+    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immorent WHERE status=1';
     $resql = $db->query($sql);
     if ($resql) {
         $res = ($db->fetch_object($resql))->total;
