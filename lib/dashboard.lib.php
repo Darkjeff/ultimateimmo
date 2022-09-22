@@ -41,7 +41,7 @@ function getRentNumber()
     global $db;
 
     $res = 0;
-    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immorent WHERE status=1 AND entity IN('.getEntity('ultimateimmo_immoproperty').')';
+    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immorent WHERE status=1 AND entity IN('.getEntity('ultimateimmo_immorent').')';
     $resql = $db->query($sql);
     if ($resql) {
         $res = ($db->fetch_object($resql))->total;
@@ -49,6 +49,21 @@ function getRentNumber()
 
     return $res;
 }
+
+function getRenterNumber()
+{
+    global $db;
+
+    $res = 0;
+    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immorenter WHERE status=1 AND entity IN('.getEntity('ultimateimmo_immorenter').')';
+    $resql = $db->query($sql);
+    if ($resql) {
+        $res = ($db->fetch_object($resql))->total;
+    }
+
+    return $res;
+}
+
 
 ///**
 // * Get the number of devices under contract
