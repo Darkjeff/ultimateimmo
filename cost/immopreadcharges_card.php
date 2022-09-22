@@ -240,6 +240,21 @@ llxHeader('', $title, $help_url);
 // });
 // </script>';
 
+/***
+ *
+ *
+ * Seleectionné Année
+Toutes les charge commune de l'année
+
+Affiche pour chaquaque charge commenue si la répartition à été faite
+Pour haque locataire des bien des charges affiché les avance sur charge
+
+On propose un ecran qui permet de saisir le montant de la charge restant du
+ *
+ *
+ *
+ */
+
 
 // Part to create
 if ($action == 'create') {
