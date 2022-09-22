@@ -104,6 +104,13 @@ if ($action == 'updateMask') {
 		setEventMessages($langs->trans("Error"), null, 'errors');
 	}
 
+	$dataTypeCost = GETPOST('ULTIMATEIMMO_TYPECOST_ADJUST', 'array');
+	$res = dolibarr_set_const($db, "ULTIMATEIMMO_TYPECOST_ADJUST", implode(',',array_values($dataTypeCost)), 'chaine', 0, '', $conf->entity);
+	if ($res <= 0) {
+		$error++;
+		setEventMessages($langs->trans("Error"), null, 'errors');
+	}
+
 	if (!$error) {
 		setEventMessages($langs->trans("SetupSaved"), null, 'mesgs');
 	}
@@ -118,10 +125,10 @@ if ($action == 'updateMask') {
 	$classname = '';
 	$filefound = 0;
 	$dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);
-	
+
 	foreach ($dirmodels as $reldir) {
 		$file = dol_buildpath($reldir . "ultimateimmo/core/modules/ultimateimmo/doc/pdf_" . $modele . ".modules.php", 0);
-		
+
 		if (file_exists($file)) {
 			$filefound = 1;
 			$classname = "pdf_" . $modele;
@@ -455,6 +462,36 @@ if (empty($conf->global->PDF_ALLOW_HTML_FOR_FREE_TEXT)) {
 	$doleditor = new DolEditor($variablename, $conf->global->$variablename, '', 80, 'dolibarr_notes');
 	print $doleditor->Create();
 }
+print "</td></tr>\n";
+
+print '<tr><td>';
+print $form->textwithpicto($langs->trans("WatermarkOnDraftImmoCards"), $htmltext, 1, 'help', '', 0, 2, 'watermarktooltip') . '<br>';
+print '<input size="50" class="flat" type="text" name="ULTIMATEIMMO_DRAFT_WATERMARK" value="' . $conf->global->ULTIMATEIMMO_DRAFT_WATERMARK . '">';
+print "</td></tr>\n";
+
+print '<tr><td>';
+print $form->textwithpicto($langs->trans("TypeCostForAdjust"), $langs->trans("") . '<br><br>' . $htmltext, 1, 'help', '', 0, 2, 'freetexttooltip') . '<br>';
+$variablename = 'ULTIMATEIMMO_TYPECOST_ADJUST';
+dol_include_once('/ultimateimmo/class/immocost_type.class.php');
+$immocosttype=new ImmoCost_Type($db);
+$dataArray=array();
+$resultImmoCostType=$immocosttype->fetchAll('','',0,0,array('t.status'=>1));
+if (!is_array($resultImmoCostType) && $resultImmoCostType<0) {
+	setEventMessages($immocosttype->error, $immocosttype->errors, 'errors');
+} elseif(is_array($resultImmoCostType) && count($resultImmoCostType)>0) {
+	foreach ($resultImmoCostType as $costType) {
+		$dataArray[$costType->id]=$costType->label;
+	}
+}
+if (!empty($dataArray)) {
+	if (empty($conf->global->{$variablename})) {
+		$selectedArray=array();
+	} else {
+		$selectedArray=explode(',', $conf->global->{$variablename});
+	}
+	print $form::multiselectarray($variablename,$dataArray,$selectedArray);
+}
+
 print "</td></tr>\n";
 
 print '<tr><td>';
