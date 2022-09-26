@@ -129,7 +129,7 @@ class ImmoRent extends CommonObject
 		'encours'          => array('type'     => 'price', 'label' => 'Encours', 'visible' => 1, 'enabled' => 1,
 									'position' => 80, 'notnull' => -1,),
 		'periode'          => array('type'     => 'varchar(128)', 'label' => 'ImmoRentPeriod', 'visible' => -1, 'enabled' => 1,
-									'position' => 85, 'notnull' => -1,),
+									'position' => 85, 'notnull' => -1, 'help' => 'ImmoRentPeriodInfo',),
 		'preavis'          => array('type'          => 'integer', 'label' => 'ImmoRentNoticePeriod', 'visible' => -1, 'enabled' => 1,
 									'position'      => 85, 'notnull' => -1,
 									'arrayofkeyval' => array('1' => 'No', '2' => 'Yes')),

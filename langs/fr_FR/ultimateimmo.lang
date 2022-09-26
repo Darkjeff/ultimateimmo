@@ -72,6 +72,11 @@ UltimateimmoAbout = À propos de Ultimateimmo
 UltimateimmoAboutPage = Page à propos de Ultimateimmo
 
 #
+# Dictionnaires
+#
+DiagnosticImmo = Diagnostiques immobiliers
+
+#
 # Menu
 #
 ImmoProperties = Biens
@@ -223,6 +228,7 @@ TotalAmount = Montant total
 Deposit = Dépôt de garantie
 Encours = Encours
 ImmoRentPeriod = Période
+ImmoRentPeriodInfo = Fréquence des loyers (mensuelle, hebdomadaire, annuelle...)
 ImmoRentNoticePeriod = Préavis
 DateStartRent = Date de prise d'effet du contrat
 date_end = Date de fin
@@ -258,7 +264,8 @@ ImmoPaymentRentAmountInfo = Entrer le montant du loyer H.C
 ImmoPaymentChargeAmountInfo = Entrer le montant des charges
 ImmoPaymentTotalAmountInfo = Entrer le montant du loyer C.C
 VatTx = Taux TVA
-ImmoCost = Quittance
+ImmoCost = Charge Locative
+TitreEditImmoCost = Édition de charge
 ImmoReceipts = Quittances
 ImmoReceipt = Quittance
 PartialPayment = Paiement partiel
@@ -284,6 +291,8 @@ Quittance = Quittance
 # Paiements
 ImmoPayments = Paiements
 ImmoPayment = Règlement
+ImmoPaymentStatusDisabled = A payer
+ImmoPaymentStatusActive = Payé
 PaymentMode = Mode de paiement
 CreatePDF = Créer un PDF
 NumPayment = <em>Numéro(Chèque/Virement N°)</em>
@@ -306,7 +315,7 @@ ImmoCostStatusActive = Charge Active
 ImmoCostStatusDisabled = Charge Désactivée
 RenterCost = Ventilation des coûts par locataire
 ImmoCostChargesReelLocataire = Charges réel Locataire
-ImmoCostDifferentielCharge = Differentiel Charge
+ImmoCostDifferentielCharge = Différentiel Charge
 ImmoCostPaiementChargelocataire = Paiement charge locataire
 ImmoResultLoyerBrutEncaisse = Loyer brut encaissé
 ImmoResultChargesDeductibles = Charges déductibles
