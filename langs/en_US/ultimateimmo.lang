@@ -105,6 +105,13 @@ UltimateimmoAbout = About Ultimateimmo
 UltimateimmoAboutPage = Ultimateimmo about page
 
 #
+# Dictionnaries
+#
+DiagnosticImmo = Real Estate diagnostics
+ImmoProperty_Type = Type of Property
+BuiltDate = Construction date
+
+#
 # Real Estate
 #
 # Real Estate
@@ -203,6 +210,7 @@ RentAmount = Rent amount
 Deposit = Deposit
 Encours = Outstanding
 ImmoRentPeriod = Period
+ImmoRentPeriodInfo = Rent due frequency (monthly, weekly, yearly...)
 ImmoRentNoticePeriod = Notice period
 DateStartRent = Date Start Rent
 date_end = Date end
@@ -252,6 +260,8 @@ Quittance = Receipt
 # Payment
 CreatePDF = Create PDF
 Property = Property
+ImmoPaymentStatusDisabled = To be paid
+ImmoPaymentStatusActive = Paid
 ImmoPaymentTitle = Result
 NumPayment = <em>Number(Cheque/Transfer N°)</em>
 CheckTransmitter = <em>Issuer(Check/Transfer N°)</em>
@@ -283,6 +293,7 @@ Average = Average
 # Cost Types
 ImmoCost_Type = Type of cost
 ImmoCostType = Types of cost
+TitreEditImmoCost = Edit cost
 CostTypeLabel = Label
 CostTypeLabelInfo = Enter a type of cost
 CostTypeFamille = Cost type
@@ -320,10 +331,8 @@ PaidReceipt = Paid receipt
 PartiallyPaidReceipt = Partially paid receipt
 TypePayment = Payment type
 NewImmoPropertyType = New Type of Property
-ImmoProperty_Type = Type of Property
 PropertyTypeStatusActive=Active
 PropertyTypeStatusCancel=Cancel
-BuiltDate = Construction date
 Civility = Title
 Renter = Renter
 ImmoUnpaid = Unpaid
