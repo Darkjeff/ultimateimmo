@@ -234,6 +234,7 @@ CloneImmoRenter = Clone renter
 ConfirmDeleteImmoRenter = Are you sure you want to delete this renter ?
 ImmoRenterStatusActive = Renter Active
 ImmoRenterStatusDisabled = Renter Disabled
+Bilan = Balance sheet
 
 #
 # Receipts
@@ -263,6 +264,9 @@ Property = Property
 ImmoPaymentStatusDisabled = To be paid
 ImmoPaymentStatusActive = Paid
 ImmoPaymentTitle = Result
+ImmoPaymentReceiptInfo = Receipt linked to this payment
+ImmoPaymentAmountInfo = Amount paid by the renter
+ImmoPaymentTypeInfo = Type of payment used by the renter
 NumPayment = <em>Number(Cheque/Transfer N°)</em>
 CheckTransmitter = <em>Issuer(Check/Transfer N°)</em>
 ChequeBank = <em>Bank(Check bank)</em>
@@ -275,6 +279,7 @@ ImmomPaiementResultat = Result
 MenuStatisticsCostFourn = Cost: Statistics by Vendor
 ImmoCostRepartition = Split Costs
 ImmoCostLabelInfo = Enter a label
+ImmoCostAmountInfo = Enter the total amount VAT included
 ImmoCostAmountExTaxInfo = Enter an amount VAT excluded
 ImmoCostAmountTaxInfo = Enter the amount of VAT
 RenterCost = Costs per renter
