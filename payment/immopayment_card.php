@@ -666,6 +666,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs);
 			}
 			print $staticrenter->ref;
+		} elseif ($val['label'] == 'TypePayment') {
+			print $langs->trans($object->mode_payment);
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
