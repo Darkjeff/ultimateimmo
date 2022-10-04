@@ -1390,7 +1390,7 @@ if ($action == 'createall') {
 
 		$MAXEVENT = 10;
 
-		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_info.php', 1) . '?recid=' . $object->id . '">';
+		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/receipt/immoreceipt_agenda.php', 1) . '?id=' . $object->id . '">';
 		$morehtmlright .= $langs->trans("SeeAll");
 		$morehtmlright .= '</a>';
 

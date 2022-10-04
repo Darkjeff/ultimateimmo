@@ -75,6 +75,7 @@ UltimateimmoAboutPage = Page à propos de Ultimateimmo
 # Dictionnaires
 #
 DiagnosticImmo = Diagnostiques immobiliers
+BuiltDate = Date de construction
 
 #
 # Menu
@@ -146,7 +147,7 @@ Staircase = Escalier
 NumFloor = Étage
 NumFlat = Numéro Appartement
 NumDoor = Porte n°
-Area = Surface habitable (m2)
+Area = Surface habitable (m²)
 NumberOfRoom = Nombre de pièces principales
 ObligationsOfTheSeller = Obligations du vendeur
 TheTechnicalDiagnosticFileDDT = Le dossier de diagnostic technique (DDT)
@@ -253,6 +254,7 @@ CloneImmoRenter = Cloner le locataire
 ConfirmCloneImmoRenter = Êtes vous sûr de vouloir cloner ce locataire ?
 ImmoRenterStatusActive = Locataire Actif
 ImmoRenterStatusDisabled = Locataire Désactivé
+Bilan = Bilan
 
 #
 # Quittances
@@ -291,6 +293,9 @@ Quittance = Quittance
 # Paiements
 ImmoPayments = Paiements
 ImmoPayment = Règlement
+ImmoPaymentReceiptInfo = Quittance liée au paiement
+ImmoPaymentAmountInfo = Montant payé par le locataire
+ImmoPaymentTypeInfo = Type de règlement utilisé par le locataire
 ImmoPaymentStatusDisabled = A payer
 ImmoPaymentStatusActive = Payé
 PaymentMode = Mode de paiement
@@ -306,6 +311,7 @@ CostStatsTitle = Charges
 ImmoCostRepartition = Répartition
 ImmoResultResultat = Résultat
 ImmoResultResultatImmo = Résultat immo
+ImmoCostAmountInfo = Montant total TVA incluse
 HtAmount = Montant HT
 VatAmount = Montant TVA
 DeleteImmoCost = Supprimer la charge
@@ -350,7 +356,6 @@ ImmoCostType = Types de coûts
 NewImmoPropertyType = Nouveau type de bien
 PropertyTypeStatusActive = Bien actif
 PropertyTypeStatusCancel = Bien désactivé
-BuiltDate = Date de construction
 Civility = Titre
 Renter = Locataire
 ImmoUnpaid = Impayée
