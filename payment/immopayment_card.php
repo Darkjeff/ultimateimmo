@@ -515,10 +515,8 @@ if (($id || $ref) && $action == 'edit') {
 		print '</td>';
 		print '<td>';
 
-		if (
-			$val['label'] == 'BankAccount'
-		) {
-			if ($object->fk_bank) {
+		if ($val['label'] == 'BankAccount') {
+			if ($object->fk_account) {
 				$bankaccount = new Account($db);
 				$result = $bankaccount->fetch($object->fk_bank);
 				$form->select_comptes($object->fk_bank, 'fk_bank', 0, '', 1);
