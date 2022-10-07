@@ -249,7 +249,7 @@ if (empty($reshook)) {
 	/*
  	 *	Delete paiement
  	 */
-	if ($action == 'delete') {
+	if ($action == 'delete' && $confirm == 'yes' && $permissiontodelete) {
 		if ($id) {
 			$payment = new ImmoPayment($db);
 			$payment->id = $id;
