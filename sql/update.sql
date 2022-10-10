@@ -40,4 +40,6 @@ ALTER TABLE llx_ultimateimmo_building add fk_user_modif integer after fk_user_cr
 ALTER TABLE llx_ultimateimmo_immocost_type add active integer after status;
 ALTER TABLE llx_ultimateimmo_immocost_type add fk_user_creat integer NOT NULL integer after status;
 
+ALTER TABLE llx_ultimateimmo_immocost CHANGE COLUMN fk_user_creat fk_user_create integer NOT NULL DEFAULT 1;
+
 
