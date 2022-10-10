@@ -72,6 +72,12 @@ UltimateimmoAbout = À propos de Ultimateimmo
 UltimateimmoAboutPage = Page à propos de Ultimateimmo
 
 #
+# Configuration
+#
+#FreeLegalTextOnReceipts = 
+#TypeCostForAdjust = 
+
+#
 # Dictionnaires
 #
 DiagnosticImmo = Diagnostiques immobiliers
@@ -290,6 +296,8 @@ CloneImmoReceipt = Cloner cette quittance
 ConfirmCloneImmoReceipt = Êtes-vous sûr de vouloir cloner cette quittance ?
 ImmoReceiptStatTitre= Loyers
 Quittance = Quittance
+ImmoReceiptStatusDisabled = Quittance désactivée
+ImmoReceiptStatusActive = Quittance activée
 # Paiements
 ImmoPayments = Paiements
 ImmoPayment = Règlement
