@@ -258,6 +258,8 @@ Periode_du = Period from
 Periode_au = Period to
 ImmoReceiptStatTitre= Rents
 Quittance = Receipt
+ImmoReceiptStatusDisabled = Receipt disabled
+ImmoReceiptStatusActive = Receipt enabled
 # Payment
 CreatePDF = Create PDF
 Property = Property
