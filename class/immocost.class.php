@@ -129,7 +129,7 @@ class ImmoCost extends CommonObject
 		'tms'           => array('type'     => 'timestamp', 'label' => 'DateModification', 'enabled' => 1,
 								 'visible'  => -2, 'position' => 501, 'notnull' => 1,),
 		'fk_user_create' => array('type'     => 'integer:User:user/class/user.class.php', 'label' => 'UserAuthor', 'enabled' => 1, 'visible' => -2,
-								 'position' => 510, 'notnull' => 1, 'foreignkey' => 'llx_user.rowid',),
+								 'position' => 510, 'notnull' => -1,  'default'=>1, 'foreignkey' => 'llx_user.rowid',),
 		'fk_user_modif' => array('type'     => 'integer:User:user/class/user.class.php', 'label' => 'UserModif', 'enabled' => 1, 'visible' => -2,
 								 'position' => 511, 'notnull' => -1, 'foreignkey' => 'llx_user.rowid',),
 		'import_key'    => array('type'     => 'varchar(14)', 'label' => 'ImportId', 'enabled' => 1, 'visible' => -2,
@@ -157,7 +157,7 @@ class ImmoCost extends CommonObject
 	public $date_end;
 	public $date_creation;
 	public $tms;
-	public $fk_user_creat;
+	public $fk_user_create;
 	public $fk_user_modif;
 	public $import_key;
 	public $dispatch;
