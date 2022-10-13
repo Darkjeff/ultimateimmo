@@ -101,12 +101,14 @@ print '<table class="tagtable nobottomiftotal liste">'."\n";
 
 $sql = 'SELECT ';
 $sql .= $object->getFieldList('t');
+$sql .= ',itc.label';
 $sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
+$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immocompteur_type as ict ON ict.rowid=t.compteur_type_id";
 if (!empty($search['fk_immoproperty'])) {
-	$sql .=" WHERE fk_immoproperty=".(int) $search['fk_immoproperty'];
+	$sql .=" WHERE t.fk_immoproperty=".(int) $search['fk_immoproperty'];
 }
 if (!empty($search['compteur_type_id'])) {
-	$sql .=" WHERE compteur_type_id=".(int) $search['compteur_type_id'];
+	$sql .=" WHERE t.compteur_type_id=".(int) $search['compteur_type_id'];
 }
 $sql .= $db->order('t.fk_immoproperty,date_relever');
 
@@ -140,7 +142,7 @@ print '<td colspan="1"></td>';
 print '<td class="left">';
 print $object->showInputField($object->fields['compteur_type_id'], 'compteur_type_id', $search['compteur_type_id'], '', '', 'search_', 'maxwidth150', 1);
 print '</td>';
-print '<td colspan="7"></td>';
+print '<td colspan="6"></td>';
 // Action column
 print '<td class="liste_titre maxwidthsearch">';
 $searchpicto = $form->showFilterButtons();
@@ -168,10 +170,20 @@ foreach ($result_data as $obj) {
 	if ($result < 0) {
 		setEventMessages($properties->error, $properties->errors, 'errors');
 	}
+
+	//Property
 	print '<td class="left">' . $properties->getNomUrl() . '</td>';
+
+	//Date relever
 	print '<td class="left">' . dol_print_date($obj->date_relever) . '</td>';
+
+	//Type de compteur
 	print '<td class="left">' . $obj->compteur_type_id . '</td>';
+
+	//Relever
 	print '<td class="left">' . $obj->qty . '</td>';
+
+	//Nb Jours
 	print '<td class="left">';
 	if (array_key_exists($i+1, $result_data) && $result_data[$i+1]->fk_immoproperty==$obj->fk_immoproperty) {
 		$day_diff = num_between_day($db->jdate($obj->date_relever), $db->jdate($result_data[$i+1]->date_relever));
@@ -180,8 +192,8 @@ foreach ($result_data as $obj) {
 		$day_diff=1;
 	}
 	print '</td>';
-	
-	//Type Compteur
+
+	//Consomation
 	print '<td class="left">';
 	if (array_key_exists($i+1, $result_data) && $result_data[$i+1]->compteur_type_id==$obj->compteur_type_id) {
 		$rel_diff = $result_data[$i+1]->qty-$obj->qty;
@@ -190,16 +202,16 @@ foreach ($result_data as $obj) {
 		$rel_diff=0;
 	}
 	print '</td>';
-	
-	//Consommation
-	print '<td class="left">';
+
+	//Consommation jour
+	/*print '<td class="left">';
 	if (array_key_exists($i+1, $result_data) && $result_data[$i+1]->fk_immoproperty==$obj->fk_immoproperty) {
 		$rel_diff = $result_data[$i+1]->qty-$obj->qty;
 		print $rel_diff;
 	} else {
 		$rel_diff=0;
 	}
-	print '</td>';
+	print '</td>';*/
 
 	//Consommation jour
 	print '<td class="left">';
