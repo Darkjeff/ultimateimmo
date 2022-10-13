@@ -67,8 +67,8 @@ if ($user->rights->ultimateimmo->read) {
         'url_add' => dol_buildpath('/ultimateimmo/property/immoproperty_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('NbProperty'), 'value' => getPropertiesNumber(), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1)),
-			array('title' => $langs->trans('NbPropertyActif'), 'value' => getPropertiesNumber(), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1)),
+            array('title' => $langs->trans('NbProperty'), 'value' => getPropertiesNumber(0), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1)),
+			array('title' => $langs->trans('NbPropertyActif'), 'value' => getPropertiesNumber(1), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1)),
         )
     );
 }
@@ -79,8 +79,8 @@ if ($user->rights->ultimateimmo->read) {
         'url_add' => dol_buildpath('/ultimateimmo/rent/immorent_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('NbRent'), 'value' => getRentNumber(), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1)),
-			array('title' => $langs->trans('NbRentActif'), 'value' => getRentNumber(), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1)),
+            array('title' => $langs->trans('NbRent'), 'value' => getRentNumber(2), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1)),
+			array('title' => $langs->trans('NbRentActif'), 'value' => getRentNumber(1), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1)),
         )
     );
 }
@@ -91,8 +91,8 @@ if ($user->rights->ultimateimmo->read) {
         'url_add' => dol_buildpath('/ultimateimmo/renter/immorenter_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('NbRenter'), 'value' => getRenterNumber(0), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1)),
-			array('title' => $langs->trans('NbRenterActif'), 'value' => getRenterNumber(1), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1)),
+            array('title' => $langs->trans('NbRenter'), 'value' => getRenterNumber(1), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1)),
+			array('title' => $langs->trans('NbRenterActif'), 'value' => getRenterNumber(0), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1)),
         )
     );
 }

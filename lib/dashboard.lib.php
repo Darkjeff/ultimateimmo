@@ -22,12 +22,12 @@
  * @return int
  */
  // get number property
-function getPropertiesNumber()
+function getPropertiesNumber($status)
 {
     global $db;
 
     $res = 0;
-    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty';
+    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immoproperty WHERE status = '.$status;
     $resql = $db->query($sql);
     if ($resql) {
         $res = ($db->fetch_object($resql))->total;
@@ -36,12 +36,12 @@ function getPropertiesNumber()
     return $res;
 }
 
-function getRentNumber()
+function getRentNumber($status)
 {
     global $db;
 
     $res = 0;
-    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immorent WHERE status=1';
+    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immorent WHERE preavis = '.$status;
     $resql = $db->query($sql);
     if ($resql) {
         $res = ($db->fetch_object($resql))->total;
@@ -55,7 +55,7 @@ function getRenterNumber($status)
     global $db;
 
     $res = 0;
-    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immorenter WHERE status = '.$status.' AND entity = 1';
+    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immorenter WHERE status = '.$status;
     $resql = $db->query($sql);
     if ($resql) {
         $res = ($db->fetch_object($resql))->total;
