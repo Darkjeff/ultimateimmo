@@ -262,7 +262,7 @@ if ($object->ismultientitymanaged == 1) {
 foreach ($search as $key => $val) {
 	if (array_key_exists($key, $object->fields)) {
 		if ($key=='ref') {
-			$key='t.label';
+			$key='label';
 			$search[$key]=$search['ref'];
 		}
 		if ($key == 'status' && $search[$key] == -1) {
@@ -280,7 +280,7 @@ foreach ($search as $key => $val) {
 			$search['label']= natural_search($key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 		}*/
 		if ($search[$key] != '') {
-			$sql .= natural_search(".t.".$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
+			$sql .= natural_search("t.".$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 		}
 	} else {
 		if (preg_match('/(_dtstart|_dtend)$/', $key) && $search[$key] != '') {
@@ -339,6 +339,7 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 		$offset = 0;
 	}
 }
+
 // if total of record found is smaller than limit, no need to do paging and to restart another select with limits set.
 if (is_numeric($nbtotalofrecords) && ($limit > $nbtotalofrecords || empty($limit))) {
 	$num = $nbtotalofrecords;

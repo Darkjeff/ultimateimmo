@@ -550,10 +550,12 @@ class ImmoOwner extends CommonObjectUltimateImmo
 		}
 
 		$resql = $this->db->query($sql);
+
 		if ($resql) {
+
 			$num = $this->db->num_rows($resql);
 			$i = 0;
-			while ($i < min($limit, $num))
+			while ($i < ($limit ? min($limit, $num) : $num))
 			{
 				$obj = $this->db->fetch_object($resql);
 

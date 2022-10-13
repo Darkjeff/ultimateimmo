@@ -65,10 +65,18 @@ if (!$res) {
 
 // Class
 require_once DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php";
+dol_include_once('/ultimateimmo/class/immoowner.class.php');
 
+$search_owner=GETPOST('search_owner','int');
+if ($search_owner==-1) $search_owner='';
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "bills", "other"));
+
+if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')) { // All tests are required to be compatible with all browsers
+	$search_owner = '';
+}
+
 
 // Filter
 $year = $_GET ["year"];
@@ -78,6 +86,19 @@ if ($year == 0) {
 } else {
 	$year_current = $year;
 	$year_start = $year;
+}
+
+$form = new Form($db);
+
+$dataOwner=array();
+$owner = new ImmoOwner($db);
+$resultFetch = $owner->fetchAll('','',0,0,array());
+if (!is_array($resultFetch) && $resultFetch<0) {
+	setEventMessages($owner->error,$owner->errors,'errors');
+} elseif (!empty($resultFetch)) {
+	foreach($resultFetch as $owner) {
+		$dataOwner[$owner->id]=$owner->societe . ' '.$owner->firstname . ' '.$owner->lastname;
+	}
 }
 
 /*
@@ -98,7 +119,20 @@ $months_list = [];
 for ($month_num = 1; $month_num <= 12; $month_num++) {
 	$months_list[$month_num] = date('F', mktime(0, 0, 0, $month_num, 10));
 }
-
+print '<form method="POST" id="searchFormList" action="' . $_SERVER["PHP_SELF"] . '">' . "\n";
+print '<input type="hidden" name="token" value="' . newToken() . '">';
+print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
+print '<input type="hidden" name="action" value="list">';
+print '<div class="liste_titre liste_titre_bydiv centpercent">';
+print '<div class="divsearchfield">';
+print $langs->trans('Owner').$form->selectarray('search_owner', $dataOwner, $search_owner, 1, 0, 0, '', 1, 0, 0, '', 'maxwidth100', 1);
+print '</div>';
+print '<td class="liste_titre" align="middle">';
+$searchpicto = $form->showFilterButtons();
+print $searchpicto;
+print '</td>';
+print '</div>';
+print '</form>' . "\n";
 //Resultat Immo
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td></tr>';
 print "\n<br>\n";
@@ -115,10 +149,13 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp ON lp.fk_property = ip.rowid ";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp ON lp.fk_property = ip.rowid ";
 $sql .= "  AND lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
 
 $sql .= " GROUP BY  ib.label";
 
@@ -174,11 +211,13 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(ir.chargesamount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir ON ir.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir ON ir.fk_property = ip.rowid";
 $sql .= " AND ir.date_echeance >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ir.date_echeance <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
-
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
 
 $sql .= " GROUP BY  ib.label";
 
@@ -228,11 +267,13 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp ON lp.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp ON lp.fk_property = ip.rowid";
 $sql .= " AND lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
-
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
 
 $sql .= " GROUP BY ib.label";
 
@@ -244,11 +285,13 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(ir.chargesamount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir ON ir.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir ON ir.fk_property = ip.rowid";
 $sql .= " AND ir.date_echeance >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ir.date_echeance <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
-
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
 
 $sql .= " GROUP BY ib.label";
 
@@ -325,12 +368,15 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM llx_ultimateimmo_immoproperty as ip
-        LEFT JOIN llx_ultimateimmo_immocost as ic ON ic.fk_property = ip.rowid AND ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "' AND
+        INNER JOIN llx_ultimateimmo_immocost as ic ON ic.fk_property = ip.rowid AND ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "' AND
 				ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'
-         LEFT JOIN llx_ultimateimmo_immocost_type as it
+         INNER JOIN llx_ultimateimmo_immocost_type as it
                    ON ic.fk_cost_type = it.rowid AND it.famille = 'Charge déductible'
-         LEFT JOIN llx_ultimateimmo_building as ib
+         INNER JOIN llx_ultimateimmo_building as ib
                     ON ib.fk_property = ip.fk_property ";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
 $sql .= " GROUP BY  ib.label";
 
 $resql = $db->query($sql);
@@ -371,72 +417,108 @@ print "</table>\n";
 // Revenu fiscal
 $value_array = array();
 
-$sql = "SELECT ib.label AS nom_immeuble";
+$sql = "SELECT ib.rowid";
 foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)=' . $month_num . ' then lp.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp ON lp.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp ON lp.fk_property = ip.rowid";
 $sql .= " AND lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
-
-$sql .= " GROUP BY  ib.label";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
+$sql .= " GROUP BY  ib.rowid";
 
 $resqlencaissement = $db->query($sql);
 
-$sql = "SELECT ib.label AS nom_immeuble";
+$sql = "SELECT ib.rowid";
 foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(ir.date_echeance)=' . $month_num . ' then ir.chargesamount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= ", ROUND(SUM(ir.chargesamount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir ON ir.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir ON ir.fk_property = ip.rowid";
 $sql .= " AND ir.date_echeance >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ir.date_echeance <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
 
-
-$sql .= " GROUP BY ib.label";
+$sql .= " GROUP BY ib.rowid";
 
 $resqlpaiement = $db->query($sql);
 
-$sql = "SELECT ib.label AS nom_immeuble";
+$sql = "SELECT ib.rowid";
 foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic ON ic.fk_property = ip.rowid";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid AND it.famille = 'Charge déductible'";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic ON ic.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid AND it.famille = 'Charge déductible'";
 $sql .= " AND ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
 
-
-$sql .= " GROUP BY  ib.label";
+$sql .= " GROUP BY ib.rowid";
 
 $resqlcharged = $db->query($sql);
 
 if ($resqlpaiement && $resqlencaissement && $resqlcharged) {
 	$i = 0;
-	$num = max($db->num_rows($resqlpaiement), $db->num_rows($resqlencaissement), $db->num_rows($resqlcharged));
-
-	while ($i < $num) {
-		$rowencaissement = $db->fetch_row($resqlencaissement);
-		$rowpaiement = $db->fetch_row($resqlpaiement);
-		$rowcharged = $db->fetch_row($resqlcharged);
-
-		$value_array[$rowencaissement[0]][0] = $rowencaissement[0];
+	//$num = max($db->num_rows($resqlpaiement), $db->num_rows($resqlencaissement), $db->num_rows($resqlcharged));
+	$dataEncaissement=array();
+	$dataPaiement=array();
+	$dataCharge=array();
+	while($rowencaissement = $db->fetch_object($resqlencaissement)) {
 		for ($j = 1; $j <= 13; $j++) {
-			$value_array[$rowencaissement[0]][$j] = ($rowencaissement[$j] - $rowpaiement[$j] - $rowcharged[$j]);
+			$dataEncaissement[$rowencaissement->rowid][$j] = $rowencaissement->{'month_'.$j};
 		}
-		$i++;
 	}
 	$db->free($resqlencaissement);
+
+	while($rowpaiement = $db->fetch_object($resqlpaiement)) {
+		for ($j = 1; $j <= 13; $j++) {
+			$dataPaiement[$resqlpaiement->rowid][$j] = $resqlpaiement->{'month_'.$j};
+		}
+	}
 	$db->free($resqlpaiement);
+
+
+	while($rowcharged = $db->fetch_object($resqlcharged)) {
+		for ($j = 1; $j <= 13; $j++) {
+			$dataCharge[$rowcharged->rowid][$j] = $rowcharged->{'month_'.$j};
+		}
+	}
 	$db->free($resqlcharged);
+
+	$value_array=array();
+	if (!empty($dataEncaissement)) {
+		foreach($dataEncaissement as $ibId=>$dataMonth) {
+			//var_dump($dataMonth);
+		}
+	}
+
+	/*while ($i < $num) {
+		$rowencaissement = $db->fetch_object($resqlencaissement);
+		$rowpaiement = $db->fetch_object($resqlpaiement);
+		$rowcharged = $db->fetch_object($resqlcharged);
+
+		$value_array[$rowencaissement->rowid][0] = $rowencaissement->label;
+		for ($j = 1; $j <= 13; $j++) {
+			$value_array[$rowencaissement->rowid][$j] = ($rowencaissement->{'month_'.$j} - $rowpaiement->{'month_'.$j} - $rowcharged->{'month_'.$j});
+		}
+		$i++;
+	}*/
+
+
 } else {
 	print $db->lasterror(); // affiche la derniere erreur sql
 }
@@ -491,13 +573,15 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic ON ic.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic ON ic.fk_property = ip.rowid";
 $sql .= "  AND ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
 $sql .= "  AND it.famille = 'Charge non déductible' ";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ic.fk_property = ib.fk_property";
-
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ic.fk_property = ib.fk_property";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
 $sql .= " GROUP BY  ib.label";
 
 $resql = $db->query($sql);
@@ -544,11 +628,13 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(lp.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp ON lp.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp ON lp.fk_property = ip.rowid";
 $sql .= " AND lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
-
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
 $sql .= " GROUP BY  ib.label";
 
 $resqlencaissement = $db->query($sql);
@@ -559,11 +645,13 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(ir.chargesamount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir ON ir.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir ON ir.fk_property = ip.rowid";
 $sql .= " AND ir.date_echeance >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ir.date_echeance <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
-
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
 
 $sql .= " GROUP BY ib.label";
 
@@ -575,13 +663,15 @@ foreach ($months_list as $month_num => $month_name) {
 }
 $sql .= ", ROUND(SUM(ic.amount),2) as Total";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic ON ic.fk_property = ip.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic ON ic.fk_property = ip.rowid";
 $sql .= " AND ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
 $sql .= "  AND it.famille = 'Charge déductible' ";
-$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
-
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
+if (!empty($search_owner)) {
+	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
+}
 $sql .= " GROUP BY  ib.label";
 
 $resqlcharged = $db->query($sql);
@@ -598,7 +688,9 @@ $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_
 $sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
 $sql .= "  AND it.famille = 'Charge non déductible' ";
-
+if (!empty($search_owner)) {
+	$sql .= ' AND ip.fk_owner='.(int)$search_owner;
+}
 $sql .= " GROUP BY  ib.label";
 
 $resqlchargend = $db->query($sql);
