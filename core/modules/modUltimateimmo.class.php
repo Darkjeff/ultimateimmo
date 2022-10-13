@@ -241,20 +241,20 @@ class modUltimateimmo extends DolibarrModules
 				'SELECT tp.rowid as rowid, tp.code, tp.label, tp.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immoproperty_type as tp',
 				'SELECT t.rowid as rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as t',
 				'SELECT t.rowid as rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_builtdate as t',
-				'SELECT t.rowid as rowid, t.ref, t.label, t.status FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immocost_type as t',
+				'SELECT t.rowid as rowid, t.ref, t.label, t.famille, t.status FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immocost_type as t',
 				'SELECT t.rowid as rowid, t.ref, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immocompteur_type as t'
 			),
 			'tabsqlsort'     => array(
 				"label ASC", "label ASC", "label ASC", "label ASC", "label ASC", "label ASC", "label ASC"
 			),
 			'tabfield'       => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label", "ref,label",
+				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label",
 			),
 			'tabfieldvalue'  => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label", "ref,label"
+				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label"
 			),
 			'tabfieldinsert' => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label", "ref,label"
+				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label"
 			),
 			'tabrowid'       => array(
 				"rowid", "rowid", "rowid", "rowid", "rowid", "rowid", "rowid"
