@@ -101,7 +101,7 @@ print '<table class="tagtable nobottomiftotal liste">'."\n";
 
 $sql = 'SELECT ';
 $sql .= $object->getFieldList('t');
-$sql .= ',t.label';
+$sql .= ',t.label as tyte_compteur';
 $sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immocompteur_type as ict ON ict.rowid=t.compteur_type_id";
 if (!empty($search['fk_immoproperty'])) {
@@ -178,7 +178,7 @@ foreach ($result_data as $obj) {
 	print '<td class="left">' . dol_print_date($obj->date_relever) . '</td>';
 
 	//Type de compteur
-	print '<td class="left">' . $obj->compteur_type_id . '</td>';
+	print '<td class="left">' . $obj->tyte_compteur . '</td>';
 
 	//Relever
 	print '<td class="left">' . $obj->qty . '</td>';
