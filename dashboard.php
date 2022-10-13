@@ -91,8 +91,8 @@ if ($user->rights->ultimateimmo->read) {
         'url_add' => dol_buildpath('/ultimateimmo/renter/immorenter_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('NbRenter'), 'value' => getRenterNumber(), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1)),
-			array('title' => $langs->trans('NbRenterActif'), 'value' => getRenterNumber(), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1)),
+            array('title' => $langs->trans('NbRenter'), 'value' => getRenterNumber(0), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1)),
+			array('title' => $langs->trans('NbRenterActif'), 'value' => getRenterNumber(1), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1)),
         )
     );
 }

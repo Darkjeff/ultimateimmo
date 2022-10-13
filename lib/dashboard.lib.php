@@ -50,12 +50,12 @@ function getRentNumber()
     return $res;
 }
 
-function getRenterNumber()
+function getRenterNumber($status)
 {
     global $db;
 
     $res = 0;
-    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immorenter WHERE status=1';
+    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immorenter WHERE status = '.$status.' AND entity = 1';
     $resql = $db->query($sql);
     if ($resql) {
         $res = ($db->fetch_object($resql))->total;
