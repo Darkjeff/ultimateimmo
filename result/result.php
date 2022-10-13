@@ -472,12 +472,13 @@ $sql .= " GROUP BY ib.rowid";
 
 $resqlcharged = $db->query($sql);
 
+
+$dataEncaissement=array();
+$dataPaiement=array();
+$dataCharge=array();
+$dataRevenueFiscal=array();
 if ($resqlpaiement && $resqlencaissement && $resqlcharged) {
 	$i = 0;
-	//$num = max($db->num_rows($resqlpaiement), $db->num_rows($resqlencaissement), $db->num_rows($resqlcharged));
-	$dataEncaissement=array();
-	$dataPaiement=array();
-	$dataCharge=array();
 	while($rowencaissement = $db->fetch_object($resqlencaissement)) {
 		for ($j = 1; $j <= 12; $j++) {
 			$dataEncaissement[$rowencaissement->rowid][$j] = $rowencaissement->{'month_'.$j};
@@ -500,49 +501,32 @@ if ($resqlpaiement && $resqlencaissement && $resqlcharged) {
 	}
 	$db->free($resqlcharged);
 
-	$value_array=array();
 	$immoData=array();
 	if (!empty($dataEncaissement)) {
-
 		foreach($dataEncaissement as $ibId=>$dataMonth) {
-
 			//find immo
 			if (!array_key_exists($ibId,$immoData)) {
 				$immoBuilding = new ImmoBuilding($db);
-				$resultFetchProp = $immoBuilding->fetch($ibId);
-				if ($resultFetchProp < 0) {
+				$resultFetchBuilding = $immoBuilding->fetch($ibId);
+				if ($resultFetchBuilding < 0) {
 					setEventMessages($immoBuilding->error, $immoBuilding->errors, 'errors');
 				} else {
 					$immoData[$ibId] = $immoBuilding->label;
 				}
 			}
 
-			$value_array[$immoData[$ibId]][0] = $immoData[$ibId];
+			$dataRevenueFiscal[$immoData[$ibId]][0] = $immoData[$ibId];
 			foreach($dataMonth as $monthInt=>$amount) {
-				$value_array[$immoData[$ibId]][$monthInt] = $amount;
+				$dataRevenueFiscal[$immoData[$ibId]][$monthInt] = $amount;
 				if (array_key_exists($ibId, $dataPaiement)) {
-					$value_array[$immoData[$ibId]][$monthInt] -= $dataPaiement[$ibId][$monthInt];
+					$dataRevenueFiscal[$immoData[$ibId]][$monthInt] -= $dataPaiement[$ibId][$monthInt];
 				}
 				if (array_key_exists($ibId, $dataCharge)) {
-					$value_array[$immoData[$ibId]][$monthInt] -= $dataCharge[$ibId][$monthInt];
+					$dataRevenueFiscal[$immoData[$ibId]][$monthInt] -= $dataCharge[$ibId][$monthInt];
 				}
 			}
 		}
 	}
-
-	/*while ($i < $num) {
-		$rowencaissement = $db->fetch_object($resqlencaissement);
-		$rowpaiement = $db->fetch_object($resqlpaiement);
-		$rowcharged = $db->fetch_object($resqlcharged);
-
-		$value_array[$rowencaissement->rowid][0] = $rowencaissement->label;
-		for ($j = 1; $j <= 13; $j++) {
-			$value_array[$rowencaissement->rowid][$j] = ($rowencaissement->{'month_'.$j} - $rowpaiement->{'month_'.$j} - $rowcharged->{'month_'.$j});
-		}
-		$i++;
-	}*/
-
-
 } else {
 	print $db->lasterror(); // affiche la derniere erreur sql
 }
@@ -555,7 +539,7 @@ foreach ($months_list as $month_name) {
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 $total_month=array();
-foreach ($value_array as $key => $val) {
+foreach ($dataRevenueFiscal as $key => $val) {
 	$total = 0;
 	print '<tr class="oddeven"><td>' . $key . '</td>';
 	foreach ($months_list as $month_num => $month_name) {
@@ -581,6 +565,9 @@ print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
 print '</tr>';
 
+
+
+
 //Charges non Déductibles
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
@@ -591,7 +578,7 @@ foreach ($months_list as $month_name) {
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 
-$sql = "SELECT ib.label AS nom_immeuble";
+$sql = "SELECT ib.label AS nom_immeuble,ib.rowid";
 foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
@@ -610,19 +597,21 @@ $sql .= " GROUP BY  ib.label";
 
 $resql = $db->query($sql);
 $total_month=array();
+$dataChargeNd=array();
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows($resql);
 
 	while ($i < $num) {
-		$row = $db->fetch_row($resql);
+		$row = $db->fetch_object($resql);
 		$total = 0;
 
-		print '<tr class="oddeven"><td>' . $row[0] . '</td>';
+		print '<tr class="oddeven"><td>' . $row->nom_immeuble . '</td>';
 		foreach ($months_list as $month_num => $month_name) {
-			print '<td align="right">' . price($row[$month_num]) . '</td>';
-			$total += $row[$month_num];
-			$total_month[$month_num] += (float) $row[$month_num];
+			$dataChargeNd[$row->rowid][$month_num]=$row->{'month_'.$month_num};
+			print '<td align="right">' . price($row->{'month_'.$month_num}) . '</td>';
+			$total += $row->{'month_'.$month_num};
+			$total_month[$month_num] += (float) $row->{'month_'.$month_num};
 		}
 		print '<td align="right"><b>' . price($total) . '</b></td>';
 		print '</tr>';
@@ -644,101 +633,38 @@ print '</tr>';
 print "</table>\n";
 
 //Revenu Net
-$value_array = array();
+$dataRevenueNet = array();
 
-$sql = "SELECT ib.label AS nom_immeuble";
-foreach ($months_list as $month_num => $month_name) {
-	$sql .= ', ROUND(SUM(case when MONTH(lp.date_payment)=' . $month_num . ' then lp.amount else 0 end),2) AS month_' . $month_num;
-}
-$sql .= ", ROUND(SUM(lp.amount),2) as Total";
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as lp ON lp.fk_property = ip.rowid";
-$sql .= " AND lp.date_payment >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
-$sql .= "  AND lp.date_payment <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
-if (!empty($search_owner)) {
-	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
-}
-$sql .= " GROUP BY  ib.label";
+if (!empty($dataRevenueFiscal)) {
+	$immoData=array();
+	if (!empty($dataEncaissement)) {
+		foreach($dataEncaissement as $ibId=>$dataMonth) {
+			//find immo
+			if (!array_key_exists($ibId,$immoData)) {
+				$immoBuilding = new ImmoBuilding($db);
+				$resultFetchBuilding = $immoBuilding->fetch($ibId);
+				if ($resultFetchBuilding < 0) {
+					setEventMessages($immoBuilding->error, $immoBuilding->errors, 'errors');
+				} else {
+					$immoData[$ibId] = $immoBuilding->label;
+				}
+			}
 
-$resqlencaissement = $db->query($sql);
-
-$sql = "SELECT ib.label AS nom_immeuble";
-foreach ($months_list as $month_num => $month_name) {
-	$sql .= ', ROUND(SUM(case when MONTH(ir.date_echeance)=' . $month_num . ' then ir.chargesamount else 0 end),2) AS month_' . $month_num;
-}
-$sql .= ", ROUND(SUM(ir.chargesamount),2) as Total";
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as ir ON ir.fk_property = ip.rowid";
-$sql .= " AND ir.date_echeance >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
-$sql .= "  AND ir.date_echeance <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ip.fk_property = ib.fk_property";
-if (!empty($search_owner)) {
-	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
-}
-
-$sql .= " GROUP BY ib.label";
-
-$resqlpaiement = $db->query($sql);
-
-$sql = "SELECT ib.label AS nom_immeuble";
-foreach ($months_list as $month_num => $month_name) {
-	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
-}
-$sql .= ", ROUND(SUM(ic.amount),2) as Total";
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic ON ic.fk_property = ip.rowid";
-$sql .= " AND ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
-$sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
-$sql .= "  AND it.famille = 'Charge déductible' ";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
-if (!empty($search_owner)) {
-	$sql .= ' WHERE ip.fk_owner='.(int)$search_owner;
-}
-$sql .= " GROUP BY  ib.label";
-
-$resqlcharged = $db->query($sql);
-
-$sql = "SELECT ib.label AS nom_immeuble";
-foreach ($months_list as $month_num => $month_name) {
-	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
-}
-$sql .= ", ROUND(SUM(ic.amount),2) as Total";
-$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ip ON ic.fk_property = ip.rowid";
-$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as ib ON ib.fk_property = ip.fk_property";
-$sql .= " WHERE ic.date_start >= '" . $db->idate(dol_get_first_day($y, 1, false)) . "'";
-$sql .= "  AND ic.date_start <= '" . $db->idate(dol_get_last_day($y, 12, false)) . "'";
-$sql .= "  AND it.famille = 'Charge non déductible' ";
-if (!empty($search_owner)) {
-	$sql .= ' AND ip.fk_owner='.(int)$search_owner;
-}
-$sql .= " GROUP BY  ib.label";
-
-$resqlchargend = $db->query($sql);
-
-if ($resqlpaiement && $resqlencaissement && $resqlcharged && $resqlchargend) {
-	$i = 0;
-	$num = max($db->num_rows($resqlpaiement), $db->num_rows($resqlencaissement), $db->num_rows($resqlcharged), $db->num_rows($resqlchargend));
-
-	while ($i < $num) {
-		$rowencaissement = $db->fetch_row($resqlencaissement);
-		$rowpaiement = $db->fetch_row($resqlpaiement);
-		$rowcharged = $db->fetch_row($resqlcharged);
-		$rowchargend = $db->fetch_row($resqlchargend);
-
-		$value_array[$rowencaissement[0]][0] = $rowencaissement[0];
-		for ($j = 1; $j <= 13; $j++) {
-			$value_array[$rowencaissement[0]][$j] = ($rowencaissement[$j] - $rowpaiement[$j] - $rowcharged[$j] - $rowchargend[$j]);
+			$dataRevenueNet[$immoData[$ibId]][0] = $immoData[$ibId];
+			foreach($dataMonth as $monthInt=>$amount) {
+				$dataRevenueNet[$immoData[$ibId]][$monthInt] = $amount;
+				if (array_key_exists($ibId, $dataPaiement)) {
+					$dataRevenueNet[$immoData[$ibId]][$monthInt] -= $dataPaiement[$ibId][$monthInt];
+				}
+				if (array_key_exists($ibId, $dataCharge)) {
+					$dataRevenueNet[$immoData[$ibId]][$monthInt] -= $dataCharge[$ibId][$monthInt];
+				}
+				if (array_key_exists($ibId, $dataCharge)) {
+					$dataRevenueNet[$immoData[$ibId]][$monthInt] -= $dataChargeNd[$ibId][$monthInt];
+				}
+			}
 		}
-		$i++;
 	}
-	$db->free($resqlencaissement);
-	$db->free($resqlpaiement);
-	$db->free($resqlcharged);
-	$db->free($resqlchargend);
 } else {
 	print $db->lasterror(); // affiche la derniere erreur sql
 }
@@ -750,7 +676,7 @@ foreach ($months_list as $month_name) {
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
 $total_month=array();
-foreach ($value_array as $key => $val) {
+foreach ($dataRevenueNet as $key => $val) {
 	$total = 0;
 	print '<tr class="oddeven"><td>' . $key . '</td>';
 	foreach ($months_list as $month_num => $month_name) {
