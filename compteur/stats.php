@@ -101,7 +101,7 @@ print '<table class="tagtable nobottomiftotal liste">'."\n";
 
 $sql = 'SELECT ';
 $sql .= $object->getFieldList('t');
-$sql .= ',itc.label';
+$sql .= ',t.label';
 $sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immocompteur_type as ict ON ict.rowid=t.compteur_type_id";
 if (!empty($search['fk_immoproperty'])) {
