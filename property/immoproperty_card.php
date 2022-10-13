@@ -57,13 +57,13 @@ dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "companies", "other"));
 
 // Get parameters
-$id			= GETPOST('id', 'int');
+$id		= GETPOST('id', 'int');
 $ref		= GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
-$confirm    = GETPOST('confirm', 'alpha');
+$confirm	= GETPOST('confirm', 'alpha');
 $cancel		= GETPOST('cancel', 'aZ09');
-$contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'myobjectcard'; // To manage different context of search
-$backtopage = GETPOST('backtopage', 'alpha');
+$contextpage	= GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'myobjectcard'; // To manage different context of search
+$backtopage	= GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
 
 // Initialize technical objects
@@ -133,11 +133,11 @@ if (empty($reshook))
 	$backurlforlist = dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1);
 
 	if (empty($backtopage) || ($cancel && empty($id))) {
-    	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
+    	  if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
     		if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
     		else $backtopage = dol_buildpath('/ultimateimmo/property/immoproperty_card.php', 1).'?id='.($id > 0 ? $id : '__ID__');
+    	  }
     	}
-    }
 	$triggermodname = 'ULTIMATEIMMO_IMMOPROPERTY_MODIFY'; // Name of trigger action code to execute when we modify record
 
 	// Actions cancel, add, update or delete
@@ -145,6 +145,9 @@ if (empty($reshook))
 
 	// Actions when printing a doc from card
 	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
+	
+	// Action to build doc
+        include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
 
 	// Actions to send emails
 	$triggersendname = 'IMMOPROPERTY_SENTBYMAIL';
