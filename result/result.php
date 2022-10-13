@@ -66,6 +66,7 @@ if (!$res) {
 // Class
 require_once DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php";
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
+dol_include_once('/ultimateimmo/class/immobuilding.class.php');
 
 $search_owner=GETPOST('search_owner','int');
 if ($search_owner==-1) $search_owner='';
@@ -478,14 +479,14 @@ if ($resqlpaiement && $resqlencaissement && $resqlcharged) {
 	$dataPaiement=array();
 	$dataCharge=array();
 	while($rowencaissement = $db->fetch_object($resqlencaissement)) {
-		for ($j = 1; $j <= 13; $j++) {
+		for ($j = 1; $j <= 12; $j++) {
 			$dataEncaissement[$rowencaissement->rowid][$j] = $rowencaissement->{'month_'.$j};
 		}
 	}
 	$db->free($resqlencaissement);
 
 	while($rowpaiement = $db->fetch_object($resqlpaiement)) {
-		for ($j = 1; $j <= 13; $j++) {
+		for ($j = 1; $j <= 12; $j++) {
 			$dataPaiement[$resqlpaiement->rowid][$j] = $resqlpaiement->{'month_'.$j};
 		}
 	}
@@ -493,16 +494,39 @@ if ($resqlpaiement && $resqlencaissement && $resqlcharged) {
 
 
 	while($rowcharged = $db->fetch_object($resqlcharged)) {
-		for ($j = 1; $j <= 13; $j++) {
+		for ($j = 1; $j <= 12; $j++) {
 			$dataCharge[$rowcharged->rowid][$j] = $rowcharged->{'month_'.$j};
 		}
 	}
 	$db->free($resqlcharged);
 
 	$value_array=array();
+	$immoData=array();
 	if (!empty($dataEncaissement)) {
+
 		foreach($dataEncaissement as $ibId=>$dataMonth) {
-			//var_dump($dataMonth);
+
+			//find immo
+			if (!array_key_exists($ibId,$immoData)) {
+				$immoBuilding = new ImmoBuilding($db);
+				$resultFetchProp = $immoBuilding->fetch($ibId);
+				if ($resultFetchProp < 0) {
+					setEventMessages($immoBuilding->error, $immoBuilding->errors, 'errors');
+				} else {
+					$immoData[$ibId] = $immoBuilding->label;
+				}
+			}
+
+			$value_array[$immoData[$ibId]][0] = $immoData[$ibId];
+			foreach($dataMonth as $monthInt=>$amount) {
+				$value_array[$immoData[$ibId]][$monthInt] = $amount;
+				if (array_key_exists($ibId, $dataPaiement)) {
+					$value_array[$immoData[$ibId]][$monthInt] -= $dataPaiement[$ibId][$monthInt];
+				}
+				if (array_key_exists($ibId, $dataCharge)) {
+					$value_array[$immoData[$ibId]][$monthInt] -= $dataCharge[$ibId][$monthInt];
+				}
+			}
 		}
 	}
 
