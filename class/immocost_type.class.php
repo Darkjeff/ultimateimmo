@@ -97,7 +97,7 @@ class ImmoCost_Type extends CommonObject
 	public $famille;
 	public $date_creation;
 	public $tms;
-	public $fk_user_creat;
+	public $fk_user_create;
 	public $fk_user_modif;
 	public $status;
 	// END MODULEBUILDER PROPERTIES
@@ -200,7 +200,7 @@ class ImmoCost_Type extends CommonObject
 	    $object->fetchCommon($fromid);
 	    // Reset some properties
 	    unset($object->id);
-	    unset($object->fk_user_creat);
+	    unset($object->fk_user_create);
 	    unset($object->import_key);
 
 	    // Clear fields
@@ -411,7 +411,7 @@ class ImmoCost_Type extends CommonObject
 	function info($id)
 	{
 		$sql = 'SELECT rowid, date_creation as datec, tms as datem,';
-		$sql.= ' fk_user_creat, fk_user_modif';
+		$sql.= ' fk_user_create, fk_user_modif';
 		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
 		$sql.= ' WHERE t.rowid = '.$id;
 		$result=$this->db->query($sql);
