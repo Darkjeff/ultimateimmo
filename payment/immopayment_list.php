@@ -498,8 +498,7 @@ foreach ($object->fields as $key => $val) {
 		$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 	} elseif (in_array($val['type'], array('timestamp'))) {
 		$cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
-	} elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real',
-										   'price')) && $val['label'] != 'TechnicalID' && empty($val['arrayofkeyval'])) {
+	} elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $val['label'] != 'TechnicalID' && empty($val['arrayofkeyval'])) {
 		$cssforfield .= ($cssforfield ? ' ' : '') . 'right';
 	}
 	if (!empty($arrayfields['t.' . $key]['checked'])) {
@@ -546,8 +545,7 @@ foreach ($object->fields as $key => $val) {
 		$cssforfield .= ($cssforfield ? ' ' : '') . 'center';
 	} elseif (in_array($val['type'], array('timestamp'))) {
 		$cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
-	} elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real',
-										   'price')) && $val['label'] != 'TechnicalID' && empty($val['arrayofkeyval'])) {
+	} elseif (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && $val['label'] != 'TechnicalID' && empty($val['arrayofkeyval'])) {
 		$cssforfield .= ($cssforfield ? ' ' : '') . 'right';
 	}
 	if (!empty($arrayfields['t.' . $key]['checked'])) {
@@ -607,9 +605,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 			$cssforfield .= ($cssforfield ? ' ' : '') . 'nowrap';
 		}
 
-		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real',
-										 'price')) && !in_array($key, array('rowid',
-																			'status')) && empty($val['arrayofkeyval'])) {
+		if (in_array($val['type'], array('double(24,8)', 'double(6,3)', 'integer', 'real', 'price')) && !in_array($key, array('rowid', 'status')) && empty($val['arrayofkeyval'])) {
 			$cssforfield .= ($cssforfield ? ' ' : '') . 'right';
 		}
 		//if (in_array($key, array('fk_soc', 'fk_user', 'fk_warehouse'))) $cssforfield = 'tdoverflowmax100';
@@ -623,7 +619,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);
 				if ($staticowner->ref) {
-					$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+					$staticowner->ref = $staticowner->getNomUrl(0);
 				}
 				print $staticowner->ref;
 			} elseif ($val['label'] == 'ImmoRent') {
@@ -658,7 +654,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					$staticrenter = new ImmoRenter($db);
 					$staticrenter->fetch($object->fk_renter);
 					if ($staticrenter->ref) {
-						$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs, 0);
+						$staticrenter->ref = $staticrenter->getNomUrl(0);
 					}
 					print $staticrenter->ref;
 				}
@@ -667,7 +663,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 					$staticproperty = new ImmoProperty($db);
 					$result = $staticproperty->fetch($object->fk_property);
 					if ($staticproperty->ref) {
-						$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
+						$staticproperty->ref = $staticproperty->getNomUrl(0);
 					}
 					print $staticproperty->ref;
 				}
@@ -696,8 +692,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 	// Extra fields
 	include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_print_fields.tpl.php';
 	// Fields from hook
-	$parameters = array('arrayfields' => $arrayfields, 'object' => $object, 'obj' => $obj, 'i' => $i,
-						'totalarray'  => &$totalarray);
+	$parameters = array('arrayfields' => $arrayfields, 'object' => $object, 'obj' => $obj, 'i' => $i, 'totalarray'  => &$totalarray);
 	$reshook = $hookmanager->executeHooks('printFieldListValue', $parameters, $object);    // Note that $action and $object may have been modified by hook
 	print $hookmanager->resPrint;
 	// Action column
