@@ -403,7 +403,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
-	$keyforbreak = 'address';
+	$keyforbreak = 'area';
 	foreach ($object->fields as $key => $val) {
 		if (!empty($keyforbreak) && $key == $keyforbreak) break; // key used for break on second column
 
