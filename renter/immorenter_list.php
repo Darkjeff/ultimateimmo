@@ -480,7 +480,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);
 				if ($staticowner->ref) {
-					$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+					$staticowner->ref = $staticowner->getNomUrl(0);
 				}
 				print $staticowner->ref;
 			} else {
