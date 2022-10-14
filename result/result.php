@@ -133,7 +133,7 @@ print '<input type="hidden" name="formfilteraction" id="formfilteraction" value=
 print '<input type="hidden" name="action" value="list">';
 print '<div class="liste_titre liste_titre_bydiv centpercent">';
 print '<div class="divsearchfield">';
-print $langs->trans('Owner').$form->selectarray('search_owner', $dataOwner, $search_owner, 1, 0, 0, '', 1, 0, 0, '', 'maxwidth200', 1);
+print $langs->trans('Owner').$form->selectarray('search_owner', $dataOwner, $search_owner, 1, 0, 0, '', 1, 0, 0, '', 'maxwidth350', 1);
 print '</div>';
 print '<td class="liste_titre" align="middle">';
 $searchpicto = $form->showFilterButtons();
