@@ -700,7 +700,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				$staticowner = new ImmoOwner($db);
 				$staticowner->fetch($object->fk_owner);
 				if ($staticowner->ref) {
-					$staticowner->ref = $staticowner->getNomUrl(0) . ' - ' . $staticowner->getFullName($langs, 0);
+					$staticowner->ref = $staticowner->getNomUrl(0);
 				}
 				print $staticowner->ref;
 			} elseif ($val['label'] == 'Renter') {
@@ -715,7 +715,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				$staticproperty->fetch($object->fk_property);
 				//var_dump($staticproperty);exit;
 				if ($staticproperty->ref) {
-					$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
+					$staticproperty->ref = $staticproperty->getNomUrl(0);
 				}
 				print $staticproperty->ref;
 			} elseif ($val['label'] == 'PartialPayment') {

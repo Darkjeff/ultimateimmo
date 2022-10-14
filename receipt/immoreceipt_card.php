@@ -1033,14 +1033,14 @@ if ($action == 'createall') {
 			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);
 			if ($staticowner->ref) {
-				$staticowner->ref = $staticowner->getNomUrl(0, '', 0) . ' - ' . $staticowner->getFullName($langs, 0);
+				$staticowner->ref = $staticowner->getNomUrl(0, '', 0);
 			}
 			print $staticowner->ref;
 		} elseif ($val['label'] == 'Renter') {
 			$staticrenter = new ImmoRenter($db);
 			$staticrenter->fetch($object->fk_renter);
 			if ($staticrenter->ref) {
-				$staticrenter->ref = $staticrenter->getNomUrl(0) . ' - ' . $staticrenter->getFullName($langs);
+				$staticrenter->ref = $staticrenter->getNomUrl(0);
 			}
 			print $staticrenter->ref;
 		} elseif (
@@ -1049,7 +1049,7 @@ if ($action == 'createall') {
 			$staticproperty = new ImmoProperty($db);
 			$staticproperty->fetch($object->fk_property);
 			if ($staticproperty->ref) {
-				$staticproperty->ref = $staticproperty->getNomUrl(0) . ' - ' . $staticproperty->label;
+				$staticproperty->ref = $staticproperty->getNomUrl(0);
 			}
 			print $staticproperty->ref;
 		} else {
