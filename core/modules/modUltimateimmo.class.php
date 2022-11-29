@@ -703,7 +703,24 @@ class modUltimateimmo extends DolibarrModules
 			'target'   => '',
 			'user'     => 2
 		);        // 0=Menu for internal users, 1=external users, 2=both
-
+		$this->menu[$r++] = array(
+			'fk_menu'  => 'fk_mainmenu=properties,fk_leftmenu=ultimateimmo_immocompteur',
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'     => 'left',                            // This is a Left menu entry
+			'titre'    => 'MenuImmoCompteurStatsYear',
+			'mainmenu' => 'properties',
+			'leftmenu' => 'ultimateimmo_immocompteur_stats_year',
+			'url'      => '/ultimateimmo/compteur/stats_by_year.php',
+			'langs'    => 'ultimateimmo@ultimateimmo',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position' => 1100 + $r,
+			'enabled'  => '$conf->ultimateimmo->enabled',
+			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'    => '$user->rights->ultimateimmo->immocompteur->read',
+			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'target'   => '',
+			'user'     => 2
+		);        // 0=Menu for internal users, 1=external users, 2=both
 //// renter
 
 $this->menu[$r++] = array(

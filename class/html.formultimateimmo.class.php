@@ -338,4 +338,25 @@ class FormUltimateimmo extends Form
 			print $this::selectarray($htmlname,$dataYear,$selected);
 		}
 	}
+
+	public function selectYearCompteur($selected = '', $htmlname = 'year')
+	{
+		dol_include_once('/ultimateimmo/class/immocompteur.class.php');
+		$object = new ImmoCompteur($this->db);
+		$dataYear=array();
+		$sql = 'SELECT DISTINCT YEAR(date_relever) as yearrelever FROM ' . MAIN_DB_PREFIX . $object->table_element;
+		$sql .= ' ORDER BY date_relever DESC';
+		$resql=$this->db->query($sql);
+
+		if ($resql) {
+			while($obj=$this->db->fetch_object($resql)) {
+				$dataYear[$obj->yearrelever] = $obj->yearrelever;
+			}
+		} else {
+			setEventMessage($this->db->lasterror,'errors');
+		}
+
+		return $this::selectarray($htmlname,$dataYear,$selected,0,0,0,'',0,0,0,'','minwidth100');
+
+	}
 }
