@@ -124,6 +124,7 @@ MenuStatisticsResult = Résultats : statistiques
 MenuListImmoCostType = Types de coût
 MenuNewImmoCostType = Nouveau type de coût
 MenuImmoCompteurStats=Statistique Conso
+MenuImmoCompteurStatsYear=Statistique Conso Par An
 
 #
 # Biens
@@ -392,3 +393,10 @@ ShowMandataireDetails = Afficher les détails du mandataire
 ShowColocataireDetails = Afficher les détails des colocataires
 UserValid = Utilisateur Valide
 Appartement = Appartement
+
+ImmoCompteurDtFirst=Date du 1er relevé
+ImmoCompteurDtLast=Date du dernier relevé
+ImmoCompteurDtFirstValue=Compteur au 1er relevé
+ImmoCompteurDtLastValue=Compteur au dernier relevé
+ImmoCompteurDiff=Différence Compteur entre le 1er et le dernier
+ImmoCompteurDtDiff=Nb de Jour entre 1er relevé et dernier relevé
