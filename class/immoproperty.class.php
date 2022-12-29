@@ -109,6 +109,9 @@ class ImmoProperty extends CommonObject
 		'target'        => array('type' => 'integer', 'label' => 'Target', 'enabled' => 1, 'visible' => 1, 'position' => 40, 'notnull' => -1, 'arrayofkeyval' => array('1' => 'Location', '2' => 'Vente', '-1' => 'Autre'), 'comment' => "Rent or sale"),
 		'fk_owner'      => array('type' => 'integer:ImmoOwner:ultimateimmo/owner/class/immoowner.class.php:1:status=1', 'label' => 'Owner', 'enabled' => 1, 'visible' => 1, 'position' => 45, 'notnull' => 1, 'index' => 1, 'help' => "LinkToOwner"),
 		'fk_soc' 	=> array('type' => 'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label' => 'ThirdParty', 'visible' => 1, 'enabled' => 1, 'position' => 46, 'notnull' => -1, 'index' => 1, 'help' => 'LinkToThirdparty'),
+		//'prix_achat'	=> array('type' => 'varchar(32)', 'label' => 'Prix achat', 'enabled' => 1, 'visible' => 1, 'position' => 47, 'notnull' => -1),
+		//'prix_achat_frais' => array('type' => 'varchar(32)', 'label' => 'Prix achat frais', 'enabled' => 1, 'visible' => 1, 'position' => 47, 'notnull' => -1),
+		//'prix_vente'	=> array('type' => 'varchar(32)', 'label' => 'Prix achat vente', 'enabled' => 1, 'visible' => 1, 'position' => 47, 'notnull' => -1),
 		'note_public'   => array('type' => 'html', 'label' => 'NotePublic', 'enabled' => 1, 'visible' => -1, 'position' => 50, 'notnull' => -1),
 		'note_private'  => array('type' => 'html', 'label' => 'NotePrivate', 'enabled' => 1, 'visible' => -1, 'position' => 55, 'notnull' => -1),
 		'area'          => array('type' => 'varchar(8)', 'label' => 'Area', 'enabled' => 1, 'visible' => 1, 'position' => 60, 'notnull' => -1),
@@ -122,6 +125,8 @@ class ImmoProperty extends CommonObject
 		'zip'           => array('type' => 'varchar(32)', 'label' => 'Zip', 'enabled' => 1, 'visible' => 1, 'position' => 105, 'notnull' => -1),
 		'town'          => array('type' => 'varchar(64)', 'label' => 'Town', 'enabled' => 1, 'visible' => 1, 'position' => 110, 'notnull' => -1),
 		'country_id'	=> array('type' => 'varchar:c_country:label:code:rowid', 'label' => 'Country', 'enabled' => 1, 'visible' => 1, 'position' => 120, 'notnull' => -1,),
+		//'section_cadastrale' => array('type' => 'varchar(32)', 'label' => 'Section cadastrale', 'enabled' => 1, 'visible' => 1, 'position' => 125, 'notnull' => -1),
+		//'parcelle_cadastrale' => array('type' => 'varchar(32)', 'label' => 'Parcelle cadastrale', 'enabled' => 1, 'visible' => 1, 'position' => 130, 'notnull' => -1),
 		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'enabled' => 1, 'visible' => -2, 'position' => 500, 'notnull' => 1),
 		'tms'           => array('type' => 'timestamp', 'label' => 'DateModification', 'enabled' => 1, 'visible' => -2, 'position' => 501, 'notnull' => 1),
 		'fk_user_creat' => array('type' => 'integer:User:user/class/user.class.php', 'label' => 'UserAuthor', 'enabled' => 1, 'visible' => -2, 'position' => 510, 'notnull' => 1, 'foreignkey' => 'llx_user.rowid',),
@@ -350,7 +355,7 @@ class ImmoProperty extends CommonObject
 	    if (!$error)
 	    {
 	    	// copy internal contacts
-			$result= $this->copy_linked_contact($object, 'internal');
+		$result= $this->copy_linked_contact($object, 'internal');
 	    	if ($result < 0)
 	    	{
 	    		$error++;
