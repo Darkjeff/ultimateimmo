@@ -348,12 +348,12 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$text .= '<tr>';
 				$text .= '<td colspan="2">';
 
-				$text .= ' - Loyer nu : ' . price($object->rentamount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "<BR>";
+				$text .= ' ' . chr(127) . ' Loyer nu : ' . price($object->rentamount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '<br />';
 				if ($object->vat > 0) {
-					$text .= ' - TVA : ' . price($object->vat, 0, $outputlangs, 1, -1, -1, $conf->currency) . "<BR>";
+					$text .= ' ' . chr(127) . ' TVA : ' . price($object->vat, 0, $outputlangs, 1, -1, -1, $conf->currency) . '<br />';
 				}
-				$text .= ' - Charges / Provisions de Charges : ' . price($object->chargesamount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "<BR>";
-				$text .= ' - Montant total du terme : ' . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . "<BR>";
+				$text .= ' ' . chr(127) . ' Charges / Provisions de Charges : ' . price($object->chargesamount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '<br />';
+				$text .= ' ' . chr(127) . ' Montant total du terme : ' . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '<br />';
 				$text .= '</td>';
 				$text .= '</tr>';
 

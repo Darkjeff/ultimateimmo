@@ -214,13 +214,13 @@ foreach ($result_data as $obj) {
 	}
 	print '</td>';*/
 
-	//Consommation jour
+	//Consommation jour arrondi a deux chiffres apres la virgule
 	print '<td class="left">';
 	$conso_jour=0;
 	if (empty($day_diff)) {
 		$day_diff = 1;
 	}
-	$conso_jour=$rel_diff/$day_diff;
+	$conso_jour=number_format($rel_diff/$day_diff,2);
 	print price($conso_jour);
 	print '</td>';
 
@@ -230,7 +230,7 @@ foreach ($result_data as $obj) {
 	print price($conso_mois);
 	print '</td>';
 
-	//Consommation annuel
+	//Consommation annuelle
 	print '<td class="left">';
 	$conso_year=$conso_jour*365;
 	print price($conso_year);
