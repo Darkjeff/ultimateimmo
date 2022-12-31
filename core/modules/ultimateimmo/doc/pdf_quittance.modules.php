@@ -274,22 +274,19 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pagenb++;
 				$this->_pagehead($pdf, $object, 1, $outputlangs);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-				$pdf->MultiCell(0, 3, '', 0,
-					'J'
-				);
+				$pdf->MultiCell(0, 3, '', 0, 'J');
 				$pdf->SetTextColor(0, 0, 0);
 
+				// Bloc Fait a
 				$hautcadre = !empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 38 : 40;
 				$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
 				$posY = $this->marge_haute + $hautcadre + 50;
 				$posX = $this->marge_gauche;
-
-
 				$text .= "\n";
 				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
 				$pdf->SetXY($posX, $posY - 12);
-				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
+				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'R');
 
 				// Bloc Quittance de loyer
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
@@ -345,18 +342,25 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->SetXY($posX, $posY);
 
 				$text = '<table>';
+				$text .= '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
 				$text .= '<tr>';
-				$text .= '<td colspan="2">';
-
-				$text .= ' ' . chr(127) . ' Loyer nu : ' . price($object->rentamount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '<br />';
-				if ($object->vat > 0) {
-					$text .= ' ' . chr(127) . ' TVA : ' . price($object->vat, 0, $outputlangs, 1, -1, -1, $conf->currency) . '<br />';
-				}
-				$text .= ' ' . chr(127) . ' Charges / Provisions de Charges : ' . price($object->chargesamount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '<br />';
-				$text .= ' ' . chr(127) . ' Montant total du terme : ' . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '<br />';
-				$text .= '</td>';
+				$text .= '<td> ' . chr(127) . ' Loyer nu</td>';
+				$text .= '<td align="right">' . price($object->rentamount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td>';
 				$text .= '</tr>';
-
+				if ($object->vat > 0) {
+					$text .= '<tr>';
+					$text .= '<td> ' . chr(127) . ' TVA : ' . price($object->vat, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td>';
+					$text .= '</tr>';
+				}
+				$text .= '<tr>';
+				$text .= '<td> ' . chr(127) . ' Charges / Provisions de Charges</td>';
+				$text .= '<td align="right">' . price($object->chargesamount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td>';
+				$text .= '</tr>';
+				$text .= '<tr>';
+				$text .= '<td> ' . chr(127) . ' Montant total du terme</td>';
+				$text .= '<td align="right">' . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td>';
+				$text .= '</tr>';
+				
 				$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.amount, p.note_public as type, il.total_amount ";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 				$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il ";
