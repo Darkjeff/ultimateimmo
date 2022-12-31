@@ -602,16 +602,18 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size-1);
 				$posY = $pdf->getY()+4;
 				$pdf->SetXY($posX, $posY);
-				$text = $outputlangs->transnoentities("<strong> MONTANT OU LOYER (voir conditions générales chapitre 1) :<br>
-				Il est fixé librement entre les parties en application de l'article 17 a) et de l'article 17 b) de la loi Cependant pour les baux contractés entre le 01.08.2013 et le 31.07.2014 et UNIQUEMENT dans les communes mentionnées par l'annexe du décret n°2013-689 OU 30.07.2013 fixant un montant maximum d'évolution des loyers, conformément à l'article 18 de la loi, le loyer des logements vacants définis à l'article 17 b) ne peut excéder le dernier loyer appliqué au précédent locataire révisé dans les limites prévues à l'article 17 d), sauf cas suivants: </strong><br>
+				$text = $outputlangs->transnoentities("<strong>MONTANT OU LOYER (voir conditions générales chapitre 1) :<br /><br />
+				Il est fixé librement entre les parties en application de l'article 17 a) et de l'article 17 b) de la loi.<br />
+				Cependant pour les baux contractés entre le 01.08.2013 et le 31.07.2014 et UNIQUEMENT dans les communes mentionnées par l'annexe du décret n°2013-689 OU 30.07.2013 fixant un montant maximum d'évolution des loyers, conformément à l'article 18 de la loi, le loyer des logements vacants définis à l'article 17 b) ne peut excéder le dernier loyer appliqué au précédent locataire révisé dans les limites prévues à l'article 17 d), sauf cas suivants: </strong><br>
 				- Lorsque le bailleur a réalisé, depuis la conclusion du dernier contrat, des travaux d'amélioration portant sur les parties privatives ou communes d'un montant au moins égal à la moitié de la dernière année de loyer, la hausse du loyer annuel ne peut excéder 15% du coût réel des travaux toutes taxes comprises;<br>
 				- Lorsque le dernier loyer appliqué au précédent locataire est manifestement sous-évalué, la hausse du nouveau loyer ne peut excéder la plus élevée des deux limites suivantes<br>
 				1. La moitié de la différence entre le montant moyen d'un loyer représentatif des loyers habituellement constatés dans le voisinage pour des logements comparables déterminé selon les modalités prévues à l'article 19 de la loi du 06.07 1989 et le dernier loyer appliqué au précédent locataire;<br>
-				2. Une majoration du loyer annuel égale à 15% du coût réel des travaux toutes taxes comprises, dans le cas où le bailleur a réalisé depuis la fin du dernier contrat de location des travaux d'amélioration portant sur les parties privatives ou communes d'un montant au moins égal à la moitié de la dernière année de loyer.<br>
-				<strong>Le montant du loyer sera payable au domicile du bailleur ou de la personne qu'il aura mandaté à cet effet.</strong><br>
-				<strong>RÉVISION OU LOYER</strong> art. 17-1-1) de la loi du 06.07.1989: La variation annuelle du loyer ne peut excéder, à la hausse, la variation sur un an de l'indice de référence des loyers publié par l'I.N.S.E.E. dont les éléments de référence sont indiqués en page 8.<br>
-				Après sa date de prise d'effet, le bailleur dispose d'un an pour manifester sa volonté d'appliquer la révision du loyer. À défaut le bailleur est réputé avoir renoncé à la révision du loyer pour l'année écoulée : Si le bailleur manifeste sa volonté de réviser le loyer, dans un délai d'un an, cette révision prend effet à compter de sa demande. ");
-				$pdf->writeHTMLCell($widthbox/2 -2, 3, $posX, $posY, $outputlangs->convToOutputCharset($text), 1, 0, 0, true, 'J');
+				2. Une majoration du loyer annuel égale à 15% du coût réel des travaux toutes taxes comprises, dans le cas où le bailleur a réalisé depuis la fin du dernier contrat de location des travaux d'amélioration portant sur les parties privatives ou communes d'un montant au moins égal à la moitié de la dernière année de loyer.<br /><br />
+				<strong>Le montant du loyer sera payable au domicile du bailleur ou de la personne qu'il aura mandaté à cet effet.</strong><br /><br />
+				<strong>RÉVISION OU LOYER</strong> art. 17-1-1) de la loi du 06.07.1989<br /><br />
+				La variation annuelle du loyer ne peut excéder, à la hausse, la variation sur un an de l'indice de référence des loyers publié par l'I.N.S.E.E. dont les éléments de référence sont indiqués en page 8.<br>
+				Après sa date de prise d'effet, le bailleur dispose d'un an pour manifester sa volonté d'appliquer la révision du loyer. À défaut le bailleur est réputé avoir renoncé à la révision du loyer pour l'année écoulée. Si le bailleur manifeste sa volonté de réviser le loyer, dans un délai d'un an, cette révision prend effet à compter de sa demande. ");
+				$pdf->writeHTMLCell($widthbox, 3, $posX, $posY, $outputlangs->convToOutputCharset($text), 1, 0, 0, true, 'J');
 
 				$posY = $pdf->getY()+200;
 
@@ -635,7 +637,7 @@ class pdf_bail_vide extends ModelePDFUltimateimmo
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetTextColor(0, 0, 0);
 				$pdf->SetXY($posX, $tab_top_newpage);
-				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('CONDITIONS GENERALES'), 1, 'C');
+				$pdf->MultiCell($widthbox, 3, $outputlangs->convToOutputCharset('CONDITIONS GÉNÉRALES'), 1, 'C');
 
 				// print TEXT
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
