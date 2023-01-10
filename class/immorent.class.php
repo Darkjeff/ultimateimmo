@@ -83,7 +83,7 @@ class ImmoRent extends CommonObject
 	public $fields = array(
 		'rowid'            => array('type'     => 'integer', 'label' => 'TechnicalID', 'visible' => -1, 'enabled' => 1,
 									'position' => 1, 'notnull' => 1, 'index' => 1, 'comment' => "Id",),
-		'ref'              => array('type'      => 'varchar(128)', 'label' => 'Ref', 'visible' => 1, 'enabled' => 1,
+		'ref'              => array('type'      => 'varchar(128)', 'label' => 'Ref', 'visible' => 2, 'enabled' => 1,
 									'position'  => 10, 'notnull' => 1, 'default' => '(PROV)', 'index' => 1,
 									'searchall' => 1, 'comment' => "Reference of object", 'showoncombobox' => 1,),
 		'entity'           => array('type'     => 'integer', 'label' => 'Entity', 'visible' => 0, 'enabled' => 1,
@@ -234,7 +234,7 @@ class ImmoRent extends CommonObject
 				unset($this->fields[$key]);
 			}
 		}
-		
+
 		// Translate some data of arrayofkeyval
 		if (is_object($langs)) {
 			foreach ($this->fields as $key => $val) {
@@ -260,7 +260,18 @@ class ImmoRent extends CommonObject
 	 */
 	public function create(User $user, $notrigger = false)
 	{
-		return $this->createCommon($user, $notrigger);
+		$this->ref='(PROV)';
+		$resultCreate = $this->createCommon($user, $notrigger);
+		if ($resultCreate<0) {
+			return -1;
+		}
+		$this->fetch($this->id);
+		$this->ref=$this->id;
+		$resultUpd = $this->update($user);
+		if ($resultUpd<0) {
+			return -1;
+		}
+		return $resultCreate;
 	}
 
 	/**
