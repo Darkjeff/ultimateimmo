@@ -176,6 +176,51 @@ if (empty($reshook)) {
 		}
 	}
 
+	// Delete file in doc form
+	//Normally managed by htdocs/core/actions_builddoc.inc.php but here module is build on other way
+	if ($action == 'remove_file' && $permissiontodelete) {
+		if (!empty($upload_dir)) {
+			require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+
+			$langs->load("other");
+			$filetodelete = GETPOST('file', 'alpha');
+
+			$file = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1] . $filetodelete;
+			$dirthumb = dirname($file) . '/thumbs/'; // Chemin du dossier contenant la vignette (if file is an image)
+			$ret = dol_delete_file($file, 0, 0, 0, $object);
+			if ($ret) {
+				// If it exists, remove thumb.
+				$regs = array();
+				if (preg_match('/(\.jpg|\.jpeg|\.bmp|\.gif|\.png|\.tiff)$/i', $file, $regs)) {
+					$photo_vignette = basename(preg_replace('/' . $regs[0] . '/i', '', $file) . '_small' . $regs[0]);
+					if (file_exists(dol_osencode($dirthumb . $photo_vignette))) {
+						dol_delete_file($dirthumb . $photo_vignette);
+					}
+
+					$photo_vignette = basename(preg_replace('/' . $regs[0] . '/i', '', $file) . '_mini' . $regs[0]);
+					if (file_exists(dol_osencode($dirthumb . $photo_vignette))) {
+						dol_delete_file($dirthumb . $photo_vignette);
+					}
+				}
+
+				setEventMessages($langs->trans("FileWasRemoved", $filetodelete), null, 'mesgs');
+			} else {
+				setEventMessages($langs->trans("ErrorFailToDeleteFile", $filetodelete), null, 'errors');
+			}
+
+			// Make a redirect to avoid to keep the remove_file into the url that create side effects
+			$urltoredirect = $_SERVER['REQUEST_URI'];
+			$urltoredirect = preg_replace('/#builddoc$/', '', $urltoredirect);
+			$urltoredirect = preg_replace('/action=remove_file&?/', '', $urltoredirect);
+
+			header('Location: ' . $urltoredirect);
+			exit;
+		} else {
+			setEventMessages('BugFoundVarUploaddirnotDefined', null, 'errors');
+		}
+	}
+
+
 	// Actions to send emails
 	$triggersendname = 'IMMORENT_SENTBYMAIL';
 	$autocopy = 'MAIN_MAIL_AUTOCOPY_IMMORENT_TO';
@@ -596,7 +641,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		// Documents
 		$relativepath = '/rent/' . dol_sanitizeFileName($object->ref);
-		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
+		//$upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1].'/rent';
+		$filedir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1] . $relativepath;
 		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 		$genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
 		$delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card

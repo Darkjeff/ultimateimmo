@@ -233,6 +233,20 @@ llxHeader('', $langs->trans("Payment"));
 
 // Form to create immoreceipt payment
 if (GETPOST('action', 'aZ09') == 'create') {
+
+			// Add realtime total information
+	if (!empty($conf->use_javascript_ajax)) {
+		print "\n" . '<script type="text/javascript">';
+		//Add js for AutoFill
+		print ' $(document).ready(function () {';
+		print ' 	$(".AutoFillAmout").on(\'click touchstart\', function(){
+						$("input[name="+$(this).data(\'rowname\')+"]").val($(this).data("value")).trigger("change");
+					});';
+		print '	});'."\n";
+		print "\n" . '</script>';
+	}
+
+
 	$receipt = new ImmoReceipt($db);
 	$result = $receipt->fetch($id);
 
@@ -400,6 +414,9 @@ if (GETPOST('action', 'aZ09') == 'create') {
 			print '<td class="center">';
 			if ($sumpaid < $objp->total_amount) {
 				$namef = "amount_" . $objp->id;
+				if (!empty($conf->use_javascript_ajax)) {
+					print img_picto("Auto fill", 'rightarrow', "class='AutoFillAmout' data-rowname='".$namef."' data-value='".($objp->total_amount - $sumpaid)."'");
+				}
 				print '<input type="text" size="8" name="' . $namef . '" required="required">';
 			} else {
 				$errmsg = $langs->trans("AlreadyPaid");
