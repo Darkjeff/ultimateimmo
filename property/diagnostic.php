@@ -144,14 +144,7 @@ print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
 if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION_'.$id);
 print '</td></tr>';
 
 // The state of the "natural" indoor gas installation.
@@ -160,15 +153,7 @@ print '<td>' . $langs->trans("UltimateImmoDiagnosticGasInstallation") . '</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_GAS_INSTALLATION_'.$id);
 print '</td></tr>';
 
 // The risk of exposure to lead (CREP).
@@ -177,15 +162,7 @@ print '<td>' . $langs->trans("UltimateImmoDiagnosticLeadExposure") . '</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LEAD_EXPOSURE');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LEAD_EXPOSURE == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_DIAGNOSTIC_LEAD_EXPOSURE">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LEAD_EXPOSURE == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_DIAGNOSTIC_LEAD_EXPOSURE">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LEAD_EXPOSURE_'.$id);
 print '</td></tr>';
 
 // The condition mentioning the presence or absence of materials or products containing asbestos.
@@ -194,15 +171,7 @@ print '<td>' . $langs->trans("UltimateImmoDiagnosticContainingAsbestos") . '</td
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_ASBESTOS');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_ASBESTOS == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_ASBESTOS">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_ASBESTOS == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_ASBESTOS">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_ASBESTOS_'.$id);
 print '</td></tr>';
 
 // condition relating to the presence of termites in the building.
@@ -211,15 +180,7 @@ print '<td>' . $langs->trans("UltimateImmoDiagnosticContainingTermites") . '</td
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_TERMITES');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_TERMITES == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_TERMITES">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_TERMITES == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_TERMITES">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_CONTAINING_TERMITES_'.$id);
 print '</td></tr>';
 
 // the state of natural and technological risks.
@@ -228,15 +189,7 @@ print '<td>' . $langs->trans("UltimateImmoDiagnosticNaturalTechnologicalRisks") 
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_NATURAL_TECHNOLOGICAL_RISKS');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_NATURAL_TECHNOLOGICAL_RISKS == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_DIAGNOSTIC_NATURAL_TECHNOLOGICAL_RISKS">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_NATURAL_TECHNOLOGICAL_RISKS == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_DIAGNOSTIC_NATURAL_TECHNOLOGICAL_RISKS">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_NATURAL_TECHNOLOGICAL_RISKS_'.$id);
 print '</td></tr>';
 
 // state of non-collective sanitation facilities.
@@ -245,15 +198,7 @@ print '<td>' . $langs->trans("UltimateImmoDiagnosticNonCollectiveSanitationFacil
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_NON_COLLECTIVE_SANITATION_FACILITIES');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_NON_COLLECTIVE_SANITATION_FACILITIES == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_DIAGNOSTIC_NON_COLLECTIVE_SANITATION_FACILITIES">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_NON_COLLECTIVE_SANITATION_FACILITIES == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_DIAGNOSTIC_NON_COLLECTIVE_SANITATION_FACILITIES">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_NON_COLLECTIVE_SANITATION_FACILITIES_'.$id);
 print '</td></tr>';
 
 // building energy performance diagnosis (DPE).
@@ -262,15 +207,7 @@ print '<td>' . $langs->trans("UltimateImmoDiagnosticEnergyPerformanceDiagnosis")
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_ENERGY_PERFORMANCE_DIAGNOSIS');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_ENERGY_PERFORMANCE_DIAGNOSIS == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_DIAGNOSTIC_ENERGY_PERFORMANCE_DIAGNOSIS">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_ENERGY_PERFORMANCE_DIAGNOSIS == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_DIAGNOSTIC_ENERGY_PERFORMANCE_DIAGNOSIS">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_ENERGY_PERFORMANCE_DIAGNOSIS_'.$id);
 print '</td></tr>';
 print '</table>';
 
@@ -290,15 +227,7 @@ print '<td>' . $langs->trans("UltimateImmoDiagnosticLeadExposure") . '</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_LEAD_EXPOSURE');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_LEAD_EXPOSURE == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_LEAD_EXPOSURE">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_LEAD_EXPOSURE == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_LEAD_EXPOSURE">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_LEAD_EXPOSURE_'.$id);
 print '</td></tr>';
 
 // the state of natural and technological risks.
@@ -308,14 +237,7 @@ print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
 if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_NATURAL_TECHNOLOGICAL_RISKS');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_NATURAL_TECHNOLOGICAL_RISKS == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_NATURAL_TECHNOLOGICAL_RISKS">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_NATURAL_TECHNOLOGICAL_RISKS == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_NATURAL_TECHNOLOGICAL_RISKS">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_NATURAL_TECHNOLOGICAL_RISKS_'.$id);
 print '</td></tr>';
 
 // building energy performance diagnosis (DPE).
@@ -324,15 +246,7 @@ print '<td>' . $langs->trans("UltimateImmoDiagnosticEnergyPerformanceDiagnosis")
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_ENERGY_PERFORMANCE_DIAGNOSIS');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_ENERGY_PERFORMANCE_DIAGNOSIS == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_ENERGY_PERFORMANCE_DIAGNOSIS">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_ENERGY_PERFORMANCE_DIAGNOSIS == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_ENERGY_PERFORMANCE_DIAGNOSIS">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_LESSOR_ENERGY_PERFORMANCE_DIAGNOSIS_'.$id);
 print '</td></tr>';
 print '</table>';
 

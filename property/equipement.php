@@ -143,15 +143,7 @@ print '<td>' . $langs->trans("UltimateImmoEquipementGardiennage") . '</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_GARDIENNAGE_'.$id);
 print '</td></tr>';
 
 // UltimateImmoEquipementInterphone.
@@ -160,15 +152,7 @@ print '<td>' . $langs->trans("UltimateImmoEquipementInterphone") . '</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_INTERPHONE_'.$id);
 print '</td></tr>';
 
 // UltimateImmoEquipementAscenseur.
@@ -177,15 +161,7 @@ print '<td>' . $langs->trans("UltimateImmoEquipementAscenseur") . '</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_ASCENSEUR_'.$id);
 print '</td></tr>';
 
 // UltimateImmoEquipementVideOrdures.
@@ -194,15 +170,7 @@ print '<td>' . $langs->trans("UltimateImmoEquipementVideOrdures") . '</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_VIDEORDURES_'.$id);
 print '</td></tr>';
 
 // UltimateImmoEquipementAntenneTVcollective.
@@ -211,15 +179,7 @@ print '<td>' . $langs->trans("UltimateImmoEquipementAntenneTVcollective") . '</t
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_ANTENNETVCOLLECTIVE_'.$id);
 print '</td></tr>';
 
 // UltimateImmoEquipementEspacesverts.
@@ -228,15 +188,7 @@ print '<td>' . $langs->trans("UltimateImmoEquipementEspacesverts") . '</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_ESPACESVERTS_'.$id);
 print '</td></tr>';
 
 // UltimateImmoEquipementChauffageCollectif.
@@ -245,15 +197,7 @@ print '<td>' . $langs->trans("UltimateImmoEquipementChauffageCollectif") . '</td
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_CHAUFFAGECOLLECTIF_'.$id);
 print '</td></tr>';
 
 // UltimateImmoEquipementEauChaudeCollective.
@@ -262,15 +206,7 @@ print '<td>' . $langs->trans("UltimateImmoEquipementEauChaudeCollective") . '</t
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
-	print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE');
-} else {
-	if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-	} else if ($conf->global->ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
-	}
-}
+print ajax_constantonoff('ULTIMATE_IMMO_EQUIPEMENT_EAUCHAUDECOLLECTIVE_'.$id);
 print '</td></tr>';
 
 
