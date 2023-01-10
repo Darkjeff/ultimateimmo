@@ -224,7 +224,8 @@ class modUltimateimmo extends DolibarrModules
 				MAIN_DB_PREFIX . "c_ultimateimmo_juridique",
 				MAIN_DB_PREFIX . "c_ultimateimmo_builtdate",
 				MAIN_DB_PREFIX . "c_ultimateimmo_immocost_type",
-				MAIN_DB_PREFIX . "c_ultimateimmo_immocompteur_type"
+				MAIN_DB_PREFIX . "c_ultimateimmo_immocompteur_type",
+				MAIN_DB_PREFIX . "ultimateimmo_immoindice",
 			),
 			'tablib'         => array(
 				"DiagnosticImmo",
@@ -233,7 +234,8 @@ class modUltimateimmo extends DolibarrModules
 				"Juridique",
 				"BuiltDate",
 				"ImmoCost_Type",
-				"ImmoCompteurType"
+				"ImmoCompteurType",
+				"ImmoIndice",
 			),
 			'tabsql'         => array(
 				'SELECT d.rowid as rowid, d.code, d.label, d.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_diagnostic as d',
@@ -242,22 +244,23 @@ class modUltimateimmo extends DolibarrModules
 				'SELECT t.rowid as rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as t',
 				'SELECT t.rowid as rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_builtdate as t',
 				'SELECT t.rowid as rowid, t.ref, t.label, t.famille, t.status FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immocost_type as t',
-				'SELECT t.rowid as rowid, t.ref, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immocompteur_type as t'
+				'SELECT t.rowid as rowid, t.ref, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immocompteur_type as t',
+				'SELECT t.rowid as rowid, t.date_start, t.date_end, t.type_indice,t.amount, t.active FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immoindice as t'
 			),
 			'tabsqlsort'     => array(
-				"label ASC", "label ASC", "label ASC", "label ASC", "label ASC", "label ASC", "label ASC"
+				"label ASC", "label ASC", "label ASC", "label ASC", "label ASC", "label ASC", "label ASC", "rowid ASC"
 			),
 			'tabfield'       => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label",
+				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label", "date_start,date_end,type_indice,amount",
 			),
 			'tabfieldvalue'  => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label"
+				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label", "date_start,date_end,type_indice,amount"
 			),
 			'tabfieldinsert' => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label"
+				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label", "date_start,date_end,type_indice,amount"
 			),
 			'tabrowid'       => array(
-				"rowid", "rowid", "rowid", "rowid", "rowid", "rowid", "rowid"
+				"rowid", "rowid", "rowid", "rowid", "rowid", "rowid", "rowid", "rowid"
 			),
 			'tabcond'        => array(
 				$conf->ultimateimmo->enabled,
@@ -266,7 +269,8 @@ class modUltimateimmo extends DolibarrModules
 				$conf->ultimateimmo->enabled,
 				$conf->ultimateimmo->enabled,
 				$conf->ultimateimmo->enabled,
-				$conf->ultimateimmo->enabled
+				$conf->ultimateimmo->enabled,
+				$conf->ultimateimmo->enabled,
 			)
 		);
 

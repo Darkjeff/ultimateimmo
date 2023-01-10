@@ -135,9 +135,9 @@ class ImmoReceipt extends CommonObject
 		'label'         => array('type' => 'varchar(255)', 'label' => 'Label', 'enabled' => 1, 'visible' => 1, 'position' => 30, 'searchall' => 1, 'css' => 'minwidth200', 'help' => 'ImmoPaymentLabelInfo', 'showoncombobox' => 1),
 		'rentamount'    => array('type' => 'price', 'label' => 'RentAmount', 'enabled' => 1, 'visible' => 1, 'position' => 65, 'notnull' => -1, 'isameasure' => '1', 'help' => 'ImmoPaymentRentAmountInfo'),
 		'chargesamount' => array('type' => 'price', 'label' => 'ChargesAmount', 'enabled' => 1, 'visible' => 1, 'position' => 70, 'notnull' => -1, 'isameasure' => '1', 'help' => 'ImmoPaymentChargeAmountInfo'),
-		'total_amount'  => array('type' => 'price', 'label' => 'TotalAmount', 'enabled' => 1, 'visible' => 1, 'default' => 'null', 'position' => 75, 'searchall' => 0, 'isameasure' => 1, 'help' => 'ImmoPaymentTotalAmountInfo'),
-		'partial_payment' => array('type' => 'price', 'label' => 'PartialPayment', 'enabled' => 1, 'visible' => 1, 'position' => 80, 'notnull' => -1, 'default' => 'null', 'isameasure' => 1, 'help' => "Help text for partial payment"),
-		'balance'       => array('type' => 'price', 'label' => 'Balance', 'enabled' => 1, 'visible' => 1, 'position' => 85, 'notnull' => -1, 'default' => 'null', 'isameasure' => 1, 'help' => "Help text"),
+		'total_amount'  => array('type' => 'price', 'label' => 'TotalAmount', 'enabled' => 1, 'visible' => 5, 'default' => 'null', 'position' => 75, 'searchall' => 0, 'isameasure' => 1, 'help' => 'ImmoPaymentTotalAmountInfo'),
+		'partial_payment' => array('type' => 'price', 'label' => 'PartialPayment', 'enabled' => 1, 'visible' => 5, 'position' => 80, 'notnull' => -1, 'default' => 'null', 'isameasure' => 1, 'help' => "Help text for partial payment"),
+		'balance'       => array('type' => 'price', 'label' => 'Balance', 'enabled' => 1, 'visible' => 5, 'position' => 85, 'notnull' => -1, 'default' => 'null', 'isameasure' => 1, 'help' => "Help text"),
 		'paye'          => array('type' => 'integer', 'label' => 'Paye', 'enabled' => 1, 'visible' => 1, 'position' => 90, 'notnull' => 1, 'arrayofkeyval' => array('0' => 'UnPaidReceipt', '1' => 'PaidReceipt', '2' => 'PartiallyPaidReceipt')),
 		'vat_amount'    => array('type' => 'price', 'label' => 'VatAmount', 'enabled' => 1, 'visible' => 1, 'position' => 95, 'notnull' => -1,),
 		'vat_tx'        => array('type' => 'integer', 'label' => 'VatTx', 'enabled' => 1, 'visible' => 1, 'position' => 96, 'notnull' => -1),
@@ -491,6 +491,7 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function create(User $user, $notrigger = false)
 	{
+		$this->total_amount = (float)$this->rentamount + (float)$this->chargesamount;
 		return $this->createCommon($user, $notrigger);
 	}
 
@@ -901,6 +902,7 @@ class ImmoReceipt extends CommonObject
 	 */
 	public function update(User $user, $notrigger = false)
 	{
+		$this->total_amount = (float)$this->rentamount + (float)$this->chargesamount;
 		return $this->updateCommon($user, $notrigger);
 	}
 

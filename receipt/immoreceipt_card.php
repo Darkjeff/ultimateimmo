@@ -302,8 +302,6 @@ if (empty($reshook)) {
 		$object->date_validation = GETPOST("date_validation");
 		$object->rentamount = GETPOST("rentamount");
 		$object->chargesamount = GETPOST("chargesamount");
-		$object->total_amount = GETPOST("total_amount");
-		$object->balance = GETPOST("balance");
 		$object->partial_payment = GETPOST("partial_payment");
 		$object->fk_payment = GETPOST("fk_payment");
 		$object->paye = GETPOST("paye");
