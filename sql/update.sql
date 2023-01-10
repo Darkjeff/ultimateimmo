@@ -44,3 +44,5 @@ ALTER TABLE llx_ultimateimmo_immocost CHANGE COLUMN fk_user_create fk_user_creat
 
 ALTER TABLE llx_ultimateimmo_immoproperty ADD COLUMN section_cadastrale varchar(32) after country_id;
 ALTER TABLE llx_ultimateimmo_immoproperty ADD COLUMN parcelle_cadastrale varchar(32) after section_cadastrale;
+ALTER TABLE llx_ultimateimmo_immoproperty ADD COLUMN num_prm_edf varchar(32) after parcelle_cadastrale;
+ALTER TABLE llx_ultimateimmo_immoproperty ADD COLUMN num_internet_line varchar(32) after num_prm_edf;

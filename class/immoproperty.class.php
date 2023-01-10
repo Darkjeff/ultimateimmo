@@ -127,6 +127,8 @@ class ImmoProperty extends CommonObject
 		'country_id'	=> array('type' => 'varchar:c_country:label:code:rowid', 'label' => 'Country', 'enabled' => 1, 'visible' => 1, 'position' => 120, 'notnull' => -1,),
 		'section_cadastrale' => array('type' => 'varchar(32)', 'label' => 'UISectioncadastrale', 'enabled' => 1, 'visible' => 1, 'position' => 125, 'notnull' => 0),
 		'parcelle_cadastrale' => array('type' => 'varchar(32)', 'label' => 'UIParcellecadastrale', 'enabled' => 1, 'visible' => 1, 'position' => 130, 'notnull' => 0),
+		'num_prm_edf' => array('type' => 'varchar(32)', 'label' => 'UINumPrmEdf', 'enabled' => 1, 'visible' => 1, 'position' => 140, 'notnull' => 0),
+		'num_internet_line' => array('type' => 'varchar(32)', 'label' => 'UINumLigneNet', 'enabled' => 1, 'visible' => 1, 'position' => 150, 'notnull' => 0),
 		'date_creation' => array('type' => 'datetime', 'label' => 'DateCreation', 'enabled' => 1, 'visible' => -2, 'position' => 500, 'notnull' => 1),
 		'tms'           => array('type' => 'timestamp', 'label' => 'DateModification', 'enabled' => 1, 'visible' => -2, 'position' => 501, 'notnull' => 1),
 		'fk_user_creat' => array('type' => 'integer:User:user/class/user.class.php', 'label' => 'UserAuthor', 'enabled' => 1, 'visible' => -2, 'position' => 510, 'notnull' => 1, 'foreignkey' => 'llx_user.rowid',),
