@@ -143,7 +143,6 @@ print '<td>' . $langs->trans("UltimateImmoDiagnosticElectricityInstallation") . 
 print '<td align="center" width="20">&nbsp;</td>';
 
 print '<td align="center" width="100">';
-if ($conf->use_javascript_ajax) {
 print ajax_constantonoff('ULTIMATE_IMMO_DIAGNOSTIC_ELECTRICITY_INSTALLATION_'.$id);
 print '</td></tr>';
 
