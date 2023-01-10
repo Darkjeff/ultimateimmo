@@ -220,6 +220,39 @@ if (empty($reshook)) {
 		}
 	}
 
+	if ($action=='confirm_revalindice' && $confirm=='yes') {
+		dol_include_once('/ultimateimmo/class/immoindice.class.php');
+		$indice1=GETPOST('indice1','int');
+		$indice2=GETPOST('indice2','int');
+		$indice_array=array();
+		$indice = new ImmoIndice($db);
+		$indice1Val=1;
+		$indice2Val=1;
+		if (!empty($indice1) && $indice1!==-1) {
+			$resultFetch = $indice->fetch($indice1);
+			if ($resultFetch<0) {
+				setEventMessages($indice->errors,$indice->error,'errors');
+			} else {
+				$indice1Val=(float)$indice->amount;
+			}
+		}
+		if (!empty($indice2) && $indice2!==-1) {
+			$resultFetch = $indice->fetch($indice2);
+			if ($resultFetch<0) {
+				setEventMessages($indice->errors,$indice->error,'errors');
+			} else {
+				$indice2Val=(float)$indice->amount;
+			}
+		}
+		$object->rentamount = ($object->rentamount * $indice1Val) / $indice2Val;
+		$object->date_last_regul=dol_now();
+		$resultUpd = $object->update($user);
+		if ($resultUpd<0) {
+			setEventMessages($object->errors,$object->error,'errors');
+		}else {
+			$object->fetch($object->id);
+		}
+	}
 
 	// Actions to send emails
 	$triggersendname = 'IMMORENT_SENTBYMAIL';
@@ -364,6 +397,39 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		// Create an array for form
 		$formquestion = array();
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('CloneImmoRent'), $langs->trans('ConfirmCloneImmoRent', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
+	}
+	// revel_indice
+	if ($action == 'revel_indice') {
+		// Create an array for form
+		dol_include_once('/ultimateimmo/class/immoindice.class.php');
+		$indice_array=array();
+		$indice = new ImmoIndice($db);
+		$indiceFetch = $indice->fetchAll('','type_indice',0,0,array('t.active'=>1));
+		if (!is_array($indiceFetch) && $indiceFetch<0) {
+			setEventMessages($indice->errors,$indice->error,'errors');
+		}elseif (!empty($indiceFetch)) {
+			foreach($indiceFetch as $id=>$data) {
+				$indice_array[$data->id]=dol_print_date($data->date_start).' - '.dol_print_date($data->date_end). ' '. $data->type_indice."=".$data->amount;
+			}
+		}
+
+		$formquestion['indeice1'] = array(
+		'name' => 'indice1',
+		'type' => 'select',
+		'label' => $langs->trans('UIIndiceX', 1),
+		'values' => $indice_array,
+		'morecss' => 'minwidth150',
+		'default' => ''
+		);
+		$formquestion['indeice2'] = array(
+		'name' => 'indice2',
+		'type' => 'select',
+		'label' => $langs->trans('UIIndiceX', 2),
+		'values' => $indice_array,
+		'morecss' => 'minwidth150',
+		'default' => ''
+		);
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('UICalcIndice'), $langs->trans('UICalcIndice', $object->ref), 'confirm_revalindice', $formquestion, 'yes', 1);
 	}
 
 	// Confirmation of action xxxx
@@ -626,6 +692,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			} else {
 				print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Delete').'</a>'."\n";
 			}
+		}
+		if ($object->status==$object::STATUS_VALIDATED) {
+			print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=revel_indice">'.$langs->trans("UIRevalIndice").'</a>'."\n";
 		}
 		print '</div>'."\n";
 	}

@@ -425,3 +425,6 @@ MenuSpreadCharges = (Beta) Répartition charges
 ImmoIndice=Indice
 
 DictionaryDescExtra = Admin. - Dictionnaire
+UIRevalIndice=Revalorisation Indice
+UICalcIndice=Nouveau Loyer sera (Loyer actuel * indice 1) / indice 2
+UIIndiceX=Indice %d
