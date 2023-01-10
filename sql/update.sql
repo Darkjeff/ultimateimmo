@@ -42,4 +42,5 @@ ALTER TABLE llx_ultimateimmo_immocost_type add fk_user_creat integer NOT NULL in
 
 ALTER TABLE llx_ultimateimmo_immocost CHANGE COLUMN fk_user_create fk_user_creat integer;
 
-
+ALTER TABLE llx_ultimateimmo_immoproperty ADD COLUMN section_cadastrale varchar(32) after country_id;
+ALTER TABLE llx_ultimateimmo_immoproperty ADD COLUMN parcelle_cadastrale varchar(32) after section_cadastrale;

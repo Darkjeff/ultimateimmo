@@ -400,3 +400,6 @@ ImmoCompteurDtFirstValue=Compteur au 1er relevé
 ImmoCompteurDtLastValue=Compteur au dernier relevé
 ImmoCompteurDiff=Différence Compteur entre le 1er et le dernier
 ImmoCompteurDtDiff=Nb de Jour entre 1er relevé et dernier relevé
+
+UISectioncadastrale=Section cadastrale
+UIParcellecadastrale=Parcelle cadastrale
