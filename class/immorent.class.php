@@ -184,7 +184,7 @@ class ImmoRent extends CommonObject
 	public $date_end;
 	public $date_next_rent;
 	public $date_last_regul;
-	public date_last_regul_charge;
+	public $date_last_regul_charge;
 	public $date_creation;
 	public $tms;
 	public $fk_user_creat;
