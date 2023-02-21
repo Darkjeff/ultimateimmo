@@ -436,3 +436,6 @@ DateLastRegul=Date de la derniére régulation
 NoteRegulCharge=Total des provisions pour charge du %s au %s : %s
 NoteRegulTotalCharge=Charge total réél sur la période : %s
 NoteRegulLetToPaid=Restant dût : %s
+
+
+MenuImmoCompteurCost=Compteur / Coût
