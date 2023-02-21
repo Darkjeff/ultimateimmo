@@ -141,6 +141,8 @@ class ImmoRent extends CommonObject
 									'position' => 100, 'notnull' => -1,),
 		'date_last_regul'  => array('type'     => 'date', 'label' => 'DateLastRegul', 'visible' => -1, 'enabled' => 1,
 									'position' => 110, 'notnull' => -1,),
+		'date_last_regul_charge'  => array('type'     => 'date', 'label' => 'DateLastRegulCharge', 'visible' => -1, 'enabled' => 1,
+									'position' => 115, 'notnull' => -1,),
 		'date_creation'    => array('type'     => 'datetime', 'label' => 'DateCreation', 'visible' => -1,
 									'enabled'  => 1, 'position' => 500,),
 		'tms'              => array('type'    => 'timestamp', 'label' => 'DateModification', 'visible' => -2,
@@ -182,6 +184,7 @@ class ImmoRent extends CommonObject
 	public $date_end;
 	public $date_next_rent;
 	public $date_last_regul;
+	public date_last_regul_charge;
 	public $date_creation;
 	public $tms;
 	public $fk_user_creat;

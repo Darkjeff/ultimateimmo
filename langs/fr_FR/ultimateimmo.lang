@@ -254,6 +254,7 @@ DateStartRent = Date de prise d'effet du contrat
 date_end = Date de fin
 DateNextRent = Date prochain loyer
 DateLastRegul = Date dernière régulation
+DateLastRegulCharge = Date dernière régulation charge
 DeleteImmoRent = Suppression de la location
 ConfirmDeleteImmoRent = Êtes-vous sûr de vouloir supprimer cette location ?
 CloneImmoRent = Cloner la location
