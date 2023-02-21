@@ -131,6 +131,37 @@ $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if (empty($reshook)) {
+
+	if ($action=='regulcharge_confirm') {
+		$dt_start = dol_mktime(0, 0, 0, GETPOST('dt_startmonth', 'int'), GETPOST('dt_startday', 'int'), GETPOST('dt_startyear', 'int'));
+		$dt_end = dol_mktime(23, 59, 59, GETPOST('dt_endmonth', 'int'), GETPOST('dt_endday', 'int'), GETPOST('dt_endyear', 'int'));
+		$chargeAmount=GETPOST('total_charge','int');
+		$receipt = new ImmoReceipt($db);
+		$resultData = $receipt->fetchAll('','',0,0,array('t.fk_rent'=>$object->fk_rent,'finddate'=>array('dtstart'=>$dt_start,'dtend'=>$dt_end)));
+		$totalChargeAllocated=0;
+		if (!is_array($resultData) && $resultData<0) {
+			setEventMessages($receipt->error,$receipt->errors,'errors');
+		} else {
+			if (count($resultData)>0) {
+				foreach($resultData as $receiptUnit) {
+					$totalChargeAllocated += (float)$receiptUnit->chargesamount;
+				}
+			}
+		}
+		$newCharge = price2num($chargeAmount) - $totalChargeAllocated;
+		$object->chargesamount=$newCharge;
+		$object->note_private=$langs->trans('NoteRegulCharge',dol_print_date($dt_start),dol_print_date($dt_end),price($totalChargeAllocated).' €');
+		$object->note_private=dol_concatdesc($object->note_private,$langs->trans('NoteRegulTotalCharge',$chargeAmount).' €');
+		$object->note_private=dol_concatdesc($object->note_private,$langs->trans('NoteRegulLetToPaid',$newCharge).' €');
+		$result = $object->update($user);
+
+		if ($result<0) {
+			setEventMessages($object->error,$object->errors,'errors');
+		}
+		$object->fetch($object->id);
+	}
+
+
 	/**
 	 *    Classify paid
 	 */
@@ -684,7 +715,7 @@ if ($action == 'createall') {
 	$sql = "SELECT rent.rowid as contractid, rent.ref as contract, loc.lastname as rentername, own.lastname as ownername, own.firstname as ownerfirstname, prop.ref as
 	localref, prop.address, prop.label as local, rent.totalamount as total, rent.rentamount , rent.chargesamount,
 	rent.fk_renter as reflocataire, rent.fk_property as reflocal, rent.preavis as preavis,
-	rent.vat, prop.fk_owner, own.rowid, own.fk_soc, prop.fk_owner";
+	rent.vat, prop.fk_owner, own.rowid, own.fk_soc, prop.fk_owner, rent.periode";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent";
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop";
@@ -764,7 +795,7 @@ if ($action == 'createall') {
 				// Colonne choix contrat
 				print '<td class="center">';
 
-				print '<input class="checkforselect flat" type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localref . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner . '_' . $objp->fk_soc . '"' . ($objp->localref ? ' checked="checked"' : "") . '/>';
+				print '<input class="checkforselect flat" type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localref . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner . '_' . $objp->fk_soc . '"' . (($objp->localref && ($objp->periode=='mensuel'))? ' checked="checked"' : "") . '/>';
 				print '</td>';
 				print '</tr>' . "\n";
 
@@ -788,13 +819,6 @@ if (($id || $ref) && $action == 'edit') {
 
 	$receipt = new ImmoReceipt($db);
 	$result = $receipt->fetch($id);
-
-	if ($action == 'delete') {
-		// Param url = id de la periode à supprimer - id session
-		$ret = $form->formconfirm($_SERVER['PHP_SELF'] . '?recid=' . $id, $langs->trans("Delete"), $langs->trans("Delete"), "confirm_delete", '', '', 1);
-		if ($ret == 'html')
-			print '<br>';
-	}
 
 	print '<form name="fiche_loyer" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
@@ -935,6 +959,26 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (!$error)
 			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
 	}
+
+	if ($action=='regulcharge') {
+		//find last Regul charge
+		$rent = new ImmoRent($db);
+		$result = $rent->fetch($object->fk_rent);
+		if ($result<0) {
+			setEventMessages($rent->error,$rent->errors,'errors');
+		} else {
+			$formquestion = array(
+			'text' => $langs->trans("RegulCharge"),
+			 array('type' => 'date', 'name' => 'dt_start', 'label' => $langs->trans("DateLastRegul"), 'value' => $rent->date_last_regul_charge),
+			 array('type' => 'date', 'name' => 'dt_end', 'label' => $langs->trans("DateEnd"), 'value' => $object->date_end),
+			 array('type' => 'text', 'name' => 'total_charge', 'label' => $langs->trans("TotalCharge"), 'value' => ''),
+			);
+
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('RegulCharge'), $text, 'regulcharge_confirm', $formquestion, 0, 1, 250);
+		}
+
+	}
+
 
 	// Call Hook formConfirm
 	$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
@@ -1284,6 +1328,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 		if (empty($reshook)) {
+			//Regul charge
+			if ($receipt->paye == 0 && $permissiontoadd) {
+				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&action=regulcharge">' . $langs->trans('RegulCharge') . '</a>' . "\n";
+			}
+
 			// Validate
 			if ($object->status == ImmoReceipt::STATUS_DRAFT) {
 				if ($permissiontoadd) {

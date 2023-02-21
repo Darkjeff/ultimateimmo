@@ -312,6 +312,7 @@ ImmoReceiptStatTitre= Loyers
 Quittance = Quittance
 ImmoReceiptStatusDisabled = Quittance désactivée
 ImmoReceiptStatusActive = Quittance activée
+RegulCharge=Régulation de charge
 # Paiements
 ImmoPayments = Paiements
 ImmoPayment = Règlement
@@ -429,3 +430,9 @@ DictionaryDescExtra = Admin. - Dictionnaire
 UIRevalIndice=Revalorisation Indice
 UICalcIndice=Nouveau Loyer sera (Loyer actuel * indice 1) / indice 2
 UIIndiceX=Indice %d
+
+TotalCharge=Charge total sur la période
+DateLastRegul=Date de la derniére régulation
+NoteRegulCharge=Total des provisions pour charge du %s au %s : %s
+NoteRegulTotalCharge=Charge total réél sur la période : %s
+NoteRegulLetToPaid=Restant dût : %s

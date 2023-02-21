@@ -343,6 +343,12 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 				$text = '<table>';
 				$text .= '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
+				if (!empty($object->note_private)) {
+					$text .= '<tr>';
+					$text .= '<td>Régulation de charges</td>';
+					$text .= '<td align="left">' . $object->note_private . '</td>';
+					$text .= '</tr>';
+				}
 				$text .= '<tr>';
 				$text .= '<td> ' . chr(127) . ' Loyer nu</td>';
 				$text .= '<td align="right">' . price($object->rentamount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td>';
@@ -360,7 +366,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$text .= '<td> ' . chr(127) . ' Montant total du terme</td>';
 				$text .= '<td align="right">' . price($object->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td>';
 				$text .= '</tr>';
-				
+
 				$sql = "SELECT p.rowid, p.fk_receipt, p.date_payment as dp, p.amount, p.note_public as type, il.total_amount ";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 				$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as il ";

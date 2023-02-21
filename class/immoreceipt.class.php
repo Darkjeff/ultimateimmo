@@ -759,7 +759,7 @@ class ImmoReceipt extends CommonObject
 
 		$records = array();
 
-		$sql = 'SELECT';
+		$sql = 'SELECT ';
 		$sql .= $this->getFieldList();
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element. ' as t';
 		if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql .= ' WHERE t.entity IN ('.getEntity($this->table_element).')';
@@ -768,16 +768,16 @@ class ImmoReceipt extends CommonObject
 		$sqlwhere = array();
 		if (count($filter) > 0) {
 			foreach ($filter as $key => $value) {
-				if ($key == 't.rowid') {
+				if ($key == 't.rowid' || $key=='t.fk_rent') {
 					$sqlwhere[] = $key.'='.$value;
-				}
-				elseif (strpos($key, 'date') !== false) {
+				} elseif ($key== 'finddate') {
+					$sqlwhere[] = 't.date_start>=\''.$this->db->idate($value['dtstart']).'\'';
+					$sqlwhere[] = 't.date_end<=\''.$this->db->idate($value['dtend']).'\'';
+				} elseif (strpos($key, 'date') !== false) {
 					$sqlwhere[] = $key.' = \''.$this->db->idate($value).'\'';
-				}
-				elseif ($key == 'customsql') {
+				} elseif ($key == 'customsql') {
 					$sqlwhere[] = $value;
-				}
-				else {
+				} else {
 					$sqlwhere[] = $key.' LIKE \'%'.$this->db->escape($value).'%\'';
 				}
 			}
@@ -797,8 +797,7 @@ class ImmoReceipt extends CommonObject
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
             $i = 0;
-			while ($i < min($limit, $num))
-			{
+			while ($i < ($limit ? min($limit, $num) : $num)) {
 			    $obj = $this->db->fetch_object($resql);
 
 				$record = new self($this->db);
