@@ -433,9 +433,13 @@ UIIndiceX=Indice %d
 
 TotalCharge=Charge total sur la période
 DateLastRegul=Date de la derniére régulation
+DateLastCptDoneSinceLastRegul=Date du dernier compteur depuis la derniére régulation (%s)
 NoteRegulCharge=Total des provisions pour charge du %s au %s : %s
 NoteRegulTotalCharge=Charge total réél sur la période : %s
 NoteRegulLetToPaid=Restant dût : %s
+CostCpt=Compteur Cout
 
+RegulChargeStep2=Calcul estimatif de charge. Premier Compteur : %s , dernier Compteur: %s (différence:%s), cout : %s
+RegulChargeStepDesc=Premier Compteur : %s , dernier Compteur: %s
 
 MenuImmoCompteurCost=Compteur / Coût

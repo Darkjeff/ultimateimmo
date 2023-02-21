@@ -132,33 +132,47 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 
 if (empty($reshook)) {
 
-	if ($action=='regulcharge_confirm') {
-		$dt_start = dol_mktime(0, 0, 0, GETPOST('dt_startmonth', 'int'), GETPOST('dt_startday', 'int'), GETPOST('dt_startyear', 'int'));
-		$dt_end = dol_mktime(23, 59, 59, GETPOST('dt_endmonth', 'int'), GETPOST('dt_endday', 'int'), GETPOST('dt_endyear', 'int'));
-		$chargeAmount=GETPOST('total_charge','int');
+	if ($action == 'regulcharge_confirm') {
+		//$dt_start = dol_mktime(0, 0, 0, GETPOST('dt_startmonth', 'int'), GETPOST('dt_startday', 'int'), GETPOST('dt_startyear', 'int'));
+		$dt_start =GETPOST('dt_start','int');
+		//$dt_end = dol_mktime(23, 59, 59, GETPOST('dt_endmonth', 'int'), GETPOST('dt_endday', 'int'), GETPOST('dt_endyear', 'int'));
+		$dt_end =GETPOST('dt_end','int');
+		$chargeAmount = GETPOST('total_charge', 'int');
 		$receipt = new ImmoReceipt($db);
-		$resultData = $receipt->fetchAll('','',0,0,array('t.fk_rent'=>$object->fk_rent,'finddate'=>array('dtstart'=>$dt_start,'dtend'=>$dt_end)));
-		$totalChargeAllocated=0;
-		if (!is_array($resultData) && $resultData<0) {
-			setEventMessages($receipt->error,$receipt->errors,'errors');
+		$resultData = $receipt->fetchAll('', '', 0, 0, array('t.fk_rent' => $object->fk_rent, 'finddate' => array('dtstart' => $dt_start, 'dtend' => $dt_end)));
+		$totalChargeAllocated = 0;
+		if (!is_array($resultData) && $resultData < 0) {
+			setEventMessages($receipt->error, $receipt->errors, 'errors');
 		} else {
-			if (count($resultData)>0) {
-				foreach($resultData as $receiptUnit) {
+			if (count($resultData) > 0) {
+				foreach ($resultData as $receiptUnit) {
 					$totalChargeAllocated += (float)$receiptUnit->chargesamount;
 				}
 			}
 		}
 		$newCharge = price2num($chargeAmount) - $totalChargeAllocated;
-		$object->chargesamount=$newCharge;
-		$object->note_private=$langs->trans('NoteRegulCharge',dol_print_date($dt_start),dol_print_date($dt_end),price($totalChargeAllocated).' €');
-		$object->note_private=dol_concatdesc($object->note_private,$langs->trans('NoteRegulTotalCharge',$chargeAmount).' €');
-		$object->note_private=dol_concatdesc($object->note_private,$langs->trans('NoteRegulLetToPaid',$newCharge).' €');
+		$object->chargesamount = $newCharge;
+		$object->note_private = $langs->trans('NoteRegulCharge', dol_print_date($dt_start), dol_print_date($dt_end), price($totalChargeAllocated) . ' €');
+		$object->note_private = dol_concatdesc($object->note_private, $langs->trans('NoteRegulTotalCharge', $chargeAmount) . ' €');
+		$object->note_private = dol_concatdesc($object->note_private, $langs->trans('NoteRegulLetToPaid', $newCharge) . ' €');
+		$object->note_private = dol_concatdesc($object->note_private, $langs->trans('RegulChargeStepDesc', GETPOST('first_qty'),GETPOST('end_qty')) . ' €');
 		$result = $object->update($user);
 
-		if ($result<0) {
-			setEventMessages($object->error,$object->errors,'errors');
+		if ($result < 0) {
+			setEventMessages($object->error, $object->errors, 'errors');
 		}
 		$object->fetch($object->id);
+		$rent = new ImmoRent($db);
+		$result = $rent->fetch($object->fk_rent);
+		if ($result < 0) {
+			setEventMessages($rent->error, $rent->errors, 'errors');
+		} else {
+			$rent->date_last_regul_charge = $dt_end;
+			$result = $rent->update($user);
+			if ($result < 0) {
+				setEventMessages($rent->error, $rent->errors, 'errors');
+			}
+		}
 	}
 
 
@@ -762,7 +776,7 @@ if ($action == 'createall') {
 		print '<td class="right">' . $langs->trans('ChargesAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('TotalAmount') . '</td>';
 		print '<td class="right">' . $langs->trans('VATIsUsed') . '</td>';
-		print '<td class="right">' . $langs->trans('Select') ;
+		print '<td class="right">' . $langs->trans('Select');
 		print $form->showCheckAddButtons('checkforselect', 1);
 		print '</td>';
 		print "</tr>\n";
@@ -795,7 +809,7 @@ if ($action == 'createall') {
 				// Colonne choix contrat
 				print '<td class="center">';
 
-				print '<input class="checkforselect flat" type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localref . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner . '_' . $objp->fk_soc . '"' . (($objp->localref && ($objp->periode=='mensuel'))? ' checked="checked"' : "") . '/>';
+				print '<input class="checkforselect flat" type="checkbox" name="mesCasesCochees[]" value="' . $objp->contractid . '_' . $objp->localref . '_' . $objp->reflocataire . '_' . $objp->total . '_' . $objp->rentamount . '_' . $objp->chargesamount . '_' . $objp->vat . '_' . $objp->fk_owner . '_' . $objp->fk_soc . '"' . (($objp->localref && ($objp->periode == 'mensuel')) ? ' checked="checked"' : "") . '/>';
 				print '</td>';
 				print '</tr>' . "\n";
 
@@ -960,23 +974,110 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?recid=' . $object->id, $langs->trans('ValidateReceipt'), $text, 'confirm_validate', $formquestion, 0, 1, 220);
 	}
 
-	if ($action=='regulcharge') {
+	if ($action == 'regulcharge') {
 		//find last Regul charge
 		$rent = new ImmoRent($db);
 		$result = $rent->fetch($object->fk_rent);
-		if ($result<0) {
-			setEventMessages($rent->error,$rent->errors,'errors');
+		if ($result < 0) {
+			setEventMessages($rent->error, $rent->errors, 'errors');
 		} else {
+			$dt_startCpt = array();
+			$sql = "SELECT DISTINCT date_relever FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocompteur WHERE fk_immoproperty=" . (int)$rent->fk_property;
+			$sql .= " AND date_relever>='" . $db->idate($rent->date_last_regul_charge) . "'";
+
+			$resql = $db->query($sql);
+			if (!$resql) {
+				setEventMessages($db->lasterror, null, 'errors');
+			} else {
+				while ($bjDt = $db->fetch_object($resql)) {
+					$dt_startCpt[$db->jdate($bjDt->date_relever)] = dol_print_date($db->jdate($bjDt->date_relever));
+				}
+
+				dol_include_once('/ultimateimmo/class/immocompteur_cost.class.php');
+				$cptCost = new ImmoCompteur_Cost($db);
+				$resultCptCost = $cptCost->fetchAll('','',0,0,array('t.status'=>$cptCost::STATUS_VALIDATED));
+				if (!is_array($resultCptCost) && $resultCptCost<0) {
+					setEventMessages($cptCost->error,$cptCost->errors,'errors');
+				} else {
+					$cost_cpt=array();
+					if (!empty($resultCptCost)) {
+						foreach($resultCptCost as $cptc) {
+							//TODO get compteur type
+							$cost_cpt[$cptc->id] = $cptc->cost_year. ' ( '.price($cptc->amount) .')';
+						}
+					}
+
+					$formquestion = array(
+						'text' => $langs->trans("RegulCharge"),
+						array('type' => 'select', 'label' => $langs->trans("DateLastCptDoneSinceLastRegul", dol_print_date($rent->date_last_regul_charge)), 'name' => 'dt_start', 'values' => $dt_startCpt),
+						array('type' => 'select', 'label' => $langs->trans("DateEnd"), 'name' => 'dt_end', 'values' => $dt_startCpt),
+						array('type' => 'select', 'label' => $langs->trans("CostCpt"), 'name' => 'cost_cpt', 'values' => $cost_cpt),
+					);
+
+					$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RegulCharge'), $text, 'regulcharge_step2', $formquestion, 0, 1, 250, 650);
+				}
+			}
+		}
+	}
+
+	if ($action == 'regulcharge_step2') {
+
+		$rent = new ImmoRent($db);
+		$result = $rent->fetch($object->fk_rent);
+		if ($result < 0) {
+			setEventMessages($rent->error, $rent->errors, 'errors');
+		} else {
+			$dtStart = GETPOST('dt_start');
+			$dtEnd = GETPOST('dt_end');
+			//Calcul Total Charge
+			$sql = "SELECT qty FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocompteur WHERE fk_immoproperty=" . (int)$rent->fk_property;
+			$sql .= " AND date_relever='" . $db->idate($dtStart) . "'";
+			$firstQty=0;
+			$resql = $db->query($sql);
+			if (!$resql) {
+				setEventMessages($db->lasterror, null, 'errors');
+			} else {
+				$objQty = $db->fetch_object($resql);
+				$firstQty = $objQty->qty;
+			}
+
+			$sql = "SELECT qty FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocompteur WHERE fk_immoproperty=" . (int)$rent->fk_property;
+			$sql .= " AND date_relever='" . $db->idate($dtEnd) . "'";
+			$endQty=0;
+			$resql = $db->query($sql);
+			if (!$resql) {
+				setEventMessages($db->lasterror, null, 'errors');
+			} else {
+				$objQty = $db->fetch_object($resql);
+				$endQty = $objQty->qty;
+			}
+
+			$diffCpt = $endQty-$firstQty;
+
+			dol_include_once('/ultimateimmo/class/immocompteur_cost.class.php');
+			$cptCost = new ImmoCompteur_Cost($db);
+			$result = $cptCost->fetch(GETPOST('cost_cpt','int'));
+			if ($result < 0) {
+				setEventMessages($cptCost->error, $cptCost->errors, 'errors');
+			}
+			$estimatedCost =0;
+			if (!empty($cptCost->amount)) {
+				$estimatedCost = $diffCpt*$cptCost->amount;
+			}
+
+
+
 			$formquestion = array(
-			'text' => $langs->trans("RegulCharge"),
-			 array('type' => 'date', 'name' => 'dt_start', 'label' => $langs->trans("DateLastRegul"), 'value' => $rent->date_last_regul_charge),
-			 array('type' => 'date', 'name' => 'dt_end', 'label' => $langs->trans("DateEnd"), 'value' => $object->date_end),
-			 array('type' => 'text', 'name' => 'total_charge', 'label' => $langs->trans("TotalCharge"), 'value' => ''),
+				'text' => $langs->trans("RegulChargeStep2",$firstQty,$endQty,$diffCpt,$cptCost->amount),
+				array('type' => 'text', 'name' => 'total_charge', 'label' => $langs->trans("TotalCharge"), 'value' => $estimatedCost),
+				array('type' => 'hidden', 'name' => 'first_qty', 'value' => $firstQty),
+				array('type' => 'hidden', 'name' => 'end_qty', 'value' => $endQty),
+				array('type' => 'hidden', 'name' => 'dt_start', 'value' => $dtStart),
+				array('type' => 'hidden', 'name' => 'dt_end', 'value' => $dtEnd),
 			);
 
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('RegulCharge'), $text, 'regulcharge_confirm', $formquestion, 0, 1, 250);
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RegulCharge'), $text, 'regulcharge_confirm', $formquestion, 0, 1, 250, 650);
 		}
-
 	}
 
 
