@@ -116,8 +116,8 @@ $morehtmlref = '<div class="refidno">';
 // Ref owner
 $staticImmoowner = new ImmoOwner($db);
 $staticImmoowner->fetch($object->fk_owner);
-$morehtmlref .= $form->editfieldkey("RefOwner", 'ref_owner', $staticImmoowner->ref, $object, $permissiontoadd, 'string', '', 0, 1);
-$morehtmlref .= $form->editfieldval("RefOwner", 'ref_owner', $staticImmoowner->ref . ' - ' . $staticImmoowner->getFullName($langs), $object, $permissiontoadd, 'string', '', null, null, '', 1);
+$morehtmlref .= $html->editfieldkey("RefOwner", 'ref_owner', $staticImmoowner->ref, $object, 0, 'string', '', 0, 1);
+$morehtmlref .= $html->editfieldval("RefOwner", 'ref_owner', $staticImmoowner->ref . ' - ' . $staticImmoowner->getFullName($langs), $object, $permissiontoadd, 'string', '', null, null, '', 1);
 
 $morehtmlref .= '</div>';
 
