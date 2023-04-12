@@ -443,3 +443,9 @@ RegulChargeStep2=Calcul estimatif de charge. Premier Compteur : %s , dernier Com
 RegulChargeStepDesc=Premier Compteur : %s , dernier Compteur: %s
 
 MenuImmoCompteurCost=Compteur / Coût
+
+YearOfCommonCostToAdjust = Année de répartition des charges
+ImmoSpreadCost = Répartition charges
+PercentSpreading = Répartition millième appartement
+Millieme = Millième
+TotalMustBeMille=Le Total des millièmes doit être de mille, il est de %d

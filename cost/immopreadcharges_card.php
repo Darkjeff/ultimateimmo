@@ -263,7 +263,7 @@ if ($action == 'create') {
 		exit;
 	}
 
-	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoCost")), '', 'object_'.$object->picto);
+	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ImmoSpreadCost")), '', 'object_'.$object->picto);
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.newToken().'">';
@@ -294,6 +294,8 @@ if ($action == 'create') {
 
 	print $formImmo->selectYearImmoCost();
 	print '</td>';
+	print '</tr>';
+
 	// Other attributes
 	//include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_add.tpl.php';
 
@@ -301,7 +303,7 @@ if ($action == 'create') {
 
 	print dol_get_fiche_end();
 
-	print $form->buttonsSaveCancel("Create");
+	print $form->buttonsSaveCancel("List");
 
 	print '</form>';
 

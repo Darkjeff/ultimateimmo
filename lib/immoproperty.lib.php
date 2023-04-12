@@ -68,15 +68,21 @@ function immopropertyPrepareHead($object)
 	$head[$h][1] = $langs->trans("Events");
 	$head[$h][2] = 'agenda';
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath("/ultimateimmo/property/diagnostic.php", 1).'?id='.$object->id;
 	$head[$h][1] = $langs->trans("Diagnostic");
 	$head[$h][2] = 'diagnostic';
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath('/ultimateimmo/property/equipement.php', 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("Equipements");
 	$head[$h][2] = 'equipement';
+	$hselected = $h;
+	$h ++;
+
+	$head[$h][0] = dol_buildpath('/ultimateimmo/property/spread.php', 1) . '?id=' . $object->id;
+	$head[$h][1] = $langs->trans("PercentSpreading");
+	$head[$h][2] = 'spreading';
 	$hselected = $h;
 	$h ++;
 

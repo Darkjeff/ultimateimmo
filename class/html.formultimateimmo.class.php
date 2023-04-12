@@ -335,7 +335,7 @@ class FormUltimateimmo extends Form
 				setEventMessage($this->db->lasterror,'errors');
 			}
 
-			print $this::selectarray($htmlname,$dataYear,$selected);
+			print $this::selectarray($htmlname,$dataYear,$selected, 1, 0, 0, '', 0, 0, 0, '', 'minwidth100');
 		}
 	}
 
