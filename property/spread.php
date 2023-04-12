@@ -202,7 +202,7 @@ if (!empty($object->lines)) {
 			setEventMessages($spreadData->error,$spreadData->errors,'errors');
 		} elseif (count($data)>1) {
 			setEventMessages('ProblemInTableSpread',null,'errors');
-		} elseif (!empty($data)) {
+		} elseif (!empty($data) && $action!=='save') {
 			$value_millieme=reset($data)->percent_application;
 		}
 		print '<input type="number" name="property_'.$property->id.'" value="'.$value_millieme.'">';
