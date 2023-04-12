@@ -359,7 +359,7 @@ CostTypeLabel = Libellé
 CostTypeLabelInfo = Indiquer un libellé
 CostTypeFamille = Famille de coût
 CostTypeFamilleInfo = Indiquer la famille de coût
-ImmoCostVentilNameProperty = Nom du bien
+ImmoCostVentilNameProperty = Statut Locatif
 ImmoCostVentilAmount = Montant
 ImmoCostVentilSelect = Select
 ImmoCostVentilAddRepartition = AJOUTER REPARTITION
@@ -448,4 +448,10 @@ YearOfCommonCostToAdjust = Année de répartition des charges
 ImmoSpreadCost = Répartition charges
 PercentSpreading = Répartition millième appartement
 Millieme = Millième
+MilliemeTheo=Millième Théorique
+MilliemeCalc=Millième Calculé
 TotalMustBeMille=Le Total des millièmes doit être de mille, il est de %d
+
+UltimateImmoDashboard = Espace Gestion Immobilier
+
+ImmoCompteur_Costs = Cout des compteurs
