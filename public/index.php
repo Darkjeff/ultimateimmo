@@ -63,7 +63,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
 
 // Load translation files required by the page
-$langs->loadLangs(array('companies', 'other', 'ultimateimmo@ultimateimmo', 'errors'));
+$langs->loadLangs(array('companies', 'other', 'ultimateimmo@ultimateimmo', 'errors', "contracts", "bills", "compta"));
 
 // Get parameters
 
