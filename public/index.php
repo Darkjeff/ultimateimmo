@@ -130,7 +130,7 @@ if (empty($user->id)) {
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-md-6">
-					<?= $user->getFullName($langs);?>
+					<?= $langs->trans('Renter').':'.$user->getFullName($langs);?>
 				</div>
 				<div class="col-md-6 text-md-end">
 					<a href="<?= $_SERVER['PHP_SELF'].'?action=logout&token='.newToken()?>">
@@ -138,13 +138,22 @@ if (empty($user->id)) {
 					</a>
 				</div>
 			</div>
+			<!-- <div class="row">
+				<div class="col-md-6 text-md-center">
+					<i class="fa fa-2x fa-money-bill" aria-hidden="true"></i>
+				</div>
+				<div class="col-md-6 text-md-center">
+					<i class="fa fa-2x fa-money-bill" aria-hidden="true"></i>
+				</div>
+			</div> -->
 		</div>
-		<div class="container-fluid">
+		<div class="container-fluid" id="recepit">
 				<div class="table-responsive-md">
 					<table class="table table-striped table-bordered">
 						<thead>
 						<tr>
 							<th scope="col"><?= $langs->trans('NomLoyer') ?></th>
+							<th scope="col"><?= $langs->trans('Date') ?></th>
 							<th scope="col"><?= $langs->trans('Nomlocal') ?></th>
 							<th scope="col"><?= $langs->trans('TotalAmount') ?></th>
 							<th scope="col"><?= $langs->trans('PartialPayment') ?></th>
@@ -153,16 +162,17 @@ if (empty($user->id)) {
 						</thead>
 						<tbody>
 						<?php
-						   $sql = "SELECT rec.rowid as reference, rec.label as receiptname,rec.ref as receiptref, loc.lastname as nom, ";
+						   $sql = "SELECT DISTINCT rec.rowid as reference, rec.label as receiptname,rec.ref as receiptref, loc.lastname as nom, ";
 							$sql .= " prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, ";
 							$sql .= " rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_owner,";
-							$sql .= " rec.fk_rent as refcontract, rent.preavis";
+							$sql .= " rec.fk_rent as refcontract, rent.preavis,";
+							$sql .= " rec.date_echeance, rent.preavis";
 							$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
 							//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
-							$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter AND loc.rowid=".(int)$renterId;
-							$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
-							$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent";
-							$sql .= " WHERE rec.paye <> 1 AND rent.preavis = 1 ";
+							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter AND loc.rowid=".(int)$renterId;
+							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
+							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent";
+							$sql .= $db->order('rec.date_echeance','ASC');
 							$resql = $db->query($sql);
 							if ($resql < 0) {
 								setEventMessages($db->lasterror, null, 'errors');
@@ -180,7 +190,8 @@ if (empty($user->id)) {
 
 										?>
 							<tr>
-								<th scope="row"><a href="<?= $urldlfile ?>" target="_blank"><?=  $objp->receiptref ?></a></th>
+								<th scope="row"><a href="<?= $urldlfile ?>" target="_blank"><i class="fa fa-file-pdf px-1" aria-hidden="true"></i><?=  $objp->receiptref ?></a></th>
+								<td><?=  dol_print_date($objp->date_echeance) ?></td>
 								<td><?=  $objp->local ?></td>
 								<td><?=  price($objp->total) ?></td>
 								<td><?=  price($objp->partial_payment) ?></td>

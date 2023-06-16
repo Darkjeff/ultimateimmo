@@ -746,7 +746,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				&& !empty($object->civility_id)
 				&& !empty($object->firstname)
 				&& !empty($object->lastname)
-				&& !empty($object->email)
 				&& empty($userLinkid)
 			) {
 				//TODO and contact /user not already created
