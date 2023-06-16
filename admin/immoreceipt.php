@@ -257,7 +257,7 @@ foreach ($dirmodels as $reldir) {
 						if ($conf->global->ULTIMATEIMMO_ADDON_NUMBER == "$file") {
 							print img_picto($langs->trans("Activated"), 'switch_on');
 						} else {
-							print '<a href="' . $_SERVER["PHP_SELF"] . '?action=setmodel&amp;value=' . $file . '&amp;scan_dir=' . $module->scandir . '&amp;label=' . urlencode($module->name) . '">';
+							print '<a href="' . $_SERVER["PHP_SELF"] . '?action=setmodel&amp;value=' . $file . '&amp;scan_dir=' . $module->scandir . '&amp;label=' . urlencode($module->name) . '&token='.newToken().'">';
 							print img_picto($langs->trans("Disabled"), 'switch_off');
 							print '</a>';
 						}
@@ -380,7 +380,7 @@ foreach ($dirmodels as $reldir) {
 									print "</td>";
 								} else {
 									print "<td align=\"center\">\n";
-									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=set&amp;value=' . $name . '&amp;scan_dir=' . $module->scandir . '&amp;label=' . urlencode($module->name) . '">' . img_picto($langs->trans("Disabled"), 'switch_off') . '</a>';
+									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=set&amp;value=' . $name . '&amp;scan_dir=' . $module->scandir . '&amp;label=' . urlencode($module->name) . '&token='.newToken().'">' . img_picto($langs->trans("Disabled"), 'switch_off') . '</a>';
 									print "</td>";
 								}
 
@@ -389,7 +389,7 @@ foreach ($dirmodels as $reldir) {
 								if ($conf->global->ULTIMATEIMMO_ADDON_PDF == $name) {
 									print img_picto($langs->trans("Default"), 'on');
 								} else {
-									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=setdoc&amp;value=' . $name . '&amp;scan_dir=' . $module->scandir . '&amp;label=' . urlencode($module->name) . '" alt="' . $langs->trans("Default") . '">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
+									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=setdoc&amp;value=' . $name . '&amp;scan_dir=' . $module->scandir . '&amp;label=' . urlencode($module->name) . '&token='.newToken().'" alt="' . $langs->trans("Default") . '">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
 								}
 								print '</td>';
 
@@ -411,7 +411,7 @@ foreach ($dirmodels as $reldir) {
 								// Preview
 								print '<td align="center">';
 								if ($module->type == 'pdf') {
-									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=specimen&module=' . $name . '">' . img_object($langs->trans("Preview"), 'intervention') . '</a>';
+									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=specimen&module=' . $name . '&token='.newToken().'">' . img_object($langs->trans("Preview"), 'intervention') . '</a>';
 								} else {
 									print img_object($langs->trans("PreviewNotAvailable"), 'generic');
 								}
@@ -494,11 +494,6 @@ if (!empty($dataArray)) {
 
 print "</td></tr>\n";
 
-print '<tr><td>';
-print $form->textwithpicto($langs->trans("WatermarkOnDraftImmoCards"), $htmltext, 1, 'help', '', 0, 2, 'watermarktooltip') . '<br>';
-print '<input size="50" class="flat" type="text" name="ULTIMATEIMMO_DRAFT_WATERMARK" value="' . $conf->global->ULTIMATEIMMO_DRAFT_WATERMARK . '">';
-print "</td></tr>\n";
-
 print '</table>';
 
 print '<div class="center"><input type="submit" class="button" value="' . $langs->trans("Modify") . '"></div>';
@@ -532,9 +527,9 @@ if ($conf->use_javascript_ajax) {
 	print ajax_constantonoff('ULTIMATEIMMO_MANDATAIRE_DETAILS');
 } else {
 	if ($conf->global->ULTIMATEIMMO_MANDATAIRE_DETAILS == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATEIMMO_MANDATAIRE_DETAILS">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATEIMMO_MANDATAIRE_DETAILS&token='.newToken().'">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
 	} else if ($conf->global->ULTIMATEIMMO_MANDATAIRE_DETAILS == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATEIMMO_MANDATAIRE_DETAILS">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATEIMMO_MANDATAIRE_DETAILS&token='.newToken().'">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
 	}
 }
 print '</td></tr>';
@@ -549,9 +544,9 @@ if ($conf->use_javascript_ajax) {
 	print ajax_constantonoff('ULTIMATEIMMO_COLOCATAIRE_DETAILS');
 } else {
 	if ($conf->global->ULTIMATEIMMO_COLOCATAIRE_DETAILS == 0) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATEIMMO_COLOCATAIRE_DETAILS">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATEIMMO_COLOCATAIRE_DETAILS&token='.newToken().'">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
 	} else if ($conf->global->ULTIMATEIMMO_COLOCATAIRE_DETAILS == 1) {
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATEIMMO_COLOCATAIRE_DETAILS">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATEIMMO_COLOCATAIRE_DETAILS&token='.newToken().'">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
 	}
 }
 print '</td></tr>';

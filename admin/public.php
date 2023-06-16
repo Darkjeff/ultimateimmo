@@ -67,13 +67,13 @@ if ($action == 'setvarother') {
     if (!$res > 0) {
         $error++;
     }
-	
+
 	$param_must_exists = GETPOST('ULTIMATEIMMO_EMAIL_MUST_EXISTS', 'alpha');
     $res = dolibarr_set_const($db, 'ULTIMATEIMMO_EMAIL_MUST_EXISTS', $param_must_exists, 'chaine', 0, '', $conf->entity);
     if (!$res > 0) {
         $error++;
     }
-	
+
 	if ($conf->global->MAIN_FEATURES_LEVEL >= 2)
     {
     	$param_show_company_logo = GETPOST('ULTIMATEIMMO_SHOW_COMPANY_LOGO', 'alpha');
@@ -113,14 +113,14 @@ $enabledisablehtml = $langs->trans("UltimateimmoPublicAccess").' ';
 if (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
 {
     // Button off, click to enable
-    $enabledisablehtml.='<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?action=setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE&value=1'.$param.'">';
+    $enabledisablehtml.='<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?action=setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE&value=1&token='.newToken().'">';
     $enabledisablehtml.=img_picto($langs->trans("Disabled"), 'switch_off');
     $enabledisablehtml.='</a>';
 }
 else
 {
     // Button on, click to disable
-    $enabledisablehtml.='<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?action=setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE&value=0'.$param.'">';
+    $enabledisablehtml.='<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?action=setULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE&value=0&token='.newToken().'">';
     $enabledisablehtml.=img_picto($langs->trans("Activated"), 'switch_on');
     $enabledisablehtml.='</a>';
 }
@@ -145,9 +145,9 @@ if (! empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
     print '<td class="center">';
     print '</td>';
     print '</tr>';
-	
+
 	 // Check if email exists
-    print '<tr class="oddeven"><td>' . $langs->trans("UltimateimmoEmailMustExist") . '</td>';
+    /*print '<tr class="oddeven"><td>' . $langs->trans("UltimateimmoEmailMustExist") . '</td>';
     print '<td class="left">';
     if ($conf->use_javascript_ajax) {
         print ajax_constantonoff('ULTIMATEIMMO_EMAIL_MUST_EXISTS');
@@ -160,7 +160,7 @@ if (! empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
     print $form->textwithpicto('', $langs->trans("UltimateimmoEmailMustExistHelp"), 1, 'help');
     print '</td>';
     print '</tr>';
-	
+
 	// Show logo for company
     print '<tr class="oddeven"><td>' . $langs->trans("UltimateimmoShowCompanyLogo") . '</td>';
     print '<td class="left">';
@@ -179,7 +179,7 @@ if (! empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
 	 if (!$conf->use_javascript_ajax) {
         print '<tr class="impair"><td colspan="3" align="center"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
         print '</tr>';
-    }
+    }*/
 
     print '</table><br>';
 

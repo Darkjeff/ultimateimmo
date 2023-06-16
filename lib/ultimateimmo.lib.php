@@ -39,47 +39,47 @@ function ultimateimmoAdminPrepareHead()
 	$head[$h][1] = $langs->trans("Quittances&Baux");
 	$head[$h][2] = 'quittance';
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/gmaps.php", 1);
 	$head[$h][1] = $langs->trans("Google Maps");
 	$head[$h][2] = 'gmaps';
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/public.php", 1);
 	$head[$h][1] = $langs->trans("PublicSite");
 	$head[$h][2] = 'public';
 	$h++;
-	
+
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/property_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsProperty");
     $head[$h][2] = 'attributes_property';
     $h++;
-	
+
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/renter_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsRenter");
     $head[$h][2] = 'attributes_renter';
     $h++;
-	
+
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/owner_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsOwner");
     $head[$h][2] = 'attributes_owner';
     $h++;
-	
+
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/payment_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsPayment");
     $head[$h][2] = 'attributes_payment';
     $h++;
-	
+
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/receipt_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsReceipt");
     $head[$h][2] = 'attributes_receipt';
     $h++;
-	
+
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/rent_extrafields.php", 1);
     $head[$h][1] = $langs->trans("ExtraFieldsRent");
     $head[$h][2] = 'attributes_rent';
     $h++;
-	
+
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/about.php", 1);
 	$head[$h][1] = $langs->trans("About");
 	$head[$h][2] = 'about';
@@ -319,4 +319,33 @@ function pdf_ultimate_pagefoot(&$pdf, $outputlangs, $paramfreetext, $fromcompany
 	//}
 
 	return $marginwithfooter;
+}
+
+/**
+ * @param $title string Title
+ * @param $addJsSign bool add Js Lib For Sign Doc
+ * @param $addQuagga bool add Js and CSS Lib For Scanner Bar Code
+ * @return void
+ */
+function llxHeaderUltimateImmoPublic($title = '', $addJsSign = false, $addQuagga = false)
+{
+	global $conf;
+
+	$conf->dol_hide_leftmenu = 1;
+	$conf->dol_hide_leftmenu = 1;
+	$bootstrapCss = array('/ultimateimmo/includes/bootstrap-5.2.0/css/bootstrap.min.css',
+		'/ultimateimmo/includes/bootstrap-5.2.0/css/bootstrap-grid.min.css',
+		'/ultimateimmo/includes/bootstrap-5.2.0/css/bootstrap-reboot.min.css',
+		'/ultimateimmo/includes/bootstrap-5.2.0/css/bootstrap-utilities.min.css');
+	$moreCss = $bootstrapCss;
+	$bootstrapJs = array('/ultimateimmo/includes/bootstrap-5.2.0/js/bootstrap.bundle.min.js');
+	$moreJs = $bootstrapJs;
+	$moreJs[] = DOL_URL_ROOT . '/includes/jquery/plugins/jSignature/jSignature.js';
+
+	$head = '<meta name="apple-mobile-web-app-title" content="DoliPad"/>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1"/>';
+	top_htmlhead($head, $title, 0, 0, $moreJs, $moreCss);
+	print '<body>';
 }

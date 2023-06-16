@@ -38,9 +38,9 @@ if (!defined('NOREQUIREMENU')) {
 // If there is no need to load and show top and left menu
 //if (! defined('NOREQUIREHTML'))  define('NOREQUIREHTML','1');            // If we don't need to load the html.form.class.php
 //if (! defined('NOREQUIREAJAX'))  define('NOREQUIREAJAX','1');
-if (!defined("NOLOGIN")) {
+/*if (!defined("NOLOGIN")) {
     define("NOLOGIN", '1');
-}
+}*/
 // If this page is public (can be called outside logged session)
 
 // Load Dolibarr environment
@@ -60,19 +60,28 @@ if (! $res) die("Include of main fails");
 
 require_once DOL_DOCUMENT_ROOT.'/core/lib/security.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
 
 // Load translation files required by the page
 $langs->loadLangs(array('companies', 'other', 'ultimateimmo@ultimateimmo', 'errors'));
 
 // Get parameters
-$track_id = GETPOST('track_id', 'alpha');
+
 $action = GETPOST('action', 'alpha');
+
+/*
+ * Action
+ */
+if ($action=='logout') {
+	$_SESSION["urlfrom"] = dol_buildpath('/ultimateimmo/public/index.php', 1);
+	header("Location: ".dol_buildpath('/user/logout.php',2).'?token='.newToken()); // Default behaviour is redirect to index.php page
+	exit;
+}
+
 
 /*
  * View
  */
-
-$form = new Form($db);
 
 if (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
 {
@@ -81,8 +90,115 @@ if (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
 }
 
 
-print '<p style="text-align: center">' .  $langs->trans("Toto"). '</p>';
+$form = new Form($db);
 
+llxHeaderUltimateImmoPublic();
+
+
+
+if (empty($user->id)) {
+	dol_include_once('/core/tpl/login.tpl.php');
+} else {
+
+	dol_include_once('/ultimateimmo/class/immorenter.class.php');
+	//var_dump($user);
+	$renter = new ImmoRenter($db);
+
+	$userLinkid=0;
+
+	$sql = 'SELECT renter.rowid as renterId FROM ' . MAIN_DB_PREFIX . 'socpeople as sp ';
+	$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'user as u ON u.fk_socpeople=sp.rowid';
+	$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . $renter->table_element.' as renter ON renter.fk_soc=sp.fk_soc';
+	$sql .= ' WHERE sp.fk_soc=' . (int)$user->socid;
+	$sql .= ' AND u.rowid="' . $user->id . '"';
+	$sql .= ' AND sp.email="' . $user->email . '"';
+	$sql .= ' AND sp.rowid="' . $user->contact_id . '"';
+	$resql = $db->query($sql);
+	if ($resql < 0) {
+		setEventMessages($db->lasterror, null, 'errors');
+	} else {
+		$num = $db->num_rows($resql);
+		if ($num > 0) {
+			while ($obc = $db->fetch_object($resql)) {
+				$renterId = $obc->renterId;
+			}
+		}
+	}
+
+?>
+<main class="container-fluid">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-6">
+					<?= $user->getFullName($langs);?>
+				</div>
+				<div class="col-md-6 text-md-end">
+					<a href="<?= $_SERVER['PHP_SELF'].'?action=logout&token='.newToken()?>">
+						<i class="fa fa-2x fa-external-link-square" aria-hidden="true"></i>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid">
+				<div class="table-responsive-md">
+					<table class="table table-striped table-bordered">
+						<thead>
+						<tr>
+							<th scope="col"><?= $langs->trans('NomLoyer') ?></th>
+							<th scope="col"><?= $langs->trans('Nomlocal') ?></th>
+							<th scope="col"><?= $langs->trans('TotalAmount') ?></th>
+							<th scope="col"><?= $langs->trans('PartialPayment') ?></th>
+							<th scope="col"><?= $langs->trans('Balance') ?></th>
+						</tr>
+						</thead>
+						<tbody>
+						<?php
+						   $sql = "SELECT rec.rowid as reference, rec.label as receiptname,rec.ref as receiptref, loc.lastname as nom, ";
+							$sql .= " prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, ";
+							$sql .= " rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_owner,";
+							$sql .= " rec.fk_rent as refcontract, rent.preavis";
+							$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
+							//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
+							$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter AND loc.rowid=".(int)$renterId;
+							$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
+							$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent";
+							$sql .= " WHERE rec.paye <> 1 AND rent.preavis = 1 ";
+							$resql = $db->query($sql);
+							if ($resql < 0) {
+								setEventMessages($db->lasterror, null, 'errors');
+							} else {
+								$num = $db->num_rows($resql);
+								if ($num > 0) {
+									while ($objp = $db->fetch_object($resql)) {
+
+										$objref = dol_sanitizeFileName($objp->receiptref);
+										$relativepath = $objref . '/' . $objref . '.pdf';
+										$filedir = $conf->ultimateimmo->dir_output . '/receipt' . '/' . $objref;
+										if (file_exists($filedir.'/'.$objref . '.pdf')) {
+											$urldlfile=dol_buildpath('/document.php', 2).'?modulepart=ultimateimmo&file=receipt/'.$relativepath;
+										}
+
+										?>
+							<tr>
+								<th scope="row"><a href="<?= $urldlfile ?>" target="_blank"><?=  $objp->receiptref ?></a></th>
+								<td><?=  $objp->local ?></td>
+								<td><?=  price($objp->total) ?></td>
+								<td><?=  price($objp->partial_payment) ?></td>
+								<td><?=  price($objp->balance) ?></td>
+							</tr>
+										<?php
+									}
+								}
+							}
+						?>
+
+						</tbody>
+					</table>
+				</div>
+		</div>
+</main>
+<?php
+}
 
 // End of page
 llxFooter();

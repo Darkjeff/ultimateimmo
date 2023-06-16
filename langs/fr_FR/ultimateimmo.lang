@@ -74,8 +74,8 @@ UltimateimmoAboutPage = Page à propos de Ultimateimmo
 #
 # Configuration
 #
-#FreeLegalTextOnReceipts = 
-#TypeCostForAdjust = 
+FreeLegalTextOnReceipts = Texte libre sur les quittances
+TypeCostForAdjust = Ajustement des coûts
 
 #
 # Dictionnaires
@@ -107,7 +107,7 @@ MenuNewImmoOwner = Nouveau propriétaire
 MenuListImmoOwner = Liste
 MenuImmoOwnerType = Type de propriétaire
 MenuNewImmoOwnerType = Nouveau type
-MenuListImmoOwnerType = Liste
+MenuListImmoOwnerType = Liste des types de propriétaires
 MenuImmoActiveRenter = Locataires actifs
 MenuImmoNotActiveRenter = Locataires inactifs
 MenuImmoRenter = Locataires
@@ -455,3 +455,6 @@ TotalMustBeMille=Le Total des millièmes doit être de mille, il est de %d
 UltimateImmoDashboard = Espace Gestion Immobilier
 
 ImmoCompteur_Costs = Cout des compteurs
+
+UltmImmoCreateContactAndUser=Créer un accès portail publique
+UltmImmoCreateUserSuccess=L'utilisateur à été créer, identifiant: %s, mot de passe: %s

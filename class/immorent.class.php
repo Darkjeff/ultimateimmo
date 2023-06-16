@@ -270,6 +270,9 @@ class ImmoRent extends CommonObject
 		}
 		$this->fetch($this->id);
 		$this->ref=$this->id;
+		if (empty($this->preavis)) {
+			$this->preavis=1;
+		}
 		$resultUpd = $this->update($user);
 		if ($resultUpd<0) {
 			return -1;

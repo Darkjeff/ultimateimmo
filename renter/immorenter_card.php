@@ -17,20 +17,26 @@
  */
 
 /**
- *   	\file       immorenter_card.php
- *		\ingroup    ultimateimmo
- *		\brief      Page to create/edit/view immorenter
+ *    \file       immorenter_card.php
+ *        \ingroup    ultimateimmo
+ *        \brief      Page to create/edit/view immorenter
  */
 
 // Load Dolibarr environment
 $res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php";
 // Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
-$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
-while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) { $i--; $j--; }
-if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) $res = @include substr($tmp, 0, ($i + 1))."/main.inc.php";
-if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) $res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include substr($tmp, 0, ($i + 1)) . "/main.inc.php";
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php";
 // Try main.inc.php using relative path
 if (!$res && file_exists("../main.inc.php")) $res = @include "../main.inc.php";
 if (!$res && file_exists("../../main.inc.php")) $res = @include "../../main.inc.php";
@@ -39,7 +45,10 @@ if (!$res) die("Include of main fails");
 
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php');
-require_once DOL_DOCUMENT_ROOT.'/core/class/html.formprojet.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formprojet.class.php';
+require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/security2.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 dol_include_once('/ultimateimmo/class/immorenter.class.php');
 dol_include_once('/ultimateimmo/class/immoowner.class.php');
 dol_include_once('/ultimateimmo/lib/immorenter.lib.php');
@@ -50,15 +59,18 @@ dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other"));
 
 // Get parameters
-$id			= GETPOST('id', 'int');
-$ref        = GETPOST('ref', 'alpha');
-$action		= GETPOST('action', 'alpha');
-$confirm    = GETPOST('confirm', 'alpha');
-$cancel     = GETPOST('cancel', 'aZ09');
+$id = GETPOST('id', 'int');
+$ref = GETPOST('ref', 'alpha');
+$action = GETPOST('action', 'alpha');
+$confirm = GETPOST('confirm', 'alpha');
+$cancel = GETPOST('cancel', 'aZ09');
 $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'myobjectcard'; // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
-$socid		= GETPOST('socid', 'int');
+$socid = GETPOST('socid', 'int');
+
+$contactLinkid = 0;
+$userLinkid = 0;
 
 // Initialize technical objects
 $object = new ImmoRenter($db);
@@ -89,6 +101,25 @@ include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be inc
 //$isdraft = (($object->statut == $object::STATUS_DRAFT) ? 1 : 0);
 //$result = restrictedArea($user, 'mymodule', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
 
+
+$sql = 'SELECT sp.rowid as contactId, u.rowid as userId FROM ' . MAIN_DB_PREFIX . 'socpeople as sp ';
+$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'user as u ON u.fk_socpeople=sp.rowid';
+$sql .= ' WHERE sp.fk_soc=' . (int)$object->fk_soc;
+$sql .= ' AND sp.email="' . $db->escape($object->email) . '"';
+$resql = $db->query($sql);
+if ($resql < 0) {
+	setEventMessages($db->lasterror, null, 'errors');
+} else {
+	$num = $db->num_rows($resql);
+	if ($num > 0) {
+		while ($obc = $db->fetch_object($resql)) {
+			$contactLinkid = $obc->contactId;
+			$userLinkid = $obc->userId;
+		}
+	}
+}
+
+
 $permissiontoread = $user->rights->ultimateimmo->read;
 $permissiontoadd = $user->rights->ultimateimmo->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
 $permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
@@ -101,53 +132,103 @@ $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $obj
  *
  */
 
-$parameters = array('id'=>$id, 'rowid'=>$id);
+$parameters = array('id' => $id, 'rowid' => $id);
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
-if (empty($reshook))
-{
+if (empty($reshook)) {
 	$error = 0;
 
 	$backurlforlist = dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1);
 
 	if (empty($backtopage) || ($cancel && empty($id))) {
-    	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
-    		if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
-    		else $backtopage = dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?id='.($id > 0 ? $id : '__ID__');
-    	}
-    }
+		if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
+			if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
+			else $backtopage = dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1) . '?id=' . ($id > 0 ? $id : '__ID__');
+		}
+	}
 	$triggermodname = 'ULTIMATEIMMO_IMMORENTER_MODIFY';
 
 	// Actions cancel, add, update or delete
-	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_addupdatedelete.inc.php';
 
 	// Actions when linking object each other
-	include DOL_DOCUMENT_ROOT.'/core/actions_dellink.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_dellink.inc.php';
 
 	// Actions when printing a doc from card
-	include DOL_DOCUMENT_ROOT.'/core/actions_printing.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
 
 	// Action to move up and down lines of object
 	//include DOL_DOCUMENT_ROOT.'/core/actions_lineupdown.inc.php';
 
 	// Action to build doc
-	include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
+	include DOL_DOCUMENT_ROOT . '/core/actions_builddoc.inc.php';
 
-	if ($action == 'set_thirdparty' && $permissiontoadd)
-	{
+	if ($action == 'set_thirdparty' && $permissiontoadd) {
 		$object->setValueFrom('fk_soc', GETPOST('fk_soc', 'int'), '', '', 'date', '', $user, 'IMMORENTER_MODIFY');
 	}
-	if ($action == 'classin' && $permissiontoadd)
-	{
+	if ($action == 'classin' && $permissiontoadd) {
 		$object->setProject(GETPOST('projectid', 'int'));
 	}
 
 	// Actions to send emails
 	$triggersendname = 'IMMORENTER_SENTBYMAIL';
 	$autocopy = 'MAIN_MAIL_AUTOCOPY_IMMORENTER_TO';
-	$trackid = 'immorenter'.$object->id;
-	include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
+	$trackid = 'immorenter' . $object->id;
+	include DOL_DOCUMENT_ROOT . '/core/actions_sendmails.inc.php';
+
+
+	if ($action == 'createContactAndUser') {
+		$contact = new Contact($db);
+		if (empty($contactLinkid)) {
+			$contact->socid = $object->fk_soc;
+			$contact->statut = 1;
+			$contact->email = $object->email;
+			$contact->firstname = $object->firstname;
+			$contact->lastname = $object->lastname;
+			$contact->birthday = $object->birth;
+			$contact->country_id = $object->country_id;
+			$contact->phone_pro = $object->phone;
+			$contact->phone_perso = $object->phone;
+			$contact->phone_mobile = $object->phone_mobile;
+			$resultCreate = $contact->create($user);
+			if ($resultCreate < 0) {
+				setEventMessages($contact->error, $contact->errors, 'errors');
+			} else {
+				$contactLinkid = $contact->id;
+			}
+		}
+		if (!empty($contactLinkid)) {
+			$resultFetch = $contact->fetch($contactLinkid);
+			if ($resultFetch < 0) {
+				setEventMessages($contact->error, $contact->errors, 'errors');
+			}
+		}
+		if (empty($userLinkid)) {
+			$db->begin();
+			$password = getRandomPassword(true, null, 10);
+			$login=dol_buildlogin($contact->lastname, $contact->firstname);
+			// Creation user
+			$nuser = new User($db);
+			$result = $nuser->create_from_contact($contact, $login); // Do not use GETPOST(alpha)
+
+			if ($result > 0) {
+
+				$result2 = $nuser->setPassword($user, $password, 0, 0, 1); // Do not use GETPOST(alpha)
+				if ($result2) {
+					setEventMessages($langs->trans('UltmImmoCreateUserSuccess', $login, $password),null);
+					$userLinkid = $nuser->id;
+					$db->commit();
+				} else {
+					setEventMessages($nuser->error, $nuser->errors, 'errors');
+					$db->rollback();
+				}
+			} else {
+				setEventMessages($nuser->error, $nuser->errors, 'errors');
+				$db->rollback();
+			}
+		}
+	}
 }
 
 
@@ -163,7 +244,7 @@ $formproject = new FormProjets($db);
 llxHeader('', $langs->trans('ImmoRenter'), '');
 
 if ($conf->use_javascript_ajax) {
-	print "\n".'<script type="text/javascript" language="javascript">';
+	print "\n" . '<script type="text/javascript" language="javascript">';
 	/*print 'jQuery(document).ready(function () {
 				jQuery("#selectcountry_id").change(function() {
 					document.formsoc.action.value="create";
@@ -172,7 +253,7 @@ if ($conf->use_javascript_ajax) {
 
 				initfieldrequired();
 			})';*/
-	print '</script>'."\n";
+	print '</script>' . "\n";
 }
 
 // Part to create
@@ -197,7 +278,7 @@ if ($action == 'create') {
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue;    // We don't want this field
 
 		print '<tr id="field_' . $key . '">';
 		print '<td';
@@ -213,7 +294,7 @@ if ($action == 'create') {
 
 		if ($val['label'] == 'Civility') {
 			// We set civility_id, civility_code and civility for the selected civility
-			$object->civility_id	= GETPOST("civility_id", 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
+			$object->civility_id = GETPOST("civility_id", 'int') ? GETPOST('civility_id', 'int') : $object->civility_id;
 
 			if ($object->civility_id) {
 				$tmparray = array();
@@ -257,16 +338,15 @@ if ($action == 'create') {
 	print '<div class="center">';
 	print '<input type="submit" class="button" name="add" value="' . dol_escape_htmltag($langs->trans("Create")) . '">';
 	print '&nbsp; ';
-	print '<input type="' . ($backtopage ? "submit" : "button") . '" class="button" name="cancel" value="' . dol_escape_htmltag($langs->trans("Cancel")) . '"' . ($backtopage ? '' : ' onclick="javascript:history.go(-1)"') . '>';	// Cancel for create does not post form if we don't know the backtopage
+	print '<input type="' . ($backtopage ? "submit" : "button") . '" class="button" name="cancel" value="' . dol_escape_htmltag($langs->trans("Cancel")) . '"' . ($backtopage ? '' : ' onclick="javascript:history.go(-1)"') . '>';    // Cancel for create does not post form if we don't know the backtopage
 	print '</div>';
 
 	print '</form>';
 }
 
 // Part to edit record
-if (($id || $ref) && $action == 'edit')
-{
-	print load_fiche_titre($langs->trans("ImmoRenter"), '', 'object_'.$object->picto);
+if (($id || $ref) && $action == 'edit') {
+	print load_fiche_titre($langs->trans("ImmoRenter"), '', 'object_' . $object->picto);
 
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . newToken() . '">';
@@ -277,7 +357,7 @@ if (($id || $ref) && $action == 'edit')
 
 	print dol_get_fiche_head();
 
-	print '<table class="border centpercent tableforfieldedit">'."\n";
+	print '<table class="border centpercent tableforfieldedit">' . "\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
@@ -286,7 +366,7 @@ if (($id || $ref) && $action == 'edit')
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;    // We don't want this field
 
 		print '<tr><td';
 		print ' class="titlefieldcreate';
@@ -348,6 +428,7 @@ if (($id || $ref) && $action == 'edit')
 
 // Part to show record
 if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create'))) {
+
 	$res = $object->fetch_optionals();
 
 	$head = immorenterPrepareHead($object);
@@ -438,11 +519,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<div class="fichecenter">';
 	print '<div class="fichehalfleft">';
 	print '<div class="underbanner clearboth"></div>';
-	print '<table class="border centpercent tableforfield">'."\n";
+	print '<table class="border centpercent tableforfield">' . "\n";
 
 	// Common attributes
 	$object->fields = dol_sort_array($object->fields, 'position');
-	$keyforbreak='civility_id'; // We change column just before this field
+	$keyforbreak = 'civility_id'; // We change column just before this field
 	//unset($object->fields['fk_project']);				// Hide field already shown in banner
 	//unset($object->fields['fk_soc']);					// Hide field already shown in banner
 	foreach ($object->fields as $key => $val) {
@@ -451,8 +532,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;	// We don't want this field
-		if (in_array($key, array('ref', 'status'))) continue;	// Ref and status are already in dol_banner
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !verifCond($val['enabled'])) continue;    // We don't want this field
+		if (in_array($key, array('ref', 'status'))) continue;    // Ref and status are already in dol_banner
 
 		$value = $object->$key;
 
@@ -474,7 +555,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			$staticowner = new ImmoOwner($db);
 			$staticowner->fetch($object->fk_owner);
 			if ($staticowner->ref) {
-				$staticowner->ref =  $staticowner->getNomUrl(0);
+				$staticowner->ref = $staticowner->getNomUrl(0);
 			}
 			print $staticowner->ref;
 		} elseif ($val['label'] == 'ImmoRent') {
@@ -494,6 +575,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '</td>';
 		print '</tr>';
 	}
+
 
 	print '</table>';
 
@@ -517,8 +599,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		// Discard if extrafield is a hidden field on form
 		if (abs($val['visible']) != 1 && abs($val['visible']) != 3 && abs($val['visible']) != 4 && abs($val['visible']) != 5) continue;
 
-		if (array_key_exists('enabled', $val) && isset($val['enabled']) && ! $val['enabled']) continue;	// We don't want this field
-		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
+		if (array_key_exists('enabled', $val) && isset($val['enabled']) && !$val['enabled']) continue;    // We don't want this field
+		if (in_array($key, array('ref', 'status'))) continue;    // Ref and status are already in dol_banner
 
 		$value = $object->$key;
 
@@ -526,22 +608,24 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print ' class="titlefield fieldname_' . $key;
 		//if ($val['notnull'] > 0) print ' fieldrequired';		// No fieldrequired in the view output
 		if ($val['label'] == 'Civility') {
+			print '">';
 			// We set civility_id, civility_code and civility for the selected civility
 			if ($object->civility_id) {
 				$tmparray = $object->getCivilityLabel($object->civility_id, 'all');
 				$object->civility_code = $tmparray['code'];
 				$object->civility = $tmparray['label'];
 			}
-			print '<tr><td width="25%">' . $langs->trans('Civility') . '</td><td>';
+			print $langs->trans('Civility') . '</td><td>';
 			print $object->civility;
 		} elseif ($val['label'] == 'ImmoBirthCountry') {
+			print '">';
 			if ($object->country_id) {
 				include_once(DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 				$tmparray = getCountry($object->country_id, 'all');
 				$object->country_code = $tmparray['code'];
 				$object->country = $tmparray['label'];
 			}
-			print '<tr><td width="25%">' . $langs->trans('Country') . '</td><td>';
+			print $langs->trans('Country') . '</td><td>';
 			print $object->country;
 		} else {
 			if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
@@ -553,6 +637,31 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
 		//print dol_escape_htmltag($object->$key, 1, 1);
+		print '</td>';
+		print '</tr>';
+	}
+	if (!empty($contactLinkid)) {
+		print '<tr><td class="titlefield fieldname_contactLinkid">';
+		print $langs->trans('Contact') . ' / ' . $langs->trans('User');
+		print '</td>';
+
+		print '<td>';
+		$contact=new Contact($db);
+		$resultFetch = $contact->fetch($contactLinkid);
+		if ($resultFetch < 0) {
+			setEventMessages($contact->error, $contact->errors, 'errors');
+		} else {
+			print $contact->getNomUrl();
+		}
+		if (!empty($userLinkid)) {
+			$nuser = new User($db);
+			$resultFetch = $nuser->fetch($userLinkid);
+			if ($resultFetch < 0) {
+				setEventMessages($nuser->error, $nuser->errors, 'errors');
+			} else {
+				print ' / ' . $nuser->getNomUrl();
+			}
+		}
 		print '</td>';
 		print '</tr>';
 	}
@@ -572,135 +681,129 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	 * Lines
 	 */
 
-	if (!empty($object->table_element_line))
-	{
-    	// Show object lines
-    	$result = $object->getLinesArray();
+	if (!empty($object->table_element_line)) {
+		// Show object lines
+		$result = $object->getLinesArray();
 
-    	print '	<form name="addproduct" id="addproduct" action="'.$_SERVER["PHP_SELF"].'?id='.$object->id.(($action != 'editline') ? '#addline' : '#line_'.GETPOST('lineid', 'int')).'" method="POST">
-    	<input type="hidden" name="token" value="' . $_SESSION ['newtoken'].'">
-    	<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline').'">
+		print '	<form name="addproduct" id="addproduct" action="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . (($action != 'editline') ? '#addline' : '#line_' . GETPOST('lineid', 'int')) . '" method="POST">
+    	<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">
+    	<input type="hidden" name="action" value="' . (($action != 'editline') ? 'addline' : 'updateline') . '">
     	<input type="hidden" name="mode" value="">
-    	<input type="hidden" name="id" value="' . $object->id.'">
+    	<input type="hidden" name="id" value="' . $object->id . '">
     	';
 
-		if (!empty($conf->use_javascript_ajax) && $object->status == 0)
-		{
-    	    include DOL_DOCUMENT_ROOT.'/core/tpl/ajaxrow.tpl.php';
-    	}
+		if (!empty($conf->use_javascript_ajax) && $object->status == 0) {
+			include DOL_DOCUMENT_ROOT . '/core/tpl/ajaxrow.tpl.php';
+		}
 
-    	print '<div class="div-table-responsive-no-min">';
-    	if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
-    	{
-    	    print '<table id="tablelines" class="noborder noshadow" width="100%">';
-    	}
+		print '<div class="div-table-responsive-no-min">';
+		if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline')) {
+			print '<table id="tablelines" class="noborder noshadow" width="100%">';
+		}
 
-    	if (!empty($object->lines))
-    	{
-    		$object->printObjectLines($action, $mysoc, null, GETPOST('lineid', 'int'), 1);
-    	}
+		if (!empty($object->lines)) {
+			$object->printObjectLines($action, $mysoc, null, GETPOST('lineid', 'int'), 1);
+		}
 
-    	// Form to add new line
-    	if ($object->status == 0 && $permissiontoadd && $action != 'selectlines')
-    	{
-    	    if ($action != 'editline')
-    	    {
-    	        // Add products/services form
-    	        $object->formAddObjectLine(1, $mysoc, $soc);
+		// Form to add new line
+		if ($object->status == 0 && $permissiontoadd && $action != 'selectlines') {
+			if ($action != 'editline') {
+				// Add products/services form
+				$object->formAddObjectLine(1, $mysoc, $soc);
 
-    	        $parameters = array();
-    	        $reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-    	    }
-    	}
+				$parameters = array();
+				$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+			}
+		}
 
-    	if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline'))
-    	{
-    	    print '</table>';
-    	}
-    	print '</div>';
+		if (!empty($object->lines) || ($object->status == $object::STATUS_DRAFT && $permissiontoadd && $action != 'selectlines' && $action != 'editline')) {
+			print '</table>';
+		}
+		print '</div>';
 
-    	print "</form>\n";
+		print "</form>\n";
 	}
 
 	// Buttons for actions
-	if ($action != 'presend' && $action != 'editline')
-	{
-    	print '<div class="tabsAction">'."\n";
-    	$parameters = array();
-    	$reshook = $hookmanager->executeHooks('addMoreActionsButtons',$parameters, $object, $action);    // Note that $action and $object may have been modified by hook
-    	if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+	if ($action != 'presend' && $action != 'editline') {
+		print '<div class="tabsAction">' . "\n";
+		$parameters = array();
+		$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
+		if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
-    	if (empty($reshook))
-    	{
-    	    // Send
-            print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
+		if (empty($reshook)) {
+			// Send
+			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
 
-    		if ($permissiontoadd)
-    		{
-    			print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
-    		}
-    		else
-    		{
-    			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Modify').'</a>'."\n";
-    		}
+			if ($permissiontoadd) {
+				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
+			} else {
+				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
+			}
+
+			if ($permissiontoadd && getDolGlobalString('ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE')
+				&& !empty($object->fk_soc)
+				&& !empty($object->civility_id)
+				&& !empty($object->firstname)
+				&& !empty($object->lastname)
+				&& !empty($object->email)
+				&& empty($userLinkid)
+			) {
+				//TODO and contact /user not already created
+				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=createContactAndUser">' . $langs->trans("UltmImmoCreateContactAndUser") . '</a>' . "\n";
+			}
 
 			// Clone
-    		if ($permissiontoadd)
-    		{
-    			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&socid='.$object->socid.'&action=clone&object=myobject">'.$langs->trans("ToClone").'</a>'."\n";
-    		}
+			if ($permissiontoadd) {
+				print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&socid=' . $object->socid . '&action=clone&object=myobject">' . $langs->trans("ToClone") . '</a>' . "\n";
+			}
 
-    		if ($permissiontodelete )
-    		{
-    			print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
-    		}
-    		else
-    		{
-    			print '<a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('Delete').'</a>'."\n";
-    		}
-    	}
-    	print '</div>'."\n";
+			if ($permissiontodelete) {
+				print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=delete">' . $langs->trans('Delete') . '</a>' . "\n";
+			} else {
+				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Delete') . '</a>' . "\n";
+			}
+		}
+		print '</div>' . "\n";
 	}
 
 
 	// Select mail models is same action as presend
-	if (GETPOST('modelselected'))
-	{
-	    $action = 'presend';
+	if (GETPOST('modelselected')) {
+		$action = 'presend';
 	}
 
-	if ($action != 'presend')
-	{
-	    print '<div class="fichecenter"><div class="fichehalfleft">';
-	    print '<a name="builddoc"></a>'; // ancre
+	if ($action != 'presend') {
+		print '<div class="fichecenter"><div class="fichehalfleft">';
+		print '<a name="builddoc"></a>'; // ancre
 
-	    // Documents
-	    $relativepath = '/renter/' . dol_sanitizeFileName($object->ref);
-	    $filedir = $conf->ultimateimmo->dir_output . $relativepath;
-	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-	    $genallowed = $permissiontoread;	// If you can read, you can build the PDF to read content
-	    $delallowed = $permissiontodelete;	// If you can create/edit, you can remove a file on card
-	    print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $object->default_lang, '', $object);
+		// Documents
+		$relativepath = '/renter/' . dol_sanitizeFileName($object->ref);
+		$filedir = $conf->ultimateimmo->dir_output . $relativepath;
+		$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
+		$genallowed = $permissiontoread;    // If you can read, you can build the PDF to read content
+		$delallowed = $permissiontodelete;    // If you can create/edit, you can remove a file on card
+		print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $object->default_lang, '', $object);
 
-	    // Show links to link elements
-	    $linktoelem = $form->showLinkToObjectBlock($object, null, array('immorenter'));
-	    $somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
+		// Show links to link elements
+		$linktoelem = $form->showLinkToObjectBlock($object, null, array('immorenter'));
+		$somethingshown = $form->showLinkedObjectBlock($object, $linktoelem);
 
 
-	    print '</div><div class="fichehalfright"><div class="ficheaddleft">';
+		print '</div><div class="fichehalfright"><div class="ficheaddleft">';
 
-	    $MAXEVENT = 10;
+		$MAXEVENT = 10;
 
-	    $morehtmlright = '<a href="'.dol_buildpath('/ultimateimmo/renter/immorenter_agenda.php', 1).'?id='.$object->id.'">';
-	    $morehtmlright.= $langs->trans("SeeAll");
-	    $morehtmlright.= '</a>';
+		$morehtmlright = '<a href="' . dol_buildpath('/ultimateimmo/renter/immorenter_agenda.php', 1) . '?id=' . $object->id . '">';
+		$morehtmlright .= $langs->trans("SeeAll");
+		$morehtmlright .= '</a>';
 
-	    // List of actions on element
-	    include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
-	    $formactions = new FormActions($db);
-	    $somethingshown = $formactions->showactions($object, 'immorenter', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
+		// List of actions on element
+		include_once DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php';
+		$formactions = new FormActions($db);
+		$somethingshown = $formactions->showactions($object, 'immorenter', $socid, 1, '', $MAXEVENT, '', $morehtmlright);
 
-	    print '</div></div></div>';
+		print '</div></div></div>';
 	}
 
 	//Select mail models is same action as presend
@@ -709,10 +812,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Presend form
 	$modelmail = 'immorenter';
 	$defaulttopic = 'InformationMessage';
-	$diroutput = $conf->ultimateimmo->dir_output.'/renter';
-	$trackid = 'immo'.$object->id;
+	$diroutput = $conf->ultimateimmo->dir_output . '/renter';
+	$trackid = 'immo' . $object->id;
 
-	include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
+	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';
 
 }
 

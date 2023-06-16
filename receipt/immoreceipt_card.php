@@ -412,54 +412,55 @@ if (empty($reshook)) {
 			$error++;
 		} else {
 			$mesLignesCochees = GETPOST('mesCasesCochees');
+			if (!empty($mesLignesCochees)) {
+				foreach ($mesLignesCochees as $maLigneCochee) {
+					$receipt = new ImmoReceipt($db);
 
-			foreach ($mesLignesCochees as $maLigneCochee) {
-				$receipt = new ImmoReceipt($db);
+					$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
 
-				$maLigneCourante = preg_split("/[\_,]/", $maLigneCochee);
+					$monId = $maLigneCourante[0];
+					$monLocal = $maLigneCourante[1];
+					$monLocataire = $maLigneCourante[2];
+					$monMontant = $maLigneCourante[3];
+					$monLoyer = $maLigneCourante[4];
+					$mesCharges = $maLigneCourante[5];
+					$maTVA = $maLigneCourante[6];
+					$monProprio = $maLigneCourante[7];
+					$socProprio = $maLigneCourante[8];
 
-				$monId = $maLigneCourante[0];
-				$monLocal = $maLigneCourante[1];
-				$monLocataire = $maLigneCourante[2];
-				$monMontant = $maLigneCourante[3];
-				$monLoyer = $maLigneCourante[4];
-				$mesCharges = $maLigneCourante[5];
-				$maTVA = $maLigneCourante[6];
-				$monProprio = $maLigneCourante[7];
-				$socProprio = $maLigneCourante[8];
+					// main info rent
+					$receipt->label = GETPOST('label', 'alpha');
+					$receipt->date_echeance = $date_echeance;
+					$receipt->date_start = $dateperiod;
+					$receipt->date_end = $dateperiodend;
 
-				// main info rent
-				$receipt->label = GETPOST('label', 'alpha');
-				$receipt->date_echeance = $date_echeance;
-				$receipt->date_start = $dateperiod;
-				$receipt->date_end = $dateperiodend;
+					// main info contract
+					$receipt->ref = '(PROV)';
+					$receipt->fk_rent = $monId;
+					$receipt->fk_property = $monLocal;
+					$receipt->fk_renter = $monLocataire;
 
-				// main info contract
-				$receipt->ref = '(PROV)';
-				$receipt->fk_rent = $monId;
-				$receipt->fk_property = $monLocal;
-				$receipt->fk_renter = $monLocataire;
+					if ($maTVA == 'Oui') {
+						$receipt->total_amount = $monMontant * 1.2;
+						$receipt->vat_amount = $monMontant * 0.2;
+					} else {
+						$receipt->total_amount = $monMontant;
+						$receipt->vat_amount = 0;
+					}
 
-				if ($maTVA == 'Oui') {
-					$receipt->total_amount = $monMontant * 1.2;
-					$receipt->vat_amount = $monMontant * 0.2;
-				} else {
-					$receipt->total_amount = $monMontant;
-					$receipt->vat_amount = 0;
-				}
+					$receipt->rentamount = $monLoyer;
+					$receipt->chargesamount = $mesCharges;
+					$receipt->fk_owner = $monProprio;
+					$receipt->fk_soc = $socProprio;
+					$receipt->status = 0;
+					$receipt->paye = 0;
+					$result = $receipt->create($user);
 
-				$receipt->rentamount = $monLoyer;
-				$receipt->chargesamount = $mesCharges;
-				$receipt->fk_owner = $monProprio;
-				$receipt->fk_soc = $socProprio;
-				$receipt->status = 0;
-				$receipt->paye = 0;
-				$result = $receipt->create($user);
-
-				if ($result < 0) {
-					setEventMessages(null, $receipt->errors, 'errors');
-					$action = 'createall';
-					$error++;
+					if ($result < 0) {
+						setEventMessages(null, $receipt->errors, 'errors');
+						$action = 'createall';
+						$error++;
+					}
 				}
 			}
 		}
