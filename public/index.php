@@ -134,7 +134,7 @@ if (empty($user->id)) {
 				</div>
 				<div class="col-md-6 text-md-end">
 					<a href="<?= $_SERVER['PHP_SELF'].'?action=logout&token='.newToken()?>">
-						<i class="fa fa-2x fa-external-link-square" aria-hidden="true"></i>
+						<i class="fa fa-2x fa-sign-out" aria-hidden="true"></i>
 					</a>
 				</div>
 			</div>
@@ -143,7 +143,7 @@ if (empty($user->id)) {
 					<i class="fa fa-2x fa-money-bill" aria-hidden="true"></i>
 				</div>
 				<div class="col-md-6 text-md-center">
-					<i class="fa fa-2x fa-money-bill" aria-hidden="true"></i>
+					<i class="fa fa-2x fa-tint" aria-hidden="true"></i>
 				</div>
 			</div> -->
 		</div>
@@ -172,7 +172,7 @@ if (empty($user->id)) {
 							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter AND loc.rowid=".(int)$renterId;
 							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
 							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent";
-							$sql .= $db->order('rec.date_echeance','ASC');
+							$sql .= $db->order('rec.date_echeance','DESC');
 							$resql = $db->query($sql);
 							if ($resql < 0) {
 								setEventMessages($db->lasterror, null, 'errors');
