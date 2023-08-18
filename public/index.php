@@ -236,7 +236,7 @@ if (empty($user->id)) {
 	$sqlBilan .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 	$sqlBilan .= " WHERE p.fk_renter =" . (int)$renterId;
 	$sqlBilan .= ")";
-	$sqlBilan .= " ORDER BY date";
+	$sqlBilan .= $db->order('date', 'DESC');
 	$resultDataBilan = array();
 	$resql = $db->query($sqlBilan);
 	if ($resql < 0) {
