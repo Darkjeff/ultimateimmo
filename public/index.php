@@ -232,7 +232,7 @@ if (empty($user->id)) {
 		<div class="container">
 			<div class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
 				<div class="col-md-3">
-					<span class="fs-4"><?= $langs->trans('Renter') . ':' . $user->getFullName($langs); ?></span>
+					<span class="fs-4"><?= $langs->trans('Renter') . ': ' . $user->getFullName($langs); ?></span>
 				</div>
 				<div class="col-md-3 text-md-center">
 						<span

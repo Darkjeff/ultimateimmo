@@ -27,7 +27,7 @@ if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
 	die("Include of main fails");
-	
+
 // Class
 dol_include_once ( "/ultimateimmo/class/immorent.class.php" );
 require_once ('../class/immorenter.class.php');
@@ -45,6 +45,16 @@ $limit = 500;
 $from_date = dol_mktime(0, 0, 0, GETPOST('frmdtmonth', 'int'), GETPOST('frmdtday', 'int'), GETPOST('frmdtyear', 'int'));
 $to_date = dol_mktime(23, 59, 59, GETPOST('todtmonth', 'int'), GETPOST('todtday', 'int'), GETPOST('todtyear', 'int'));
 
+
+// Purge search criteria
+if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')) { // All tests are required to be compatible with all browsers
+	$from_date='';
+	$to_date='';
+}
+
+$form = new Form($db);
+
+
 /*
  * Bilan Renter
  */
@@ -57,11 +67,18 @@ $object->fetch_thirdparty();
 
 $head=immorenterPrepareHead($object);
 
-dol_fiche_head($head, 'bilan',  $langs->trans("Renter"), 0, 'user');
+print dol_get_fiche_head($head, 'bilan',  $langs->trans("Renter"), 1, 'user');
 
 $linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 
 //immo_banner_tab($object, 'id', $linkback, 1, 'rowid', 'name');
+
+print '<form method="POST" id="searchFormList" action="'.$_SERVER["PHP_SELF"].'">'."\n";
+print '<input type="hidden" name="token" value="'.newToken().'">';
+print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
+print '<input type="hidden" name="action" value="list">';
+print '<input type="hidden" name="id" value="'.$id.'">';
+
 
 print '<table class="border centpercent">';
 
@@ -73,23 +90,33 @@ print '</td></tr>';
 print '<tr><td class="left">' . $langs->trans("To") . '</td><td class="left">';
 print $form->selectDate($to_date, 'todt', 0, 0, 1, 'stats', 1, 0);
 print '</td></tr>';
-	
+print '<tr><td class="left"></td><td class="left">';
+print $form->showFilterButtons();
+print '</td></tr>';
+
 $sql = "(SELECT l.date_start as date , l.total_amount as debit, 0 as credit , l.label as des";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as l";
 $sql .= " WHERE  l.fk_renter =" . $id;
+if (!empty($to_date) && !empty($from_date)) {
+	$sql .= " AND l.date_start BETWEEN '" . $db->idate($from_date) . "' AND '" . $db->idate($to_date) . "'";
+}
 $sql .= ")";
 $sql .= "UNION (SELECT p.date_payment as date, 0 as debit, p.amount as credit, p.note_public as des";
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 $sql .= " WHERE p.fk_renter =" . $id;
-$sql .= ")";
-$sql .= "ORDER BY date";
+if (!empty($to_date) && !empty($from_date)) {
+	$sql .= " AND p.date_payment BETWEEN '".$db->idate($from_date)."' AND '".$db->idate($to_date)."'";
+}
 
+$sql .= ")";
+
+$sql .= " ORDER BY date";
 $result = $db->query ( $sql );
 if ($result) {
 	$num_lignes = $db->num_rows ( $result );
 	$i = 0;
 
-	print '<table class="border tableforfield" width="100%">';
+	print '<table class="tagtable liste" width="100%">';
 	print '<tr class="liste_titre">';
 	print '<td>' . $langs->trans ( "Date" ) . '</td>';
 	print '<td>' . $langs->trans ( "Debit" ) . '</td>';
@@ -100,10 +127,16 @@ if ($result) {
 	$sql2 = "SELECT SUM(l.total_amount) as debit, 0 as credit ";
 	$sql2 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as l";
 	$sql2 .= " WHERE l.fk_renter =" . $id;
+	if (!empty($to_date) && !empty($from_date)) {
+		$sql2 .= " AND l.date_start BETWEEN '" . $db->idate($from_date) . "' AND '" . $db->idate($to_date) . "'";
+	}
 
-	$sql3 .= "SELECT 0 as debit , sum(p.amount) as credit";
+	$sql3 = "SELECT 0 as debit , sum(p.amount) as credit";
 	$sql3 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
 	$sql3 .= " WHERE p.fk_renter =" . $id;
+	if (!empty($to_date) && !empty($from_date)) {
+		$sql3 .= " AND p.date_payment BETWEEN '".$db->idate($from_date)."' AND '".$db->idate($to_date)."'";
+	}
 
 	$result2 = $db->query ( $sql2 );
 	$result3 = $db->query ( $sql3 );
@@ -111,29 +144,25 @@ if ($result) {
 	$objp2 = $db->fetch_object ( $result2 );
 	$objp3 = $db->fetch_object ( $result3 );
 
-	$var = ! $var;
 
-	$var = True;
-	while ( $i < min ( $num_lignes, $limit ) )
+	while ( $objp = $db->fetch_object ( $result ))
 	{
-		$objp = $db->fetch_object ( $result );
-		$var = ! $var;
-		print "<tr $bc[$var]>";
+
+		print '<tr class="oddeven">';
 
 		print '<td>' . dol_print_date ( $db->jdate ( $objp->date ), 'day' ) . '</td>';
-		print '<td align="right">' . price($objp->debit) . '</td>';
-		print '<td align="right">' . price($objp->credit) . '</td>';
+		print '<td>' . price($objp->debit) . '</td>';
+		print '<td>' . price($objp->credit) . '</td>';
 		print '<td>' . $objp->des . '</td>';
 
 		print "</tr>";
-		$i ++;
 	}
 
 	// Total
-	print "<tr $bc[$var]>";
+	print '<tr class="liste_total">';
 	print '<td>' . $langs->trans("Total") . '</td>';
-	print '<td align="right">' . price($objp2->debit) . '</td>';
-	print '<td align="right">' . price($objp3->credit) . '</td>';
+	print '<td >' . price($objp2->debit) . '</td>';
+	print '<td>' . price($objp3->credit) . '</td>';
 	print '<td>' . price(($objp3->credit)-($objp2->debit)). '</td>';
 	print "</tr>";
 } else {
@@ -141,42 +170,9 @@ if ($result) {
 }
 
 print '</table>';
-
-/*
-if ($result2) {
-	$num_lignes = $db->num_rows ( $result2 );
-	$i = 0;
-	/*
-	print '<table class="border" width="100%">';
-	print '<tr class="liste_titre">';
-	print '<td>&nbsp;</td>';
-	print '<td>' . $langs->trans ( "debit" ) . '</td>';
-	print '<td>' . $langs->trans ( "credit" ) . '</td>';
-	print '<td>&nbsp;</td>';
-	print "</tr>\n";
-	
-	$var = True;
-	while ( $i < min ( $num_lignes, $limit ) ) {
-		
-		$objp2 = $db->fetch_object ( $result2 );
-		$var = ! $var;
-		print "<tr $bc[$var]>";
-		
-		print '<td>&nbsp; Total</td>';
-		print '<td>' . $objp2->debit . '</td>';
-		print '<td>' . $objp2->credit . '</td>';
-		print '<td>&nbsp;</td>';
-		
-		print "</tr>";
-		$i ++;
-	}
-	print '</table>';
-} else {
-	print $db->error ();
-}
+print '</form>';
 
 
-*/
 llxFooter();
 
 $db->close();
