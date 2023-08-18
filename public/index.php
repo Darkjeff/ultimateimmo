@@ -171,7 +171,7 @@ if (empty($user->id)) {
 							//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
 							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter AND loc.rowid=".(int)$renterId;
 							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
-							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent";
+							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent AND rent.preavis=1";
 							$sql .= $db->order('rec.date_echeance','DESC');
 							$resql = $db->query($sql);
 							if ($resql < 0) {
