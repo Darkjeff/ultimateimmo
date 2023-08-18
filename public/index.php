@@ -125,14 +125,59 @@ if (empty($user->id)) {
 		}
 	}
 
+
+	  $sql = "SELECT DISTINCT rec.rowid as reference, rec.label as receiptname,rec.ref as receiptref, loc.lastname as nom, ";
+	$sql .= " prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, ";
+	$sql .= " rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_owner,";
+	$sql .= " rec.fk_rent as refcontract, rent.preavis,";
+	$sql .= " rec.date_echeance, rent.preavis";
+	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter AND loc.rowid=".(int)$renterId;
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent AND rent.preavis=1";
+	$sql .= $db->order('rec.date_echeance','DESC');
+	$resql = $db->query($sql);
+	$datas=[];
+	$totalBalance=0;
+	if ($resql < 0) {
+		setEventMessages($db->lasterror, null, 'errors');
+	} else {
+		$num = $db->num_rows($resql);
+		if ($num > 0) {
+			while ($objp = $db->fetch_object($resql)) {
+
+				$objref = dol_sanitizeFileName($objp->receiptref);
+				$relativepath = $objref . '/' . $objref . '.pdf';
+				$filedir = $conf->ultimateimmo->dir_output . '/receipt' . '/' . $objref;
+				if (file_exists($filedir . '/' . $objref . '.pdf')) {
+					$urldlfile = dol_buildpath('/document.php', 2) . '?modulepart=ultimateimmo&file=receipt/' . $relativepath;
+				}
+
+				$datas[$objp->reference]['date_echeance']=$objp->date_echeance;
+				$datas[$objp->reference]['local']=$objp->local;
+				$datas[$objp->reference]['total']=$objp->total;
+				$datas[$objp->reference]['partial_payment']=$objp->partial_payment;
+				$datas[$objp->reference]['balance']=$objp->balance;
+				$datas[$objp->reference]['receiptref']=$objp->receiptref;
+				$datas[$objp->reference]['urldlfile']=$urldlfile;
+
+				$totalBalance += (float)$objp->balance;
+
+			}
+		}
+	}
+
 ?>
-<main class="container-fluid">
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-md-6">
-					<?= $langs->trans('Renter').':'.$user->getFullName($langs);?>
+<main>
+		<div class="container">
+			<div class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+				<div class="col-md-4">
+					<span class="fs-4"><?= $langs->trans('Renter').':'.$user->getFullName($langs);?></span>
 				</div>
-				<div class="col-md-6 text-md-end">
+				<div class="col-md-4 text-center">
+					<span class="fs-4"><?= $langs->trans('DetteLocative').': '.price($totalBalance,0,$langs,1,-1,-1, $conf->currency) ?></span>
+				</div>
+				<div class="col-md-4 text-md-end">
 					<a href="<?= $_SERVER['PHP_SELF'].'?action=logout&token='.newToken()?>">
 						<i class="fa fa-2x fa-sign-out" aria-hidden="true"></i>
 					</a>
@@ -147,7 +192,7 @@ if (empty($user->id)) {
 				</div>
 			</div> -->
 		</div>
-		<div class="container-fluid" id="recepit">
+		<div class="container" id="recepit">
 				<div class="table-responsive-md">
 					<table class="table table-striped table-bordered">
 						<thead>
@@ -157,50 +202,26 @@ if (empty($user->id)) {
 							<th scope="col"><?= $langs->trans('Nomlocal') ?></th>
 							<th scope="col"><?= $langs->trans('TotalAmount') ?></th>
 							<th scope="col"><?= $langs->trans('PartialPayment') ?></th>
-							<th scope="col"><?= $langs->trans('Balance') ?></th>
+							<th scope="col"><?= $langs->trans('DetteLocative') ?></th>
 						</tr>
 						</thead>
 						<tbody>
 						<?php
-						   $sql = "SELECT DISTINCT rec.rowid as reference, rec.label as receiptname,rec.ref as receiptref, loc.lastname as nom, ";
-							$sql .= " prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, ";
-							$sql .= " rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_owner,";
-							$sql .= " rec.fk_rent as refcontract, rent.preavis,";
-							$sql .= " rec.date_echeance, rent.preavis";
-							$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
-							//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
-							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter AND loc.rowid=".(int)$renterId;
-							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
-							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent AND rent.preavis=1";
-							$sql .= $db->order('rec.date_echeance','DESC');
-							$resql = $db->query($sql);
-							if ($resql < 0) {
-								setEventMessages($db->lasterror, null, 'errors');
-							} else {
-								$num = $db->num_rows($resql);
-								if ($num > 0) {
-									while ($objp = $db->fetch_object($resql)) {
+						if (!empty($datas)) {
+							foreach($datas as $data) {
+						?>
+						<tr>
+							<th scope="row"><a href="<?= $data['urldlfile'] ?>" target="_blank"><i class="fa fa-file-pdf px-1" aria-hidden="true"></i><?=  $data['receiptref'] ?></a></th>
+							<td><?=  dol_print_date($data['date_echeance']) ?></td>
+							<td><?=  $data['local'] ?></td>
+							<td><?=  price($data['total']) ?></td>
+							<td><?=  price($data['partial_payment']) ?></td>
+							<td><?=  price($data['balance']) ?></td>
+						</tr>
+						<?php
 
-										$objref = dol_sanitizeFileName($objp->receiptref);
-										$relativepath = $objref . '/' . $objref . '.pdf';
-										$filedir = $conf->ultimateimmo->dir_output . '/receipt' . '/' . $objref;
-										if (file_exists($filedir.'/'.$objref . '.pdf')) {
-											$urldlfile=dol_buildpath('/document.php', 2).'?modulepart=ultimateimmo&file=receipt/'.$relativepath;
-										}
-
-										?>
-							<tr>
-								<th scope="row"><a href="<?= $urldlfile ?>" target="_blank"><i class="fa fa-file-pdf px-1" aria-hidden="true"></i><?=  $objp->receiptref ?></a></th>
-								<td><?=  dol_print_date($objp->date_echeance) ?></td>
-								<td><?=  $objp->local ?></td>
-								<td><?=  price($objp->total) ?></td>
-								<td><?=  price($objp->partial_payment) ?></td>
-								<td><?=  price($objp->balance) ?></td>
-							</tr>
-										<?php
-									}
-								}
 							}
+						}
 						?>
 
 						</tbody>

@@ -333,12 +333,12 @@ function llxHeaderUltimateImmoPublic($title = '', $addJsSign = false, $addQuagga
 
 	$conf->dol_hide_leftmenu = 1;
 	$conf->dol_hide_leftmenu = 1;
-	$bootstrapCss = array('/ultimateimmo/includes/bootstrap-5.2.0/css/bootstrap.min.css',
-		'/ultimateimmo/includes/bootstrap-5.2.0/css/bootstrap-grid.min.css',
-		'/ultimateimmo/includes/bootstrap-5.2.0/css/bootstrap-reboot.min.css',
-		'/ultimateimmo/includes/bootstrap-5.2.0/css/bootstrap-utilities.min.css');
+	$bootstrapCss = array('/ultimateimmo/includes/bootstrap-5.3.1/css/bootstrap.min.css',
+		'/ultimateimmo/includes/bootstrap-5.3.1/css/bootstrap-grid.min.css',
+		'/ultimateimmo/includes/bootstrap-5.3.1/css/bootstrap-reboot.min.css',
+		'/ultimateimmo/includes/bootstrap-5.3.1/css/bootstrap-utilities.min.css');
 	$moreCss = $bootstrapCss;
-	$bootstrapJs = array('/ultimateimmo/includes/bootstrap-5.2.0/js/bootstrap.bundle.min.js');
+	$bootstrapJs = array('/ultimateimmo/includes/bootstrap-5.3.1/js/bootstrap.bundle.min.js');
 	$moreJs = $bootstrapJs;
 	$moreJs[] = DOL_URL_ROOT . '/includes/jquery/plugins/jSignature/jSignature.js';
 

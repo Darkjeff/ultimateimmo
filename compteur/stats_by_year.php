@@ -229,7 +229,7 @@ foreach ($result_data as $obj) {
 	print '<td class="left">' . ($obj->value_cpt_dt_last  - $obj->value_cpt_dt_first). '</td>';
 
 	//ImmoCompteurDtDiff
-	print '<td class="left">' . (($db->jdate($obj->dt_last) - $db->jdate($obj->dt_first)) /(24*60*365)). '</td>';
+	print '<td class="left">' . price((($db->jdate($obj->dt_last) - $db->jdate($obj->dt_first))) / (60*60*24)). '</td>';
 
 	print '<td class="left"></td>';
 

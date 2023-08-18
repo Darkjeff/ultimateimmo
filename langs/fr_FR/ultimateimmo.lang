@@ -458,3 +458,4 @@ ImmoCompteur_Costs = Cout des compteurs
 
 UltmImmoCreateContactAndUser=Créer un accès portail publique
 UltmImmoCreateUserSuccess=L'utilisateur à été créer, identifiant: %s, mot de passe: %s
+DetteLocative=Dette locative
