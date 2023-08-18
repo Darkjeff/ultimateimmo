@@ -58,6 +58,7 @@ if (!$res) {
 // Class
 require_once DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php";
 dol_include_once('/ultimateimmo/class/immocompteur.class.php');
+dol_include_once('/ultimateimmo/class/immocompteur_type.class.php');
 dol_include_once('/ultimateimmo/class/immoproperty.class.php');
 dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 
@@ -65,6 +66,7 @@ dol_include_once('/ultimateimmo/class/html.formultimateimmo.class.php');
 $langs->loadLangs(array("ultimateimmo@ultimateimmo", "other", "bills"));
 
 $object = new ImmoCompteur($db);
+$compteur_type=new ImmoCompteur_Type($db);
 $properties = new ImmoProperty($db);
 $form = new Form($db);
 $formImmo = new FormUltimateimmo($db);
@@ -81,6 +83,13 @@ if (GETPOSTISSET('search_compteur_type_id') && GETPOST('search_compteur_type_id'
 	$search['compteur_type_id'] = GETPOST('search_compteur_type_id', 'int');
 } else {
 	$search['compteur_type_id']=1;
+	$res=$compteur_type->fetchAll('','',0,0,array('active'=>1));
+	if (!is_array($res) && $res<0) {
+		setEventMessages($compteur_type->error,$compteur_type->errors,'errors');
+	}else {
+		$search['compteur_type_id']=reset($res)->id;
+	}
+
 }
 if (GETPOSTISSET('search_year')) {
 	$search['year'] = GETPOST('search_year', 'int');

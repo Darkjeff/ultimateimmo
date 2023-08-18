@@ -96,7 +96,7 @@ class ImmoCompteur extends CommonObject
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>'1', 'position'=>1, 'notnull'=>1, 'visible'=>0, 'noteditable'=>'1', 'index'=>1, 'comment'=>"Id"),
 		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>'1', 'position'=>10, 'notnull'=>1, 'visible'=>2, 'index'=>1, 'searchall'=>1, 'showoncombobox'=>'1', 'comment'=>"Reference of object"),
-		'compteur_type_id' => array('type' => 'integer:ImmoCompteur_Type:ultimateimmo/class/immocompteur_type.class.php:1:active=1', 'label' => 'ImmoCompteurType', 'enabled' => 1, 'visible' => -1, 'position' => 20, 'notnull' => 1, 'help' => 'ImmoCompteurTypeInfo',),
+		'compteur_type_id' => array('type' => 'integer:ImmoCompteur_Type:ultimateimmo/class/immocompteur_type.class.php:1:(active:=:1)', 'label' => 'ImmoCompteurType', 'enabled' => 1, 'visible' => -1, 'position' => 20, 'notnull' => 1, 'help' => 'ImmoCompteurTypeInfo',),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>'1', 'position'=>30, 'notnull'=>0, 'visible'=>0, 'searchall'=>1, 'css'=>'minwidth200', 'help'=>"Help text", 'showoncombobox'=>'1',),
 		'date_relever' => array('type'=>'date', 'label'=>'ImmoCompteurDateStatement', 'enabled'=>'1', 'position'=>45, 'notnull'=>1, 'visible'=>1,),
 		'qty' => array('type'=>'real', 'label'=>'ImmoCompteurStatement', 'enabled'=>'1', 'position'=>45, 'notnull'=>0, 'visible'=>1, 'default'=>'0', 'isameasure'=>'1', 'css'=>'maxwidth75imp', 'help'=>"ImmoCompteurStatementInfo",),
