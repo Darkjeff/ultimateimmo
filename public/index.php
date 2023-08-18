@@ -27,13 +27,13 @@
 //if (! defined('NOREQUIRESOC'))   define('NOREQUIRESOC','1');
 //if (! defined('NOREQUIRETRAN'))  define('NOREQUIRETRAN','1');
 if (!defined('NOCSRFCHECK')) {
-    define('NOCSRFCHECK', '1');
+	define('NOCSRFCHECK', '1');
 }
 // Do not check anti CSRF attack test
 //if (! defined('NOSTYLECHECK'))   define('NOSTYLECHECK','1');            // Do not check style html tag into posted data
 //if (! defined('NOTOKENRENEWAL')) define('NOTOKENRENEWAL','1');        // Do not check anti POST attack test
 if (!defined('NOREQUIREMENU')) {
-    define('NOREQUIREMENU', '1');
+	define('NOREQUIREMENU', '1');
 }
 // If there is no need to load and show top and left menu
 //if (! defined('NOREQUIREHTML'))  define('NOREQUIREHTML','1');            // If we don't need to load the html.form.class.php
@@ -44,22 +44,28 @@ if (!defined('NOREQUIREMENU')) {
 // If this page is public (can be called outside logged session)
 
 // Load Dolibarr environment
-$res=0;
+$res = 0;
 // Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
-if (! $res && ! empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res=@include($_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php");
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) $res = @include($_SERVER["CONTEXT_DOCUMENT_ROOT"] . "/main.inc.php");
 // Try main.inc.php into web root detected using web root caluclated from SCRIPT_FILENAME
-$tmp=empty($_SERVER['SCRIPT_FILENAME'])?'':$_SERVER['SCRIPT_FILENAME'];$tmp2=realpath(__FILE__); $i=strlen($tmp)-1; $j=strlen($tmp2)-1;
-while($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i]==$tmp2[$j]) { $i--; $j--; }
-if (! $res && $i > 0 && file_exists(substr($tmp, 0, ($i+1))."/main.inc.php")) $res=@include(substr($tmp, 0, ($i+1))."/main.inc.php");
-if (! $res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php")) $res=@include(dirname(substr($tmp, 0, ($i+1)))."/main.inc.php");
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME'];
+$tmp2 = realpath(__FILE__);
+$i = strlen($tmp) - 1;
+$j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--;
+	$j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1)) . "/main.inc.php")) $res = @include(substr($tmp, 0, ($i + 1)) . "/main.inc.php");
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php")) $res = @include(dirname(substr($tmp, 0, ($i + 1))) . "/main.inc.php");
 // Try main.inc.php using relative path
-if (! $res && file_exists("../main.inc.php")) $res=@include("../main.inc.php");
-if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.php");
-if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
-if (! $res) die("Include of main fails");
+if (!$res && file_exists("../main.inc.php")) $res = @include("../main.inc.php");
+if (!$res && file_exists("../../main.inc.php")) $res = @include("../../main.inc.php");
+if (!$res && file_exists("../../../main.inc.php")) $res = @include("../../../main.inc.php");
+if (!$res) die("Include of main fails");
 
-require_once DOL_DOCUMENT_ROOT.'/core/lib/security.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/security.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 dol_include_once('/ultimateimmo/lib/ultimateimmo.lib.php');
 
 // Load translation files required by the page
@@ -72,9 +78,9 @@ $action = GETPOST('action', 'alpha');
 /*
  * Action
  */
-if ($action=='logout') {
+if ($action == 'logout') {
 	$_SESSION["urlfrom"] = dol_buildpath('/ultimateimmo/public/index.php', 1);
-	header("Location: ".dol_buildpath('/user/logout.php',2).'?token='.newToken()); // Default behaviour is redirect to index.php page
+	header("Location: " . dol_buildpath('/user/logout.php', 2) . '?token=' . newToken()); // Default behaviour is redirect to index.php page
 	exit;
 }
 
@@ -83,8 +89,7 @@ if ($action=='logout') {
  * View
  */
 
-if (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))
-{
+if (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE)) {
 	print $langs->trans('UltimateimmoPublicInterfaceForbidden');
 	exit;
 }
@@ -95,7 +100,6 @@ $form = new Form($db);
 llxHeaderUltimateImmoPublic();
 
 
-
 if (empty($user->id)) {
 	dol_include_once('/core/tpl/login.tpl.php');
 } else {
@@ -104,11 +108,11 @@ if (empty($user->id)) {
 	//var_dump($user);
 	$renter = new ImmoRenter($db);
 
-	$userLinkid=0;
+	$userLinkid = 0;
 
 	$sql = 'SELECT renter.rowid as renterId FROM ' . MAIN_DB_PREFIX . 'socpeople as sp ';
 	$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'user as u ON u.fk_socpeople=sp.rowid';
-	$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . $renter->table_element.' as renter ON renter.fk_soc=sp.fk_soc';
+	$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . $renter->table_element . ' as renter ON renter.fk_soc=sp.fk_soc';
 	$sql .= ' WHERE sp.fk_soc=' . (int)$user->socid;
 	$sql .= ' AND u.rowid="' . $user->id . '"';
 	$sql .= ' AND sp.email="' . $user->email . '"';
@@ -125,20 +129,19 @@ if (empty($user->id)) {
 		}
 	}
 
-
-	  $sql = "SELECT DISTINCT rec.rowid as reference, rec.label as receiptname,rec.ref as receiptref, loc.lastname as nom, ";
+	$sql = "SELECT DISTINCT rec.rowid as reference, rec.label as receiptname,rec.ref as receiptref, loc.lastname as nom, ";
 	$sql .= " prop.address, prop.label as local, loc.status as status, rec.total_amount as total, rec.partial_payment, ";
 	$sql .= " rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_owner,";
 	$sql .= " rec.fk_rent as refcontract, rent.preavis,";
 	$sql .= " rec.date_echeance, rent.preavis";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
-	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter AND loc.rowid=".(int)$renterId;
+	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter AND loc.rowid=" . (int)$renterId;
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent AND rent.preavis=1";
-	$sql .= $db->order('rec.date_echeance','DESC');
+	$sql .= $db->order('rec.date_echeance', 'DESC');
 	$resql = $db->query($sql);
-	$datas=[];
-	$totalBalance=0;
+	$datas = [];
+	$totalBalance = 0;
 	if ($resql < 0) {
 		setEventMessages($db->lasterror, null, 'errors');
 	} else {
@@ -153,13 +156,13 @@ if (empty($user->id)) {
 					$urldlfile = dol_buildpath('/document.php', 2) . '?modulepart=ultimateimmo&file=receipt/' . $relativepath;
 				}
 
-				$datas[$objp->reference]['date_echeance']=$objp->date_echeance;
-				$datas[$objp->reference]['local']=$objp->local;
-				$datas[$objp->reference]['total']=$objp->total;
-				$datas[$objp->reference]['partial_payment']=$objp->partial_payment;
-				$datas[$objp->reference]['balance']=$objp->balance;
-				$datas[$objp->reference]['receiptref']=$objp->receiptref;
-				$datas[$objp->reference]['urldlfile']=$urldlfile;
+				$datas[$objp->reference]['date_echeance'] = $objp->date_echeance;
+				$datas[$objp->reference]['local'] = $objp->local;
+				$datas[$objp->reference]['total'] = $objp->total;
+				$datas[$objp->reference]['partial_payment'] = $objp->partial_payment;
+				$datas[$objp->reference]['balance'] = $objp->balance;
+				$datas[$objp->reference]['receiptref'] = $objp->receiptref;
+				$datas[$objp->reference]['urldlfile'] = $urldlfile;
 
 				$totalBalance += (float)$objp->balance;
 
@@ -167,18 +170,83 @@ if (empty($user->id)) {
 		}
 	}
 
-?>
-<main>
+	if (!empty($datas)) {
+		dol_include_once('/ultimateimmo/class/immocompteur.class.php');
+		$compteur = new ImmoCompteur($db);
+		$sql = 'SELECT ';
+		$sql .= $compteur->getFieldList('compteur');
+		$sql .= ',prop.label as local, ict.label as label_compteur, ict.rowid as typecounterid, YEAR(compteur.date_relever) as yearrelever';
+		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter AND loc.rowid=" . (int)$renterId;
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent AND rent.preavis=1";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocompteur as compteur ON compteur.fk_immoproperty=rec.fk_property";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "c_ultimateimmo_immocompteur_type as ict ON ict.rowid=compteur.compteur_type_id";
+		$sql .= " WHERE 1=1";
+		$sql .= " AND YEAR(compteur.date_relever)=YEAR(rec.date_echeance)";
+		$sql .= $db->order('rec.date_echeance', 'DESC');
+		$resultDataCompteur = array();
+
+		$resql = $db->query($sql);
+		if ($resql < 0) {
+			setEventMessages($db->lasterror, null, 'errors');
+		} else {
+			$num = $db->num_rows($resql);
+			if ($num > 0) {
+
+				while ($obj = $db->fetch_object($resql)) {
+					$newObj = new stdClass();
+					if (array_key_exists($obj->fk_immoproperty, $resultDataCompteur)
+					&& array_key_exists($obj->yearrelever, $resultDataCompteur[$obj->fk_immoproperty])
+					&& array_key_exists($obj->typecounterid, $resultDataCompteur[$obj->fk_immoproperty][$obj->yearrelever])) {
+						if ($obj->date_relever < $resultDataCompteur[$obj->fk_immoproperty][$obj->yearrelever][$obj->typecounterid]->dt_first) {
+							$newObj->dt_first = $obj->date_relever;
+							$newObj->value_cpt_dt_first = $obj->qty;
+						} else {
+							$newObj = $resultDataCompteur[$obj->fk_immoproperty][$obj->yearrelever][$obj->typecounterid];
+						}
+						if ($obj->date_relever > $resultDataCompteur[$obj->fk_immoproperty][$obj->yearrelever][$obj->typecounterid]->dt_last) {
+							$newObj->dt_last = $obj->date_relever;
+							$newObj->value_cpt_dt_last = $obj->qty;
+						}
+					} else {
+						$newObj->dt_first = $obj->date_relever;
+						$newObj->value_cpt_dt_first = $obj->qty;
+						$newObj->dt_last = $obj->date_relever;
+						$newObj->value_cpt_dt_last = $obj->qty;
+					}
+					$newObj->fk_immoproperty = $obj->fk_immoproperty;
+					$newObj->local = $obj->local;
+					$newObj->label_compteur = $obj->label_compteur;
+					$newObj->conso = $newObj->value_cpt_dt_last  - $newObj->value_cpt_dt_first;
+
+					$resultDataCompteur[$obj->fk_immoproperty][$obj->yearrelever][$obj->typecounterid] = $newObj;
+				}
+				$db->free($resql);
+			}
+		}
+	}
+
+	?>
+	<main>
 		<div class="container">
 			<div class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-				<div class="col-md-4">
-					<span class="fs-4"><?= $langs->trans('Renter').':'.$user->getFullName($langs);?></span>
+				<div class="col-md-3">
+					<span class="fs-4"><?= $langs->trans('Renter') . ':' . $user->getFullName($langs); ?></span>
 				</div>
-				<div class="col-md-4 text-center">
-					<span class="fs-4"><?= $langs->trans('DetteLocative').': '.price($totalBalance,0,$langs,1,-1,-1, $conf->currency) ?></span>
+				<div class="col-md-3 text-md-center">
+						<span
+							class="fs-4"><?= $langs->trans('DetteLocative') . ': ' . price($totalBalance, 0, $langs, 1, -1, -1, $conf->currency) ?></span>
 				</div>
-				<div class="col-md-4 text-md-end">
-					<a href="<?= $_SERVER['PHP_SELF'].'?action=logout&token='.newToken()?>">
+				<?php if (!empty($resultDataCompteur)) { ?>
+				<div class="col-md-3 text-md-center">
+						<a href="#dataCompteur">
+						<i class="fa fa-2x fa-faucet" aria-hidden="true"></i>
+					</a>
+				</div>
+				<?php } ?>
+				<div class="col-md-3 text-md-end">
+					<a href="<?= $_SERVER['PHP_SELF'] . '?action=logout&token=' . newToken() ?>">
 						<i class="fa fa-2x fa-sign-out" aria-hidden="true"></i>
 					</a>
 				</div>
@@ -193,43 +261,85 @@ if (empty($user->id)) {
 			</div> -->
 		</div>
 		<div class="container" id="recepit">
-				<div class="table-responsive-md">
-					<table class="table table-striped table-bordered">
-						<thead>
-						<tr>
-							<th scope="col"><?= $langs->trans('NomLoyer') ?></th>
-							<th scope="col"><?= $langs->trans('Date') ?></th>
-							<th scope="col"><?= $langs->trans('Nomlocal') ?></th>
-							<th scope="col"><?= $langs->trans('TotalAmount') ?></th>
-							<th scope="col"><?= $langs->trans('PartialPayment') ?></th>
-							<th scope="col"><?= $langs->trans('DetteLocative') ?></th>
-						</tr>
-						</thead>
-						<tbody>
-						<?php
-						if (!empty($datas)) {
-							foreach($datas as $data) {
-						?>
-						<tr>
-							<th scope="row"><a href="<?= $data['urldlfile'] ?>" target="_blank"><i class="fa fa-file-pdf px-1" aria-hidden="true"></i><?=  $data['receiptref'] ?></a></th>
-							<td><?=  dol_print_date($data['date_echeance']) ?></td>
-							<td><?=  $data['local'] ?></td>
-							<td><?=  price($data['total']) ?></td>
-							<td><?=  price($data['partial_payment']) ?></td>
-							<td><?=  price($data['balance']) ?></td>
-						</tr>
-						<?php
+			<div class="table-responsive-md">
+				<table class="table table-striped table-bordered">
+					<thead>
+					<tr>
+						<th scope="col"><?= $langs->trans('NomLoyer') ?></th>
+						<th scope="col"><?= $langs->trans('Date') ?></th>
+						<th scope="col"><?= $langs->trans('Nomlocal') ?></th>
+						<th scope="col"><?= $langs->trans('TotalAmount') ?></th>
+						<th scope="col"><?= $langs->trans('PartialPayment') ?></th>
+						<th scope="col"><?= $langs->trans('DetteLocative') ?></th>
+					</tr>
+					</thead>
+					<tbody>
+					<?php
+					if (!empty($datas)) {
+						foreach ($datas as $data) {
+							?>
+							<tr>
+								<th scope="row"><a href="<?= $data['urldlfile'] ?>" target="_blank"><i
+											class="fa fa-file-pdf px-1"
+											aria-hidden="true"></i><?= $data['receiptref'] ?></a></th>
+								<td><?= dol_print_date($data['date_echeance']) ?></td>
+								<td><?= $data['local'] ?></td>
+								<td><?= price($data['total']) ?></td>
+								<td><?= price($data['partial_payment']) ?></td>
+								<td><?= price($data['balance']) ?></td>
+							</tr>
+							<?php
 
+						}
+					}
+					?>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<?php if (!empty($resultDataCompteur)) { ?>
+		<div class="container" id="dataCompteur">
+			<div class="row">
+				<div class="col-md-12 text-md-center">
+					<span class="fs-4"><?= $langs->trans('MenuImmoCompteur'); ?></span>
+				</div>
+			</div>
+			<table class="table table-striped table-bordered">
+					<thead>
+					<tr>
+						<th scope="col"><?= $langs->trans('Year') ?></th>
+						<th scope="col"><?= $langs->trans('ImmoCompteurType') ?></th>
+						<th scope="col"><?= $langs->trans('Nomlocal') ?></th>
+						<th scope="col"><?= $langs->trans('Consommation') ?></th>
+					</tr>
+					</thead>
+					<tbody>
+						<?php
+						if (!empty($resultDataCompteur)) {
+							foreach ($resultDataCompteur as $propertyId=>$dataByProperty) {
+								foreach ($dataByProperty as $yearRelever=>$dataByYear) {
+									foreach ($dataByYear as $counterType=>$dataByCounterType) {
+
+								?>
+								<tr>
+									<th scope="row"><?= $yearRelever ?></th>
+									<td><?= $dataByCounterType->label_compteur ?></td>
+									<td><?= $dataByCounterType->local ?></td>
+									<td><?= $dataByCounterType->conso ?></td>
+								</tr>
+								<?php
+									}
+								}
 							}
 						}
-						?>
+					?>
+					</tbody>
+			</table>
 
-						</tbody>
-					</table>
-				</div>
 		</div>
-</main>
-<?php
+		<?php } ?>
+	</main>
+	<?php
 }
 
 // End of page

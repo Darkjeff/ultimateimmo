@@ -80,7 +80,7 @@ if (GETPOSTISSET('search_fk_immoproperty') && GETPOST('search_fk_immoproperty', 
 if (GETPOSTISSET('search_compteur_type_id') && GETPOST('search_compteur_type_id', 'int') != -1) {
 	$search['compteur_type_id'] = GETPOST('search_compteur_type_id', 'int');
 } else {
-	$search['compteur_type_id']=0;
+	$search['compteur_type_id']=1;
 }
 if (GETPOSTISSET('search_year')) {
 	$search['year'] = GETPOST('search_year', 'int');
@@ -121,7 +121,7 @@ $sql = 'SELECT ';
 $sql .= $object->getFieldList('t');
 $sql .= ',ict.label as label_compteur';
 $sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
-$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immocompteur_type as ict ON ict.rowid=t.compteur_type_id";
+$sql .= " INNER JOIN ".MAIN_DB_PREFIX."c_ultimateimmo_immocompteur_type as ict ON ict.rowid=t.compteur_type_id";
 $sql .= " WHERE 1=1";
 if (!empty($search['fk_immoproperty'])) {
 	$sql .=" AND t.fk_immoproperty=".(int) $search['fk_immoproperty'];
