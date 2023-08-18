@@ -227,42 +227,81 @@ if (empty($user->id)) {
 		}
 	}
 
+
+	$sqlBilan = "(SELECT l.date_start as date , l.total_amount as debit, 0 as credit , l.label as des";
+	$sqlBilan .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as l";
+	$sqlBilan .= " WHERE  l.fk_renter =" . (int)$renterId;
+	$sqlBilan .= ")";
+	$sqlBilan .= "UNION (SELECT p.date_payment as date, 0 as debit, p.amount as credit, p.note_public as des";
+	$sqlBilan .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
+	$sqlBilan .= " WHERE p.fk_renter =" . (int)$renterId;
+	$sqlBilan .= ")";
+	$sqlBilan .= " ORDER BY date";
+	$resultDataBilan = array();
+	$resql = $db->query($sqlBilan);
+	if ($resql < 0) {
+		setEventMessages($db->lasterror, null, 'errors');
+	} else {
+		$num = $db->num_rows($resql);
+		if ($num > 0) {
+			while ($objp = $db->fetch_object($resql)) {
+				$resultDataBilan[]=$objp;
+			}
+		}
+	}
+
+	$sql2 = "SELECT SUM(l.total_amount) as debit, 0 as credit ";
+	$sql2 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as l";
+	$sql2 .= " WHERE l.fk_renter =" . (int)$renterId;
+
+
+	$sql3 = "SELECT 0 as debit , sum(p.amount) as credit";
+	$sql3 .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
+	$sql3 .= " WHERE p.fk_renter =" . (int)$renterId;
+
+	$result2 = $db->query ( $sql2 );
+	if ($result2 < 0) {
+		setEventMessages($db->lasterror, null, 'errors');
+	}
+	$result3 = $db->query ( $sql3 );
+	if ($result3 < 0) {
+		setEventMessages($db->lasterror, null, 'errors');
+	}
+	$objp2 = $db->fetch_object ( $result2 );
+	$objp3 = $db->fetch_object ( $result3 );
+	$newObj = new stdClass();
+	$newObj->debit = $objp2->debit;
+	$newObj->debit = $objp3->credit;
+	$newObj->balance = (float)$objp3->credit-(float)$objp2->debit;
+	$resultDataBilan['total']=$newObj;
+
 	?>
 	<main>
 		<div class="container">
 			<div class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-				<div class="col-md-3">
+				<div class="col-md-4">
 					<span class="fs-4"><?= $langs->trans('Renter') . ': ' . $user->getFullName($langs); ?></span>
 				</div>
-				<div class="col-md-3 text-md-center">
+				<div class="col-md-4 text-md-center">
 						<span
 							class="fs-4"><?= $langs->trans('DetteLocative') . ': ' . price($totalBalance, 0, $langs, 1, -1, -1, $conf->currency) ?></span>
 				</div>
-				<?php if (!empty($resultDataCompteur)) { ?>
-				<div class="col-md-3 text-md-center">
-						<a href="#dataCompteur">
-						<i class="fa fa-2x fa-faucet" aria-hidden="true"></i>
-					</a>
-				</div>
-				<?php } ?>
-				<div class="col-md-3 text-md-end">
+				<div class="col-md-4 text-md-end">
 					<a href="<?= $_SERVER['PHP_SELF'] . '?action=logout&token=' . newToken() ?>">
 						<i class="fa fa-2x fa-sign-out" aria-hidden="true"></i>
 					</a>
 				</div>
 			</div>
-			<!-- <div class="row">
-				<div class="col-md-6 text-md-center">
-					<i class="fa fa-2x fa-money-bill" aria-hidden="true"></i>
-				</div>
-				<div class="col-md-6 text-md-center">
-					<i class="fa fa-2x fa-tint" aria-hidden="true"></i>
-				</div>
-			</div> -->
 		</div>
 		<div class="container" id="recepit">
-			<div class="table-responsive-md">
-				<table class="table table-striped table-bordered">
+			<div class="row">
+				<div class="col-md-12 text-md-center">
+					<span class="fs-4"><?= $langs->trans('MenuListImmoReceipt'); ?></span>
+				</div>
+			</div>
+			<div class="col row border border-dark rounded-4 table-responsive-md overflow-scroll"
+				 style="max-height: 500px;">
+				<table class="table table-striped table-bordered table-primary">
 					<thead>
 					<tr>
 						<th scope="col"><?= $langs->trans('NomLoyer') ?></th>
@@ -304,39 +343,84 @@ if (empty($user->id)) {
 					<span class="fs-4"><?= $langs->trans('MenuImmoCompteur'); ?></span>
 				</div>
 			</div>
-			<table class="table table-striped table-bordered">
-					<thead>
-					<tr>
-						<th scope="col"><?= $langs->trans('Year') ?></th>
-						<th scope="col"><?= $langs->trans('ImmoCompteurType') ?></th>
-						<th scope="col"><?= $langs->trans('Nomlocal') ?></th>
-						<th scope="col"><?= $langs->trans('Consommation') ?></th>
-					</tr>
-					</thead>
-					<tbody>
-						<?php
-						if (!empty($resultDataCompteur)) {
-							foreach ($resultDataCompteur as $propertyId=>$dataByProperty) {
-								foreach ($dataByProperty as $yearRelever=>$dataByYear) {
-									foreach ($dataByYear as $counterType=>$dataByCounterType) {
+			<div class="col row border border-dark rounded-4 table-responsive-md overflow-scroll"
+				 style="max-height: 500px;">
+				<table class="table table-striped table-bordered table-secondary">
+						<thead>
+						<tr>
+							<th scope="col"><?= $langs->trans('Year') ?></th>
+							<th scope="col"><?= $langs->trans('ImmoCompteurType') ?></th>
+							<th scope="col"><?= $langs->trans('Nomlocal') ?></th>
+							<th scope="col"><?= $langs->trans('Consommation') ?></th>
+						</tr>
+						</thead>
+						<tbody>
+							<?php
+							if (!empty($resultDataCompteur)) {
+								foreach ($resultDataCompteur as $propertyId=>$dataByProperty) {
+									foreach ($dataByProperty as $yearRelever=>$dataByYear) {
+										foreach ($dataByYear as $counterType=>$dataByCounterType) {
 
-								?>
-								<tr>
-									<th scope="row"><?= $yearRelever ?></th>
-									<td><?= $dataByCounterType->label_compteur ?></td>
-									<td><?= $dataByCounterType->local ?></td>
-									<td><?= $dataByCounterType->conso ?></td>
-								</tr>
-								<?php
+									?>
+									<tr>
+										<th scope="row"><?= $yearRelever ?></th>
+										<td><?= $dataByCounterType->label_compteur ?></td>
+										<td><?= $dataByCounterType->local ?></td>
+										<td><?= $dataByCounterType->conso ?></td>
+									</tr>
+									<?php
+										}
 									}
 								}
 							}
-						}
-					?>
-					</tbody>
-			</table>
-
+						?>
+						</tbody>
+				</table>
+			</div>
 		</div>
+		<?php } ?>
+		<?php if (!empty($resultDataBilan)) { ?>
+		<div class="container" id="dataBilan">
+			<div class="row">
+				<div class="col-md-12 text-md-center">
+					<span class="fs-4"><?= $langs->trans('DetailPayment'); ?></span>
+				</div>
+			</div>
+			<div class="col row border border-dark rounded-4 table-responsive-md overflow-scroll"
+				 style="max-height: 500px;">
+				<table class="table table-striped table-bordered table-info">
+					<thead>
+					<tr>
+						<th scope="col"><?= $langs->trans('Date') ?></th>
+						<th scope="col"><?= $langs->trans('Debit') ?></th>
+						<th scope="col"><?= $langs->trans('Credit') ?></th>
+						<th scope="col"><?= $langs->trans('Description') ?></th>
+					</tr>
+					</thead>
+					<tbody>
+					<?php
+						foreach ($resultDataBilan as $key=>$data) {
+							if ($key !== 'total') {
+							?>
+						<tr>
+							<th scope="row"><?= dol_print_date ( $db->jdate ( $data->date ), 'day' ) ?></th>
+							<td><?= price($data->debit) ?></td>
+							<td><?= price($data->credit) ?></td>
+							<td><?= $data->des ?></td>
+						</tr>
+					<?php
+							}
+						}
+							?>
+					</tbody>
+					<tfoot>
+						<th scope="row"><?= $langs->trans("Total")  ?></th>
+						<td><?= price($resultDataBilan['total']->debit) ?></td>
+						<td><?= price($resultDataBilan['total']->credit) ?></td>
+						<td><?= price($resultDataBilan['total']->balance) ?></td>
+					</tfoot>
+				</table>
+			</div>
 		<?php } ?>
 	</main>
 	<?php
