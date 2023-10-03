@@ -130,7 +130,7 @@ class ImmoRent extends CommonObject
 									'position' => 80, 'notnull' => -1,),
 		'periode'          => array('type'     => 'varchar(128)', 'label' => 'ImmoRentPeriod', 'visible' => -1, 'enabled' => 1,
 									'position' => 85, 'notnull' => -1, 'help' => 'ImmoRentPeriodInfo',),
-		'preavis'          => array('type'          => 'integer', 'label' => 'ImmoRentNoticePeriod', 'visible' => -1, 'enabled' => 1,
+		'preavis'          => array('type'          => 'integer', 'label' => 'ImmoRentNoticePeriod', 'visible' => 1, 'enabled' => 1,
 									'position'      => 85, 'notnull' => -1,
 									'arrayofkeyval' => array('1' => 'No', '2' => 'Yes')),
 		'date_start'       => array('type'     => 'date', 'label' => 'DateStartRent', 'visible' => -1, 'enabled' => 1,
