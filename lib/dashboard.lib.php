@@ -35,6 +35,25 @@ function getPropertiesNumber($status)
 
     return $res;
 }
+/**
+ * Get the number of devices
+ *
+ * @return int
+ */
+ // get number property
+function getOwnerNumber($status)
+{
+    global $db;
+
+    $res = 0;
+    $sql = 'SELECT COUNT(rowid) AS total FROM '.MAIN_DB_PREFIX.'ultimateimmo_immoowner WHERE status = '.$status;
+    $resql = $db->query($sql);
+    if ($resql) {
+        $res = ($db->fetch_object($resql))->total;
+    }
+
+    return $res;
+}
 
 function getRentNumber($status)
 {
