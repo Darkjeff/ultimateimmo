@@ -81,8 +81,8 @@ if ($user->rights->ultimateimmo->read) {
         'url_add' => dol_buildpath('/ultimateimmo/property/immoproperty_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('ImmoNotActiveProperties'), 'value' => getPropertiesNumber(9), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1)),
-            array('title' => $langs->trans('ImmoActiveProperties'), 'value' => getPropertiesNumber(1), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1)),
+            array('title' => $langs->trans('ImmoActiveProperties'), 'value' => getPropertiesNumber(1), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php?search_status=1', 1)),
+			array('title' => $langs->trans('ImmoNotActiveProperties'), 'value' => getPropertiesNumber(9), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php?search_status=9', 1)),
         )
     );
 }
@@ -93,8 +93,8 @@ if ($user->rights->ultimateimmo->read) {
         'url_add' => dol_buildpath('/ultimateimmo/rent/immorent_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('MenuImmoNotActiveRent'), 'value' => getRentNumber(2), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1)),
-            array('title' => $langs->trans('MenuImmoActiveRent'), 'value' => getRentNumber(1), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1)),
+            array('title' => $langs->trans('MenuImmoActiveRent'), 'value' => getRentNumber(1), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php?search_status=1', 1)),
+			array('title' => $langs->trans('MenuImmoNotActiveRent'), 'value' => getRentNumber(2), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php?search_status=0', 1)),
         )
     );
 }
