@@ -98,8 +98,47 @@ if (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE)) {
 $form = new Form($db);
 
 llxHeaderUltimateImmoPublic();
+?>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			const loadingModal = document.getElementById("loadingModal");
+			const bsModalLoading = new bootstrap.Modal(loadingModal);
+
+        	const errorModal = document.getElementById("errorModal");
+			let bsModalError = new bootstrap.Modal(errorModal);
+
+			const inputCompteurModal = document.getElementById('inputCompteurModal');
+			const bsinputCompteurModal = new bootstrap.Modal(inputCompteurModal);
+			$('#validCounter').click(function () {
+				bsModalLoading.show();
+				$.ajax({
+					type: "POST",
+					url: "<?php echo dol_buildpath('/ultimateimmo/ajax/publiccounter.php', 2); ?>",
+					data: {
+						action: "validCounterInput",
+						token: "<?php echo currentToken();?>",
+						immoProperty: $('#counterProperty').val(),
+						counterValue: $('#counterValue').val(),
+					},
+					dataType: "json"
+				}).done(function (response) {
+					location.reload();
+				}).fail(function (response) {
+					bsinputCompteurModal.hide();
+					console.log("Error in ajax call");
+					console.log(response);
+					setTimeout(function () {
+						bsModalLoading.hide();
+						$('#errorModalText').text(response.responseJSON)
+						bsModalError.show();
+					}, 500);
+				});
+			});
 
 
+		});
+	</script>
+<?php
 if (empty($user->id)) {
 	dol_include_once('/core/tpl/login.tpl.php');
 } else {
@@ -134,6 +173,7 @@ if (empty($user->id)) {
 	$sql .= " rec.balance, rec.fk_renter as reflocataire, rec.fk_property as reflocal, rec.fk_owner,";
 	$sql .= " rec.fk_rent as refcontract, rent.preavis,";
 	$sql .= " rec.date_echeance, rent.preavis";
+	$sql .= " ,prop.rowid as propid";
 	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter AND loc.rowid=" . (int)$renterId;
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
@@ -141,6 +181,7 @@ if (empty($user->id)) {
 	$sql .= $db->order('rec.date_echeance', 'DESC');
 	$resql = $db->query($sql);
 	$datas = [];
+	$resultDataProperty = array();
 	$totalBalance = 0;
 	if ($resql < 0) {
 		setEventMessages($db->lasterror, null, 'errors');
@@ -163,6 +204,7 @@ if (empty($user->id)) {
 				$datas[$objp->reference]['balance'] = $objp->balance;
 				$datas[$objp->reference]['receiptref'] = $objp->receiptref;
 				$datas[$objp->reference]['urldlfile'] = $urldlfile;
+				$resultDataProperty[$objp->propid]=$objp->local;
 
 				$totalBalance += (float)$objp->balance;
 
@@ -279,14 +321,24 @@ if (empty($user->id)) {
 	<main>
 		<div class="container">
 			<div class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-				<div class="col-md-4">
+				<div class="col-md-3">
 					<span class="fs-4"><?= $langs->trans('Renter') . ': ' . $user->getFullName($langs); ?></span>
 				</div>
-				<div class="col-md-4 text-md-center">
+				<div class="col-md-3 text-md-center">
 						<span
 							class="fs-4"><?= $langs->trans('DetteLocative') . ': ' . price($totalBalance, 0, $langs, 1, -1, -1, $conf->currency) ?></span>
 				</div>
-				<div class="col-md-4 text-md-end">
+				<div class="col-md-3 text-md-end">
+						<?php
+					if (!empty($resultDataProperty))
+					{
+						?>
+					<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#inputCompteurModal"><?= $langs->trans('InputCounterWarter');?></button>
+						<?php
+					}
+						?>
+				</div>
+				<div class="col-md-3 text-md-end">
 					<a href="<?= $_SERVER['PHP_SELF'] . '?action=logout&token=' . newToken() ?>">
 						<i class="fa fa-2x fa-sign-out" aria-hidden="true"></i>
 					</a>
@@ -422,6 +474,81 @@ if (empty($user->id)) {
 				</table>
 			</div>
 		<?php } ?>
+
+			<!-- Input Compteur Modal -->
+			<div class="modal fade" id="inputCompteurModal" tabindex="-1"
+			aria-labelledby="inputCompteurModal" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title"
+								id="inputCompteurModalLabel"><?= $langs->trans('InputCounterWarter');?></h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="<?=  $langs->trans('Close'); ?>"></button>
+						</div>
+						<div class="modal-body">
+							<div class="row pt-2">
+								<label for="counterProperty" class="form-label"><?=  $langs->trans('Property');?></label>
+								<select class="form-select" id="counterProperty" name="counterProperty" aria-label="<?=  $langs->trans('Property');?>">
+									<?php
+										foreach($resultDataProperty as $propid=>$proplabel) {
+											?>
+												<option value="<?= $propid?>"><?= $proplabel?></option>
+											<?php
+										}
+									?>
+								</select>
+							</div>
+							<div class="row pt-2">
+								<label for="counterValue" class="form-label"><?=  $langs->trans('ImmoCompteurStatement');?></label>
+								<input type="number" class="form-control" id="counterValue" name="counterValue">
+							</div>
+							<div class="row pt-2">
+								<div class="col text-md-end">
+									<button type="button" class="btn btn-primary validCounter" id="validCounter" data-bs-dismiss="modal">
+									<?= $langs->trans('Valid'); ?>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Error Modal -->
+			<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModal"
+				 aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header bg-danger">
+							<h5 class="modal-title"
+								id="errorModalLabel"><?= $langs->trans('Error');?></h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="<?= $langs->trans('Close') ?>"></button>
+						</div>
+						<div class="modal-body bg-warning">
+							<h5 id="errorModalText"></h5>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- Loading -->
+			<div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModal"
+				 aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title"
+								id="loadingModalLabel"><?= $langs->trans('Loading') ?></h5>
+							<div class="spinner-border" role="status">
+							  <span class="visually-hidden"><?= $langs->trans('Loading') ?></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 	</main>
 	<?php
 }

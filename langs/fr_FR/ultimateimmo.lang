@@ -460,3 +460,6 @@ UltmImmoCreateContactAndUser=Créer un accès portail publique
 UltmImmoCreateUserSuccess=L'utilisateur à été créer, identifiant: %s, mot de passe: %s
 DetteLocative=Dette locative
 DetailPayment=Détail Paiement
+
+InputCounterWarter=Saisie Compteur Eaux
+CounterNotAllowedInput=Vous ne pouvez pas saisir un relevé de compteur sur ce compteur
