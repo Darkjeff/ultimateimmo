@@ -143,7 +143,7 @@ div.mainmenu.result {
 	background-color: #FFBF69;
 	border-top-left-radius: .25rem;
 	border-bottom-left-radius: .25rem;
-	width: 25%;
+	width: 10%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
