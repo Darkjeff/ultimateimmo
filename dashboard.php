@@ -68,8 +68,8 @@ if ($user->rights->ultimateimmo->read) {
         'url_add' => dol_buildpath('/ultimateimmo/owner/immoowner_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('MenuImmoActiveOwner'), 'value' => getOwnerNumber(1), 'url' => dol_buildpath('/ultimateimmo/owner/immoowner_list.php?search_status=1', 1)),
-			array('title' => $langs->trans('MenuImmoNotActiveOwner'), 'value' => getOwnerNumber(9), 'url' => dol_buildpath('/ultimateimmo/owner/immoowner_list.php?search_status=9', 1)),
+            array('title' => $langs->trans('MenuImmoActiveOwner'), 'value' => getOwnerNumber(1), 'url' => dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1).'?search_status=1'),
+			array('title' => $langs->trans('MenuImmoNotActiveOwner'), 'value' => getOwnerNumber(9), 'url' => dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1).'?search_status=9'),
         )
     );
 }
@@ -81,8 +81,8 @@ if ($user->rights->ultimateimmo->read) {
         'url_add' => dol_buildpath('/ultimateimmo/property/immoproperty_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('ImmoActiveProperties'), 'value' => getPropertiesNumber(1), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php?search_status=1', 1)),
-			array('title' => $langs->trans('ImmoNotActiveProperties'), 'value' => getPropertiesNumber(9), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php?search_status=9', 1)),
+            array('title' => $langs->trans('ImmoActiveProperties'), 'value' => getPropertiesNumber(1), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1).'?search_status=1'),
+			array('title' => $langs->trans('ImmoNotActiveProperties'), 'value' => getPropertiesNumber(9), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1).'?search_status=9'),
         )
     );
 }
@@ -93,8 +93,8 @@ if ($user->rights->ultimateimmo->read) {
         'url_add' => dol_buildpath('/ultimateimmo/rent/immorent_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('MenuImmoActiveRent'), 'value' => getRentNumber(1), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php?search_preavis=1', 1)),
-			array('title' => $langs->trans('MenuImmoNotActiveRent'), 'value' => getRentNumber(2), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php?search_preavis=2', 1)),
+            array('title' => $langs->trans('MenuImmoActiveRent'), 'value' => getRentNumber(1), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1).'?search_preavis=1'),
+			array('title' => $langs->trans('MenuImmoNotActiveRent'), 'value' => getRentNumber(2), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1).'?search_preavis=2'),
         )
     );
 }
@@ -105,99 +105,12 @@ if ($user->rights->ultimateimmo->read) {
         'url_add' => dol_buildpath('/ultimateimmo/renter/immorenter_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
-            array('title' => $langs->trans('MenuImmoActiveRenter'), 'value' => getRenterNumber(1), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php?search_status=1', 1)),
-			array('title' => $langs->trans('MenuImmoNotActiveRenter'), 'value' => getRenterNumber(0), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php?search_status=0', 1)),
+            array('title' => $langs->trans('MenuImmoActiveRenter'), 'value' => getRenterNumber(1), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1).'?search_status=1'),
+			array('title' => $langs->trans('MenuImmoNotActiveRenter'), 'value' => getRenterNumber(0), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1).'?search_status=0'),
         )
     );
 }
 
-
-/*if ($user->rights->ultimateimmo->user->read) {
-    $globalboxes[] = array('name' => $langs->trans('RENTER'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_USER, 'icon' => 'fa-user',
-        'url' => dol_buildpath('/ultimateimmo/contact_list.php', 1),
-        'url_add' => dol_buildpath('/ultimateimmo/contact_card.php?action=create', 1),
-        'right' => $user->rights->ultimateimmo->user->write,
-        'lines' => array(
-            array('title' => $langs->trans('Total'), 'value' => getUsersNumber(), 'url' => dol_buildpath('/ultimateimmo/contact_list.php', 1)),
-        )
-    );
-}
-
-if ($user->rights->ultimateimmo->application->read) {
-    $globalboxes[] = array('name' => $langs->trans('RENT'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_APP, 'icon' => 'fa-mobile',
-        'url' => dol_buildpath('/ultimateimmo/application_list.php', 1),
-        'url_add' => dol_buildpath('/ultimateimmo/application_card.php?action=create', 1),
-        'right' => $user->rights->ultimateimmo->application->write,
-        'lines' => array(
-            array('title' => $langs->trans('Total'), 'value' => getApplicationsNumber(), 'url' => dol_buildpath('/ultimateimmo/application_list.php', 1)),
-        )
-    );
-}
-
-if ($user->rights->ultimateimmo->adresse->read) {
-    $globalboxes[] = array('name' => $langs->trans('ADDRESSES'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_ADDR, 'icon' => 'fa-code-fork',
-        'url' => dol_buildpath('/ultimateimmo/address_list.php', 1),
-        'url_add' => dol_buildpath('/ultimateimmo/address_card.php?action=create', 1),
-        'right' => $user->rights->ultimateimmo->adresse->write,
-        'lines' => array(
-            array('title' => $langs->trans('Total'), 'value' => getAddressesNumber(), 'url' => dol_buildpath('/ultimateimmo/address_list.php', 1)),
-        )
-    );
-}
-
-if ($user->rights->ultimateimmo->auth->read) {
-    $globalboxes[] = array('name' => $langs->trans('AUTHENTICATIONS'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_AUTH, 'icon' => 'fa-key',
-        'url' => dol_buildpath('/ultimateimmo/auth_list.php', 1),
-        'lines' => array(
-            array('title' => $langs->trans('Total'), 'value' => getAuthenticationsNumber(), 'url' => dol_buildpath('/ultimateimmo/auth_list.php', 1)),
-        )
-    );
-}
-
-if ($user->rights->infoextranet->user->read) {
-    $globalboxes[] = array('name' => $langs->trans('USERS'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_USER, 'icon' => 'fa-user',
-        'lines' => array(
-            array('title' => $langs->trans('Total'), 'value' => getUsersNumber(), 'url' => dol_buildpath('/infoextranet/contact_list.php', 1)),
-        )
-    );
-}
-
-if (!empty($conf->contrat->enabled) && $user->rights->contrat->lire) {
-    $globalboxes[] = array('name' => $langs->trans('CONTRACTS'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_CONTRACT, 'icon' => 'fa-plug',
-        'url' => dol_buildpath('/contrat/list.php', 1),
-        'url_add' => dol_buildpath('/contrat/card.php?action=create', 1),
-        'right' => $user->rights->contrat->creer,
-        'lines' => array(
-            array('title' => $langs->trans('Total'), 'value' => getContractsNumber(), 'url' => dol_buildpath('/contrat/list.php', 1)),
-        )
-    );
-}
-
-if (!empty($conf->ficheinter->enabled) && $conf->global->ULTIMATEIMMO_INTER_LINK && $user->rights->ficheinter->lire) {
-    $globalboxes[] = array('name' => $langs->trans('INTERVENTIONS'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_INTER, 'icon' => 'fa-ambulance',
-        'url' => dol_buildpath('/fichinter/list.php', 1),
-        'url_add' => dol_buildpath('/fichinter/card.php?action=create', 1),
-        'right' => $user->rights->ficheinter->creer,
-        'lines' => array(
-            array('title' => $langs->trans('Total'), 'value' => getInterventionsNumber(), 'url' => dol_buildpath('/fichinter/list.php', 1)),
-        )
-    );
-}
-
-if (!empty($conf->ticket->enabled) && $conf->global->ULTIMATEIMMO_TICKET_LINK && $user->rights->ticket->read) {
-    require_once DOL_DOCUMENT_ROOT.'/ticket/class/ticket.class.php';
-    $globalboxes[] = array('name' => $langs->trans('TICKETS'), 'color' => '#'.$conf->global->ULTIMATEIMMO_COLOR_TICKET, 'icon' => 'fa-ticket',
-        'url' => dol_buildpath('/ticket/list.php', 1),
-        'url_add' => dol_buildpath('/ticket/card.php?action=create', 1),
-        'right' => $user->rights->ticket->write,
-        'lines' => array(
-            array('title' => $langs->trans('NotRead'), 'value' => getTicketsNumber(Ticket::STATUS_NOT_READ), 'url' => dol_buildpath('/ticket/list.php', 1)),
-            array('title' => $langs->trans('InProgress'), 'value' => getTicketsNumber(Ticket::STATUS_IN_PROGRESS), 'url' => dol_buildpath('/ticket/list.php', 1)),
-            array('title' => $langs->trans('Assigned'), 'value' => getTicketsNumber(Ticket::STATUS_ASSIGNED), 'url' => dol_buildpath('/ticket/list.php', 1)),
-            array('title' => $langs->trans('Waiting'), 'value' => getTicketsNumber(Ticket::STATUS_WAITING), 'url' => dol_buildpath('/ticket/list.php', 1)),
-        )
-    );
-}*/
 
 /*
  * Actions
@@ -286,32 +199,57 @@ print '<div class="fichecenter fichecenterbis">';
  * Show boxes
  */
 
-$boxlist.='<div class="twocolumns">';
 
-$boxlist.='<div class="firstcolumn fichehalfleft boxhalfleft" id="boxhalfleft">';
+$globalboxes=[];
+if ($user->rights->ultimateimmo->read) {
 
-$boxlist.=$boxwork;
-$boxlist.=$resultboxes['boxlista'];
+	$sql = "SELECT loc.lastname as nom, ";
+	$sql .= " SUM(rec.balance) as totalbalance";
+	$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rec";
+	//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p ON rec.rowid = p.fk_receipt";
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as loc ON loc.rowid = rec.fk_renter";
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as prop ON prop.rowid = rec.fk_property";
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rent.rowid = rec.fk_rent";
+	$sql .= " WHERE rec.paye <> 1 AND rent.preavis = 1  ";
+	$sql .= " GROUP BY loc.lastname";
+	$sql .= " ORDER BY SUM(rec.balance) DESC";
 
-$boxlist.= '</div>';
+	$resql = $db->query($sql);
 
-$boxlist.= '<div class="secondcolumn fichehalfright boxhalfright" id="boxhalfright">';
+	if ($resql) {
+		$num = $db->num_rows($resql);
+		$lineData = [];
+		if ($num > 0) {
+			while ($objp = $db->fetch_object($resql)) {
+				$lineData[]=array(
+					'title' => $objp->nom,
+					'value' => price($objp->totalbalance),
+					'url' => dol_buildpath('custom/ultimateimmo/payment/immopayment_card.php', 1).'?action=createall&search_renter='.urlencode($objp->nom));
+			}
 
-$boxlist.=$boxstat;
-$boxlist.=$resultboxes['boxlistb'];
+			$globalboxes[] = array('name' => strtoupper($langs->trans('RenterLetToPay')), 'color' => '#C19875',
+				'url' => dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1),
+				'right' => $user->rights->ultimateimmo->read,
+				'lines' => $lineData
+			);
+		}
+	}
+}
 
-$boxlist.= '</div>';
-$boxlist.= "\n";
+foreach ($globalboxes as $globalbox) {
 
-$boxlist.='</div>';
+    print '<div class="ultimateimmo-card-list">';
+    print '<div class="ultimateimmo-left-side" style="background-color: '.$globalbox['color'].';"><i class="fa '.$globalbox['icon'].' icon"></i></div>';
+    print '<div class="ultimateimmo-right-side"><div class="inner"><b style="color: '.$globalbox['color'].';">'.$globalbox['name'].'</b>';
+    if (!empty($globalbox['url_add']) && $globalbox['right'])
+        print '<a href="'.$globalbox['url_add'].'" class="ultimateimmo-rounded-btn"><i class="fa fa-plus-circle fa-2x" style="color: '.$globalbox['color'].';"></i></a>';
+    foreach ($globalbox['lines'] as $line) {
+        print '<div class="line-info">'.$line['title'].' : <a href="'.$line['url'].'"><span style="background-color: '.$globalbox['color'].'">' . $line['value'] . '</span></a></div>';
+    }
+    print '</div></div>';
+    print '</div>';
+}
 
-
-print $boxlist;
-
-print '</div>';
-
-// Separator
-print '<div class="clearboth"></div>';
 
 // End of page
 llxFooter();

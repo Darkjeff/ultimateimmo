@@ -463,3 +463,5 @@ DetailPayment=Détail Paiement
 
 InputCounterWarter=Saisie Compteur Eaux
 CounterNotAllowedInput=Vous ne pouvez pas saisir un relevé de compteur sur ce compteur
+
+RenterLetToPay=Encours locataire
