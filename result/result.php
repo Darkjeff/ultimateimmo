@@ -146,6 +146,7 @@ print '</form>' . "\n";
 
 //Resultat Immo
 print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td></tr>';
+print '</table>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre"><td width="10%">' . $langs->trans("ImmoResultResultatImmo") . '</td>';
