@@ -778,7 +778,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		*/
 
 			if ($user->rights->ultimateimmo->delete) {
-				print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=delete">' . $langs->trans('Delete') . '</a>' . "\n";
+				print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=delete&token='.newToken().'">' . $langs->trans('Delete') . '</a>' . "\n";
 			} else {
 				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Delete') . '</a>' . "\n";
 			}

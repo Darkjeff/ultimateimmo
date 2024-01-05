@@ -103,6 +103,7 @@ if ($type_stats=='cost_type') {
 	print $langs->trans("Supplier");
 }
 print '</td>';
+print '<td class="left">'.$langs->trans("NbCost").'</td>';
 print '<td class="left" width=10%>' . $langs->trans("Building") . '</td>';
 foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
@@ -114,7 +115,7 @@ if ($type_stats=='cost_type') {
 } elseif ($type_stats=='fourn_type') {
 	$fields = "soc.nom";
 }
-$sql = 'SELECT '.$fields.' AS label , ib.label AS nom_immeuble';
+$sql = 'SELECT '.$fields.' AS label , ib.label AS nom_immeuble, count(ic.rowid) as nbcost';
 foreach ($months_list as $month_num => $month_name) {
 	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)=' . $month_num . ' then ic.amount else 0 end),2) AS month_' . $month_num;
 }
@@ -142,6 +143,7 @@ if ($resql) {
 		$total = 0;
 
 		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
+		print '<td class="left">' . $row [2] . '</td>';
 		print '<td class="left">' . $row [1] . '</td>';
 		foreach ($months_list as $month_num => $month_name) {
 			print '<td align="right">' . price($row [$month_num + 1]) . '</td>';

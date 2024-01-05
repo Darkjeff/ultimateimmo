@@ -1327,7 +1327,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			print '<td class="right">';
 			if ($user->admin) {
-				print '<a href="' . dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?id=' . $objp->rowid . "&amp;action=delete&amp;receipt=" . $id . '">';
+				print '<a href="' . dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1) . '?id=' . $objp->rowid . "&amp;action=delete&amp;receipt=" . $id . '&token='.newToken().'">';
 				print img_delete();
 				print '</a>';
 			}
