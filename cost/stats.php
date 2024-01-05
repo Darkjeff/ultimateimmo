@@ -101,8 +101,12 @@ if (!is_array($resultFetch) && $resultFetch<0) {
  */
 llxHeader('', 'Immobilier - charge par mois');
 
-$textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?type_stats='.$type_stats.'&year=' . ($year_current - 1) . '">' . img_previous() . '</a>';
-$textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?type_stats='.$type_stats.'&year=' . ($year_current + 1) . '">' . img_next() . '</a>';
+$paramOwner ='';
+if (!empty($search_owner)) {
+	$paramOwner .= '&search_owner='.$search_owner;
+}
+$textprevyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?type_stats='.$type_stats.'&year=' . ($year_current - 1) . $paramOwner . '">' . img_previous() . '</a>';
+$textnextyear = '<a href="' . dol_buildpath('/ultimateimmo/cost/stats.php', 1) . '?type_stats='.$type_stats.'&year=' . ($year_current + 1) . $paramOwner . '">' . img_next() . '</a>';
 
 print load_fiche_titre($langs->trans("CostStatsTitle") . $textprevyear . $langs->trans("Year") . " $year_start $textnextyear");
 print '<form method="POST" id="searchFormList" action="' . $_SERVER["PHP_SELF"] . '">' . "\n";
