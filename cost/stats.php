@@ -267,7 +267,7 @@ print '<td></td>';
 foreach ($months_list as $month_num => $month_name) {
 	print '<td align="right"></td>';
 }
-print '<td align="right"><b>'.price($total/12).'</b></td>';
+print '<td align="right"><b>'.price($total/12,0,'',1,2,1).'</b></td>';
 print '</tr>';
 print "</table>\n";
 
