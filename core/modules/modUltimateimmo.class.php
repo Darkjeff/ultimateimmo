@@ -98,7 +98,7 @@ class modUltimateimmo extends DolibarrModules
 			// Set this to 1 if module has its own menus handler directory (core/menus)
 			'theme' => 0,
 			// Set this to 1 if module has its own theme directory (theme)
-			'tpl' => 1,
+			'tpl' => 0,
 			// Set this to 1 if module overwrite template dir (core/tpl)
 			'barcode' => 0,
 			// Set this to 1 if module has its own barcode directory (core/modules/barcode)
