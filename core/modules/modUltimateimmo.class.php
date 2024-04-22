@@ -98,7 +98,7 @@ class modUltimateimmo extends DolibarrModules
 			// Set this to 1 if module has its own menus handler directory (core/menus)
 			'theme' => 0,
 			// Set this to 1 if module has its own theme directory (theme)
-			'tpl' => 1,
+			'tpl' => 0,
 			// Set this to 1 if module overwrite template dir (core/tpl)
 			'barcode' => 0,
 			// Set this to 1 if module has its own barcode directory (core/modules/barcode)
@@ -108,7 +108,7 @@ class modUltimateimmo extends DolibarrModules
 			// Set this to relative path of css file if module has its own css file
 			'js' => array('/ultimateimmo/js/ultimateimmo.js.php'),
 			// Set this to relative path of js file if module must load a js on all pages
-			'hooks' => array('data' => array('index', 'searchform', 'thirdpartycard', 'commcard',
+			'hooks' => array('data' => array('leftblock','index', 'searchform', 'thirdpartycard', 'commcard',
 				'categorycard', 'contactcard', 'actioncard', 'agendathirdparty',
 				'projectthirdparty',
 				'infothirdparty', 'thirdpartybancard', 'consumptionthirdparty',
