@@ -437,6 +437,8 @@ print '</tr>';
 print "</table>\n";
 
 // Revenu fiscal
+$value_array = array();
+
 if (!empty($dataPaiement) && !empty($dataEncaissement) && !empty($dataCharge)) {
 	foreach($dataEncaissement as $ibId=>$dataMonth) {
 		//find immo
@@ -566,6 +568,8 @@ print '</tr>';
 print "</table>\n";
 
 //Revenu Net
+$dataRevenueNet = array();
+
 if (!empty($dataRevenueFiscal)) {
 
 
