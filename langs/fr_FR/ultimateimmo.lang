@@ -467,3 +467,5 @@ CounterNotAllowedInput=Vous ne pouvez pas saisir un relevé de compteur sur ce c
 RenterLetToPay=Encours locataire
 
 NbCost=Nombre de charge
+TypeEntiteImmo=Type immobilier (locataire/bailleur)
+TypeEnt=Seuls les bailleurs sont visibles dans la liste des bailleurs ET seuls les locataires sont visibles dans la liste des locataires
