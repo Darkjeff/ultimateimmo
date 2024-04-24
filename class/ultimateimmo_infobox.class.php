@@ -42,7 +42,7 @@ class UltimateImmoInfoBox
      * @param int           $includehidden          Include also hidden boxes
      * @return array of boxes
      */
-    public function listBoxes($db, $mode, $zone, $user = null, $excludelist = array(), $includehidden = 1)
+    public static function listBoxes($db, $mode, $zone, $user = null, $excludelist = array(), $includehidden = 1)
     {
         global $conf;
 

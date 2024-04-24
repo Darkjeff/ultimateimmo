@@ -223,4 +223,34 @@ class ActionsUltimateimmo
 
 	/* Add here any other hooked methods... */
 
+    function addToLandingPageList($parameters, &$object, &$action, $hookmanager)
+    {
+        if ($object->rights->ultimateimmo->read) {
+            $parameters[dol_buildpath('/custom/ultimateimmo/rent/immorent_list.php', 1) . '?mainmenu=properties&leftmenu='] = 'UltimateImmo';
+            $this->results                                                                                                  = $parameters;
+            return 1;
+        }
+    }
+
+
+    /**
+     * Do something
+     *
+     * @param   int				$param				0=True url, 1=Url formated with colors
+     * @return	string								Url string
+     */
+    function addSearchEntry($parameters, $object, $action, $hookmanager)
+    {
+        global $user, $langs;
+        if ($user->rights->ultimateimmo->read) {
+            if (in_array($parameters['currentcontext'], array('globalcard', 'searchform', 'leftblock'))) {  // do something only for the context 'somecontext1' or 'somecontext2'
+                $langs->load("ultimateimmo@ultimateimmo");
+                $this->results = [
+                    ['position' => 200, 'shortcut' => 'U', 'img' => 'immorenter.png@ultimateimmo', 'label' => $langs->trans("Renter"), 'text' => img_picto('', 'immorenter@ultimateimmo', 'class="pictofixedwidth"') . ' ' . $langs->trans("Renter", $search_boxvalue), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1) . ($search_boxvalue ? '?search_all=' . urlencode($search_boxvalue) : '')],
+                    ['position' => 200, 'shortcut' => 'U', 'img' => 'immoproperty.png@ultimateimmo', 'label' => $langs->trans("Property"), 'text' => img_picto('', 'immoproperty@ultimateimmo', 'class="pictofixedwidth"') . ' ' . $langs->trans("Property", $search_boxvalue), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . ($search_boxvalue ? '?search_all=' . urlencode($search_boxvalue) : '')],
+                    ['position' => 200, 'shortcut' => 'U', 'img' => 'immoowner.png@ultimateimmo', 'label' => $langs->trans("Owner"), 'text' => img_picto('', 'immoowner@ultimateimmo', 'class="pictofixedwidth"') . ' ' . $langs->trans("Owner", $search_boxvalue), 'url' => dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1) . ($search_boxvalue ? '?search_all=' . urlencode($search_boxvalue) : '')],
+                ];
+            }
+        }
+    }
 }

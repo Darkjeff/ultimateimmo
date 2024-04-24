@@ -1352,7 +1352,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	} else {
 		dol_print_error($db);
 	}
-
+$remaintopay = $object->total_amount - $object->getSommePaiement();
 	print '</table>';
 	print '</div>';
 	print '</div>';

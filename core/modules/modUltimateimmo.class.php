@@ -108,7 +108,7 @@ class modUltimateimmo extends DolibarrModules
 			// Set this to relative path of css file if module has its own css file
 			'js' => array('/ultimateimmo/js/ultimateimmo.js.php'),
 			// Set this to relative path of js file if module must load a js on all pages
-			'hooks' => array('data' => array('index', 'searchform', 'thirdpartycard', 'commcard',
+			'hooks' => array('data' => array('leftblock','index', 'searchform', 'thirdpartycard', 'commcard',
 				'categorycard', 'contactcard', 'actioncard', 'agendathirdparty',
 				'projectthirdparty',
 				'infothirdparty', 'thirdpartybancard', 'consumptionthirdparty',
