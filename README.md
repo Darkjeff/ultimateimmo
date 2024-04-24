@@ -2,7 +2,7 @@
 ULTIMATEIMMO FOR <a href="https://www.dolibarr.org">DOLIBARR ERP CRM</a>
 
 ## Features
-Description...
+This version will replace owner and renter by thirdparties, will also use Dolibarr invoices for quitances
 
 <!--
 ![Screenshot ultimateimmo](img/screenshot_ultimateimmo.png?raw=true "Ultimateimmo"){imgmd}
