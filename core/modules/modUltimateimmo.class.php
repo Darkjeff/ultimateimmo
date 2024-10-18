@@ -113,7 +113,7 @@ class modUltimateimmo extends DolibarrModules
 				'projectthirdparty',
 				'infothirdparty', 'thirdpartybancard', 'consumptionthirdparty',
 				'thirdpartynotification', 'thirdpartymargins',
-				'thirdpartycustomerprice', 'searchform', 'globalcard'),
+				'thirdpartycustomerprice', 'searchform', 'globalcard','elementproperties'),
 				'entity' => '0')
 			// Set here all hooks context managed by module. To find available hook context, make a "grep -r '>initHooks(' *" on source code. You can also set hook context 'all'
 		);
