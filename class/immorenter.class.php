@@ -26,6 +26,7 @@
 require_once DOL_DOCUMENT_ROOT . '/core/class/commonobject.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
+dol_include_once('/core/class/commonpeople.class.php');
 dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
 //require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
@@ -34,6 +35,7 @@ dol_include_once('/ultimateimmo/class/immoreceipt.class.php');
  */
 class ImmoRenter extends CommonObject
 {
+ use CommonPeople;
 	/**
 	 * @var string ID to identify managed object
 	 */
@@ -495,8 +497,11 @@ class ImmoRenter extends CommonObject
 	 *
 	 * @return string
 	 */
-	public function getFieldList($alias='')
+	public function getFieldList($alias='', $excludefields = [])
 	{
+        foreach ($excludefields as $key) {
+            unset($this->fields[$key]);
+        }
 		$keys = array_keys($this->fields);
 		return implode(',', $keys);
 	}
@@ -540,7 +545,7 @@ class ImmoRenter extends CommonObject
 	 * @param	string	$morewhere		More SQL filters (' AND ...')
 	 * @return 	int         			<0 if KO, 0 if not found, >0 if OK
 	 */
-	public function fetchCommon($id, $ref = null, $morewhere = '')
+	public function fetchCommon($id, $ref = null, $morewhere = '', $noextrafields = 0)
 	{
 		if (empty($id) && empty($ref) && empty($morewhere)) return -1;
 

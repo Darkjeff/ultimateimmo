@@ -337,7 +337,7 @@ class ImmoRent extends CommonObject
 	 * @param string $morewhere morewhere
 	 * @return int         <0 if KO, 0 if not found, >0 if OK
 	 */
-	public function fetchCommon($id, $ref = null, $morewhere = '')
+	public function fetchCommon($id, $ref = null, $morewhere = '', $noextrafields = 0)
 	{
 		if (empty($id) && empty($ref)) return false;
 
