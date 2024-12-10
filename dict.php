@@ -762,7 +762,7 @@ if ($id) {
 					// Active
 					print '<td align="center" class="nowrap">';
 					if ($canbedisabled) {
-						print '<a href="' . $url . 'action=' . $acts[$obj->active] . '">' . $actl[$obj->active] . '</a>';
+						print '<a href="' . $url . 'action=' . $acts[$obj->active] . '&token='.newToken().'">' . $actl[$obj->active] . '</a>';
 					} else {
 						if (in_array($obj->code, array('AC_OTH', 'AC_OTH_AUTO'))) {
 							print $langs->trans("AlwaysActive");

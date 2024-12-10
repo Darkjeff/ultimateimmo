@@ -65,7 +65,7 @@ $globalboxes = array();
 if ($user->rights->ultimateimmo->read) {
     $globalboxes[] = array('name' => $langs->trans('MenuImmoOwner'), 'color' =>'#C19875',
         'url' => dol_buildpath('/ultimateimmo/owner/immowner_list.php', 1),
-        'url_add' => dol_buildpath('/ultimateimmo/owner/immoowner_card.php?action=create', 1),
+        'url_add' => dol_buildpath('/societe/card.php?action=create&options_typeent=2', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
             array('title' => $langs->trans('MenuImmoActiveOwner'), 'value' => getOwnerNumber(1), 'url' => dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1).'?search_status=1'),
@@ -102,7 +102,7 @@ if ($user->rights->ultimateimmo->read) {
 if ($user->rights->ultimateimmo->read) {
     $globalboxes[] = array('name' => strtoupper($langs->trans('MenuImmoRenter')), 'color' =>'#C19875',
         'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1),
-        'url_add' => dol_buildpath('/ultimateimmo/renter/immorenter_card.php?action=create', 1),
+        'url_add' => dol_buildpath('/societe/card.php?action=create&options_typeent=1', 1),
         'right' => $user->rights->ultimateimmo->read,
         'lines' => array(
             array('title' => $langs->trans('MenuImmoActiveRenter'), 'value' => getRenterNumber(1), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1).'?search_status=1'),
