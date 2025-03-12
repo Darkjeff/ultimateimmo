@@ -179,6 +179,7 @@ if ($action == 'add_payment') {
 			$payment->fk_property  = $receipt->fk_property;
 			$payment->fk_renter	   = $receipt->fk_renter;
 			$payment->fk_payment   = $receipt->fk_payment;
+			$payment->fk_owner     = $receipt->fk_owner;
 			$payment->date_payment = $date_payment;
 			$payment->amounts      = $amounts;   // Tableau de montant
 			$payment->fk_mode_reglement  = GETPOST('fk_mode_reglement', 'int');
