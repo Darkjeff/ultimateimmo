@@ -119,7 +119,7 @@ if ($object->id) {
 	if (!empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immorentPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoRents"), -1, 'payment');
+	print dol_get_fiche_head($head, 'document', $langs->trans("ImmoRents"), -1, 'payment');
 
 
 	// Build file list
@@ -165,7 +165,7 @@ if ($object->id) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	$modulepart = 'ultimateimmo';
 	//$permission = $user->rights->ultimateimmo->rent->write;

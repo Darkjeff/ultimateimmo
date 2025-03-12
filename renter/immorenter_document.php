@@ -117,7 +117,7 @@ if ($object->id) {
 	if (!empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immorenterPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoRenter"), -1, 'contact');
+	print dol_get_fiche_head($head, 'document', $langs->trans("ImmoRenter"), -1, 'contact');
 
 	// Build file list
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '(\.meta|_preview.*\.png)$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
@@ -155,7 +155,7 @@ if ($object->id) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	$modulepart = 'ultimateimmo';
 	//$permission = $user->rights->ultimateimmo->renter->write;

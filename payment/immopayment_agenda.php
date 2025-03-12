@@ -144,7 +144,7 @@ if ($object->id > 0) {
 	$head = immopaymentPrepareHead($object);
 
 
-	dol_fiche_head($head, 'agenda', $langs->trans("ImmoPayment"), -1, 'payment');
+	print dol_get_fiche_head($head, 'agenda', $langs->trans("ImmoPayment"), -1, 'payment');
 
 	// Object card
 	// ------------------------------------------------------------
@@ -168,7 +168,7 @@ if ($object->id > 0) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 
 

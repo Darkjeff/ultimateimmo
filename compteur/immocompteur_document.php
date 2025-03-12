@@ -114,7 +114,7 @@ if ($object->id)
 	 */
 	$head = immocompteurPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoCompteur"), -1, $object->picto);
+	print dol_get_fiche_head($head, 'document', $langs->trans("ImmoCompteur"), -1, $object->picto);
 
 
 	// Build file list
@@ -186,7 +186,7 @@ if ($object->id)
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	$modulepart = 'ultimateimmo';
 	//$permission = $user->rights->ultimateimmo->immocompteur->write;

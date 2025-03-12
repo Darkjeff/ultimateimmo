@@ -100,7 +100,7 @@ if ($id > 0 || !empty($ref)) {
 
 	$head = immopaymentPrepareHead($object);
 
-	dol_fiche_head($head, 'note', $langs->trans("ImmoPayment"), -1, 'payment');
+	print dol_get_fiche_head($head, 'note', $langs->trans("ImmoPayment"), -1, 'payment');
 
 	// Object card
 	// ------------------------------------------------------------
@@ -125,7 +125,7 @@ if ($id > 0 || !empty($ref)) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 }
 
 

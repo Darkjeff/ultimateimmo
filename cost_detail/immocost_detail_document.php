@@ -114,7 +114,7 @@ if ($object->id)
 	 */
 	$head = immocost_detailPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoCost_Detail"), -1, 'immocost_detail@ultimateimmo');
+	print dol_get_fiche_head($head, 'document', $langs->trans("ImmoCost_Detail"), -1, 'immocost_detail@ultimateimmo');
 
 
 	// Build file list
@@ -146,7 +146,7 @@ if ($object->id)
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	$modulepart = 'ultimateimmo';
 	//$permission = $user->rights->ultimateimmo->create;

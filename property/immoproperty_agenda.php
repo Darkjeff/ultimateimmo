@@ -142,7 +142,7 @@ if ($object->id > 0) {
 	$head = immopropertyPrepareHead($object);
 
 
-	dol_fiche_head($head, 'agenda', $langs->trans("ImmoProperty"), -1, 'company');
+	print dol_get_fiche_head($head, 'agenda', $langs->trans("ImmoProperty"), -1, 'company');
 
 	// Object card
 	// ------------------------------------------------------------
@@ -167,7 +167,7 @@ if ($object->id > 0) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	// Actions buttons
 

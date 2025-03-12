@@ -114,7 +114,7 @@ if ($object->id)
 	if (! empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immocostPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoCost"), -1, 'immocost@ultimateimmo');
+	print dol_get_fiche_head($head, 'document', $langs->trans("ImmoCost"), -1, 'immocost@ultimateimmo');
 
 
 	// Construit liste des fichiers
@@ -146,7 +146,7 @@ if ($object->id)
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	$modulepart = 'ultimateimmo';
 	$permission = $user->rights->ultimateimmo->cost->write;

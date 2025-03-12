@@ -122,7 +122,7 @@ print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
 
 // Configuration header
 $head = ultimateimmoAdminPrepareHead();
-dol_fiche_head($head, 'gmaps', $langs->trans("ModuleUltimateimmoName"), -1, 'building@ultimateimmo');
+print dol_get_fiche_head($head, 'gmaps', $langs->trans("ModuleUltimateimmoName"), -1, 'building@ultimateimmo');
 
 print '<form action="' . $_SERVER["PHP_SELF"] . '" method="post">';
 print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
@@ -185,7 +185,7 @@ print '</table>';
 
 print info_admin($langs->trans("EnableAPI", "https://code.google.com/apis/console/", "https://code.google.com/apis/console/", "Geocoding API"));
 
-dol_fiche_end();
+print dol_get_fiche_end();
 
 print '<div align="center">';
 print "<input type=\"submit\" name=\"save\" class=\"button\" value=\"" . $langs->trans("Save") . "\">";

@@ -145,7 +145,7 @@ if (($id || $ref) && $action == 'edit')
 	print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
 	print '<input type="hidden" name="id" value="'.$object->id.'">';
 
-	dol_fiche_head();
+	print dol_get_fiche_head();
 
 	print '<table class="border centpercent">'."\n";
 
@@ -166,8 +166,8 @@ if (($id || $ref) && $action == 'edit')
 		print '"';
 		print '>'.$langs->trans($val['label']).'</td>';
 		print '<td>';
-		if ($val['label'] == 'BirthCountry') 
-		{			
+		if ($val['label'] == 'BirthCountry')
+		{
 			// We set country_id, country_code and country for the selected country
 			$object->country_id=GETPOST('country_id','int')?GETPOST('country_id','int'):$object->country_id;
 			if ($object->country_id)
@@ -177,7 +177,7 @@ if (($id || $ref) && $action == 'edit')
 				$object->country=$tmparray['label'];
 			}
 			// Country
-			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));	
+			print $form->select_country((GETPOST('country_id')!=''?GETPOST('country_id'):$object->country_id));
 		}
 		else
 		{
@@ -196,7 +196,7 @@ if (($id || $ref) && $action == 'edit')
 
 	print '</table>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	print '<div class="center"><input type="submit" class="button" name="save" value="'.$langs->trans("Save").'">';
 	print ' &nbsp; <input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
@@ -211,7 +211,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     $res = $object->fetch_optionals($object->id, $extralabels);
 
 	$head = immorenterPrepareHead($object);
-	dol_fiche_head($head, 'immorents', $langs->trans("ImmoRenter"), -1, 'user');
+	print dol_get_fiche_head($head, 'immorents', $langs->trans("ImmoRenter"), -1, 'user');
 
 	$formconfirm = '';
 
@@ -263,7 +263,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	// Common attributes
 	$keyforbreak='note_private';
-	
+
 	$staticImmoproperty=new ImmoProperty($db);
 	$staticImmoproperty->fetch($object->fk_property);
 	print '<tr><td';
@@ -276,7 +276,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print $staticImmoproperty->town;
 	print '</td>';
 	print '</tr>';
-	
+
 	foreach($object->fields as $key => $val)
 	{
 		// Discard if extrafield is a hidden field on form
@@ -286,14 +286,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (in_array($key, array('ref','status'))) continue;	// Ref and status are already in dol_banner
 
 		$value=$object->$key;
-		
+
 		print '<tr><td';
 		print ' class="titlefield';
 		if ($val['notnull'] > 0) print ' fieldrequired';
 		if ($val['type'] == 'text' || $val['type'] == 'html') print ' tdtop';
 		print '"';
 		print '>'.$langs->trans($val['label']).'</td>';
-		print '<td>';		
+		print '<td>';
 		print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
@@ -333,8 +333,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '<tr><td';
 		print ' class="titlefield';
 		if ($val['notnull'] > 0) print ' fieldrequired';
-		if ($val['label'] == 'BirthCountry') 
-		{ 
+		if ($val['label'] == 'BirthCountry')
+		{
 			print '<tr><td width="25%">'.$langs->trans('Country').'</td><td>';
 			print $object->country;
 		}
@@ -361,7 +361,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	print '<div class="clearboth"></div><br>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 
 	// Buttons for actions
@@ -410,7 +410,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     	}
     	print '</div>'."\n";
 	}
-	
+
 	 /*
      * List of rents
      */
@@ -429,7 +429,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."bank_account as ba ON b.fk_account = ba.rowid";
         $sql.= " WHERE rr.rowid = c.fk_renter AND rr.rowid=".$id;
 		$sql.= $db->order($sortfield, $sortorder);
-		
+
         $result = $db->query($sql);
         if ($result)
         {
@@ -458,7 +458,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
             while ($i < $num)
             {
                 $objp = $db->fetch_object($result);
-               
+
                 $locationstatic->id=$objp->crowid;
 				$locationstatic->ref=$objp->crowid;
 
@@ -468,7 +468,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                 print '<td align="center">'.dol_print_date($db->jdate($objp->dateh),'day')."</td>\n";
                 print '<td align="center">'.dol_print_date($db->jdate($objp->datef),'day')."</td>\n";
                 print '<td align="right">'.price($objp->totalamount).'</td>';
-				
+
 				if (! empty($conf->banque->enabled))
 				{
 					print '<td align="right">';
@@ -519,7 +519,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    print '<a name="builddoc"></a>'; // ancre
 
 	    // Documents
-	    $relativepath = '/rent/' . dol_sanitizeFileName($object->ref).'/';	
+	    $relativepath = '/rent/' . dol_sanitizeFileName($object->ref).'/';
 	    $filedir = $conf->ultimateimmo->dir_output . $relativepath;
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
 	    $genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
@@ -548,7 +548,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	}*/
 
 	//Select mail models is same action as presend
-	
+
 	if (GETPOST('modelselected')) $action = 'presend';
 
 	// Presend form
@@ -558,7 +558,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$trackid = 'immo'.$object->id;
 
 	//include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
-	 
+
 }
 
 

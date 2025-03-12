@@ -27,7 +27,7 @@ if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
 	die("Include of main fails");
-	
+
 // Class
 dol_include_once ( "/ultimateimmo/class/immoproperty.class.php" );
 require_once ('../class/immoproperty.class.php');
@@ -57,7 +57,7 @@ $object->fetch_thirdparty();
 
 $head=immopropertyPrepareHead($object);
 
-dol_fiche_head($head, 'bilan Compteur',  $langs->trans("Property"), 0, 'user');
+print dol_get_fiche_head($head, 'bilan Compteur',  $langs->trans("Property"), 0, 'user');
 
 $linkback = '<a href="./list.php'.(! empty($socid)?'?socid='.$socid:'').'">'.$langs->trans("BackToList").'</a>';
 

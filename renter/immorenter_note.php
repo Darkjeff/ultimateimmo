@@ -99,7 +99,7 @@ if ($id > 0 || !empty($ref)) {
 
 	$head = immorenterPrepareHead($object);
 
-	dol_fiche_head($head, 'note', $langs->trans("ImmoRenter"), -1, 'contact');
+	print dol_get_fiche_head($head, 'note', $langs->trans("ImmoRenter"), -1, 'contact');
 
 	// Object card
 	// ------------------------------------------------------------
@@ -126,7 +126,7 @@ if ($id > 0 || !empty($ref)) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 }
 
 

@@ -100,7 +100,7 @@ if ($id > 0 || !empty($ref)) {
 
 	$head = immoreceiptPrepareHead($object);
 
-	dol_fiche_head($head, 'note', $langs->trans("ImmoReceipt"), -1, 'bill');
+	print dol_get_fiche_head($head, 'note', $langs->trans("ImmoReceipt"), -1, 'bill');
 
 	// Object card
 	// ------------------------------------------------------------
@@ -128,7 +128,7 @@ if ($id > 0 || !empty($ref)) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 }
 
 

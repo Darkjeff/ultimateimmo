@@ -143,7 +143,7 @@ if ($object->id > 0) {
 	$head = immoownerPrepareHead($object);
 
 
-	dol_fiche_head($head, 'agenda', $langs->trans("ImmoOwner"), -1, 'user');
+	print dol_get_fiche_head($head, 'agenda', $langs->trans("ImmoOwner"), -1, 'user');
 
 	// Object card
 	// ------------------------------------------------------------
@@ -154,7 +154,7 @@ if ($object->id > 0) {
 		$res = $soc->fetch($socid);
 
 	$morehtmlref = '<div class="refidno">';
-	
+
 	// Thirdparty
 	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . (is_object($object->thirdparty) ? $object->thirdparty->getNomUrl(1) : '');
 	if (empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) $morehtmlref .= ' (<a href="' . dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1) . '?socid=' . $object->thirdparty->id . '&search_fk_soc=' . urlencode($object->thirdparty->id) . '">' . $langs->trans("OtherProperties") . '</a>)';
@@ -192,7 +192,7 @@ if ($object->id > 0) {
 	        }
 	    }
 	}
-	
+
 	$morehtmlref .= '</div>';
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
@@ -205,7 +205,7 @@ if ($object->id > 0) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	// Actions buttons
 

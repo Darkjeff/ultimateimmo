@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /* Copyright (C) 2004      Rodolphe Quiedeville <rodolphe@quiedeville.org>
  * Copyright (C) 2005-2006 Laurent Destailleur  <eldy@users.sourceforge.net>
  * Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
@@ -167,7 +167,7 @@ if (!empty($local->id)) {
 if ($id > 0) {
 	$head = immocostPrepareHead($charge);
 
-	dol_fiche_head($head, 'repartition', $langs->trans("ImmoCost"), -1, 'ultimateimmo@ultimateimmo');
+	print dol_get_fiche_head($head, 'repartition', $langs->trans("ImmoCost"), -1, 'ultimateimmo@ultimateimmo');
 
 	// Object Charge
 	// ------------------------------------------------------------

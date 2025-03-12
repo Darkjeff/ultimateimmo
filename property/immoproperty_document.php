@@ -118,7 +118,7 @@ if ($object->id) {
 	if (!empty($conf->notification->enabled)) $langs->load("mails");
 	$head = immopropertyPrepareHead($object);
 
-	dol_fiche_head($head, 'document', $langs->trans("ImmoProperty"), -1, 'company');
+	print dol_get_fiche_head($head, 'document', $langs->trans("ImmoProperty"), -1, 'company');
 
 
 	// Build file list
@@ -158,7 +158,7 @@ if ($object->id) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 	$modulepart = 'ultimateimmo';
 	//$permission = $user->rights->ultimateimmo->write;

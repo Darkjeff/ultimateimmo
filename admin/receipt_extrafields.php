@@ -84,11 +84,11 @@ print load_fiche_titre($langs->trans("UltimateimmoSetup"),$linkback,'title_setup
 
 $head = ultimateimmoAdminPrepareHead();
 
-dol_fiche_head($head, 'attributes_receipt', $langs->trans("ModuleUltimateimmoName"), 0, 'building@ultimateimmo');
+print dol_get_fiche_head($head, 'attributes_receipt', $langs->trans("ModuleUltimateimmoName"), 0, 'building@ultimateimmo');
 
 require DOL_DOCUMENT_ROOT.'/core/tpl/admin_extrafields_view.tpl.php';
 
-dol_fiche_end();
+print dol_get_fiche_end();
 
 
 // Buttons

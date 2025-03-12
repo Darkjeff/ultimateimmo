@@ -94,7 +94,7 @@ if ($id > 0 || ! empty($ref))
 
 	$head = immoowner_typePrepareHead($object);
 
-	dol_fiche_head($head, 'note', $langs->trans("MenuImmoOwnerType"), -1, 'ultimateimmo@ultimateimmo');
+	print dol_get_fiche_head($head, 'note', $langs->trans("MenuImmoOwnerType"), -1, 'ultimateimmo@ultimateimmo');
 
 	// Object card
 	// ------------------------------------------------------------
@@ -155,7 +155,7 @@ if ($id > 0 || ! empty($ref))
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 }
 
 

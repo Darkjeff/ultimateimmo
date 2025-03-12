@@ -100,14 +100,14 @@ if ($id > 0 || !empty($ref)) {
 
 	$head = immorentPrepareHead($object);
 
-	dol_fiche_head($head, 'note', $langs->trans("ImmoRents"), -1, 'payment');
+	print dol_get_fiche_head($head, 'note', $langs->trans("ImmoRents"), -1, 'payment');
 
 	// Object card
 	// ------------------------------------------------------------
 	$linkback = '<a href="' . dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref = '<div class="refidno">';
-	
+
 	// Ref renter
 	$staticImmorenter = new ImmoRenter($db);
 	$staticImmorenter->fetch($object->fk_renter);
@@ -168,7 +168,7 @@ if ($id > 0 || !empty($ref)) {
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 }
 
 

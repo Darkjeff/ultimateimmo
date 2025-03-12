@@ -101,13 +101,13 @@ print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
 
 // Configuration header
 $head = ultimateimmoAdminPrepareHead();
-dol_fiche_head($head, 'public', $langs->trans("ModuleUltimateimmoName"), -1, 'building@ultimateimmo');
+print dol_get_fiche_head($head, 'public', $langs->trans("ModuleUltimateimmoName"), -1, 'building@ultimateimmo');
 
 print '<span class="opacitymedium">'.$langs->trans("UltimateimmoEnablePublicInterface") . '</span> : <a href="' . dol_buildpath('/ultimateimmo/public/index.php', 1) . '" target="_blank" >' . dol_buildpath('/ultimateimmo/public/index.php', 2) . '</a>';
 print '<br><br>';
 print $langs->trans("PublicSiteDesc").'<br><br>';
 
-dol_fiche_end();
+print dol_get_fiche_end();
 
 $enabledisablehtml = $langs->trans("UltimateimmoPublicAccess").' ';
 if (empty($conf->global->ULTIMATEIMMO_ENABLE_PUBLIC_INTERFACE))

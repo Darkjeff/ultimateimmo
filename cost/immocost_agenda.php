@@ -141,7 +141,7 @@ if ($object->id > 0)
 	$head = immocostPrepareHead($object);
 
 
-	dol_fiche_head($head, 'agenda', $langs->trans("ImmoCost"), -1, 'ultimateimmo@ultimateimmo');
+	print dol_get_fiche_head($head, 'agenda', $langs->trans("ImmoCost"), -1, 'ultimateimmo@ultimateimmo');
 
 	// Object card
 	// ------------------------------------------------------------
@@ -200,7 +200,7 @@ if ($object->id > 0)
 
 	print '</div>';
 
-	dol_fiche_end();
+	print dol_get_fiche_end();
 
 
 

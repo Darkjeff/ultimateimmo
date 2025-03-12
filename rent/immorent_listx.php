@@ -233,7 +233,7 @@ foreach($object->fields as $key => $val)
     $sql.='t.'.$key.', ';
 }
 // Add fields from extrafields
-foreach ($extrafields->attribute_label as $key => $val) $sql.=($extrafields->attribute_type[$key] != 'separate' ? ",ef.".$key : '');
+foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql.=($extrafields->attribute_type[$key] != 'separate' ? ",ef.".$key : '');
 // Add where from hooks
 $parameters=array();
 $reshook=$hookmanager->executeHooks('printFieldListGroupBy',$parameters);    // Note that $action and $object may have been modified by hook
@@ -452,31 +452,31 @@ while ($i < ($limit ? min($num, $limit) : $num))
 		{
 			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
 			if ($key == 'status') print $object->getLibStatut(5);
-			
-			elseif ($val['label'] == 'Owner') 
+
+			elseif ($val['label'] == 'Owner')
 			{
 				$staticowner = new ImmoOwner($db);
-				$staticowner->fetch($object->fk_owner);			
+				$staticowner->fetch($object->fk_owner);
 				if ($staticowner->ref)
 				{
 					$staticowner->ref=$staticowner->getFullName($langs);
 				}
 				print $staticowner->ref;
 			}
-			elseif ($val['label'] == 'Renter') 
+			elseif ($val['label'] == 'Renter')
 			{
 				$staticrenter = new ImmoRenter($db);
-				$staticrenter->fetch($object->fk_renter);			
+				$staticrenter->fetch($object->fk_renter);
 				if ($staticrenter->ref)
 				{
 					$staticrenter->ref = $staticrenter->getFullName($langs);
 				}
 				print $staticrenter->ref;
 			}
-			elseif ($val['label'] == 'Property') 
+			elseif ($val['label'] == 'Property')
 			{
 				$staticproperty = new ImmoProperty($db);
-				$staticproperty->fetch($object->fk_property);			
+				$staticproperty->fetch($object->fk_property);
 				if ($staticproperty->ref)
 				{
 					$staticproperty->ref = $staticproperty->name;

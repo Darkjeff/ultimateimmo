@@ -137,29 +137,29 @@ if ($action == 'confirm_valide' && $confirm == 'yes' && $usercancreate)
 	}
 }
 
-if ($action == 'addall') 
+if ($action == 'addall')
 {
 	$date_payment = @dol_mktime(0, 0, 0, GETPOST("remonth"), GETPOST("reday"), GETPOST("reyear"));
-	if (! $date_payment) 
+	if (! $date_payment)
 	{
 		$mesg = $langs->trans("ErrorFieldRequired", $langs->transnoentities("Datepaie"));
 		setEventMessages($mesg, null, 'errors');
 		$action = 'createall';
-	} 
-	else 
+	}
+	else
 	{
 		$datapost = $_POST;
-		foreach ( $datapost as $key => $value ) 
+		foreach ( $datapost as $key => $value )
 		{
-			if (strpos($key, 'receipt_') !== false) 
-			{			
+			if (strpos($key, 'receipt_') !== false)
+			{
 				$tmp_array = explode('_', $key);
-				
+
 				if (count($tmp_array) > 0) {
 					$reference = $tmp_array[1];
 					$amount= GETPOST('incomeprice_'.$reference);
-				
-					if (! empty($reference) && !empty($amount)) 
+
+					if (! empty($reference) && !empty($amount))
 					{
 						$payment = new Immopayment($db);
 
@@ -174,17 +174,17 @@ if ($action == 'addall')
 						$payment->fk_mode_reglement	= GETPOST("fk_mode_reglement");
 						$payment->num_payment		= GETPOST("num_payment");
 						$payment->fk_owner			= $user->id;
-						
+
 						$result = $payment->create ($user);
 
-						if ($result<0) 
+						if ($result<0)
 						{
 							setEventMessages($payment->error, null, 'errors');
 						}
 					}
 				}
 			}
-		}				
+		}
 	}
 }
 
@@ -204,7 +204,7 @@ $head[$h][1] = $langs->trans("Card");
 $hselected = $h;
 $h++;
 
-dol_fiche_head($head, $hselected, $langs->trans("CustomerReceiptPayment"), -1, 'payment');
+print dol_get_fiche_head($head, $hselected, $langs->trans("CustomerReceiptPayment"), -1, 'payment');
 
 /*
  * Confirm deleting of the payment
@@ -281,17 +281,17 @@ print '</table>';
 /*                                                                             */
 /* *************************************************************************** */
 
-if ($action == 'createall') 
+if ($action == 'createall')
 {
 
 	print '<form name="fiche_payment" method="post" action="' . $_SERVER["PHP_SELF"] . '">';
 	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	print '<input type="hidden" name="action" value="addall">';
-	
+
 	print '<table class="border" width="100%">';
 
 	print "<tr class=\"liste_titre\">";
-	
+
 	print '<td align="left">';
 	print $langs->trans("DatePayment");
 	print '</td><td align="left">';
@@ -304,22 +304,22 @@ if ($action == 'createall')
 	print $langs->trans("Numero");
 	print '</td>';
 	print "</tr>\n";
-	
+
 	print '<tr class="oddeven" valign="top">';
-	
-	// Due date	
+
+	// Due date
 	print '<td align="center">';
 	print $form->select_date(! empty($date_payment) ? $date_payment : '-1', 'payment', 0, 0, 0, 'card', 1);
 	print '</td>';
-	
+
 	// Comment
 	print '<td><input name="comment" size="30" value="' . GETPOST('note_public') . '"</td>';
-	
+
 	// Payment mode
 	print '<td align="center">';
 	print $form->select_types_paiements(GETPOST('fk_mode_reglement','int')?GETPOST('fk_mode_reglement','int'):$payment->fk_mode_reglement, "fk_mode_reglement");
 	print '</td>';
-	
+
 	// AccountToCredit
 	print '<td align="center">';
 	print $form->select_comptes(isset($_POST["accountid"])?$_POST["accountid"]:$payment->accountid, "accountid", 0, '',1);  // Show open bank account list
@@ -327,10 +327,10 @@ if ($action == 'createall')
 
 	// num_payment
 	print '<td><input name="num_payment" size="30" value="' . GETPOST('num_payment') . '"</td>';
-	
-	
+
+
 	print "</tr>\n";
-	
+
 	/*
 	 * List receipt
 	 */
@@ -341,13 +341,13 @@ if ($action == 'createall')
 	$sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immorent as c";
 	$sql .= " WHERE rec.paye = 0 AND loc.rowid = rec.fk_renter AND l.rowid = rec.fk_property AND  c.rowid = rec.fk_rent and c.preavis =0 ";
 	$resql = $db->query($sql);
-	if ($resql) 
+	if ($resql)
 	{
 		$num = $db->num_rows($resql);
-		
+
 		$i = 0;
 		$total = 0;
-		
+
 		print '<br><table class="noborder" width="100%">';
 		print '<tr class="liste_titre">';
 		print '<td>' . $langs->trans('ReceiptName') . '</td>';
@@ -358,41 +358,41 @@ if ($action == 'createall')
 		print '<td align="right">' . $langs->trans('due') . '</td>';
 		print '<td align="right">' . $langs->trans('income') . '</td>';
 		print "</tr>\n";
-		
+
 		if ($num > 0) {
-			
-			while ( $i < $num ) 
+
+			while ( $i < $num )
 			{
 				$objp = $db->fetch_object($resql);
 				print '<tr class="oddeven">';
-				
+
 				print '<td>' . $objp->receiptname . '</td>';
 				print '<td>' . $objp->local . '</td>';
 				print '<td>' . $objp->nom . '</td>';
-				
+
 				print '<td align="right">' . price($objp->total) . '</td>';
 				print '<td align="right">' . price($objp->paiepartiel) . '</td>';
 				print '<td align="right">' . price($objp->balance) . '</td>';
-				
+
 					print '<input type="hidden" name="fk_rent' . $objp->reference . '" size="10" value="' . $objp->refcontract . '">';
 					print '<input type="hidden" name="fk_property_' . $objp->reference . '" size="10" value="' . $objp->reflocal . '">';
 					print '<input type="hidden" name="fk_renter_' . $objp->reference . '" size="10" value="' . $objp->reflocataire . '">';
 					print '<input type="hidden" name="receipt_' . $objp->reference . '" size="10" value="' . $objp->reference . '">';
-				
+
 				// Colonne imput income
 				print '<td align="right">';
 			print '<input type="text" name="incomeprice_' . $objp->reference . '" id="incomeprice_' . $objp->reference . '" size="6" value="" class="flat">';
-			print '</td>';				
-	
+			print '</td>';
+
 				print '</tr>';
-				
+
 				$i ++;
 			}
 		}
-		
+
 		print "</table>\n";
 		$db->free($resql);
-	} 
+	}
 
 	else {
 		dol_print_error($db);
@@ -401,7 +401,7 @@ if ($action == 'createall')
 	print '<div class="inline-block divButAction"><input type="submit"  name="button_addallpaiement" id="button_addallpaiement" class="butAction" value="' . $langs->trans("Payed") . '" /></div>';
 	print '</div>';
 	print '</form>';
-	
+
 }
 
 
@@ -472,7 +472,7 @@ else
 
 print '</div>';
 
-dol_fiche_end();
+print dol_get_fiche_end();
 
 
 /*
