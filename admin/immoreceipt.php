@@ -489,7 +489,7 @@ $variablename = 'ULTIMATEIMMO_TYPECOST_ADJUST';
 dol_include_once('/ultimateimmo/class/immocost_type.class.php');
 $immocosttype=new ImmoCost_Type($db);
 $dataArray=array();
-$resultImmoCostType=$immocosttype->fetchAll('','',0,0,array('t.status'=>1));
+$resultImmoCostType=$immocosttype->fetchAll('','',0,0,array('t.active'=>1));
 if (!is_array($resultImmoCostType) && $resultImmoCostType<0) {
 	setEventMessages($immocosttype->error, $immocosttype->errors, 'errors');
 } elseif(is_array($resultImmoCostType) && count($resultImmoCostType)>0) {
@@ -514,7 +514,7 @@ $variablename = 'ULTIMATEIMMO_TYPECOST_RENTER_PROPERTY';
 dol_include_once('/ultimateimmo/class/immocost_type.class.php');
 $immocosttype=new ImmoCost_Type($db);
 $dataArray=array();
-$resultImmoCostType=$immocosttype->fetchAll('','',0,0,array('t.status'=>1));
+$resultImmoCostType=$immocosttype->fetchAll('','',0,0,array('t.active'=>1));
 if (!is_array($resultImmoCostType) && $resultImmoCostType<0) {
 	setEventMessages($immocosttype->error, $immocosttype->errors, 'errors');
 } elseif(is_array($resultImmoCostType) && count($resultImmoCostType)>0) {
@@ -539,7 +539,7 @@ $variablename = 'ULTIMATEIMMO_TYPECOST_RENTER_RENTER';
 dol_include_once('/ultimateimmo/class/immocost_type.class.php');
 $immocosttype=new ImmoCost_Type($db);
 $dataArray=array();
-$resultImmoCostType=$immocosttype->fetchAll('','',0,0,array('t.status'=>1));
+$resultImmoCostType=$immocosttype->fetchAll('','',0,0,array('t.active'=>1));
 if (!is_array($resultImmoCostType) && $resultImmoCostType<0) {
 	setEventMessages($immocosttype->error, $immocosttype->errors, 'errors');
 } elseif(is_array($resultImmoCostType) && count($resultImmoCostType)>0) {
