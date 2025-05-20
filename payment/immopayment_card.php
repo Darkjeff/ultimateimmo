@@ -665,11 +665,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 			print $staticrenter->ref;
 		} elseif ($val['label'] == 'TypePayment') {
-			print $langs->trans($object->mode_payment);
+			print $langs->trans('PaymentTypeShort'.$object->mode_payment);
 		} else {
 			print $object->showOutputField($val, $key, $value, '', '', '', 0);
 		}
-		//print dol_escape_htmltag($object->$key, 1, 1);
 		print '</td>';
 		print '</tr>';
 
