@@ -111,6 +111,20 @@ if ($action == 'updateMask') {
 		setEventMessages($langs->trans("Error"), null, 'errors');
 	}
 
+	$dataTypeCost = GETPOST('ULTIMATEIMMO_TYPECOST_RENTER_PROPERTY', 'array');
+	$res = dolibarr_set_const($db, "ULTIMATEIMMO_TYPECOST_RENTER_PROPERTY", implode(',',array_values($dataTypeCost)), 'chaine', 0, '', $conf->entity);
+	if ($res <= 0) {
+		$error++;
+		setEventMessages($langs->trans("Error"), null, 'errors');
+	}
+
+	$dataTypeCost = GETPOST('ULTIMATEIMMO_TYPECOST_RENTER_RENTER', 'array');
+	$res = dolibarr_set_const($db, "ULTIMATEIMMO_TYPECOST_RENTER_RENTER", implode(',',array_values($dataTypeCost)), 'chaine', 0, '', $conf->entity);
+	if ($res <= 0) {
+		$error++;
+		setEventMessages($langs->trans("Error"), null, 'errors');
+	}
+
 	if (!$error) {
 		setEventMessages($langs->trans("SetupSaved"), null, 'mesgs');
 	}
@@ -472,6 +486,56 @@ print "</td></tr>\n";
 print '<tr><td>';
 print $form->textwithpicto($langs->trans("TypeCostForAdjust"), $langs->trans("") . '<br><br>' . $htmltext, 1, 'help', '', 0, 2, 'freetexttooltip') . '<br>';
 $variablename = 'ULTIMATEIMMO_TYPECOST_ADJUST';
+dol_include_once('/ultimateimmo/class/immocost_type.class.php');
+$immocosttype=new ImmoCost_Type($db);
+$dataArray=array();
+$resultImmoCostType=$immocosttype->fetchAll('','',0,0,array('t.status'=>1));
+if (!is_array($resultImmoCostType) && $resultImmoCostType<0) {
+	setEventMessages($immocosttype->error, $immocosttype->errors, 'errors');
+} elseif(is_array($resultImmoCostType) && count($resultImmoCostType)>0) {
+	foreach ($resultImmoCostType as $costType) {
+		$dataArray[$costType->id]=$costType->label;
+	}
+}
+if (!empty($dataArray)) {
+	if (empty($conf->global->{$variablename})) {
+		$selectedArray=array();
+	} else {
+		$selectedArray=explode(',', $conf->global->{$variablename});
+	}
+	print $form::multiselectarray($variablename,$dataArray,$selectedArray);
+}
+
+print "</td></tr>\n";
+
+print '<tr><td>';
+print $form->textwithpicto($langs->trans("TypeCostForRenterProperty"), $langs->trans("") . '<br><br>' . $htmltext, 1, 'help', '', 0, 2, 'freetexttooltip') . '<br>';
+$variablename = 'ULTIMATEIMMO_TYPECOST_RENTER_PROPERTY';
+dol_include_once('/ultimateimmo/class/immocost_type.class.php');
+$immocosttype=new ImmoCost_Type($db);
+$dataArray=array();
+$resultImmoCostType=$immocosttype->fetchAll('','',0,0,array('t.status'=>1));
+if (!is_array($resultImmoCostType) && $resultImmoCostType<0) {
+	setEventMessages($immocosttype->error, $immocosttype->errors, 'errors');
+} elseif(is_array($resultImmoCostType) && count($resultImmoCostType)>0) {
+	foreach ($resultImmoCostType as $costType) {
+		$dataArray[$costType->id]=$costType->label;
+	}
+}
+if (!empty($dataArray)) {
+	if (empty($conf->global->{$variablename})) {
+		$selectedArray=array();
+	} else {
+		$selectedArray=explode(',', $conf->global->{$variablename});
+	}
+	print $form::multiselectarray($variablename,$dataArray,$selectedArray);
+}
+
+print "</td></tr>\n";
+
+print '<tr><td>';
+print $form->textwithpicto($langs->trans("TypeCostForRenterRenter"), $langs->trans("") . '<br><br>' . $htmltext, 1, 'help', '', 0, 2, 'freetexttooltip') . '<br>';
+$variablename = 'ULTIMATEIMMO_TYPECOST_RENTER_RENTER';
 dol_include_once('/ultimateimmo/class/immocost_type.class.php');
 $immocosttype=new ImmoCost_Type($db);
 $dataArray=array();

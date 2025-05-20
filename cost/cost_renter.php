@@ -145,7 +145,7 @@ print '</tr>';
 print '<tr><td colspan=2>';
 print "\n<br>\n";
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre"><td width=10%>'.$langs->trans("ImmoCostChargesReelLocataire").'</td>';
+print '<tr class="liste_titre"><td width=10%>'.$langs->trans("ImmoCostChargesReelLocataireProperty").'</td>';
 foreach( $months_list as $month_name )
 {
 	print '<td align="right">'.$langs->trans($month_name).'</td>';
@@ -165,9 +165,72 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_start >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.rowid   = 	12 ";
+$sql .= "  AND it.rowid IN (".getDolGlobalString('ULTIMATEIMMO_TYPECOST_RENTER_PROPERTY').")";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 $sql .= " GROUP BY  ii.label";
+
+
+
+$resql = $db->query ( $sql );
+if ($resql)
+{
+	$i = 0;
+	$num = $db->num_rows ( $resql );
+
+	while ( $i < $num )
+	{
+		$row = $db->fetch_row ( $resql );
+		$total = 0;
+
+		print '<tr class="oddeven"><td>' . $row [0] . '</td>';
+		foreach( $months_list as $month_num => $month_name )
+		{
+			print '<td align="right">' . $row [$month_num] . '</td>';
+			$total += $row [$month_num];
+		}
+		print '<td align="right"><b>' . $total . '</b></td>';
+		print '</tr>';
+		$i ++;
+	}
+	$db->free ( $resql );
+}
+else
+{
+	print $db->lasterror (); // affiche la derniere erreur sql
+}
+
+
+print "</table>\n";
+print '</td><td valign="top" width="70%" class="notopnoleftnoright">';
+print '</td><td valign="top" width="70%" class="notopnoleftnoright"></td>';
+print '</tr>';
+
+
+print '<tr><td colspan=2>';
+print "\n<br>\n";
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre"><td width=10%>'.$langs->trans("ImmoCostChargesReelLocataireRenter").'</td>';
+foreach( $months_list as $month_name )
+{
+	print '<td align="right">'.$langs->trans($month_name).'</td>';
+}
+print '<td align="right"><b>'.$langs->trans("Total").'</b></td></tr>';
+
+
+$sql = "SELECT CONCAT(irer.firstname, ' ', irer.lastname) AS nom_locataire";
+foreach( $months_list as $month_num => $month_name )
+{
+	$sql .= ', ROUND(SUM(case when MONTH(ic.date_start)='.$month_num.' then ic.amount else 0 end),2) AS month_'.$month_num;
+}
+$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON ic.fk_cost_type = it.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON ic.fk_property = ll.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as ir ON  ir.fk_property = ll.rowid";
+$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as irer ON ir.fk_renter = irer.rowid";
+$sql .= " WHERE ic.date_start >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
+$sql .= "  AND ic.date_start <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= "  AND it.rowid IN (".getDolGlobalString('ULTIMATEIMMO_TYPECOST_RENTER_RENTER').")";
+$sql .= " GROUP BY irer.lastname";
 
 
 $resql = $db->query ( $sql );
@@ -234,7 +297,7 @@ $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
 $sql .= " WHERE ic.date_start >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
 $sql .= "  AND ic.date_start <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
-$sql .= "  AND it.rowid   = 	12 ";
+$sql .= "  AND it.rowid IN (".getDolGlobalString('ULTIMATEIMMO_TYPECOST_RENTER_PROPERTY').")";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 $sql .= " GROUP BY  ii.label";
 

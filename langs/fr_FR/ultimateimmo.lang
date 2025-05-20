@@ -344,7 +344,8 @@ CloneImmoCost = Cloner la charge
 ImmoCostStatusActive = Charge Active
 ImmoCostStatusDisabled = Charge Désactivée
 RenterCost = Ventilation des coûts par locataire
-ImmoCostChargesReelLocataire = Charges réel Locataire
+ImmoCostChargesReelLocataireProperty = Charges réel Locataire par bien
+ImmoCostChargesReelLocataireRenter = Charges réel Locataire par locataire
 ImmoCostDifferentielCharge = Différentiel Charge
 ImmoCostPaiementChargelocataire = Paiement charge locataire
 ImmoResultLoyerBrutEncaisse = Loyer brut encaissé
@@ -363,6 +364,8 @@ ImmoCostVentilNameProperty = Statut Locatif
 ImmoCostVentilAmount = Montant
 ImmoCostVentilSelect = Select
 ImmoCostVentilAddRepartition = AJOUTER REPARTITION
+TypeCostForRenterProperty=Type de cout Charges réel Locataire par bien (rapport des cout locataire)
+TypeCostForRenterRenter=Type de cout Charges réel Locataire par locataire (rapport des cout locataire)
 
 #
 # Autres

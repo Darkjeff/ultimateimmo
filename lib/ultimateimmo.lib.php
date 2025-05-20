@@ -36,7 +36,7 @@ function ultimateimmoAdminPrepareHead()
 	$head = array();
 
 	$head[$h][0] = dol_buildpath("/ultimateimmo/admin/immoreceipt.php", 1);
-	$head[$h][1] = $langs->trans("Quittances&Baux");
+	$head[$h][1] = $langs->trans("Configuration");
 	$head[$h][2] = 'quittance';
 	$h++;
 
