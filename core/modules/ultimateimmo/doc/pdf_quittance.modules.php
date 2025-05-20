@@ -175,6 +175,12 @@ class pdf_quittance extends ModelePDFUltimateimmo
 	{
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
+		if (!($object instanceof ImmoReceipt)) {
+			$this->error = 'Error: object must be an instance of ImmoReceipt';
+			$this->error[] = $this->error;
+			setEventMessages($this->error, $this->errors, 'errors');;
+			return - 1;
+		}
 		// Translations
 		$outputlangs->loadLangs(array("main", "ultimateimmo@ultimateimmo", "companies"));
 
@@ -218,7 +224,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 
 			// Set nblignes with the new facture lines content after hook
-			$nblignes = count($object->lines);
+			//$nblignes = count($object->lines);
 			//$nbpayments = count($object->getListOfPayments()); TODO : add method
 
 			// Create pdf instance
@@ -226,8 +232,8 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$default_font_size = pdf_getPDFFontSize($outputlangs);	// Must be after pdf_getInstance
 			$pdf->SetAutoPageBreak(1, 0);
 
-			$heightforinfotot = 50 + (4 * $nbpayments);	// Height reserved to output the info and total part and payment part
-			$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5);	// Height reserved to output the free text on last page
+			//$heightforinfotot = 50 + (4 * $nbpayments);	// Height reserved to output the info and total part and payment part
+			//$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5);	// Height reserved to output the free text on last page
 			$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
 			if (!empty($conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS)) $heightforfooter += 6;
 

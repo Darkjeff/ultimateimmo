@@ -65,7 +65,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
      * @var array() Minimum version of PHP required by module.
 	 * e.g.: PHP ≥ 5.4 = array(5, 4)
      */
-	public $phpmin = array(5, 4); 
+	public $phpmin = array(5, 4);
 
 	/**
      * Dolibarr version of the loaded document
@@ -77,32 +77,32 @@ class pdf_quittance extends ModelePDFUltimateimmo
      * @var int page_largeur
      */
     public $page_largeur;
-	
+
 	/**
      * @var int page_hauteur
      */
     public $page_hauteur;
-	
+
 	/**
      * @var array format
      */
     public $format;
-	
+
 	/**
      * @var int marge_gauche
      */
 	public $marge_gauche;
-	
+
 	/**
      * @var int marge_droite
      */
 	public $marge_droite;
-	
+
 	/**
      * @var int marge_haute
      */
 	public $marge_haute;
-	
+
 	/**
      * @var int marge_basse
      */
@@ -169,6 +169,13 @@ class pdf_quittance extends ModelePDFUltimateimmo
 	{
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
+		if (!($object instanceof ImmoReceipt)) {
+			$this->error = $langs->trans("ObjectMustBeReceipt");
+			$this->errors[] = $this->error;
+			setEventMessages($this->error, $this->errors, 'errors');;
+			return - 1;
+		}
+
 		// Translations
 		$outputlangs->loadLangs(array("main", "ultimateimmo@ultimateimmo", "companies"));
 
@@ -217,9 +224,9 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
 			global $action;
 			$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
-			
+
 			// Set nblignes with the new facture lines content after hook
-			$nblignes = count($object->lines);
+			//$nblignes = count($object->lines);
 			//$nbpayments = count($object->getListOfPayments()); TODO : add method
 
 			// Create pdf instance
@@ -237,7 +244,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->setPrintFooter(false);
 			}
 			$pdf->SetFont(pdf_getPDFFont($outputlangs));
-			
+
 			// Set path to the background PDF File
 			if (! empty($conf->global->MAIN_ADD_PDF_BACKGROUND))
 			{
@@ -279,19 +286,19 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$pdf->MultiCell(0, 3, '', 0, 'J');
 				$pdf->SetTextColor(0, 0, 0);
-				
+
 				$hautcadre=!empty($conf->global->MAIN_PDF_USE_ISO_LOCATION) ? 38 : 40;
 				$widthbox = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
 				$posY = $this->marge_haute + $hautcadre +50;
-				$posX = $this->marge_gauche;			
+				$posX = $this->marge_gauche;
 
-				
+
 				$text .= "\n";
-				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";				
+				$text .= 'Fait à ' . $owner->town . ' le ' . dol_print_date(dol_now(), 'daytext') . "\n";
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
 				$pdf->SetXY($posX, $posY-12);
 				$pdf->MultiCell($widthbox, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
-				
+
 				// Bloc Quittance de loyer
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 15);
 				$pdf->SetXY($posX, $posY);
@@ -304,7 +311,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 13);
 				$posY = $pdf->getY();
 				$pdf->SetXY($posX, $posY);
-				
+
 				$period = $object->label;
 				$pdf->MultiCell($widthbox, 3, $period, 1, 'C', 0);
 
@@ -325,7 +332,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 				if ($object->getSommePaiement())
 				{
 					$amountalreadypaid = price($object->getSommePaiement(), 0, $outputlangs, 1, -1, -1, $conf->currency);
-				}	
+				}
 
 				$text = 'Reçu de ' . $renter->civilite . '' .$renter->firstname. ' '.$renter->lastname. ' la somme de ' . $amountalreadypaid . "\n";
 				;
@@ -370,7 +377,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 
 				dol_syslog(get_class($this) . ':: Paiement', LOG_DEBUG);
 				$resql = $this->db->query($sql);
-				if ($resql) 
+				if ($resql)
 				{
 					$num = $this->db->num_rows($resql);
 					$i = 0;
@@ -381,7 +388,7 @@ class pdf_quittance extends ModelePDFUltimateimmo
 					$text .= '<td align="right">' . $langs->trans("Amount") . '</td>';
 					$text .= "</tr>";
 
-					while ( $i < $num ) 
+					while ( $i < $num )
 					{
 						$objp = $this->db->fetch_object($resql);
 
@@ -782,13 +789,13 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->MultiCell($widthrecbox-2, 4, $carac_emetteur, 0, 'L');
 			$posy=$pdf->getY();
-			
+
 
 			//Recipient name
 			$renter = new ImmoRenter($this->db);
 			$result = $renter->fetch($object->fk_renter);
 			$carac_client_name= $outputlangs->convToOutputCharset($renter->getFullName($outputlangs));
-			
+
 			$property = new ImmoProperty($this->db);
 			$result = $property->fetch($object->fk_property);
 			$carac_client .= $property->label . "\n";
@@ -822,8 +829,8 @@ class pdf_quittance extends ModelePDFUltimateimmo
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->SetXY($posx+2, $posy);
 			$pdf->MultiCell($widthrecbox, 4, $carac_client, 0, 'L');
-			
-			
+
+
 		}
 
 		$pdf->SetTextColor(0, 0, 0);
