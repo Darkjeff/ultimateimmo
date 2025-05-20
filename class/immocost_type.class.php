@@ -89,7 +89,7 @@ class ImmoCost_Type extends CommonObject
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>1, 'visible'=>-2, 'position'=>501, 'notnull'=>1,),
 		'fk_user_create' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>1, 'visible'=>-2, 'position'=>510, 'notnull'=>-1,'default' =>1, 'foreignkey'=>'llx_user.rowid',),
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserModif', 'enabled'=>1, 'visible'=>-2, 'position'=>511, 'notnull'=>-1,),
-		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
+		'active' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>1, 'visible'=>1, 'position'=>1000, 'notnull'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Draft', '1'=>'Active', '-1'=>'Cancel')),
 	);
 	public $rowid;
 	public $ref;
@@ -99,7 +99,7 @@ class ImmoCost_Type extends CommonObject
 	public $tms;
 	public $fk_user_create;
 	public $fk_user_modif;
-	public $status;
+	public $active;
 	// END MODULEBUILDER PROPERTIES
 
 
@@ -350,7 +350,7 @@ class ImmoCost_Type extends CommonObject
 	 */
 	function getLibStatut($mode=0)
 	{
-		return $this->LibStatut($this->status,$mode);
+		return $this->LibStatut($this->active,$mode);
 	}
 
 	/**
@@ -433,7 +433,7 @@ class ImmoCost_Type extends CommonObject
 		$sqlwhere = array();
 		if (count($filter) > 0) {
 			foreach ($filter as $key => $value) {
-				if ($key == 't.rowid' || $key=='t.status') {
+				if ($key == 't.rowid' || $key=='t.active') {
 					$sqlwhere[] = $key." = ".((int) $value);
 				} elseif (in_array($this->fields[$key]['type'], array('date', 'datetime', 'timestamp'))) {
 					$sqlwhere[] = $key." = '".$this->db->idate($value)."'";

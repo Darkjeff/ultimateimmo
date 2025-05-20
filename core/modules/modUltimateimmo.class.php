@@ -51,7 +51,7 @@ class modUltimateimmo extends DolibarrModules
 		$this->rights_class = 'ultimateimmo';
 		// Gives the possibility to the module, to provide his own family info and position of this family.
 		$this->familyinfo = array(
-			'atoonet' => array(
+			'ZenDSI' => array(
 				'position' => '001',
 				'label' => $langs->trans("AtooNet")
 			)
@@ -59,7 +59,7 @@ class modUltimateimmo extends DolibarrModules
 
 		// Family can be 'crm','financial','hr','projects','products','ecm','technic','interface','other'
 		// It is used to group modules by family in module setup page
-		$this->family = "Atoo.Net";
+		$this->family = "ZenDSI";
 		// Module position in the family on 2 digits ('01', '10', '20', ...)
 		$this->module_position = '01';
 		// Gives the possibility to the module, to provide his own family info and position of this family (Overwrite $this->family and $this->module_position. Avoid this)
@@ -71,13 +71,13 @@ class modUltimateimmo extends DolibarrModules
 		$this->description = "ModuleUltimateimmoDesc";
 		// Used only if file README.md and README-LL.md not found.
 		$this->descriptionlong = "Solution logicielle très puissante pour toutes les agences immobilières et autres professionnels de l'immobilier";
-		$editors = array('ATOO.NET', 'Jeffinfo SARL');
+		$editors = array('Jeffinfo SARL');
 		$this->editor_name = implode(',', $editors);
-		$editor_url = array('https://www.atoo-net.com', 'https://www.jeffinfo.com/');
+		$editor_url = array('https://www.jeffinfo.com/');
 		$this->editor_url = implode(', &nbsp;', $editor_url);
 
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated' or a version string like 'x.y.z'
-		$this->version = '15.0.0';
+		$this->version = '19.0.0';
 		// Key used in llx_const table to save module status enabled/disabled (where ULTIMATEIMMO is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
 		// Name of image file used for this module.
@@ -144,7 +144,7 @@ class modUltimateimmo extends DolibarrModules
 		$this->conflictwith = array();    // List of module class names as string this module is in conflict with
 		$this->langfiles = array("ultimateimmo@ultimateimmo");
 		$this->phpmin = array(7, 4);                    // Minimum version of PHP required by module
-		$this->need_dolibarr_version = array(20, 0);    // Minimum version of Dolibarr required by module
+		$this->need_dolibarr_version = array(19, 0);    // Minimum version of Dolibarr required by module
 		$this->warnings_activation = array();                     // Warning to show when we activate module. array('always'='text') or array('FR'='textfr','ES'='textes'...)
 		$this->warnings_activation_ext = array();                 // Warning to show when we activate an external module. array('always'='text') or array('FR'='textfr','ES'='textes'...)
 		//$this->automatic_activation = array('FR'=>'UltimateimmoWasAutomaticallyActivatedBecauseOfYourCountryChoice');
@@ -223,7 +223,7 @@ class modUltimateimmo extends DolibarrModules
 				MAIN_DB_PREFIX . "c_ultimateimmo_immoproperty_type",
 				MAIN_DB_PREFIX . "c_ultimateimmo_juridique",
 				MAIN_DB_PREFIX . "c_ultimateimmo_builtdate",
-				MAIN_DB_PREFIX . "c_ultimateimmo_immocost_type",
+				MAIN_DB_PREFIX . "ultimateimmo_immocost_type",
 				MAIN_DB_PREFIX . "c_ultimateimmo_immocompteur_type",
 				MAIN_DB_PREFIX . "ultimateimmo_immoindice",
 			),
@@ -238,26 +238,26 @@ class modUltimateimmo extends DolibarrModules
 				"ImmoIndice",
 			),
 			'tabsql' => array(
-				'SELECT d.rowid as rowid, d.code, d.label, d.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_diagnostic as d',
-				'SELECT t.rowid as rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immorent_type as t',
-				'SELECT tp.rowid as rowid, tp.code, tp.label, tp.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immoproperty_type as tp',
-				'SELECT t.rowid as rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as t',
-				'SELECT t.rowid as rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_builtdate as t',
-				'SELECT t.rowid as rowid, t.ref, t.label, t.famille, t.status FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immocost_type as t',
-				'SELECT t.rowid as rowid, t.ref, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immocompteur_type as t',
-				'SELECT t.rowid as rowid, t.date_start, t.date_end, t.type_indice,t.amount, t.active FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immoindice as t'
+				'SELECT d.rowid, d.code, d.label, d.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_diagnostic as d',
+				'SELECT t.rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immorent_type as t',
+				'SELECT tp.rowid, tp.code, tp.label, tp.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immoproperty_type as tp',
+				'SELECT t.rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as t',
+				'SELECT t.rowid, t.code, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_builtdate as t',
+				'SELECT t.rowid, t.ref, t.label, t.famille, t.active FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immocost_type as t',
+				'SELECT t.rowid, t.ref, t.label, t.active FROM ' . MAIN_DB_PREFIX . 'c_ultimateimmo_immocompteur_type as t',
+				'SELECT t.rowid, t.date_start, t.date_end, t.type_indice,t.amount, t.active FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immoindice as t'
 			),
 			'tabsqlsort' => array(
 				"label ASC", "label ASC", "label ASC", "label ASC", "label ASC", "label ASC", "label ASC", "rowid ASC"
 			),
 			'tabfield' => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label", "date_start,date_end,type_indice,amount",
+				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille", "ref,label", "date_start,date_end,type_indice,amount",
 			),
 			'tabfieldvalue' => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label", "date_start,date_end,type_indice,amount"
+				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille", "ref,label", "date_start,date_end,type_indice,amount"
 			),
 			'tabfieldinsert' => array(
-				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille,status", "ref,label", "date_start,date_end,type_indice,amount"
+				"code,label", "code,label", "code,label", "code,label", "code,label", "ref,label,famille", "ref,label", "date_start,date_end,type_indice,amount"
 			),
 			'tabrowid' => array(
 				"rowid", "rowid", "rowid", "rowid", "rowid", "rowid", "rowid", "rowid"
@@ -1181,6 +1181,7 @@ class modUltimateimmo extends DolibarrModules
 		global $langs;
 		$this->_load_tables('/ultimateimmo/sql/');
 
+		$sql=[];
 		// Create extrafields
 		include_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 		$extrafields = new ExtraFields($this->db);

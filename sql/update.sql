@@ -38,8 +38,9 @@ ALTER TABLE llx_ultimateimmo_building add tms timestamp NOT NULL after date_crea
 ALTER TABLE llx_ultimateimmo_building add fk_user_creat integer NOT NULL after tms;
 ALTER TABLE llx_ultimateimmo_building add fk_user_modif integer after fk_user_creat;
 
-ALTER TABLE llx_ultimateimmo_immocost_type add active integer after status;
+ALTER TABLE llx_ultimateimmo_immocost_type add active integer DEFAULT 1 after status;
 ALTER TABLE llx_ultimateimmo_immocost_type add fk_user_creat integer NOT NULL after status;
+UPDATE llx_ultimateimmo_immocost_type SET active=status;
 
 ALTER TABLE llx_ultimateimmo_immocost CHANGE COLUMN fk_user_create fk_user_creat integer;
 

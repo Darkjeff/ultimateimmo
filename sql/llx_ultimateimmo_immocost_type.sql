@@ -16,15 +16,15 @@
 
 CREATE TABLE llx_ultimateimmo_immocost_type(
 	-- BEGIN MODULEBUILDER FIELDS
-	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL, 
+	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
+	ref varchar(128) NOT NULL,
 	entity integer DEFAULT 1 NOT NULL,
 	label varchar(255),
-	famille varchar(100) NOT NULL,	
-	date_creation datetime NOT NULL, 
-	tms timestamp NOT NULL, 
+	famille varchar(100) NOT NULL,
+	date_creation datetime NOT NULL,
+	tms timestamp NOT NULL,
 	fk_user_create integer NOT NULL,
-	fk_user_modif integer,  
-	status integer NOT NULL
+	fk_user_modif integer,
+	active integer DEFAULT 1 NOT NULL
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

@@ -19,10 +19,9 @@
 ALTER TABLE llx_ultimateimmo_immocost_type ADD INDEX idx_ultimateimmo_immocost_type_rowid (rowid);
 ALTER TABLE llx_ultimateimmo_immocost_type ADD INDEX idx_ultimateimmo_immocost_type_ref (ref);
 ALTER TABLE llx_ultimateimmo_immocost_type ADD CONSTRAINT llx_ultimateimmo_immocost_type_fk_user_creat FOREIGN KEY (fk_user_create) REFERENCES llx_user(rowid);
-ALTER TABLE llx_ultimateimmo_immocost_type ADD INDEX idx_ultimateimmo_immocost_type_status (status);
+ALTER TABLE llx_ultimateimmo_immocost_type ADD INDEX idx_ultimateimmo_immocost_type_active (active);
 -- END MODULEBUILDER INDEXES
 
 --ALTER TABLE llx_ultimateimmo_immocost_type ADD UNIQUE INDEX uk_ultimateimmo_immocost_type_fieldxy(fieldx, fieldy);
 
 --ALTER TABLE llx_ultimateimmo_immocost_type ADD CONSTRAINT llx_ultimateimmo_immocost_type_fk_field FOREIGN KEY (fk_field) REFERENCES llx_ultimateimmo_myotherobject(rowid);
-
