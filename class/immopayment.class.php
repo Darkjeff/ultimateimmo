@@ -396,12 +396,15 @@ class ImmoPayment extends CommonObject
 
 
 		$this->db->begin();
+		if (empty($this->ref)) {
+			$this->ref = dol_print_date($this->date_payment, 'dayhour');
+		}
 
 		if ($totalamount != 0) {
-			$sql = "INSERT INTO " . MAIN_DB_PREFIX . "ultimateimmo_immopayment (fk_receipt, date_creation, date_payment, amount,";
+			$sql = "INSERT INTO " . MAIN_DB_PREFIX . "ultimateimmo_immopayment (ref, fk_receipt, date_creation, date_payment, amount,";
 			$sql .= " fk_mode_reglement, fk_property, fk_renter, fk_rent, num_payment, note_public, fk_user_creat, fk_account, ";
 			$sql .= "fk_owner)";
-			$sql .= " VALUES (" . $this->fk_receipt . ", '" . $this->db->idate($now) . "',";
+			$sql .= " VALUES ('".$this->ref."'," . $this->fk_receipt . ", '" . $this->db->idate($now) . "',";
 			$sql .= " '" . $this->db->idate($this->date_payment) . "',";
 			$sql .= " " . $totalamount . ",";
 			$sql .= " " . $this->fk_mode_reglement . ",'" . $this->db->escape($this->fk_property) . "','" .
