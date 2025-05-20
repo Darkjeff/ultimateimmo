@@ -16,7 +16,7 @@
 -- ========================================================================
 --
 
-CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoreceipt ( 
+CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoreceipt (
    rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
    ref varchar(128) NOT NULL,
    type smallint(6) NOT NULL DEFAULT 0,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoreceipt (
    partial_payment double(24,8) DEFAULT NULL,
    --fk_mode_reglement int(11) DEFAULT NULL,
    fk_payment INT(11) DEFAULT NULL,
-   paye INT(2) NULL DEFAULT 0,
+   paye integer NOT NULL DEFAULT 0,
    vat_amount double(24,8) DEFAULT NULL,
    vat_tx INT(11) DEFAULT NULL,
    date_rent datetime DEFAULT NULL,
@@ -55,5 +55,3 @@ CREATE TABLE IF NOT EXISTS llx_ultimateimmo_immoreceipt (
    last_main_doc varchar(255) DEFAULT NULL,
    status INT(11) NULL DEFAULT 0
 ) ENGINE=InnoDB;
-
-
