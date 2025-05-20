@@ -160,21 +160,21 @@ if (empty($reshook)) {
 	include DOL_DOCUMENT_ROOT . '/core/actions_printing.inc.php';
 
 	// Build doc
-//	if ($action == 'builddoc' && $permissiontoadd) {
-//		// Save last template used to generate document
-//		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model', 'alpha'));
-//
-//		$outputlangs = $langs;
-//		if (GETPOST('lang_id', 'aZ09')) {
-//			$outputlangs = new Translate("", $conf);
-//			$outputlangs->setDefaultLang(GETPOST('lang_id', 'aZ09'));
-//		}
-//		$result = $object->generateDocument($object->model_pdf, $outputlangs);
-//		if ($result <= 0) {
-//			setEventMessages($object->error, $object->errors, 'errors');
-//			$action = '';
-//		}
-//	}
+	if ($action == 'builddoc' && $permissiontoadd) {
+		// Save last template used to generate document
+		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model', 'alpha'));
+
+		$outputlangs = $langs;
+		if (GETPOST('lang_id', 'aZ09')) {
+			$outputlangs = new Translate("", $conf);
+			$outputlangs->setDefaultLang(GETPOST('lang_id', 'aZ09'));
+		}
+		$result = $object->generateDocument($object->model_pdf, $outputlangs);
+		if ($result <= 0) {
+			setEventMessages($object->error, $object->errors, 'errors');
+			$action = '';
+		}
+	}
 
 	// Delete file in doc form
 	//Normally managed by htdocs/core/actions_builddoc.inc.php but here module is build on other way

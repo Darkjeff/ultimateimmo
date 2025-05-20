@@ -530,22 +530,6 @@ if (empty($reshook)) {
 	// Action to build doc
 	include DOL_DOCUMENT_ROOT . '/core/actions_builddoc.inc.php';
 
-	// Build doc
-	if ($action == 'builddoc' && $permissiontoadd) {
-		// Save last template used to generate document
-		if (GETPOST('model')) $object->setDocModel($user, GETPOST('model', 'alpha'));
-
-		$outputlangs = $langs;
-		if (GETPOST('lang_id', 'aZ09')) {
-			$outputlangs = new Translate("", $conf);
-			$outputlangs->setDefaultLang(GETPOST('lang_id', 'aZ09'));
-		}
-		$result = $object->generateDocument($object->model_pdf, $outputlangs);
-		if ($result <= 0) {
-			setEventMessages($object->error, $object->errors, 'errors');
-			$action = '';
-		}
-	}
 
 	if ($action == 'set_thirdparty' && $permissiontoadd) {
 		$object->setValueFrom('fk_soc', GETPOST('fk_soc', 'int'), '', '', 'date', '', $user, 'IMMORECEIPT_MODIFY');
