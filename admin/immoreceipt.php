@@ -388,13 +388,13 @@ foreach ($dirmodels as $reldir) {
 								// Active
 								if (in_array($name, $def)) {
 									print "<td align=\"center\">\n";
-									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=del&amp;value=' . $name . '">';
+									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=del&amp;value=' . $name . '&token='.newToken().'">';
 									print img_picto($langs->trans("Enabled"), 'switch_on');
 									print '</a>';
 									print "</td>";
 								} else {
 									print "<td align=\"center\">\n";
-									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=set&amp;value=' . $name . '&amp;scan_dir=' . $module->scandir . '&amp;label=' . urlencode($module->name) . '&token='.newToken().'">' . img_picto($langs->trans("Disabled"), 'switch_off') . '</a>';
+									print '<a href="' . $_SERVER["PHP_SELF"] . '?action=set&token='.newToken().'&value=' . $name . '&amp;scan_dir=' . $module->scandir . '&amp;label=' . urlencode($module->name) . '&token='.newToken().'">' . img_picto($langs->trans("Disabled"), 'switch_off') . '</a>';
 									print "</td>";
 								}
 

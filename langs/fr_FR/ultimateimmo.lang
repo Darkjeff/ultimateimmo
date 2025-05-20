@@ -472,3 +472,4 @@ RenterLetToPay=Encours locataire
 NbCost=Nombre de charge
 
 ObjectMustBeReceipt=La quittance ne peut être créer que depuis les Quittances
+ObjectMustBeRent=Le bail ne peut être créer que depuis les Locations
