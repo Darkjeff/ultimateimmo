@@ -253,7 +253,7 @@ foreach ($dirmodels as $reldir) {
 						if ($module->version == 'development'  && $conf->global->MAIN_FEATURES_LEVEL < 2) continue;
 						if ($module->version == 'experimental' && $conf->global->MAIN_FEATURES_LEVEL < 1) continue;
 
-						print '<tr class="oddeven"><td>' . $module->nom . "</td><td>\n";
+						print '<tr class="oddeven"><td>' . $module->name . "</td><td>\n";
 						print $module->info();
 						print '</td>';
 
@@ -469,8 +469,8 @@ $htmltext .= '</i>';
 print '<tr><td>';
 print $form->textwithpicto($langs->trans("FreeLegalTextOnReceipts"), $langs->trans("AddCRIfTooLong") . '<br><br>' . $htmltext, 1, 'help', '', 0, 2, 'freetexttooltip') . '<br>';
 $variablename = 'ULTIMATEIMMO_FREE_TEXT';
-if (empty($conf->global->PDF_ALLOW_HTML_FOR_FREE_TEXT)) {
-	print '<textarea name="' . $variablename . '" class="flat" cols="120">' . $conf->global->$variablename . '</textarea>';
+if (getDolGlobalString('PDF_ALLOW_HTML_FOR_FREE_TEXT')) {
+	print '<textarea name="' . $variablename . '" class="flat" cols="120">' . getDolGlobalString($variablename) . '</textarea>';
 } else {
 	include_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 	$doleditor = new DolEditor($variablename, $conf->global->$variablename, '', 80, 'dolibarr_notes');
@@ -480,7 +480,7 @@ print "</td></tr>\n";
 
 print '<tr><td>';
 print $form->textwithpicto($langs->trans("WatermarkOnDraftImmoCards"), $htmltext, 1, 'help', '', 0, 2, 'watermarktooltip') . '<br>';
-print '<input size="50" class="flat" type="text" name="ULTIMATEIMMO_DRAFT_WATERMARK" value="' . $conf->global->ULTIMATEIMMO_DRAFT_WATERMARK . '">';
+print '<input size="50" class="flat" type="text" name="ULTIMATEIMMO_DRAFT_WATERMARK" value="' . getDolGlobalString('ULTIMATEIMMO_DRAFT_WATERMARK') . '">';
 print "</td></tr>\n";
 
 print '<tr><td>';

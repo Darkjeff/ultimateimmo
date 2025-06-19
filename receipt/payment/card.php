@@ -480,26 +480,13 @@ print dol_get_fiche_end();
  */
 print '<div class="tabsAction">';
 
-/*
-if (! empty($conf->global->BILL_ADD_PAYMENT_VALIDATION))
-{
-	if ($user->socid == 0 && $object->statut == 0 && $_GET['action'] == '')
-	{
-		if ($user->rights->facture->paiement)
-		{
-			print '<a class="butAction" href="card.php?id='.$_GET['id'].'&amp;facid='.$objp->facid.'&amp;action=valide">'.$langs->trans('Valid').'</a>';
-		}
-	}
-}
-*/
-
-if ($_GET['action'] == '')
+if (GETPOST('action'))
 {
 	if ($usercandelete)
 	{
 		if (! $disable_delete)
 		{
-			print '<a class="butActionDelete" href="card.php?id='.$_GET['id'].'&amp;action=delete">'.$langs->trans('Delete').'</a>';
+			print '<a class="butActionDelete" href="card.php?id='.GETPOST('id','int').'&amp;action=delete">'.$langs->trans('Delete').'</a>';
 		}
 		else
 		{

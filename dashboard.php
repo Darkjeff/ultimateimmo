@@ -52,7 +52,6 @@ dol_include_once('ultimateimmo/class/ultimateimmo_modele_boxes.class.php');
 dol_include_once('ultimateimmo/lib/dashboard.lib.php');
 
 // If not defined, we select menu "home"
-$_GET['mainmenu']=GETPOST('mainmenu', 'aZ09')?GETPOST('mainmenu', 'aZ09'):'home';
 $action=GETPOST('action', 'aZ09');
 
 $hookmanager->initHooks(array('index'));

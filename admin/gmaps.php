@@ -89,17 +89,17 @@ if (preg_match('/del_(.*)/', $action, $reg)) {
 
 if ($actionsave) {
     $db->begin();
-
+	$mesg='';
     $res = 0;
-    $res += dolibarr_set_const($db, 'GOOGLE_GMAPS_ZOOM_LEVEL', trim($_POST["GOOGLE_GMAPS_ZOOM_LEVEL"]), 'chaine', 0, '', $conf->entity);
-    $res += dolibarr_set_const($db, 'GOOGLE_API_SERVERKEY', trim($_POST["GOOGLE_API_SERVERKEY"]), 'chaine', 0, '', $conf->entity);
+    $res += dolibarr_set_const($db, 'GOOGLE_GMAPS_ZOOM_LEVEL', getDolGlobalString("GOOGLE_GMAPS_ZOOM_LEVEL"), 'chaine', 0, '', $conf->entity);
+    $res += dolibarr_set_const($db, 'GOOGLE_API_SERVERKEY', getDolGlobalString("GOOGLE_API_SERVERKEY"), 'chaine', 0, '', $conf->entity);
 
     if ($res == 2) {
         $db->commit();
-        $mesg = "<font class=\"ok\">" . $langs->trans("SetupSaved") . "</font>";
+        setEventMessage($langs->trans("SetupSaved"));
     } else {
         $db->rollback();
-        $mesg = "<font class=\"error\">" . $langs->trans("Error") . "</font>";
+		setEventMessage($langs->trans("Error"), "errors");
     }
 }
 
@@ -116,7 +116,7 @@ $page_name = "UltimateimmoSetup";
 llxHeader('', $langs->trans($page_name));
 
 // Subheader
-$linkback = '<a href="' . ($backtopage ? $backtopage : DOL_URL_ROOT . '/admin/modules.php') . '">' . $langs->trans("BackToModuleList") . '</a>';
+$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php' . '">' . $langs->trans("BackToModuleList") . '</a>';
 
 print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
 
@@ -143,9 +143,9 @@ print '<td align="center" width="100">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('ULTIMATEIMMO_USE_GOOGLE');
 } else {
-    if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 0) {
+    if (!getDolGlobalInt('ULTIMATEIMMO_USE_GOOGLE')) {
         print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_ULTIMATEIMMO_USE_GOOGLE">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
-    } else if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1) {
+    } else if (getDolGlobalInt('ULTIMATEIMMO_USE_GOOGLE','int')==1) {
         print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_ULTIMATEIMMO_USE_GOOGLE">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
     }
 }
@@ -173,7 +173,7 @@ print "</tr>";
 print '<tr class="oddeven">';
 print '<td>' . $langs->trans("GOOGLE_API_SERVERKEY") . "</td>";
 print "<td>";
-print '<input class="flat" type="text" size="64" name="GOOGLE_API_SERVERKEY" value="' . $conf->global->GOOGLE_API_SERVERKEY . '">';
+print '<input class="flat" type="text" size="64" name="GOOGLE_API_SERVERKEY" value="' . getDolGlobalString('GOOGLE_API_SERVERKEY') . '">';
 print '</td>';
 print '<td>';
 print $langs->trans("KeepEmptyYoUsePublicQuotaOfAPI", "Geocoding API") . '<br>';
