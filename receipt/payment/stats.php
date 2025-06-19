@@ -48,7 +48,7 @@ require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
 $langs->loadLangs(array("ultimateimmo@ultimateimmo","other","bills"));
 
 // Filter
-$year = (int)$_GET ["year"];
+$year = GETPOST('year','int');
 if ($year == 0)
 {
 	$year_current = (int)strftime ( "%Y", time () );

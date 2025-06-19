@@ -161,10 +161,6 @@ $permissiontodelete = $user->rights->ultimateimmo->delete;
 // Security check
 if (empty($conf->ultimateimmo->enabled)) accessforbidden('Module not enabled');
 $socid = 0;
-if ($user->societe_id > 0)    // Protection if external user
-{
-	accessforbidden();
-}
 
 // Security check (enable the most restrictive one)
 if ($user->socid > 0) accessforbidden();
@@ -671,6 +667,7 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 	// Show here line of result
 	print '<tr class="oddeven">';
 	foreach ($object->fields as $key => $val) {
+		$totalpaye=0;
 		$cssforfield = (empty($val['csslist']) ? (empty($val['css']) ? '' : $val['css']) : $val['csslist']);
 		if (in_array($val['type'], array('date', 'datetime', 'timestamp'))) {
 			$cssforfield .= ($cssforfield ? ' ' : '') . 'center';

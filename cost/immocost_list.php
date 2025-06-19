@@ -91,8 +91,8 @@ if (!$sortorder) $sortorder = "DESC";
 
 // Security check
 $socid = 0;
-if ($user->societe_id > 0) {    // Protection if external user
-	//$socid = $user->societe_id;
+if ($user->socid > 0) {    // Protection if external user
+	//$socid = $user->socid;
 	accessforbidden();
 }
 //$result = restrictedArea($user, 'ultimateimmo', $id, '');

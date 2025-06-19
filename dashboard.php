@@ -70,7 +70,8 @@ if ($user->rights->ultimateimmo->read) {
         'lines' => array(
             array('title' => $langs->trans('MenuImmoActiveOwner'), 'value' => getOwnerNumber(1), 'url' => dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1).'?search_status=1'),
 			array('title' => $langs->trans('MenuImmoNotActiveOwner'), 'value' => getOwnerNumber(9), 'url' => dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1).'?search_status=9'),
-        )
+        ),
+		'icon' => ''
     );
 }
 
@@ -83,7 +84,8 @@ if ($user->rights->ultimateimmo->read) {
         'lines' => array(
             array('title' => $langs->trans('ImmoActiveProperties'), 'value' => getPropertiesNumber(1), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1).'?search_status=1'),
 			array('title' => $langs->trans('ImmoNotActiveProperties'), 'value' => getPropertiesNumber(9), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1).'?search_status=9'),
-        )
+        ),
+		'icon' => ''
     );
 }
 
@@ -95,7 +97,8 @@ if ($user->rights->ultimateimmo->read) {
         'lines' => array(
             array('title' => $langs->trans('MenuImmoActiveRent'), 'value' => getRentNumber(1), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1).'?search_preavis=1'),
 			array('title' => $langs->trans('MenuImmoNotActiveRent'), 'value' => getRentNumber(2), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1).'?search_preavis=2'),
-        )
+        ),
+		'icon' => ''
     );
 }
 
@@ -107,7 +110,8 @@ if ($user->rights->ultimateimmo->read) {
         'lines' => array(
             array('title' => $langs->trans('MenuImmoActiveRenter'), 'value' => getRenterNumber(1), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1).'?search_status=1'),
 			array('title' => $langs->trans('MenuImmoNotActiveRenter'), 'value' => getRenterNumber(0), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1).'?search_status=0'),
-        )
+        ),
+		'icon' => ''
     );
 }
 
@@ -142,28 +146,27 @@ if (GETPOST('addbox'))	// Add box (when submit is done from a form when ajax dis
  * View
  */
 
-if (! is_object($form)) $form=new Form($db);
+$form=new Form($db);
 
 // Translations
 $langs->loadLangs(array("admin", "ultimateimmo@gultimateimmo"));
 
 // Title
 $title = $langs->trans("UltimateImmoDashboard");
-if (! empty($conf->global->MAIN_APPLICATION_TITLE)) $title=$langs->trans("HomeArea").' - '.$conf->global->MAIN_APPLICATION_TITLE;
+$title=$langs->trans("HomeArea").' - '.getDolGlobalString('MAIN_APPLICATION_TITLE');
 
 llxHeader('', $title);
 $resultboxes = UltimateImmoGetBoxesArea($user, "0");    // Load $resultboxes (selectboxlist + boxactivated + boxlista + boxlistb)
 $morehtmlright = $resultboxes['selectboxlist'];
 
 print load_fiche_titre($langs->trans("UltimateImmoDashboard"), $morehtmlright, 'ultimateimmo_minimized@ultimateimmo');
-print '<div class="dashboardBtnContainer">'.$button.'</div>';
 
 /*
  * Demo text
  */
-if ($conf->global->ULTIMATEIMMO_DEMO_ACTIVE == 1 && !empty($conf->global->ULTIMATEIMMO_DEMO_HOME)) {
+if (getDolGlobalInt('ULTIMATEIMMO_DEMO_ACTIVE')) {
     print '<div class="ultimateimmo-demo-div">';
-    print $conf->global->ULTIMATEIMMO_DEMO_HOME;
+    print getDolGlobalInt('ULTIMATEIMMO_DEMO_ACTIVE');
     print '</div>';
     print '<div class="clearboth"></div>';
 }
@@ -230,7 +233,8 @@ if ($user->rights->ultimateimmo->read) {
 			$globalboxes[] = array('name' => strtoupper($langs->trans('RenterLetToPay')), 'color' => '#C19875',
 				'url' => dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1),
 				'right' => $user->rights->ultimateimmo->read,
-				'lines' => $lineData
+				'lines' => $lineData,
+				'icon' => 'fa-home'
 			);
 		}
 	}

@@ -66,8 +66,8 @@ $hookmanager->initHooks(array('immorentnote'));     // Note that conf->hooks_mod
 $extralabels = $extrafields->fetch_name_optionals_label('immorent');
 
 // Security check - Protection if external user
-//if ($user->societe_id > 0) access_forbidden();
-//if ($user->societe_id > 0) $socid = $user->societe_id;
+//if ($user->socid > 0) access_forbidden();
+//if ($user->socid > 0) $socid = $user->socid;
 //$result = restrictedArea($user, 'ultimateimmo', $id);
 
 // Load object

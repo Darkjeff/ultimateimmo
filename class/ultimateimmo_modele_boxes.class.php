@@ -150,7 +150,7 @@ class UltimateImmoModeleBoxes
 
         $cachetime = 900;   // 900 : 15mn
         $cachedir = DOL_DATA_ROOT.'/boxes/temp';
-        $fileid = get_class($this).'id-'.$this->box_id.'-e'.$conf->entity.'-u'.$user->id.'-s'.$user->societe_id.'.cache';
+        $fileid = get_class($this).'id-'.$this->box_id.'-e'.$conf->entity.'-u'.$user->id.'-s'.$user->socid.'.cache';
         $filename = '/box-'.$fileid;
         $refresh = dol_cache_refresh($cachedir, $filename, $cachetime);
         $out = '';

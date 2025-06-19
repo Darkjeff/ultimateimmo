@@ -324,12 +324,12 @@ class ImmoReceipt extends CommonObject
 
 		// Translate some data of arrayofkeyval
 		foreach ($this->fields as $key => $val) {
-			if (is_array($this->fields['status']['arrayofkeyval'])) {
+			if (!empty($this->fields['status']['arrayofkeyval']) && is_array($this->fields['status']['arrayofkeyval'])) {
 				foreach ($this->fields['status']['arrayofkeyval'] as $key2 => $val2) {
 					$this->fields['status']['arrayofkeyval'][$key2] = $langs->trans($val2);
 				}
 			}
-			if (is_array($this->fields['paye']['arrayofkeyval'])) {
+			if (!empty($this->fields['paye']['arrayofkeyval']) && is_array($this->fields['paye']['arrayofkeyval'])) {
 				foreach ($this->fields['paye']['arrayofkeyval'] as $key3 => $val3) {
 					$this->fields['paye']['arrayofkeyval'][$key3] = $langs->trans($val3);
 				}
@@ -1428,9 +1428,9 @@ class ImmoReceipt extends CommonObject
 		dol_syslog(get_class($this) . "::getSommePaiement", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$obj = $this->db->fetch_object($resql);
+			if ($obj = $this->db->fetch_object($resql)) return $obj->amount;
 			$this->db->free($resql);
-			return $obj->amount;
+			return 0;
 		} else {
 			$this->error = "Error ".$this->db->lasterror();
 			return -1;

@@ -71,7 +71,7 @@ class RenterStats extends Stats
 
 		$this->where.= " m.status != 0";
 		$this->where.= " AND p.fk_renter = m.rowid AND m.entity IN (".getEntity('ultimateimmo').")";
-		//if (!$user->rights->societe->client->voir && !$user->societe_id) $this->where .= " AND p.fk_soc = sc.fk_soc AND sc.fk_user = " .$user->id;
+		//if (!$user->rights->societe->client->voir && !$user->socid) $this->where .= " AND p.fk_soc = sc.fk_soc AND sc.fk_user = " .$user->id;
 		/*if($this->memberid)
 		{
 			$this->where .= " AND m.rowid = ".$this->memberid;
@@ -92,7 +92,7 @@ class RenterStats extends Stats
 
 		$sql = "SELECT date_format(p.date_creation,'%m') as dm, count(*)";
 		$sql.= " FROM ".$this->from;
-		//if (!$user->rights->societe->client->voir && !$user->societe_id) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+		//if (!$user->rights->societe->client->voir && !$user->socid) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 		$sql.= " WHERE date_format(p.date_creation,'%Y') = '".$year."'";
 		$sql.= " AND ".$this->where;
 		$sql.= " GROUP BY dm";
@@ -112,7 +112,7 @@ class RenterStats extends Stats
 
 		$sql = "SELECT date_format(p.date_creation,'%Y') as dm, count(*)";
 		$sql.= " FROM ".$this->from;
-		//if (!$user->rights->societe->client->voir && !$user->societe_id) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+		//if (!$user->rights->societe->client->voir && !$user->socid) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 		$sql.= " WHERE ".$this->where;
 		$sql.= " GROUP BY dm";
         $sql.= $this->db->order('dm','DESC');
@@ -121,7 +121,7 @@ class RenterStats extends Stats
 	}
 
 	/**
-	 * Return the number of subscriptions by month for a given year 
+	 * Return the number of subscriptions by month for a given year
 	 *
      * @param   int		$year       Year
      * @return	array				Array of amount each month
@@ -132,7 +132,7 @@ class RenterStats extends Stats
 
 		$sql = "SELECT date_format(p.date_creation,'%m') as dm, sum(p.".$this->field.")";
 		$sql.= " FROM ".$this->from;
-		//if (!$user->rights->societe->client->voir && !$user->societe_id) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
+		//if (!$user->rights->societe->client->voir && !$user->socid) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 		$sql.= " WHERE date_format(p.date_creation,'%Y') = '".$year."'";
 		$sql.= " AND ".$this->where;
 		$sql.= " GROUP BY dm";

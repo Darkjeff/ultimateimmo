@@ -220,7 +220,7 @@ if ($action == 'add_payment') {
 		}
 	}
 
-	$_GET["action"] = 'create';
+	$action = 'create';
 }
 
 
@@ -233,7 +233,7 @@ $form = new Form($db);
 llxHeader('', $langs->trans("Payment"));
 
 // Form to create immoreceipt payment
-if (GETPOST('action', 'aZ09') == 'create') {
+if ($action == 'create') {
 
 			// Add realtime total information
 	if (!empty($conf->use_javascript_ajax)) {
