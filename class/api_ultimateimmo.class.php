@@ -56,7 +56,7 @@ class UltimateimmoApi extends DolibarrApi
      * @url     GET /
      *
      */
-    function __construct()
+    public function __construct()
     {
 		global $db, $conf;
 		$this->db = $db;
@@ -74,7 +74,7 @@ class UltimateimmoApi extends DolibarrApi
      * @url	GET immorenters/{id}
      * @throws 	RestException
      */
-    function get($id)
+    public function get($id)
     {
 		if(! DolibarrApiAccess::$user->rights->immorenter->read) {
 			throw new RestException(401);
@@ -109,7 +109,7 @@ class UltimateimmoApi extends DolibarrApi
      *
      * @url	GET /immorenters/
      */
-    function index($sortfield = "t.rowid", $sortorder = 'ASC', $limit = 100, $page = 0, $sqlfilters = '') {
+    public function index($sortfield = "t.rowid", $sortorder = 'ASC', $limit = 100, $page = 0, $sqlfilters = '') {
         global $db, $conf;
 
         $obj_ret = array();
@@ -192,7 +192,7 @@ class UltimateimmoApi extends DolibarrApi
      *
      * @url	POST immorenters/
      */
-    function post($request_data = NULL)
+    public function post($request_data = NULL)
     {
         if(! DolibarrApiAccess::$user->rights->immorenter->create) {
 			throw new RestException(401);
@@ -218,7 +218,7 @@ class UltimateimmoApi extends DolibarrApi
      *
      * @url	PUT immorenters/{id}
      */
-    function put($id, $request_data = NULL)
+    public function put($id, $request_data = NULL)
     {
         if(! DolibarrApiAccess::$user->rights->immorenter->create) {
 			throw new RestException(401);
@@ -251,7 +251,7 @@ class UltimateimmoApi extends DolibarrApi
      *
      * @url	DELETE immorenter/{id}
      */
-    function delete($id)
+    public function delete($id)
     {
         if(! DolibarrApiAccess::$user->rights->immorenter->supprimer) {
 			throw new RestException(401);
@@ -287,7 +287,7 @@ class UltimateimmoApi extends DolibarrApi
      *
      * @throws RestException
      */
-    function _validate($data)
+    public function _validate($data)
     {
         $immorenter = array();
         foreach (ImmoRenterApi::$FIELDS as $field) {

@@ -41,7 +41,7 @@ class FormUltimateimmo extends Form
 	 *
 	 * @param DoliDB $db handler
 	 */
-	function __construct($db)
+	public function __construct($db)
 	{
 		$this->db = $db;
 	}
@@ -287,7 +287,7 @@ class FormUltimateimmo extends Form
 	 *    @param      string	$rowid      rowid de la date de construction
 	 *    @return     string     			Nom traduit de la date de construction
 	 */
-	function getLabelBuiltDate($rowid)
+	public function getLabelBuiltDate($rowid)
 	{
 		global $db,$langs;
 

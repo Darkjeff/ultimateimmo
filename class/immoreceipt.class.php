@@ -1414,7 +1414,7 @@ class ImmoReceipt extends CommonObject
 	 *  @param 		int 	$multicurrency 	Return multicurrency_amount instead of amount
 	 *	@return		int						Amount of payment already done, <0 if KO
 	 */
-	function getSommePaiement()
+	public function getSommePaiement()
 	{
 		$table = 'ultimateimmo_immopayment';
 		$field = 'fk_receipt';

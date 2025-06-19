@@ -761,7 +761,7 @@ class ImmoRenter extends CommonObject
 	 *    @param     int	$socid		Id of user to link to
 	 *    @return    int						1=OK, -1=KO
 	 */
-	function setThirdPartyId($socid)
+	public function setThirdPartyId($socid)
 	{
 		global $conf, $langs;
 
@@ -1062,7 +1062,7 @@ class ImmoRenter extends CommonObject
 	 *  @param	int		$mode          0=libelle long, 1=libelle court, 2=Picto + Libelle court, 3=Picto, 4=Picto + Libelle long, 5=Libelle court + Picto
 	 *  @return	string 			       Label of status
 	 */
-	function getLibStatut($mode = 0)
+	public function getLibStatut($mode = 0)
 	{
 		return $this->LibStatut($this->status, $mode);
 	}
@@ -1115,7 +1115,7 @@ class ImmoRenter extends CommonObject
 	 *	@param  int		$id       Id of order
 	 *	@return	void
 	 */
-	function info($id)
+	public function info($id)
 	{
 		$sql = 'SELECT rowid, date_creation as datec, tms as datem,';
 		$sql .= ' fk_user_creat, fk_user_modif';
@@ -1202,7 +1202,7 @@ class ImmoRenter extends CommonObject
 	 *    @param      int		$searchlabel    Label of country to search (warning: searching on label is not reliable)
 	 *    @return     mixed       				String with country code or translated country name or Array('id','code','label')
 	 */
-	function getCountry($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
+	public function getCountry($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
 	{
 		global $db, $langs;
 

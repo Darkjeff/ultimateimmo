@@ -67,7 +67,7 @@ class ActionsUltimateimmo
     /**
      * Precise information on classes of ultimate immo
      */
-    function getElementProperties($parameters, &$object, &$action, $hookmanager)
+    public function getElementProperties($parameters, &$object, &$action, $hookmanager)
     {
         global $conf, $user, $langs;
 //        var_dump($parameters['elementType']);
@@ -253,7 +253,7 @@ class ActionsUltimateimmo
 
     /* Add here any other hooked methods... */
 
-    function addToLandingPageList($parameters, &$object, &$action, $hookmanager)
+    public function addToLandingPageList($parameters, &$object, &$action, $hookmanager)
     {
         if ($object->rights->ultimateimmo->read) {
             $parameters[dol_buildpath('/custom/ultimateimmo/rent/immorent_list.php', 1) . '?mainmenu=properties&leftmenu='] = 'UltimateImmo';
@@ -268,7 +268,7 @@ class ActionsUltimateimmo
      * @param   int				$param				0=True url, 1=Url formated with colors
      * @return	string								Url string
      */
-    function addSearchEntry($parameters, $object, $action, $hookmanager)
+    public function addSearchEntry($parameters, $object, $action, $hookmanager)
     {
         global $user, $langs;
         $search_boxvalue = ''; // ??????????

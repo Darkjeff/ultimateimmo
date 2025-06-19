@@ -653,7 +653,7 @@ class ImmoOwner extends CommonObjectUltimateImmo
      *  @param	int		$mode          0=libelle long, 1=libelle court, 2=Picto + Libelle court, 3=Picto, 4=Picto + Libelle long, 5=Libelle court + Picto
      *  @return	string 			       Label of status
      */
-    function getLibStatut($mode = 0)
+    public function getLibStatut($mode = 0)
     {
         return $this->LibStatut($this->status, $mode);
     }
@@ -665,7 +665,7 @@ class ImmoOwner extends CommonObjectUltimateImmo
      *  @param  int		$mode          	0=long label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto, 6=Long label + Picto
      *  @return string 			       	Label of status
      */
-    function LibStatut($status, $mode = 0)
+    public function LibStatut($status, $mode = 0)
     {
         global $langs;
 
@@ -695,7 +695,7 @@ class ImmoOwner extends CommonObjectUltimateImmo
      * 	@param  int		$id       Id of order
      * 	@return	void
      */
-    function info($id)
+    public function info($id)
     {
         $sql    = 'SELECT rowid, date_creation as datec, tms as datem,';
         $sql    .= ' fk_user_creat, fk_user_modif';
@@ -803,7 +803,7 @@ class ImmoOwner extends CommonObjectUltimateImmo
      *    @param      int		$searchlabel    Label of country to search (warning: searching on label is not reliable)
      *    @return     mixed       				String with country code or translated country name or Array('id','code','label')
      */
-    function getCountry($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
+    public function getCountry($searchkey, $withcode = '', $dbtouse = 0, $outputlangs = '', $entconv = 1, $searchlabel = '')
     {
         global $db, $langs;
 
