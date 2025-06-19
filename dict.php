@@ -216,7 +216,7 @@ if (GETPOST('actionadd') || GETPOST('actionmodify')) {
 			if ($listfieldvalue[$i] == 'sortorder')
 			{
 				// For column name 'sortorder', we use the field name 'position'
-				$sql .= "'" . (int)$db->escape($_POST['position']) . "'";
+				$sql .= "'" . (int)$db->escape(GETPOST('position')) . "'";
 			} elseif ($listfieldvalue[$i] == 'date_start' || $listfieldvalue[$i] == 'date_end') {
 				$sql .= "'" . $db->idate(dol_mktime(12, 0, 0, GETPOST($listfieldvalue[$i]."_addmonth", 'int'), GETPOST($listfieldvalue[$i]."_addday", 'int'), GETPOST($listfieldvalue[$i]."_addyear", 'int'))) . "'";
 			} elseif ($_POST[$listfieldvalue[$i]] == '' && !($listfieldvalue[$i] == 'code' && $id == 10)) {
@@ -271,7 +271,7 @@ if (GETPOST('actionadd') || GETPOST('actionmodify')) {
 			$sql .= $field . "=";
 			if ($listfieldvalue[$i] == 'sortorder')        // For column name 'sortorder', we use the field name 'position'
 			{
-				$sql .= "'" . (int)$db->escape($_POST['position']) . "'";
+				$sql .= "'" . (int)$db->escape(GETPOST('position')) . "'";
 			} elseif ($listfieldvalue[$i] == 'date_start' || $listfieldvalue[$i] == 'date_end') {
 				$sql .= "'" . $db->idate(dol_mktime(12, 0, 0, GETPOST($listfieldvalue[$i]."_editmonth", 'int'), GETPOST($listfieldvalue[$i]."_editday", 'int'), GETPOST($listfieldvalue[$i]."_edityear", 'int'))) . "'";
 			} elseif ($_POST[$listfieldvalue[$i]] == '' && !($listfieldvalue[$i] == 'code' && $id == 10)) {

@@ -107,11 +107,11 @@ $usercandelete = $user->rights->ultimateimmo->delete || ($usercancreate && $obje
 if ($id > 0) {
 	$ret = $receipt->fetch($id);
 }
-//var_dump($_POST);
+
 // Initialize technical object to manage hooks of paiements. Note that conf->hooks_modules contains array array
 $hookmanager->initHooks(array('paiementcard', 'globalcard'));
 
-//var_dump($_POST);exit;
+
 /*
  * Actions
  */
@@ -123,7 +123,7 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 $form = new Form($db);
 if ($action == 'add_payment') {
 	$error = 0;
-//var_dump($id);exit;
+
 	if (GETPOST('cancel')) {
 		$loc = dol_buildpath("/ultimateimmo/receipt/immoreceipt_card.php", 1) . '?id=' . $id;
 		header("Location: " . $loc);
@@ -198,7 +198,7 @@ if ($action == 'add_payment') {
 			if (!$error) {
 				$label = '(CustomerReceiptPayment)';
 				if (GETPOST('type') == ImmoReceipt::TYPE_CREDIT_NOTE) $label = '(CustomerReceiptPaymentBack)';
-				$result = $payment->addPaymentToBank($user, 'immopayment', $label, $_POST['accountid'], '', '');
+				$result = $payment->addPaymentToBank($user, 'immopayment', $label, GETPOST('accountid','int'), '', '');
 				if ($result <= 0) {
 					$errmsg = $payment->errors;
 					setEventMessages(null, $errmsg, 'errors');

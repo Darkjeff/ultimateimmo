@@ -91,8 +91,8 @@ if ($actionsave) {
     $db->begin();
 	$mesg='';
     $res = 0;
-    $res += dolibarr_set_const($db, 'GOOGLE_GMAPS_ZOOM_LEVEL', getDolGlobalString("GOOGLE_GMAPS_ZOOM_LEVEL"), 'chaine', 0, '', $conf->entity);
-    $res += dolibarr_set_const($db, 'GOOGLE_API_SERVERKEY', getDolGlobalString("GOOGLE_API_SERVERKEY"), 'chaine', 0, '', $conf->entity);
+    $res += dolibarr_set_const($db, 'GOOGLE_GMAPS_ZOOM_LEVEL', GETPOST("GOOGLE_GMAPS_ZOOM_LEVEL"), 'chaine', 0, '', $conf->entity);
+    $res += dolibarr_set_const($db, 'GOOGLE_API_SERVERKEY', GETPOST("GOOGLE_API_SERVERKEY"), 'chaine', 0, '', $conf->entity);
 
     if ($res == 2) {
         $db->commit();
@@ -155,7 +155,7 @@ print '<tr class="oddeven">';
 print '<td>' . $langs->trans("GoogleZoomLevel") . '</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="100">';
-print '<input class="flat" name="GOOGLE_GMAPS_ZOOM_LEVEL" id="GOOGLE_GMAPS_ZOOM_LEVEL" value="' . (isset($_POST["GOOGLE_GMAPS_ZOOM_LEVEL"]) ? $_POST["GOOGLE_GMAPS_ZOOM_LEVEL"] : $conf->global->GOOGLE_GMAPS_ZOOM_LEVEL) . '" size="2">';
+print '<input class="flat" name="GOOGLE_GMAPS_ZOOM_LEVEL" id="GOOGLE_GMAPS_ZOOM_LEVEL" value="' . (GETPOST("GOOGLE_GMAPS_ZOOM_LEVEL") ? GETPOST("GOOGLE_GMAPS_ZOOM_LEVEL") : getDolGlobalString("GOOGLE_GMAPS_ZOOM_LEVEL")) . '" size="2">';
 print '</td></tr>';
 
 print '</table>';

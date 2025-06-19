@@ -322,7 +322,7 @@ if ($action == 'createall')
 
 	// AccountToCredit
 	print '<td align="center">';
-	print $form->select_comptes(isset($_POST["accountid"])?$_POST["accountid"]:$payment->accountid, "accountid", 0, '',1);  // Show open bank account list
+	print $form->select_comptes(GETPOST("accountid")?GETPOST("accountid"):$payment->accountid, "accountid", 0, '',1);  // Show open bank account list
 	print '</td>';
 
 	// num_payment
