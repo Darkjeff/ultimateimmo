@@ -80,12 +80,12 @@ if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x'
 
 
 // Filter
-$year = $_GET ["year"];
-if ($year == 0) {
-	$year_current = strftime("%Y", time());
+$year = GETPOST('year','int');
+if (empty($year)) {
+	$year_current = (int) strftime("%Y", time());
 	$year_start = $year_current;
 } else {
-	$year_current = $year;
+	$year_current = (int) $year;
 	$year_start = $year;
 }
 
@@ -195,6 +195,9 @@ if ($resql) {
 		foreach ($months_list as $month_num => $month_name) {
 			print '<td align="right">' . price($row->{'month_'.$month_num}) . '</td>';
 			$total += $row->{'month_'.$month_num};
+			if (!isset($total_month[$month_num])) {
+				$total_month[$month_num] = 0;
+			}
 			$total_month[$month_num] += (float) $row->{'month_'.$month_num};
 			$dataResultatImmo[$row->rowid][$month_num] = (float) $row->{'month_'.$month_num};
 		}
@@ -210,8 +213,9 @@ if ($resql) {
 $total=0;
 print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
 foreach ($months_list as $month_num => $month_name) {
-	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
-	$total += $total_month[$month_num];
+	$amount= (isset($total_month[$month_num]) ? $total_month[$month_num] : 0);
+	print '<td align="right">' . price($amount) . '</td>';
+	$total += $amount;
 }
 print '<td align="right"><b>' . price($total) . '</b></td>';
 print '</tr>';
@@ -270,6 +274,9 @@ if ($resql) {
 		foreach ($months_list as $month_num => $month_name) {
 			print '<td align="right">' . price($row->{'month_'.$month_num}) . '</td>';
 			$total += $row->{'month_'.$month_num};
+			if (!isset($total_month[$month_num])) {
+				$total_month[$month_num] = 0;
+			}
 			$total_month[$month_num]  += (float) $row->{'month_'.$month_num};
 			$dataPaiement[$row->rowid][$month_num] = (float) $row->{'month_'.$month_num};
 		}
@@ -283,9 +290,11 @@ if ($resql) {
 //Total Ligne
 $total=0;
 print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
+
 foreach ($months_list as $month_num => $month_name) {
-	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
-	$total += $total_month[$month_num];
+	$amount= (isset($total_month[$month_num]) ? $total_month[$month_num] : 0);
+	print '<td align="right">' . price($amount) . '</td>';
+	$total += $amount;
 }
 print '<td align="right"><b>' . price($total) . '</b></td>';
 print '</tr>';
@@ -339,6 +348,9 @@ foreach ($value_array as $key => $val) {
 	$total = 0;
 	print '<tr class="oddeven"><td>' . $key . '</td>';
 	foreach ($months_list as $month_num => $month_name) {
+		if (!isset($total_month[$month_num])) {
+			$total_month[$month_num] = 0;
+		}
 		print '<td align="right">' . price($val[$month_num]) . '</td>';
 		$total += $val[$month_num];
 		$total_month[$month_num] += (float) $val[$month_num];
@@ -351,8 +363,9 @@ foreach ($value_array as $key => $val) {
 $total=0;
 print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
 foreach ($months_list as $month_num => $month_name) {
-	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
-	$total += $total_month[$month_num];
+	$amount= (isset($total_month[$month_num]) ? $total_month[$month_num] : 0);
+	print '<td align="right">' . price($amount) . '</td>';
+	$total += $amount;
 }
 print '<td align="right"><b>' . price($total) . '</b></td>';
 print '</tr>';
@@ -414,6 +427,9 @@ if ($resql) {
 		foreach ($months_list as $month_num => $month_name) {
 			print '<td align="right">' . price($row->{'month_'.$month_num}) . '</td>';
 			$total += $row->{'month_'.$month_num};
+			if (!isset($total_month[$month_num])) {
+				$total_month[$month_num] = 0;
+			}
 			$total_month[$month_num] += (float) $row->{'month_'.$month_num};
 			$dataCharge[$row->rowid][$month_num] = (float) $row->{'month_'.$month_num};
 		}
@@ -429,8 +445,9 @@ if ($resql) {
 $total=0;
 print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
 foreach ($months_list as $month_num => $month_name) {
-	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
-	$total += $total_month[$month_num];
+	$amount= (isset($total_month[$month_num]) ? $total_month[$month_num] : 0);
+	print '<td align="right">' . price($amount) . '</td>';
+	$total += $amount;
 }
 print '<td align="right"><b>' . price($total) . '</b></td>';
 print '</tr>';
@@ -481,6 +498,9 @@ foreach ($dataRevenueFiscal as $key => $val) {
 	foreach ($months_list as $month_num => $month_name) {
 		print '<td align="right">' . price($val[$month_num]) . '</td>';
 		$total += $val[$month_num];
+		if (!isset($total_month[$month_num])) {
+			$total_month[$month_num] = 0;
+		}
 		$total_month[$month_num] += (float) $val[$month_num];
 	}
 	print '<td align="right"><b>' . price($total) . '</b></td>';
@@ -491,8 +511,9 @@ foreach ($dataRevenueFiscal as $key => $val) {
 $total=0;
 print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
 foreach ($months_list as $month_num => $month_name) {
-	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
-	$total += $total_month[$month_num];
+	$amount= (isset($total_month[$month_num]) ? $total_month[$month_num] : 0);
+	print '<td align="right">' . price($amount) . '</td>';
+	$total += $amount;
 }
 print '<td align="right"><b>' . price($total) . '</b></td>';
 print '</tr>';
@@ -546,6 +567,9 @@ if ($resql) {
 			$dataChargeNd[$row->rowid][$month_num]=$row->{'month_'.$month_num};
 			print '<td align="right">' . price($row->{'month_'.$month_num}) . '</td>';
 			$total += $row->{'month_'.$month_num};
+			if (!isset($total_month[$month_num])) {
+				$total_month[$month_num] = 0;
+			}
 			$total_month[$month_num] += (float) $row->{'month_'.$month_num};
 		}
 		print '<td align="right"><b>' . price($total) . '</b></td>';
@@ -560,8 +584,9 @@ if ($resql) {
 $total=0;
 print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
 foreach ($months_list as $month_num => $month_name) {
-	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
-	$total += $total_month[$month_num];
+	$amount= (isset($total_month[$month_num]) ? $total_month[$month_num] : 0);
+	print '<td align="right">' . price($amount) . '</td>';
+	$total += $amount;
 }
 print '<td align="right"><b>' . price($total) . '</b></td>';
 print '</tr>';
@@ -589,8 +614,8 @@ if (!empty($dataRevenueFiscal)) {
 
 			$dataRevenueNet[$ibId][0] = $immoData[$ibId];
 			foreach ($months_list as $month_num => $month_name) {
-				$dataRevenueNet[$ibId][$month_num] = $dataRevenueFiscal[$ibId][$month_num];
-				if (array_key_exists($ibId, $dataPaiement)) {
+				$dataRevenueNet[$ibId][$month_num] = (float) $dataRevenueFiscal[$ibId][$month_num];
+				if (isset($dataChargeNd[$ibId][$month_num])) {
 					$dataRevenueNet[$ibId][$month_num] -= (float)$dataChargeNd[$ibId][$month_num];
 				}
 			}
@@ -613,6 +638,9 @@ foreach ($dataRevenueNet as $key => $val) {
 	foreach ($months_list as $month_num => $month_name) {
 		print '<td align="right">' . price($val[$month_num], 0, '', 1, -1, 2) . '</td>';
 		$total += $val[$month_num];
+		if (!isset($total_month[$month_num])) {
+			$total_month[$month_num] = 0;
+		}
 		$total_month[$month_num] += (float) $val[$month_num];
 	}
 	print '<td align="right"><b>' . price($total) . '</b></td>';
@@ -623,8 +651,9 @@ foreach ($dataRevenueNet as $key => $val) {
 $total=0;
 print '<tr class="liste_total"><td>' . $langs->trans('Total') . '</td>';
 foreach ($months_list as $month_num => $month_name) {
-	print '<td align="right">' . price($total_month[$month_num]) . '</td>';
-	$total += (float) $total_month[$month_num];
+	$amount= (isset($total_month[$month_num]) ? $total_month[$month_num] : 0);
+	print '<td align="right">' . price($amount) . '</td>';
+	$total += (float) $amount;
 }
 print '<td align="right"><b>' . price($total) . '</b></td>';
 print '</tr>';
