@@ -650,7 +650,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	include DOL_DOCUMENT_ROOT . '/core/tpl/card_presend.tpl.php';
 }
 
-if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE_API_SERVERKEY))
+if (getDolGlobalInt('ULTIMATEIMMO_USE_GOOGLE') && getDolGlobalString('GOOGLE_API_SERVERKEY'))
 {
 	if ($action != 'create' && $action != 'edit')
 	{
@@ -660,8 +660,8 @@ if ($conf->global->ULTIMATEIMMO_USE_GOOGLE == 1 && ! empty($conf->global->GOOGLE
 		{
 			 // URL to include javascript map
 			$urlforjsmap='https://maps.googleapis.com/maps/api/js';
-			if (empty($conf->global->GOOGLE_API_SERVERKEY)) $urlforjsmap.="?sensor=true";
-			else $urlforjsmap.="?key=".$conf->global->GOOGLE_API_SERVERKEY;
+			if (getDolGlobalString('GOOGLE_API_SERVERKEY')) $urlforjsmap.="?sensor=true";
+			else $urlforjsmap.="?key=".getDolGlobalString('GOOGLE_API_SERVERKEY');
 
 		?>
 		<!--gmaps.php: Include Google javascript map -->
