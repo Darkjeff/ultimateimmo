@@ -448,8 +448,6 @@ print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sort
 // Add code for pre mass action (confirmation or email presend form)
 $topicmail = "SendImmoPaymentRef";
 $modelmail = "immopayment";
-$objecttmp = new ImmoPayment($db);
-$objecttmp->fetch(0, 0, $bank_id);
 $trackid = 'xxxx' . $object->id;
 include DOL_DOCUMENT_ROOT . '/core/tpl/massactions_pre.tpl.php';
 
@@ -632,9 +630,10 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 				}
 			} elseif ($val['label'] == 'TypePayment') {
 				if ($object->fk_mode_reglement) {
-					$tmparray = $object->setPaymentMethods($object->fk_mode_reglement, 'int');
-					$object->mode_code = $tmparray['code'];
-					$object->mode_payment = $tmparray['libelle'];
+					$result = $object->setPaymentMethods($object->fk_mode_reglement);
+					if ($result<0) {
+						setEventMessages($object->error, $object->errors, 'errors');
+					}
 				}
 				// Payment mode
 				print $form->form_modes_reglement($_SERVER['PHP_SELF'], $object->fk_mode_reglement, 'none');

@@ -354,6 +354,7 @@ class ImmoRent extends CommonObject
 		$sql .= ' rentr.lastname as nomlocataire,';
 		$sql .= ' rentr.firstname as firstname_renter,';
 		$sql .= ' prop.label as nomlocal';
+		$sql .= ' ,rent_t.code as location_type_code';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorenter as rentr ON t.fk_renter = rentr.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as prop ON t.fk_property = prop.rowid';
@@ -380,7 +381,6 @@ class ImmoRent extends CommonObject
 
 					$this->location_type_id = $obj->location_type_id;
 					$this->location_type_code = $obj->location_type_code;
-					$this->location_type = $obj->location_type;
 
 					$this->setVarsFromFetchObj($obj);
 

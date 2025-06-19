@@ -79,8 +79,8 @@ $addwarning = 0;
 $receipt = new ImmoReceipt($db);
 $receipt->fetch($id);
 
-$object = new ImmoPayment($db);
-$object->fetch($receipt->fk_payment);
+//$object = new ImmoPayment($db);
+//$object->fetch($receipt->fk_payment);
 
 
 $renter = new ImmoRenter($db);
@@ -178,7 +178,6 @@ if ($action == 'add_payment') {
 			$payment->fk_rent	   = $receipt->fk_rent;
 			$payment->fk_property  = $receipt->fk_property;
 			$payment->fk_renter	   = $receipt->fk_renter;
-			$payment->fk_payment   = $receipt->fk_payment;
 			$payment->fk_owner     = $receipt->fk_owner;
 			$payment->date_payment = $date_payment;
 			$payment->amounts      = $amounts;   // Tableau de montant
@@ -256,8 +255,8 @@ if ($action == 'create') {
 	if ($result >= 0) {
 		//$ret = $paiement->fetch_thirdparty();
 		$title = '';
-		if ($receipt->type != ImmoReceipt::TYPE_CREDIT_NOTE) $title .= $langs->trans("EnterPaymentReceivedFromCustomer");
-		if ($receipt->type == ImmoReceipt::TYPE_CREDIT_NOTE) $title .= $langs->trans("EnterPaymentDueToCustomer");
+//		if ($receipt->type != ImmoReceipt::TYPE_CREDIT_NOTE) $title .= $langs->trans("EnterPaymentReceivedFromCustomer");
+//		if ($receipt->type == ImmoReceipt::TYPE_CREDIT_NOTE) $title .= $langs->trans("EnterPaymentDueToCustomer");
 		print load_fiche_titre($title);
 
 		print '<form id="payment_form" name="add_payment" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
@@ -270,8 +269,8 @@ if ($action == 'create') {
 
 		print '<table class="border centpercent">' . "\n";
 
-		$paymentstatic = new ImmoPayment($db);
-		$paymentstatic->fetch($receipt->fk_payment);
+//		$paymentstatic = new ImmoPayment($db);
+//		$paymentstatic->fetch($receipt->fk_payment);
 
 		// Reference
 		$tmpref = GETPOST('ref', 'alpha') ? GETPOST('ref', 'alpha') : $receipt->id;
@@ -298,7 +297,7 @@ if ($action == 'create') {
 		print '<tr><td>' . $langs->trans("Renter") . "</td><td colspan=\"2\">" . $staticrenter->ref . "</td></tr>\n";
 
 		// Total amount
-		print '<tr><td>' . $langs->trans("Amount") . "</td><td colspan=\"2\">" . price($receipt->total_amount, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td></tr>';
+		print '<tr><td>' . $langs->trans("Amount") . "</td><td colspan=\"2\">" . price($receipt->total_amount, 0, $langs, 1, -1, -1, $conf->currency) . '</td></tr>';
 
 		$sql = "SELECT sum(p.amount) as total";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as p";
@@ -311,21 +310,21 @@ if ($action == 'create') {
 			$db->free();
 		}
 
-		print '<tr><td>' . $langs->trans("AlreadyPaid") . '</td><td colspan="2">' . price($sumpaid, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td></tr>';
-		print '<tr><td class="tdtop">' . $langs->trans("RemainderToPay") . '</td><td colspan="2">' . price($receipt->total_amount - $sumpaid, 0, $outputlangs, 1, -1, -1, $conf->currency) . '</td></tr>';
+		print '<tr><td>' . $langs->trans("AlreadyPaid") . '</td><td colspan="2">' . price($sumpaid, 0, $langs, 1, -1, -1, $conf->currency) . '</td></tr>';
+		print '<tr><td class="tdtop">' . $langs->trans("RemainderToPay") . '</td><td colspan="2">' . price($receipt->total_amount - $sumpaid, 0, $langs, 1, -1, -1, $conf->currency) . '</td></tr>';
 
 		print '<tr class="liste_titre">';
 		print "<td colspan=\"3\">" . $langs->trans("Payment") . '</td>';
 		print '</tr>';
 
 		print '<tr><td><span class="fieldrequired">' . $langs->trans('Date') . '</span></td><td>';
-		$date_payment = dol_mktime(12, 0, 0, $_POST['remonth'], $_POST['reday'], $_POST['reyear']);
-		$datepayment = empty($conf->global->MAIN_AUTOFILL_DATE) ? (empty($_POST["remonth"]) ? -1 : $date_payment) : 0;
+		$date_payment = dol_mktime(12, 0, 0, GETPOST("remonth",'int'), GETPOST("reday",'int'), GETPOST("reyear",'int'));
+		$datepayment = !getDolGlobalInt('MAIN_AUTOFILL_DATE') ? (GETPOST("remonth",'int') ? -1 : $date_payment) : 0;
 		print $form->selectDate($datepayment, '', '', '', '', "add_payment", 1, 1);
 		print '</td></tr>';
 
 		print '<tr><td class="fieldrequired">' . $langs->trans("PaymentMode") . '</td><td colspan="2">';
-		$form->select_types_paiements((GETPOST('fk_mode_reglement') ? GETPOST('fk_mode_reglement') : $paymentstatic->fk_mode_reglement), 'fk_mode_reglement');
+		$form->select_types_paiements(GETPOST('fk_mode_reglement','int'), 'fk_mode_reglement');
 		print "</td>\n";
 		print '</tr>';
 
@@ -333,7 +332,7 @@ if ($action == 'create') {
 		print '<tr>';
 		print '<td class="fieldrequired">' . $langs->trans('AccountToCredit') . '</td>';
 		print '<td colspan="2">';
-		$form->select_comptes(isset($_POST["accountid"]) ? $_POST["accountid"] : $paymentstatic->accountid, "accountid", 0, '', 1);  // Show open bank account list
+		$form->select_comptes(GETPOST('accountid','int'), "accountid", 0, '', 1);  // Show open bank account list
 		print '</td></tr>';
 
 		// Cheque number
@@ -343,15 +342,15 @@ if ($action == 'create') {
 		print '<td><input name="num_paiement" type="text" value="' . $paymentnum . '"></td></tr>';
 
 		// Check transmitter
-		print '<tr><td class="' . (GETPOST('fk_mode_reglement') == 'CHQ' ? 'fieldrequired ' : '') . 'fieldrequireddyn">' . $langs->transnoentities('CheckTransmitter');
+		print '<tr><td class="' . (GETPOST('fk_mode_reglement') == 'CHQ' ? 'fieldrequired ' : '') . ' fieldrequireddyn">' . $langs->transnoentities('CheckTransmitter');
 		print '</td>';
-		print '<td><input id="fieldchqemetteur" name="chqemetteur" size="30" type="text" value="' . GETPOST('chqemetteur', 'alphanohtml') . '"></td></tr>';
+		print '<td><input id="fieldchqemetteur" name="chqemetteur" size="30" type="text" value="' . GETPOST('chqemetteur') . '"></td></tr>';
 
 		// Bank name
 		print '<tr><td>';
 		print '(' . $langs->transnoentities("ChequeBank") . ')';
 		print '</td>';
-		print '<td><input name="chqbank" size="30" type="text" value="' . GETPOST('chqbank', 'alphanohtml') . '"></td></tr>';
+		print '<td><input name="chqbank" size="30" type="text" value="' . GETPOST('chqbank') . '"></td></tr>';
 
 		// Comments
 		print '<tr><td>' . $langs->transnoentities('Comments') . '</td>';
@@ -391,17 +390,17 @@ if ($action == 'create') {
 
 			$sql = "SELECT rent.rowid, rent.ref as contract";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immopayment as pmt";
-			$sql .= ", " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rcpt";
+			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as rcpt ON pmt.fk_rent = rent.rowid";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as rent ON rcpt.fk_rent = rent.rowid";
 			$sql .= " WHERE pmt.fk_receipt = " . $id;
-			$sql .= " AND pmt.fk_rent = rent.rowid";
 			//print_r($sql);exit;
 			$resql = $db->query($sql);
 			if ($resql) {
-				$obj = $db->fetch_object($resql);
-				$contract = $obj->contract;
-				//var_dump($obj);exit;
-				$db->free();
+				if ($obj = $db->fetch_object($resql)) {
+					$contract = $obj->contract;
+					//var_dump($obj);exit;
+					$db->free();
+				}
 			}
 
 			print '<td class="left">' . $rent->getNomUrl(0) . "</td>";

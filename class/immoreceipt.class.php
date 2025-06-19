@@ -657,7 +657,6 @@ class ImmoReceipt extends CommonObject
 		$array[0] = 't.rowid';
 		$array = array_splice($array, 0, count($array), $array[0]);
 		$array = implode(', t.', $array);
-
 		$sql = 'SELECT ' . $array . ',';
 		$sql .= ' lc.rowid as renter_id,';
 		$sql .= ' lc.email as emaillocataire,';
@@ -684,10 +683,10 @@ class ImmoReceipt extends CommonObject
 						$this->brouillon = 1;
 					}
 
-					$this->fk_mode_reglement  = $obj->fk_mode_reglement;
-					$this->mode_reglement_code = $obj->payment_code;
-					$this->mode_reglement = $obj->payment_label;
-					$this->date_rent = $this->db->jdate($obj->date_rent);
+//					$this->fk_mode_reglement  = $obj->fk_mode_reglement;
+//					$this->mode_reglement_code = $obj->payment_code;
+//					$this->mode_reglement = $obj->payment_label;
+//					$this->date_rent = $this->db->jdate($obj->date_rent);
 					$this->date_start = $this->db->jdate($obj->date_start);
 					$this->date_end = $this->db->jdate($obj->date_end);
 					$this->date_creation = $this->db->jdate($obj->date_creation);

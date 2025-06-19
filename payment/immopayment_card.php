@@ -72,6 +72,7 @@ $socid 		= GETPOST('socid', 'int');
 $accountid	= GETPOST('accountid', 'int');
 $fk_mode_reglement	= GETPOST("fk_mode_reglement");
 $receipt_id = GETPOST('receipt', 'int');
+$confirm = GETPOST('confirm', 'alpha');
 
 $search_loyer = GETPOST('search_loyer', 'alpha');
 $search_local = GETPOST('search_local', 'alpha');
@@ -606,7 +607,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	//$morehtmlleft = '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref"><span class="fas fa-money-check-alt infobox-bank_account" style="" title="No photo"></span></div></div>';
 
 
-	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '', 0, $morehtmlleft);
+	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '', 0);
 
 
 	print '<div class="fichecenter">';
