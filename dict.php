@@ -140,13 +140,15 @@ $tabcond = array(0);
 $tabhelp = array(0);
 $tabfieldcheck = array(0);
 
+$search_country_id = GETPOST('search_country_id', 'int');
+
 
 // Complete all arrays with entries found into modules
 complete_dictionary_with_ultimateimmo($taborder, $tabname, $tablib, $tabsql, $tabsqlsort, $tabfield, $tabfieldvalue, $tabfieldinsert, $tabrowid, $tabcond, $tabhelp, $tabfieldcheck);
 
 
 // Defaut sortorder
-if (empty($sortfield)) {
+if (empty($sortfield) && !empty($id)) {
 	$tmp1 = explode(',', $tabsqlsort[$id]);
 	$tmp2 = explode(' ', $tmp1[0]);
 	$sortfield = preg_replace('/^.*\./', '', $tmp2[0]);
@@ -469,6 +471,7 @@ if ($id) {
 		print '<table class="noborder" width="100%">';
 
 		// Line for title
+		$valuetoshow='';
 		print '<tr class="liste_titre">';
 		foreach ($fieldlist as $field => $value) {
 			if ($fieldlist[$field] == 'entity') {
@@ -483,7 +486,7 @@ if ($id) {
 				}
 			}
 			if ($valuetoshow != '') {
-				print '<td' . ($class ? ' class="' . $class . '"' : '') . '>';
+				print '<td>';
 				if (!empty($tabhelp[$id][$value]) && preg_match('/^http(s*):/i', $tabhelp[$id][$value])) {
 					print '<a href="' . $tabhelp[$id][$value] . '" target="_blank">' . $valuetoshow . ' ' . img_help(1, $valuetoshow) . '</a>';
 				} else if (!empty($tabhelp[$id][$value])) {
@@ -732,12 +735,14 @@ if ($id) {
 					if (isset($obj->type) && in_array($obj->type, array('system', 'systemauto'))) {
 						$iserasable = 0;
 					}
-					if (in_array($obj->code, array('AC_OTH', 'AC_OTH_AUTO')) || in_array($obj->type, array('systemauto'))) {
+					if ((isset($obj->code) && isset($obj->type)) &&
+						(in_array($obj->code, array('AC_OTH', 'AC_OTH_AUTO'))
+							|| in_array($obj->type, array('systemauto')))) {
 						$canbedisabled = 0;
 						$canbedisabled = 0;
 					}
 					$canbemodified = $iserasable;
-					if ($obj->code == 'RECEP') {
+					if (isset($obj->code) && $obj->code == 'RECEP') {
 						$canbemodified = 1;
 					}
 					if ($tabname[$id] == MAIN_DB_PREFIX . "c_actioncomm") {
@@ -786,7 +791,7 @@ if ($id) {
 					// Delete link
 					if ($iserasable) {
 						print '<td align="center">';
-						if ($user->rights->gestionparc->dict) {
+						if ($user->hasRight('gestionparc','dict')) {
 							print '<a href="' . $url . 'action=delete">' . img_delete() . '</a>';
 						}
 						//else print '<a href="#">'.img_delete().'</a>';    // Some dictionary can be edited by other profile than admin
