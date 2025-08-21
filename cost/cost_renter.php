@@ -357,5 +357,3 @@ print '</tr>';
 
 llxFooter('');
 $db->close();
-
-?>
