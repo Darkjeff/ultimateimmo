@@ -76,8 +76,7 @@ if ($id > 0 || !empty($ref)) {
 	$upload_dir = $conf->ultimateimmo->multidir_output[empty($object->entity) ? $conf->entity : $object->entity]."/".$object->id;
 }
 
-$permissionnote = 1;
-//$permissionnote=$user->hasRight('ultimateimmo','creer');	// Used by the include of actions_setnotes.inc.php
+$permissionnote = $permissiontoadd = $user->hasRight('ultimateimmo','property','write');
 
 
 /*
