@@ -27,6 +27,9 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/commonobject.class.php';
  */
 class CommonObjectUltimateImmo extends CommonObject
 {
+
+	public $civility;
+	public $country_id;
 	/**
 	 * Return HTML string to put an input field into a page
 	 * Code very similar with showInputField of extra fields

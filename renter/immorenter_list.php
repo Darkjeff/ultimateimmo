@@ -235,7 +235,7 @@ foreach ($search as $key => $val) {
 		 $sql .= ' OR '.natural_search('t.lastname', $search[$key], $mode_search,1).')';
 	} elseif ($search[$key] != '') $sql .= natural_search('t.'.$key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 }
-if ($search_country_id && $search_country_id != '-1')       $sql .= " AND t.country_id IN (" . $db->escape($search_country_id) . ')';
+if (isset($search_country_id) && $search_country_id != '-1')       $sql .= " AND t.country_id IN (" . $db->escape($search_country_id) . ')';
 if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_sql.tpl.php';
@@ -459,7 +459,9 @@ print '</tr>'."\n";
 
 // Detect if we need a fetch on each output line
 $needToFetchEachLine = 0;
-if (is_array($extrafields->attributes[$object->table_element]['computed']) && count($extrafields->attributes[$object->table_element]['computed']) > 0) {
+if (isset($extrafields->attributes[$object->table_element]['computed'])
+	&& is_array($extrafields->attributes[$object->table_element]['computed'])
+	&& count($extrafields->attributes[$object->table_element]['computed']) > 0) {
 	foreach ($extrafields->attributes[$object->table_element]['computed'] as $key => $val) {
 		if (preg_match('/\$object/', $val)) $needToFetchEachLine++; // There is at least one compute field that use $object
 	}
@@ -469,6 +471,7 @@ if (is_array($extrafields->attributes[$object->table_element]['computed']) && co
 // --------------------------------------------------------------------
 $i = 0;
 $totalarray = array();
+$totalarray['nbfield']=0;
 while ($i < ($limit ? min($num, $limit) : $num)) {
 	$obj = $db->fetch_object($resql);
 	if (empty($obj)) break;		// Should not happen
