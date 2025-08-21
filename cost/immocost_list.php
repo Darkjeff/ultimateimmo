@@ -535,6 +535,9 @@ while ($i < min($num, $limit)) {
 			if (!$i) $totalarray['nbfield']++;
 			if (!empty($val['isameasure'])) {
 				if (!$i) $totalarray['pos'][$totalarray['nbfield']] = 't.' . $key;
+				if (!isset($totalarray['val']['t.' . $key])) {
+					$totalarray['val']['t.' . $key] = 0;
+				}
 				$totalarray['val']['t.' . $key] += $obj->$key;
 			}
 		}

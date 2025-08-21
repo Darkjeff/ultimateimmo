@@ -75,6 +75,7 @@ $cancel = GETPOST('cancel', 'aZ09');
 $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'immoreceiptcard';   // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
 $search_fk_soc = GETPOST('search_fk_soc', 'alpha');
+$optioncss  = GETPOST('optioncss', 'aZ'); // Option for the css output (always '' except when 'print')
 
 $limit = GETPOST('limit', 'int') ? GETPOST('limit', 'int') : $conf->liste_limit;
 $sortfield = GETPOST('sortfield', 'alpha');
