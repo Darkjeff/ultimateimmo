@@ -94,7 +94,7 @@ $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'
 $hookmanager->initHooks(array('immopaymentcard'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immopayment');
-$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
+$search_array_options = $extrafields->getOptionalsFromPost($object->table_element, '', 'search_');
 
 // Initialize array of search criterias
 $search_all = trim(GETPOST("search_all", 'alpha'));

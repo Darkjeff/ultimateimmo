@@ -83,7 +83,7 @@ $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'
 $hookmanager->initHooks(array('immocostlist'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immocost');
-$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
+$search_array_options = $extrafields->getOptionalsFromPost($object->table_element, '', 'search_');
 
 // Default sort order (if not yet defined by previous GETPOST)
 if (!$sortfield) $sortfield = "t.date_start";   // Set here default search field. By default 1st field in definition.

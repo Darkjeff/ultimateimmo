@@ -85,7 +85,7 @@ $hookmanager->initHooks(array('immoownerlist'));     // Note that conf->hooks_mo
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('immoowner');
 
-$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
+$search_array_options = $extrafields->getOptionalsFromPost($object->table_element, '', 'search_');
 
 // Default sort order (if not yet defined by previous GETPOST)
 if (!$sortfield) $sortfield = "t." . key($object->fields);   // Set here default search field. By default 1st field in definition.

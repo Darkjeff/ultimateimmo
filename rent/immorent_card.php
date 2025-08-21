@@ -76,8 +76,7 @@ $hookmanager->initHooks(array('immorentcard', 'globalcard'));     // Note that c
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
 
-$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
-
+$search_array_options = $extrafields->getOptionalsFromPost($object->table_element, '', 'search_');
 // Initialize array of search criterias
 $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
