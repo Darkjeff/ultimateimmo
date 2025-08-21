@@ -101,7 +101,7 @@ if ($id > 0 || !empty($ref)) {
 	$upload_dir = $conf->ultimateimmo->multidir_output[empty($object->entity) ? $conf->entity : $object->entity]."/".$object->id;
 }
 
-$permissiontoadd = $user->hasRight('ultimateimmo','property','write');
+$permissiontoadd = 0;
 
 /*
  *	Actions

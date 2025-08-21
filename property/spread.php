@@ -65,6 +65,8 @@ if (! $user->hasRight('ultimateimmo','read')) {
 	accessforbidden();
 }
 
+$permissiontoadd = 0;
+
 $object = new ImmoProperty($db);
 $owner = new ImmoOwner($db);
 $result = $object->fetch($id);
@@ -212,7 +214,7 @@ if (!empty($object->lines)) {
 
 	print '</table>';
 
-	print $form->buttonsSaveCancel("Save");
+	print $html->buttonsSaveCancel("Save");
 	print '</form>';
 }
 

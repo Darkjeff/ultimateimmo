@@ -757,8 +757,8 @@ class ImmoProperty extends CommonObject
 				$this->date_creation     = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->datem);
 				if (!empty($obj->datev)) {
-    $this->date_validation   = $this->db->jdate($obj->datev);
-}
+					$this->date_validation   = $this->db->jdate($obj->datev);
+				}
 			}
 
 			$this->db->free($result);

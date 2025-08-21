@@ -58,7 +58,7 @@ $langs->loadLangs(array("admin", "ultimateimmo@ultimateimmo"));
 $action = GETPOST('action', 'alpha');
 $backtopage = GETPOST('backtopage', 'alpha');
 $id = GETPOST('rowid') ? GETPOST('rowid', 'int') : GETPOST('id', 'int');
-
+$permissiontoadd = 0;
 // Security check
 if (! $user->hasRight('ultimateimmo','read')) {
 	accessforbidden();
