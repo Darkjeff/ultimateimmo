@@ -77,6 +77,7 @@ if ($id > 0 || !empty($ref)) {
 }
 
 $permissionnote = 1;
+$permissiontoadd=0;
 //$permissionnote=$user->hasRight('ultimateimmo','creer');	// Used by the include of actions_setnotes.inc.php
 
 
