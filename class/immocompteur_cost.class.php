@@ -834,7 +834,11 @@ class ImmoCompteur_Cost extends CommonObject
 			$statusType = 'status6';
 		}
 
-		return dolGetStatus($this->labelStatus[$status], $this->labelStatusShort[$status], '', $statusType, $mode);
+		if (isset($this->labelStatus[$status])) {
+			return dolGetStatus($this->labelStatus[$status], $this->labelStatusShort[$status], '', $statusType, $mode);
+		} else {
+			return '';
+		}
 	}
 
 	/**
