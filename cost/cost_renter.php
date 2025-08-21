@@ -51,7 +51,7 @@ $langs->loadLangs(array("ultimateimmo@ultimateimmo","other","bills"));
 
 // Filter
 $year = GETPOST("year","int");
-if ($year == 0)
+if (empty($year))
 {
 	$year_current = strftime ( "%Y", time () );
 	$year_start = $year_current;
@@ -316,7 +316,7 @@ if ($resqlpaiement && $resqlencaissement)
 		$value_array[$rowencaissement [0]][13] =  0;
 		for ($j = 1; $j <= 12; $j++)
 		{
-			$value_array[$rowencaissement [0]][$j] = ($rowencaissement [$j] - $rowpaiement [$j]);
+			$value_array[$rowencaissement [0]][$j] = (isset($rowencaissement[$j])?$rowencaissement[$j]:0) - (isset($rowpaiement[$j])?$rowpaiement[$j]:0);
 		}
 		$i ++;
 	}
