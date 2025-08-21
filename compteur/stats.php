@@ -220,19 +220,21 @@ foreach ($result_data as $obj) {
 	if (empty($day_diff)) {
 		$day_diff = 1;
 	}
-	$conso_jour=number_format($rel_diff/$day_diff,2);
+	$conso_jour_float=$rel_diff/$day_diff;
+	$conso_jour=number_format($conso_jour_float,2);
 	print price($conso_jour);
 	print '</td>';
 
+
 	//Consommation mois
 	print '<td class="left">';
-	$conso_mois=$conso_jour*30;
+	$conso_mois=$conso_jour_float*30;
 	print price($conso_mois);
 	print '</td>';
 
 	//Consommation annuelle
 	print '<td class="left">';
-	$conso_year=$conso_jour*365;
+	$conso_year=$conso_jour_float*365;
 	print price($conso_year);
 	print '</td>';
 
