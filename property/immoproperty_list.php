@@ -247,7 +247,9 @@ $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "ultimateimmo_building as b ON b.fk_pro
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = t.fk_owner";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_country as country ON country.rowid = t.country_id";
 $sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'c_ultimateimmo_juridique as j ON t.juridique_id = j.rowid';
-if (isset($extrafields->attributes[$object->table_element]['label']) && is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) {
+if (isset($extrafields->attributes[$object->table_element]['label'])
+	&& is_array($extrafields->attributes[$object->table_element]['label'])
+	&& count($extrafields->attributes[$object->table_element]['label'])) {
 	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . $object->table_element . "_extrafields as ef on (t.rowid = ef.fk_object)";
 }
 // Add table from hooks

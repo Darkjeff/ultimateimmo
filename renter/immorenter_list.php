@@ -102,7 +102,7 @@ foreach ($object->fields as $key => $val) {
 // List of fields to search into when doing a "search in all"
 $fieldstosearchall = array();
 foreach ($object->fields as $key => $val) {
-	if ($val['searchall']) $fieldstosearchall['t.' . $key] = $val['label'];
+	if (isset($val['searchall'])) $fieldstosearchall['t.' . $key] = $val['label'];
 }
 
 // Definition of fields for list
@@ -112,7 +112,9 @@ foreach ($object->fields as $key => $val) {
 	if (!empty($val['visible'])) $arrayfields['t.' . $key] = array('label' => $val['label'], 'checked' => (($val['visible'] < 0) ? 0 : 1), 'enabled' => ($val['enabled'] && ($val['visible'] != 3)), 'position' => $val['position']);
 }
 // Extra fields
-if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label']) > 0) {
+if (isset($extrafields->attributes[$object->table_element]['label'])
+	&& is_array($extrafields->attributes[$object->table_element]['label'])
+	&& count($extrafields->attributes[$object->table_element]['label']) > 0) {
 	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
 		if (!empty($extrafields->attributes[$object->table_element]['list'][$key])) {
 			$arrayfields["ef." . $key] = array(
@@ -214,7 +216,11 @@ $sql .= " FROM " . MAIN_DB_PREFIX . $object->table_element . " as t";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid = t.fk_owner";
 //$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."ultimateimmo_immorent as rent ON rent.rowid = t.fk_rent";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_country as country ON country.rowid = t.country_id";
-if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . $object->table_element . "_extrafields as ef on (t.rowid = ef.fk_object)";
+if (isset($extrafields->attributes[$object->table_element]['label'])
+	&& is_array($extrafields->attributes[$object->table_element]['label'])
+	&& count($extrafields->attributes[$object->table_element]['label'])) {
+	$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . $object->table_element . "_extrafields as ef on (t.rowid = ef.fk_object)";
+}
 if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (" . getEntity($object->element) . ")";
 else $sql .= " WHERE 1 = 1";
 foreach ($search as $key => $val) {

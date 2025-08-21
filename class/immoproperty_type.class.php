@@ -104,7 +104,7 @@ class ImmoProperty_Type extends CommonObject
 	 */
 	public function __construct(DoliDB $db)
 	{
-		global $conf, $user, $langs;
+		global $conf, $langs;
 
 		$this->db = $db;
 
