@@ -67,8 +67,8 @@ else
  */
 llxHeader ( '', 'Compta - Ventilation' );
 
-$textprevyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/cost_renter.php',1) . '?year=' . ($year_current - 1) . '">' . img_previous () . '</a>';
-$textnextyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/cost_renter.php',1) . '?year=' . ($year_current + 1) . '">' . img_next () . '</a>';
+$textprevyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/cost_renter.php',1) . '?year=' . ((int)$year_current - 1) . '">' . img_previous () . '</a>';
+$textnextyear = '<a href="' .dol_buildpath('/ultimateimmo/cost/cost_renter.php',1) . '?year=' . ((int)$year_current + 1) . '">' . img_next () . '</a>';
 
 print_fiche_titre ( $langs->trans("RenterCost")." ".$textprevyear." ".$langs->trans("Year")." ".$year_start." ".$textnextyear);
 
@@ -104,8 +104,8 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= ' FROM ' . MAIN_DB_PREFIX . 'ultimateimmo_immoreceipt as lo';
 $sql .= ' , ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as ll';
 $sql .= ' , ' . MAIN_DB_PREFIX . 'ultimateimmo_building as ii';
-$sql .= ' WHERE lo.date_echeance >= \'' . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . '\'';
-$sql .= '  AND lo.date_echeance <= \'' . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . '\'';
+$sql .= ' WHERE lo.date_echeance >= \'' . $db->idate ( dol_get_first_day ( (int)$y, 1, false ) ) . '\'';
+$sql .= '  AND lo.date_echeance <= \'' . $db->idate ( dol_get_last_day ( (int)$y, 12, false ) ) . '\'';
 $sql .= '  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property  ';
 //$sql .= '  AND lo.paye = 1 ';
 $sql .= ' GROUP BY ii.label';
@@ -162,8 +162,8 @@ $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE ic.date_start >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND ic.date_start <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= " WHERE ic.date_start >= '" . $db->idate ( dol_get_first_day ( (int)$y, 1, false ) ) . "'";
+$sql .= "  AND ic.date_start <= '" . $db->idate ( dol_get_last_day ( (int)$y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.rowid IN (".getDolGlobalString('ULTIMATEIMMO_TYPECOST_RENTER_PROPERTY').")";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
@@ -227,8 +227,8 @@ $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it ON i
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll ON ic.fk_property = ll.rowid";
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorent as ir ON  ir.fk_property = ll.rowid";
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "ultimateimmo_immorenter as irer ON ir.fk_renter = irer.rowid";
-$sql .= " WHERE ic.date_start >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND ic.date_start <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= " WHERE ic.date_start >= '" . $db->idate ( dol_get_first_day ( (int)$y, 1, false ) ) . "'";
+$sql .= "  AND ic.date_start <= '" . $db->idate ( dol_get_last_day ( (int)$y, 12, false ) ) . "'";
 $sql .= "  AND it.rowid IN (".getDolGlobalString('ULTIMATEIMMO_TYPECOST_RENTER_RENTER').")";
 $sql .= " GROUP BY irer.lastname";
 
@@ -277,8 +277,8 @@ foreach( $months_list as $month_num => $month_name )
 $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immoreceipt as lo";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= " WHERE lo.date_echeance >= '" . $db->idate ( dol_get_first_day ( (int)$y, 1, false ) ) . "'";
+$sql .= "  AND lo.date_echeance <= '" . $db->idate ( dol_get_last_day ( (int)$y, 12, false ) ) . "'";
 $sql .= "  AND lo.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
 //$sql .= "  AND lo.paye = 1 ";
 $sql .= " GROUP BY  ii.label";
@@ -294,8 +294,8 @@ $sql .= " FROM " . MAIN_DB_PREFIX . "ultimateimmo_immocost as ic";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immocost_type as it";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_immoproperty as ll";
 $sql .= " , " . MAIN_DB_PREFIX . "ultimateimmo_building as ii";
-$sql .= " WHERE ic.date_start >= '" . $db->idate ( dol_get_first_day ( $y, 1, false ) ) . "'";
-$sql .= "  AND ic.date_start <= '" . $db->idate ( dol_get_last_day ( $y, 12, false ) ) . "'";
+$sql .= " WHERE ic.date_start >= '" . $db->idate ( dol_get_first_day ( (int)$y, 1, false ) ) . "'";
+$sql .= "  AND ic.date_start <= '" . $db->idate ( dol_get_last_day ( (int)$y, 12, false ) ) . "'";
 $sql .= "  AND ic.fk_cost_type = it.rowid ";
 $sql .= "  AND it.rowid IN (".getDolGlobalString('ULTIMATEIMMO_TYPECOST_RENTER_PROPERTY').")";
 $sql .= "  AND ic.fk_property = ll.rowid AND ll.fk_property = ii.fk_property ";
