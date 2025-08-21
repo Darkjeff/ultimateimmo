@@ -738,6 +738,8 @@ class ImmoBuilding extends CommonObject
 
 		if (isset($this->labelStatus[$status])) {
 			return dolGetStatus($this->labelStatus[$status], $this->labelStatusShort[$status], '', $statusType, $mode);
+		} else {
+			return '';
 		}
 	}
 

@@ -455,6 +455,7 @@ if (isset($extrafields->attributes[$object->table_element]['computed'])
 $i = 0;
 $totalarray = array();
 $totalarray['nbfield'] = 0;
+$totalarray['val'] = array();
 while ($i < ($limit ? min($num, $limit) : $num)) {
 	$obj = $db->fetch_object($resql);
 	if (empty($obj)) break; // Should not happen
@@ -483,6 +484,9 @@ while ($i < ($limit ? min($num, $limit) : $num)) {
 			if (!$i) $totalarray['nbfield']++;
 			if (!empty($val['isameasure'])) {
 				if (!$i) $totalarray['pos'][$totalarray['nbfield']] = 't.'.$key;
+				if (!isset($totalarray['val']['t.'.$key])) {
+					$totalarray['val']['t.'.$key] = 0;
+				}
 				$totalarray['val']['t.'.$key] += $object->$key;
 			}
 		}

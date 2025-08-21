@@ -272,6 +272,7 @@ class ImmoCompteur_Type extends CommonObject
         $label.= '<b>' . $langs->trans('Label') . ':</b> ' . $this->label;
 
         //$url = dol_buildpath('/ultimateimmo/cost_type/immocost_type_card.php',1).'?id='.$this->id;
+		$url='';
 
         if ($option != 'nolink')
         {
