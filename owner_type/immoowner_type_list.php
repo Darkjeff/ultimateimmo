@@ -102,7 +102,7 @@ foreach($object->fields as $key => $val)
 $fieldstosearchall = array();
 foreach($object->fields as $key => $val)
 {
-	if ($val['searchall']) $fieldstosearchall['t.'.$key]=$val['label'];
+	if (isset($val['searchall'])) $fieldstosearchall['t.'.$key]=$val['label'];
 }
 
 // Definition of fields for list
@@ -352,7 +352,7 @@ $objecttmp=new ImmoOwner_Type($db);
 $trackid='xxxx'.$object->id;
 include DOL_DOCUMENT_ROOT.'/core/tpl/massactions_pre.tpl.php';
 
-if ($sall)
+if (isset($sall))
 {
 	foreach($fieldstosearchall as $key => $val) $fieldstosearchall[$key]=$langs->trans($val);
 	print $langs->trans("FilterOnInto", $sall) . join(', ',$fieldstosearchall);
@@ -392,7 +392,7 @@ foreach($object->fields as $key => $val)
 	if (in_array($val['type'], array('date','datetime','timestamp'))) $align.=($align?' ':'').'center';
 	if (in_array($val['type'], array('timestamp'))) $align.=($align?' ':'').'nowrap';
 	if ($key == 'status') $align.=($align?' ':'').'center';
-	if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($align?' '.$align:'').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'"></td>';
+	if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($align?' '.$align:'').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.(isset($search[$key])?dol_escape_htmltag($search[$key]):'').'"></td>';
 }
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
@@ -447,6 +447,7 @@ if (isset($extrafields->attributes[$object->table_element]['computed'])
 // --------------------------------------------------------------------
 $i=0;
 $totalarray=array();
+$totalarray['nbfield'] = 0;
 while ($i < min($num, $limit))
 {
 	$obj = $db->fetch_object($resql);

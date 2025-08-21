@@ -122,7 +122,7 @@ foreach($object->fields as $key => $val)
 $fieldstosearchall = array();
 foreach($object->fields as $key => $val)
 {
-	if ($val['searchall']) $fieldstosearchall['t.'.$key]=$val['label'];
+	if (isset($val['searchall'])) $fieldstosearchall['t.'.$key]=$val['label'];
 }
 
 // Definition of fields for list
@@ -415,7 +415,7 @@ foreach($object->fields as $key => $val)
 	if (in_array($val['type'], array('date','datetime','timestamp'))) $cssforfield.=($cssforfield?' ':'').'center';
 	if (in_array($val['type'], array('timestamp'))) $cssforfield.=($cssforfield?' ':'').'nowrap';
 	if ($key == 'status') $cssforfield.=($cssforfield?' ':'').'center';
-	if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($cssforfield?' '.$cssforfield:'').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'"></td>';
+	if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($cssforfield?' '.$cssforfield:'').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.(isset($search[$key])?dol_escape_htmltag($search[$key]):'').'"></td>';
 }
 // Extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
@@ -473,6 +473,7 @@ if (isset($extrafields->attributes[$object->table_element]['computed'])
 // --------------------------------------------------------------------
 $i=0;
 $totalarray=array();
+$totalarray['nbfield'] = 0;
 while ($i < min($num, $limit))
 {
 	$obj = $db->fetch_object($resql);
