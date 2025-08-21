@@ -164,8 +164,8 @@ if (empty($reshook))
 	// Mass actions
 	$objectclass='ImmoCost_Type';
 	$objectlabel='ImmoCost_Type';
-	$permtoread = $user->rights->ultimateimmo->read;
-	$permtodelete = $user->rights->ultimateimmo->delete;
+	$permtoread = $user->hasRight('ultimateimmo','read');
+	$permtodelete = $user->hasRight('ultimateimmo','delete');
 	$uploaddir = $conf->ultimateimmo->dir_output;
 	include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
 }
@@ -325,7 +325,7 @@ $arrayofmassactions =  array(
 	//'presend'=>$langs->trans("SendByMail"),
 	//'builddoc'=>$langs->trans("PDFMerge"),
 );
-if ($user->rights->ultimateimmo->delete) $arrayofmassactions['predelete']=$langs->trans("Delete");
+if ($user->hasRight('ultimateimmo','delete')) $arrayofmassactions['predelete']=$langs->trans("Delete");
 if (in_array($massaction, array('presend','predelete'))) $arrayofmassactions=array();
 $massactionbutton=$form->selectMassAction('', $arrayofmassactions);
 
@@ -556,8 +556,8 @@ if (in_array('builddoc',$arrayofmassactions) && ($nbtotalofrecords === '' || $nb
 	$urlsource.=str_replace('&amp;','&',$param);
 
 	$filedir=$diroutputmassaction;
-	$genallowed=$user->rights->ultimateimmo->read;
-	$delallowed=$user->rights->ultimateimmo->write;
+	$genallowed=$user->hasRight('ultimateimmo','read');
+	$delallowed=$user->hasRight('ultimateimmo','write');
 
 	print $formfile->showdocuments('massfilesarea_ultimateimmo','',$filedir,$urlsource,0,$delallowed,'',1,1,0,48,1,$param,$title,'','','',null,$hidegeneratedfilelistifempty);
 }

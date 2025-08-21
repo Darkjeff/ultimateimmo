@@ -91,8 +91,8 @@ include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be inc
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
 if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity ? $object->entity : $conf->entity] . "/property/" . dol_sanitizeFileName($object->ref);
 
-$permissiontoadd = $user->rights->ultimateimmo->property->write; // Used by the include of actions_addupdatedelete.inc.php
-$permissiontoread=  $user->rights->ultimateimmo->property->read;
+$permissiontoadd = $user->hasRight('ultimateimmo','property','write'); // Used by the include of actions_addupdatedelete.inc.php
+$permissiontoread=  $user->hasRight('ultimateimmo','property','read');
 /*
  * Actions
  */
@@ -161,9 +161,9 @@ if ($object->id) {
 	print dol_get_fiche_end();
 
 	$modulepart = 'ultimateimmo';
-	//$permission = $user->rights->ultimateimmo->write;
+	//$permission = $user->hasRight('ultimateimmo','write');
 	$permission = 1;
-	//$permtoedit = $user->rights->ultimateimmo->write;
+	//$permtoedit = $user->hasRight('ultimateimmo','write');
 	$permtoedit = 1;
 	$param = '&id=' . $object->id;
 

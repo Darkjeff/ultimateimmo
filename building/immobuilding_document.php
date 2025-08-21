@@ -124,7 +124,7 @@ if ($id > 0 || !empty($ref)) {
 	$upload_dir = $conf->ultimateimmo->multidir_output[$object->entity ? $object->entity : $conf->entity]."/immobuilding/".get_exdir(0, 0, 0, 1, $object);
 }
 
-$permissiontoadd = $user->rights->ultimateimmo->immobuilding->write; // Used by the include of actions_addupdatedelete.inc.php and actions_linkedfiles.inc.php
+$permissiontoadd = $user->hasRight('ultimateimmo','immobuilding','write'); // Used by the include of actions_addupdatedelete.inc.php and actions_linkedfiles.inc.php
 
 // Security check (enable the most restrictive one)
 //if ($user->socid > 0) accessforbidden();
@@ -233,9 +233,9 @@ if ($object->id) {
 	print dol_get_fiche_end();
 
 	$modulepart = 'ultimateimmo';
-	//$permissiontoadd = $user->rights->ultimateimmo->immobuilding->write;
+	//$permissiontoadd = $user->hasRight('ultimateimmo','immobuilding','write');
 	$permissiontoadd = 1;
-	//$permtoedit = $user->rights->ultimateimmo->immobuilding->write;
+	//$permtoedit = $user->hasRight('ultimateimmo','immobuilding','write');
 	$permtoedit = 1;
 	$param = '&id='.$object->id;
 

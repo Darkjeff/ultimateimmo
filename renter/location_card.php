@@ -103,8 +103,8 @@ if (empty($reshook))
 {
 	$error=0;
 
-	$permissiontoadd = $user->rights->ultimateimmo->write;
-	$permissiontodelete = $user->rights->ultimateimmo->delete;
+	$permissiontoadd = $user->hasRight('ultimateimmo','write');
+	$permissiontodelete = $user->hasRight('ultimateimmo','delete');
 	$backurlforlist = dol_buildpath('/ultimateimmo/rent/immorent_list.php',1);
 
 	// Actions cancel, add, update or delete
@@ -376,7 +376,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     	    // Send
            // print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
 
-    		if ($user->rights->ultimateimmo->write)
+    		if ($user->hasRight('ultimateimmo','write'))
     		{
     			print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
     		}
@@ -386,7 +386,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
 
     		/*
-    		if ($user->rights->ultimateimmo->create)
+    		if ($user->hasRight('ultimateimmo','create'))
     		{
     			if ($object->status == 1)
     		 	{
@@ -399,7 +399,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
     		*/
 
-    		if ($user->rights->ultimateimmo->delete)
+    		if ($user->hasRight('ultimateimmo','delete'))
     		{
     			print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
     		}
@@ -522,8 +522,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    $relativepath = '/rent/' . dol_sanitizeFileName($object->ref).'/';
 	    $filedir = $conf->ultimateimmo->dir_output . $relativepath;
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-	    $genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
-	    $delallowed = $user->rights->ultimateimmo->write;	// If you can create/edit, you can remove a file on card
+	    $genallowed = $user->hasRight('ultimateimmo','read');	// If you can read, you can build the PDF to read content
+	    $delallowed = $user->hasRight('ultimateimmo','write');	// If you can create/edit, you can remove a file on card
 	    print $formfile->showdocuments('ultimateimmo', $relativepath, $filedir, $urlsource, 0, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
 
 	    // Show links to link elements

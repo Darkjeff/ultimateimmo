@@ -126,11 +126,11 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php'; // Must be includ
 // Set $enablepermissioncheck to 1 to enable a minimum low level of checks
 $enablepermissioncheck = 0;
 if ($enablepermissioncheck) {
-	$permissiontoread = $user->rights->ultimateimmo->immoindice->read;
-	$permissiontoadd = $user->rights->ultimateimmo->immoindice->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
-	$permissiontodelete = $user->rights->ultimateimmo->immoindice->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
-	$permissionnote = $user->rights->ultimateimmo->immoindice->write; // Used by the include of actions_setnotes.inc.php
-	$permissiondellink = $user->rights->ultimateimmo->immoindice->write; // Used by the include of actions_dellink.inc.php
+	$permissiontoread = $user->hasRight('ultimateimmo','immoindice','read');
+	$permissiontoadd = $user->hasRight('ultimateimmo','immoindice','write'); // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+	$permissiontodelete = $user->hasRight('ultimateimmo','immoindice','delete') || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+	$permissionnote = $user->hasRight('ultimateimmo','immoindice','write'); // Used by the include of actions_setnotes.inc.php
+	$permissiondellink = $user->hasRight('ultimateimmo','immoindice','write'); // Used by the include of actions_dellink.inc.php
 } else {
 	$permissiontoread = 1;
 	$permissiontoadd = 1; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php

@@ -74,7 +74,7 @@ include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be inc
 //if ($id > 0) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity] . "/" . $object->id;
 
 $permissionnote = 1;
-//$permissionnote=$user->rights->ultimateimmo->creer;	// Used by the include of actions_setnotes.inc.php
+//$permissionnote=$user->hasRight('ultimateimmo','creer');	// Used by the include of actions_setnotes.inc.php
 
 
 /*

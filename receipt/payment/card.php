@@ -71,9 +71,9 @@ if ($id > 0)
 	if (! $result) dol_print_error($db, 'Failed to get payment id '.$id);
 }
 
-$usercanread = $user->rights->ultimateimmo->read;
-$usercancreate = $user->rights->ultimateimmo->write;
-$usercandelete = $user->rights->ultimateimmo->delete || ($usercancreate && $object->status == 0);
+$usercanread = $user->hasRight('ultimateimmo','read');
+$usercancreate = $user->hasRight('ultimateimmo','write');
+$usercandelete = $user->hasRight('ultimateimmo','delete') || ($usercancreate && $object->status == 0);
 
 
 /*

@@ -205,7 +205,7 @@ if ($object->id > 0) {
 
 	print '</div>';
 
-	if (!empty($conf->agenda->enabled) && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read))) {
+	if (!empty($conf->agenda->enabled) && (!empty($user->hasRight('agenda','myactions','read')) || !empty($user->hasRight('agenda','allactions','read')))) {
 		$param = '&socid=' . $socid;
 		if (!empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) $param .= '&contextpage=' . $contextpage;
 		if ($limit > 0 && $limit != $conf->liste_limit) $param .= '&limit=' . $limit;

@@ -87,11 +87,11 @@ $rowid = GETPOST('rowid', 'alpha');
 $entity = GETPOST('entity', 'int');
 $code = GETPOST('code', 'alpha');
 
-$allowed = $user->rights->ultimateimmo->dict;
-if ($id == 7 && !empty($user->rights->accounting->chartofaccount)) {
+$allowed = $user->hasRight('ultimateimmo','dict');
+if ($id == 7 && !empty($user->hasRight('accounting','chartofaccount'))) {
 	$allowed = 1;     // Tax page allowed to manager of chart account
 }
-if ($id == 10 && !empty($user->rights->accounting->chartofaccount)) {
+if ($id == 10 && !empty($user->hasRight('accounting','chartofaccount'))) {
 	$allowed = 1;    // Vat page allowed to manager of chart account
 }
 if (!$allowed) {

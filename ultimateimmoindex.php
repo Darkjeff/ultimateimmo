@@ -52,7 +52,7 @@ $id = GETPOST('id','int')?GETPOST('id','int'):GETPOST('rowid','int');
 
 
 // Securite acces client
-if (! $user->rights->ultimateimmo->read) accessforbidden();
+if (! $user->hasRight('ultimateimmo','read')) accessforbidden();
 $socid=GETPOST('socid','int');
 if (isset($user->socid) && $user->socid > 0)
 {

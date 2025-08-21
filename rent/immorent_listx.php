@@ -136,9 +136,9 @@ if (isset($extrafields->attributes[$object->table_element]['label'])
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
 
-$permissiontoread = $user->rights->ultimateimmo->read;
-$permissiontoadd = $user->rights->ultimateimmo->write;
-$permissiontodelete = $user->rights->ultimateimmo->delete;
+$permissiontoread = $user->hasRight('ultimateimmo','read');
+$permissiontoadd = $user->hasRight('ultimateimmo','write');
+$permissiontodelete = $user->hasRight('ultimateimmo','delete');
 
 /*
  * Actions

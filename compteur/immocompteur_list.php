@@ -145,9 +145,9 @@ if (isset($extrafields->attributes[$object->table_element]['label'])
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
 
-$permissiontoread = $user->rights->ultimateimmo->immocompteur->read;
-$permissiontoadd = $user->rights->ultimateimmo->immocompteur->write;
-$permissiontodelete = $user->rights->ultimateimmo->immocompteur->delete;
+$permissiontoread = $user->hasRight('ultimateimmo','immocompteur','read');
+$permissiontoadd = $user->hasRight('ultimateimmo','immocompteur','write');
+$permissiontodelete = $user->hasRight('ultimateimmo','immocompteur','delete');
 
 // Security check
 if (empty($conf->ultimateimmo->enabled)) accessforbidden('Module not enabled');

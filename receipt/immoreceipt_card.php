@@ -112,11 +112,11 @@ if (empty($action) && empty($id) && empty($ref)) $action = 'view';
 // Load object
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
-$permissiontoread = $user->rights->ultimateimmo->read;
-$permissiontoadd = $user->rights->ultimateimmo->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
-$permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
-$permissionnote = $user->rights->ultimateimmo->write; // Used by the include of actions_setnotes.inc.php
-$permissiondellink = $user->rights->ultimateimmo->write; // Used by the include of actions_dellink.inc.php
+$permissiontoread = $user->hasRight('ultimateimmo','read');
+$permissiontoadd = $user->hasRight('ultimateimmo','write'); // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+$permissiontodelete = $user->hasRight('ultimateimmo','delete') || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+$permissionnote = $user->hasRight('ultimateimmo','write'); // Used by the include of actions_setnotes.inc.php
+$permissiondellink = $user->hasRight('ultimateimmo','write'); // Used by the include of actions_dellink.inc.php
 $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1];
 
 

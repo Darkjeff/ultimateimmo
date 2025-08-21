@@ -108,11 +108,11 @@ if (!empty($object->id)) {
 //$isdraft = (($object->statut == $object::STATUS_DRAFT) ? 1 : 0);
 //$result = restrictedArea($user, 'mymodule', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
 
-$permissiontoread = $user->rights->ultimateimmo->property->read;
-$permissiontoadd = $user->rights->ultimateimmo->property->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
-$permissiontodelete = $user->rights->ultimateimmo->property->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
-$permissionnote = $user->rights->ultimateimmo->property->write; // Used by the include of actions_setnotes.inc.php
-$permissiondellink = $user->rights->ultimateimmo->property->write; // Used by the include of actions_dellink.inc.php
+$permissiontoread = $user->hasRight('ultimateimmo','property','read');
+$permissiontoadd = $user->hasRight('ultimateimmo','property','write'); // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+$permissiontodelete = $user->hasRight('ultimateimmo','property','delete') || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+$permissionnote = $user->hasRight('ultimateimmo','property','write'); // Used by the include of actions_setnotes.inc.php
+$permissiondellink = $user->hasRight('ultimateimmo','property','write'); // Used by the include of actions_dellink.inc.php
 $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1];
 
 /*
@@ -128,8 +128,8 @@ if (empty($reshook))
 {
 	$error=0;
 
-	$permissiontoadd = $user->rights->ultimateimmo->write;
-	$permissiontodelete = $user->rights->ultimateimmo->delete;
+	$permissiontoadd = $user->hasRight('ultimateimmo','write');
+	$permissiontodelete = $user->hasRight('ultimateimmo','delete');
 	$backurlforlist = dol_buildpath('/ultimateimmo/property/immoproperty_list.php',1);
 
 	if (empty($backtopage) || ($cancel && empty($id))) {

@@ -132,7 +132,7 @@ if ($id > 0 || !empty($ref)) {
 	$upload_dir = $conf->ultimateimmo->multidir_output[$object->entity]."/".$object->id;
 }
 
-$permissiontoadd = $user->rights->ultimateimmo->immobuilding->write; // Used by the include of actions_addupdatedelete.inc.php
+$permissiontoadd = $user->hasRight('ultimateimmo','immobuilding','write'); // Used by the include of actions_addupdatedelete.inc.php
 
 // Security check (enable the most restrictive one)
 //if ($user->socid > 0) accessforbidden();
@@ -280,7 +280,7 @@ if ($object->id > 0) {
 
 	print '</div>';
 
-	if (!empty($conf->agenda->enabled) && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read))) {
+	if (!empty($conf->agenda->enabled) && (!empty($user->hasRight('agenda','myactions','read')) || !empty($user->hasRight('agenda','allactions','read')))) {
 		$param = '&id='.$object->id.'&socid='.$socid;
 		if (!empty($contextpage) && $contextpage != $_SERVER["PHP_SELF"]) {
 			$param .= '&contextpage='.urlencode($contextpage);

@@ -61,11 +61,11 @@ $globalboxes = array();
 
 // Color theme : (#96BBBB, #F2E3BC, #618985, #C19875)
 
-if ($user->rights->ultimateimmo->read) {
+if ($user->hasRight('ultimateimmo','read')) {
     $globalboxes[] = array('name' => $langs->trans('MenuImmoOwner'), 'color' =>'#C19875',
         'url' => dol_buildpath('/ultimateimmo/owner/immowner_list.php', 1),
         'url_add' => dol_buildpath('/ultimateimmo/owner/immoowner_card.php?action=create', 1),
-        'right' => $user->rights->ultimateimmo->read,
+        'right' => $user->hasRight('ultimateimmo','read'),
         'lines' => array(
             array('title' => $langs->trans('MenuImmoActiveOwner'), 'value' => getOwnerNumber(1), 'url' => dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1).'?search_status=1'),
 			array('title' => $langs->trans('MenuImmoNotActiveOwner'), 'value' => getOwnerNumber(9), 'url' => dol_buildpath('/ultimateimmo/owner/immoowner_list.php', 1).'?search_status=9'),
@@ -75,11 +75,11 @@ if ($user->rights->ultimateimmo->read) {
 }
 
 
-if ($user->rights->ultimateimmo->read) {
+if ($user->hasRight('ultimateimmo','read')) {
     $globalboxes[] = array('name' => strtoupper($langs->trans('ImmoProperties')), 'color' =>'#96BBBB',
         'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1),
         'url_add' => dol_buildpath('/ultimateimmo/property/immoproperty_card.php?action=create', 1),
-        'right' => $user->rights->ultimateimmo->read,
+        'right' => $user->hasRight('ultimateimmo','read'),
         'lines' => array(
             array('title' => $langs->trans('ImmoActiveProperties'), 'value' => getPropertiesNumber(1), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1).'?search_status=1'),
 			array('title' => $langs->trans('ImmoNotActiveProperties'), 'value' => getPropertiesNumber(9), 'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1).'?search_status=9'),
@@ -88,11 +88,11 @@ if ($user->rights->ultimateimmo->read) {
     );
 }
 
-if ($user->rights->ultimateimmo->read) {
+if ($user->hasRight('ultimateimmo','read')) {
     $globalboxes[] = array('name' => strtoupper($langs->trans('MenuImmoRent')), 'color' =>'#F2E3BC',
         'url' => dol_buildpath('/ultimateimmo/property/immorent_list.php', 1),
         'url_add' => dol_buildpath('/ultimateimmo/rent/immorent_card.php?action=create', 1),
-        'right' => $user->rights->ultimateimmo->read,
+        'right' => $user->hasRight('ultimateimmo','read'),
         'lines' => array(
             array('title' => $langs->trans('MenuImmoActiveRent'), 'value' => getRentNumber(1), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1).'?search_preavis=1'),
 			array('title' => $langs->trans('MenuImmoNotActiveRent'), 'value' => getRentNumber(2), 'url' => dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1).'?search_preavis=2'),
@@ -101,11 +101,11 @@ if ($user->rights->ultimateimmo->read) {
     );
 }
 
-if ($user->rights->ultimateimmo->read) {
+if ($user->hasRight('ultimateimmo','read')) {
     $globalboxes[] = array('name' => strtoupper($langs->trans('MenuImmoRenter')), 'color' =>'#C19875',
         'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1),
         'url_add' => dol_buildpath('/ultimateimmo/renter/immorenter_card.php?action=create', 1),
-        'right' => $user->rights->ultimateimmo->read,
+        'right' => $user->hasRight('ultimateimmo','read'),
         'lines' => array(
             array('title' => $langs->trans('MenuImmoActiveRenter'), 'value' => getRenterNumber(1), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1).'?search_status=1'),
 			array('title' => $langs->trans('MenuImmoNotActiveRenter'), 'value' => getRenterNumber(0), 'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1).'?search_status=0'),
@@ -203,7 +203,7 @@ print '<div class="fichecenter fichecenterbis">';
 
 
 $globalboxes=[];
-if ($user->rights->ultimateimmo->read) {
+if ($user->hasRight('ultimateimmo','read')) {
 
 	$sql = "SELECT loc.lastname as nom, ";
 	$sql .= " SUM(rec.balance) as totalbalance";
@@ -231,7 +231,7 @@ if ($user->rights->ultimateimmo->read) {
 
 			$globalboxes[] = array('name' => strtoupper($langs->trans('RenterLetToPay')), 'color' => '#C19875',
 				'url' => dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1),
-				'right' => $user->rights->ultimateimmo->read,
+				'right' => $user->hasRight('ultimateimmo','read'),
 				'lines' => $lineData,
 				'icon' => 'fa-home'
 			);

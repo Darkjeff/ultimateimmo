@@ -272,7 +272,7 @@ class ActionsUltimateimmo
     {
         global $user, $langs;
         $search_boxvalue = ''; // ??????????
-        if ($user->rights->ultimateimmo->read) {
+        if ($user->hasRight('ultimateimmo','read')) {
             if (in_array($parameters['currentcontext'], array('globalcard', 'searchform', 'leftblock'))) {  // do something only for the context 'somecontext1' or 'somecontext2'
                 $langs->load("ultimateimmo@ultimateimmo");
                 $this->results = [

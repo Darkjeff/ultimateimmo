@@ -179,7 +179,7 @@ class ImmoCompteur_Cost extends CommonObject
 		}
 
 		// Example to show how to set values of fields definition dynamically
-		/*if ($user->rights->ultimateimmo->immocompteur_cost->read) {
+		/*if ($user->hasRight('ultimateimmo','immocompteur')_cost->read) {
 			$this->fields['myfield']['visible'] = 1;
 			$this->fields['myfield']['noteditable'] = 0;
 		}*/
@@ -493,8 +493,8 @@ class ImmoCompteur_Cost extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->immocompteur_cost->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->immocompteur_cost->immocompteur_cost_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','immocompteur')_cost->write))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','immocompteur')_cost->immocompteur_cost_advance->validate))))
 		 {
 		 $this->error='NotEnoughPermissions';
 		 dol_syslog(get_class($this)."::valid ".$this->error, LOG_ERR);
@@ -611,8 +611,8 @@ class ImmoCompteur_Cost extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->ultimateimmo_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','write')))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','ultimateimmo')_advance->validate))))
 		 {
 		 $this->error='Permission denied';
 		 return -1;
@@ -635,8 +635,8 @@ class ImmoCompteur_Cost extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->ultimateimmo_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','write')))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','ultimateimmo')_advance->validate))))
 		 {
 		 $this->error='Permission denied';
 		 return -1;
@@ -659,8 +659,8 @@ class ImmoCompteur_Cost extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->ultimateimmo_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','write')))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','ultimateimmo')_advance->validate))))
 		 {
 		 $this->error='Permission denied';
 		 return -1;

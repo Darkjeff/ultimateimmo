@@ -67,8 +67,8 @@ $extrafields->fetch_name_optionals_label($object->table_element);
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php'; // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity]."/".$object->id;
 
-$permissionnote = $user->rights->ultimateimmo->immocompteur->write; // Used by the include of actions_setnotes.inc.php
-$permissiontoadd = $user->rights->ultimateimmo->immocompteur->write; // Used by the include of actions_addupdatedelete.inc.php
+$permissionnote = $user->hasRight('ultimateimmo','immocompteur','write'); // Used by the include of actions_setnotes.inc.php
+$permissiontoadd = $user->hasRight('ultimateimmo','immocompteur','write'); // Used by the include of actions_addupdatedelete.inc.php
 
 
 

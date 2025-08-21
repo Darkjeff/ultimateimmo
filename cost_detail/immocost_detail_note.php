@@ -68,7 +68,7 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be inclu
 if ($id > 0 || ! empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity] . "/" . $object->id;
 
 $permissionnote=1;
-//$permissionnote=$user->rights->ultimateimmo->creer;	// Used by the include of actions_setnotes.inc.php
+//$permissionnote=$user->hasRight('ultimateimmo','creer');	// Used by the include of actions_setnotes.inc.php
 
 
 
@@ -113,7 +113,7 @@ if ($id > 0 || ! empty($ref))
 	{
 	    $langs->load("projects");
 	    $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
-	    if ($user->rights->ultimateimmo->creer)
+	    if ($user->hasRight('ultimateimmo','creer'))
 	    {
 	        if ($action != 'classify')
 	            //$morehtmlref.='<a href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';

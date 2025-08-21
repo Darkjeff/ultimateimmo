@@ -173,7 +173,7 @@ class ImmoIndice extends CommonObject
 		}
 
 		// Example to show how to set values of fields definition dynamically
-		/*if ($user->rights->ultimateimmo->immoindice->read) {
+		/*if ($user->hasRight('ultimateimmo','immoindice','read')) {
 			$this->fields['myfield']['visible'] = 1;
 			$this->fields['myfield']['noteditable'] = 0;
 		}*/
@@ -487,8 +487,8 @@ class ImmoIndice extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->immoindice->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->immoindice->immoindice_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','immoindice','write')))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','immoindice','immoindice')_advance->validate))))
 		 {
 		 $this->error='NotEnoughPermissions';
 		 dol_syslog(get_class($this)."::valid ".$this->error, LOG_ERR);
@@ -605,8 +605,8 @@ class ImmoIndice extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->ultimateimmo_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','write')))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','ultimateimmo')_advance->validate))))
 		 {
 		 $this->error='Permission denied';
 		 return -1;
@@ -629,8 +629,8 @@ class ImmoIndice extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->ultimateimmo_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','write')))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','ultimateimmo')_advance->validate))))
 		 {
 		 $this->error='Permission denied';
 		 return -1;
@@ -653,8 +653,8 @@ class ImmoIndice extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->ultimateimmo->ultimateimmo_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','write')))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('ultimateimmo','ultimateimmo')_advance->validate))))
 		 {
 		 $this->error='Permission denied';
 		 return -1;

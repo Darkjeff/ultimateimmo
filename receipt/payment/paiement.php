@@ -99,9 +99,9 @@ $property->fetch($receipt->fk_property);
 if ($renter->fk_soc > 0) {
 	$socid = $renter->fk_soc;
 }
-$usercanread = $user->rights->ultimateimmo->read;
-$usercancreate = $user->rights->ultimateimmo->write;
-$usercandelete = $user->rights->ultimateimmo->delete || ($usercancreate && $object->status == 0);
+$usercanread = $user->hasRight('ultimateimmo','read');
+$usercancreate = $user->hasRight('ultimateimmo','write');
+$usercandelete = $user->hasRight('ultimateimmo','delete') || ($usercancreate && $object->status == 0);
 
 // Load object
 if ($id > 0) {

@@ -180,9 +180,9 @@ $arrayfields = dol_sort_array($arrayfields, 'position');
 // Set $enablepermissioncheck to 1 to enable a minimum low level of checks
 $enablepermissioncheck = 0;
 if ($enablepermissioncheck) {
-	$permissiontoread = $user->rights->ultimateimmo->immobuilding->read;
-	$permissiontoadd = $user->rights->ultimateimmo->immobuilding->write;
-	$permissiontodelete = $user->rights->ultimateimmo->immobuilding->delete;
+	$permissiontoread = $user->hasRight('ultimateimmo','immobuilding','read');
+	$permissiontoadd = $user->hasRight('ultimateimmo','immobuilding','write');
+	$permissiontodelete = $user->hasRight('ultimateimmo','immobuilding','delete');
 } else {
 	$permissiontoread = 1;
 	$permissiontoadd = 1;

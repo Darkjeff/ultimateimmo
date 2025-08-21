@@ -101,8 +101,8 @@ if ($id > 0 || !empty($ref)) {
 	$upload_dir = $conf->ultimateimmo->multidir_output[$object->entity]."/".$object->id;
 }
 
-$permissionnote = $user->rights->ultimateimmo->immobuilding->write; // Used by the include of actions_setnotes.inc.php
-$permissiontoadd = $user->rights->ultimateimmo->immobuilding->write; // Used by the include of actions_addupdatedelete.inc.php
+$permissionnote = $user->hasRight('ultimateimmo','immobuilding','write'); // Used by the include of actions_setnotes.inc.php
+$permissiontoadd = $user->hasRight('ultimateimmo','immobuilding','write'); // Used by the include of actions_addupdatedelete.inc.php
 
 // Security check (enable the most restrictive one)
 //if ($user->socid > 0) accessforbidden();

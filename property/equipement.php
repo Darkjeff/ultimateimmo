@@ -60,7 +60,7 @@ $backtopage = GETPOST('backtopage', 'alpha');
 $id = GETPOST('rowid') ? GETPOST('rowid', 'int') : GETPOST('id', 'int');
 
 // Security check
-if (! $user->rights->ultimateimmo->read) {
+if (! $user->hasRight('ultimateimmo','read')) {
 	accessforbidden();
 }
 

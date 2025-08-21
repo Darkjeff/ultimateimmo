@@ -85,7 +85,7 @@ if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[
 //if ($user->socid > 0) $socid = $user->socid;
 //$result = restrictedArea($user, 'ultimateimmo', $object->id);
 
-$permissiontoadd = $user->rights->ultimateimmo->immocompteur->write; // Used by the include of actions_addupdatedelete.inc.php
+$permissiontoadd = $user->hasRight('ultimateimmo','immocompteur','write'); // Used by the include of actions_addupdatedelete.inc.php
 
 
 
@@ -189,9 +189,9 @@ if ($object->id)
 	print dol_get_fiche_end();
 
 	$modulepart = 'ultimateimmo';
-	//$permission = $user->rights->ultimateimmo->immocompteur->write;
+	//$permission = $user->hasRight('ultimateimmo','immocompteur','write');
 	$permission = 1;
-	//$permtoedit = $user->rights->ultimateimmo->immocompteur->write;
+	//$permtoedit = $user->hasRight('ultimateimmo','immocompteur','write');
 	$permtoedit = 1;
 	$param = '&id='.$object->id;
 

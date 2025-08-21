@@ -85,7 +85,7 @@ class box_immorenter extends ModeleBoxes
 	public function __construct(DoliDB $db, $param = '')
 	{
 		global $user, $conf, $langs;
-		
+
 		// Load traductions files requiredby by page
 		$langs->loadLangs(array("ultimateimmo@ultimateimmo","boxes"));
 
@@ -96,7 +96,7 @@ class box_immorenter extends ModeleBoxes
 		$this->param = $param;
 
 		//$this->enabled = $conf->global->FEATURES_LEVEL > 0;         // Condition when module is enabled or not
-		$this->hidden = ! ($user->rights->ultimateimmo->read);   // Condition when module is visible by user (test on permission)
+		$this->hidden = ! ($user->hasRight('ultimateimmo','read'));   // Condition when module is visible by user (test on permission)
 	}
 
 	/**
@@ -113,9 +113,9 @@ class box_immorenter extends ModeleBoxes
 		// Use configuration value for max lines count
 		$this->max = $max;
 
-		dol_include_once('/ultimateimmo/class/immorenter.class.php');	
+		dol_include_once('/ultimateimmo/class/immorenter.class.php');
 		// Initialize technical objects
-		$object=new ImmoRenter($this->db);		
+		$object=new ImmoRenter($this->db);
 
 		// Populate the head at runtime
 		$text = $langs->trans("BoxTitleLastModifiedRenters", $max);
@@ -137,39 +137,39 @@ class box_immorenter extends ModeleBoxes
 			// Adds translated " (Graph)" to a hidden form value's input (?)
 			'graph' => false
 		);
-		
-		if ($user->rights->ultimateimmo->read)
-		{		
-			
-			$sql = "SELECT t.rowid, t.ref, t.firstname, t.lastname, t.email, t.phone_mobile, t.tms";		
+
+		if ($user->hasRight('ultimateimmo','read'))
+		{
+
+			$sql = "SELECT t.rowid, t.ref, t.firstname, t.lastname, t.email, t.phone_mobile, t.tms";
 			$sql.= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 			$sql.= " WHERE t.entity IN (".getEntity('immorenter').")";
 			$sql.= " ORDER BY t.tms DESC";
-			
+
 			$result = $this->db->query($sql);
-			if ($result) 
+			if ($result)
 			{
 				$num = $this->db->num_rows($result);
-				
+
 				$line = 0;
 				while ($line < $num)
 				{
 					$objp = $this->db->fetch_object($result);
 					$datem = $this->db->jdate($objp->tms);
-					
+
 					$object->firstname=$objp->firstname;
 					$object->lastname=$objp->lastname;
 					$object->id = $objp->rowid;
-					$object->ref=$objp->ref;	
+					$object->ref=$objp->ref;
 					$object->email=$objp->email;
 					$object->phone_mobile=$objp->phone_mobile;
-					
+
 					$this->info_box_contents[$line][] = array(
 						'td' => '',
 						'text' => $object->getNomUrl(1),
 						'asis' => 1,
 					);
-					
+
 					$this->info_box_contents[$line][] = array(
 						'td' => '',
 						'text' => $object->firstname,
@@ -181,13 +181,13 @@ class box_immorenter extends ModeleBoxes
 						'text' => $object->lastname,
 						'url' => dol_buildpath('/ultimateimmo/renter/immorenter_card.php', 1).'?id='.$objp->rowid,
 					);
-					
+
 					$this->info_box_contents[$line][] = array(
 						'td' => '',
 						'text' => $object->email,
 						'asis' => 1,
 					);
-					
+
 					$this->info_box_contents[$line][] = array(
 						'td' => '',
 						'text' => $object->phone_mobile,

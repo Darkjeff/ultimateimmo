@@ -96,11 +96,11 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be inclu
 //$isdraft = (($object->statut == $object::STATUS_DRAFT) ? 1 : 0);
 //$result = restrictedArea($user, 'mymodule', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
 
-$permissiontoread = $user->rights->ultimateimmo->rent->read;
-$permissiontoadd = $user->rights->ultimateimmo->rent->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
-$permissiontodelete = $user->rights->ultimateimmo->rent->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
-$permissionnote = $user->rights->ultimateimmo->rent->write; // Used by the include of actions_setnotes.inc.php
-$permissiondellink = $user->rights->ultimateimmo->rent->write; // Used by the include of actions_dellink.inc.php
+$permissiontoread = $user->hasRight('ultimateimmo','rent','read');
+$permissiontoadd = $user->hasRight('ultimateimmo','rent','write'); // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+$permissiontodelete = $user->hasRight('ultimateimmo','rent','delete') || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+$permissionnote = $user->hasRight('ultimateimmo','rent','write'); // Used by the include of actions_setnotes.inc.php
+$permissiondellink = $user->hasRight('ultimateimmo','rent','write'); // Used by the include of actions_dellink.inc.php
 $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1].'/rent';
 
 /*
@@ -134,8 +134,8 @@ if (empty($reshook)) {
 		}
 	}
 
-	$permissiontoadd = $user->rights->ultimateimmo->write;
-	$permissiontodelete = $user->rights->ultimateimmo->delete;
+	$permissiontoadd = $user->hasRight('ultimateimmo','write');
+	$permissiontodelete = $user->hasRight('ultimateimmo','delete');
 	$backurlforlist = dol_buildpath('/ultimateimmo/rent/immorent_list.php', 1);
 
 	if (empty($backtopage) || ($cancel && empty($id))) {

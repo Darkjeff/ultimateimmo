@@ -102,11 +102,11 @@ if (empty($action) && empty($id) && empty($ref)) $action = 'view';
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php'; // Must be include, not include_once.
 
 
-$permissiontoread = $user->rights->ultimateimmo->immocompteur->read;
-$permissiontoadd = $user->rights->ultimateimmo->immocompteur->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
-$permissiontodelete = $user->rights->ultimateimmo->immocompteur->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
-$permissionnote = $user->rights->ultimateimmo->immocompteur->write; // Used by the include of actions_setnotes.inc.php
-$permissiondellink = $user->rights->ultimateimmo->immocompteur->write; // Used by the include of actions_dellink.inc.php
+$permissiontoread = $user->hasRight('ultimateimmo','immocompteur','read');
+$permissiontoadd = $user->hasRight('ultimateimmo','immocompteur','write'); // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+$permissiontodelete = $user->hasRight('ultimateimmo','immocompteur','delete') || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+$permissionnote = $user->hasRight('ultimateimmo','immocompteur','write'); // Used by the include of actions_setnotes.inc.php
+$permissiondellink = $user->hasRight('ultimateimmo','immocompteur','write'); // Used by the include of actions_dellink.inc.php
 $upload_dir = $conf->ultimateimmo->multidir_output[isset($object->entity) ? $object->entity : 1];
 
 // Security check - Protection if external user
@@ -549,8 +549,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			$relativepath = $objref . '/' . $objref . '.pdf';
 			$filedir = $conf->ultimateimmo->dir_output.'/'.$object->element.'/'.$objref;
 			$urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-			$genallowed = $user->rights->ultimateimmo->immocompteur->read;	// If you can read, you can build the PDF to read content
-			$delallowed = $user->rights->ultimateimmo->immocompteur->write;	// If you can create/edit, you can remove a file on card
+			$genallowed = $user->hasRight('ultimateimmo','immocompteur','read');	// If you can read, you can build the PDF to read content
+			$delallowed = $user->hasRight('ultimateimmo','immocompteur','write');	// If you can create/edit, you can remove a file on card
 			print $formfile->showdocuments('ultimateimmo:ImmoCompteur', $object->element.'/'.$objref, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $langs->defaultlang);
 		}
 

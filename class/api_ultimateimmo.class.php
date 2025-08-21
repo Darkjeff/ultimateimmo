@@ -76,7 +76,7 @@ class UltimateimmoApi extends DolibarrApi
      */
     public function get($id)
     {
-		if(! DolibarrApiAccess::$user->rights->immorenter->read) {
+		if(! DolibarrApiAccess::$user->hasRight('immorenter','read')) {
 			throw new RestException(401);
 		}
 
@@ -117,13 +117,13 @@ class UltimateimmoApi extends DolibarrApi
         $socid = DolibarrApiAccess::$user->socid ? DolibarrApiAccess::$user->socid : '';
 
         // If the internal user must only see his customers, force searching by him
-        if (! DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) $search_sale = DolibarrApiAccess::$user->id;
+        if (! DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) $search_sale = DolibarrApiAccess::$user->id;
 
         $sql = "SELECT s.rowid";
-        if ((!DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) || $search_sale > 0) $sql .= ", sc.fk_soc, sc.fk_user"; // We need these fields in order to filter by sale (including the case where the user can only see his prospects)
+        if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql .= ", sc.fk_soc, sc.fk_user"; // We need these fields in order to filter by sale (including the case where the user can only see his prospects)
         $sql.= " FROM ".MAIN_DB_PREFIX."ultimateimmo_immorenter as s";
 
-        if ((!DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) || $search_sale > 0) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc"; // We need this table joined to the select in order to filter by sale
+        if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc"; // We need this table joined to the select in order to filter by sale
         $sql.= ", ".MAIN_DB_PREFIX."c_stcomm as st";
         $sql.= " WHERE s.fk_stcomm = st.id";
 
@@ -132,7 +132,7 @@ class UltimateimmoApi extends DolibarrApi
         //if ($mode == 2) $sql.= " AND s.client IN (2, 3)";
 
         $sql.= ' AND s.entity IN ('.getEntity('immorenter').')';
-        if ((!DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) || $search_sale > 0) $sql.= " AND s.fk_soc = sc.fk_soc";
+        if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql.= " AND s.fk_soc = sc.fk_soc";
         if ($socid) $sql.= " AND s.fk_soc = ".$socid;
         if ($search_sale > 0) $sql.= " AND s.rowid = sc.fk_soc";		// Join for the needed table to filter by sale
         // Insert sale filter
@@ -194,7 +194,7 @@ class UltimateimmoApi extends DolibarrApi
      */
     public function post($request_data = NULL)
     {
-        if(! DolibarrApiAccess::$user->rights->immorenter->create) {
+        if(! DolibarrApiAccess::$user->hasRight('immorenter','create')) {
 			throw new RestException(401);
 		}
         // Check mandatory fields
@@ -220,7 +220,7 @@ class UltimateimmoApi extends DolibarrApi
      */
     public function put($id, $request_data = NULL)
     {
-        if(! DolibarrApiAccess::$user->rights->immorenter->create) {
+        if(! DolibarrApiAccess::$user->hasRight('immorenter','create')) {
 			throw new RestException(401);
 		}
 
@@ -253,7 +253,7 @@ class UltimateimmoApi extends DolibarrApi
      */
     public function delete($id)
     {
-        if(! DolibarrApiAccess::$user->rights->immorenter->supprimer) {
+        if(! DolibarrApiAccess::$user->hasRight('immorenter','supprimer')) {
 			throw new RestException(401);
 		}
         $result = $this->immorenter->fetch($id);

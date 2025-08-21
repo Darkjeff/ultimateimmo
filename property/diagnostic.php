@@ -57,7 +57,7 @@ $action = GETPOST('action', 'alpha');
 $backtopage = GETPOST('backtopage', 'alpha');
 
 // Security check
-if (! $user->rights->ultimateimmo->read) {
+if (! $user->hasRight('ultimateimmo','read')) {
 	accessforbidden();
 }
 

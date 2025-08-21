@@ -236,7 +236,7 @@ class ImmoRenter extends CommonObject
 		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
 
 		// Example to show how to set values of fields definition dynamically
-		/*if ($user->rights->mymodule->myobject->read) {
+		/*if ($user->hasRight('mymodule','myobject','read')) {
 			$this->fields['myfield']['visible'] = 1;
 			$this->fields['myfield']['noteditable'] = 0;
 		}*/
@@ -813,8 +813,8 @@ class ImmoRenter extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->mymodule->myobject->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->mymodule->myobject->myobject_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('mymodule','myobject','write')))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('mymodule','myobject','myobject')_advance->validate))))
 		 {
 		 $this->error='NotEnoughPermissions';
 		 dol_syslog(get_class($this)."::valid ".$this->error, LOG_ERR);
@@ -928,8 +928,8 @@ class ImmoRenter extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->mymodule->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->mymodule->mymodule_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('mymodule','write')))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('mymodule','mymodule')_advance->validate))))
 		 {
 		 $this->error='Permission denied';
 		 return -1;
@@ -953,8 +953,8 @@ class ImmoRenter extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->mymodule->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->mymodule->mymodule_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('mymodule','write')))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('mymodule','mymodule')_advance->validate))))
 		 {
 		 $this->error='Permission denied';
 		 return -1;
@@ -977,8 +977,8 @@ class ImmoRenter extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->mymodule->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->mymodule->mymodule_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('mymodule','write')))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->hasRight('mymodule','mymodule')_advance->validate))))
 		 {
 		 $this->error='Permission denied';
 		 return -1;

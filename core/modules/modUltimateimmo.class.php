@@ -189,7 +189,7 @@ class modUltimateimmo extends DolibarrModules
 		$this->tabs = array();
 		// Example:
 		//$this->tabs[] = array('data'=>'thirdparty:+tabimmoowner_card:ImmoOwner:ultimateimmo@ultimateimmo:/ultimateimmo/owner/immoowner_card.php?id=__ID__');  					// To add a new tab identified by code tabname1
-		// $this->tabs[] = array('data'=>'objecttype:+tabname2:SUBSTITUTION_Title2:mylangfile@ultimateimmo:$user->rights->othermodule->read:/ultimateimmo/mynewtab2.php?id=__ID__',  	// To add another new tab identified by code tabname2. Label will be result of calling all substitution functions on 'Title2' key.
+		// $this->tabs[] = array('data'=>'objecttype:+tabname2:SUBSTITUTION_Title2:mylangfile@ultimateimmo:$user->hasRight('othermodule','read'):/ultimateimmo/mynewtab2.php?id=__ID__',  	// To add another new tab identified by code tabname2. Label will be result of calling all substitution functions on 'Title2' key.
 		// $this->tabs[] = array('data'=>'objecttype:-tabname:NU:conditiontoremove');												     										// To remove an existing tab identified by code tabname
 		//
 		// Where objecttype can be
@@ -304,231 +304,231 @@ class modUltimateimmo extends DolibarrModules
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read ultimateimmo';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'read';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = '';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'read';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = '';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update ultimateimmo';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'write';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = '';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'write';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = '';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete ultimateimmo';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'delete';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = '';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'delete';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = '';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read renter';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'renter';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'renter';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update renter';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'renter';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'renter';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete renter';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'renter';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'renter';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read rent';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'rent';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'rent';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update rent';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'rent';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'rent';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete rent';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'rent';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'rent';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read owner';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'owner';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'owner';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update owner';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'owner';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'owner';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete owner';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'owner';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'owner';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read property';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'property';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'property';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update property';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'property';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'property';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete property';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'property';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'property';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read receipt';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'receipt';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'receipt';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update receipt';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'receipt';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'receipt';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete receipt';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'receipt';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'receipt';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read payment';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'payment';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'payment';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update payment';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'payment';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'payment';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete payment';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'payment';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'payment';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read cost';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'cost';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'cost';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update cost';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'cost';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'cost';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete cost';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'cost';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'cost';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read cost_type';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'cost_type';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'cost_type';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update cost_type';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'cost_type';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'cost_type';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete cost_type';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'cost_type';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'cost_type';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'delete';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read compteur';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'immocompteur';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'immocompteur';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update compteur';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'immocompteur';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'immocompteur';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete compteur';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'immocompteur';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'immocompteur';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 		$this->rights[$r][5] = 'delete';
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read dict';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'dict';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'dict';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'read';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Create/Update dict';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'dict';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
-		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'dict';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
+		$this->rights[$r][5] = 'write';                    // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r;    // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Delete dict';    // Permission label
 		$this->rights[$r][3] = 1;                    // Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'dict';                // In php code, permission will be checked by test if ($user->rights->ultimateimmo->level1->level2)
+		$this->rights[$r][4] = 'dict';                // In php code, permission will be checked by test if ($user->hasRight('ultimateimmo','level')1->level2)
 		$this->rights[$r][5] = 'delete';
 
 		// Main menu entries
@@ -550,7 +550,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -571,7 +571,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -589,7 +589,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -607,7 +607,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);
@@ -625,7 +625,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);
@@ -644,7 +644,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -662,7 +662,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -682,7 +682,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both 		// 0=Menu for internal users, 1=external users, 2=both
@@ -701,8 +701,8 @@ class modUltimateimmo extends DolibarrModules
 			'position' => 1100 + $r,
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-			'perms' => '$user->rights->ultimateimmo->immocompteur->read',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'perms' => '$user->hasRight("ultimateimmo","immocompteur","read")',
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -719,8 +719,8 @@ class modUltimateimmo extends DolibarrModules
 			'position' => 1100 + $r,
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-			'perms' => '$user->rights->ultimateimmo->immocompteur->write',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'perms' => '$user->hasRight("ultimateimmo","immocompteur","write")',
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);
@@ -738,8 +738,8 @@ class modUltimateimmo extends DolibarrModules
 			'position' => 1100 + $r,
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-			'perms' => '$user->rights->ultimateimmo->immocompteur->read',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'perms' => '$user->hasRight("ultimateimmo","immocompteur","read")',
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);        // 0=Menu for internal users, 1=external users, 2=both
@@ -756,8 +756,8 @@ class modUltimateimmo extends DolibarrModules
 			'position' => 1100 + $r,
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-			'perms' => '$user->rights->ultimateimmo->immocompteur->read',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'perms' => '$user->hasRight("ultimateimmo","immocompteur","read")',
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);
@@ -774,8 +774,8 @@ class modUltimateimmo extends DolibarrModules
 			'position' => 1100 + $r,
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-			'perms' => '$user->rights->ultimateimmo->immocompteur->read',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			'perms' => '$user->hasRight("ultimateimmo","immocompteur","read")',
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);
@@ -795,7 +795,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -813,7 +813,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -836,7 +836,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -854,7 +854,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -876,7 +876,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -896,7 +896,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -915,7 +915,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -934,7 +934,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -953,7 +953,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -971,7 +971,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -989,7 +989,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -1008,7 +1008,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);
@@ -1027,7 +1027,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -1045,7 +1045,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -1064,7 +1064,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -1084,7 +1084,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -1103,7 +1103,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -1122,7 +1122,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);
@@ -1142,7 +1142,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both
@@ -1161,7 +1161,7 @@ class modUltimateimmo extends DolibarrModules
 			'enabled' => '$conf->ultimateimmo->enabled',
 			// Define condition to show or hide menu entry. Use '$conf->ultimateimmo->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'perms' => '1',
-			// Use 'perms'=>'$user->rights->ultimateimmo->level1->level2' if you want your menu with a permission rules
+			// Use 'perms'=>'$user->hasRight('ultimateimmo','level')1->level2' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2
 		);                                // 0=Menu for internal users, 1=external users, 2=both

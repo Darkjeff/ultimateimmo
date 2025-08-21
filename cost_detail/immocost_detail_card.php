@@ -117,8 +117,8 @@ if (empty($reshook))
 {
 	$error=0;
 
-	$permissiontoadd = $user->rights->ultimateimmo->write;
-	$permissiontodelete = $user->rights->ultimateimmo->delete || ($permissiontoadd && $object->status == 0);
+	$permissiontoadd = $user->hasRight('ultimateimmo','write');
+	$permissiontodelete = $user->hasRight('ultimateimmo','delete') || ($permissiontoadd && $object->status == 0);
     	$backurlforlist = dol_buildpath('/ultimateimmo/cost_detail/immocost_detail_list.php',1);
 	if (empty($backtopage)) {
 	    if (empty($id)) $backtopage = $backurlforlist;
@@ -294,8 +294,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$morehtmlref='<div class="refidno">';
 	/*
 	// Ref bis
-	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', 0, 1);
-	$morehtmlref.=$form->editfieldval("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->ultimateimmo->creer, 'string', '', null, null, '', 1);
+	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->hasRight('ultimateimmo','creer'), 'string', '', 0, 1);
+	$morehtmlref.=$form->editfieldval("RefBis", 'ref_client', $object->ref_client, $object, $user->hasRight('ultimateimmo','creer'), 'string', '', null, null, '', 1);
 	// Thirdparty
 	$morehtmlref.='<br>'.$langs->trans('ThirdParty') . ' : ' . $soc->getNomUrl(1);
 	// Project
@@ -303,7 +303,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	{
 	    $langs->load("projects");
 	    $morehtmlref.='<br>'.$langs->trans('Project') . ' ';
-	    if ($user->rights->ultimateimmo->write)
+	    if ($user->hasRight('ultimateimmo','write'))
 	    {
 	        if ($action != 'classify')
 	            $morehtmlref.='<a href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
@@ -369,7 +369,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
             print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
 
             // Modify
-    		if ($user->rights->ultimateimmo->write)
+    		if ($user->hasRight('ultimateimmo','write'))
     		{
     			print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("Modify").'</a>'."\n";
     		}
@@ -379,13 +379,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
 
     		// Clone
-    		if ($user->rights->ultimateimmo->write)
+    		if ($user->hasRight('ultimateimmo','write'))
     		{
     			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&amp;socid=' . $object->socid . '&amp;action=clone&amp;object=order">' . $langs->trans("ToClone") . '</a></div>';
     		}
 
     		/*
-    		if ($user->rights->ultimateimmo->write)
+    		if ($user->hasRight('ultimateimmo','write'))
     		{
     			if ($object->status == 1)
     		 	{
@@ -398,7 +398,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
     		*/
 
-    		if ($user->rights->ultimateimmo->delete)
+    		if ($user->hasRight('ultimateimmo','delete'))
     		{
     			print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
     		}
@@ -426,8 +426,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    $relativepath = $comref . '/' . $comref . '.pdf';
 	    $filedir = $conf->ultimateimmo->dir_output . '/' . $objref;
 	    $urlsource = $_SERVER["PHP_SELF"] . "?id=" . $object->id;
-	    $genallowed = $user->rights->ultimateimmo->read;	// If you can read, you can build the PDF to read content
-	    $delallowed = $user->rights->ultimateimmo->create;	// If you can create/edit, you can remove a file on card
+	    $genallowed = $user->hasRight('ultimateimmo','read');	// If you can read, you can build the PDF to read content
+	    $delallowed = $user->hasRight('ultimateimmo','create');	// If you can create/edit, you can remove a file on card
 	    print $formfile->showdocuments('ultimateimmo', $objref, $filedir, $urlsource, $genallowed, $delallowed, $object->model_pdf, 1, 0, 0, 28, 0, '', '', '', $soc->default_lang);
 		*/
 

@@ -136,8 +136,8 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 if (empty($reshook)) {
 	$error = 0;
 
-	$permissiontoadd = $user->rights->ultimateimmo->write;
-	$permissiontodelete = $user->rights->ultimateimmo->delete;
+	$permissiontoadd = $user->hasRight('ultimateimmo','write');
+	$permissiontodelete = $user->hasRight('ultimateimmo','delete');
 	$backurlforlist = dol_buildpath('/ultimateimmo/payment/immopayment_list.php', 1);
 
 	// Actions cancel, add, update or delete
@@ -757,14 +757,14 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			// Send
 			print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>' . "\n";
 
-			if ($user->rights->ultimateimmo->write) {
+			if ($user->hasRight('ultimateimmo','write')) {
 				print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
 			} else {
 				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Modify') . '</a>' . "\n";
 			}
 
 			/*
-    		if ($user->rights->ultimateimmo->create)
+    		if ($user->hasRight('ultimateimmo','create'))
     		{
     			if ($object->status == 1)
     		 	{
@@ -777,7 +777,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		}
     		*/
 
-			if ($user->rights->ultimateimmo->delete) {
+			if ($user->hasRight('ultimateimmo','delete')) {
 				print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&amp;action=delete&token='.newToken().'">' . $langs->trans('Delete') . '</a>' . "\n";
 			} else {
 				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans('Delete') . '</a>' . "\n";
@@ -1054,8 +1054,8 @@ if ($action == 'createall') {
 	$urlsource = $_SERVER['PHP_SELF'].'?actionlist=createall';
 
 	$filedir = $conf->ultimateimmo->dir_output . '/rentmassgen';
-	$genallowed = $user->rights->ultimateimmo->write;
-	$delallowed = $user->rights->ultimateimmo->delete;
+	$genallowed = $user->hasRight('ultimateimmo','write');
+	$delallowed = $user->hasRight('ultimateimmo','delete');
 	$title = '';
 
 
