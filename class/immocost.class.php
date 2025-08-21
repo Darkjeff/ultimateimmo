@@ -457,7 +457,7 @@ class ImmoCost extends CommonObject
 	public function info($id)
 	{
 		$sql = 'SELECT rowid, date_creation as datec, tms as datem,';
-		$sql .= ' fk_user_create, fk_user_modif';
+		$sql .= ' fk_user_modif';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' WHERE t.rowid = ' . $id;
 		$result = $this->db->query($sql);
@@ -485,7 +485,9 @@ class ImmoCost extends CommonObject
 
 				$this->date_creation = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->datem);
-				$this->date_validation = $this->db->jdate($obj->datev);
+				if (isset($obj->datev)) {
+					$this->date_validation = $this->db->jdate($obj->datev);
+				}
 			}
 
 			$this->db->free($result);

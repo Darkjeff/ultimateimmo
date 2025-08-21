@@ -872,12 +872,9 @@ class ImmoReceipt extends CommonObject
 				$line->status = $obj->status;
 				$line->date_start = $this->db->jdate ( $obj->date_start );
 				$line->date_end = $this->db->jdate ( $obj->date_end );
-				$line->encours = $obj->encours;
-				$line->regul = $obj->regul;
 				$line->fk_owner = $obj->fk_owner;
 				$line->paye = $obj->paye;
 				$line->partial_payment = $obj->partial_payment;
-				$line->fk_payment = $obj->fk_payment;
 
 				$this->lines[] = $line;
 
@@ -1479,4 +1476,8 @@ class ImmoreceiptLine
 	public $nomlocataire;
 	public $nomlocal;
 	public $property_id;
+	public $encours;
+	public $regul;
+	public $ref;
+
 }

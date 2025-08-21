@@ -91,7 +91,9 @@ $extralabels = $extrafields->fetch_name_optionals_label('immocost');
 
 // Load object
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
-if ($id > 0 || ! empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity] . "/" . $object->id;
+if ($id > 0 || !empty($ref)) {
+	$upload_dir = $conf->ultimateimmo->multidir_output[empty($object->entity) ? $conf->entity : $object->entity]."/cost/" . dol_sanitizeFileName($object->ref);
+}
 
 
 
@@ -99,7 +101,7 @@ if ($id > 0 || ! empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output
  *	Actions
  */
 
-$parameters=array('id'=>$socid);
+$parameters=array();
 $reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 

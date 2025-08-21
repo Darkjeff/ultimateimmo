@@ -86,8 +86,10 @@ $permissiontoadd = $user->hasRight('ultimateimmo','cost','write'); // Used by th
 
 
 //if ($id > 0 || ! empty($ref)) $upload_dir = $conf->sellyoursaas->multidir_output[$object->entity] . "/packages/" . dol_sanitizeFileName($object->id);
-if ($id > 0 || ! empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$conf->entity] . "/cost/" . dol_sanitizeFileName($object->ref);
-
+//if ($id > 0 || ! empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$conf->entity] . "/cost/" . dol_sanitizeFileName($object->ref);
+if ($id > 0 || !empty($ref)) {
+	$upload_dir = $conf->ultimateimmo->multidir_output[empty($object->entity) ? $conf->entity : $object->entity]."/cost/" . dol_sanitizeFileName($object->ref);
+}
 /*
  * Actions
  */
@@ -129,7 +131,7 @@ if ($object->id)
 	// ------------------------------------------------------------
 	$linkback = '<a href="' .dol_buildpath('/ultimateimmo/cost/immocost_list.php',1) . '?restore_lastsearch_values=1' . (! empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
-	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
+	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref');
 
     print '<div class="fichecenter">';
 
