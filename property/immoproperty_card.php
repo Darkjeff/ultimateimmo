@@ -313,7 +313,7 @@ if (($id || $ref) && $action == 'edit') {
 			elseif ($val['type'] == 'text' || $val['type'] == 'html') $value = GETPOSTISSET($key) ? GETPOST($key, 'none') : $object->$key;
 			else $value = GETPOSTISSET($key) ? GETPOST($key, 'alpha') : $object->$key;
 			//var_dump($val.' '.$key.' '.$value);
-			if ($val['noteditable']) print $object->showOutputField($val, $key, $value, '', '', '', 0);
+			if (!empty($val['noteditable'])) print $object->showOutputField($val, $key, $value, '', '', '', 0);
 			else print $object->showInputField($val, $key, $value, '', '', '', 0);
 		}
 		print '</td>';
