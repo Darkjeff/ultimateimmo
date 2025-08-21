@@ -177,7 +177,7 @@ if ($object->id > 0) {
 	$objcon = new stdClass();
 
 	$out = '';
-	$permok = $user->rights->agenda->myactions->create;
+	$permok = $user->hasRight('agenda','myactions','create');
 	if ((!empty($objthirdparty->id) || !empty($objcon->id)) && $permok) {
 		//$out.='<a href="'.DOL_URL_ROOT.'/comm/action/card.php?action=create';
 		if (get_class($objthirdparty) == 'Societe') $out .= '&amp;socid=' . $objthirdparty->id;
@@ -191,7 +191,7 @@ if ($object->id > 0) {
 	//print '<div class="tabsAction">';
 	$buttoncreate = '';
 	if (!empty($conf->agenda->enabled)) {
-		if (!empty($user->rights->agenda->myactions->create) || !empty($user->rights->agenda->allactions->create)) {
+		if (!empty($user->hasRight('agenda','myactions','create')) || !empty($user->hasRight('agenda','allactions','create'))) {
 			$buttoncreate .= '<a class="addnewrecord" href="' . DOL_URL_ROOT . '/comm/action/card.php?action=create' . $out . '">' . $langs->trans("AddAction") . '</a>';
 		}
 	}
