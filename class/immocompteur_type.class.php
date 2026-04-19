@@ -125,7 +125,7 @@ class ImmoCompteur_Type extends CommonObject
 		{
 			foreach($this->fields as $key => $val)
 			{
-				if (is_array($val['arrayofkeyval']))
+				if (!empty($val['arrayofkeyval']) && is_array($val['arrayofkeyval']))
 				{
 					foreach($val['arrayofkeyval'] as $key2 => $val2)
 					{
@@ -271,16 +271,6 @@ class ImmoCompteur_Type extends CommonObject
         $label.= '<br>';
         $label.= '<b>' . $langs->trans('Label') . ':</b> ' . $this->label;
 
-        //$url = dol_buildpath('/ultimateimmo/cost_type/immocost_type_card.php',1).'?id='.$this->id;
-
-        if ($option != 'nolink')
-        {
-	        // Add param to save lastsearch_values or not
-	        $add_save_lastsearch_values=($save_lastsearch_value == 1 ? 1 : 0);
-	        if ($save_lastsearch_value == -1 && preg_match('/list\.php/',$_SERVER["PHP_SELF"])) $add_save_lastsearch_values=1;
-	        if ($add_save_lastsearch_values) $url.='&save_lastsearch_values=1';
-        }
-
         $linkclose='';
         if (empty($notooltip))
         {
@@ -294,15 +284,7 @@ class ImmoCompteur_Type extends CommonObject
         }
         else $linkclose = ($morecss?' class="'.$morecss.'"':'');
 
-		$linkstart = '<a href="'.$url.'"';
-		$linkstart.=$linkclose.'>';
-		$linkend='</a>';
-
-		//$result .= $linkstart;
-		//if ($withpicto) $result.=img_object(($notooltip?'':$label), ($this->picto?$this->picto:'generic'), ($notooltip?(($withpicto != 2) ? 'class="paddingright"' : ''):'class="'.(($withpicto != 2) ? 'paddingright ' : '').'classfortooltip"'), 0, 0, $notooltip?0:1);
-		//if ($withpicto != 2) $result.= $this->label;
-		//$result .= $linkend;
-		$result.= $this->label;
+		$result .= $this->label;
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
 		return $result;

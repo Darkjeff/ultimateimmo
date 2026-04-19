@@ -241,7 +241,7 @@ class ImmoRent extends CommonObject
 		// Translate some data of arrayofkeyval
 		if (is_object($langs)) {
 			foreach ($this->fields as $key => $val) {
-				if (is_array($val['arrayofkeyval'])) {
+				if (!empty($val['arrayofkeyval']) && is_array($val['arrayofkeyval'])) {
 					foreach ($val['arrayofkeyval'] as $key2 => $val2) {
 						$this->fields[$key]['arrayofkeyval'][$key2] = $langs->trans($val2);
 					}
@@ -353,7 +353,8 @@ class ImmoRent extends CommonObject
 		$sql .= ' soc.rowid as socid, soc.nom as name,';
 		$sql .= ' rentr.lastname as nomlocataire,';
 		$sql .= ' rentr.firstname as firstname_renter,';
-		$sql .= ' prop.label as nomlocal';
+		$sql .= ' prop.label as nomlocal,';
+		$sql .= ' rent_t.code as location_type_code, rent_t.label as location_type';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorenter as rentr ON t.fk_renter = rentr.rowid';
 		$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immoproperty as prop ON t.fk_property = prop.rowid';
@@ -632,7 +633,7 @@ class ImmoRent extends CommonObject
 			}
 		}
 
-		$modelpath = "ultimateimmo/core/modules/ultimateimmo/doc/";
+		$modelpath = "ultimateimmo/core/modules/ultimateimmo/pdf/";
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref, $moreparams);
 	}

@@ -661,6 +661,7 @@ class ImmoReceipt extends CommonObject
 		$sql = 'SELECT ' . $array . ',';
 		$sql .= ' lc.rowid as renter_id,';
 		$sql .= ' lc.email as emaillocataire,';
+		$sql .= ' pm.fk_mode_reglement,';
 		$sql .= ' cp.libelle as payment_label, cp.code as payment_code';
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'ultimateimmo_immorenter as lc ON t.fk_renter = lc.rowid';
@@ -684,10 +685,10 @@ class ImmoReceipt extends CommonObject
 						$this->brouillon = 1;
 					}
 
-					$this->fk_mode_reglement  = $obj->fk_mode_reglement;
-					$this->mode_reglement_code = $obj->payment_code;
-					$this->mode_reglement = $obj->payment_label;
-					$this->date_rent = $this->db->jdate($obj->date_rent);
+					$this->fk_mode_reglement  = $obj->fk_mode_reglement ?? null;
+					$this->mode_reglement_code = $obj->payment_code ?? null;
+					$this->mode_reglement = $obj->payment_label ?? null;
+					$this->date_rent = $this->db->jdate($obj->date_rent ?? null);
 					$this->date_start = $this->db->jdate($obj->date_start);
 					$this->date_end = $this->db->jdate($obj->date_end);
 					$this->date_creation = $this->db->jdate($obj->date_creation);
@@ -1430,7 +1431,7 @@ class ImmoReceipt extends CommonObject
 		if ($resql) {
 			$obj = $this->db->fetch_object($resql);
 			$this->db->free($resql);
-			return $obj->amount;
+			return $obj ? $obj->amount : 0;
 		} else {
 			$this->error = "Error ".$this->db->lasterror();
 			return -1;

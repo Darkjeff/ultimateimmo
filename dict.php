@@ -118,6 +118,7 @@ $pageprev = $page - 1;
 $pagenext = $page + 1;
 
 $search_code = GETPOST('search_code', 'alpha');
+$search_country_id = GETPOST('search_country_id', 'int');
 
 // Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
 $hookmanager->initHooks(array('admin'));
@@ -146,7 +147,7 @@ complete_dictionary_with_ultimateimmo($taborder, $tabname, $tablib, $tabsql, $ta
 
 
 // Defaut sortorder
-if (empty($sortfield)) {
+if (empty($sortfield) && !empty($tabsqlsort[$id])) {
 	$tmp1 = explode(',', $tabsqlsort[$id]);
 	$tmp2 = explode(' ', $tmp1[0]);
 	$sortfield = preg_replace('/^.*\./', '', $tmp2[0]);
@@ -394,7 +395,7 @@ if ($search_country_id > 0) {
 	$param .= '&search_country_id=' . urlencode($search_country_id);
 }
 if ($search_code != '') {
-	$param .= '&search_code=' . urlencode($search_country_id);
+	$param .= '&search_code=' . urlencode($search_code);
 }
 if ($entity != '') {
 	$param .= '&entity=' . (int)$entity;

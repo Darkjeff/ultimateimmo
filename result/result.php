@@ -80,13 +80,13 @@ if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x'
 
 
 // Filter
-$year = $_GET ["year"];
+$year = GETPOST('year', 'int');
 if ($year == 0) {
-	$year_current = strftime("%Y", time());
+	$year_current = (int) date('Y');
 	$year_start = $year_current;
 } else {
-	$year_current = $year;
-	$year_start = $year;
+	$year_current = (int) $year;
+	$year_start = (int) $year;
 }
 
 $form = new Form($db);
@@ -172,7 +172,7 @@ if (!empty($search_owner)) {
 $sql .= " GROUP BY  ib.rowid";
 
 $resql = $db->query($sql);
-$total_month=array();
+$total_month = array_fill_keys(array_keys($months_list), 0);
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows($resql);
@@ -248,7 +248,7 @@ if (!empty($search_owner)) {
 $sql .= " GROUP BY  ib.rowid";
 
 $resql = $db->query($sql);
-$total_month=array();
+$total_month = array_fill_keys(array_keys($months_list), 0);
 if ($resql) {
 
 	while ($row = $db->fetch_object($resql)) {
@@ -334,7 +334,7 @@ foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
-$total_month=array();
+$total_month = array_fill_keys(array_keys($months_list), 0);
 foreach ($value_array as $key => $val) {
 	$total = 0;
 	print '<tr class="oddeven"><td>' . $key . '</td>';
@@ -390,7 +390,7 @@ if (!empty($search_owner)) {
 $sql .= " GROUP BY  ib.rowid";
 
 $resql = $db->query($sql);
-$total_month=array();
+$total_month = array_fill_keys(array_keys($months_list), 0);
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows($resql);
@@ -474,7 +474,7 @@ foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
-$total_month=array();
+$total_month = array_fill_keys(array_keys($months_list), 0);
 foreach ($dataRevenueFiscal as $key => $val) {
 	$total = 0;
 	print '<tr class="oddeven"><td>' . $immoData[$key] . '</td>';
@@ -532,7 +532,7 @@ if (!empty($search_owner)) {
 $sql .= " GROUP BY  ib.rowid";
 
 $resql = $db->query($sql);
-$total_month=array();
+$total_month = array_fill_keys(array_keys($months_list), 0);
 if ($resql) {
 	$i = 0;
 	$num = $db->num_rows($resql);
@@ -606,7 +606,7 @@ foreach ($months_list as $month_name) {
 	print '<td align="right">' . $langs->trans($month_name) . '</td>';
 }
 print '<td align="right"><b>' . $langs->trans("Total") . '</b></td></tr>';
-$total_month=array();
+$total_month = array_fill_keys(array_keys($months_list), 0);
 foreach ($dataRevenueNet as $key => $val) {
 	$total = 0;
 	print '<tr class="oddeven"><td>' . $immoData[$key] . '</td>';

@@ -64,6 +64,7 @@ $globalboxes = array();
 
 if ($user->rights->ultimateimmo->read) {
     $globalboxes[] = array('name' => $langs->trans('MenuImmoOwner'), 'color' =>'#C19875',
+        'icon' => 'fa-id-card',
         'url' => dol_buildpath('/ultimateimmo/owner/immowner_list.php', 1),
         'url_add' => dol_buildpath('/ultimateimmo/owner/immoowner_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
@@ -77,6 +78,7 @@ if ($user->rights->ultimateimmo->read) {
 
 if ($user->rights->ultimateimmo->read) {
     $globalboxes[] = array('name' => strtoupper($langs->trans('ImmoProperties')), 'color' =>'#96BBBB',
+        'icon' => 'fa-building',
         'url' => dol_buildpath('/ultimateimmo/property/immoproperty_list.php', 1),
         'url_add' => dol_buildpath('/ultimateimmo/property/immoproperty_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
@@ -89,6 +91,7 @@ if ($user->rights->ultimateimmo->read) {
 
 if ($user->rights->ultimateimmo->read) {
     $globalboxes[] = array('name' => strtoupper($langs->trans('MenuImmoRent')), 'color' =>'#F2E3BC',
+        'icon' => 'fa-home',
         'url' => dol_buildpath('/ultimateimmo/property/immorent_list.php', 1),
         'url_add' => dol_buildpath('/ultimateimmo/rent/immorent_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
@@ -101,6 +104,7 @@ if ($user->rights->ultimateimmo->read) {
 
 if ($user->rights->ultimateimmo->read) {
     $globalboxes[] = array('name' => strtoupper($langs->trans('MenuImmoRenter')), 'color' =>'#C19875',
+        'icon' => 'fa-user',
         'url' => dol_buildpath('/ultimateimmo/renter/immorenter_list.php', 1),
         'url_add' => dol_buildpath('/ultimateimmo/renter/immorenter_card.php?action=create', 1),
         'right' => $user->rights->ultimateimmo->read,
@@ -117,12 +121,12 @@ if ($user->rights->ultimateimmo->read) {
  */
 
 // Check if company name is defined (first install)
-if (!isset($conf->global->MAIN_INFO_SOCIETE_NOM) || empty($conf->global->MAIN_INFO_SOCIETE_NOM))
+if (empty(getDolGlobalString('MAIN_INFO_SOCIETE_NOM')))
 {
     header("Location: ".DOL_URL_ROOT."/admin/index.php?mainmenu=home&leftmenu=setup&mesg=setupnotcomplete");
     exit;
 }
-if (count($conf->modules) <= (empty($conf->global->MAIN_MIN_NB_ENABLED_MODULE_FOR_WARNING)?1:$conf->global->MAIN_MIN_NB_ENABLED_MODULE_FOR_WARNING))	// If only user module enabled
+if (count($conf->modules) <= (getDolGlobalInt('MAIN_MIN_NB_ENABLED_MODULE_FOR_WARNING', 1)))	// If only user module enabled
 {
     header("Location: ".DOL_URL_ROOT."/admin/index.php?mainmenu=home&leftmenu=setup&mesg=setupnotcomplete");
     exit;
@@ -142,28 +146,27 @@ if (GETPOST('addbox'))	// Add box (when submit is done from a form when ajax dis
  * View
  */
 
-if (! is_object($form)) $form=new Form($db);
+$form = new Form($db);
 
 // Translations
 $langs->loadLangs(array("admin", "ultimateimmo@gultimateimmo"));
 
 // Title
 $title = $langs->trans("UltimateImmoDashboard");
-if (! empty($conf->global->MAIN_APPLICATION_TITLE)) $title=$langs->trans("HomeArea").' - '.$conf->global->MAIN_APPLICATION_TITLE;
+if (getDolGlobalString('MAIN_APPLICATION_TITLE')) $title=$langs->trans("HomeArea").' - '.getDolGlobalString('MAIN_APPLICATION_TITLE');
 
 llxHeader('', $title);
 $resultboxes = UltimateImmoGetBoxesArea($user, "0");    // Load $resultboxes (selectboxlist + boxactivated + boxlista + boxlistb)
 $morehtmlright = $resultboxes['selectboxlist'];
 
 print load_fiche_titre($langs->trans("UltimateImmoDashboard"), $morehtmlright, 'ultimateimmo_minimized@ultimateimmo');
-print '<div class="dashboardBtnContainer">'.$button.'</div>';
 
 /*
  * Demo text
  */
-if ($conf->global->ULTIMATEIMMO_DEMO_ACTIVE == 1 && !empty($conf->global->ULTIMATEIMMO_DEMO_HOME)) {
+if (getDolGlobalInt('ULTIMATEIMMO_DEMO_ACTIVE') == 1 && getDolGlobalString('ULTIMATEIMMO_DEMO_HOME')) {
     print '<div class="ultimateimmo-demo-div">';
-    print $conf->global->ULTIMATEIMMO_DEMO_HOME;
+    print getDolGlobalString('ULTIMATEIMMO_DEMO_HOME');
     print '</div>';
     print '<div class="clearboth"></div>';
 }
@@ -228,6 +231,7 @@ if ($user->rights->ultimateimmo->read) {
 			}
 
 			$globalboxes[] = array('name' => strtoupper($langs->trans('RenterLetToPay')), 'color' => '#C19875',
+				'icon' => 'fa-money-bill-alt',
 				'url' => dol_buildpath('/ultimateimmo/payment/immopayment_card.php', 1),
 				'right' => $user->rights->ultimateimmo->read,
 				'lines' => $lineData
@@ -411,14 +415,12 @@ function UltimateImmoGetBoxesArea($user, $areacode)
         $boxlista.="\n<!-- Box left container -->\n";
 
         // Define $box_max_lines
-        $box_max_lines=5;
-        if (! empty($conf->global->ULTIMATEIMMO_BOXES_MAXLINES)) $box_max_lines=$conf->global->ULTIMATEIMMO_BOXES_MAXLINES;
+        $box_max_lines = getDolGlobalInt('ULTIMATEIMMO_BOXES_MAXLINES', 5);
 
         $ii=0;
         foreach ($boxactivated as $key => $box)
         {
-			var_dump($box);
-            if ((! empty($user->conf->$confuserzone) && $box->fk_user == 0) || (empty($user->conf->$confuserzone) && $box->fk_user != 0)) continue;
+	            if ((! empty($user->conf->$confuserzone) && $box->fk_user == 0) || (empty($user->conf->$confuserzone) && $box->fk_user != 0)) continue;
             if (empty($box->box_order) && $ii < ($nbboxactivated / 2)) $box->box_order='A'.sprintf("%02d", ($ii+1)); // When box_order was not yet set to Axx or Bxx and is still 0
             if (preg_match('/^A/i', $box->box_order)) // column A
             {

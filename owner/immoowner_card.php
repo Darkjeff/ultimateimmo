@@ -57,6 +57,8 @@ $langs->loadLangs(array("ultimateimmo@ultimateimmo", "companies", "other"));
 $id			= GETPOST('id', 'int');
 $ref        = GETPOST('ref', 'alpha');
 $action		= GETPOST('action', 'alpha');
+$massaction = GETPOST('massaction', 'alpha');
+$lineid     = GETPOST('lineid', 'int');
 $confirm    = GETPOST('confirm', 'alpha');
 $cancel		= GETPOST('cancel', 'aZ09');
 $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'immoownercard'; // To manage different context of search

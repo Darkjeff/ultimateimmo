@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Copyright (C) 2021   	 Alexandre Spangaro		<info@open-dsi.fr>
---
+-- 
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -38,9 +38,8 @@ ALTER TABLE llx_ultimateimmo_building add tms timestamp NOT NULL after date_crea
 ALTER TABLE llx_ultimateimmo_building add fk_user_creat integer NOT NULL after tms;
 ALTER TABLE llx_ultimateimmo_building add fk_user_modif integer after fk_user_creat;
 
-ALTER TABLE llx_ultimateimmo_immocost_type add active integer DEFAULT 1 after status;
-ALTER TABLE llx_ultimateimmo_immocost_type add fk_user_creat integer NOT NULL after status;
-UPDATE llx_ultimateimmo_immocost_type SET active=status;
+ALTER TABLE llx_ultimateimmo_immocost_type add active integer after status;
+ALTER TABLE llx_ultimateimmo_immocost_type add fk_user_creat integer NOT NULL integer after status;
 
 ALTER TABLE llx_ultimateimmo_immocost CHANGE COLUMN fk_user_create fk_user_creat integer;
 
@@ -48,5 +47,3 @@ ALTER TABLE llx_ultimateimmo_immoproperty ADD COLUMN section_cadastrale varchar(
 ALTER TABLE llx_ultimateimmo_immoproperty ADD COLUMN parcelle_cadastrale varchar(32) after section_cadastrale;
 ALTER TABLE llx_ultimateimmo_immoproperty ADD COLUMN num_prm_edf varchar(32) after parcelle_cadastrale;
 ALTER TABLE llx_ultimateimmo_immoproperty ADD COLUMN num_internet_line varchar(32) after num_prm_edf;
-
-ALTER TABLE llx_ultimateimmo_immoreceipt ADD COLUMN paye integer NOT NULL DEFAULT 0 after fk_payment;
