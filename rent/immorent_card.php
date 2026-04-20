@@ -74,7 +74,7 @@ $diroutputmassaction = $conf->ultimateimmo->dir_output . '/temp/massgeneration/'
 $hookmanager->initHooks(array('immorentcard', 'globalcard'));     // Note that conf->hooks_modules contains array
 
 // Fetch optionals attributes and labels
-$extrafields->fetch_name_optionals_label($object->table_element);
+$extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
 
 $search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
 

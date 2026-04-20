@@ -60,6 +60,7 @@ $ref = GETPOST('ref', 'alpha');
 
 // Security check - Protection if external user
 //if ($user->societe_id > 0) access_forbidden();
+$socid = GETPOST('socid', 'int');
 if ($user->societe_id > 0) $socid = $user->societe_id;
 $result = restrictedArea($user, 'ultimateimmo', $id);
 

@@ -96,7 +96,9 @@ $extralabels = $extrafields->fetch_name_optionals_label('immoowner');
 
 // Load object
 include DOL_DOCUMENT_ROOT . '/core/actions_fetchobject.inc.php';  // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
-if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity] . "/" . $object->id;
+if ($id > 0 || !empty($ref)) $upload_dir = $conf->ultimateimmo->multidir_output[$object->entity > 0 ? $object->entity : $conf->entity] . "/" . $object->id;
+
+$socid = GETPOST('socid', 'int');
 
 
 
@@ -213,7 +215,7 @@ if ($object->id > 0) {
 	$objcon = new stdClass();
 
 	$out = '';
-	$permok = $user->rights->agenda->myactions->create;
+	$permok = !empty($user->rights->agenda->myactions->create);
 	if ((!empty($objthirdparty->id) || !empty($objcon->id)) && $permok) {
 		//$out.='<a href="'.DOL_URL_ROOT.'/comm/action/card.php?action=create';
 		if (get_class($objthirdparty) == 'Societe') $out .= '&amp;socid=' . $objthirdparty->id;

@@ -127,6 +127,7 @@ if ($action=='save') {
 
 $html = new Form($db);
 $htmlimmo = new FormUltimateimmo($db);
+$permissiontoadd = $user->rights->ultimateimmo->property->write;
 
 
 if ($result < 0) {

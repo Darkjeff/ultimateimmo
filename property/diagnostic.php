@@ -92,6 +92,7 @@ $html = new Form($db);
 $htmlimmo = new FormUltimateimmo($db);
 $object = new Immoproperty($db);
 $result = $object->fetch($id);
+$permissiontoadd = $user->rights->ultimateimmo->property->write;
 
 if ($result < 0) {
 	setEventMessages(null, $object->errors, 'errors');

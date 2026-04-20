@@ -739,30 +739,23 @@ class ImmoProperty extends CommonObject
 			{
 				$obj = $this->db->fetch_object($result);
 				$this->id = $obj->rowid;
-				if ($obj->fk_user_author)
+
+				if ($obj->fk_user_creat)
 				{
 					$cuser = new User($this->db);
-					$cuser->fetch($obj->fk_user_author);
+					$cuser->fetch($obj->fk_user_creat);
 					$this->user_creation = $cuser;
 				}
 
-				if ($obj->fk_user_valid)
+				if ($obj->fk_user_modif)
 				{
-					$vuser = new User($this->db);
-					$vuser->fetch($obj->fk_user_valid);
-					$this->user_validation = $vuser;
-				}
-
-				if ($obj->fk_user_cloture)
-				{
-					$cluser = new User($this->db);
-					$cluser->fetch($obj->fk_user_cloture);
-					$this->user_cloture = $cluser;
+					$muser = new User($this->db);
+					$muser->fetch($obj->fk_user_modif);
+					$this->user_modification = $muser;
 				}
 
 				$this->date_creation     = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->datem);
-				$this->date_validation   = $this->db->jdate($obj->datev);
 			}
 
 			$this->db->free($result);

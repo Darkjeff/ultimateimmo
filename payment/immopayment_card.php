@@ -1013,7 +1013,7 @@ if ($action == 'createall') {
 
 				// Action column
 				print '<td class="nowrap center">';
-				if (in_array($objp->reference, $arrayofselected)) $selected = 1;
+				$selected = in_array($objp->reference, $arrayofselected) ? 1 : 0;
 				print '<input id="cb' . $objp->reference . '" class="flat checkforselect" type="checkbox" name="toselect[]" value="' . $objp->reference . '"' . ($selected ? ' checked="checked"' : '') . '>';
 				print '</td>';
 

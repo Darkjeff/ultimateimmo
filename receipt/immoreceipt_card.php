@@ -75,6 +75,7 @@ $confirm = GETPOST('confirm', 'alpha');
 $toselect = GETPOST('toselect', 'array');
 $cancel = GETPOST('cancel', 'aZ09');
 $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'immoreceiptcard';   // To manage different context of search
+$optioncss = GETPOST('optioncss', 'alpha');
 $backtopage = GETPOST('backtopage', 'alpha');
 $search_fk_soc = GETPOST('search_fk_soc', 'alpha');
 
